@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FSM>
+    <Signals>
+        <Input Name="error"/>
+        <Input Name="start"/>
+        <Input Name="check"/>
+        <Input Name="stop"/>
+        <Input Name="bootOK"/>
+        <Output Name="boot"/>
+        <Output Name="checkOK"/>
+        <Output Name="power"/>
+        <Output Name="alarm"/>
+    </Signals>
+    <States>
+        <State Name="Init" X="29" Y="-266">
+            <Action Type="Output" Name="power"/>
+        </State>
+        <State Name="On" X="304" Y="-14">
+            <Action Type="Output" Name="power"/>
+        </State>
+        <State Name="Error" X="-76" Y="262">
+            <Action Type="Output" Name="alarm"/>
+        </State>
+        <State Name="Off" IsInitial="true" X="-371" Y="-32"/>
+    </States>
+    <Transitions>
+        <Transition Source="Init" Target="On">
+            <Condition>
+                <LogicVariable Name="bootOK"/>
+            </Condition>
+            <Actions/>
+        </Transition>
+        <Transition Source="Off" Target="Off">
+            <Condition>
+                <LogicVariable Name="check"/>
+            </Condition>
+            <Actions>
+                <Action Type="Output" Name="checkOK"/>
+            </Actions>
+        </Transition>
+        <Transition Source="On" Target="Error">
+            <Condition>
+                <LogicVariable Name="error"/>
+            </Condition>
+            <Actions/>
+        </Transition>
+        <Transition Source="On" Target="Off">
+            <Condition>
+                <LogicEquation Nature="and">
+                    <LeftOperand>
+                        <LogicVariable Name="stop"/>
+                    </LeftOperand>
+                    <RightOperand>
+                        <LogicEquation Nature="not">
+                            <RightOperand>
+                                <LogicVariable Name="error"/>
+                            </RightOperand>
+                        </LogicEquation>
+                    </RightOperand>
+                </LogicEquation>
+            </Condition>
+            <Actions/>
+        </Transition>
+        <Transition Source="Off" Target="Error">
+            <Condition>
+                <LogicVariable Name="error"/>
+            </Condition>
+            <Actions/>
+        </Transition>
+        <Transition Source="Error" Target="Off">
+            <Condition>
+                <LogicEquation Nature="not">
+                    <RightOperand>
+                        <LogicVariable Name="error"/>
+                    </RightOperand>
+                </LogicEquation>
+            </Condition>
+            <Actions/>
+        </Transition>
+        <Transition Source="Off" Target="Init">
+            <Condition>
+                <LogicEquation Nature="and">
+                    <LeftOperand>
+                        <LogicVariable Name="start"/>
+                    </LeftOperand>
+                    <RightOperand>
+                        <LogicEquation Nature="not">
+                            <RightOperand>
+                                <LogicVariable Name="error"/>
+                            </RightOperand>
+                        </LogicEquation>
+                    </RightOperand>
+                </LogicEquation>
+            </Condition>
+            <Actions>
+                <Action Type="Output" Name="boot"/>
+            </Actions>
+        </Transition>
+    </Transitions>
+</FSM>

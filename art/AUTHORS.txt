@@ -1,0 +1,32 @@
+
+
+The following image files are used in StateS:
+
+__________________________________________________________________________________________________
+ File name                | Author        | Licence                                              |
+--------------------------------------------------------------------------------------------------
+Usb_stick_by_mimooh.svg   | Mimooh        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Gnome-go-jump.svg         | GNOME Project | GNU Public Licence version 2                         |
+29699-kleanSweep.svg      | gg3po         | GNU Public Licence version 2                         |
+Clean_machine.png         | Epok__        | GNU Public Licence version 2                         |
+StateS.svg/.png           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Save.svg/.png             | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Load.svg/.png             | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Create_FSM.svg/.png       | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Export.svg/.png           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+
+
+Licences can be foud:
+
+_______________________________________________________________________________________________________________________________________
+ Licence                                              | Provided in file...  | Online                                                 |
+--------------------------------------------------------------------------------------------------------------------------------------|
+ Creative Commons Attribution-ShareAlike 3.0 Unported | LICENCE_CC-BY-SA-3   | https://creativecommons.org/licenses/by-sa/3.0/deed.en |
+ GNU Public Licence version 2                         | LICENCE_GPL_V2       | http://www.gnu.org/licenses/gpl-2.0.html               |
+
+
+I would like to thank the artists for sharing their work under open licences.
+Some files were found on Wikimedia Commons https://commons.wikimedia.org
+Thanks to the Wikimedia foundation for their sharing work.
+
+

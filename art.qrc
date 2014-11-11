@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="StateS_icon">art/StateS.png</file>
+        <file alias="save_icon">art/Save.png</file>
+        <file alias="load_icon">art/Load.png</file>
+        <file alias="create_FSM_icon">art/Create_FSM.png</file>
+        <file alias="clean_machine_icon">art/Clear_machine.png</file>
+        <file alias="export_pdf_icon">art/Export.png</file>
+    </qresource>
+</RCC>

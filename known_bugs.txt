@@ -1,0 +1,21 @@
+
+*****************
+* StateS v. 0.1 *
+*****************
+
+// The following behaviors are known.
+// They may be buggy, or just uninmplemented code.
+
+- Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
+- Simulator does not check for transition exclusive conditions, it just takes the firt available transition with true condition,
+- Begin/end simulation: conditions only containing constants: color is not updated,
+- Problem when error on rename signal (red), then begin other action while not resolving error,
+- Biggest transition selection box hides smaller transitions when multiple transitions between states.
+
+// Not bugs, but still
+
+- Transition selection box for straight lines is only on line, so very difficult to catch,
+- Context menu when simulating should change with appropriate options: force state activation,
+- Allow cancel renaming/adding signals while editing not validated,
+- Display current state on simu (add tooltip),
+- Should not allow to stack states (ugly state/transition stacking).
