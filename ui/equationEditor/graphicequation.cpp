@@ -115,6 +115,7 @@ void GraphicEquation::buildEquation()
         if (complexEquation->getFunction() != LogicEquation::nature::notOp)
         {
             leftOperandDisplay = new GraphicEquation(complexEquation->getLeftOperand(), this, isTemplate);
+            layout->addWidget(leftOperandDisplay);
         }
 
         switch(complexEquation->getFunction())
@@ -143,10 +144,9 @@ void GraphicEquation::buildEquation()
         }
         this->operatorText->setAlignment(Qt::AlignCenter);
 
-        rightOperandDisplay = new GraphicEquation(complexEquation->getRightOperand(), this, isTemplate);
-
-        layout->addWidget(leftOperandDisplay);
         layout->addWidget(operatorText);
+
+        rightOperandDisplay = new GraphicEquation(complexEquation->getRightOperand(), this, isTemplate);
         layout->addWidget(rightOperandDisplay);
     }
     else // Equation is actually variable
@@ -161,9 +161,7 @@ void GraphicEquation::buildEquation()
         variableText->setAlignment(Qt::AlignCenter);
 
         layout->addWidget(variableText);
-
     }
-
 
     if (this->isTemplate)
         this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");

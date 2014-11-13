@@ -23,7 +23,7 @@
 
 #include "logicvariable.h"
 
-LogicEquation::LogicEquation(LogicVariable* leftOperand, nature function, LogicVariable* rightOperand )
+LogicEquation::LogicEquation(LogicVariable* leftOperand, nature function, LogicVariable* rightOperand)
 {
     this->function = function;
 

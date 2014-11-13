@@ -24,7 +24,7 @@
 
 #include <QWidget>
 
-#include <QGridLayout>
+
 #include <QPushButton>
 #include <QListWidget>
 
@@ -58,14 +58,10 @@ private:
     FsmState* currentState = nullptr;
 
     Clock* clock = nullptr;
-
     SimulationTimeLine* timeLine = nullptr;
 
-    QGridLayout* layout = nullptr;
-
-    QPushButton * buttonTriggerSimulation = nullptr;
-    QPushButton * buttonReset = nullptr;
-    QPushButton * buttonNextStep = nullptr;
+    QPushButton* buttonTriggerSimulation = nullptr;
+    QWidget* simulationTools = nullptr;
 
     QListWidget* inputList = nullptr;
 };

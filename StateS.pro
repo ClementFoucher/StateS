@@ -47,7 +47,6 @@ SOURCES += \
     ui/resourcesbar/tools/fsmtools.cpp \
     ui/resourcesbar/editor/transitioneditortab.cpp \
     ui/resourcesbar/editor/stateeditortab.cpp \
-    ui/resourcesbar/simulator/simulatortab.cpp \
     ui/resourcesbar/interface/interfaceresourcestab.cpp \
     ui/resourcesbar/interface/iolistdelegate.cpp \
     ui/equationEditor/equationeditor.cpp \
@@ -60,7 +59,9 @@ SOURCES += \
     core/variables/output.cpp \
     ui/scene/fsm/fsmscene.cpp \
     ui/langselector.cpp \
-    ui/reactivebutton.cpp
+    ui/reactivebutton.cpp \
+    core/variables/logicvariablevector.cpp \
+    ui/resourcesbar/simulatortab.cpp
 
 
 HEADERS  += \
@@ -92,7 +93,6 @@ HEADERS  += \
     ui/resourcesbar/tools/include/fsmtools.h \
     ui/resourcesbar/editor/include/stateeditortab.h \
     ui/resourcesbar/editor/include/transitioneditortab.h \
-    ui/resourcesbar/simulator/include/simulatortab.h \
     ui/resourcesbar/tools/include/toolresourcestab.h \
     ui/resourcesbar/interface/include/interfaceresourcestab.h \
     ui/resourcesbar/interface/include/iolistdelegate.h \
@@ -106,7 +106,9 @@ HEADERS  += \
     ui/resourcesbar/include/abouttab.h \
     ui/simulation/include/clocktimeline.h \
     ui/include/langselector.h \
-    ui/reactivebutton.h
+    ui/reactivebutton.h \
+    core/variables/include/logicvariablevector.h \
+    ui/resourcesbar/include/simulatortab.h
 
 FORMS    += \
     ui/drawingwindow.ui
@@ -123,7 +125,6 @@ INCLUDEPATH += \
     ui/resourcesbar/include \
     ui/resourcesbar/editor/include \
     ui/resourcesbar/interface/include \
-    ui/resourcesbar/simulator/include \
     ui/resourcesbar/tools/include \
     ui/scene/fsm/include \
     ui/simulation/include \

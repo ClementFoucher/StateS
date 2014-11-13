@@ -417,6 +417,14 @@
         <source>No initial state!</source>
         <translation>Aucun état initial !</translation>
     </message>
+    <message>
+        <source>End simulation</source>
+        <translation>Mettre fin à la simulation</translation>
+    </message>
+    <message>
+        <source>Select signals from the list below to activate inputs:</source>
+        <translation>Selectionnez des signaux dans la liste ci-dessous pour activer les entrées correspondantes :</translation>
+    </message>
 </context>
 <context>
     <name>StateEditorTab</name>
