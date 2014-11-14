@@ -66,6 +66,7 @@ private:
     QHBoxLayout* layout = nullptr;
 
     QLabel* operatorText = nullptr;
+    QLabel* invertorText = nullptr;
 
     GraphicEquation* leftOperandDisplay  = nullptr;
     GraphicEquation* rightOperandDisplay = nullptr;

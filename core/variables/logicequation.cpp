@@ -21,6 +21,8 @@
 
 #include "logicequation.h"
 
+#include <QDebug>
+
 #include "logicvariable.h"
 
 LogicEquation::LogicEquation(LogicVariable* leftOperand, nature function, LogicVariable* rightOperand)
@@ -94,12 +96,46 @@ bool LogicEquation::getCurrentState() const
     case nature::xnorOp:
         return (! (leftOperand->getCurrentState() ^ rightOperand->getCurrentState()));
         break;
+    default:
+        qDebug() << "(Logic equation:) Error! Unkown operator type!";
+        return false;
+    }
+}
+
+bool LogicEquation::isInverted() const
+{
+    switch (function)
+    {
+    case nature::notOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+        return true;
+        break;
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+        return false;
+        break;
+    default:
+        qDebug() << "(Logic equation:) Error! Unkown operator type!";
+        return false;
     }
 }
 
 QString LogicEquation::getText() const
 {
-    QString text = "(";
+    QString text;
+
+    if (function != nature::notOp)
+        text = "(";
+
+    // Inversion oeprator
+    if ( (function == nature::notOp)  ||
+         (function == nature::nandOp) ||
+         (function == nature::norOp)  ||
+         (function == nature::xnorOp) )
+        text += '/';
 
     // Do not display left operand for "not" operator
     if (function != nature::notOp)
@@ -107,32 +143,26 @@ QString LogicEquation::getText() const
 
     switch(function)
     {
-    case LogicEquation::nature::notOp:
-        text += "not ";
-        break;
     case LogicEquation::nature::andOp:
-        text += " and ";
+    case LogicEquation::nature::nandOp:
+        text += " • ";
         break;
     case LogicEquation::nature::orOp:
-        text += " or ";
+    case LogicEquation::nature::norOp:
+        text += " + ";
         break;
     case LogicEquation::nature::xorOp:
-        text += " xor ";
-        break;
-    case LogicEquation::nature::nandOp:
-        text += " nand ";
-        break;
-    case LogicEquation::nature::norOp:
-        text += " nor ";
-        break;
     case LogicEquation::nature::xnorOp:
-        text += " xnor ";
+        text += " ⊕ ";
+        break;
+    default:
         break;
     }
 
     text += rightOperand->getText();
 
-    text += ")";
+    if (function != nature::notOp)
+        text += ")";
 
     return text;
 }

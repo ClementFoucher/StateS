@@ -99,11 +99,13 @@ void GraphicEquation::buildEquation()
     delete operatorText;
     delete rightOperandDisplay;
     delete variableText;
+    delete invertorText;
 
     leftOperandDisplay = nullptr;
     operatorText = nullptr;
     rightOperandDisplay = nullptr;
     variableText = nullptr;
+    invertorText = nullptr;
 
     if (!isTemplate)
         this->setAcceptDrops(true);
@@ -112,39 +114,74 @@ void GraphicEquation::buildEquation()
 
     if (complexEquation != nullptr)
     {
+        if ( (!this->isTemplate) && (complexEquation->isInverted()) )
+        {
+            this->invertorText = new QLabel("/");
+            layout->addWidget(this->invertorText);
+        }
+
         if (complexEquation->getFunction() != LogicEquation::nature::notOp)
         {
             leftOperandDisplay = new GraphicEquation(complexEquation->getLeftOperand(), this, isTemplate);
             layout->addWidget(leftOperandDisplay);
         }
 
-        switch(complexEquation->getFunction())
+        if (this->isTemplate)
         {
-        case LogicEquation::nature::notOp:
-            this->operatorText = new QLabel("not");
-            break;
-        case LogicEquation::nature::andOp:
-            this->operatorText = new QLabel("and");
-            break;
-        case LogicEquation::nature::orOp:
-            this->operatorText = new QLabel("or");
-            break;
-        case LogicEquation::nature::xorOp:
-            this->operatorText = new QLabel("xor");
-            break;
-        case LogicEquation::nature::nandOp:
-            this->operatorText = new QLabel("nand");
-            break;
-        case LogicEquation::nature::norOp:
-            this->operatorText = new QLabel("nor");
-            break;
-        case LogicEquation::nature::xnorOp:
-            this->operatorText = new QLabel("xnor");
-            break;
-        }
-        this->operatorText->setAlignment(Qt::AlignCenter);
+            switch(complexEquation->getFunction())
+            {
+            case LogicEquation::nature::notOp:
+                this->operatorText = new QLabel("not");
+                break;
+            case LogicEquation::nature::andOp:
+                this->operatorText = new QLabel("and");
+                break;
+            case LogicEquation::nature::orOp:
+                this->operatorText = new QLabel("or");
+                break;
+            case LogicEquation::nature::xorOp:
+                this->operatorText = new QLabel("xor");
+                break;
+            case LogicEquation::nature::nandOp:
+                this->operatorText = new QLabel("nand");
+                break;
+            case LogicEquation::nature::norOp:
+                this->operatorText = new QLabel("nor");
+                break;
+            case LogicEquation::nature::xnorOp:
+                this->operatorText = new QLabel("xnor");
+                break;
+            }
 
-        layout->addWidget(operatorText);
+            layout->addWidget(operatorText);
+            this->operatorText->setAlignment(Qt::AlignCenter);
+        }
+        else
+        {
+            switch(complexEquation->getFunction())
+            {
+            case LogicEquation::nature::andOp:
+            case LogicEquation::nature::nandOp:
+                this->operatorText = new QLabel("•");
+                this->operatorText->setAlignment(Qt::AlignCenter);
+                layout->addWidget(operatorText);
+                break;
+            case LogicEquation::nature::orOp:
+            case LogicEquation::nature::norOp:
+                this->operatorText = new QLabel("+");
+                this->operatorText->setAlignment(Qt::AlignCenter);
+                layout->addWidget(operatorText);
+                break;
+            case LogicEquation::nature::xorOp:
+            case LogicEquation::nature::xnorOp:
+                this->operatorText = new QLabel("⊕");
+                this->operatorText->setAlignment(Qt::AlignCenter);
+                layout->addWidget(operatorText);
+                break;
+            default:
+                break;
+            }
+        }
 
         rightOperandDisplay = new GraphicEquation(complexEquation->getRightOperand(), this, isTemplate);
         layout->addWidget(rightOperandDisplay);
@@ -296,7 +333,10 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
                     LogicEquation* newEquation = droppedComplexEquation->clone();
 
-                    newEquation->setLeftOperand(currentEquation->clone());
+                    if (currentEquation != nullptr)
+                        newEquation->setLeftOperand(currentEquation->clone());
+                    else
+                        newEquation->setLeftOperand(this->equation);
 
                     a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
 
@@ -311,7 +351,10 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
                 LogicEquation* newEquation = droppedComplexEquation->clone();
 
-                newEquation->setRightOperand(currentEquation->clone());
+                if (currentEquation != nullptr)
+                    newEquation->setRightOperand(currentEquation->clone());
+                else
+                    newEquation->setRightOperand(this->equation);
 
                 a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
 

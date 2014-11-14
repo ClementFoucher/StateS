@@ -49,6 +49,7 @@ public:
     QString getText() const override;
 
     bool getCurrentState() const override;
+    bool isInverted() const;
 
     LogicEquation* clone() const;
 
