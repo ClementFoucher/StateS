@@ -166,8 +166,7 @@ void TransitionEditorTab::addAction()
     if (availableActions.count() != 0)
     {
         menu = new ContextMenu();
-
-        menu->setStyleSheet( QString( "background-color: lightgrey; border: 3px double"));
+        menu->setListStyle();
 
         foreach(LogicVariable* var, availableActions)
         {

@@ -28,6 +28,7 @@
 #include "contextmenu.h"
 
 const QString ContextMenu::errorStyle = QString( "background-color: lightgrey; border: 3px solid red; color: red");
+const QString ContextMenu::listStyle = QString( "background-color: lightgrey; border: 3px double");
 
 ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)
@@ -44,6 +45,11 @@ void ContextMenu::addTitle(const QString& titleText)
     QWidgetAction* a = new QWidgetAction(this);
     a->setDefaultWidget(title);
     this->addAction(a);
+}
+
+void ContextMenu::setListStyle()
+{
+    this->setStyleSheet(listStyle);
 }
 
 // Code found in Qt FAQ to add tool tip support to menus...

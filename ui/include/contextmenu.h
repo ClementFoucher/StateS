@@ -32,11 +32,13 @@ public:
     static ContextMenu* createErrorMenu(const QString& text, QWidget *parent = 0);
 
     static const QString errorStyle;
+    static const QString listStyle;
 
 public:
     explicit ContextMenu(QWidget* parent = 0);
 
     void addTitle(const QString& titleText);
+    void setListStyle();
 
 protected slots:
     bool event(QEvent* e) override;
