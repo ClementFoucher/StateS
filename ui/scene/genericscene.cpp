@@ -46,6 +46,8 @@ void GenericScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
         QGraphicsScene::mousePressEvent(me);
 }
 
+
+
 void GenericScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)
 {
     // Ignore double-clicks

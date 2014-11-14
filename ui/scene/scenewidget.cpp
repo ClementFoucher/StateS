@@ -23,6 +23,7 @@
 #include <QStyle>
 #include <QScrollBar>
 #include <fsmstate.h>
+#include <QGraphicsSceneMouseEvent>
 
 #include "scenewidget.h"
 
@@ -85,6 +86,53 @@ void SceneWidget::resizeEvent(QResizeEvent* event)
     buttonZoomOut->move(this->width() - buttonZoomOut->width() - rightAlign, buttonZoomIn->height() + 20);
 }
 
+void SceneWidget::mousePressEvent(QMouseEvent *me)
+{
+    if (me->button() == Qt::LeftButton)
+    {
+ //       this->setDragMode(QGraphicsView::RubberBandDrag);
+    }
+    if (me->button() == Qt::MiddleButton)
+    {
+        this->movingScene = true;
+        this->setDragMode(QGraphicsView::ScrollHandDrag);
+    }
+
+    QGraphicsView::mousePressEvent(me);
+}
+
+void SceneWidget::mouseReleaseEvent(QMouseEvent *me)
+{
+    if (this->dragMode() == QGraphicsView::RubberBandDrag)
+    {
+        //this->setDragMode(QGraphicsView::NoDrag);
+
+    }
+    else if (this->dragMode() == QGraphicsView::ScrollHandDrag)
+    {
+        this->movingScene = false;
+        this->setDragMode(QGraphicsView::NoDrag);
+    }
+
+    QGraphicsView::mouseReleaseEvent(me);
+}
+
+void SceneWidget::mouseMoveEvent(QMouseEvent *me)
+{
+    static QPoint lastMouseEventPos(0, 0);
+    if (this->movingScene)
+    {
+        QScrollBar *hBar = horizontalScrollBar();
+        QScrollBar *vBar = verticalScrollBar();
+        QPoint delta = me->pos() - lastMouseEventPos;
+        hBar->setValue(hBar->value() + -delta.x());
+        vBar->setValue(vBar->value() - delta.y());
+    }
+
+    lastMouseEventPos = me->pos();
+
+    QGraphicsView::mouseMoveEvent(me);
+}
 
 void SceneWidget::wheelEvent(QWheelEvent* event)
 {

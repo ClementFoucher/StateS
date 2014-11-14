@@ -40,7 +40,10 @@ public:
     void setMachine(Machine* Machine, ResourcesBar *resources);
 
 protected:
-    void resizeEvent( QResizeEvent *) override;
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
     void wheelEvent(QWheelEvent*) override;
     void enterEvent(QEvent*) override;
 
@@ -54,6 +57,7 @@ private:
     QPushButton* buttonZoomIn = nullptr;
     QPushButton* buttonZoomOut = nullptr;
 
+    bool movingScene = false;
 };
 
 #endif // SCENEWIDGET_H

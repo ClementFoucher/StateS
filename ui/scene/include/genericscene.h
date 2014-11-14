@@ -40,8 +40,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
 
-
-    ResourcesBar *resources = nullptr;
+    ResourcesBar* resources = nullptr;
 };
 
 #endif // GENERICSCENE_H
