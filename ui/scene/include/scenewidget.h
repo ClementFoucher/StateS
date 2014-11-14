@@ -40,17 +40,19 @@ public:
     void setMachine(Machine* Machine, ResourcesBar *resources);
 
 protected:
-    void resizeEvent( QResizeEvent * event ) override;
-    void wheelEvent(QWheelEvent* event) override;
+    void resizeEvent( QResizeEvent *) override;
+    void wheelEvent(QWheelEvent*) override;
+    void enterEvent(QEvent*) override;
 
 private slots:
     void zoomIn();
     void zoomOut();
 
 private:
+    ResourcesBar* resourcesBar = nullptr;
 
-    QPushButton* buttonZoomIn;
-    QPushButton* buttonZoomOut;
+    QPushButton* buttonZoomIn = nullptr;
+    QPushButton* buttonZoomOut = nullptr;
 
 };
 

@@ -23,7 +23,7 @@
 #define FSMTOOLS_H
 
 #include <QWidget>
-#include <QGridLayout>
+
 #include <QPushButton>
 #include <QSignalMapper>
 #include <QString>
@@ -38,6 +38,7 @@ class FsmTools : public MachineTools
 
 public:
     explicit FsmTools(QWidget* parent = 0);
+    ~FsmTools();
 
     tool getTool() const override;
     bool setTool(MachineTools::tool newTool) override;
@@ -46,14 +47,12 @@ private slots:
     void buttonPushed(QString button);
 
 private:
-    QGridLayout * layout = nullptr;
-
     QPushButton * buttonAddState        = nullptr;
     QPushButton * buttonAddInitialState = nullptr;
     QPushButton * buttonAddTransition   = nullptr;
     QPushButton * buttonNoTool          = nullptr;
 
-    QSignalMapper * signalMapper = nullptr;
+    QSignalMapper* signalMapper = nullptr;
 };
 
 #endif // FSMTOOLS_H

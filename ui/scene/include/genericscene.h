@@ -37,8 +37,8 @@ public:
 
     virtual void simulationModeChanged() = 0;
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *me) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent*) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
 
 
     ResourcesBar *resources = nullptr;

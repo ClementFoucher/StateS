@@ -28,6 +28,8 @@
 #include <QWidgetAction>
 #include <QResizeEvent>
 #include <QMessageBox>
+#include <QPixmap>
+#include <QPainter>
 
 #include <QDebug>
 
@@ -54,6 +56,40 @@ qreal FsmGraphicalState::getRadius()
 //
 // Class object definition
 //
+
+QPixmap FsmGraphicalState::getPixmap(uint size, bool isInitial, bool addArrow)
+{
+    QPixmap pixmap(QSize(size, size));
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+
+    painter.setPen(FsmGraphicalState::pen);
+    painter.setBrush(FsmGraphicalState::inactiveBrush);
+    painter.drawEllipse(QRectF(FsmGraphicalState::pen.width()/2, FsmGraphicalState::pen.width()/2, size-FsmGraphicalState::pen.width(), size-FsmGraphicalState::pen.width()));
+
+    if (isInitial)
+    {
+        qreal space = size/10 + FsmGraphicalState::pen.width();
+        painter.drawEllipse(QRectF(FsmGraphicalState::pen.width()/2 + space, FsmGraphicalState::pen.width()/2 + space, size-FsmGraphicalState::pen.width() - space*2, size-FsmGraphicalState::pen.width() - space*2));
+    }
+
+    if (addArrow)
+    {
+        painter.drawLine(0, 0, size/3, 0);
+        painter.drawLine(0, 0, 0, size/3);
+    }
+
+    return pixmap;
+}
+
+// This is only used to build state icon from image.
+// Do not try to call rebuild representation on a
+// graphical state created with this construcor!
+FsmGraphicalState::FsmGraphicalState()
+{
+    this->setPen(pen);
+}
 
 FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)

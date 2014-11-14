@@ -13,6 +13,8 @@ What the software can do for now:
 - Simulate it,
 - Export to PDF.
 
+Qt 5.3 is required to execute this application.
+
 You can test interacting with a machine by loading file "Demo.SfsmS".
 
 This is early stage of the software development.

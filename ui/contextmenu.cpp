@@ -27,8 +27,8 @@
 
 #include "contextmenu.h"
 
-const QString ContextMenu::errorStyle = QString( "background-color: lightgrey; border: 3px solid red; color: red");
-const QString ContextMenu::listStyle = QString( "background-color: lightgrey; border: 3px double");
+const QString ContextMenu::errorStyle("background-color: lightgrey; border: 3px solid red; color: red");
+const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px double");
 
 ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)

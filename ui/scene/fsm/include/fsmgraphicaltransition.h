@@ -51,6 +51,10 @@ class FsmGraphicalTransition : public QObject, public QGraphicsItemGroup
 public:
     enum class mode{initMode, standardMode, dynamicSourceMode, dynamicTargetMode};
 
+    // Static
+public:
+    static QPixmap getPixmap(uint size);
+
 private:
     // Private constructor for handling common initialization elements
     explicit FsmGraphicalTransition();

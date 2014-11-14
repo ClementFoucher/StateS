@@ -31,10 +31,14 @@
 #include "resourcesbar.h"
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
+#include "fsmgraphicaltransition.h"
+#include "machinetools.h"
 
 SceneWidget::SceneWidget(Machine* machine, ResourcesBar* resources, QWidget* parent) :
     SceneWidget(parent)
 {
+    this->resourcesBar = resources;
+
     this->setMachine(machine, resources);
 }
 
@@ -53,6 +57,8 @@ SceneWidget::SceneWidget(QWidget* parent) :
 void SceneWidget::setMachine(Machine* machine, ResourcesBar* resources)
 {
     delete this->scene();
+
+    this->resourcesBar = resources;
 
     if (machine != nullptr)
     {
@@ -96,6 +102,41 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
             scale(1.0 / scaleFactor, 1.0 / scaleFactor);
         }
     }
+}
+
+void SceneWidget::enterEvent(QEvent*)
+{
+    if (this->resourcesBar->getBuildTools() != nullptr)
+    {
+        if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::none)
+        {
+            this->unsetCursor();
+        }
+        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::state)
+        {
+            // Should test is FSM mode before
+            QPixmap pixmap = FsmGraphicalState::getPixmap(32, false, true);
+            this->setCursor(QCursor(pixmap, 0, 0));
+        }
+        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::initial_state)
+        {
+            // Should test is FSM mode before
+            QPixmap pixmap = FsmGraphicalState::getPixmap(32, true, true);
+
+            this->setCursor(QCursor(pixmap, 0, 0));
+        }
+        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::transition)
+        {
+            // Should test is FSM mode before
+            QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
+            QCursor cursor(pixmap, 0 , 0);
+
+            this->setCursor(cursor);
+        }
+        else
+            this->unsetCursor();
+    }
+
 }
 
 void SceneWidget::zoomIn()

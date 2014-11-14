@@ -29,6 +29,7 @@
 #include <QLabel>
 #include <QWidgetAction>
 #include <QResizeEvent>
+#include <QPainter>
 
 #include <QDebug>
 
@@ -48,6 +49,21 @@ qreal FsmGraphicalTransition::middleBarLength = 20;
 QPen FsmGraphicalTransition::standardPen = QPen(Qt::SolidPattern, 3);
 QPen FsmGraphicalTransition::editPen = QPen(QBrush(Qt::red, Qt::SolidPattern), 3);
 QPen FsmGraphicalTransition::selectionPen = QPen(Qt::DashLine);
+
+QPixmap FsmGraphicalTransition::getPixmap(uint size)
+{
+    QPixmap pixmap(QSize(size, size));
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+
+    painter.setPen(FsmGraphicalTransition::standardPen);
+    painter.drawLine(0, 0, size, size);
+    painter.drawLine(0, 0, size/3, 0);
+    painter.drawLine(0, 0, 0, size/3);
+
+    return pixmap;
+}
 
 FsmGraphicalTransition::FsmGraphicalTransition()
 {

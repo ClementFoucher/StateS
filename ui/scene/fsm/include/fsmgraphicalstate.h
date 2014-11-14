@@ -29,6 +29,7 @@
 #include <QPen>
 #include <QGraphicsTextItem>
 #include <QAction>
+#include <QPixmap>
 
 class FsmState;
 
@@ -37,11 +38,18 @@ class FsmGraphicalState : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
 
     // Static
+public:
+    static QPixmap getPixmap(uint size, bool isInitial = false, bool addArrow = false);
+
 private:
     const static qreal radius;
     static QBrush inactiveBrush;
     static QBrush activeBrush;
     static QPen pen;
+
+    // Private constructor
+private:
+    explicit FsmGraphicalState();
 
     // Public
 public:

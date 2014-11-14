@@ -20,46 +20,62 @@
  */
 
 #include <QLabel>
+#include <QGridLayout>
+#include <QIcon>
+#include <QBitmap>
+#include <QPixmap>
+#include <fsmgraphicaltransition.h>
 
 #include <QDebug>
 
 #include "fsmtools.h"
+#include "fsmgraphicalstate.h"
+ #include "fsmstate.h"
 
 FsmTools::FsmTools(QWidget* parent) :
     MachineTools(parent)
 {
-    layout = new QGridLayout(this);
+    QGridLayout* layout = new QGridLayout(this);
 
-    buttonNoTool = new QPushButton(tr("Mouse"));
-    buttonNoTool->setCheckable(true);
-    buttonNoTool->setChecked(true);
-    buttonNoTool->setEnabled(false);
-    layout->addWidget(buttonNoTool, 0, 0, 1, 2);
+    this->buttonNoTool = new QPushButton(tr("Mouse"));
+//    this->buttonNoTool->setIcon(QIcon(*QCursor(Qt::CursorShape::ArrowCursor).bitmap()));
+    this->buttonNoTool->setCheckable(true);
+    this->buttonNoTool->setChecked(true);
+    this->buttonNoTool->setEnabled(false);
+    layout->addWidget(this->buttonNoTool, 0, 0, 1, 2);
 
-    buttonAddInitialState = new QPushButton(tr("Add initial state"));
-    buttonAddInitialState->setCheckable(true);
-    layout->addWidget(buttonAddInitialState, 1, 0, 1, 2);
+    this->buttonAddInitialState = new QPushButton(tr("Add initial state"));
+    this->buttonAddInitialState->setIcon(QIcon(FsmGraphicalState::getPixmap(128, true)));
+    this->buttonAddInitialState->setCheckable(true);
+    layout->addWidget(this->buttonAddInitialState, 1, 0, 1, 2);
 
-    buttonAddState = new QPushButton(tr("Add state"));
-    buttonAddState->setCheckable(true);
-    layout->addWidget(buttonAddState, 2, 0, 1, 1);
+    this->buttonAddState = new QPushButton(tr("Add state"));
+    this->buttonAddState->setIcon(QIcon(FsmGraphicalState::getPixmap(128)));
+    this->buttonAddState->setCheckable(true);
+    layout->addWidget(this->buttonAddState, 2, 0, 1, 1);
 
-    buttonAddTransition = new QPushButton(tr("Add transition"));
-    buttonAddTransition->setCheckable(true);
-    layout->addWidget(buttonAddTransition, 2, 1, 1, 1);
+    this->buttonAddTransition = new QPushButton(tr("Add transition"));
+    this->buttonAddTransition->setIcon(QIcon(FsmGraphicalTransition::getPixmap(128)));
+    this->buttonAddTransition->setCheckable(true);
+    layout->addWidget(this->buttonAddTransition, 2, 1, 1, 1);
 
-    signalMapper = new QSignalMapper(this);
-    signalMapper->setMapping(buttonAddState, "add_state");
-    signalMapper->setMapping(buttonAddInitialState, "add_initial_state");
-    signalMapper->setMapping(buttonAddTransition, "add_transition");
-    signalMapper->setMapping(buttonNoTool, "no_tool");
+    this->signalMapper = new QSignalMapper(this);
+    this->signalMapper->setMapping(buttonAddState, "add_state");
+    this->signalMapper->setMapping(buttonAddInitialState, "add_initial_state");
+    this->signalMapper->setMapping(buttonAddTransition, "add_transition");
+    this->signalMapper->setMapping(buttonNoTool, "no_tool");
 
-    connect(buttonAddState, SIGNAL(clicked()), signalMapper, SLOT (map()));
-    connect(buttonAddInitialState, SIGNAL(clicked()), signalMapper, SLOT (map()));
-    connect(buttonAddTransition, SIGNAL(clicked()), signalMapper, SLOT (map()));
-    connect(buttonNoTool, SIGNAL(clicked()), signalMapper, SLOT (map()));
+    connect(this->buttonAddState,        SIGNAL(clicked()), this->signalMapper, SLOT (map()));
+    connect(this->buttonAddInitialState, SIGNAL(clicked()), this->signalMapper, SLOT (map()));
+    connect(this->buttonAddTransition,   SIGNAL(clicked()), this->signalMapper, SLOT (map()));
+    connect(this->buttonNoTool,          SIGNAL(clicked()), this->signalMapper, SLOT (map()));
 
     connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(buttonPushed(QString)));
+}
+
+FsmTools::~FsmTools()
+{
+    delete this->signalMapper;
 }
 
 void FsmTools::buttonPushed(QString button)
@@ -76,11 +92,11 @@ void FsmTools::buttonPushed(QString button)
 
 FsmTools::tool FsmTools::getTool() const
 {
-    if (buttonAddTransition->isChecked())
+    if (this->buttonAddTransition->isChecked())
         return tool::transition;
-    else if (buttonAddState->isChecked())
+    else if (this->buttonAddState->isChecked())
         return tool::state;
-    else if (buttonAddInitialState->isChecked())
+    else if (this->buttonAddInitialState->isChecked())
         return tool::initial_state;
     else
         return tool::none;
@@ -91,40 +107,39 @@ bool FsmTools::setTool(MachineTools::tool newTool)
     switch (newTool)
     {
     case MachineTools::tool::state:
-        buttonNoTool->setChecked(false);
-        buttonAddState->setChecked(true);
-        buttonAddInitialState->setChecked(false);
-        buttonAddTransition->setChecked(false);
-        buttonNoTool->setEnabled(true);
+        this->buttonNoTool->setChecked(false);
+        this->buttonAddState->setChecked(true);
+        this->buttonAddInitialState->setChecked(false);
+        this->buttonAddTransition->setChecked(false);
+        this->buttonNoTool->setEnabled(true);
 
         return true;
 
     case MachineTools::tool::transition:
-        buttonNoTool->setChecked(false);
-        buttonAddState->setChecked(false);
-        buttonAddTransition->setChecked(true);
-        buttonAddInitialState->setChecked(false);
-        buttonNoTool->setEnabled(true);
+        this->buttonNoTool->setChecked(false);
+        this->buttonAddState->setChecked(false);
+        this->buttonAddTransition->setChecked(true);
+        this->buttonAddInitialState->setChecked(false);
+        this->buttonNoTool->setEnabled(true);
 
         return true;
 
     case MachineTools::tool::initial_state:
-        buttonNoTool->setChecked(false);
-        buttonAddState->setChecked(false);
-        buttonAddInitialState->setChecked(true);
-        buttonAddTransition->setChecked(false);
-        buttonNoTool->setEnabled(true);
+        this->buttonNoTool->setChecked(false);
+        this->buttonAddState->setChecked(false);
+        this->buttonAddInitialState->setChecked(true);
+        this->buttonAddTransition->setChecked(false);
+        this->buttonNoTool->setEnabled(true);
 
         return true;
 
     case MachineTools::tool::none:
-        buttonNoTool->setChecked(true);
-        buttonAddState->setChecked(false);
-        buttonAddInitialState->setChecked(false);
-        buttonAddTransition->setChecked(false);
+        this->buttonNoTool->setChecked(true);
+        this->buttonAddState->setChecked(false);
+        this->buttonAddInitialState->setChecked(false);
+        this->buttonAddTransition->setChecked(false);
+        this->buttonNoTool->setEnabled(false);
 
-
-        buttonNoTool->setEnabled(false);
         return true;
 
     default:
