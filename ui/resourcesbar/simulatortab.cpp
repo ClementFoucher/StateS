@@ -21,7 +21,6 @@
 
 #include <QLabel>
 #include <QListWidgetItem>
-#include <QMenu>
 #include <QVBoxLayout>
 
 #include <QDebug>
@@ -39,6 +38,7 @@
 #include "logicequation.h"
 #include "input.h"
 #include "output.h"
+#include "contextmenu.h"
 
 SimulatorTab::SimulatorTab(Fsm* machine, QWidget* parent) :
     QWidget(parent)
@@ -115,11 +115,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             {
                 this->buttonTriggerSimulation->setChecked(false);
 
-                QMenu* menu = new QMenu();
-                menu->addAction(tr("No initial state!"));
-
-                menu[0].setStyleSheet( QString( "background-color: lightgrey; border: 3px solid red; color: red"));
-
+                ContextMenu* menu = ContextMenu::createErrorMenu(tr("No initial state!"));
                 menu->popup(buttonTriggerSimulation->mapToGlobal(QPoint(buttonTriggerSimulation->width(), -menu->sizeHint().height())));
             }
         }

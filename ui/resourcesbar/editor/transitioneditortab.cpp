@@ -20,7 +20,6 @@
  */
 
 #include <QLabel>
-#include <QMenu>
 
 #include "transitioneditortab.h"
 
@@ -30,6 +29,7 @@
 #include "input.h"
 #include "logicequation.h"
 #include "equationeditor.h"
+#include "contextmenu.h"
 
 TransitionEditorTab::TransitionEditorTab(FsmTransition* transition, QWidget* parent) :
     EditorTab(parent)
@@ -127,12 +127,7 @@ void TransitionEditorTab::setCondition()
     }
     else
     {
-        QMenu* menu = new QMenu();
-
-        menu->addAction(tr("No compatible signal!"));
-
-        menu[0].setStyleSheet( QString( "background-color: lightgrey; border: 3px solid red; color: red"));
-
+        ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
         menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
     }
 
@@ -158,28 +153,32 @@ void TransitionEditorTab::treatMenuSetCondition(QAction* action)
 
 void TransitionEditorTab::addAction()
 {
-    QMenu* menu = new QMenu();
+    ContextMenu* menu;
 
-    QList<LogicVariable *> availableActions = transition->getOwningMachine()->getWrittableVariables();
+    QList<LogicVariable*> availableActions;
+
+    foreach(LogicVariable* var, transition->getOwningMachine()->getWrittableVariables())
+    {
+        if (!transition->getActions().contains(var))
+            availableActions.append(var);
+    }
 
     if (availableActions.count() != 0)
     {
+        menu = new ContextMenu();
+
         menu->setStyleSheet( QString( "background-color: lightgrey; border: 3px double"));
 
         foreach(LogicVariable* var, availableActions)
         {
-            if (!transition->getActions().contains(var))
-                menu->addAction(var->getName());
+            menu->addAction(var->getName());
         }
 
         connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(treatMenuAdd(QAction*)));
     }
     else
     {
-        menu->addAction(tr("No compatible signal!"));
-
-        menu[0].setStyleSheet( QString( "background-color: lightgrey; border: 3px solid red; color: red"));
-
+        menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
     }
 
     menu->popup(buttonAddAction->mapToGlobal(QPoint(buttonAddAction->width(), -menu->sizeHint().height())));

@@ -22,7 +22,6 @@
 #include "fsmgraphicalstate.h"
 
 #include <QPen>
-#include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QAction>
 #include <QLabel>
@@ -36,6 +35,7 @@
 #include "fsmscene.h"
 #include "logicvariable.h"
 #include "scenewidget.h"
+#include "contextmenu.h"
 
 //
 // Static elements
@@ -103,16 +103,8 @@ QVariant FsmGraphicalState::itemChange(GraphicsItemChange change, const QVariant
 
 void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    QMenu *menu = new QMenu();
-    menu->setStyleSheet( QString( "border: 1px solid"));
-
-    QLabel* menuTitle = new QLabel("<b>" + tr("State") + " <i>" + logicalState->getName() + "</i></b>");
-    menuTitle->setAlignment(Qt::AlignCenter);
-    menuTitle->setMinimumHeight(50);
-
-    QWidgetAction* a = new QWidgetAction(menu);
-    a->setDefaultWidget(menuTitle);
-    menu->addAction(a);
+    ContextMenu* menu = new ContextMenu();
+    menu->addTitle(tr("State") + " <i>" + logicalState->getName() + "</i>");
 
     if (!logicalState->isInitial())
         menu->addAction(tr("Set initial"));

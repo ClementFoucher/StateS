@@ -314,6 +314,10 @@
         <source>Existing equation: </source>
         <translation>Équation actuelle :</translation>
     </message>
+    <message>
+        <source>New equation would be: </source>
+        <translation>La nouvelle équation serait :</translation>
+    </message>
 </context>
 <context>
     <name>InterfaceResourcesTab</name>
@@ -455,6 +459,10 @@
     <message>
         <source>Remove action</source>
         <translation>Supprimer l&apos;action</translation>
+    </message>
+    <message>
+        <source>No compatible signal!</source>
+        <translation>Aucun signal compatible !</translation>
     </message>
 </context>
 <context>

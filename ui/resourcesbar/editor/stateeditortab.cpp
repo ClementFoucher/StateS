@@ -20,7 +20,6 @@
  */
 
 #include <QLabel>
-#include <QMenu>
 #include <QHeaderView>
 #include <QTableWidgetItem>
 #include <QList>
@@ -34,6 +33,7 @@
 #include "fsm.h"
 #include "io.h"
 #include "dynamiclineedit.h"
+#include "contextmenu.h"
 
 StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     EditorTab(parent)
@@ -123,28 +123,31 @@ void StateEditorTab::nameChanged(const QString& name)
 
 void StateEditorTab::addAction()
 {
-    QMenu *menu = new QMenu();
+    ContextMenu* menu;
 
-    QList<LogicVariable*> availableActions = state->getOwningMachine()->getWrittableVariables();
+    QList<LogicVariable*> availableActions;
+    foreach(LogicVariable* var, state->getOwningMachine()->getWrittableVariables())
+    {
+        if (!state->getActions().contains(var))
+            availableActions.append(var);
+    }
 
     if (availableActions.count() != 0)
     {
+        menu = new ContextMenu();
+
         menu->setStyleSheet( QString( "background-color: lightgrey; border: 3px double"));
 
         foreach(LogicVariable* var, availableActions)
         {
-            if (!state->getActions().contains(var))
-                menu->addAction(var->getName());
+            menu->addAction(var->getName());
         }
 
         connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(treatMenuAdd(QAction*)));
     }
     else
     {
-        menu->addAction("No compatible signal!");
-
-        menu[0].setStyleSheet( QString( "background-color: lightgrey; border: 3px solid red; color: red"));
-
+        menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
     }
 
     menu->popup(buttonAddAction->mapToGlobal(QPoint(buttonAddAction->width(), -menu->sizeHint().height())));

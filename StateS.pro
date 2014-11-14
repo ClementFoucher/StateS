@@ -60,8 +60,9 @@ SOURCES += \
     ui/scene/fsm/fsmscene.cpp \
     ui/langselector.cpp \
     ui/reactivebutton.cpp \
-    core/variables/logicvariablevector.cpp \
-    ui/resourcesbar/simulatortab.cpp
+#    core/variables/logicvariablevector.cpp \
+    ui/resourcesbar/simulatortab.cpp \
+    ui/contextmenu.cpp
 
 
 HEADERS  += \
@@ -106,9 +107,10 @@ HEADERS  += \
     ui/resourcesbar/include/abouttab.h \
     ui/simulation/include/clocktimeline.h \
     ui/include/langselector.h \
-    ui/reactivebutton.h \
-    core/variables/include/logicvariablevector.h \
-    ui/resourcesbar/include/simulatortab.h
+    ui/include/reactivebutton.h \
+#    core/variables/include/logicvariablevector.h \
+    ui/resourcesbar/include/simulatortab.h \
+    ui/include/contextmenu.h
 
 FORMS    += \
     ui/drawingwindow.ui

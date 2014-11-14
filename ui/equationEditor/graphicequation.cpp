@@ -24,13 +24,13 @@
 #include <QDrag>
 #include <QMouseEvent>
 #include <QMimeData>
-#include <QMenu>
 #include <QWidgetAction>
 
 #include <QDebug>
 
 #include "equationmimedata.h"
 #include "logicequation.h"
+#include "contextmenu.h"
 
 // A graphic equation can either represent
 // a logic equation or a logic variable.
@@ -232,15 +232,8 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 {
     if ( (!isTemplate) && (equation != LogicVariable::constant0) && (equation != LogicVariable::constant1) )
     {
-        QMenu* menu = new QMenu();
-        menu->setStyleSheet( QString( "border: 1px solid"));
-
-        QLabel* title = new QLabel(tr("Equation: ") +  "<i>" + equation->getText() + "</i>");
-        title->setAlignment(Qt::AlignCenter);
-        title->setMinimumHeight(50);
-        QWidgetAction* a = new QWidgetAction(menu);
-        a->setDefaultWidget(title);
-        menu->addAction(a);
+        ContextMenu* menu = new ContextMenu();
+        menu->addTitle(tr("Equation: ") +  "<i>" + equation->getText() + "</i>");
 
         menu->addAction(tr("Delete"));
 
@@ -269,20 +262,13 @@ void GraphicEquation::dropEvent(QDropEvent* event)
         else
         {
             // Ask what to do
-            QMenu* menu = new QMenu();
-            menu->setStyleSheet( QString( "border: 1px solid"));
-
-            QLabel* menuTitle = new QLabel("<b>" + tr("What should I do?") + "</b>");
-            menuTitle->setAlignment(Qt::AlignCenter);
-            menuTitle->setMinimumHeight(50);
-            QWidgetAction* a = new QWidgetAction(menu);
-            a->setDefaultWidget(menuTitle);
-            menu->addAction(a);
+            ContextMenu* menu = new ContextMenu();
+            menu->addTitle(tr("What should I do?"));
 
             QLabel* oldEqTitle = new QLabel(tr("Existing equation: ") +  "<i>" + equation->getText() + "</i>");
             oldEqTitle->setAlignment(Qt::AlignCenter);
             oldEqTitle->setMinimumHeight(40);
-            a = new QWidgetAction(menu);
+            QWidgetAction* a = new QWidgetAction(menu);
             a->setDefaultWidget(oldEqTitle);
             menu->addAction(a);
 
@@ -293,15 +279,45 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             a->setDefaultWidget(newEqTitle);
             menu->addAction(a);
 
-            menu->addAction(tr("Replace existing equation by dropped equation"));
+            a = new QWidgetAction(menu);
+            a->setText(tr("Replace existing equation by dropped equation"));
+            a->setToolTip(tr("New equation would be: ") + "<i>" + droppedEquation->getText() + "</i>");
+            menu->addAction(a);
 
-            LogicEquation* newEquation = dynamic_cast <LogicEquation*> (droppedEquation);
-            if (newEquation != nullptr)
+            LogicEquation* droppedComplexEquation = dynamic_cast <LogicEquation*> (droppedEquation);
+            if (droppedComplexEquation != nullptr)
             {
-                if (newEquation->getFunction() != LogicEquation::nature::notOp)
-                    menu->addAction(tr("Set existing equation as left operand of dropped equation"));
+                LogicEquation* currentEquation = dynamic_cast<LogicEquation*> (this->equation);
 
-                menu->addAction(tr("Set existing equation as right operand of dropped equation"));
+                if (droppedComplexEquation->getFunction() != LogicEquation::nature::notOp)
+                {
+                    a = new QWidgetAction(menu);
+                    a->setText(tr("Set existing equation as left operand of dropped equation"));
+
+                    LogicEquation* newEquation = droppedComplexEquation->clone();
+
+                    newEquation->setLeftOperand(currentEquation->clone());
+
+                    a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
+
+                    delete newEquation;
+
+                    menu->addAction(a);
+                }
+
+
+                a = new QWidgetAction(menu);
+                a->setText(tr("Set existing equation as right operand of dropped equation"));
+
+                LogicEquation* newEquation = droppedComplexEquation->clone();
+
+                newEquation->setRightOperand(currentEquation->clone());
+
+                a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
+
+                delete newEquation;
+
+                menu->addAction(a);
             }
             menu->addAction(tr("Cancel"));
 

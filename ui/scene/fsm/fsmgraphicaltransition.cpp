@@ -25,7 +25,6 @@
 #include <QBrush>
 #include <QList>
 #include <QPainterPath>
-#include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QLabel>
 #include <QWidgetAction>
@@ -42,6 +41,7 @@
 #include "fsmgraphicaltransitionneighborhood.h"
 #include "logicvariable.h"
 #include "logicequation.h"
+#include "contextmenu.h"
 
 qreal FsmGraphicalTransition::arrowEndSize = 10;
 qreal FsmGraphicalTransition::middleBarLength = 20;
@@ -848,16 +848,8 @@ void FsmGraphicalTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* ev
 {
     if (currentMode == mode::standardMode)
     {
-        QMenu *menu = new QMenu();
-        menu->setStyleSheet( QString( "border: 1px solid"));
-
-        QLabel* menuTitle = new QLabel("<b>" + tr("Transition") + "</b>");
-        menuTitle->setAlignment(Qt::AlignCenter);
-        menuTitle->setMinimumHeight(50);
-
-        QWidgetAction* a = new QWidgetAction(menu);
-        a->setDefaultWidget(menuTitle);
-        menu->addAction(a);
+        ContextMenu* menu = new ContextMenu();
+        menu->addTitle(tr("Transition"));
 
         menu->addAction(tr("Change source"));
         menu->addAction(tr("Change target"));
