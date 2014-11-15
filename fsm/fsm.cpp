@@ -508,7 +508,10 @@ LogicVariable* Fsm::parseEquation(QDomElement element) const
             }
 
             // Create equation
-            equation = new LogicEquation(leftOperand, equationType, rightOperand);
+            if (equationType == LogicEquation::nature::notOp)
+                equation = new LogicEquation(1, equationType, rightOperand);
+            else
+                equation = new LogicEquation(2, equationType, leftOperand, rightOperand);
         }
         else
         {
@@ -555,13 +558,19 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, LogicVariable* equation) 
         if (complexEquation->getFunction() != LogicEquation::nature::notOp)
         {
             stream.writeStartElement("LeftOperand");
-            writeLogicEquation(stream, complexEquation->getLeftOperand());
+            writeLogicEquation(stream, complexEquation->getOperand(0));
             stream.writeEndElement(); // LeftOperand
-        }
 
-        stream.writeStartElement("RightOperand");
-        writeLogicEquation(stream, complexEquation->getRightOperand());
-        stream.writeEndElement(); // RightOperand
+            stream.writeStartElement("RightOperand");
+            writeLogicEquation(stream, complexEquation->getOperand(1));
+            stream.writeEndElement(); // RightOperand
+        }
+        else
+        {
+            stream.writeStartElement("RightOperand");
+            writeLogicEquation(stream, complexEquation->getOperand(0));
+            stream.writeEndElement(); // RightOperand
+        }
     }
     else
     {

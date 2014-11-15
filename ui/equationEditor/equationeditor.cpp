@@ -36,48 +36,37 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
 {
     this->machine = machine;
 
-    LogicEquation* temp = dynamic_cast <LogicEquation*> (initialEquation);
-
-    if (temp != nullptr)
-        this->equation = new GraphicEquation(temp->clone(), nullptr);
-    else
-        this->equation = new GraphicEquation(initialEquation, nullptr);
-
     mainLayout = new QVBoxLayout(this);
 
     // Title
     QLabel* title = new QLabel("<b>" + tr("Equation editor") + "</b>");
     title->setAlignment(Qt::AlignCenter);
-
     mainLayout->addWidget(title);
 
-
     // Resources
-
     QLabel* resourcesTitle = new QLabel("<i>" + tr("Drag and drop equation components from here...") + "</i>");
     resourcesTitle->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(resourcesTitle);
 
     resourcesLayout = new QHBoxLayout();
+    mainLayout->addLayout(resourcesLayout);
+
 
     if (machine->getInputs().count() != 0)
     {
         inputListLayout = new QVBoxLayout();
         inputListLayout->setAlignment(Qt::AlignTop);
+        resourcesLayout->addLayout(inputListLayout);
 
         QLabel* inputsTitle = new QLabel("<b>" + tr("Inputs") + "</b>");
         inputsTitle->setAlignment(Qt::AlignCenter);
         inputListLayout->addWidget(inputsTitle);
 
-        //inputs = new QListWidget();
-        foreach (Input* var, machine->getInputs())
+        foreach (LogicVariable* var, machine->getInputs())
         {
-            //new QListWidgetItem(var->getName(), inputs);
-            //inputListLayout->addWidget(inputs);
-            GraphicEquation* input = new GraphicEquation(var, nullptr, true);
+            GraphicEquation* input = new GraphicEquation(var, true);
             inputListLayout->addWidget(input);
         }
-        resourcesLayout->addLayout(inputListLayout);
     }
 
 
@@ -85,38 +74,35 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
     {
         variableListLayout = new QVBoxLayout();
         variableListLayout->setAlignment(Qt::AlignTop);
+        resourcesLayout->addLayout(variableListLayout);
 
         QLabel* variablesTitle = new QLabel("<b>" + tr("Variables")+ "</b>");
         variablesTitle->setAlignment(Qt::AlignCenter);
         variableListLayout->addWidget(variablesTitle);
 
-        //variables = new QListWidget();
         foreach (LogicVariable* var, machine->getLocalVariables())
         {
-            //  new QListWidgetItem(var->getName(), variables);
-            //variableListLayout->addWidget(variables);
-            GraphicEquation* variable = new GraphicEquation(var, nullptr, true);
+            GraphicEquation* variable = new GraphicEquation(var, true);
             variableListLayout->addWidget(variable);
         }
 
-        resourcesLayout->addLayout(variableListLayout);
     }
 
     operatorListLayout = new QVBoxLayout();
     operatorListLayout->setAlignment(Qt::AlignTop);
+    resourcesLayout->addLayout(operatorListLayout);
 
     QLabel* operatorsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
     operatorsTitle->setAlignment(Qt::AlignCenter);
-
     operatorListLayout->addWidget(operatorsTitle);
 
-    notOperator  = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::notOp,  nullptr), nullptr, true);
-    andOperator  = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::andOp,  nullptr), nullptr, true);
-    orOperator   = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::orOp,   nullptr), nullptr, true);
-    xorOperator  = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::xorOp,  nullptr), nullptr, true);
-    nandOperator = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::nandOp, nullptr), nullptr, true);
-    norOperator  = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::norOp,  nullptr), nullptr, true);
-    xnorOperator = new GraphicEquation(new LogicEquation(nullptr, LogicEquation::nature::xnorOp, nullptr), nullptr, true);
+    notOperator  = new GraphicEquation(new LogicEquation(1, LogicEquation::nature::notOp),  true);
+    andOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::andOp),  true);
+    orOperator   = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::orOp),   true);
+    xorOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xorOp),  true);
+    nandOperator = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::nandOp), true);
+    norOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::norOp),  true);
+    xnorOperator = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xnorOp), true);
 
     operatorListLayout->addWidget(notOperator);
     operatorListLayout->addWidget(andOperator);
@@ -126,20 +112,25 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
     operatorListLayout->addWidget(norOperator);
     operatorListLayout->addWidget(xnorOperator);
 
-    resourcesLayout->addLayout(operatorListLayout);
-    mainLayout->addLayout(resourcesLayout);
-
     // Equation
-
     QLabel* equationTitle = new QLabel("<i>" + tr("... to here.") + "</i>");
     equationTitle->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(equationTitle);
+
+
+    LogicEquation* temp = dynamic_cast <LogicEquation*> (initialEquation);
+
+    if (temp != nullptr)
+        this->equation = new GraphicEquation(temp->clone(), false);
+    else
+        this->equation = new GraphicEquation(initialEquation, false);
 
     mainLayout->addWidget(equation);
 
     // Buttons
 
     buttonsLayout = new QHBoxLayout();
+    mainLayout->addLayout(buttonsLayout);
 
     buttonOK = new QPushButton(tr("OK"));
     buttonsLayout->addWidget(buttonOK);
@@ -148,10 +139,6 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
     buttonCancel = new QPushButton(tr("Cancel"));
     buttonsLayout->addWidget(buttonCancel);
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-
-    mainLayout->addLayout(buttonsLayout);
-
-
 }
 
 LogicVariable* EquationEditor::getResultEquation() const

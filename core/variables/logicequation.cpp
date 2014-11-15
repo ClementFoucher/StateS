@@ -25,81 +25,128 @@
 
 #include "logicvariable.h"
 
-LogicEquation::LogicEquation(LogicVariable* leftOperand, nature function, LogicVariable* rightOperand)
+LogicEquation::LogicEquation(uint size, nature function, LogicVariable* operand1, LogicVariable* operand2)
 {
+    this->size = size;
     this->function = function;
 
-    // A logic equation must ALWAYS has its two operands set
+    // A logic equation must ALWAYS have all its operands set
     // If one is set to nullptr, it will be affected constant 0.
-    // Even for "not", which doesn't have a left operand, left
-    // is set to constant 0.
-    this->leftOperand  = LogicVariable::constant0;
-    this->rightOperand = LogicVariable::constant0;
+    for(int i = 0 ; i < size ; i ++)
+        this->operands[i] = LogicVariable::constant0;
 
-    setLeftOperand(leftOperand);
-    setRightOperand(rightOperand);
+    if (operand1 != nullptr)
+        setOperand(0, operand1);
+
+    if (operand2 != nullptr)
+        setOperand(1, operand2);
+}
+
+LogicEquation::LogicEquation(nature function, const QMap<int, LogicVariable *> &operandList) :
+    LogicEquation(operandList.size(), function)
+{
+    for (int i = 0 ; i < this->size ; i++)
+    {
+        if (operandList[i] != nullptr)
+            setOperand(i, operandList[i]);
+    }
 }
 
 LogicEquation::~LogicEquation()
 {
     // Only delete equations, variables belong to
     // the machine and must not be deleted
+    foreach (LogicVariable* var, this->operands)
+    {
+        LogicEquation* temp = dynamic_cast <LogicEquation*> (var);
 
-    LogicEquation* temp = dynamic_cast <LogicEquation*> (leftOperand);
-
-    if (temp != nullptr)
-        delete temp;
-
-    temp = dynamic_cast <LogicEquation*> (rightOperand);
-
-    if (temp != nullptr)
-        delete temp;
+        if (temp != nullptr)
+            delete temp;
+    }
 }
 
 void LogicEquation::childDeletedEvent(LogicVariable* var)
 {
-    if (var == leftOperand)
+    for (int i = 0 ; i < this->size ; i++)
     {
-        setLeftOperand(nullptr);
-    }
-    else if (var == rightOperand)
-    {
-        setRightOperand(nullptr);
+        if (var == operands[i])
+            setOperand(i, nullptr);
     }
 
     // In order to actualize display
     emit renamedEvent();
 }
 
+const QMap<int, LogicVariable*>& LogicEquation::getOperands() const
+{
+    return operands;
+}
+
+uint LogicEquation::getSize() const
+{
+    return size;
+}
+
 bool LogicEquation::getCurrentState() const
 {
-    switch (function)
+    bool computedValue = false;
+
+    if (this->function == nature::notOp)
     {
-    case nature::notOp:
-        return (! rightOperand->getCurrentState());
-        break;
-    case nature::andOp:
-        return (leftOperand->getCurrentState() && rightOperand->getCurrentState());
-        break;
-    case nature::orOp:
-        return (leftOperand->getCurrentState() || rightOperand->getCurrentState());
-        break;
-    case nature::xorOp:
-        return (leftOperand->getCurrentState() ^ rightOperand->getCurrentState());
-        break;
-    case nature::nandOp:
-        return (! (leftOperand->getCurrentState() && rightOperand->getCurrentState()) );
-        break;
-    case nature::norOp:
-        return (! (leftOperand->getCurrentState() || rightOperand->getCurrentState()) );
-        break;
-    case nature::xnorOp:
-        return (! (leftOperand->getCurrentState() ^ rightOperand->getCurrentState()));
-        break;
-    default:
-        qDebug() << "(Logic equation:) Error! Unkown operator type!";
-        return false;
+        computedValue = !( operands[0]->getCurrentState() );
     }
+    else
+    {
+        switch (function)
+        {
+        case nature::andOp:
+        case nature::nandOp:
+            computedValue = true;
+            foreach(LogicVariable* var, operands)
+            {
+                if (var->getCurrentState() == false)
+                {
+                    computedValue = false;
+                    break;
+                }
+            }
+            break;
+
+        case nature::orOp:
+        case nature::norOp:
+            computedValue = false;
+            foreach(LogicVariable* var, operands)
+            {
+                if (var->getCurrentState() == true)
+                {
+                    computedValue = true;
+                    break;
+                }
+            }
+            break;
+
+        case nature::xorOp:
+        case nature::xnorOp:
+            uint count = 0;
+            foreach(LogicVariable* var, operands)
+            {
+                if (var->getCurrentState() == true)
+                {
+                    count++;
+                }
+            }
+            if (count % 2 == 1)
+                computedValue = true;
+            else
+                computedValue = false;
+            break;
+        }
+
+        if (this->isInverted())
+            computedValue = ! computedValue;
+    }
+
+    return computedValue;
 }
 
 bool LogicEquation::isInverted() const
@@ -127,7 +174,7 @@ QString LogicEquation::getText() const
 {
     QString text;
 
-    if (function != nature::notOp)
+    if (this->size > 1)
         text = "(";
 
     // Inversion oeprator
@@ -137,31 +184,34 @@ QString LogicEquation::getText() const
          (function == nature::xnorOp) )
         text += '/';
 
-    // Do not display left operand for "not" operator
-    if (function != nature::notOp)
-        text += leftOperand->getText();
-
-    switch(function)
+    for (int i = 0 ; i < this->size ; i++)
     {
-    case LogicEquation::nature::andOp:
-    case LogicEquation::nature::nandOp:
-        text += " • ";
-        break;
-    case LogicEquation::nature::orOp:
-    case LogicEquation::nature::norOp:
-        text += " + ";
-        break;
-    case LogicEquation::nature::xorOp:
-    case LogicEquation::nature::xnorOp:
-        text += " ⊕ ";
-        break;
-    default:
-        break;
+        text += operands[i]->getText();
+
+        // Add operator, except for last operand
+        if (i < this->size - 1)
+        {
+            switch(function)
+            {
+            case LogicEquation::nature::andOp:
+            case LogicEquation::nature::nandOp:
+                text += " • ";
+                break;
+            case LogicEquation::nature::orOp:
+            case LogicEquation::nature::norOp:
+                text += " + ";
+                break;
+            case LogicEquation::nature::xorOp:
+            case LogicEquation::nature::xnorOp:
+                text += " ⊕ ";
+                break;
+            default:
+                break;
+            }
+        }
     }
 
-    text += rightOperand->getText();
-
-    if (function != nature::notOp)
+    if (this->size > 1)
         text += ")";
 
     return text;
@@ -177,89 +227,82 @@ void LogicEquation::setFunction(const nature &value)
     function = value;
 }
 
-LogicVariable* LogicEquation::getLeftOperand() const
+LogicVariable* LogicEquation::getOperand(uint i) const
 {
-    return leftOperand;
+    if (i < this->size)
+        return this->operands[i];
+    else
+        return nullptr;
 }
 
-void LogicEquation::setLeftOperand(LogicVariable* value)
+void LogicEquation::setOperand(uint i, LogicVariable* newOperand)
 {
-    // Ignore set if new value is same as current
-    if (leftOperand != value)
+    if (i < this->size)
     {
-        if (leftOperand != LogicVariable::constant0)
+        // Ignore set if new value is same as current
+        if (operands[i] != newOperand)
         {
-            disconnect(leftOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
-            disconnect(leftOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
-            disconnect(leftOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
-        }
+            LogicVariable* oldOperand = operands[i];
 
-        if (value != nullptr)
-        {
-            leftOperand = value;
+            if (oldOperand != LogicVariable::constant0)
+            {
+                disconnect(oldOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
+                disconnect(oldOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
+                disconnect(oldOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
+            }
 
-            connect(leftOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
-            connect(leftOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
-            connect(leftOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
+            if (newOperand != nullptr)
+            {
+                operands[i] = newOperand;
+
+                connect(newOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
+                connect(newOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
+                connect(newOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
+            }
+            else
+                operands[i] = LogicVariable::constant0;
         }
-        else
-            leftOperand = LogicVariable::constant0;
     }
 }
 
-LogicVariable* LogicEquation::getRightOperand() const
+void LogicEquation::increaseOperandCount()
 {
-    return rightOperand;
+    this->operands[this->size] = LogicVariable::constant0;
+    this->size++;
 }
 
-void LogicEquation::setRightOperand(LogicVariable* value)
+void LogicEquation::decreaseOperandCount()
 {
-    // Ignore set if new value is same as current
-    if (rightOperand != value)
+    if (dynamic_cast<LogicEquation*>(this->operands[this->size-1]) != nullptr)
     {
-        if (rightOperand != LogicVariable::constant0)
-        {
-            disconnect(rightOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
-            disconnect(rightOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
-            disconnect(rightOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
-        }
-
-        if (value != nullptr)
-        {
-            rightOperand = value;
-
-            connect(rightOperand, SIGNAL(stateChangedEvent()), this, SIGNAL(stateChangedEvent()));
-            connect(rightOperand, SIGNAL(renamedEvent()), this, SIGNAL(renamedEvent()));
-            connect(rightOperand, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(childDeletedEvent(LogicVariable*)));
-        }
-        else
-        {
-            rightOperand = LogicVariable::constant0;
-        }
+        delete this->operands[this->size-1];
     }
+
+    this->operands.remove(this->size-1);
+    this->size--;
 }
 
 LogicEquation* LogicEquation::clone() const
 {
-    // For equation children, clone them.
-    // For variable children, reference them.
+    QMap<int, LogicVariable*> variables;
 
-    LogicVariable* leftVariable;
-    LogicVariable* rightVariable;
+    for (int i = 0 ; i < this->size ; i++)
+    {
+        if (this->operands[i] != LogicVariable::constant0)
+        {
+            // For equation children, clone them.
+            // For variable children, reference them.
 
-    LogicEquation* leftEquation = dynamic_cast <LogicEquation*> (leftOperand);
+            LogicEquation* complexOperand = dynamic_cast<LogicEquation*>(this->operands[i]);
 
-    if (leftEquation != nullptr)
-        leftVariable = leftEquation->clone();
-    else
-        leftVariable = leftOperand;
+            if (complexOperand != nullptr)
+                variables[i] = complexOperand->clone();
+            else
+                variables[i] = this->operands[i];
+        }
+        else
+            variables[i] = nullptr;
+    }
 
-    LogicEquation* rightEquation = dynamic_cast <LogicEquation*> (rightOperand);
-
-    if (rightEquation != nullptr)
-        rightVariable = rightEquation->clone();
-    else
-        rightVariable = rightOperand;
-
-    return new LogicEquation(leftVariable, function, rightVariable);
+    return new LogicEquation(function, variables);
 }

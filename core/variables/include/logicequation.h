@@ -22,6 +22,8 @@
 #ifndef LOGICEQUATION_H
 #define LOGICEQUATION_H
 
+#include <QMap>
+
 #include "logicvariable.h"
 
 class Operator;
@@ -34,17 +36,18 @@ public:
     enum class nature{notOp, andOp, orOp, xorOp, nandOp, norOp, xnorOp };
 
 public:
-    explicit LogicEquation(LogicVariable* leftOperand, nature function, LogicVariable* rightOperand );
+    explicit LogicEquation(uint size, nature function, LogicVariable* operand1 = nullptr, LogicVariable* operand2 = nullptr);
+    explicit LogicEquation(nature function, const QMap<int, LogicVariable *> &operandList);
     ~LogicEquation();
 
     nature getFunction() const;
     void setFunction(const nature& value);
 
-    LogicVariable* getLeftOperand() const;
-    void setLeftOperand(LogicVariable* value);
+    LogicVariable* getOperand(uint i) const;
+    void setOperand(uint i, LogicVariable* newOperand);
 
-    LogicVariable* getRightOperand() const;
-    void setRightOperand(LogicVariable* value);
+    void increaseOperandCount();
+    void decreaseOperandCount();
 
     QString getText() const override;
 
@@ -53,16 +56,18 @@ public:
 
     LogicEquation* clone() const;
 
+    uint getSize() const;
+
+    const QMap<int, LogicVariable *>& getOperands() const;
+
 private slots:
     void childDeletedEvent(LogicVariable* var);
 
 private:
     nature function;
+    uint size = 0;
 
-    LogicVariable * leftOperand  = nullptr;
-    LogicVariable * rightOperand = nullptr;
-
-
+    QMap<int, LogicVariable*> operands;
 };
 
 #endif // LOGICEQUATION_H

@@ -25,6 +25,8 @@
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QWidgetAction>
+#include <QLabel>
+#include <QHBoxLayout>
 
 #include <QDebug>
 
@@ -35,77 +37,26 @@
 // A graphic equation can either represent
 // a logic equation or a logic variable.
 
-GraphicEquation::GraphicEquation(LogicVariable* equation, GraphicEquation* parent, bool isTemplate)
+GraphicEquation::GraphicEquation(LogicVariable* equation, bool isTemplate, QWidget* parent) :
+    QFrame(parent)
 {
     this->equation   = equation;
     this->isTemplate = isTemplate;
-    this->parent     = parent;
 
-    this->layout = new QHBoxLayout(this);
+    this->setLayout(new QHBoxLayout(this));
 
     buildEquation();
 }
 
-void GraphicEquation::updateEquation()
-{
-    // If equation is variable: nothing to do.
-    // Else, set left/right operands based on current displays
-    LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
-
-    if (complexEquation != nullptr)
-    {
-        LogicVariable* previousOperand;
-
-        previousOperand = complexEquation->getLeftOperand();
-        if (leftOperandDisplay != nullptr)
-        {
-            if (previousOperand != leftOperandDisplay->getLogicEquation())
-            {
-                complexEquation->setLeftOperand(leftOperandDisplay->getLogicEquation());
-
-                LogicEquation* previousEquation = dynamic_cast <LogicEquation*> (previousOperand);
-
-                if (previousEquation != nullptr)
-                    delete previousOperand;
-            }
-        }
-        else
-            complexEquation->setLeftOperand(nullptr);
-
-        previousOperand = complexEquation->getRightOperand();
-        if (rightOperandDisplay != nullptr)
-        {
-            if (previousOperand != rightOperandDisplay->getLogicEquation())
-            {
-                complexEquation->setRightOperand(rightOperandDisplay->getLogicEquation());
-
-                LogicEquation* previousEquation = dynamic_cast <LogicEquation*> (previousOperand);
-
-                if (previousEquation != nullptr)
-                    delete previousOperand;
-            }
-        }
-        else
-            complexEquation->setRightOperand(nullptr);
-    }
-
-    if (parent != nullptr)
-        parent->updateEquation();
-}
-
 void GraphicEquation::buildEquation()
 {
-    delete leftOperandDisplay;
-    delete operatorText;
-    delete rightOperandDisplay;
-    delete variableText;
-    delete invertorText;
-
-    leftOperandDisplay = nullptr;
-    operatorText = nullptr;
-    rightOperandDisplay = nullptr;
-    variableText = nullptr;
-    invertorText = nullptr;
+    // How to obtain only widget children?
+    QObjectList components = this->children();
+    foreach(QObject* obj, components)
+    {
+        if (dynamic_cast<QWidget*>(obj) != nullptr)
+            delete obj;
+    }
 
     if (!isTemplate)
         this->setAcceptDrops(true);
@@ -114,90 +65,112 @@ void GraphicEquation::buildEquation()
 
     if (complexEquation != nullptr)
     {
-        if ( (!this->isTemplate) && (complexEquation->isInverted()) )
+        if (complexEquation->isInverted())
         {
-            this->invertorText = new QLabel("/");
-            layout->addWidget(this->invertorText);
-        }
+            QLabel* operatorText = nullptr;
 
-        if (complexEquation->getFunction() != LogicEquation::nature::notOp)
-        {
-            leftOperandDisplay = new GraphicEquation(complexEquation->getLeftOperand(), this, isTemplate);
-            layout->addWidget(leftOperandDisplay);
-        }
-
-        if (this->isTemplate)
-        {
-            switch(complexEquation->getFunction())
+            if (this->isTemplate)
             {
-            case LogicEquation::nature::notOp:
-                this->operatorText = new QLabel("not");
-                break;
-            case LogicEquation::nature::andOp:
-                this->operatorText = new QLabel("and");
-                break;
-            case LogicEquation::nature::orOp:
-                this->operatorText = new QLabel("or");
-                break;
-            case LogicEquation::nature::xorOp:
-                this->operatorText = new QLabel("xor");
-                break;
-            case LogicEquation::nature::nandOp:
-                this->operatorText = new QLabel("nand");
-                break;
-            case LogicEquation::nature::norOp:
-                this->operatorText = new QLabel("nor");
-                break;
-            case LogicEquation::nature::xnorOp:
-                this->operatorText = new QLabel("xnor");
-                break;
+                if (complexEquation->getFunction() == LogicEquation::nature::notOp)
+                    operatorText = new QLabel("not");
             }
+            else
+                operatorText = new QLabel("/");
 
-            layout->addWidget(operatorText);
-            this->operatorText->setAlignment(Qt::AlignCenter);
-        }
-        else
-        {
-            switch(complexEquation->getFunction())
+            if(operatorText != nullptr)
             {
-            case LogicEquation::nature::andOp:
-            case LogicEquation::nature::nandOp:
-                this->operatorText = new QLabel("•");
-                this->operatorText->setAlignment(Qt::AlignCenter);
-                layout->addWidget(operatorText);
-                break;
-            case LogicEquation::nature::orOp:
-            case LogicEquation::nature::norOp:
-                this->operatorText = new QLabel("+");
-                this->operatorText->setAlignment(Qt::AlignCenter);
-                layout->addWidget(operatorText);
-                break;
-            case LogicEquation::nature::xorOp:
-            case LogicEquation::nature::xnorOp:
-                this->operatorText = new QLabel("⊕");
-                this->operatorText->setAlignment(Qt::AlignCenter);
-                layout->addWidget(operatorText);
-                break;
-            default:
-                break;
+                operatorText->setAlignment(Qt::AlignCenter);
+                this->layout()->addWidget(operatorText);
             }
         }
 
-        rightOperandDisplay = new GraphicEquation(complexEquation->getRightOperand(), this, isTemplate);
-        layout->addWidget(rightOperandDisplay);
+        for (int i = 0 ; i < complexEquation->getSize() ; i++)
+        {
+            // Add operand
+            graphicOperands[i] = new GraphicEquation(complexEquation->getOperand(i), isTemplate, this);
+            this->layout()->addWidget(graphicOperands[i]);
+
+            // Add operator, except for last operand
+            if (i < complexEquation->getSize() -1)
+            {
+                if (this->isTemplate)
+                {
+                    QLabel* operatorText = nullptr;
+
+                    switch(complexEquation->getFunction())
+                    {
+                    case LogicEquation::nature::andOp:
+                        operatorText = new QLabel("and");
+                        break;
+                    case LogicEquation::nature::orOp:
+                        operatorText = new QLabel("or");
+                        break;
+                    case LogicEquation::nature::xorOp:
+                        operatorText = new QLabel("xor");
+                        break;
+                    case LogicEquation::nature::nandOp:
+                        operatorText = new QLabel("nand");
+                        break;
+                    case LogicEquation::nature::norOp:
+                        operatorText = new QLabel("nor");
+                        break;
+                    case LogicEquation::nature::xnorOp:
+                        operatorText = new QLabel("xnor");
+                        break;
+                    }
+
+                    if (operatorText != nullptr)
+                    {
+                        operatorText->setAlignment(Qt::AlignCenter);
+                        this->layout()->addWidget(operatorText);
+                    }
+                }
+                else
+                {
+                    QLabel* operatorText = nullptr;
+
+                    switch(complexEquation->getFunction())
+                    {
+                    case LogicEquation::nature::andOp:
+                    case LogicEquation::nature::nandOp:
+                        operatorText = new QLabel("•");
+                        break;
+                    case LogicEquation::nature::orOp:
+                    case LogicEquation::nature::norOp:
+                        operatorText = new QLabel("+");
+                        break;
+                    case LogicEquation::nature::xorOp:
+                    case LogicEquation::nature::xnorOp:
+                        operatorText = new QLabel("⊕");
+                        break;
+                    default:
+                        break;
+                    }
+
+                    if (operatorText != nullptr)
+                    {
+                        operatorText->setAlignment(Qt::AlignCenter);
+                        this->layout()->addWidget(operatorText);
+                    }
+                }
+            }
+        }
     }
     else // Equation is actually variable
     {
+        QLabel* variableText = nullptr;
+
         if ( (equation == LogicVariable::constant1) || (equation == LogicVariable::constant0) )
         {
             variableText = new QLabel("...");
         }
         else
+        {
             variableText = new QLabel(equation->getName());
+        }
 
         variableText->setAlignment(Qt::AlignCenter);
-
-        layout->addWidget(variableText);
+        this->layout()->addWidget(variableText);
     }
 
     if (this->isTemplate)
@@ -211,8 +184,65 @@ void GraphicEquation::buildEquation()
         else
             this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
     }
+}
+
+void GraphicEquation::replaceEquation(LogicVariable* newVariable)
+{
+    LogicEquation* newEquation = dynamic_cast <LogicEquation*> (newVariable);
+
+    // Delete current equation if it is not a single variable
+    LogicEquation* currentEquation = dynamic_cast <LogicEquation*> (equation);
+    if (currentEquation != nullptr)
+        delete currentEquation;
+
+    this->equation = nullptr;
+
+    // Test if equation is actually equation or just single variable
 
 
+    if (newEquation != nullptr)
+        this->equation = newEquation->clone();
+    else
+        this->equation = newVariable;
+
+    buildEquation();
+
+    GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
+    if (parentEquation != nullptr)
+        parentEquation->updateEquation();
+}
+
+// This function is used to update the logic equation
+// based on graphical changes made by user
+void GraphicEquation::updateEquation()
+{
+    // If equation is variable: nothing to do.
+    // Else, set operands based on current displays
+    LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
+
+    if (complexEquation != nullptr)
+    {
+        LogicVariable* previousOperand;
+
+        for (int i = 0 ; i < complexEquation->getSize() ; i++)
+        {
+            previousOperand = complexEquation->getOperand(i);
+
+            if (graphicOperands[i]->getLogicEquation() != previousOperand)
+            {
+                complexEquation->setOperand(i, graphicOperands[i]->getLogicEquation());
+
+                LogicEquation* previousEquation = dynamic_cast <LogicEquation*> (previousOperand);
+
+                if (previousEquation != nullptr)
+                    delete previousOperand;
+            }
+        }
+    }
+
+    GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
+    if (parentEquation != nullptr)
+        parentEquation->updateEquation();
 }
 
 LogicVariable* GraphicEquation::getLogicEquation() const
@@ -251,8 +281,10 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
             drag->exec();
         }
     }
-    else if (this->parent != nullptr)
-        parent->mousePressEvent(event);
+    else
+    {
+        QFrame::mousePressEvent(event);
+    }
 }
 
 void GraphicEquation::dragEnterEvent(QDragEnterEvent* event)
@@ -271,6 +303,20 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
     {
         ContextMenu* menu = new ContextMenu();
         menu->addTitle(tr("Equation: ") +  "<i>" + equation->getText() + "</i>");
+
+       /* LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
+        if (complexEquation != nullptr)
+        {
+            if (complexEquation->getFunction() != LogicEquation::nature::notOp)
+            {
+                menu->addAction(tr("Add one operand to that operator"));
+
+                if (complexEquation->getSize() > 2)
+                {
+                    menu->addAction(tr("Remove one operand from that operator"));
+                }
+            }
+        }*/
 
         menu->addAction(tr("Delete"));
 
@@ -314,76 +360,46 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             {
                 LogicEquation* currentEquation = dynamic_cast<LogicEquation*> (this->equation);
 
-                if (droppedComplexEquation->getFunction() != LogicEquation::nature::notOp)
+                for (int i = 0 ; i < droppedComplexEquation->getOperands().count() ; i++)
                 {
-                    a = new QWidgetAction(menu);
-                    a->setText(tr("Set existing equation as left operand of dropped equation"));
+                    QString actionText = tr("Set existing equation as ");
+                    actionText += QString::number(i+1);
 
-                    LogicEquation* newEquation = droppedComplexEquation->clone();
-
-                    if (currentEquation != nullptr)
-                        newEquation->setLeftOperand(currentEquation->clone());
+                    if (i == 0)
+                        actionText += tr("st");
+                    else if (i == 1)
+                        actionText += tr("nd");
+                    else if (i == 1)
+                        actionText += tr("rd");
                     else
-                        newEquation->setLeftOperand(this->equation);
+                        actionText += tr("th");
 
+                    actionText += tr(" operand of dropped equation");
+
+                    a = new QWidgetAction(menu);
+                    a->setText(actionText);
+
+                    // Build tooltip
+                    LogicEquation* newEquation = droppedComplexEquation->clone();
+                    if (currentEquation != nullptr)
+                        newEquation->setOperand(i, currentEquation->clone());
+                    else
+                        newEquation->setOperand(i, this->equation);
                     a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
-
                     delete newEquation;
 
                     menu->addAction(a);
                 }
-
-
-                a = new QWidgetAction(menu);
-                a->setText(tr("Set existing equation as right operand of dropped equation"));
-
-                LogicEquation* newEquation = droppedComplexEquation->clone();
-
-                if (currentEquation != nullptr)
-                    newEquation->setRightOperand(currentEquation->clone());
-                else
-                    newEquation->setRightOperand(this->equation);
-
-                a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
-
-                delete newEquation;
-
-                menu->addAction(a);
             }
             menu->addAction(tr("Cancel"));
 
             menu->popup(this->mapToGlobal(event->pos()));
 
-            connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(treatMenu(QAction*)));
+            connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(treatMenu(QAction*)));
         }
 
         event->acceptProposedAction();
     }
-}
-
-void GraphicEquation::replaceEquation(LogicVariable* newVariable)
-{
-    LogicEquation* newEquation = dynamic_cast <LogicEquation*> (newVariable);
-
-    // Delete current equation if it is not a single variable
-    LogicEquation* currentEquation = dynamic_cast <LogicEquation*> (equation);
-    if (currentEquation != nullptr)
-        delete currentEquation;
-
-    this->equation = nullptr;
-
-    // Test if equation is actually equation or just single variable
-
-
-    if (newEquation != nullptr)
-        this->equation = newEquation->clone();
-    else
-        this->equation = newVariable;
-
-    buildEquation();
-
-    if (parent != nullptr)
-        parent->updateEquation();
 }
 
 void GraphicEquation::treatMenu(QAction* action)
@@ -393,31 +409,53 @@ void GraphicEquation::treatMenu(QAction* action)
     {
         replaceEquation(droppedEquation);
     }
-    else if (action->text() == tr("Set existing equation as left operand of dropped equation"))
-    {
-        LogicVariable* oldEquation = this->equation;
-
-        LogicEquation* newEquation = dynamic_cast <LogicEquation*> (droppedEquation)->clone();
-        newEquation->setLeftOperand(oldEquation);
-
-        this->equation = newEquation;
-
-        buildEquation();
-    }
-    else if (action->text() == tr("Set existing equation as right operand of dropped equation"))
-    {
-        LogicVariable* oldEquation = this->equation;
-
-        LogicEquation* newEquation = dynamic_cast <LogicEquation*> (droppedEquation)->clone();
-        newEquation->setRightOperand(oldEquation);
-
-        this->equation = newEquation;
-
-        buildEquation();
-    }
     else if (action->text() == tr("Delete"))
     {
         replaceEquation(LogicVariable::constant0);
+    }
+    else if (action->text() == tr("Add one operand to that operator"))
+    {
+       /* LogicEquation* complexEquation = dynamic_cast<LogicEquation*>(this->equation);
+
+        complexEquation->increaseOperandCount();
+        this->updateEquation();*/
+    }
+    else if (action->text() == tr("Remove one operand from that operator"))
+    {
+
+    }
+    else
+    {
+        LogicEquation* droppedComplexEquation = dynamic_cast <LogicEquation*> (droppedEquation);
+        for (int i = 0 ; i < droppedComplexEquation->getOperands().count() ; i++)
+        {
+            QString actionText = tr("Set existing equation as ");
+            actionText += QString::number(i+1);
+
+            if (i == 0)
+                actionText += tr("st");
+            else if (i == 1)
+                actionText += tr("nd");
+            else if (i == 1)
+                actionText += tr("rd");
+            else
+                actionText += tr("th");
+
+            actionText += tr(" operand of dropped equation");
+
+            if (action->text() == actionText)
+            {
+                LogicVariable* oldEquation = this->equation;
+
+                LogicEquation* newEquation = dynamic_cast <LogicEquation*> (droppedEquation)->clone();
+                newEquation->setOperand(i, oldEquation);
+
+                this->equation = newEquation;
+
+                buildEquation();
+                break;
+            }
+        }
     }
 
     droppedEquation = nullptr;

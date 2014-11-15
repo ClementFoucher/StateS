@@ -296,11 +296,11 @@
     </message>
     <message>
         <source>Set existing equation as left operand of dropped equation</source>
-        <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de gauche de l&apos;équation déposée</translation>
+        <translation type="vanished">Utiliser l&apos;équation actuelle en tant qu&apos;opérande de gauche de l&apos;équation déposée</translation>
     </message>
     <message>
         <source>Set existing equation as right operand of dropped equation</source>
-        <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de droite de l&apos;équation déposée</translation>
+        <translation type="vanished">Utiliser l&apos;équation actuelle en tant qu&apos;opérande de droite de l&apos;équation déposée</translation>
     </message>
     <message>
         <source>Equation: </source>
@@ -317,6 +317,38 @@
     <message>
         <source>New equation would be: </source>
         <translation>La nouvelle équation serait :</translation>
+    </message>
+    <message>
+        <source>Set existing equation as </source>
+        <translation>Définir l&apos;équation existante en tant que </translation>
+    </message>
+    <message>
+        <source>st</source>
+        <translation>ère</translation>
+    </message>
+    <message>
+        <source>nd</source>
+        <translation>nd</translation>
+    </message>
+    <message>
+        <source>rd</source>
+        <translation>ème</translation>
+    </message>
+    <message>
+        <source>th</source>
+        <translation>ème</translation>
+    </message>
+    <message>
+        <source> operand of dropped equation</source>
+        <translation> opérande de l&apos;équation déposée</translation>
+    </message>
+    <message>
+        <source>Add one operand to that operator</source>
+        <translation>Ajouter une opérande à cet opérateur</translation>
+    </message>
+    <message>
+        <source>Remove one operand from that operator</source>
+        <translation>Supprimer une opérande de cet opérateur</translation>
     </message>
 </context>
 <context>

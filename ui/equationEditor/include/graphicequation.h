@@ -25,9 +25,7 @@
 
 #include <QFrame>
 
-#include <QLabel>
-#include <QWidget>
-#include <QHBoxLayout>
+#include <QMap>
 
 class LogicVariable;
 
@@ -36,7 +34,7 @@ class GraphicEquation : public QFrame
     Q_OBJECT
 
 public:
-    explicit GraphicEquation(LogicVariable* equation, GraphicEquation* parent, bool isTemplate = false);
+    explicit GraphicEquation(LogicVariable* equation, bool isTemplate = false, QWidget* parent = 0);
 
     void updateEquation();
 
@@ -61,17 +59,7 @@ private:
 
     LogicVariable* equation = nullptr;
 
-    GraphicEquation* parent = nullptr;
-
-    QHBoxLayout* layout = nullptr;
-
-    QLabel* operatorText = nullptr;
-    QLabel* invertorText = nullptr;
-
-    GraphicEquation* leftOperandDisplay  = nullptr;
-    GraphicEquation* rightOperandDisplay = nullptr;
-
-    QLabel* variableText = nullptr;
+    QMap<int, GraphicEquation*> graphicOperands;
 
     LogicVariable* droppedEquation = nullptr;
 };
