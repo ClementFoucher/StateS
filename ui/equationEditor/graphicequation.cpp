@@ -248,7 +248,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
             drag->setMimeData(mimeData);
             drag->setPixmap(this->grab());
 
-            /*Qt::DropAction dropAction = */ drag->exec();
+            drag->exec();
         }
     }
     else if (this->parent != nullptr)
@@ -301,22 +301,10 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             // Ask what to do
             ContextMenu* menu = new ContextMenu();
             menu->addTitle(tr("What should I do?"));
+            menu->addSubTitle(tr("Existing equation: ") +  "<i>" + equation->getText() + "</i>");
+            menu->addSubTitle(tr("Dropped equation: ") + "<i>" + droppedEquation->getText() + "</i>");
 
-            QLabel* oldEqTitle = new QLabel(tr("Existing equation: ") +  "<i>" + equation->getText() + "</i>");
-            oldEqTitle->setAlignment(Qt::AlignCenter);
-            oldEqTitle->setMinimumHeight(40);
             QWidgetAction* a = new QWidgetAction(menu);
-            a->setDefaultWidget(oldEqTitle);
-            menu->addAction(a);
-
-            QLabel* newEqTitle = new QLabel(tr("Dropped equation: ") + "<i>" + droppedEquation->getText() + "</i>");
-            newEqTitle->setAlignment(Qt::AlignCenter);
-            newEqTitle->setMinimumHeight(40);
-            a = new QWidgetAction(menu);
-            a->setDefaultWidget(newEqTitle);
-            menu->addAction(a);
-
-            a = new QWidgetAction(menu);
             a->setText(tr("Replace existing equation by dropped equation"));
             a->setToolTip(tr("New equation would be: ") + "<i>" + droppedEquation->getText() + "</i>");
             menu->addAction(a);
@@ -338,7 +326,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
                     else
                         newEquation->setLeftOperand(this->equation);
 
-                    a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
+                    a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
 
                     delete newEquation;
 
@@ -356,7 +344,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
                 else
                     newEquation->setRightOperand(this->equation);
 
-                a->setToolTip(tr("New equation would be: ") + "<i>" + newEquation->getText() + "</i>");
+                a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
 
                 delete newEquation;
 

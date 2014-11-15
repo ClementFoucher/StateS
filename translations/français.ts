@@ -296,11 +296,11 @@
     </message>
     <message>
         <source>Set existing equation as left operand of dropped equation</source>
-        <translation>Utilise l&apos;équation actuelle en tant qu&apos;opérande de gauche de l&apos;équation déposée</translation>
+        <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de gauche de l&apos;équation déposée</translation>
     </message>
     <message>
         <source>Set existing equation as right operand of dropped equation</source>
-        <translation>Utilise l&apos;équation actuelle en tant qu&apos;opérande de droite de l&apos;équation déposée</translation>
+        <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de droite de l&apos;équation déposée</translation>
     </message>
     <message>
         <source>Equation: </source>

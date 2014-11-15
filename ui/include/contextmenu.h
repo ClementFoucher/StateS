@@ -38,6 +38,7 @@ public:
     explicit ContextMenu(QWidget* parent = 0);
 
     void addTitle(const QString& titleText);
+    void addSubTitle(const QString& titleText);
     void setListStyle();
 
 protected slots:

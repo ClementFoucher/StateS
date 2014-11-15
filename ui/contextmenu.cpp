@@ -47,6 +47,17 @@ void ContextMenu::addTitle(const QString& titleText)
     this->addAction(a);
 }
 
+void ContextMenu::addSubTitle(const QString& titleText)
+{
+    QLabel* title = new QLabel(titleText);
+    title->setAlignment(Qt::AlignCenter);
+    title->setMinimumHeight(40);
+
+    QWidgetAction* a = new QWidgetAction(this);
+    a->setDefaultWidget(title);
+    this->addAction(a);
+}
+
 void ContextMenu::setListStyle()
 {
     this->setStyleSheet(listStyle);
@@ -56,17 +67,20 @@ void ContextMenu::setListStyle()
 // Why not default?
 bool ContextMenu::event(QEvent* e)
 {
-    if (this->toolTip().count() != 0)
+    if (this->activeAction() != nullptr)
     {
-        const QHelpEvent* helpEvent = static_cast <QHelpEvent*>(e);
+        if (this->activeAction()->toolTip().count() != 0)
+        {
+            const QHelpEvent* helpEvent = static_cast <QHelpEvent*>(e);
 
-        if (helpEvent->type() == QEvent::ToolTip)
-        {
-            QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
-        }
-        else
-        {
-            QToolTip::hideText();
+            if (helpEvent->type() == QEvent::ToolTip)
+            {
+                QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
+            }
+            else
+            {
+                QToolTip::hideText();
+            }
         }
     }
 
