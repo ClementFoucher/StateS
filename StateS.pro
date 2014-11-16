@@ -140,7 +140,8 @@ OTHER_FILES += \
     README \
     README.txt \
     LICENSE \
-    LICENSE.txt
+    LICENSE.txt \
+    release_notes.txt
 
 RESOURCES += \
     art.qrc \
