@@ -203,8 +203,12 @@ void DrawingWindow::on_actionLoad_triggered()
     else
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Load machine"), QString(), "*.SfsmS");
-        machine = new Fsm(fileName);
-        setMachine(machine);
+
+        if (fileName.count() != 0)
+        {
+            machine = new Fsm(fileName);
+            setMachine(machine);
+        }
     }
 
 

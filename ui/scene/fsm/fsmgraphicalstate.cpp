@@ -145,6 +145,7 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
     if (!logicalState->isInitial())
         menu->addAction(tr("Set initial"));
     menu->addAction(tr("Edit"));
+    menu->addAction(tr("Draw transition from this state"));
     menu->addAction(tr("Rename"));
     menu->addAction(tr("Delete"));
 
@@ -212,6 +213,10 @@ void FsmGraphicalState::treatMenu(QAction* action)
     else if (action->text() == tr("Delete"))
     {
         askDelete();
+    }
+    else if (action->text() == tr("Draw transition from this state"))
+    {
+        ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
     }
 }
 

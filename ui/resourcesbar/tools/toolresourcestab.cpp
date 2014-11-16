@@ -42,11 +42,14 @@ ToolResourcesTab::ToolResourcesTab(Machine::type machineType, QWidget* parent) :
 
     instructions += tr("Use <i>mouse center button</i> to move scene");
     instructions += "<br />";
+    instructions += "<br />";
     instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out");
     instructions += "<br />";
-    instructions += tr("Use <i>right-click</i> on a machine element to display context menu");
+    instructions += "<br />";
+    instructions += tr("Use <i>right-click</i> to unselect current tool") + "<br />" + tr("or display context menu if no tool selected");
 
     QLabel* instructionsLabel = new QLabel(instructions);
+    instructionsLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(instructionsLabel);
 
     if (machineType == Machine::type::FSM)

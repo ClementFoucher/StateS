@@ -217,6 +217,10 @@
         <translatorcomment>Part of sentence: All X connected transitions will be deleted</translatorcomment>
         <translation> transitions connectées seront supprimées</translation>
     </message>
+    <message>
+        <source>Draw transition from this state</source>
+        <translation>Créer une transition ayant pour origine cet état</translation>
+    </message>
 </context>
 <context>
     <name>FsmGraphicalTransition</name>
@@ -239,6 +243,17 @@
     <message>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
+    <name>FsmScene</name>
+    <message>
+        <source>Add state</source>
+        <translation>Ajouter un état</translation>
+    </message>
+    <message>
+        <source>Add initial state</source>
+        <translation>Ajouter un état initial</translation>
     </message>
 </context>
 <context>
@@ -529,11 +544,19 @@
     </message>
     <message>
         <source>Use &lt;i&gt;right-click&lt;/i&gt; on a machine element to display context menu</source>
-        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; sur un élément de la machine&lt;br /&gt;pour afficher un menu contextuel</translation>
+        <translation type="vanished">Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; sur un élément de la machine&lt;br /&gt;pour afficher un menu contextuel</translation>
     </message>
     <message>
         <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out</source>
         <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool</source>
+        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; pour déselectionner l&apos;outil courant</translation>
+    </message>
+    <message>
+        <source>or display context menu if no tool selected</source>
+        <translation type="unfinished">ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
     </message>
 </context>
 <context>

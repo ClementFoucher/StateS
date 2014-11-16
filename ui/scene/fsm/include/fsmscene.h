@@ -46,6 +46,8 @@ public:
 
     ResourcesBar::mode getMode() const;
 
+    void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
+
 protected slots:
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent*) override;
@@ -57,6 +59,7 @@ private slots:
     void handleSelection();
     void stateCallsEdit(FsmState* state);
     void stateCallsRename(FsmState* state);
+    void treatMenu(QAction*);
 
     void updateSceneRect();
 
@@ -75,6 +78,8 @@ private:
     bool isEditingTransitionSource = false;
     bool isEditingTransitionTarget = false;
     FsmGraphicalTransition * currentTransition = nullptr;
+
+    QPointF mousePos;
 
     QSize displaySize;
 

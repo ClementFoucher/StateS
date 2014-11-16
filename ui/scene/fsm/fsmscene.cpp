@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include <QMouseEvent>
+#include <QAction>
 
 #include "fsmscene.h"
 
@@ -35,6 +36,7 @@
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "resourcesbar.h"
+#include "contextmenu.h"
 
 FsmScene::FsmScene(ResourcesBar* resources, Fsm* machine) :
     GenericScene(resources)
@@ -87,6 +89,22 @@ ResourcesBar::mode FsmScene::getMode() const
     return resources->getCurrentMode();
 }
 
+void FsmScene::beginDrawTransition(FsmGraphicalState *source, const QPointF& currentMousePos)
+{
+    isDrawingTransition = true;
+
+    if (!currentMousePos.isNull())
+        currentTransition = new FsmGraphicalTransition(source, currentMousePos);
+    else
+    {
+        // Compute mouse pos wrt. scene
+        QPointF sceneMousePos = views()[0]->mapToScene(this->views()[0]->mapFromGlobal(QCursor::pos()));
+        currentTransition = new FsmGraphicalTransition(source, sceneMousePos);
+    }
+
+    addTransition(currentTransition);
+}
+
 void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
 {
     if (me->button() == Qt::LeftButton)
@@ -127,12 +145,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
 
                 if ( stateUnderMouse != nullptr)
                 {
-                    isDrawingTransition = true;
-                    currentTransition = new FsmGraphicalTransition(stateUnderMouse, me->scenePos());
-                    currentTransition->setMousePosition(QPointF(me->scenePos()));
-
-                    addTransition(currentTransition);
-
+                    beginDrawTransition(stateUnderMouse, me->scenePos());
                 }
             }
             else if (currentTool == FsmTools::tool::none)
@@ -180,6 +193,25 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
              (this->items(me->scenePos(), Qt::IntersectsItemShape, Qt::DescendingOrder).count() == 0)
              )
         {
+            // If there is a tool selected: unselect it
+            if (this->resources->getBuildTools()->getTool() != MachineTools::tool::none)
+            {
+                this->resources->getBuildTools()->setTool(MachineTools::tool::none);
+
+                GenericScene::mousePressEvent(me);
+            }
+            else
+            {
+                // Display context menu
+                ContextMenu* menu = new ContextMenu();
+                menu->addAction(tr("Add state"));
+                menu->addAction(tr("Add initial state"));
+                menu->popup(me->screenPos());
+
+                this->mousePos = me->scenePos();
+
+                connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(treatMenu(QAction*)));
+            }
             GenericScene::mousePressEvent(me);
         }
         else if (isEditingTransitionSource || isEditingTransitionTarget)
@@ -188,6 +220,12 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
             isEditingTransitionSource = false;
             isEditingTransitionTarget = false;
             currentTransition->endDynamicMode(false);
+            currentTransition = nullptr;
+        }
+        else if (isDrawingTransition)
+        {
+            isDrawingTransition = false;
+            delete currentTransition;
             currentTransition = nullptr;
         }
     }
@@ -230,18 +268,6 @@ void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
             previousStatePointed = nullptr;
         }
     }
-    //else if (resources->getBuildTools()->getTool() == MachineTools::state)
-    //{
-    /*if (ghostState == nullptr)
-        {
-            ghostState = new FsmGraphicalState();
-            addItem(ghostState);
-        }
-
-        ghostState->setPos(me->scenePos());*/
-
-    // Should change cursor instead
-    //}
     else
     {
         GenericScene::mouseMoveEvent(me);
@@ -497,6 +523,23 @@ void FsmScene::stateCallsRename(FsmState* state)
     clearSelection();
     state->getGraphicalRepresentation()->setSelected(true);
     resources->selectedState(state, true, true);
+}
+
+void FsmScene::treatMenu(QAction* action)
+{
+    if (action->text() == tr("Add state"))
+    {
+        FsmState* logicState = new FsmState(machine);
+
+        addState(logicState, this->mousePos);
+    }
+    else if (action->text() == tr("Add initial state"))
+    {
+        FsmState* logicState = new FsmState(machine);
+        logicState->setInitial();
+
+        addState(logicState, this->mousePos);
+    }
 }
 
 void FsmScene::transitionCallsEdit(FsmTransition* transition)

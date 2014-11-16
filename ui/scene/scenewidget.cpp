@@ -97,6 +97,13 @@ void SceneWidget::mousePressEvent(QMouseEvent *me)
         this->movingScene = true;
         this->setDragMode(QGraphicsView::ScrollHandDrag);
     }
+    else if (me->button() == Qt::RightButton)
+    {
+        if (this->resourcesBar->getBuildTools() != nullptr)
+        {
+            this->unsetCursor();
+        }
+    }
 
     QGraphicsView::mousePressEvent(me);
 }
