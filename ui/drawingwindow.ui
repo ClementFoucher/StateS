@@ -63,10 +63,6 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave">
-   <property name="icon">
-    <iconset resource="../art.qrc">
-     <normaloff>:/icons/save_icon</normaloff>:/icons/save_icon</iconset>
-   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -75,10 +71,6 @@
    </property>
   </action>
   <action name="actionLoad">
-   <property name="icon">
-    <iconset resource="../art.qrc">
-     <normaloff>:/icons/load_icon</normaloff>:/icons/load_icon</iconset>
-   </property>
    <property name="text">
     <string>Load</string>
    </property>
@@ -87,10 +79,6 @@
    </property>
   </action>
   <action name="actionNew">
-   <property name="icon">
-    <iconset resource="../art.qrc">
-     <normaloff>:/icons/create_FSM_icon</normaloff>:/icons/create_FSM_icon</iconset>
-   </property>
    <property name="text">
     <string>New FSM</string>
    </property>
@@ -99,10 +87,6 @@
    </property>
   </action>
   <action name="actionClear">
-   <property name="icon">
-    <iconset resource="../art.qrc">
-     <normaloff>:/icons/clean_machine_icon</normaloff>:/icons/clean_machine_icon</iconset>
-   </property>
    <property name="text">
     <string>Clear machine</string>
    </property>
@@ -110,10 +94,6 @@
   <action name="actionExport">
    <property name="enabled">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../art.qrc">
-     <normaloff>:/icons/export_pdf_icon</normaloff>:/icons/export_pdf_icon</iconset>
    </property>
    <property name="text">
     <string>Export</string>
@@ -124,8 +104,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../art.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

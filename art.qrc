@@ -1,10 +1,10 @@
 <RCC>
     <qresource prefix="/icons">
-        <file alias="StateS_icon">art/StateS.png</file>
-        <file alias="save_icon">art/Save.png</file>
-        <file alias="load_icon">art/Load.png</file>
-        <file alias="create_FSM_icon">art/Create_FSM.png</file>
-        <file alias="clean_machine_icon">art/Clear_machine.png</file>
-        <file alias="export_pdf_icon">art/Export.png</file>
+        <file alias="load">art/svg/Load.svg</file>
+        <file alias="save">art/svg/Save.svg</file>
+        <file alias="clear">art/3rd_party/29699-kleanSweep.svg</file>
+        <file alias="new_FSM">art/svg/Create_FSM.svg</file>
+        <file alias="export_PDF">art/svg/Export_PDF.svg</file>
+        <file alias="StateS">art/svg/StateS.svg</file>
     </qresource>
 </RCC>

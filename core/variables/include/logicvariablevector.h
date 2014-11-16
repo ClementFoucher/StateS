@@ -19,34 +19,27 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "states.h"
+#ifndef LOGICVARIABLEVECTOR_H
+#define LOGICVARIABLEVECTOR_H
 
-#include <QPainter>
-#include <QSvgRenderer>
+#include <QVector>
 
-#include "drawingwindow.h"
+#include "logicvariable.h"
 
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+class LogicVariableVector : public LogicVariable, public QVector<LogicVariable>
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+    Q_OBJECT
 
-    return pixmap;
-}
+public:
+    explicit LogicVariableVector(const QString& name, int size);
 
-StateS::StateS()
-{
-    drawingWindow = new DrawingWindow();
+    // Unused here, will always return false
+    virtual bool getCurrentState() const override;
 
-    drawingWindow->show();
-}
+    // No need to override getText: return name as a logic variable
+    //QString getText() const override;
 
-StateS::~StateS()
-{
-    drawingWindow->setMachine(nullptr);
+    QString getValue();
+};
 
-    delete drawingWindow;
-}
+#endif // LOGICVARIABLEVECTOR_H

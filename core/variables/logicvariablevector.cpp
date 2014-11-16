@@ -19,34 +19,21 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "states.h"
+#include "logicvariablevector.h"
 
-#include <QPainter>
-#include <QSvgRenderer>
-
-#include "drawingwindow.h"
-
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+LogicVariableVector::LogicVariableVector(const QString &name, int size) :
+    LogicVariable(name),
+    QVector<LogicVariable> (size)
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
-
-    return pixmap;
 }
 
-StateS::StateS()
+bool LogicVariableVector::getCurrentState() const
 {
-    drawingWindow = new DrawingWindow();
-
-    drawingWindow->show();
+    return false;
 }
 
-StateS::~StateS()
+QString LogicVariableVector::getValue()
 {
-    drawingWindow->setMachine(nullptr);
-
-    delete drawingWindow;
+    // TODO
+    return "0";
 }

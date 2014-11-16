@@ -8,8 +8,8 @@ QT += \
       core \
       gui \
       printsupport \
-      xml
-#      svg
+      xml \
+      svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

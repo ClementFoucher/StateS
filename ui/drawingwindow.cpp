@@ -26,10 +26,12 @@
 #include <QScreen>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <QIcon>
 
 #include "drawingwindow.h"
 #include "ui_drawingwindow.h"
 
+#include "states.h"
 #include "machine.h"
 #include "centralwidget.h"
 #include "fsm.h"
@@ -44,6 +46,12 @@ DrawingWindow::DrawingWindow(Machine* machine) :
     ui(new Ui::DrawingWindow)
 {
     this->ui->setupUi(this);
+
+    ui->actionLoad->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/load"))));
+    ui->actionSave->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save"))));
+    ui->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
+    ui->actionExport->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF"))));
+    ui->actionNew->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
 
     this->centralWidget = new CentralWidget();
     this->setCentralWidget(this->centralWidget);

@@ -22,11 +22,16 @@
 #ifndef STATES_H
 #define STATES_H
 
+#include <QPixmap>
+
 class DrawingWindow;
 class Machine;
 
 class StateS
 {
+public:
+    static QPixmap getPixmapFromSvg(const QString& path);
+
 public:
     explicit StateS();
     ~StateS();

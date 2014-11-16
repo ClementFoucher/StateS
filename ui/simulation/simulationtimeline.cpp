@@ -29,6 +29,7 @@
 
 #include "simulationtimeline.h"
 
+#include "states.h"
 #include "logicvariable.h"
 #include "machine.h"
 #include "variabletimeline.h"
@@ -45,8 +46,8 @@ SimulationTimeLine::SimulationTimeLine(Machine* machine, Clock* clock, QWidget* 
 
     this->toolBar = this->addToolBar(tr("Tools"));
     this->toolBar->setIconSize(QSize(64, 64));
-    QIcon exportPdfIcon;
-    exportPdfIcon.addFile(QStringLiteral(":/icons/export_pdf_icon"));
+
+    QIcon exportPdfIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF")));
     QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(exportToPDF()));
 
