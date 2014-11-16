@@ -156,6 +156,10 @@
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
+    <message>
+        <source>You can also use right-click on equation members to edit</source>
+        <translation>Vous pouvez également utiliser le clic-droit sur un membre de l&apos;équation pour l&apos;éditer</translation>
+    </message>
 </context>
 <context>
     <name>FsmGraphicalState</name>
@@ -349,6 +353,18 @@
     <message>
         <source>Remove one operand from that operator</source>
         <translation>Supprimer une opérande de cet opérateur</translation>
+    </message>
+    <message>
+        <source>User confirmation needed</source>
+        <translation>Confirmation de l&apos;utilisateur requise</translation>
+    </message>
+    <message>
+        <source>Delete last oprand?</source>
+        <translation>Supprimer l&apos;opérande de droite ?</translation>
+    </message>
+    <message>
+        <source>Content is: </source>
+        <translation>Son contenu est :</translation>
     </message>
 </context>
 <context>
