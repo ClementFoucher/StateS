@@ -19,44 +19,19 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATIONTIMELINE_H
-#define SIMULATIONTIMELINE_H
-
-#include <QMainWindow>
+#ifndef INVERTERBAR_H
+#define INVERTERBAR_H
 
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QToolBar>
 
-class Machine;
-class Clock;
-
-class SimulationTimeLine : public QMainWindow
+class InverterBar : public QWidget
 {
     Q_OBJECT
-
 public:
-    explicit SimulationTimeLine(Machine* machine, Clock* clock, QWidget* parent = 0);
-
-protected slots:
-    void mouseMoveEvent(QMouseEvent*) override;
-
-private slots:
-    void exportToPDF();
+    explicit InverterBar(QWidget* parent = 0);
 
 protected:
     void paintEvent(QPaintEvent*) override;
-
-private:
-    Machine* machine = nullptr;
-
-    Clock* clock = nullptr;
-
-    QVBoxLayout* layout = nullptr;
-
-    QToolBar* toolBar = nullptr;
-
-    uint separatorPosition = 0;
 };
 
-#endif // SIMULATIONTIMELINE_H
+#endif // INVERTERBAR_H

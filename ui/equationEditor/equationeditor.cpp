@@ -88,35 +88,34 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
 
     }
 
-    operatorListLayout = new QVBoxLayout();
+    operatorListLayout = new QGridLayout();
     operatorListLayout->setAlignment(Qt::AlignTop);
     resourcesLayout->addLayout(operatorListLayout);
 
     QLabel* operatorsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
     operatorsTitle->setAlignment(Qt::AlignCenter);
-    operatorListLayout->addWidget(operatorsTitle);
+    operatorListLayout->addWidget(operatorsTitle, 0, 0, 1, 2);
 
-    notOperator  = new GraphicEquation(new LogicEquation(1, LogicEquation::nature::notOp),  true);
-    andOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::andOp),  true);
-    orOperator   = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::orOp),   true);
-    xorOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xorOp),  true);
-    nandOperator = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::nandOp), true);
-    norOperator  = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::norOp),  true);
-    xnorOperator = new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xnorOp), true);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(1, LogicEquation::nature::notOp),  true),  1, 0, 1, 2);
 
-    operatorListLayout->addWidget(notOperator);
-    operatorListLayout->addWidget(andOperator);
-    operatorListLayout->addWidget(orOperator);
-    operatorListLayout->addWidget(xorOperator);
-    operatorListLayout->addWidget(nandOperator);
-    operatorListLayout->addWidget(norOperator);
-    operatorListLayout->addWidget(xnorOperator);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::andOp),  true), 2, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::orOp),   true), 3, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xorOp),  true), 4, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::nandOp), true), 5, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::norOp),  true), 6, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(2, LogicEquation::nature::xnorOp), true), 7, 0, 1, 1);
+
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::andOp),  true), 2, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::orOp),   true), 3, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::xorOp),  true), 4, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::nandOp), true), 5, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::norOp),  true), 6, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(new LogicEquation(3, LogicEquation::nature::xnorOp), true), 7, 1, 1, 1);
 
     // Equation
     QLabel* equationTitle = new QLabel("<i>" + tr("... to here.") + "</i>");
     equationTitle->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(equationTitle);
-
 
     LogicEquation* temp = dynamic_cast <LogicEquation*> (initialEquation);
 
@@ -126,6 +125,10 @@ EquationEditor::EquationEditor(Machine* machine, LogicVariable* initialEquation,
         this->equation = new GraphicEquation(initialEquation, false);
 
     mainLayout->addWidget(equation);
+
+    QLabel* equationInfo= new QLabel(tr("You can also use right-click on equation members to edit"));
+    equationInfo->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(equationInfo);
 
     // Buttons
 

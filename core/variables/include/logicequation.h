@@ -37,7 +37,7 @@ public:
 
 public:
     explicit LogicEquation(uint size, nature function, LogicVariable* operand1 = nullptr, LogicVariable* operand2 = nullptr);
-    explicit LogicEquation(nature function, const QMap<int, LogicVariable *> &operandList);
+    explicit LogicEquation(nature function, const QMap<int, LogicVariable *>& operandList);
     ~LogicEquation();
 
     nature getFunction() const;
@@ -56,7 +56,7 @@ public:
 
     LogicEquation* clone() const;
 
-    uint getSize() const;
+    int getSize() const;
 
     const QMap<int, LogicVariable *>& getOperands() const;
 

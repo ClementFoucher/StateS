@@ -19,44 +19,20 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATIONTIMELINE_H
-#define SIMULATIONTIMELINE_H
+#include <QPainter>
 
-#include <QMainWindow>
+#include "inverterbar.h"
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QToolBar>
-
-class Machine;
-class Clock;
-
-class SimulationTimeLine : public QMainWindow
+InverterBar::InverterBar(QWidget* parent) :
+    QWidget(parent)
 {
-    Q_OBJECT
+    this->setMinimumHeight(10);
+    this->setMaximumHeight(10);
+}
 
-public:
-    explicit SimulationTimeLine(Machine* machine, Clock* clock, QWidget* parent = 0);
+void InverterBar::paintEvent(QPaintEvent*)
+{
+    QPainter painter(this);
 
-protected slots:
-    void mouseMoveEvent(QMouseEvent*) override;
-
-private slots:
-    void exportToPDF();
-
-protected:
-    void paintEvent(QPaintEvent*) override;
-
-private:
-    Machine* machine = nullptr;
-
-    Clock* clock = nullptr;
-
-    QVBoxLayout* layout = nullptr;
-
-    QToolBar* toolBar = nullptr;
-
-    uint separatorPosition = 0;
-};
-
-#endif // SIMULATIONTIMELINE_H
+    painter.drawLine(5, 5, this->width() - 5, 5);
+}

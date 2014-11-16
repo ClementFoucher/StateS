@@ -82,9 +82,9 @@ const QMap<int, LogicVariable*>& LogicEquation::getOperands() const
     return operands;
 }
 
-uint LogicEquation::getSize() const
+int LogicEquation::getSize() const
 {
-    return size;
+    return (int)size;
 }
 
 bool LogicEquation::getCurrentState() const
@@ -174,15 +174,15 @@ QString LogicEquation::getText() const
 {
     QString text;
 
-    if (this->size > 1)
-        text = "(";
-
     // Inversion oeprator
     if ( (function == nature::notOp)  ||
          (function == nature::nandOp) ||
          (function == nature::norOp)  ||
          (function == nature::xnorOp) )
         text += '/';
+
+    if (this->size > 1)
+        text += "( ";
 
     for (int i = 0 ; i < this->size ; i++)
     {
@@ -212,7 +212,7 @@ QString LogicEquation::getText() const
     }
 
     if (this->size > 1)
-        text += ")";
+        text += " )";
 
     return text;
 }

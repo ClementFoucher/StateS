@@ -28,6 +28,7 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QPushButton>
 
 class Machine;
@@ -52,16 +53,8 @@ private:
     QHBoxLayout* resourcesLayout    = nullptr;
     QVBoxLayout* inputListLayout    = nullptr;
     QVBoxLayout* variableListLayout = nullptr;
-    QVBoxLayout* operatorListLayout = nullptr;
+    QGridLayout* operatorListLayout = nullptr;
     QHBoxLayout* buttonsLayout      = nullptr;
-
-    GraphicEquation* notOperator  = nullptr;
-    GraphicEquation* andOperator  = nullptr;
-    GraphicEquation* orOperator   = nullptr;
-    GraphicEquation* xorOperator  = nullptr;
-    GraphicEquation* nandOperator = nullptr;
-    GraphicEquation* norOperator  = nullptr;
-    GraphicEquation* xnorOperator = nullptr;
 
     GraphicEquation* equation = nullptr;
 

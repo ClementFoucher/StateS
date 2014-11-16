@@ -484,34 +484,26 @@ LogicVariable* Fsm::parseEquation(QDomElement element) const
 
             QDomNodeList childNodes = currentElement.childNodes();
 
-            LogicVariable* leftOperand = nullptr;
-            LogicVariable* rightOperand = nullptr;
+            QMap<int, LogicVariable *> operands;
 
             for (int i = 0 ; i < childNodes.count() ; i++)
             {
                 QDomElement currentElement = childNodes.at(i).toElement();
 
-                if (currentElement.tagName() == "LeftOperand")
+                if (currentElement.tagName() == "Operand")
                 {
-                    leftOperand = parseEquation(currentElement);
-                }
-                else if (currentElement.tagName() == "RightOperand")
-                {
-                    rightOperand = parseEquation(currentElement);
+                    operands[currentElement.attribute("Number").toInt()] = parseEquation(currentElement);
                 }
                 else
                 {
                     qDebug() << "(Fsm:) Unexpected operand nature encountered while parsing logic equation: " << currentElement.tagName();
                     break;
                 }
-
             }
 
             // Create equation
-            if (equationType == LogicEquation::nature::notOp)
-                equation = new LogicEquation(1, equationType, rightOperand);
-            else
-                equation = new LogicEquation(2, equationType, leftOperand, rightOperand);
+            equation = new LogicEquation(equationType, operands);
+
         }
         else
         {
@@ -555,21 +547,12 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, LogicVariable* equation) 
             break;
         }
 
-        if (complexEquation->getFunction() != LogicEquation::nature::notOp)
+        for (int i = 0 ; i < complexEquation->getSize() ; i++)
         {
-            stream.writeStartElement("LeftOperand");
-            writeLogicEquation(stream, complexEquation->getOperand(0));
-            stream.writeEndElement(); // LeftOperand
-
-            stream.writeStartElement("RightOperand");
-            writeLogicEquation(stream, complexEquation->getOperand(1));
-            stream.writeEndElement(); // RightOperand
-        }
-        else
-        {
-            stream.writeStartElement("RightOperand");
-            writeLogicEquation(stream, complexEquation->getOperand(0));
-            stream.writeEndElement(); // RightOperand
+            stream.writeStartElement("Operand");
+            stream.writeAttribute("Number", QString::number(i));
+            writeLogicEquation(stream, complexEquation->getOperand(i));
+            stream.writeEndElement(); // Operand
         }
     }
     else

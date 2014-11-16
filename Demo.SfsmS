@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FSM>
     <Signals>
+        <Input Name="bootOK"/>
         <Input Name="error"/>
         <Input Name="start"/>
         <Input Name="check"/>
         <Input Name="stop"/>
-        <Input Name="bootOK"/>
         <Output Name="boot"/>
         <Output Name="checkOK"/>
         <Output Name="power"/>
@@ -47,16 +47,16 @@
         <Transition Source="On" Target="Off">
             <Condition>
                 <LogicEquation Nature="and">
-                    <LeftOperand>
+                    <Operand Number="0">
                         <LogicVariable Name="stop"/>
-                    </LeftOperand>
-                    <RightOperand>
+                    </Operand>
+                    <Operand Number="1">
                         <LogicEquation Nature="not">
-                            <RightOperand>
+                            <Operand Number="0">
                                 <LogicVariable Name="error"/>
-                            </RightOperand>
+                            </Operand>
                         </LogicEquation>
-                    </RightOperand>
+                    </Operand>
                 </LogicEquation>
             </Condition>
             <Actions/>
@@ -70,9 +70,9 @@
         <Transition Source="Error" Target="Off">
             <Condition>
                 <LogicEquation Nature="not">
-                    <RightOperand>
+                    <Operand Number="0">
                         <LogicVariable Name="error"/>
-                    </RightOperand>
+                    </Operand>
                 </LogicEquation>
             </Condition>
             <Actions/>
@@ -80,16 +80,16 @@
         <Transition Source="Off" Target="Init">
             <Condition>
                 <LogicEquation Nature="and">
-                    <LeftOperand>
+                    <Operand Number="0">
                         <LogicVariable Name="start"/>
-                    </LeftOperand>
-                    <RightOperand>
+                    </Operand>
+                    <Operand Number="1">
                         <LogicEquation Nature="not">
-                            <RightOperand>
+                            <Operand Number="0">
                                 <LogicVariable Name="error"/>
-                            </RightOperand>
+                            </Operand>
                         </LogicEquation>
-                    </RightOperand>
+                    </Operand>
                 </LogicEquation>
             </Condition>
             <Actions>

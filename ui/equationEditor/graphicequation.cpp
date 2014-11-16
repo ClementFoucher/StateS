@@ -26,13 +26,16 @@
 #include <QMimeData>
 #include <QWidgetAction>
 #include <QLabel>
+#include <QMessageBox>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 
 #include <QDebug>
 
 #include "equationmimedata.h"
 #include "logicequation.h"
 #include "contextmenu.h"
+#include "inverterbar.h"
 
 // A graphic equation can either represent
 // a logic equation or a logic variable.
@@ -43,89 +46,91 @@ GraphicEquation::GraphicEquation(LogicVariable* equation, bool isTemplate, QWidg
     this->equation   = equation;
     this->isTemplate = isTemplate;
 
-    this->setLayout(new QHBoxLayout(this));
+    if (!isTemplate)
+        this->setAcceptDrops(true);
 
     buildEquation();
 }
 
 void GraphicEquation::buildEquation()
 {
+    QObjectList toDelete = this->children();
+    qDeleteAll(toDelete);
+
+
+
+
     // How to obtain only widget children?
-    QObjectList components = this->children();
+ /*   QObjectList components = this->children();
     foreach(QObject* obj, components)
     {
         if (dynamic_cast<QWidget*>(obj) != nullptr)
             delete obj;
     }
+*/
 
-    if (!isTemplate)
-        this->setAcceptDrops(true);
 
+    QHBoxLayout* equationLayout = new QHBoxLayout();
     LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
 
     if (complexEquation != nullptr)
     {
-        if (complexEquation->isInverted())
+        if (this->isTemplate)
         {
-            QLabel* operatorText = nullptr;
+            QString text;
 
-            if (this->isTemplate)
+            switch(complexEquation->getFunction())
             {
-                if (complexEquation->getFunction() == LogicEquation::nature::notOp)
-                    operatorText = new QLabel("not");
+            case LogicEquation::nature::notOp:
+                text += "not";
+                break;
+            case LogicEquation::nature::andOp:
+                text += "and";
+                break;
+            case LogicEquation::nature::orOp:
+                text += "or";
+                break;
+            case LogicEquation::nature::xorOp:
+                text += "xor";
+                break;
+            case LogicEquation::nature::nandOp:
+                text += "nand";
+                break;
+            case LogicEquation::nature::norOp:
+                text += "nor";
+                break;
+            case LogicEquation::nature::xnorOp:
+                text += "xnor";
+                break;
             }
-            else
-                operatorText = new QLabel("/");
 
-            if(operatorText != nullptr)
-            {
-                operatorText->setAlignment(Qt::AlignCenter);
-                this->layout()->addWidget(operatorText);
-            }
+            if (complexEquation->getSize() > 1)
+                text += " " + QString::number(complexEquation->getSize());
+
+            QLabel* variableText = new QLabel(text);
+            variableText->setAlignment(Qt::AlignCenter);
+            equationLayout->addWidget(variableText);
+
+            this->setLayout(equationLayout);
         }
-
-        for (int i = 0 ; i < complexEquation->getSize() ; i++)
+        else
         {
-            // Add operand
-            graphicOperands[i] = new GraphicEquation(complexEquation->getOperand(i), isTemplate, this);
-            this->layout()->addWidget(graphicOperands[i]);
-
-            // Add operator, except for last operand
-            if (i < complexEquation->getSize() -1)
+    /*        if (complexEquation->isInverted())
             {
-                if (this->isTemplate)
-                {
-                    QLabel* operatorText = nullptr;
+                QLabel* operatorText = nullptr;
+                operatorText = new QLabel("/");
+                operatorText->setAlignment(Qt::AlignCenter);
+                equationLayout->addWidget(operatorText);
+            }
+*/
+            for (int i = 0 ; i < complexEquation->getSize() ; i++)
+            {
+                // Add operand
+                graphicOperands[i] = new GraphicEquation(complexEquation->getOperand(i), isTemplate, this);
+                equationLayout->addWidget(graphicOperands[i]);
 
-                    switch(complexEquation->getFunction())
-                    {
-                    case LogicEquation::nature::andOp:
-                        operatorText = new QLabel("and");
-                        break;
-                    case LogicEquation::nature::orOp:
-                        operatorText = new QLabel("or");
-                        break;
-                    case LogicEquation::nature::xorOp:
-                        operatorText = new QLabel("xor");
-                        break;
-                    case LogicEquation::nature::nandOp:
-                        operatorText = new QLabel("nand");
-                        break;
-                    case LogicEquation::nature::norOp:
-                        operatorText = new QLabel("nor");
-                        break;
-                    case LogicEquation::nature::xnorOp:
-                        operatorText = new QLabel("xnor");
-                        break;
-                    }
-
-                    if (operatorText != nullptr)
-                    {
-                        operatorText->setAlignment(Qt::AlignCenter);
-                        this->layout()->addWidget(operatorText);
-                    }
-                }
-                else
+                // Add operator, except for last operand
+                if (i < complexEquation->getSize() -1)
                 {
                     QLabel* operatorText = nullptr;
 
@@ -150,8 +155,23 @@ void GraphicEquation::buildEquation()
                     if (operatorText != nullptr)
                     {
                         operatorText->setAlignment(Qt::AlignCenter);
-                        this->layout()->addWidget(operatorText);
+                        equationLayout->addWidget(operatorText);
+
                     }
+                }
+
+                if (!complexEquation->isInverted())
+                    this->setLayout(equationLayout);
+                else
+                {
+                    QVBoxLayout* verticalLayout = new QVBoxLayout();
+
+                    InverterBar* inverterBar = new InverterBar();
+
+                    verticalLayout->addWidget(inverterBar);
+                    verticalLayout->addLayout(equationLayout);
+
+                    this->setLayout(verticalLayout);
                 }
             }
         }
@@ -170,7 +190,8 @@ void GraphicEquation::buildEquation()
         }
 
         variableText->setAlignment(Qt::AlignCenter);
-        this->layout()->addWidget(variableText);
+        equationLayout->addWidget(variableText);
+        this->setLayout(equationLayout);
     }
 
     if (this->isTemplate)
@@ -304,7 +325,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
         ContextMenu* menu = new ContextMenu();
         menu->addTitle(tr("Equation: ") +  "<i>" + equation->getText() + "</i>");
 
-       /* LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
+        LogicEquation* complexEquation = dynamic_cast<LogicEquation*> (equation);
         if (complexEquation != nullptr)
         {
             if (complexEquation->getFunction() != LogicEquation::nature::notOp)
@@ -316,7 +337,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
                     menu->addAction(tr("Remove one operand from that operator"));
                 }
             }
-        }*/
+        }
 
         menu->addAction(tr("Delete"));
 
@@ -415,14 +436,43 @@ void GraphicEquation::treatMenu(QAction* action)
     }
     else if (action->text() == tr("Add one operand to that operator"))
     {
-       /* LogicEquation* complexEquation = dynamic_cast<LogicEquation*>(this->equation);
+        LogicEquation* complexEquation = dynamic_cast<LogicEquation*>(this->equation);
 
         complexEquation->increaseOperandCount();
-        this->updateEquation();*/
+
+        this->buildEquation();
+
+        GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
+        if (parentEquation != nullptr)
+            parentEquation->updateEquation();
     }
     else if (action->text() == tr("Remove one operand from that operator"))
     {
+        bool valid = false;
 
+        LogicEquation* complexEquation = dynamic_cast<LogicEquation*>(this->equation);
+        LogicVariable* operandToRemove = complexEquation->getOperand(complexEquation->getSize() - 1);
+        if ( (operandToRemove == LogicVariable::constant0) || (operandToRemove == LogicVariable::constant1) )
+            valid = true;
+        else
+        {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete last oprand?") + "<br />" + tr("Content is: ") + operandToRemove->getText(), QMessageBox::Ok | QMessageBox::Cancel);
+
+            if (reply == QMessageBox::StandardButton::Ok)
+                valid = true;
+        }
+
+        if (valid)
+        {
+            complexEquation->decreaseOperandCount();
+
+            this->buildEquation();
+
+            GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
+            if (parentEquation != nullptr)
+                parentEquation->updateEquation();
+        }
     }
     else
     {
