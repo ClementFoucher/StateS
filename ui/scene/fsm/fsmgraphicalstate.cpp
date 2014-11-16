@@ -105,7 +105,7 @@ FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
 
     this->logicalState = logicState;
     this->logicalState->setGraphicalRepresentation(this);
-    connect(this->logicalState, SIGNAL(stateConfigurationChanged()), this, SLOT(rebuildRepresentation()));
+    connect(this->logicalState, SIGNAL(elementConfigurationChanged()), this, SLOT(rebuildRepresentation()));
 
     rebuildRepresentation();
 }
@@ -114,7 +114,7 @@ FsmGraphicalState::~FsmGraphicalState()
 {
     delete actionsBox;
 
-    disconnect(this->logicalState, SIGNAL(stateConfigurationChanged()), this, SLOT(rebuildRepresentation()));
+    disconnect(this->logicalState, SIGNAL(elementConfigurationChanged()), this, SLOT(rebuildRepresentation()));
     logicalState->clearGraphicalRepresentation();
 }
 
@@ -282,13 +282,20 @@ void FsmGraphicalState::rebuildRepresentation()
         {
             QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
 
-            if (scene() != nullptr)
-            {
-                if (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode)
-                {
-                    actionText->setHtml(actions[i]->getText(true));
-                }
-            }
+            QString currentActionText;
+
+            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode) )
+                currentActionText = actions[i]->getText(true);
+            else
+                currentActionText = actions[i]->getText(false);
+
+            if (logicalState->getActionType(actions[i]) == LogicVariable::action_types::set)
+                currentActionText += " = 1";
+            else if (logicalState->getActionType(actions[i]) == LogicVariable::action_types::reset)
+                currentActionText += " = 0";
+
+            actionText->setHtml(currentActionText);
+
 
             if (maxTextWidth < actionText->boundingRect().width())
                 maxTextWidth = actionText->boundingRect().width();

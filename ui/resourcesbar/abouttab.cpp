@@ -33,7 +33,7 @@ AboutTab::AboutTab(QWidget* parent) :
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    QLabel* versionLabel = new QLabel(tr("Version") + " 0.1.6");
+    QLabel* versionLabel = new QLabel(tr("Version") + " 0.1.7");
     versionLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(versionLabel);
 

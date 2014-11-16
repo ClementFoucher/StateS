@@ -30,12 +30,13 @@
 #include "logicequation.h"
 #include "equationeditor.h"
 #include "contextmenu.h"
+#include "signalactionslist.h"
 
 TransitionEditorTab::TransitionEditorTab(FsmTransition* transition, QWidget* parent) :
     EditorTab(parent)
 {
     this->transition = transition;
-    connect(transition, SIGNAL(transitionConfigurationChanged()), this, SLOT(updateContent()));
+    connect(transition, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 
     QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
     title->setAlignment(Qt::AlignCenter);
@@ -94,17 +95,19 @@ void TransitionEditorTab::updateContent()
     foreach(LogicVariable* var, transition->getActions())
     {
         actionList->insertRow(actionList->rowCount());
+
+        actionList->setCellWidget(actionList->rowCount()-1, 0, new SignalActionsList(transition, var));
         actionList->setItem(actionList->rowCount()-1, 1, new QTableWidgetItem(var->getName()));
     }
 }
 
 void TransitionEditorTab::changeEditedTransition(FsmTransition* transition)
 {
-    disconnect(transition, SIGNAL(transitionConfigurationChanged()), this, SLOT(updateContent()));
+    disconnect(transition, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 
     this->transition = transition;
 
-    connect(transition, SIGNAL(transitionConfigurationChanged()), this, SLOT(updateContent()));
+    connect(transition, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 
     updateContent();
 }

@@ -55,7 +55,7 @@
     <name>DrawingWindow</name>
     <message>
         <source>StateS</source>
-        <translation>StateS</translation>
+        <translation type="vanished">StateS</translation>
     </message>
     <message>
         <source>Save</source>
@@ -91,7 +91,7 @@
     </message>
     <message>
         <source>Export to PDF</source>
-        <translation>Exporter en PDF</translation>
+        <translation type="vanished">Exporter en PDF</translation>
     </message>
     <message>
         <source>Export machine to PDF</source>
@@ -120,6 +120,14 @@
     <message>
         <source>Overwrite current machine?</source>
         <translation>Écraser la machine courante ?</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>Export machine to PDF file</source>
+        <translation>Exporter la machine au format PDF</translation>
     </message>
 </context>
 <context>
@@ -436,6 +444,21 @@
     </message>
 </context>
 <context>
+    <name>SignalActionsList</name>
+    <message>
+        <source>Pulse</source>
+        <translation>Impulsion</translation>
+    </message>
+    <message>
+        <source>Set</source>
+        <translation>Set</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation>Reset</translation>
+    </message>
+</context>
+<context>
     <name>SimulationTimeLine</name>
     <message>
         <source>Clock</source>
@@ -556,7 +579,7 @@
     </message>
     <message>
         <source>or display context menu if no tool selected</source>
-        <translation type="unfinished">ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
+        <translation>ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
     </message>
 </context>
 <context>

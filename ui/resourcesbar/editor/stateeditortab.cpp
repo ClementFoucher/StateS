@@ -34,12 +34,13 @@
 #include "io.h"
 #include "dynamiclineedit.h"
 #include "contextmenu.h"
+#include "signalactionslist.h"
 
 StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     EditorTab(parent)
 {
     this->state = state;
-    connect(state, SIGNAL(stateConfigurationChanged()), this, SLOT(updateContent()));
+    connect(state, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 
     QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>");
     title->setAlignment(Qt::AlignCenter);
@@ -78,17 +79,17 @@ StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
 
 StateEditorTab::~StateEditorTab()
 {
-    disconnect(state, SIGNAL(stateConfigurationChanged()), this, SLOT(updateContent()));
+    disconnect(state, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 }
 
 void StateEditorTab::changeEditedState(FsmState* newState)
 {
-    disconnect(state, SIGNAL(stateConfigurationChanged()), this, SLOT(updateContent()));
+    disconnect(state, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 
     this->state = newState;
     updateContent();
 
-    connect(newState, SIGNAL(stateConfigurationChanged()), this, SLOT(updateContent()));
+    connect(newState, SIGNAL(elementConfigurationChanged()), this, SLOT(updateContent()));
 }
 
 void StateEditorTab::setEditName()
@@ -106,6 +107,8 @@ void StateEditorTab::updateContent()
     foreach(LogicVariable* var, state->getActions())
     {
         actionList->insertRow(actionList->rowCount());
+
+        actionList->setCellWidget(actionList->rowCount()-1, 0, new SignalActionsList(state, var));
         actionList->setItem(actionList->rowCount()-1, 1, new QTableWidgetItem(var->getName()));
     }
 }
@@ -126,7 +129,7 @@ void StateEditorTab::addAction()
     ContextMenu* menu;
 
     QList<LogicVariable*> availableActions;
-    foreach(LogicVariable* var, state->getOwningMachine()->getWrittableVariables())
+    foreach(LogicVariable* var, state->getOwningFsm()->getWrittableVariables())
     {
         if (!state->getActions().contains(var))
             availableActions.append(var);

@@ -64,7 +64,11 @@ SOURCES += \
 #    core/variables/logicvariablevector.cpp \
     ui/resourcesbar/simulatortab.cpp \
     ui/contextmenu.cpp \
-    ui/equationEditor/inverterbar.cpp
+    ui/equationEditor/inverterbar.cpp \
+    ui/resourcesbar/editor/signalactionslist.cpp \
+    core/machineelement.cpp \
+    fsm/fsmelement.cpp \
+    core/machineactuatorelement.cpp
 
 
 HEADERS  += \
@@ -113,7 +117,11 @@ HEADERS  += \
 #    core/variables/include/logicvariablevector.h \
     ui/resourcesbar/include/simulatortab.h \
     ui/include/contextmenu.h \
-    ui/equationEditor/include/inverterbar.h
+    ui/equationEditor/include/inverterbar.h \
+    ui/resourcesbar/editor/include/signalactionslist.h \
+    core/include/machineelement.h \
+    fsm/include/fsmelement.h \
+    core/include/machineactuatorelement.h
 
 QMAKE_CXXFLAGS += -std=c++11
 

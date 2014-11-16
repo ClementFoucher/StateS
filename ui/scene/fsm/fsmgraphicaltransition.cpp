@@ -94,7 +94,7 @@ FsmGraphicalTransition::FsmGraphicalTransition(FsmTransition* logicTransition) :
 {
     this->logicalTransition = logicTransition;
     this->logicalTransition->setGraphicalRepresentation(this);
-    connect(this->logicalTransition, SIGNAL(transitionConfigurationChanged()), this, SLOT(updateText()));
+    connect(this->logicalTransition, SIGNAL(elementConfigurationChanged()), this, SLOT(updateText()));
 
     currentMode = mode::initMode;
     this->setSourceState(this->logicalTransition->getSource()->getGraphicalRepresentation());
@@ -129,7 +129,7 @@ void FsmGraphicalTransition::setLogicalTransition(FsmTransition* transition)
     if (this->logicalTransition == nullptr)
     {
         this->logicalTransition = transition;
-        connect(this->logicalTransition, SIGNAL(transitionConfigurationChanged()), this, SLOT(updateText()));
+        connect(this->logicalTransition, SIGNAL(elementConfigurationChanged()), this, SLOT(updateText()));
         this->updateText();
     }
     else
@@ -397,22 +397,20 @@ void FsmGraphicalTransition::updateText()
         {
             QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getName(), actionsBox);
 
-            if (scene() != nullptr)
-            {
-                if (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode)
-                {
-                    actionText = new QGraphicsTextItem("", actionsBox);
+            QString currentActionText;
 
-                    if (actions[i]->isActive())
-                    {
-                        actionText->setHtml("<div style='color:green;'>" + actions[i]->getName() + "</div>");
-                    }
-                    else
-                    {
-                        actionText->setHtml("<div style='color:red;'>" + actions[i]->getName() + "</div>");
-                    }
-                }
-            }
+            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode) )
+                currentActionText = actions[i]->getText(true);
+            else
+                currentActionText = actions[i]->getText(false);
+
+
+            if (logicalTransition->getActionType(actions[i]) == LogicVariable::action_types::set)
+                currentActionText += " = 1";
+            else if (logicalTransition->getActionType(actions[i]) == LogicVariable::action_types::reset)
+                currentActionText += " = 0";
+
+            actionText->setHtml(currentActionText);
 
             if (maxTextWidth < actionText->boundingRect().width())
                 maxTextWidth = actionText->boundingRect().width();

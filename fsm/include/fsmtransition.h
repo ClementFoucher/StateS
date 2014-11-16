@@ -22,14 +22,14 @@
 #ifndef FSMTRANSITION_H
 #define FSMTRANSITION_H
 
-#include <QObject>
+#include "fsmelement.h"
 
 class Fsm;
 class FsmState;
 class FsmGraphicalTransition;
 class LogicVariable;
 
-class FsmTransition : public QObject
+class FsmTransition : public FsmElement
 {
     Q_OBJECT
 
@@ -47,36 +47,21 @@ public:
     void setGraphicalRepresentation(FsmGraphicalTransition* representation);
     void clearGraphicalRepresentation();
 
-    Fsm* getOwningMachine() const;
-
     void setCrossed() const;
 
     LogicVariable* getCondition() const;
     void setCondition(LogicVariable* variable);
 
-    QList<LogicVariable*> getActions() const;
-    void addAction(const QString& variableName);
-    void addAction(LogicVariable* variable);
-    void removeAction(const QString& variableName);
-    void clearActions();
-    void setActions(const QList<LogicVariable*>* newActions);
-
 public slots:
     void clearCondition();
-    void removeAction(LogicVariable* variable);
-
-signals:
-    void transitionConfigurationChanged();
 
 private:
-    Fsm* owningMachine = nullptr;
     FsmGraphicalTransition* graphicalRepresentation = nullptr;
 
     FsmState* source = nullptr;
     FsmState* target = nullptr;
 
     LogicVariable* condition = nullptr;
-    QList<LogicVariable*> actions;
 };
 
 #endif // FSMTRANSITION_H

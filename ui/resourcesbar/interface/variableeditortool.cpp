@@ -133,9 +133,6 @@ void VariableEditorTools::updateList()
         QListWidgetItem* currentItem = new QListWidgetItem(var->getName(), ioList);
         currentItem->setWhatsThis(var->getName());
 
-        // Do not allow edition for now: see renaming event issues
-        //currentItem->setFlags(currentItem->flags () | Qt::ItemIsEditable);
-
         if (selection.count() != 0)
         {
             foreach (QString text, selection)
@@ -259,18 +256,10 @@ void VariableEditorTools::removeSelectedIOs()
         selection.append(i->text());
     }
 
-    //if (selection.count() == 1)
+    foreach (QString ioName, selection)
     {
-        //       int selectedItem = ioList->sele
+        emit removeIOEvent(ioName);
     }
-    //else
-    {
-        foreach (QString ioName, selection)
-        {
-            emit removeIOEvent(ioName);
-        }
-    }
-
 }
 
 

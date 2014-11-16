@@ -111,10 +111,10 @@ void Fsm::setInitialState(FsmState* newInitialState)
         initialState = newInitialState;
 
         if (initialState != nullptr)
-            emit initialState->stateConfigurationChanged();
+            emit initialState->elementConfigurationChanged();
 
         if (previousInitialState != nullptr)
-            emit previousInitialState->stateConfigurationChanged();
+            emit previousInitialState->elementConfigurationChanged();
     }
 }
 

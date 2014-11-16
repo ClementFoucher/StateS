@@ -29,9 +29,9 @@
 #include "fsmgraphicaltransition.h"
 #include "logicvariable.h"
 
-FsmTransition::FsmTransition(Fsm* parent, FsmState* source, FsmState* target, FsmGraphicalTransition* graphicalRepresentation, LogicVariable* condition)
+FsmTransition::FsmTransition(Fsm* parent, FsmState* source, FsmState* target, FsmGraphicalTransition* graphicalRepresentation, LogicVariable* condition) :
+    FsmElement(parent)
 {
-    this->owningMachine = parent;
 
     this->source = source;
     this->target = target;
@@ -44,7 +44,7 @@ FsmTransition::FsmTransition(Fsm* parent, FsmState* source, FsmState* target, Fs
     source->addOutgoingTransition(this);
     target->addIncomingTransition(this);
 
-    this->owningMachine->addTransition(this);
+    this->getOwningFsm()->addTransition(this);
 
     setGraphicalRepresentation(graphicalRepresentation);
 }
@@ -56,7 +56,7 @@ FsmTransition::~FsmTransition()
     source->removeOutgoingTransition(this);
     target->removeIncomingTransition(this);
 
-    owningMachine->removeTransition(this);
+    this->getOwningFsm()->removeTransition(this);
 
     delete graphicalRepresentation;
 }
@@ -109,22 +109,36 @@ void FsmTransition::setTarget(FsmState* newTarget)
     target->addIncomingTransition(this);
 }
 
-Fsm* FsmTransition::getOwningMachine() const
-{
-    return owningMachine;
-}
-
 LogicVariable* FsmTransition::getCondition() const
 {
     return condition;
+}
+
+void FsmTransition::setCrossed() const
+{
+    foreach (LogicVariable* var, actions)
+    {
+        if (actionType[var] == LogicVariable::action_types::pulse)
+        {
+            var->setCurrentState(true, true);
+        }
+        else if (actionType[var] == LogicVariable::action_types::set)
+        {
+            var->setCurrentState(true);
+        }
+        else if (actionType[var] == LogicVariable::action_types::reset)
+        {
+            var->setCurrentState(false);
+        }
+    }
 }
 
 void FsmTransition::setCondition(LogicVariable* variable)
 {
     if (condition != nullptr)
     {
-        disconnect(condition, SIGNAL(renamedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-        disconnect(condition, SIGNAL(stateChangedEvent()), this, SIGNAL(transitionConfigurationChanged()));
+        disconnect(condition, SIGNAL(renamedEvent()), this, SIGNAL(elementConfigurationChanged()));
+        disconnect(condition, SIGNAL(stateChangedEvent()), this, SIGNAL(elementConfigurationChanged()));
         disconnect(condition, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(clearCondition()));
     }
 
@@ -141,94 +155,15 @@ void FsmTransition::setCondition(LogicVariable* variable)
 
     if (variable != nullptr)
     {
-        connect(variable, SIGNAL(renamedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-        connect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(transitionConfigurationChanged()));
+        connect(variable, SIGNAL(renamedEvent()), this, SIGNAL(elementConfigurationChanged()));
+        connect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(elementConfigurationChanged()));
         connect(variable, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(clearCondition()));
     }
 
-    emit transitionConfigurationChanged();
+    emit elementConfigurationChanged();
 }
 
 void FsmTransition::clearCondition()
 {
     setCondition(nullptr);
-}
-
-QList<LogicVariable*> FsmTransition::getActions() const
-{
-    return actions;
-}
-
-void FsmTransition::addAction(const QString& variableName)
-{
-    foreach (LogicVariable* currentIo, owningMachine->getWrittableVariables())
-    {
-        if (currentIo->getName() == variableName)
-        {
-            addAction(currentIo);
-            break;
-        }
-    }
-}
-
-void FsmTransition::removeAction(const QString& variableName)
-{
-    LogicVariable* foundIO = nullptr;
-
-    foreach (LogicVariable* currentIo, actions)
-    {
-        if (currentIo->getName() == variableName)
-        {
-            foundIO = currentIo;
-            break;
-        }
-    }
-
-    if (foundIO != nullptr)
-        removeAction(foundIO);
-}
-
-void FsmTransition::setActions(const QList<LogicVariable*>* newActions)
-{
-    actions = *newActions;
-}
-
-void FsmTransition::clearActions()
-{
-    QList<LogicVariable*> actionsToDelete = actions;
-
-    foreach(LogicVariable* var, actionsToDelete)
-    {
-        removeAction(var);
-    }
-}
-
-void FsmTransition::setCrossed() const
-{
-    foreach (LogicVariable* io, actions)
-    {
-        io->setCurrentState(true, true);
-    }
-}
-
-void FsmTransition::addAction(LogicVariable* variable)
-{
-    actions.append(variable);
-
-    connect(variable, SIGNAL(renamedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-    connect(variable, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(removeAction(LogicVariable*)));
-    connect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-
-    emit transitionConfigurationChanged();
-}
-
-void FsmTransition::removeAction(LogicVariable* variable)
-{
-    disconnect(variable, SIGNAL(renamedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-    disconnect(variable, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(removeAction(LogicVariable*)));
-    disconnect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(transitionConfigurationChanged()));
-
-    actions.removeAll(variable);
-
-    emit transitionConfigurationChanged();
 }

@@ -31,6 +31,9 @@ class LogicVariable : public QObject
     Q_OBJECT
 
 public:
+    enum class action_types { pulse, set, reset };
+
+public:
     static LogicVariable* constant0;
     static LogicVariable* constant1;
 

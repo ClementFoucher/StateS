@@ -22,7 +22,7 @@
 #ifndef FSMSTATE_H
 #define FSMSTATE_H
 
-#include <QObject>
+#include "fsmelement.h"
 
 #include <QList>
 #include <QPointF>
@@ -32,7 +32,7 @@ class FsmTransition;
 class FsmGraphicalState;
 class LogicVariable;
 
-class FsmState : public QObject
+class FsmState : public FsmElement
 {
     Q_OBJECT
 
@@ -55,18 +55,9 @@ public:
     bool isInitial() const;
     void setInitial();
 
-    QList<LogicVariable*> getActions() const;
-    void addAction(const QString& variableName);
-    void addAction(LogicVariable* variable);
-    void removeAction(const QString& variableName);
-    void setActions(const QList<LogicVariable*>* newActions);
-    void clearActions();
-
     QString getName() const;
     bool setName(const QString& value);
     void setUniqueName();
-
-    Fsm* getOwningMachine() const;
 
     FsmGraphicalState* getGraphicalRepresentation() const;
     void setGraphicalRepresentation(FsmGraphicalState* representation);
@@ -74,24 +65,14 @@ public:
 
     QPointF position; // Public because we don't care, just used by loader
 
-public slots:
-    void removeAction(LogicVariable* variable);
-
-signals:
-    void stateConfigurationChanged();
-
 private:
     QList<FsmTransition*> inputTransitions;
     QList<FsmTransition*> outputTransitions;
-    QList<LogicVariable*> actions;
 
-    Fsm* owningMachine = nullptr;
     FsmGraphicalState* graphicalRepresentation = nullptr;
     QString name;
 
     bool isActive = false;
-
-
 };
 
 #endif // FSMSTATE_H

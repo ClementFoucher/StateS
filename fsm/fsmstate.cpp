@@ -32,20 +32,18 @@
 #include "io.h"
 
 
-FsmState::FsmState(Fsm* parent)
+FsmState::FsmState(Fsm* parent) :
+    FsmElement(parent)
 {
-    this->owningMachine = parent;
-
     // Build name dynamically to ensure uniqueness
     this->setUniqueName();
 
-    this->owningMachine->addState(this);
+    this->getOwningFsm()->addState(this);
 }
 
-FsmState::FsmState(Fsm* parent, const QString& name)
+FsmState::FsmState(Fsm* parent, const QString& name) :
+    FsmElement(parent)
 {
-    this->owningMachine = parent;
-
     // Try given name, but ignore if not unique
     if (!setName(name))
     {
@@ -53,7 +51,7 @@ FsmState::FsmState(Fsm* parent, const QString& name)
         qDebug() << "(Fsm state:) WARNING! Ignore given name " + name + " because already existing in machine. Used name " + this->name + " instead.";
     }
 
-    this->owningMachine->addState(this);
+    this->getOwningFsm()->addState(this);
 }
 
 FsmState::~FsmState()
@@ -68,7 +66,7 @@ FsmState::~FsmState()
 
     qDeleteAll(uniqueTransitions);
 
-    owningMachine->removeState(this);
+    getOwningFsm()->removeState(this);
 
     // Delete graphics representation
     delete graphicalRepresentation;
@@ -92,11 +90,6 @@ void FsmState::clearGraphicalRepresentation()
     graphicalRepresentation = nullptr;
 }
 
-Fsm* FsmState::getOwningMachine() const
-{
-    return owningMachine;
-}
-
 QString FsmState::getName() const
 {
     return name;
@@ -106,7 +99,7 @@ bool FsmState::setName(const QString& newName)
 {
     bool nameIsValid = true;
 
-    foreach(FsmState* colleage, owningMachine->getStates())
+    foreach(FsmState* colleage, getOwningFsm()->getStates())
     {
         if (colleage->getName() == newName)
         {
@@ -118,7 +111,7 @@ bool FsmState::setName(const QString& newName)
     if(nameIsValid)
     {
         name = newName;
-        emit stateConfigurationChanged();
+        emit elementConfigurationChanged();
     }
 
     return nameIsValid;
@@ -137,7 +130,7 @@ void FsmState::setUniqueName()
         currentName = baseName + QString::number(i);
 
         nameIsValid = true;
-        foreach(FsmState* colleage, this->owningMachine->getStates())
+        foreach(FsmState* colleage, this->getOwningFsm()->getStates())
         {
             if (colleage->getName() == currentName)
             {
@@ -188,94 +181,35 @@ void FsmState::setActive(bool value)
 {
     this->isActive = value;
 
-    foreach (LogicVariable* io, actions)
+    foreach (LogicVariable* var, actions)
     {
-        io->setCurrentState(isActive);
+        if (actionType[var] == LogicVariable::action_types::pulse)
+        {
+            var->setCurrentState(isActive);
+        }
+        else if (value) // On enter state only
+        {
+            if (actionType[var] == LogicVariable::action_types::set)
+            {
+                var->setCurrentState(true);
+            }
+            else if (actionType[var] == LogicVariable::action_types::reset)
+            {
+                var->setCurrentState(false);
+            }
+        }
     }
 
-    emit stateConfigurationChanged();
+    emit elementConfigurationChanged();
 }
 
 bool FsmState::isInitial() const
 {
-    return (owningMachine->getInitialState() == this);
+    return (getOwningFsm()->getInitialState() == this);
 }
 
 void FsmState::setInitial()
 {
-    owningMachine->setInitialState(this);
+    getOwningFsm()->setInitialState(this);
 }
-
-QList<LogicVariable *> FsmState::getActions() const
-{
-    return actions;
-}
-
-void FsmState::setActions(const QList<LogicVariable*>* newActions)
-{
-    actions = *newActions;
-}
-
-void FsmState::addAction(LogicVariable* variable)
-{
-    actions.append(variable);
-
-    connect(variable, SIGNAL(renamedEvent()), this, SIGNAL(stateConfigurationChanged()));
-    connect(variable, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(removeAction(LogicVariable*)));
-    connect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(stateConfigurationChanged()));
-
-    emit stateConfigurationChanged();
-}
-
-void FsmState::removeAction(LogicVariable* variable)
-{
-    disconnect(variable, SIGNAL(renamedEvent()), this, SIGNAL(stateConfigurationChanged()));
-    disconnect(variable, SIGNAL(deletedEvent(LogicVariable*)), this, SLOT(removeAction(LogicVariable*)));
-    disconnect(variable, SIGNAL(stateChangedEvent()), this, SIGNAL(stateConfigurationChanged()));
-
-    actions.removeAll(variable);
-    emit stateConfigurationChanged();
-}
-
-void FsmState::addAction(const QString& variableName)
-{
-    foreach (LogicVariable* currentIo, owningMachine->getWrittableVariables())
-    {
-        if (currentIo->getName() == variableName)
-        {
-            addAction(currentIo);
-            break;
-        }
-    }
-}
-
-void FsmState::removeAction(const QString &variableName)
-{
-    LogicVariable* foundIO = nullptr;
-
-    foreach (LogicVariable* currentIo, actions)
-    {
-        if (currentIo->getName() == variableName)
-        {
-            foundIO = currentIo;
-            break;
-        }
-    }
-
-    if (foundIO != nullptr)
-        removeAction(foundIO);
-}
-
-void FsmState::clearActions()
-{
-    QList<LogicVariable*> actionsToDelete = actions;
-
-    foreach(LogicVariable* var, actionsToDelete)
-    {
-        removeAction(var);
-    }
-
-
-}
-
 
