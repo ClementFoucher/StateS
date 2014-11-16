@@ -24,6 +24,8 @@
 
 #include <QMainWindow>
 
+#include <QAction>
+
 class Machine;
 class CentralWidget;
 
@@ -37,11 +39,10 @@ class DrawingWindow : public QMainWindow
 
 public:
     explicit DrawingWindow(Machine* machine = 0);
-    ~DrawingWindow();
 
     void setMachine(Machine* machine);
 
-public slots: // Debug
+public slots:
     void clearMachine();
     void newMachine();
 
@@ -49,19 +50,18 @@ protected slots:
     void closeEvent(QCloseEvent*) override;
 
 private slots:
-    void on_actionNew_triggered();
-
-    void on_actionClear_triggered();
-
-    void on_actionExport_triggered();
-
-    void on_actionSave_triggered();
-
-    void on_actionLoad_triggered();
+    void newMachineRequestEvent();
+    void clearMachineRequestEvent();
+    void exportPdfRequestEvent();
+    void saveMachineRequestEvent();
+    void loadMachineRequestEvent();
 
 private:
-    Ui::DrawingWindow* ui = nullptr;
-
+    QAction* actionSave = nullptr;
+    QAction* actionLoad = nullptr;
+    QAction* actionNewFsm = nullptr;
+    QAction* actionClear = nullptr;
+    QAction* actionExportPdf = nullptr;
     CentralWidget* centralWidget = nullptr;
 
     // For debug only

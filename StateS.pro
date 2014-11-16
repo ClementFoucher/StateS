@@ -115,9 +115,6 @@ HEADERS  += \
     ui/include/contextmenu.h \
     ui/equationEditor/include/inverterbar.h
 
-FORMS    += \
-    ui/drawingwindow.ui
-
 QMAKE_CXXFLAGS += -std=c++11
 
 INCLUDEPATH += \

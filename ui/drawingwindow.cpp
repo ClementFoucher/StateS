@@ -27,9 +27,10 @@
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QIcon>
+#include <QToolBar>
+#include <QApplication>
 
 #include "drawingwindow.h"
-#include "ui_drawingwindow.h"
 
 #include "states.h"
 #include "machine.h"
@@ -42,37 +43,68 @@
 //
 
 DrawingWindow::DrawingWindow(Machine* machine) :
-    QMainWindow(nullptr),
-    ui(new Ui::DrawingWindow)
+    QMainWindow(nullptr)
 {
-    this->ui->setupUi(this);
-
-    ui->actionLoad->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/load"))));
-    ui->actionSave->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save"))));
-    ui->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
-    ui->actionExport->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF"))));
-    ui->actionNew->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
-
-    this->centralWidget = new CentralWidget();
-    this->setCentralWidget(this->centralWidget);
-
+    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowTitle("StateS");
     this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
+    this->resize(QApplication::desktop()->availableGeometry().size() - QSize(200, 200));
 
+    // Center window
     this->move(QPoint((QApplication::desktop()->availableGeometry().width()-this->width())/2,
                       (QApplication::desktop()->availableGeometry().height()-this->height())/2
                       )
                );
 
+    QToolBar* mainToolBar = new QToolBar(this);
+    mainToolBar->setMovable(true);
+    mainToolBar->setAllowedAreas(Qt::AllToolBarAreas);
+    mainToolBar->setIconSize(QSize(64, 64));
+    this->addToolBar(Qt::LeftToolBarArea, mainToolBar);
+
+    this->actionSave = new QAction(this);
+    this->actionSave->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save"))));
+    this->actionSave->setText(tr("Save"));
+    this->actionSave->setToolTip(tr("Save machine"));
+    connect(this->actionSave, SIGNAL(triggered()), this, SLOT(saveMachineRequestEvent()));
+    mainToolBar->addAction(this->actionSave);
+
+    this->actionLoad = new QAction(this);
+    this->actionLoad->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/load"))));
+    this->actionLoad->setText(tr("Load"));
+    this->actionLoad->setToolTip(tr("Load machine"));
+    connect(this->actionLoad, SIGNAL(triggered()), this, SLOT(loadMachineRequestEvent()));
+    mainToolBar->addAction(this->actionLoad);
+
+    mainToolBar->addSeparator();
+
+    this->actionNewFsm = new QAction(this);
+    this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
+    this->actionNewFsm->setText(tr("New FSM"));
+    this->actionNewFsm->setToolTip(tr("Create new FSM"));
+    connect(this->actionNewFsm, SIGNAL(triggered()), this, SLOT(newMachineRequestEvent()));
+    mainToolBar->addAction(this->actionNewFsm);
+
+    this->actionClear = new QAction(this);
+    this->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
+    this->actionClear->setText(tr("Clear"));
+    this->actionClear->setToolTip(tr("Clear machine"));
+    connect(this->actionClear, SIGNAL(triggered()), this, SLOT(clearMachineRequestEvent()));
+    mainToolBar->addAction(this->actionClear);
+
+    mainToolBar->addSeparator();
+
+    this->actionExportPdf = new QAction(this);
+    this->actionExportPdf->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF"))));
+    this->actionExportPdf->setText(tr("Export"));
+    this->actionExportPdf->setToolTip(tr("Export machine to PDF file"));
+    connect(this->actionExportPdf, SIGNAL(triggered()), this, SLOT(exportPdfRequestEvent()));
+    mainToolBar->addAction(this->actionExportPdf);
+
+    this->centralWidget = new CentralWidget();
+    this->setCentralWidget(this->centralWidget);
+
     this->setMachine(machine);
-}
-
-//
-// Destructor
-//
-
-DrawingWindow::~DrawingWindow()
-{
-    delete ui;
 }
 
 //
@@ -85,15 +117,15 @@ void DrawingWindow::setMachine(Machine* machine)
 
     if (machine != nullptr)
     {
-        this->ui->actionExport->setEnabled(true);
-        this->ui->actionSave->setEnabled(true);
-        this->ui->actionClear->setEnabled(true);
+        this->actionExportPdf->setEnabled(true);
+        this->actionSave->setEnabled(true);
+        this->actionClear->setEnabled(true);
     }
     else
     {
-        this->ui->actionExport->setEnabled(false);
-        this->ui->actionSave->setEnabled(false);
-        this->ui->actionClear->setEnabled(true);
+        this->actionExportPdf->setEnabled(false);
+        this->actionSave->setEnabled(false);
+        this->actionClear->setEnabled(true);
     }
 
     this->machine = machine;
@@ -126,12 +158,12 @@ void DrawingWindow::newMachine()
     }
 }
 
-void DrawingWindow::on_actionNew_triggered()
+void DrawingWindow::newMachineRequestEvent()
 {
     newMachine();
 }
 
-void DrawingWindow::on_actionClear_triggered()
+void DrawingWindow::clearMachineRequestEvent()
 {
     if (this->machine != nullptr)
     {
@@ -154,7 +186,7 @@ void DrawingWindow::closeEvent(QCloseEvent *)
 
 }
 
-void DrawingWindow::on_actionExport_triggered()
+void DrawingWindow::exportPdfRequestEvent()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export machine to PDF"), QString(), "*.pdf");
 
@@ -177,7 +209,7 @@ void DrawingWindow::on_actionExport_triggered()
     }
 }
 
-void DrawingWindow::on_actionSave_triggered()
+void DrawingWindow::saveMachineRequestEvent()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save machine"), QString(), "*.SfsmS");
 
@@ -190,7 +222,7 @@ void DrawingWindow::on_actionSave_triggered()
     }
 }
 
-void DrawingWindow::on_actionLoad_triggered()
+void DrawingWindow::loadMachineRequestEvent()
 {
     if (this->machine != nullptr)
     {
