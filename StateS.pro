@@ -9,6 +9,7 @@ QT += \
       gui \
       printsupport \
       xml
+#      svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -62,7 +63,8 @@ SOURCES += \
     ui/reactivebutton.cpp \
 #    core/variables/logicvariablevector.cpp \
     ui/resourcesbar/simulatortab.cpp \
-    ui/contextmenu.cpp
+    ui/contextmenu.cpp \
+    ui/equationEditor/inverterbar.cpp
 
 
 HEADERS  += \
@@ -110,7 +112,8 @@ HEADERS  += \
     ui/include/reactivebutton.h \
 #    core/variables/include/logicvariablevector.h \
     ui/resourcesbar/include/simulatortab.h \
-    ui/include/contextmenu.h
+    ui/include/contextmenu.h \
+    ui/equationEditor/include/inverterbar.h
 
 FORMS    += \
     ui/drawingwindow.ui
