@@ -20,6 +20,7 @@
  */
 
 #include <QLabel>
+#include <QVBoxLayout>
 
 #include <QDebug>
 
@@ -30,24 +31,39 @@
 ToolResourcesTab::ToolResourcesTab(Machine::type machineType, QWidget* parent) :
     QWidget(parent)
 {
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->setAlignment(Qt::AlignTop);
+
+    QLabel* instrTitle = new QLabel("<b>" + tr("Navigation") + "</b>");
+    instrTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(instrTitle);
+
+    QString instructions;
+
+    instructions += tr("Use <i>mouse center button</i> to move scene");
+    instructions += "<br />";
+    instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out");
+    instructions += "<br />";
+    instructions += tr("Use <i>right-click</i> on a machine element to display context menu");
+
+    QLabel* instructionsLabel = new QLabel(instructions);
+    layout->addWidget(instructionsLabel);
+
     if (machineType == Machine::type::FSM)
     {
-        buildTools = new FsmTools();
-
         QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
         title->setAlignment(Qt::AlignCenter);
-
-        layout = new QVBoxLayout(this);
         layout->addWidget(title);
-        layout->addWidget(buildTools);
 
-        this->setMaximumHeight(250);
+        buildTools = new FsmTools();
+        layout->addWidget(buildTools);
     }
     else
     {
         qDebug() << "(Drawing tool bar:) Error, unknown machine type";
     }
 
+    this->setLayout(layout);
 }
 
 MachineTools* ToolResourcesTab::getBuildTools() const

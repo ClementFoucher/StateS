@@ -49,7 +49,7 @@ public:
     void increaseOperandCount();
     void decreaseOperandCount();
 
-    QString getText() const override;
+    QString getText(bool colored = false) const override;
 
     bool getCurrentState() const override;
     bool isInverted() const;

@@ -39,6 +39,7 @@ public:
     explicit SimulationTimeLine(Machine* machine, Clock* clock, QWidget* parent = 0);
 
 protected slots:
+    void mousePressEvent(QMouseEvent*) override;
     void mouseMoveEvent(QMouseEvent*) override;
 
 private slots:

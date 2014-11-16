@@ -46,9 +46,11 @@
 
 qreal FsmGraphicalTransition::arrowEndSize = 10;
 qreal FsmGraphicalTransition::middleBarLength = 20;
+QPen FsmGraphicalTransition::selectionPen = QPen(Qt::DashLine);
 QPen FsmGraphicalTransition::standardPen = QPen(Qt::SolidPattern, 3);
 QPen FsmGraphicalTransition::editPen = QPen(QBrush(Qt::red, Qt::SolidPattern), 3);
-QPen FsmGraphicalTransition::selectionPen = QPen(Qt::DashLine);
+QPen FsmGraphicalTransition::activePen = QPen(QBrush(Qt::darkGreen, Qt::SolidPattern), 3);
+QPen FsmGraphicalTransition::inactivePen = QPen(QBrush(Qt::red, Qt::SolidPattern), 3);
 
 QPixmap FsmGraphicalTransition::getPixmap(uint size)
 {
@@ -359,14 +361,20 @@ void FsmGraphicalTransition::updateText()
     {
         if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode) )
         {
-            if (logicalTransition->getCondition()->isActive())
-                conditionText->setHtml("<div style='background-color:#E8E8E8; color:green;'>" + logicalTransition->getCondition()->getText() + "</div>");
-            else
-                conditionText->setHtml("<div style='background-color:#E8E8E8; color:red;'>" + logicalTransition->getCondition()->getText() + "</div>");
+            conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + logicalTransition->getCondition()->getText(true) + "</div>");
+            if (conditionLine != nullptr)
+            {
+                if (logicalTransition->getCondition()->isActive())
+                    conditionLine->setPen(activePen);
+                else
+                    conditionLine->setPen(inactivePen);
+            }
         }
         else
         {
             conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + logicalTransition->getCondition()->getText() + "</div>");
+            if (conditionLine != nullptr)
+                conditionLine->setPen(standardPen);
         }
     }
     else
@@ -494,6 +502,9 @@ void FsmGraphicalTransition::updateDisplay()
     // Redraw arrow body
     QPointF curveMiddle;
 
+    delete this->conditionLine;
+    this->conditionLine = nullptr;
+
     if ( (neighbors == nullptr) && (currentSourceState != currentTargetState) )
     {
         delete arrowBody;
@@ -523,12 +534,12 @@ void FsmGraphicalTransition::updateDisplay()
         arrowBody = line;
 
         // Display condition
-        QLineF conditionLine = straightLine.normalVector();
-        conditionLine.setLength(middleBarLength);
-        QGraphicsLineItem *conditionLineDisplay = new QGraphicsLineItem(conditionLine, line);
-        conditionLineDisplay->setPen(*currentPen);
+        QLineF conditionLineF = straightLine.normalVector();
+        conditionLineF.setLength(middleBarLength);
+        conditionLine = new QGraphicsLineItem(conditionLineF, line);
+        conditionLine->setPen(*currentPen);
         curveMiddle = QPointF(straightLine.p2()/2);
-        conditionLineDisplay->setPos(curveMiddle - conditionLine.p2()/2);
+        conditionLine->setPos(curveMiddle - conditionLineF.p2()/2);
 
         //
         // Update positions with actual ones used for construction
@@ -601,13 +612,13 @@ void FsmGraphicalTransition::updateDisplay()
             arcItem->setPen(*currentPen);
             arrowBody = arcItem;
 
-            QLineF conditionLine(0, 0, 0, 1);
-            conditionLine.setLength(middleBarLength);
-            QGraphicsLineItem *conditionLineDisplay = new QGraphicsLineItem(conditionLine, arcItem);
-            conditionLineDisplay->setPen(*currentPen);
+            QLineF conditionLineF(0, 0, 0, 1);
+            conditionLineF.setLength(middleBarLength);
+            conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
+            conditionLine->setPen(*currentPen);
 
             arcMiddle = QPointF(0, stateCenterToArcCenterVector.p2().y()-arcHeight/2);
-            conditionLineDisplay->setPos(arcMiddle - conditionLine.p2()/2);
+            conditionLine->setPos(arcMiddle - conditionLineF.p2()/2);
 
             arrowEnd->setPos(stateCenterToArcEndVector.p2());
             arrowEnd->setRotation(180);
@@ -644,7 +655,7 @@ void FsmGraphicalTransition::updateDisplay()
         QPointF curveTarget;
         qreal endAngle1;
         qreal endAngle2;
-        arrowBody = neighbors->buildMyBody(currentPen, this, deltaCurveOrigin, curveMiddle, curveTarget, endAngle1, endAngle2);
+        arrowBody = neighbors->buildMyBody(currentPen, this, deltaCurveOrigin, curveMiddle, curveTarget, endAngle1, endAngle2, &conditionLine);
         //arrowBody = path;
 
         sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();

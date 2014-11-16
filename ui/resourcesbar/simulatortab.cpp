@@ -46,6 +46,7 @@ SimulatorTab::SimulatorTab(Fsm* machine, QWidget* parent) :
     this->machine = machine;
 
     this->setLayout(new QVBoxLayout());
+    this->layout()->setAlignment(Qt::AlignTop);
 
     QLabel* title = new QLabel("<b>" + tr("Simulator") + "</b>");
     title->setAlignment(Qt::AlignCenter);

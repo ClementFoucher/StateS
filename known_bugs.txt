@@ -8,7 +8,7 @@
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Simulator does not check for transition exclusive conditions, it just takes the firt available transition with true condition,
-- Begin/end simulation: conditions only containing constants: color is not updated,
+- Begin/end simulation: conditions only containing constants/state actions: color is not updated,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states.
 
@@ -18,4 +18,8 @@
 - Context menu when simulating should change with appropriate options: force state activation,
 - Allow cancel renaming/adding signals while editing not validated,
 - Display current state on simu (add tooltip),
-- Should not allow to stack states (ugly state/transition stacking).
+- Should not allow to stack states (ugly state/transition stacking),
+- Support box selection on scene,
+- Equation editor should display a scroll bar when too much variables,
+- Should be able to move condition text along transitions,
+- Should be able to define an initial state for inputs.

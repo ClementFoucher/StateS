@@ -158,7 +158,7 @@
     </message>
     <message>
         <source>You can also use right-click on equation members to edit</source>
-        <translation>Vous pouvez également utiliser le clic-droit sur un membre de l&apos;équation pour l&apos;éditer</translation>
+        <translation>Vous pouvez également utiliser le clic-droit&lt;br /&gt;sur un membre de l&apos;équation pour l&apos;éditer</translation>
     </message>
 </context>
 <context>
@@ -475,7 +475,7 @@
     </message>
     <message>
         <source>Select signals from the list below to activate inputs:</source>
-        <translation>Selectionnez des signaux dans la liste ci-dessous pour activer les entrées correspondantes :</translation>
+        <translation>Selectionnez des signaux dans la liste ci-dessous&lt;br /&gt;pour activer les entrées correspondantes :</translation>
     </message>
 </context>
 <context>
@@ -518,6 +518,22 @@
     <message>
         <source>FSM editor</source>
         <translation>Éditeur de FSM</translation>
+    </message>
+    <message>
+        <source>Navigation</source>
+        <translation>Navigation</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;mouse center button&lt;/i&gt; to move scene</source>
+        <translation>Utilisez le &lt;i&gt;bouton central de la sours&lt;/i&gt; pour déplacer la vue</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;right-click&lt;/i&gt; on a machine element to display context menu</source>
+        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; sur un élément de la machine&lt;br /&gt;pour afficher un menu contextuel</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out</source>
+        <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
     </message>
 </context>
 <context>

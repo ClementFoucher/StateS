@@ -36,12 +36,13 @@ public:
 
 public:
     explicit LogicVariable(const QString &name);
+    explicit LogicVariable();
     ~LogicVariable();
 
     QString getName() const;
     void setName(const QString& value);
 
-    virtual QString getText() const;
+    virtual QString getText(bool colored = false) const;
 
     void setCurrentState(bool value, bool pulse = false);
 
@@ -58,9 +59,6 @@ signals:
     void renamedEvent();
     void stateChangedEvent();
     void deletedEvent(LogicVariable* emitter);
-
-protected:
-    explicit LogicVariable();
 
 private:
     explicit LogicVariable(bool active);

@@ -130,6 +130,7 @@ private:
     QGraphicsItem*      arrowEnd = nullptr;
     QGraphicsTextItem*  conditionText = nullptr;
     QGraphicsItemGroup* actionsBox   = nullptr;
+    QGraphicsLineItem*  conditionLine = nullptr;
     QGraphicsRectItem*  selectionBox = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
     qreal sceneAngle = 0;
 
@@ -148,6 +149,8 @@ private:
     static QPen standardPen;
     static QPen editPen;
     static QPen selectionPen;
+    static QPen inactivePen;
+    static QPen activePen;
 };
 
 #endif // FSMGRAPHICALTRANSITION_H

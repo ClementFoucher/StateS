@@ -170,7 +170,7 @@ bool LogicEquation::isInverted() const
     }
 }
 
-QString LogicEquation::getText() const
+QString LogicEquation::getText(bool colored) const
 {
     QString text;
 
@@ -186,7 +186,7 @@ QString LogicEquation::getText() const
 
     for (int i = 0 ; i < this->size ; i++)
     {
-        text += operands[i]->getText();
+        text += operands[i]->getText(colored);
 
         // Add operator, except for last operand
         if (i < this->size - 1)

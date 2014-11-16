@@ -275,22 +275,14 @@ void FsmGraphicalState::rebuildRepresentation()
 
         for (int i = 0 ; i < actions.count() ; i++)
         {
-            QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getName(), actionsBox);
+            QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
 
             if (scene() != nullptr)
             {
                 if (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode)
                 {
-                    if (actions[i]->isActive())
-                    {
-                        actionText->setHtml("<div style='color:green;'>" + actions[i]->getName() + "</div>");
-                    }
-                    else
-                    {
-                        actionText->setHtml("<div style='color:red;'>" + actions[i]->getName() + "</div>");
-                    }
+                    actionText->setHtml(actions[i]->getText(true));
                 }
-
             }
 
             if (maxTextWidth < actionText->boundingRect().width())

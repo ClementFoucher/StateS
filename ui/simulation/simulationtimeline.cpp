@@ -105,6 +105,14 @@ SimulationTimeLine::SimulationTimeLine(Machine* machine, Clock* clock, QWidget* 
     }
 }
 
+void SimulationTimeLine::mousePressEvent(QMouseEvent* event)
+{
+    separatorPosition = event->x();
+
+    QWidget::mousePressEvent(event);
+
+    repaint();
+}
 
 void SimulationTimeLine::mouseMoveEvent(QMouseEvent* event)
 {

@@ -23,7 +23,6 @@
 #define TOOLRESOURCESTAB_H
 
 #include <QWidget>
-#include <QVBoxLayout>
 
 #include "machine.h"
 
@@ -40,7 +39,6 @@ public:
 
 private:
     MachineTools* buildTools = nullptr;
-    QVBoxLayout* layout = nullptr;
 };
 
 #endif // TOOLRESOURCESTAB_H

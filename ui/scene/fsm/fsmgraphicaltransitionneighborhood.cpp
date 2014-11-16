@@ -84,7 +84,7 @@ int FsmGraphicalTransitionNeighborhood::computeTransitionPosition(FsmGraphicalTr
 }
 
 
-QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicalTransition* me, QPointF& deltaCurveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2) const
+QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicalTransition* me, QPointF& deltaCurveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2, QGraphicsLineItem** conditionLine) const
 {
     //
     // Create a first system as:
@@ -139,12 +139,12 @@ QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, Fs
     QLineF edgeAngle2Line(deltaSystemCPoint, deltaSystemXVector.p1());
 
     // Display condition
-    QLineF conditionLine = sceneSystemYVector;
-    conditionLine.setLength(20);
-    QGraphicsLineItem *conditionLineDisplay = new QGraphicsLineItem(conditionLine, curve);
+    QLineF conditionLineF = sceneSystemYVector;
+    conditionLineF.setLength(20);
+    QGraphicsLineItem *conditionLineDisplay = new QGraphicsLineItem(conditionLineF, curve);
 
     QPointF conditionPosition(middleVector.p2());
-    conditionPosition.setY(conditionPosition.y() - conditionLine.length()/2);
+    conditionPosition.setY(conditionPosition.y() - conditionLineF.length()/2);
     conditionLineDisplay->setPos(conditionPosition);
     conditionLineDisplay->setPen(*pen);
 
@@ -170,6 +170,8 @@ QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, Fs
     // Curve angles wrt. states perimeters
     edgeAngle1 = edgeAngle1Line.angle();
     edgeAngle2 = edgeAngle2Line.angle();
+
+    *conditionLine = conditionLineDisplay;
 
     return curve;
 }

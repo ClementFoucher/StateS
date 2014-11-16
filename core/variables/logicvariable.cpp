@@ -72,9 +72,21 @@ void LogicVariable::updateState()
     }
 }
 
-QString LogicVariable::getText() const
+QString LogicVariable::getText(bool colored) const
 {
-    return name;
+    if (!colored)
+        return this->name;
+    else
+    {
+        if (this->currentState == true)
+        {
+            return "<font color=\"green\">" + this->name + "</font>";
+        }
+        else
+        {
+            return "<font color=\"red\">" + this->name + "</font>";
+        }
+    }
 }
 
 QString LogicVariable::getName() const
