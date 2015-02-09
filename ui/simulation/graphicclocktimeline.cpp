@@ -28,14 +28,8 @@ GraphicClockTimeLine::GraphicClockTimeLine(Clock* clock, QWidget* parent) :
 {
     this->clock = clock;
 
-    connect(this->clock, SIGNAL(clockEvent()), this, SLOT(clockEvent()));
-    connect(this->clock, SIGNAL(resetEvent()), this, SLOT(resetEvent()));
-}
-
-GraphicClockTimeLine::~GraphicClockTimeLine()
-{
-    disconnect(this->clock, SIGNAL(clockEvent()), this, SLOT(clockEvent()));
-    disconnect(this->clock, SIGNAL(resetEvent()), this, SLOT(resetEvent()));
+    connect(this->clock, &Clock::clockEvent, this, &GraphicClockTimeLine::clockEvent);
+    connect(this->clock, &Clock::resetEvent, this, &GraphicClockTimeLine::resetEvent);
 }
 
 void GraphicClockTimeLine::clockEvent()

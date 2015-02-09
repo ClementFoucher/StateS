@@ -24,7 +24,7 @@
 Clock::Clock(QObject* parent) :
     QObject(parent)
 {
-    connect(&this->timer, SIGNAL(timeout()), this, SIGNAL(clockEvent()));
+    connect(&(this->timer), &QTimer::timeout, this, &Clock::clockEvent);
 }
 
 void Clock::nextStep()

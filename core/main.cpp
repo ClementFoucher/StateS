@@ -22,14 +22,14 @@
 #include <QApplication>
 #include <QTranslator>
 
-#include "langselector.h"
+#include "langselectiondialog.h"
 #include "states.h"
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
-    LangSelector* langageSelectionWindow = new LangSelector(&a);
+    LangSelectionDialog* langageSelectionWindow = new LangSelectionDialog(&a);
     langageSelectionWindow->setWindowFlags(Qt::Dialog | langageSelectionWindow->windowFlags());
     langageSelectionWindow->setWindowTitle("StateS");
     langageSelectionWindow->exec();

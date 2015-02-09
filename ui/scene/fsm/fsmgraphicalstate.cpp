@@ -35,7 +35,7 @@
 
 #include "fsmstate.h"
 #include "fsmscene.h"
-#include "logicvariable.h"
+#include "signal.h"
 #include "scenewidget.h"
 #include "contextmenu.h"
 
@@ -105,7 +105,8 @@ FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
 
     this->logicalState = logicState;
     this->logicalState->setGraphicalRepresentation(this);
-    connect(this->logicalState, SIGNAL(elementConfigurationChanged()), this, SLOT(rebuildRepresentation()));
+    connect(this->logicalState, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &FsmGraphicalState::rebuildRepresentation);
+    connect(this->logicalState, &MachineActuatorComponent::elementStateChangedEvent,         this, &FsmGraphicalState::rebuildRepresentation);
 
     rebuildRepresentation();
 }
@@ -113,8 +114,6 @@ FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
 FsmGraphicalState::~FsmGraphicalState()
 {
     delete actionsBox;
-
-    disconnect(this->logicalState, SIGNAL(elementConfigurationChanged()), this, SLOT(rebuildRepresentation()));
     logicalState->clearGraphicalRepresentation();
 }
 
@@ -151,7 +150,7 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
     menu->popup(event->screenPos());
 
-    connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(treatMenu(QAction*)));
+    connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
 }
 
 void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
@@ -229,7 +228,7 @@ void FsmGraphicalState::askDelete()
         if (linkedTransitions == 1)
             messageText += tr("The connected transition will be deleted");
         else
-            messageText += tr("All ") + QString::number(linkedTransitions) + tr(" connected transitions will be deleted");
+            messageText += tr("All") + " " + QString::number(linkedTransitions) + " " + tr("connected transitions will be deleted");
 
         QMessageBox::StandardButton reply = QMessageBox::question(scene()->views()[0], tr("User confirmation needed"), messageText, QMessageBox::Ok | QMessageBox::Cancel);
 
@@ -272,7 +271,7 @@ void FsmGraphicalState::rebuildRepresentation()
     qDeleteAll(actionsBox->childItems());
     actionsBox->childItems().clear();
 
-    QList<LogicVariable *> actions = logicalState->getActions();
+    QList<Signal *> actions = logicalState->getActions();
     if (actions.count() != 0)
     {
         qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
@@ -284,15 +283,22 @@ void FsmGraphicalState::rebuildRepresentation()
 
             QString currentActionText;
 
-            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourcesBar::mode::simulateMode) )
+            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourceBar::mode::simulateMode) )
                 currentActionText = actions[i]->getText(true);
             else
                 currentActionText = actions[i]->getText(false);
 
-            if (logicalState->getActionType(actions[i]) == LogicVariable::action_types::set)
+            if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
                 currentActionText += " = 1";
-            else if (logicalState->getActionType(actions[i]) == LogicVariable::action_types::reset)
-                currentActionText += " = 0";
+            else if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
+            {
+                if (actions[i]->getSize() == 1)
+                    currentActionText += " = 0";
+                else
+                    currentActionText += " = " + LogicValue::getValue0(actions[i]->getSize()).toString() + "<sub>b</sub>";
+            }
+            else if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
+                currentActionText += " = " + logicalState->getActionValue(actions[i]).toString() + "<sub>b</sub>";
 
             actionText->setHtml(currentActionText);
 

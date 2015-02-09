@@ -88,9 +88,6 @@ private:
     QGraphicsTextItem*  stateName    = nullptr;
     QGraphicsItemGroup* actionsBox   = nullptr;
 
-
-
-
 };
 
 #endif // FSMGRAPHICALSTATE_H

@@ -29,13 +29,13 @@
 
 #include "machine.h"
 #include "fsmscene.h"
-#include "resourcesbar.h"
+#include "resourcebar.h"
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
 #include "machinetools.h"
 
-SceneWidget::SceneWidget(Machine* machine, ResourcesBar* resources, QWidget* parent) :
+SceneWidget::SceneWidget(Machine* machine, ResourceBar* resources, QWidget* parent) :
     SceneWidget(parent)
 {
     this->resourcesBar = resources;
@@ -48,14 +48,14 @@ SceneWidget::SceneWidget(QWidget* parent) :
 {
     this->buttonZoomIn = new QPushButton("+", this);
     this->buttonZoomIn->resize(QSize(20, 20));
-    connect(buttonZoomIn, SIGNAL(clicked()), this, SLOT(zoomIn()));
+    connect(buttonZoomIn, &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
 
     this->buttonZoomOut = new QPushButton("-", this);
     this->buttonZoomOut->resize(QSize(20, 20));
-    connect(buttonZoomOut, SIGNAL(clicked()), this, SLOT(zoomOut()));
+    connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 }
 
-void SceneWidget::setMachine(Machine* machine, ResourcesBar* resources)
+void SceneWidget::setMachine(Machine* machine, ResourceBar* resources)
 {
     delete this->scene();
 

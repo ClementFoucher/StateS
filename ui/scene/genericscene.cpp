@@ -23,10 +23,10 @@
 
 #include "genericscene.h"
 
-#include "resourcesbar.h"
+#include "resourcebar.h"
 #include "machinetools.h"
 
-GenericScene::GenericScene(ResourcesBar* resources) :
+GenericScene::GenericScene(ResourceBar* resources) :
     QGraphicsScene()
 {
     this->resources = resources;

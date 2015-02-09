@@ -24,7 +24,7 @@
 
 #include "genericscene.h"
 
-#include "resourcesbar.h"
+#include "resourcebar.h"
 
 class FsmGraphicalTransition;
 class FsmGraphicalState;
@@ -37,14 +37,14 @@ class FsmScene : public GenericScene
     Q_OBJECT
 
 public:
-    explicit FsmScene(ResourcesBar* resources, Fsm* machine);
+    explicit FsmScene(ResourceBar* resources, Fsm* machine);
     ~FsmScene() override;
 
     void setDisplaySize(const QSize& newSize) override;
 
     void simulationModeChanged() override;
 
-    ResourcesBar::mode getMode() const;
+    ResourceBar::mode getMode() const;
 
     void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
 

@@ -24,7 +24,7 @@
 
 #include <QPixmap>
 
-class DrawingWindow;
+class StatesUi;
 class Machine;
 
 class StateS
@@ -37,7 +37,7 @@ public:
     ~StateS();
 
 private:
-    DrawingWindow* drawingWindow = nullptr;
+    StatesUi* drawingWindow = nullptr;
 };
 
 #endif // STATES_H

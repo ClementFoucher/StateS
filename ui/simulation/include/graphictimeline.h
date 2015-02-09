@@ -31,7 +31,7 @@ class GraphicTimeLine : public QWidget
     Q_OBJECT
 
 public:
-    GraphicTimeLine(bool initialState, QWidget* parent = 0);
+    GraphicTimeLine(bool initialState, QWidget* parent = nullptr);
 
     void addPoint(bool state);
     void addPointConst();

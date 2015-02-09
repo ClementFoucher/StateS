@@ -1,8 +1,14 @@
+*****************
+* StateS v. 0.2 *
+*****************
+
+- 2015-02-08 - V 0.2 - * Warning! Save files compatibility broken! * Added support for multiple bits signals, constants, signals initial value and equal/diff equations. Simulation input now has a real implementation instead of a list.
 
 *****************
 * StateS v. 0.1 *
 *****************
 
+2014-11-16 - V 0.1.7 - Added support for variable affectation, which allows to maintain variable state.
 2014-11-16 - V 0.1.6 - Allow machine drawing using contextual menu.
 2014-11-16 - V 0.1.5 - Variables state on conditions (color) now displayed independently for each variable instead of the whole transition.
 2014-11-16 - V 0.1.4 - * Warning! Save files compatibility broken! * Added support for equations with more than two operands.
@@ -10,4 +16,3 @@
 2014-11-14 - V 0.1.2 - Added icons on buttons and custom cursor shapes for machine building.
 2014-11-13 - V 0.1.1 - Rebuild simulator tab. Added a hint for how to use inputs.
 2014-11-11 - V 0.1   - Initial release.
-

@@ -31,8 +31,7 @@ class GraphicClockTimeLine : public GraphicTimeLine
     Q_OBJECT
 
 public:
-    explicit GraphicClockTimeLine(Clock* clock, QWidget* parent = 0);
-    ~GraphicClockTimeLine();
+    explicit GraphicClockTimeLine(Clock* clock, QWidget* parent = nullptr);
 
 private slots:
     void clockEvent();

@@ -27,17 +27,17 @@
 #include <QPushButton>
 
 class Machine;
-class ResourcesBar;
+class ResourceBar;
 
 class SceneWidget : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    explicit SceneWidget(Machine *machine, ResourcesBar *resources, QWidget* parent);
+    explicit SceneWidget(Machine *machine, ResourceBar *resources, QWidget* parent);
     explicit SceneWidget(QWidget* parent);
 
-    void setMachine(Machine* Machine, ResourcesBar *resources);
+    void setMachine(Machine* Machine, ResourceBar *resources);
 
 protected:
     void mousePressEvent(QMouseEvent*) override;
@@ -52,7 +52,7 @@ private slots:
     void zoomOut();
 
 private:
-    ResourcesBar* resourcesBar = nullptr;
+    ResourceBar* resourcesBar = nullptr;
 
     QPushButton* buttonZoomIn = nullptr;
     QPushButton* buttonZoomOut = nullptr;

@@ -35,14 +35,14 @@
 #include "machine.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "resourcesbar.h"
+#include "resourcebar.h"
 #include "contextmenu.h"
 
-FsmScene::FsmScene(ResourcesBar* resources, Fsm* machine) :
+FsmScene::FsmScene(ResourceBar* resources, Fsm* machine) :
     GenericScene(resources)
 {
     this->machine = machine;
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(handleSelection()));
+    connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
     foreach(FsmState* state, ((Fsm*)machine)->getStates())
     {
@@ -84,7 +84,7 @@ FsmScene::~FsmScene()
     qDeleteAll(states);
 }
 
-ResourcesBar::mode FsmScene::getMode() const
+ResourceBar::mode FsmScene::getMode() const
 {
     return resources->getCurrentMode();
 }
@@ -210,7 +210,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
 
                 this->mousePos = me->scenePos();
 
-                connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(treatMenu(QAction*)));
+                connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
             }
             GenericScene::mousePressEvent(me);
         }
@@ -449,7 +449,7 @@ void FsmScene::setDisplaySize(const QSize& newSize)
 
 void FsmScene::simulationModeChanged()
 {
-    if (resources->getCurrentMode() == ResourcesBar::mode::editMode)
+    if (resources->getCurrentMode() == ResourceBar::mode::editMode)
     {
         handleSelection();
     }
@@ -561,17 +561,17 @@ FsmGraphicalState* FsmScene::addState(FsmState* logicState, QPointF location)
     addItem(actionsBox);
     actionsBox->setZValue(3);
 
-    connect(newState, SIGNAL(callEdit(FsmState*)), this, SLOT(stateCallsEdit(FsmState*)));
-    connect(newState, SIGNAL(callRename(FsmState*)), this, SLOT(stateCallsRename(FsmState*)));
+    connect(newState, &FsmGraphicalState::callEdit, this, &FsmScene::stateCallsEdit);
+    connect(newState, &FsmGraphicalState::callRename, this, &FsmScene::stateCallsRename);
 
     return newState;
 }
 
 void FsmScene::addTransition(FsmGraphicalTransition* newTransition)
 {
-    connect(newTransition, SIGNAL(callDynamicSource(FsmGraphicalTransition*)), this, SLOT(transitionCallsDynamicSource(FsmGraphicalTransition*)));
-    connect(newTransition, SIGNAL(callDynamicTarget(FsmGraphicalTransition*)), this, SLOT(transitionCallsDynamicTarget(FsmGraphicalTransition*)));
-    connect(newTransition, SIGNAL(callEdit(FsmTransition*)), this, SLOT(transitionCallsEdit(FsmTransition*)));
+    connect(newTransition, &FsmGraphicalTransition::callDynamicSource, this, &FsmScene::transitionCallsDynamicSource);
+    connect(newTransition, &FsmGraphicalTransition::callDynamicTarget, this, &FsmScene::transitionCallsDynamicTarget);
+    connect(newTransition, &FsmGraphicalTransition::callEdit, this, &FsmScene::transitionCallsEdit);
 
     addItem(newTransition);
     newTransition->setZValue(2);

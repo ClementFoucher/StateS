@@ -108,7 +108,7 @@ private:
     void rebuildArrowEnd();
 
     void checkNeighboors();
-    void setNeighbors(FsmGraphicalTransitionNeighborhood* neighbors);
+    void setNeighbors(FsmGraphicalTransitionNeighborhood* neighborhood);
     void quitNeighboorhood();  // Ohhh... So sad
 
     //

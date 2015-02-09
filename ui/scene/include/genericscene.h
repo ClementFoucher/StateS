@@ -24,23 +24,24 @@
 
 #include <QGraphicsScene>
 
-class ResourcesBar;
+class ResourceBar;
 
 class GenericScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    explicit GenericScene(ResourcesBar *resources);
+    explicit GenericScene(ResourceBar *resources);
 
     virtual void setDisplaySize(const QSize &newSize) = 0;
 
     virtual void simulationModeChanged() = 0;
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
 
-    ResourcesBar* resources = nullptr;
+    ResourceBar* resources = nullptr;
 };
 
 #endif // GENERICSCENE_H

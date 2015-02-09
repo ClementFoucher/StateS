@@ -31,7 +31,7 @@ class ClockTimeLine : public QWidget
     Q_OBJECT
 
 public:
-    explicit ClockTimeLine(Clock* clock, QWidget* parent = 0);
+    explicit ClockTimeLine(Clock* clock, QWidget* parent = nullptr);
 };
 
 #endif // CLOCKTIMELINE_H

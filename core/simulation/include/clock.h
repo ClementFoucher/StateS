@@ -31,7 +31,7 @@ class Clock : public QObject
     Q_OBJECT
 
 public:
-    explicit Clock(QObject* parent = 0);
+    explicit Clock(QObject* parent = nullptr);
 
     void nextStep();
     void reset();

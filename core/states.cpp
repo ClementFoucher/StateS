@@ -24,7 +24,7 @@
 #include <QPainter>
 #include <QSvgRenderer>
 
-#include "drawingwindow.h"
+#include "statesui.h"
 
 QPixmap StateS::getPixmapFromSvg(const QString &path)
 {
@@ -39,7 +39,7 @@ QPixmap StateS::getPixmapFromSvg(const QString &path)
 
 StateS::StateS()
 {
-    drawingWindow = new DrawingWindow();
+    drawingWindow = new StatesUi();
 
     drawingWindow->show();
 }

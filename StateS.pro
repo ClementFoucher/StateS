@@ -18,127 +18,143 @@ TEMPLATE = app
 
 
 SOURCES += \
-    fsm/fsm.cpp \
-    ui/drawingwindow.cpp \
+    core/machine/fsm/fsm.cpp \
     core/main.cpp \
     core/states.cpp \
-    fsm/fsmstate.cpp \
-    fsm/fsmtransition.cpp \
+    core/machine/fsm/fsmstate.cpp \
+    core/machine/fsm/fsmtransition.cpp \
     ui/scene/fsm/fsmgraphicalstate.cpp \
     ui/scene/fsm/fsmgraphicaltransition.cpp \
     ui/scene/scenewidget.cpp \
     ui/scene/genericscene.cpp \
-    ui/resourcesbar/resourcesbar.cpp \
-    core/machine.cpp \
-    ui/centralwidget.cpp \
-    ui/resourcesbar/dynamiclineedit.cpp \
     ui/scene/fsm/fsmgraphicaltransitionneighborhood.cpp \
-    ui/simulation/simulationtimeline.cpp \
-    ui/simulation/variabletimeline.cpp \
-    core/variables/inout.cpp \
-    core/variables/input.cpp \
-    core/variables/io.cpp \
-    core/variables/logicequation.cpp \
-    core/variables/logicvariable.cpp \
+    core/signal/inout.cpp \
+    core/signal/input.cpp \
+    core/signal/io.cpp \
     core/simulation/clock.cpp \
     ui/simulation/graphictimeline.cpp \
     ui/simulation/graphicclocktimeline.cpp \
     ui/simulation/clocktimeline.cpp \
-    ui/resourcesbar/editor/editortab.cpp \
-    ui/resourcesbar/tools/fsmtools.cpp \
-    ui/resourcesbar/editor/transitioneditortab.cpp \
-    ui/resourcesbar/editor/stateeditortab.cpp \
-    ui/resourcesbar/interface/interfaceresourcestab.cpp \
-    ui/resourcesbar/interface/iolistdelegate.cpp \
-    ui/equationEditor/equationeditor.cpp \
-    ui/equationEditor/graphicequation.cpp \
-    ui/resourcesbar/tools/machinetools.cpp \
-    ui/resourcesbar/tools/toolresourcestab.cpp \
-    ui/equationEditor/equationmimedata.cpp \
-    ui/resourcesbar/interface/variableeditortool.cpp \
-    ui/resourcesbar/abouttab.cpp \
-    core/variables/output.cpp \
+    ui/resource_bar/machine_builder/fsmtools.cpp \
+    ui/resource_bar/component_editor/transitioneditortab.cpp \
+    ui/resource_bar/component_editor/stateeditortab.cpp \
+    ui/equation_editor/equationeditor.cpp \
+    ui/equation_editor/graphicequation.cpp \
+    ui/resource_bar/machine_builder/machinetools.cpp \
+    ui/equation_editor/equationmimedata.cpp \
+    ui/resource_bar/abouttab.cpp \
+    core/signal/output.cpp \
     ui/scene/fsm/fsmscene.cpp \
-    ui/langselector.cpp \
-    ui/reactivebutton.cpp \
-#    core/variables/logicvariablevector.cpp \
-    ui/resourcesbar/simulatortab.cpp \
-    ui/contextmenu.cpp \
-    ui/equationEditor/inverterbar.cpp \
-    ui/resourcesbar/editor/signalactionslist.cpp \
-    core/machineelement.cpp \
-    fsm/fsmelement.cpp \
-    core/machineactuatorelement.cpp
+    ui/resource_bar/simulator_tab/simulatortab.cpp \
+    ui/equation_editor/inverterbar.cpp \
+    core/signal/signal.cpp \
+    core/signal/equation.cpp \
+    core/machine/machine.cpp \
+    ui/refined_widget/dynamiclineedit.cpp \
+    ui/refined_widget/contextmenu.cpp \
+    ui/resource_bar/component_editor/actionlisteditor.cpp \
+    ui/resource_bar/component_editor/componenteditortab.cpp \
+    ui/resource_bar/signal_editor/signaleditortab.cpp \
+    ui/resource_bar/signal_editor/signallisteditor.cpp \
+    ui/refined_widget/dynamictableitemdelegate.cpp \
+    ui/resource_bar/machine_builder/machinebuildertab.cpp \
+    ui/resource_bar/resourcebar.cpp \
+    ui/refined_widget/reactivebutton.cpp \
+    ui/statesui.cpp \
+    ui/langselectiondialog.cpp \
+    ui/resource_bar/component_editor/actioneditor.cpp \
+    core/machine/machinecomponent.cpp \
+    core/machine/machineactuatorcomponent.cpp \
+    core/machine/fsm/fsmcomponent.cpp \
+    core/basic_type/logicvalue.cpp \
+    ui/simulation/simulationwindow.cpp \
+    ui/simulation/signaltimeline.cpp \
+    ui/resource_bar/simulator_tab/inputbitselector.cpp \
+    ui/resource_bar/simulator_tab/inputsselector.cpp \
+    ui/resource_bar/simulator_tab/inputsignalselector.cpp
 
 
 HEADERS  += \
-    fsm/include/fsm.h \
-    ui/include/drawingwindow.h \
-    core/include/machine.h \
+    core/machine/fsm/include/fsm.h \
     core/include/states.h \
-    fsm/include/fsmstate.h \
-    fsm/include/fsmtransition.h \
+    core/machine/fsm/include/fsmstate.h \
+    core/machine/fsm/include/fsmtransition.h \
     ui/scene/fsm/include/fsmgraphicalstate.h \
     ui/scene/fsm/include/fsmgraphicaltransition.h \
     ui/scene/include/scenewidget.h \
     ui/scene/include/genericscene.h \
-    ui/resourcesbar/include/resourcesbar.h \
-    ui/include/centralwidget.h \
     ui/scene/fsm/include/fsmgraphicaltransitionneighborhood.h \
-    ui/simulation/include/simulationtimeline.h \
-    ui/simulation/include/variabletimeline.h \
-    core/variables/include/inout.h \
-    core/variables/include/input.h \
-    core/variables/include/io.h \
-    core/variables/include/logicequation.h \
-    core/variables/include/logicvariable.h \
+    core/signal/include/inout.h \
+    core/signal/include/input.h \
+    core/signal/include/io.h \
     core/simulation/include/clock.h \
     ui/simulation/include/graphictimeline.h \
     ui/simulation/include/graphicclocktimeline.h \
-    ui/resourcesbar/include/dynamiclineedit.h \
-    ui/resourcesbar/editor/include/editortab.h \
-    ui/resourcesbar/tools/include/fsmtools.h \
-    ui/resourcesbar/editor/include/stateeditortab.h \
-    ui/resourcesbar/editor/include/transitioneditortab.h \
-    ui/resourcesbar/tools/include/toolresourcestab.h \
-    ui/resourcesbar/interface/include/interfaceresourcestab.h \
-    ui/resourcesbar/interface/include/iolistdelegate.h \
-    ui/resourcesbar/tools/include/machinetools.h \
-    ui/equationEditor/include/equationeditor.h \
-    ui/equationEditor/include/graphicequation.h \
-    ui/resourcesbar/interface/include/variableeditortools.h \
-    ui/equationEditor/include/equationmimedata.h \
-    core/variables/include/output.h \
+    ui/resource_bar/machine_builder/include/fsmtools.h \
+    ui/resource_bar/component_editor/include/stateeditortab.h \
+    ui/resource_bar/component_editor/include/transitioneditortab.h \
+    ui/resource_bar/machine_builder/include/machinetools.h \
+    ui/equation_editor/include/equationeditor.h \
+    ui/equation_editor/include/graphicequation.h \
+    ui/equation_editor/include/equationmimedata.h \
+    core/signal/include/output.h \
     ui/scene/fsm/include/fsmscene.h \
-    ui/resourcesbar/include/abouttab.h \
+    ui/resource_bar/include/abouttab.h \
     ui/simulation/include/clocktimeline.h \
-    ui/include/langselector.h \
-    ui/include/reactivebutton.h \
-#    core/variables/include/logicvariablevector.h \
-    ui/resourcesbar/include/simulatortab.h \
-    ui/include/contextmenu.h \
-    ui/equationEditor/include/inverterbar.h \
-    ui/resourcesbar/editor/include/signalactionslist.h \
-    core/include/machineelement.h \
-    fsm/include/fsmelement.h \
-    core/include/machineactuatorelement.h
+    ui/resource_bar/simulator_tab/include/simulatortab.h \
+    ui/equation_editor/include/inverterbar.h \
+    core/signal/include/signal.h \
+    core/signal/include/equation.h \
+    core/machine/include/machine.h \
+    ui/refined_widget/include/dynamiclineedit.h \
+    ui/refined_widget/include/contextmenu.h \
+    ui/resource_bar/component_editor/include/actionlisteditor.h \
+    ui/resource_bar/component_editor/include/componenteditortab.h \
+    ui/resource_bar/signal_editor/include/signaleditortab.h \
+    ui/resource_bar/signal_editor/include/signallisteditor.h \
+    ui/refined_widget/include/dynamictableitemdelegate.h \
+    ui/resource_bar/machine_builder/include/machinebuildertab.h \
+    ui/resource_bar/include/resourcebar.h \
+    ui/refined_widget/include/reactivebutton.h \
+    ui/include/statesui.h \
+    ui/include/langselectiondialog.h \
+    ui/resource_bar/component_editor/include/actioneditor.h \
+    core/machine/include/machinecomponent.h \
+    core/machine/include/machineactuatorcomponent.h \
+    core/machine/fsm/include/fsmcomponent.h \
+    core/basic_type/include/logicvalue.h \
+    ui/simulation/include/simulationwindow.h \
+    ui/simulation/include/signaltimeline.h \
+    ui/resource_bar/simulator_tab/include/inputsignalselector.h \
+    ui/resource_bar/simulator_tab/include/inputbitselector.h \
+    ui/resource_bar/simulator_tab/include/inputsselector.h
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += \
+# Need C++ 11 for dynamic cast and nullptr
+    -std=c++11 \
+# I AM pedantic. Why should GCC not be?
+    -pedantic
 
 INCLUDEPATH += \
+# Core
     core/include \
+    core/basic_type/include \
+    core/machine/include \
+    core/machine/fsm/include \
+    core/signal/include \
     core/simulation/include \
-    core/variables/include \
-    fsm/include \
+# UI
     ui/include \
+    ui/equation_editor/include \
+    ui/refined_widget/include \
+    ui/resource_bar/include \
+    ui/resource_bar/component_editor/include \
+    ui/resource_bar/machine_builder/include \
+    ui/resource_bar/signal_editor/include \
+    ui/resource_bar/simulator_tab/include \
     ui/scene/include \
-    ui/resourcesbar/include \
-    ui/resourcesbar/editor/include \
-    ui/resourcesbar/interface/include \
-    ui/resourcesbar/tools/include \
     ui/scene/fsm/include \
-    ui/simulation/include \
-    ui/equationEditor/include
+    ui/simulation/include
 
 OTHER_FILES += \
     known_bugs.txt \
@@ -146,7 +162,8 @@ OTHER_FILES += \
     README.txt \
     LICENSE \
     LICENSE.txt \
-    release_notes.txt
+    release_notes.txt \
+    core/basic_type/README.txt
 
 RESOURCES += \
     art.qrc \
