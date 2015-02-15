@@ -20,6 +20,7 @@
  */
 
 #include <QHBoxLayout>
+#include <QStyle>
 
 #include "inputbitselector.h"
 
@@ -36,6 +37,8 @@ InputBitSelector::InputBitSelector(Signal* signalToCommand, uint bitNumber, QWid
     this->bitValue = new QLabel(QString::number(this->signalToCommand->getCurrentValue()[this->bitNumber]));
     this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + this->signalToCommand->getName());
     layout->addWidget(this->bitValue);
+
+    this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
     connect(this->signalToCommand, &Signal::signalStateChangedEvent, this, &InputBitSelector::signalValueChanged);
 }

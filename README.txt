@@ -21,7 +21,6 @@ This is early stage of the software development.
 Currently, there are NO UNDO when editing machine.
 
 Here is what I plan to support (this list is only thoughts, items will maybe, or maybe not, actually implemented):
-- Support bit vectors and variable affectation,
 - Check machine for correctness,
 - Ability to save/load timeline, and load stimuli vector,
 - Add machine display customization in order to make it look as you're used to.

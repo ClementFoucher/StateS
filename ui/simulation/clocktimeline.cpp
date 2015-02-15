@@ -33,8 +33,8 @@ ClockTimeLine::ClockTimeLine(Clock* clock, QWidget* parent) :
     QLabel* title = new QLabel(tr("Clock"));
 
     GraphicClockTimeLine* timeLineDisplay = new GraphicClockTimeLine(clock);
-    timeLineDisplay->setMinimumHeight(title->sizeHint().height());
-    timeLineDisplay->setMaximumHeight(title->sizeHint().height());
+    timeLineDisplay->setMinimumHeight(20);
+    timeLineDisplay->setMaximumHeight(20);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
 

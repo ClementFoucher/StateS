@@ -2,7 +2,7 @@
 * StateS v. 0.2 *
 *****************
 
-- 2015-02-08 - V 0.2 - * Warning! Save files compatibility broken! * Added support for multiple bits signals, constants, signals initial value and equal/diff equations. Simulation input now has a real implementation instead of a list.
+- 2015-02-09 - V 0.2 - * Warning! Save files compatibility broken! * Added support for multiple bits signals, constants, signals initial value and equal/diff equations. Simulation input now has a real implementation instead of a list.
 
 *****************
 * StateS v. 0.1 *

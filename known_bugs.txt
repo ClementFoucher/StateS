@@ -28,4 +28,4 @@
 // Devlopping side
 
 - Contextual menus memory is never reclaimed => memory leak.
-- Avoid reinterpret_cast in signal lists
+- Should avoid reinterpret_cast in signal lists

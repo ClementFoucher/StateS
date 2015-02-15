@@ -45,8 +45,8 @@ SignalTimeline::SignalTimeline(Signal* signal, Clock* clock, bool dynamic, QWidg
     if (signal->getSize() == 1)
     {
         GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(signal->getInitialValue()[0]);
-        timeLineDisplay->setMinimumHeight(varName->sizeHint().height());
-        timeLineDisplay->setMaximumHeight(varName->sizeHint().height());
+        timeLineDisplay->setMinimumHeight(20);
+        timeLineDisplay->setMaximumHeight(20);
         variableLineDisplay.append(timeLineDisplay);
 
         globalLayout->addWidget(timeLineDisplay);
@@ -63,8 +63,8 @@ SignalTimeline::SignalTimeline(Signal* signal, Clock* clock, bool dynamic, QWidg
             innerLayout->addWidget(bitNumber);
 
             GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(signal->getInitialValue()[i]);
-            timeLineDisplay->setMinimumHeight(varName->sizeHint().height());
-            timeLineDisplay->setMaximumHeight(varName->sizeHint().height());
+            timeLineDisplay->setMinimumHeight(20);
+            timeLineDisplay->setMaximumHeight(20);
             variableLineDisplay.append(timeLineDisplay);
             innerLayout->addWidget(timeLineDisplay);
 
