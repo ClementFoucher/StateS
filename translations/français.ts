@@ -383,10 +383,6 @@
         <translation>Outils</translation>
     </message>
     <message>
-        <source>Interface</source>
-        <translation type="vanished">Interface</translation>
-    </message>
-    <message>
         <source>Editor</source>
         <translation>Éditeur</translation>
     </message>
@@ -446,10 +442,6 @@
         <translation>I/O</translation>
     </message>
     <message>
-        <source>Switch between I/O and locals editor using tabs below</source>
-        <translation type="vanished">Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaus ci-dessous</translation>
-    </message>
-    <message>
         <source>Signals length can not exceed 64 bits</source>
         <translation>La taille des signaux ne peut excéder 64 bits</translation>
     </message>
@@ -495,37 +487,6 @@
     <message>
         <source>Remove</source>
         <translation>Supprimer</translation>
-    </message>
-</context>
-<context>
-    <name>SimulationTimeLine</name>
-    <message>
-        <source>Clock</source>
-        <translation type="vanished">Horloge</translation>
-    </message>
-    <message>
-        <source>Inputs</source>
-        <translation type="vanished">Entrées</translation>
-    </message>
-    <message>
-        <source>Outputs</source>
-        <translation type="vanished">Sorties</translation>
-    </message>
-    <message>
-        <source>Local variables</source>
-        <translation type="vanished">Variables locales</translation>
-    </message>
-    <message>
-        <source>Tools</source>
-        <translation type="vanished">Outils</translation>
-    </message>
-    <message>
-        <source>Export to PDF</source>
-        <translation type="vanished">Exporter en PDF</translation>
-    </message>
-    <message>
-        <source>Export time line to PDF</source>
-        <translation type="vanished">Exporter le chronogramme en PDF</translation>
     </message>
 </context>
 <context>
@@ -582,12 +543,20 @@
         <translation>Mettre fin à la simulation</translation>
     </message>
     <message>
-        <source>Select signals from the list below to activate inputs:</source>
-        <translation type="vanished">Selectionnez des signaux dans la liste ci-dessous&lt;br /&gt;pour activer les entrées correspondantes :</translation>
-    </message>
-    <message>
         <source>Click on bits from the list below to switch value:</source>
         <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
+    </message>
+    <message>
+        <source>Warning! There are multiple active transitions going out the current state!</source>
+        <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
+    </message>
+    <message>
+        <source>This means your FSM is wrong by construction. This should be fixed.</source>
+        <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
+    </message>
+    <message>
+        <source>For current simulation, just choose the target state in the following list:</source>
+        <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
 </context>
 <context>
