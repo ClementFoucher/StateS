@@ -179,32 +179,84 @@ void SimulatorTab::resetEvent()
     }
 }
 
+void SimulatorTab::targetStateSelectionMade(QObject* choosenTransition)
+{
+    delete targetStateSelection;
+    targetStateSelection = nullptr;
+    delete signalMapper;
+    signalMapper = nullptr;
+
+    FsmTransition* actualTransition = (FsmTransition*)choosenTransition;
+
+    if (actualTransition->getCondition() != nullptr)
+        actualTransition->activateActions();
+
+    currentState->setActive(false);
+
+    currentState = actualTransition->getTarget();
+    currentState->setActive(true);
+}
+
 void SimulatorTab::clockEvent()
 {
+    QList<FsmTransition*> potentialTransitions;
+
     foreach(FsmTransition* transition, currentState->getOutgoingTransitions())
     {
         if (transition->getCondition() != nullptr)
         {
             if (transition->getCondition()->isTrue())
             {
-                transition->activateActions();
-
-                currentState->setActive(false);
-
-                currentState = transition->getTarget();
-                currentState->setActive(true);
-
-                break;
+                potentialTransitions.append(transition);
             }
         }
         else
         {
-            currentState->setActive(false);
-
-            currentState = transition->getTarget();
-            currentState->setActive(true);
-
-            break;
+            potentialTransitions.append(transition);
         }
+    }
+
+    if (potentialTransitions.count() == 1)
+    {
+        if (potentialTransitions[0]->getCondition() != nullptr)
+            potentialTransitions[0]->activateActions();
+
+        currentState->setActive(false);
+
+        currentState = potentialTransitions[0]->getTarget();
+        currentState->setActive(true);
+
+    }
+    else if (potentialTransitions.count() > 1)
+    {
+        // If multiple transitions leading to the same state, no way to differentiate them,
+        // but this is anyway a small instant patch, user should correct his machine.
+
+        targetStateSelection = new QWidget();
+        QVBoxLayout* choiceWindowLayout = new QVBoxLayout(targetStateSelection);
+
+        QLabel* choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
+                                                     + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
+                                                     + tr("For current simulation, just choose the target state in the following list:"));
+
+        choiceWindowLayout->addWidget(choiceWindowWarningText);
+
+        signalMapper = new QSignalMapper();
+
+        connect(signalMapper, static_cast<void (QSignalMapper::*)(QObject*)>(&QSignalMapper::mapped), this, &SimulatorTab::targetStateSelectionMade);
+
+        foreach(FsmTransition* transition, potentialTransitions)
+        {
+            QPushButton* button = new QPushButton(transition->getTarget()->getName());
+
+            signalMapper->setMapping(button, transition);
+
+            connect(button, &QPushButton::clicked, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+            connect(button, &QPushButton::clicked, targetStateSelection, &QWidget::close);
+
+            choiceWindowLayout->addWidget(button);
+        }
+
+        targetStateSelection->show();
     }
 }

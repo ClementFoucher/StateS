@@ -199,6 +199,7 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
         Signal* itemToRename = allSignals[oldName];
         itemToRename->setName(newName);
 
+        // Update map
         if (inputs.contains(oldName))
         {
             inputs.remove(oldName);

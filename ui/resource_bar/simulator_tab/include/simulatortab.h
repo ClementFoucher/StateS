@@ -24,9 +24,9 @@
 
 #include <QWidget>
 
-
 #include <QPushButton>
 #include <QListWidget>
+#include <QSignalMapper>
 
 class Fsm;
 class FsmState;
@@ -52,6 +52,7 @@ private slots:
     void nextStep();
     void clockEvent();
     void resetEvent();
+    void targetStateSelectionMade(QObject *choosenTransition);
 
 private:
     Fsm* machine = nullptr;
@@ -64,6 +65,9 @@ private:
     QWidget* simulationTools = nullptr;
 
     InputsSelector* inputList = nullptr;
+
+    QWidget* targetStateSelection = nullptr;
+    QSignalMapper* signalMapper = nullptr;
 };
 
 #endif // SIMULATORTAB_H

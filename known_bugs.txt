@@ -1,13 +1,12 @@
 
-*****************
-* StateS v. 0.2 *
-*****************
+*******************
+* StateS v. 0.2.1 *
+*******************
 
 // The following behaviors are known.
 // They may be buggy, or just uninmplemented code.
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-- Simulator does not check for transition exclusive conditions, it just takes the firt available transition with true condition,
 - Begin/end simulation: conditions only containing constants/state actions: color is not updated,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states.
@@ -24,8 +23,9 @@
 - Should be able to move condition text along transitions,
 - Signals values should be writtable in hexa,
 - No check on signals names => should at least refuse "/", "+", and other operators.
+- A confirmation message should be displayed when deleting or resizing signal will break an equation.
 
 // Devlopping side
 
 - Contextual menus memory is never reclaimed => memory leak.
-- Should avoid reinterpret_cast in signal lists
+- reinterpret_cast in signal lists causing compilation warning => see if a built-in QList mechanism could do the job?

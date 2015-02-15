@@ -264,7 +264,7 @@ QString LogicValue::toString() const
     QString text;
 
     if (this->isNull())
-        text += "(null state)";
+        text += "(null value)";
     else
     {
         foreach (bool b, *((QVector<bool>*)this))
