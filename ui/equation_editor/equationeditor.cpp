@@ -19,17 +19,18 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "equationeditor.h"
 
+// Qt classes
 #include <QLabel>
 
-#include "signal.h"
+// StateS classes
 #include "machine.h"
-#include "io.h"
 #include "equation.h"
 #include "graphicequation.h"
 #include "input.h"
-#include "output.h"
+
 
 EquationEditor::EquationEditor(Machine* machine, Signal* initialEquation, QWidget* parent) :
     QDialog(parent)

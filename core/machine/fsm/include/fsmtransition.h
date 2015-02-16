@@ -22,8 +22,10 @@
 #ifndef FSMTRANSITION_H
 #define FSMTRANSITION_H
 
+// Parent
 #include "fsmcomponent.h"
 
+// StateS classes
 class Fsm;
 class FsmState;
 class FsmGraphicalTransition;

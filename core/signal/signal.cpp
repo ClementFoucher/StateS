@@ -19,7 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "signal.h"
+
 
 Signal::Signal(const QString &name, const LogicValue& initialValue, bool isConstant) :
     initialValue(initialValue),

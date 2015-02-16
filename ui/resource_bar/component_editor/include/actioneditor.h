@@ -22,14 +22,16 @@
 #ifndef ACTIONEDITOR_H
 #define ACTIONEDITOR_H
 
+// Parent
 #include <QWidget>
-#include <QString>
 
-#include <QGridLayout>
+// Qt classes
+#include <QString>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QMap>
 
+// StateS Classes
 class MachineActuatorComponent;
 class Signal;
 

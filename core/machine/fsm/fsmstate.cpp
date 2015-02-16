@@ -19,17 +19,17 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QList>
-#include <QSet>
-
-#include <QDebug>
-
+// Current class header
 #include "fsmstate.h"
 
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
 #include "fsmtransition.h"
-#include "io.h"
+#include "signal.h"
 
 
 FsmState::FsmState(Fsm* parent) :

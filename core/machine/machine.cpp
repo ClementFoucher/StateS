@@ -19,12 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "machine.h"
 
+// StateS classes
 #include "input.h"
 #include "output.h"
-#include "io.h"
-#include "signal.h"
+
 
 Machine::Machine()
 {

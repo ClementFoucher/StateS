@@ -19,13 +19,17 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "inputsselector.h"
+
+// Qt classes
 #include <QVBoxLayout>
 #include <QStyle>
 
-#include "inputsselector.h"
-
+// StateS classes
 #include "input.h"
 #include "inputsignalselector.h"
+
 
 InputsSelector::InputsSelector(QList<Input*> inputList, QWidget *parent) :
     QScrollArea(parent)

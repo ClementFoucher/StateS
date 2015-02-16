@@ -19,10 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "actionlisteditor.h"
 
+// StateS classes
 #include "machineactuatorcomponent.h"
 #include "signal.h"
+
 
 ActionListEditor::ActionListEditor(MachineActuatorComponent* actuator, Signal* signal, QWidget* parent) :
     QComboBox(parent)

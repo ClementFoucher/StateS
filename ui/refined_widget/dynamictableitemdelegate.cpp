@@ -19,11 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QListWidgetItem>
-
+// Current class header
 #include "dynamictableitemdelegate.h"
 
+// StateS classes
 #include "dynamiclineedit.h"
+
 
 DynamicTableItemDelegate::DynamicTableItemDelegate(QTableWidgetItem** currentVariable, QObject* parent) :
     QItemDelegate(parent)

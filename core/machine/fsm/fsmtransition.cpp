@@ -19,15 +19,18 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-
+// Current class header
 #include "fsmtransition.h"
 
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "equation.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmgraphicaltransition.h"
-#include "signal.h"
+
 
 FsmTransition::FsmTransition(Fsm* parent, FsmState* source, FsmState* target, FsmGraphicalTransition* graphicalRepresentation, Signal* condition) :
     FsmComponent(parent)

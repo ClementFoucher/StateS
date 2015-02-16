@@ -22,6 +22,7 @@
 #ifndef ABOUTTAB_H
 #define ABOUTTAB_H
 
+// Parent
 #include <QWidget>
 
 class AboutTab : public QWidget

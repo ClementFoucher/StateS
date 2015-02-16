@@ -19,27 +19,25 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QLabel>
-#include <QListWidgetItem>
-#include <QVBoxLayout>
-
-#include <QDebug>
-
+// Current class header
 #include "simulatortab.h"
 
+// Qt classes
+#include <QLabel>
+
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "fsmstate.h"
-#include "machine.h"
 #include "fsm.h"
 #include "fsmtransition.h"
 #include "signal.h"
-#include "io.h"
 #include "clock.h"
 #include "simulationwindow.h"
-#include "equation.h"
-#include "input.h"
-#include "output.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
+
 
 SimulatorTab::SimulatorTab(Fsm* machine, QWidget* parent) :
     QWidget(parent)

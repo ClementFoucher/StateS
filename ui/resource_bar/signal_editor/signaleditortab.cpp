@@ -19,14 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QToolBox>
-
+// Current class header
 #include "signaleditortab.h"
 
+// Qt classes
+#include <QLabel>
+#include <QToolBox>
+
+// StateS classes
 #include "signallisteditor.h"
-#include "machine.h"
+
 
 SignalEditorTab::SignalEditorTab(Machine* machine, QWidget* parent) :
     QWidget(parent)

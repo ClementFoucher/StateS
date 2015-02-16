@@ -19,18 +19,19 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QLabel>
-#include <QGridLayout>
-#include <QIcon>
-#include <QBitmap>
-#include <QPixmap>
+// Current class header
+#include "fsmtools.h"
 
+// Qt classes
+#include <QGridLayout>
+
+// Debug
 #include <QDebug>
 
-#include "fsmtools.h"
+// StateS classes
 #include "fsmgraphicalstate.h"
-#include "fsmstate.h"
 #include "fsmgraphicaltransition.h"
+
 
 FsmTools::FsmTools(QWidget* parent) :
     MachineTools(parent)

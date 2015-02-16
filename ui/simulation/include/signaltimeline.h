@@ -22,10 +22,13 @@
 #ifndef SIGNALTIMELINE_H
 #define SIGNALTIMELINE_H
 
+// Parent
 #include <QWidget>
 
+// Qt classes
 #include <QList>
 
+// StateS classes
 class Signal;
 class Clock;
 class GraphicTimeLine;

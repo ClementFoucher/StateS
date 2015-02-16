@@ -19,14 +19,19 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "machinebuildertab.h"
+
+// Qt classes
 #include <QLabel>
 #include <QVBoxLayout>
 
+// Debug
 #include <QDebug>
 
-#include "machinebuildertab.h"
-
+// StateS classes
 #include "fsmtools.h"
+
 
 MachineBuilderTab::MachineBuilderTab(Machine::type machineType, QWidget* parent) :
     QWidget(parent)

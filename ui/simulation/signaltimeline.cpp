@@ -19,12 +19,14 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "signaltimeline.h"
 
+// Qt classes
 #include <QLabel>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
+// StateS classes
 #include "signal.h"
 #include "clock.h"
 #include "graphictimeline.h"

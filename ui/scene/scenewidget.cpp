@@ -19,21 +19,21 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "scenewidget.h"
+
+// Qt classes
 #include <QResizeEvent>
 #include <QStyle>
 #include <QScrollBar>
-#include <fsmstate.h>
-#include <QGraphicsSceneMouseEvent>
 
-#include "scenewidget.h"
-
-#include "machine.h"
+// StateS classes
 #include "fsmscene.h"
-#include "resourcebar.h"
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
 #include "machinetools.h"
+
 
 SceneWidget::SceneWidget(Machine* machine, ResourceBar* resources, QWidget* parent) :
     SceneWidget(parent)

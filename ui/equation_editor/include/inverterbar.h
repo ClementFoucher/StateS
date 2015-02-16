@@ -22,6 +22,7 @@
 #ifndef INVERTERBAR_H
 #define INVERTERBAR_H
 
+// Parent
 #include <QWidget>
 
 class InverterBar : public QWidget

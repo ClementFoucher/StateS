@@ -22,14 +22,17 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
+// Parent
 #include <QObject>
 
+// Qt classes
 #include <QList>
 #include <QHash>
 
+// StateS basic types
 #include "logicvalue.h"
 
-class IO;
+// StateS classes
 class Signal;
 class Input;
 class Output;

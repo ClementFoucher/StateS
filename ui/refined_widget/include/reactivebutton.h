@@ -22,6 +22,7 @@
 #ifndef REACTIVEBUTTON_H
 #define REACTIVEBUTTON_H
 
+// Parent
 #include <QPushButton>
 
 class ReactiveButton : public QPushButton

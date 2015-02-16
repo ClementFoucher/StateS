@@ -22,10 +22,13 @@
 #ifndef MACHINEBUILDERTAB_H
 #define MACHINEBUILDERTAB_H
 
+// Parent
 #include <QWidget>
 
+// To access enums
 #include "machine.h"
 
+// StateS classes
 class MachineTools;
 
 class MachineBuilderTab : public QWidget

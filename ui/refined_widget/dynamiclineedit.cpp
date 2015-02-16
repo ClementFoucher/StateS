@@ -19,7 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "dynamiclineedit.h"
+
 
 DynamicLineEdit::DynamicLineEdit(const QString& content, bool beginAsRefused, QValidator* validator, QWidget* parent) :
     QLineEdit(content, parent)

@@ -22,8 +22,10 @@
 #ifndef STATES_H
 #define STATES_H
 
+// Qt classes
 #include <QPixmap>
 
+// StateS classes
 class StatesUi;
 class Machine;
 

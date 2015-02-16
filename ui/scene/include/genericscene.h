@@ -22,8 +22,10 @@
 #ifndef GENERICSCENE_H
 #define GENERICSCENE_H
 
+// Parent
 #include <QGraphicsScene>
 
+// StateS classes
 class ResourceBar;
 
 class GenericScene : public QGraphicsScene

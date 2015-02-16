@@ -22,9 +22,11 @@
 #ifndef IO_H
 #define IO_H
 
-#include <QString>
-
+// Parent
 #include "signal.h"
+
+// Qt classes
+#include <QString>
 
 class IO : public Signal
 {

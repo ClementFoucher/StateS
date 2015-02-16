@@ -19,12 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "states.h"
 
+// Qt classes
 #include <QPainter>
 #include <QSvgRenderer>
 
+// StateS classes
 #include "statesui.h"
+
 
 QPixmap StateS::getPixmapFromSvg(const QString &path)
 {

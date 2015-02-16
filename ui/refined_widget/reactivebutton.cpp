@@ -19,7 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "reactivebutton.h"
+
 
 ReactiveButton::ReactiveButton(QWidget* parent) :
     QPushButton(parent)

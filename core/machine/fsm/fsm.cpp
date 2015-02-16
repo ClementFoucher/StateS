@@ -19,22 +19,23 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-#include <QFile>
-#include <QXmlStreamWriter>
-#include <QDomDocument>
-
+// Current class header
 #include "fsm.h"
 
+// Qt classes
+#include <QFile>
+
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "equation.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "signal.h"
-#include "io.h"
 #include "input.h"
 #include "output.h"
 #include "fsmgraphicalstate.h"
-#include "fsmgraphicaltransition.h"
+
 
 Fsm::Fsm()
 {

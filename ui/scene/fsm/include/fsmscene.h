@@ -22,10 +22,13 @@
 #ifndef FSMSCENE_H
 #define FSMSCENE_H
 
+// Parent
 #include "genericscene.h"
 
+// To access enums
 #include "resourcebar.h"
 
+// StateS classes
 class FsmGraphicalTransition;
 class FsmGraphicalState;
 class Fsm;

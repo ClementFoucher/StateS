@@ -22,8 +22,10 @@
 #ifndef DYNAMICTABLEITEMDELEGATE_H
 #define DYNAMICTABLEITEMDELEGATE_H
 
+// Parent
 #include <QItemDelegate>
 
+// Qt classes
 #include <QTableWidgetItem>
 #include <QValidator>
 

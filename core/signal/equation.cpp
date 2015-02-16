@@ -19,9 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "equation.h"
 
+// Debug
 #include <QDebug>
+
 
 Equation::Equation(nature function, const QVector<Signal*>& operandList) :
     Equation(function, operandList.count())

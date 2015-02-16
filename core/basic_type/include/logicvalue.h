@@ -22,7 +22,10 @@
 #ifndef LOGICVALUE_H
 #define LOGICVALUE_H
 
+// Parent
 #include <QVector>
+
+// Qt classes
 #include <QString>
 
 class LogicValue : private QVector<bool>

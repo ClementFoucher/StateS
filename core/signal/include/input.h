@@ -22,9 +22,11 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <QString>
-
+// Parent
 #include "io.h"
+
+// Qt classes
+#include <QString>
 
 class Input : public IO
 {

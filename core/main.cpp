@@ -19,11 +19,10 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QTranslator>
-
+// StateS classes
 #include "langselectiondialog.h"
 #include "states.h"
+
 
 int main(int argc, char* argv[])
 {

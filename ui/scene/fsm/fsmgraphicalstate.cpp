@@ -19,25 +19,21 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "fsmgraphicalstate.h"
 
-#include <QPen>
+// Qt classes
 #include <QGraphicsSceneContextMenuEvent>
-#include <QAction>
-#include <QLabel>
-#include <QWidgetAction>
 #include <QResizeEvent>
 #include <QMessageBox>
-#include <QPixmap>
-#include <QPainter>
 
-#include <QDebug>
-
+// StateS classes
 #include "fsmstate.h"
 #include "fsmscene.h"
 #include "signal.h"
 #include "scenewidget.h"
 #include "contextmenu.h"
+
 
 //
 // Static elements

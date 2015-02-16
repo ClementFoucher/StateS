@@ -22,8 +22,10 @@
 #ifndef ACTIONLISTEDITOR_H
 #define ACTIONLISTEDITOR_H
 
+// Parent
 #include <QComboBox>
 
+// StateS classes
 class Signal;
 class MachineActuatorComponent;
 

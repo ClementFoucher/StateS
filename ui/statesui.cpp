@@ -19,27 +19,25 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
+// Current class header
+#include "statesui.h"
+
+// Qt classes
 #include <QFileDialog>
 #include <QPrinter>
-#include <QTranslator>
-#include <QScreen>
 #include <QDesktopWidget>
 #include <QMessageBox>
-#include <QIcon>
 #include <QToolBar>
 #include <QApplication>
 #include <QSplitter>
 
-#include "statesui.h"
-
+// StateS classes
 #include "states.h"
-#include "machine.h"
-//#include "centralwidget.h"
 #include "fsm.h"
 #include "scenewidget.h"
 #include "resourcebar.h"
 #include "genericscene.h"
+
 
 //
 // Constructors

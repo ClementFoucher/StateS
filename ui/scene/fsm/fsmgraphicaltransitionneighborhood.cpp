@@ -19,10 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "fsmgraphicaltransitionneighborhood.h"
 
+// StateS classes
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
+
 
 FsmGraphicalTransitionNeighborhood::FsmGraphicalTransitionNeighborhood(FsmGraphicalState* source, FsmGraphicalState* target)
 {

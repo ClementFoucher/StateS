@@ -19,13 +19,15 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QEvent>
+// Current class header
+#include "contextmenu.h"
+
+// Qt classes
 #include <QHelpEvent>
 #include <QLabel>
 #include <QToolTip>
 #include <QWidgetAction>
 
-#include "contextmenu.h"
 
 const QString ContextMenu::errorStyle("background-color: lightgrey; border: 3px solid red; color: red");
 const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px double");

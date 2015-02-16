@@ -22,11 +22,14 @@
 #ifndef FSMGRAPHICALTRANSITIONNEIGHBORHOOD_H
 #define FSMGRAPHICALTRANSITIONNEIGHBORHOOD_H
 
+// Parent
 #include <QObject>
 
+// Qt classes
 #include <QMap>
 #include <QGraphicsPathItem>
 
+// StateS classes
 class FsmGraphicalTransition;
 class FsmGraphicalState;
 

@@ -19,30 +19,26 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QGraphicsSceneMouseEvent>
-#include <QPointF>
-#include <QGraphicsLineItem>
-#include <QBrush>
-#include <QList>
-#include <QPainterPath>
+// Current class header
+#include "fsmgraphicaltransition.h"
+
+// Qt classes
 #include <QGraphicsSceneContextMenuEvent>
-#include <QLabel>
-#include <QWidgetAction>
 #include <QResizeEvent>
 #include <QPainter>
 
+// Debug
 #include <QDebug>
 
-#include "fsmgraphicaltransition.h"
-
+// States classes
 #include "fsmgraphicalstate.h"
 #include "fsmstate.h"
 #include "fsmscene.h"
 #include "fsmtransition.h"
 #include "fsmgraphicaltransitionneighborhood.h"
 #include "signal.h"
-#include "equation.h"
 #include "contextmenu.h"
+
 
 qreal FsmGraphicalTransition::arrowEndSize = 10;
 qreal FsmGraphicalTransition::middleBarLength = 20;

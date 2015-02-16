@@ -19,21 +19,14 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QListWidgetItem>
-#include <QList>
-#include <QLineEdit>
-#include <QRegExpValidator>
-
-#include <QDebug>
-
+// Current class header
 #include "signallisteditor.h"
 
-#include "input.h"
-#include "output.h"
-#include "inout.h"
+// StateS classes
 #include "dynamiclineedit.h"
-#include "io.h"
+#include "signal.h"
 #include "dynamictableitemdelegate.h"
+
 
 SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types editorType)
 {

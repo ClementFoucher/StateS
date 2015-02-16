@@ -22,12 +22,15 @@
 #ifndef SIMULATIONWINDOW_H
 #define SIMULATIONWINDOW_H
 
+// Parent
 #include <QMainWindow>
 
+// Qt classes
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QToolBar>
 
+// StateS classes
 class Machine;
 class Clock;
 

@@ -19,18 +19,17 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QLabel>
-
+// Current class header
 #include "transitioneditortab.h"
 
+// StateS classes
 #include "fsmtransition.h"
 #include "fsm.h"
-#include "io.h"
-#include "input.h"
 #include "equation.h"
 #include "equationeditor.h"
 #include "contextmenu.h"
 #include "actioneditor.h"
+
 
 TransitionEditorTab::TransitionEditorTab(FsmTransition* transition, QWidget* parent) :
     ComponentEditorTab(parent)

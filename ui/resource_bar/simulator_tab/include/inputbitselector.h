@@ -22,10 +22,13 @@
 #ifndef INPUTBITSELECTOR_H
 #define INPUTBITSELECTOR_H
 
+// Parent
 #include <QFrame>
 
+// Qt classes
 #include <QLabel>
 
+// StateS classes
 class Signal;
 
 class InputBitSelector : public QFrame

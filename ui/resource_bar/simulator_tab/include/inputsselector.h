@@ -22,8 +22,10 @@
 #ifndef INPUTSSELECTOR_H
 #define INPUTSSELECTOR_H
 
+// Parent
 #include <QScrollArea>
 
+// StateS classes
 class Input;
 
 class InputsSelector : public QScrollArea

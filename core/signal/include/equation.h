@@ -22,10 +22,13 @@
 #ifndef EQUATION_H
 #define EQUATION_H
 
-#include <QVector>
-
+// Parent
 #include "signal.h"
 
+// Qt classes
+#include <QVector>
+
+// StateS classes
 class Operator;
 
 /**

@@ -19,9 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "machinecomponent.h"
 
-#include "machine.h"
 
 MachineComponent::MachineComponent(Machine* owningMachine)
 {

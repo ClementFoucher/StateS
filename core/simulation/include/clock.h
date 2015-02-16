@@ -22,8 +22,10 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+// Parent
 #include <QObject>
 
+// Qt classes
 #include <QTimer>
 
 class Clock : public QObject

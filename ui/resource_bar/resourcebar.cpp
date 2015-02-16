@@ -19,10 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-
+// Current class header
 #include "resourcebar.h"
 
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "machinebuildertab.h"
 #include "signaleditortab.h"
 #include "stateeditortab.h"
@@ -30,6 +33,7 @@
 #include "transitioneditortab.h"
 #include "simulatortab.h"
 #include "abouttab.h"
+
 
 ResourceBar::ResourceBar(QWidget* parent, Machine* machine) :
     QTabWidget(parent)

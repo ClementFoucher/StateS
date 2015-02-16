@@ -19,13 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "clocktimeline.h"
 
+// Qt classes
 #include <QLabel>
 #include <QHBoxLayout>
 
-#include "clocktimeline.h"
-
+// StateS classes
 #include "graphicclocktimeline.h"
+
 
 ClockTimeLine::ClockTimeLine(Clock* clock, QWidget* parent) :
     QWidget(parent)

@@ -22,7 +22,10 @@
 #ifndef DYNAMICLINEEDIT_H
 #define DYNAMICLINEEDIT_H
 
+// Parent
 #include <QLineEdit>
+
+// Qt classes
 #include <QValidator>
 
 class DynamicLineEdit : public QLineEdit

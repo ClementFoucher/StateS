@@ -22,16 +22,19 @@
 #ifndef SIGNALLISTEDITOR_H
 #define SIGNALLISTEDITOR_H
 
+// Parent
 #include <QWidget>
 
+// Qt classes
 #include <QGridLayout>
 #include <QTableWidget>
 #include <QPushButton>
 #include <QMap>
 
+// To access enums
 #include "machine.h"
-#include "logicvalue.h"
 
+// StateS classes
 class DynamicTableItemDelegate;
 
 class SignalListEditor : public QWidget

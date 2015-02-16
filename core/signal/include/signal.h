@@ -22,10 +22,13 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
+// Parent
 #include <QObject>
 
+// Qt classes
 #include <QString>
 
+// StateS basic types
 #include "logicvalue.h"
 
 class Signal : public QObject

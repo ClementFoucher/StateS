@@ -19,9 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "graphictimeline.h"
+
+// Qt classes
 #include <QPainter>
 
-#include "graphictimeline.h"
 
 GraphicTimeLine::GraphicTimeLine(bool initialState, QWidget* parent) :
     QWidget(parent)

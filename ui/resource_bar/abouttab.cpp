@@ -19,10 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "abouttab.h"
+
+// Qt classes
 #include <QLabel>
 #include <QVBoxLayout>
 
-#include "abouttab.h"
 
 AboutTab::AboutTab(QWidget* parent) :
     QWidget(parent)

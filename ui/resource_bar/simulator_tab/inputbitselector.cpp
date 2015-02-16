@@ -19,12 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "inputbitselector.h"
+
+// Qt classes
 #include <QHBoxLayout>
 #include <QStyle>
 
-#include "inputbitselector.h"
-
+// StateS classes
 #include "signal.h"
+
 
 InputBitSelector::InputBitSelector(Signal* signalToCommand, uint bitNumber, QWidget *parent) :
     QFrame(parent)

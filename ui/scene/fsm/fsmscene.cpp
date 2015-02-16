@@ -19,24 +19,26 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QGraphicsSceneMouseEvent>
-
-#include <QDebug>
-#include <QMouseEvent>
-#include <QAction>
-
+// Current class header
 #include "fsmscene.h"
 
+// Qt classes
+#include <QGraphicsSceneMouseEvent>
+#include <QMouseEvent>
+
+// Debug
+#include <QDebug>
+
+// StateS classes
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
 #include "fsmtools.h"
 #include "fsm.h"
 #include "scenewidget.h"
-#include "machine.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "resourcebar.h"
 #include "contextmenu.h"
+
 
 FsmScene::FsmScene(ResourceBar* resources, Fsm* machine) :
     GenericScene(resources)

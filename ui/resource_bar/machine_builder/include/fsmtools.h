@@ -22,13 +22,12 @@
 #ifndef FSMTOOLS_H
 #define FSMTOOLS_H
 
-#include <QWidget>
-
-#include <QPushButton>
-
+// Parent
 #include "machinetools.h"
 
-class SignalListEditor;
+// Qt classes
+#include <QWidget>
+#include <QPushButton>
 
 class FsmTools : public MachineTools
 {

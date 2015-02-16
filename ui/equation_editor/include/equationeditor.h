@@ -22,18 +22,19 @@
 #ifndef EQUATIONEDITOR_H
 #define EQUATIONEDITOR_H
 
+// Parent
 #include <QDialog>
 
-#include <QListWidget>
+// Qt classes
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
 
+// StateS classes
 class Machine;
 class GraphicEquation;
-class Equation;
 class Signal;
 
 class EquationEditor : public QDialog
@@ -59,7 +60,7 @@ private:
 
     GraphicEquation* equation = nullptr;
 
-    QPushButton* buttonOK = nullptr;
+    QPushButton* buttonOK     = nullptr;
     QPushButton* buttonCancel = nullptr;
 };
 

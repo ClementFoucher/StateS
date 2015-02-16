@@ -23,10 +23,13 @@
 #ifndef GRAPHICEQUATION_H
 #define GRAPHICEQUATION_H
 
+// Parent
 #include <QFrame>
 
+// Qt classes
 #include <QMap>
 
+// StateS classes
 class Signal;
 
 class GraphicEquation : public QFrame

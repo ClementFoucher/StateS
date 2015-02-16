@@ -19,12 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QGraphicsSceneMouseEvent>
-
+// Current class header
 #include "genericscene.h"
 
-#include "resourcebar.h"
-#include "machinetools.h"
+// Qt classes
+#include <QGraphicsSceneMouseEvent>
+
 
 GenericScene::GenericScene(ResourceBar* resources) :
     QGraphicsScene()

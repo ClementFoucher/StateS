@@ -22,10 +22,13 @@
 #ifndef SCENEWIDGET_H
 #define SCENEWIDGET_H
 
+// Parent
 #include <QGraphicsView>
 
+// Qt classes
 #include <QPushButton>
 
+// StateS classes
 class Machine;
 class ResourceBar;
 

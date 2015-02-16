@@ -22,8 +22,10 @@
 #ifndef EQUATIONMIMEDATA_H
 #define EQUATIONMIMEDATA_H
 
+// Parent
 #include <QMimeData>
 
+// StateS classes
 class GraphicEquation;
 
 class EquationMimeData : public QMimeData

@@ -22,8 +22,10 @@
 #ifndef INPUTVSIGNALSELECTOR_H
 #define INPUTVSIGNALSELECTOR_H
 
+// Parent
 #include <QWidget>
 
+// StateS classes
 class Signal;
 
 class InputSignalSelector : public QWidget

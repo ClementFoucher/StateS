@@ -22,15 +22,18 @@
 #ifndef FSMGRAPHICALSTATE_H
 #define FSMGRAPHICALSTATE_H
 
+// Parents
 #include <QObject>
 #include <QGraphicsEllipseItem>
 
+// Qt classes
 #include <QBrush>
 #include <QPen>
 #include <QGraphicsTextItem>
 #include <QAction>
 #include <QPixmap>
 
+// StateS classes
 class FsmState;
 
 class FsmGraphicalState : public QObject, public QGraphicsEllipseItem

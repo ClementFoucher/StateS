@@ -22,8 +22,10 @@
 #ifndef FSMCOMPONENT_H
 #define FSMCOMPONENT_H
 
+// Parent
 #include "machineactuatorcomponent.h"
 
+// StateS classes
 class Fsm;
 
 class FsmComponent : public MachineActuatorComponent

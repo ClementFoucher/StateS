@@ -22,9 +22,11 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include <QString>
-
+// Parent
 #include "io.h"
+
+// Qt classes
+#include <QString>
 
 class Output : public IO
 {

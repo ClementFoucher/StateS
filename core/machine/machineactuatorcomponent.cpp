@@ -19,12 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-
+// Current class header
 #include "machineactuatorcomponent.h"
 
+// StateS classes
 #include "signal.h"
 #include "machine.h"
+
 
 MachineActuatorComponent::MachineActuatorComponent(Machine* owningMachine) :
     MachineComponent(owningMachine)

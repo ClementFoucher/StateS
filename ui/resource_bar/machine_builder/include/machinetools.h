@@ -22,6 +22,7 @@
 #ifndef MACHINETOOLS_H
 #define MACHINETOOLS_H
 
+// Parent
 #include <QWidget>
 
 class MachineTools : public QWidget

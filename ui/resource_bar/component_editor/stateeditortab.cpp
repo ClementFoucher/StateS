@@ -19,23 +19,18 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QLabel>
-#include <QHeaderView>
-#include <QTableWidgetItem>
-#include <QList>
-#include <QVBoxLayout>
-
-#include <QDebug>
-
+// Current class header
 #include "stateeditortab.h"
 
+// Qt classes
+#include <QLabel>
+#include <QVBoxLayout>
+
+// StateS classes
 #include "fsmstate.h"
-#include "signal.h"
-#include "fsm.h"
-#include "io.h"
 #include "dynamiclineedit.h"
-#include "contextmenu.h"
 #include "actioneditor.h"
+
 
 StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     ComponentEditorTab(parent)

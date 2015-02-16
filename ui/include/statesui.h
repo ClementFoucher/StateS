@@ -22,18 +22,16 @@
 #ifndef STATESUI_H
 #define STATESUI_H
 
+// Parent
 #include <QMainWindow>
 
+// Qt classes
 #include <QAction>
 
+// StateS classes
 class Machine;
-//class CentralWidget;
 class ResourceBar;
 class SceneWidget;
-
-namespace Ui {
-class DrawingWindow;
-}
 
 class StatesUi : public QMainWindow
 {

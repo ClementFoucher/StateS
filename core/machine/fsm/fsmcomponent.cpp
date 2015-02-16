@@ -19,9 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "fsmcomponent.h"
 
+// StateS classes
 #include "fsm.h"
+
 
 FsmComponent::FsmComponent(Fsm* owningFsm) :
     MachineActuatorComponent(owningFsm)

@@ -22,8 +22,10 @@
 #ifndef RESOURCEBAR_H
 #define RESOURCEBAR_H
 
+// Parent
 #include <QTabWidget>
 
+// StateS classes
 class MachineBuilderTab;
 class MachineTools;
 class SignalEditorTab;

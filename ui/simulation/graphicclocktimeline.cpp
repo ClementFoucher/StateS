@@ -19,9 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "graphicclocktimeline.h"
 
+// StateS classes
 #include "clock.h"
+
 
 GraphicClockTimeLine::GraphicClockTimeLine(Clock* clock, QWidget* parent) :
     GraphicTimeLine(false, parent)

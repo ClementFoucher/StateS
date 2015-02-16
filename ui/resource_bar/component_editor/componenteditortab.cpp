@@ -19,7 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "componenteditortab.h"
+
 
 ComponentEditorTab::ComponentEditorTab(QWidget* parent) :
     QWidget(parent)

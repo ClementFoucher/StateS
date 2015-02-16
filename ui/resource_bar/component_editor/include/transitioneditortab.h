@@ -22,14 +22,16 @@
 #ifndef TRANSITIONEDITORTAB_H
 #define TRANSITIONEDITORTAB_H
 
+// Parent
+#include "componenteditortab.h"
+
+// Qt classes
 #include <QGridLayout>
 #include <QPushButton>
 #include <QWidget>
 #include <QLabel>
-#include <QTableWidget>
 
-#include "componenteditortab.h"
-
+// StateS classes
 class FsmTransition;
 class ActionEditor;
 

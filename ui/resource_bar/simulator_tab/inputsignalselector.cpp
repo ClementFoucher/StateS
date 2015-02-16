@@ -19,13 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QHBoxLayout"
-#include "QLabel"
-
+// Current class header
 #include "inputsignalselector.h"
 
+// Qt classes
+#include "QHBoxLayout"
+
+// StateS classes
 #include "signal.h"
 #include "inputbitselector.h"
+
 
 InputSignalSelector::InputSignalSelector(Signal *relatedSignal, QWidget *parent) :
     QWidget(parent)

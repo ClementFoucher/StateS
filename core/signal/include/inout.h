@@ -22,9 +22,11 @@
 #ifndef INOUT_H
 #define INOUT_H
 
-#include <QString>
-
+// Parent
 #include "io.h"
+
+// Qt classes
+#include <QString>
 
 class InOut : public IO
 {

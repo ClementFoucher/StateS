@@ -22,8 +22,10 @@
 #ifndef GRAPHICTIMELINE_H
 #define GRAPHICTIMELINE_H
 
+// Parent
 #include <QWidget>
 
+// Qt classes
 #include <QPolygon>
 
 class GraphicTimeLine : public QWidget

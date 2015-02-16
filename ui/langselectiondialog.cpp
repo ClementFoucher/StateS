@@ -19,12 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QVBoxLayout>
-
+// Current class header
 #include "langselectiondialog.h"
 
+// Qt classes
+#include <QVBoxLayout>
+
+// StateS classes
 #include "reactivebutton.h"
 #include "states.h"
+
 
 LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* parent) :
     QDialog(parent)

@@ -22,12 +22,15 @@
 #ifndef LANGSELECTIONDIALOG_H
 #define LANGSELECTIONDIALOG_H
 
+// Parent
 #include <QDialog>
 
+// Qt classes
 #include <QLabel>
 #include <QApplication>
 #include <QTranslator>
 
+// StateS classes
 class ReactiveButton;
 
 class LangSelectionDialog : public QDialog

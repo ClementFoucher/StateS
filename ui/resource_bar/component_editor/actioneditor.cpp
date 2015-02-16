@@ -19,15 +19,20 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "actioneditor.h"
 
+// Qt classes
+#include <QGridLayout>
 #include <QLabel>
 
+// StateS classes
 #include "machineactuatorcomponent.h"
 #include "actionlisteditor.h"
 #include "contextmenu.h"
 #include "machine.h"
 #include "signal.h"
+
 
 ActionEditor::ActionEditor(MachineActuatorComponent* actuator, QString title, QWidget* parent) :
     QWidget(parent)

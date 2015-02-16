@@ -22,12 +22,14 @@
 #ifndef SIMULATORTAB_H
 #define SIMULATORTAB_H
 
+// Parent
 #include <QWidget>
 
+// Qt classes
 #include <QPushButton>
-#include <QListWidget>
 #include <QSignalMapper>
 
+// StateS classes
 class Fsm;
 class FsmState;
 class Clock;

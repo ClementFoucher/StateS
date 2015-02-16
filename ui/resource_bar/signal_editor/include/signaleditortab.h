@@ -22,8 +22,10 @@
 #ifndef SIGNALSEDITORTAB_H
 #define SIGNALSEDITORTAB_H
 
+// Parent
 #include <QWidget>
 
+// StateS classes
 class Machine;
 
 class SignalEditorTab : public QWidget

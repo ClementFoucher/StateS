@@ -19,23 +19,23 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "graphicequation.h"
 
+// Qt classes
 #include <QDrag>
 #include <QMouseEvent>
-#include <QMimeData>
 #include <QWidgetAction>
 #include <QLabel>
 #include <QMessageBox>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include <QDebug>
-
+// StateS classes
 #include "equationmimedata.h"
 #include "equation.h"
 #include "contextmenu.h"
 #include "inverterbar.h"
+
 
 // A graphic equation can either represent
 // a logic equation or a logic signal

@@ -22,8 +22,10 @@
 #ifndef GRAPHICCLOCKTIMELINE_H
 #define GRAPHICCLOCKTIMELINE_H
 
+// Parent
 #include "graphictimeline.h"
 
+// StateS classes
 class Clock;
 
 class GraphicClockTimeLine : public GraphicTimeLine

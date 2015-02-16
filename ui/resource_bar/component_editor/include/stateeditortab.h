@@ -22,12 +22,10 @@
 #ifndef STATEEDITORTAB_H
 #define STATEEDITORTAB_H
 
-#include <QPushButton>
-#include <QGridLayout>
-#include <QTableWidget>
-
+// Parent
 #include "componenteditortab.h"
 
+// StateS classes
 class FsmState;
 class DynamicLineEdit;
 class ActionEditor;

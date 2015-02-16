@@ -22,6 +22,7 @@
 #ifndef COMPONENTEDITORTAB_H
 #define COMPONENTEDITORTAB_H
 
+// Parent
 #include <QWidget>
 
 class ComponentEditorTab : public QWidget

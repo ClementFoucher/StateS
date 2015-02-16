@@ -22,16 +22,18 @@
 #ifndef FSMGRAPHICALTRANSITION_H
 #define FSMGRAPHICALTRANSITION_H
 
+// Parents
 #include <QObject>
 #include <QGraphicsItemGroup>
 
+// Qt classes
 #include <QGraphicsItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsRectItem>
 #include <QPen>
-#include <QHash>
 #include <QAction>
 
+// StateS classes
 class FsmGraphicalState;
 class FsmTransition;
 class FsmGraphicalTransitionNeighborhood;

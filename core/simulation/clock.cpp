@@ -19,7 +19,9 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "clock.h"
+
 
 Clock::Clock(QObject* parent) :
     QObject(parent)

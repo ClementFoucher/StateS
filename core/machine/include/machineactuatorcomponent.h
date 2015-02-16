@@ -22,12 +22,16 @@
 #ifndef MACHINEACTUATORCOMPONENT_H
 #define MACHINEACTUATORCOMPONENT_H
 
+// Parent
 #include "machinecomponent.h"
 
+// Qt classes
 #include <QMap>
 
+// StateS basic types
 #include "logicvalue.h"
 
+// StateS classes
 class Machine;
 class Signal;
 

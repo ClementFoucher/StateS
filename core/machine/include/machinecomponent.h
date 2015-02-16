@@ -22,8 +22,10 @@
 #ifndef MACHINECOMPONENT_H
 #define MACHINECOMPONENT_H
 
+// Parent
 #include <QObject>
 
+// StateS classes
 class Machine;
 
 class MachineComponent : public QObject

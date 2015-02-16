@@ -22,15 +22,17 @@
 #ifndef FSMSTATE_H
 #define FSMSTATE_H
 
+// Parent
 #include "fsmcomponent.h"
 
+// Qt classes
 #include <QList>
 #include <QPointF>
 
+// StateS classes
 class Fsm;
 class FsmTransition;
 class FsmGraphicalState;
-class Signal;
 
 class FsmState : public FsmComponent
 {

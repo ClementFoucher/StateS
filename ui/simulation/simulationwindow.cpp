@@ -19,24 +19,25 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "simulationwindow.h"
+
+// Qt classes
 #include <QAction>
 #include <QFileDialog>
 #include <QLabel>
-#include <QList>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPrinter>
 
-#include "simulationwindow.h"
-
+// StateS classes
 #include "states.h"
-#include "signal.h"
 #include "machine.h"
 #include "signaltimeline.h"
-#include "io.h"
 #include "clocktimeline.h"
 #include "input.h"
 #include "output.h"
+
 
 SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* parent) :
     QMainWindow(parent)

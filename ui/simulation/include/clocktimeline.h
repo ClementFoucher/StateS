@@ -22,8 +22,10 @@
 #ifndef CLOCKTIMELINE_H
 #define CLOCKTIMELINE_H
 
+// Parent
 #include <QWidget>
 
+// StateS classes
 class Clock;
 
 class ClockTimeLine : public QWidget

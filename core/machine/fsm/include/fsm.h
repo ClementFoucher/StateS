@@ -22,16 +22,17 @@
 #ifndef FSM_H
 #define FSM_H
 
-#include <QDomElement>
-#include <QList>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
-
+// Parent
 #include "machine.h"
 
+// Qt classes
+#include <QDomElement>
+#include <QList>
+#include <QXmlStreamWriter>
+
+// StateS classes
 class FsmState;
 class FsmTransition;
-class Equation;
 class MachineActuatorComponent;
 
 class Fsm : public Machine
@@ -73,12 +74,9 @@ private:
     void writeLogicEquation(QXmlStreamWriter& stream, Signal* equation) const;
     void writeActions(QXmlStreamWriter& stream, MachineActuatorComponent* component) const;
 
-
     QList<FsmState*> states;
     QList<FsmTransition*> transitions;
     FsmState* initialState = nullptr;
-
-
 };
 
 #endif // FSM_H

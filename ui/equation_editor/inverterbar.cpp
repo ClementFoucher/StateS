@@ -19,9 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
+#include "inverterbar.h"
+
+// Qt classes
 #include <QPainter>
 
-#include "inverterbar.h"
 
 InverterBar::InverterBar(QWidget* parent) :
     QWidget(parent)
