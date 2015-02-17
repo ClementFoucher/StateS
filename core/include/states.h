@@ -38,6 +38,8 @@ public:
     explicit StateS();
     ~StateS();
 
+    static QString getVersion();
+
 private:
     StatesUi* drawingWindow = nullptr;
 };

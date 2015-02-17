@@ -19,43 +19,29 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "states.h"
+#ifndef VHDLEXPORTOPTIONS_H
+#define VHDLEXPORTOPTIONS_H
+
+// Parent
+#include <QDialog>
 
 // Qt classes
-#include <QPainter>
-#include <QSvgRenderer>
-
-// StateS classes
-#include "statesui.h"
+#include <QComboBox>
 
 
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+class VhdlExportOptions : public QDialog
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+    Q_OBJECT
 
-    return pixmap;
-}
+public:
+    explicit VhdlExportOptions(QWidget* parent = nullptr);
 
-StateS::StateS()
-{
-    drawingWindow = new StatesUi();
+    bool isResetPositive();
+    bool prefixIOs();
 
-    drawingWindow->show();
-}
+private:
+    QComboBox* resetLogicSelectionBox = nullptr;
+    QComboBox* addPrefixSelectionBox  = nullptr;
+};
 
-StateS::~StateS()
-{
-    drawingWindow->setMachine(nullptr);
-
-    delete drawingWindow;
-}
-
-QString StateS::getVersion()
-{
-    return "0.2.2";
-}
+#endif // VHDLEXPORTOPTIONS_H

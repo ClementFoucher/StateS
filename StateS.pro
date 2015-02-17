@@ -71,7 +71,9 @@ SOURCES += \
     ui/simulation/signaltimeline.cpp \
     ui/resource_bar/simulator_tab/inputbitselector.cpp \
     ui/resource_bar/simulator_tab/inputsselector.cpp \
-    ui/resource_bar/simulator_tab/inputsignalselector.cpp
+    ui/resource_bar/simulator_tab/inputsignalselector.cpp \
+    core/machine/fsm/fsmvhdlexport.cpp \
+    ui/vhdlexportoptions.cpp
 
 
 HEADERS  += \
@@ -127,7 +129,9 @@ HEADERS  += \
     ui/simulation/include/signaltimeline.h \
     ui/resource_bar/simulator_tab/include/inputsignalselector.h \
     ui/resource_bar/simulator_tab/include/inputbitselector.h \
-    ui/resource_bar/simulator_tab/include/inputsselector.h
+    ui/resource_bar/simulator_tab/include/inputsselector.h \
+    core/machine/fsm/include/fsmvhdlexport.h \
+    ui/include/vhdlexportoptions.h
 
 QMAKE_CXXFLAGS += \
 # Need C++ 11 for dynamic cast and nullptr
@@ -163,7 +167,9 @@ OTHER_FILES += \
     LICENSE \
     LICENSE.txt \
     release_notes.txt \
-    core/basic_type/README.txt
+    core/basic_type/README.txt \
+    art/AUTHORS \
+    art/AUTHORS.txt
 
 RESOURCES += \
     art.qrc \

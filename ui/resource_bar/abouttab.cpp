@@ -26,6 +26,9 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+// StateS classes
+#include "states.h"
+
 
 AboutTab::AboutTab(QWidget* parent) :
     QWidget(parent)
@@ -36,7 +39,7 @@ AboutTab::AboutTab(QWidget* parent) :
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    QLabel* versionLabel = new QLabel(tr("Version") + " 0.2.1");
+    QLabel* versionLabel = new QLabel(tr("Version") + " " + StateS::getVersion());
     versionLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(versionLabel);
 
@@ -44,7 +47,7 @@ AboutTab::AboutTab(QWidget* parent) :
     copyrightLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(copyrightLabel);
 
-    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br />GNU General Public Licence" + tr("version") + " 2");
+    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br />GNU General Public Licence " + tr("version") + " 2");
     licenseLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(licenseLabel);
 

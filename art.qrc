@@ -6,5 +6,6 @@
         <file alias="new_FSM">art/svg/Create_FSM.svg</file>
         <file alias="export_PDF">art/svg/Export_PDF.svg</file>
         <file alias="StateS">art/svg/StateS.svg</file>
+        <file alias="export_VHDL">art/svg/Export_VHDL.svg</file>
     </qresource>
 </RCC>

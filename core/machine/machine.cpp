@@ -73,13 +73,25 @@ QList<Signal *> Machine::getWrittableSignals() const
 
 QList<Signal*> Machine::getReadableSignals() const
 {
+    QList<Signal*> readableSignals;
+
+    QList<Input*> inputList = inputs.values();
+
+    readableSignals += *reinterpret_cast<QList<Signal*>*> (&inputList);
+    readableSignals += localVariables.values();
+    readableSignals += constants.values();
+
+    return readableSignals;
+}
+
+QList<Signal *> Machine::getReadableVariableSignals() const
+{
     QList<Signal*> readableVariables;
 
     QList<Input*> inputList = inputs.values();
 
     readableVariables += *reinterpret_cast<QList<Signal*>*> (&inputList);
     readableVariables += localVariables.values();
-    readableVariables += constants.values();
 
     return readableVariables;
 }
@@ -96,6 +108,19 @@ QList<Signal*> Machine::getAllVariables() const
     allVariables += localVariables.values();
 
     return allVariables;
+}
+
+QList<Signal*> Machine::getIOs() const
+{
+    QList<Signal*> IOs;
+
+    QList<Input*> inputList = inputs.values();
+    QList<Output*> outputList = outputs.values();
+
+    IOs += *reinterpret_cast<QList<Signal*>*> (&inputList);
+    IOs += *reinterpret_cast<QList<Signal*>*> (&outputList);
+
+    return IOs;
 }
 
 QList<Signal*> Machine::getAllSignals() const

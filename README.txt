@@ -11,6 +11,7 @@ What the software can do for now:
 
 - Draw a FSM,
 - Simulate it,
+- Export it to VHDL,
 - Export to PDF.
 
 Qt 5.4 is required to execute this application.
@@ -27,8 +28,7 @@ Here is what I plan to support (this list is only thoughts, items will maybe, or
 
 And, longer term (even maybe never), but I would love to implement these:
 - Support a coupling interface to send outputs/receive inputs from another software (or more generally, another environment -- hardware?),
-- Export machines using standard save formats (do standard representations exist?),
-- Generate VHDL code from machine.
+- Export machines using standard save formats (do standard representations exist?).
 
 This list reflects what I have in mind currently about the software I want to build.
 But some of these features may be complex to implement, and I can't guarantee I'll actually do.

@@ -53,16 +53,18 @@ private slots:
     void newMachineRequestEvent();
     void clearMachineRequestEvent();
     void exportPdfRequestEvent();
+    void exportVhdlRequestEvent();
     void saveMachineRequestEvent();
     void loadMachineRequestEvent();
     void handleSimulationToggled();
 
 private:
-    QAction* actionSave = nullptr;
-    QAction* actionLoad = nullptr;
-    QAction* actionNewFsm = nullptr;
-    QAction* actionClear = nullptr;
-    QAction* actionExportPdf = nullptr;
+    QAction* actionSave       = nullptr;
+    QAction* actionLoad       = nullptr;
+    QAction* actionNewFsm     = nullptr;
+    QAction* actionClear      = nullptr;
+    QAction* actionExportPdf  = nullptr;
+    QAction* actionExportVhdl = nullptr;
 
     SceneWidget* machineDisplayArea = nullptr;
     ResourceBar* resourcesBar       = nullptr;

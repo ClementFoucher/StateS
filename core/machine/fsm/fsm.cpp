@@ -215,6 +215,7 @@ void Fsm::saveMachine(const QString& path)
 
     file->flush();
     file->close();
+    delete file;
 }
 
 void Fsm::parseXML(const QString& path)

@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.2.1 *
+* StateS v. 0.2.2 *
 *******************
 
 // The following behaviors are known.
@@ -9,7 +9,9 @@
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Begin/end simulation: conditions only containing constants/state actions: color is not updated,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
-- Biggest transition selection box hides smaller transitions when multiple transitions between states.
+- Biggest transition selection box hides smaller transitions when multiple transitions between states,
+- Signal pulse on state is not correctly handled in VHDL export: signal value is maintained when leaving state,
+- Actions on transitions are ignored when FSM is exported to VHDL.
 
 // Not bugs, but still
 

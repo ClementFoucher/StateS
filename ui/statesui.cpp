@@ -37,6 +37,8 @@
 #include "scenewidget.h"
 #include "resourcebar.h"
 #include "genericscene.h"
+#include "fsmvhdlexport.h"
+#include "vhdlexportoptions.h"
 
 
 //
@@ -97,11 +99,17 @@ StatesUi::StatesUi(Machine* machine) :
 
     this->actionExportPdf = new QAction(this);
     this->actionExportPdf->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF"))));
-    this->actionExportPdf->setText(tr("Export"));
+    this->actionExportPdf->setText(tr("Export to PDF"));
     this->actionExportPdf->setToolTip(tr("Export machine to PDF file"));
     connect(this->actionExportPdf, &QAction::triggered, this, &StatesUi::exportPdfRequestEvent);
     mainToolBar->addAction(this->actionExportPdf);
 
+    this->actionExportVhdl = new QAction(this);
+    this->actionExportVhdl->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
+    this->actionExportVhdl->setText(tr("Export to VHDL"));
+    this->actionExportVhdl->setToolTip(tr("Export machine to VHDL"));
+    connect(this->actionExportVhdl, &QAction::triggered, this, &StatesUi::exportVhdlRequestEvent);
+    mainToolBar->addAction(this->actionExportVhdl);
 
     // Add scene and resource bar
     QSplitter* splitter = new QSplitter();
@@ -135,12 +143,14 @@ void StatesUi::setMachine(Machine* machine)
     if (machine != nullptr)
     {
         this->actionExportPdf->setEnabled(true);
+        this->actionExportVhdl->setEnabled(true);
         this->actionSave->setEnabled(true);
         this->actionClear->setEnabled(true);
     }
     else
     {
         this->actionExportPdf->setEnabled(false);
+        this->actionExportVhdl->setEnabled(false);
         this->actionSave->setEnabled(false);
         this->actionClear->setEnabled(true);
     }
@@ -224,6 +234,29 @@ void StatesUi::exportPdfRequestEvent()
         sceneView->scene()->clearSelection();
         sceneView->scene()->render(&painter);
     }
+}
+
+void StatesUi::exportVhdlRequestEvent()
+{
+    VhdlExportOptions* exportOptions = new VhdlExportOptions();
+    exportOptions->setModal(true);
+
+    exportOptions->exec();
+
+    if (exportOptions->result() == QDialog::Accepted)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), QString(), "*.vhdl");
+
+        if (!fileName.isEmpty())
+        {
+            if (!fileName.endsWith(".vhdl", Qt::CaseInsensitive))
+                fileName += ".vhdl";
+
+            FsmVhdlExport::exportFSM((Fsm*)machine, fileName, exportOptions->isResetPositive(), exportOptions->prefixIOs());
+        }
+    }
+
+    delete exportOptions;
 }
 
 void StatesUi::saveMachineRequestEvent()

@@ -19,43 +19,26 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "states.h"
+#ifndef FSMVHDLEXPORT_H
+#define FSMVHDLEXPORT_H
 
 // Qt classes
-#include <QPainter>
-#include <QSvgRenderer>
+#include <QString>
 
 // StateS classes
-#include "statesui.h"
+class Fsm;
+class Equation;
+class Signal;
 
 
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+class FsmVhdlExport
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+public:
+    static void exportFSM(Fsm* machine, QString path, bool resetLogicPositive, bool prefixIOs);
 
-    return pixmap;
-}
+private:
+    static QString correctName(QString name);
+    static QString equationText(Signal *equation, Fsm *fsm, bool prefixIOs);
+};
 
-StateS::StateS()
-{
-    drawingWindow = new StatesUi();
-
-    drawingWindow->show();
-}
-
-StateS::~StateS()
-{
-    drawingWindow->setMachine(nullptr);
-
-    delete drawingWindow;
-}
-
-QString StateS::getVersion()
-{
-    return "0.2.2";
-}
+#endif // FSMVHDLEXPORT_H

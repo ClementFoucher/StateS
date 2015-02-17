@@ -614,7 +614,7 @@
     </message>
     <message>
         <source>Export</source>
-        <translation>Exporter</translation>
+        <translation type="vanished">Exporter</translation>
     </message>
     <message>
         <source>Export machine to PDF file</source>
@@ -643,6 +643,18 @@
     <message>
         <source>Overwrite current machine?</source>
         <translation>Écraser la machine courante ?</translation>
+    </message>
+    <message>
+        <source>Export to PDF</source>
+        <translation>Exporter en PDF</translation>
+    </message>
+    <message>
+        <source>Export to VHDL</source>
+        <translation>Exporter en VHDL</translation>
+    </message>
+    <message>
+        <source>Export machine to VHDL</source>
+        <translation>Exporter la machine en VHDL</translation>
     </message>
 </context>
 <context>
@@ -690,6 +702,45 @@
     <message>
         <source>Warning: equation representing condition is not valid.</source>
         <translation>Attention : l&apos;équation représentant la trasition est invalide</translation>
+    </message>
+</context>
+<context>
+    <name>VhdlExportOptions</name>
+    <message>
+        <source>Choose export options:</source>
+        <translation>Choisissez vos options pour l&apos;export :</translation>
+    </message>
+    <message>
+        <source>Positive</source>
+        <translation>Positive</translation>
+    </message>
+    <message>
+        <source>Negative</source>
+        <translation>Négative</translation>
+    </message>
+    <message>
+        <source>Reset logic:</source>
+        <translation>Logique du reset :</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation>Non</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation>Oui</translation>
+    </message>
+    <message>
+        <source>Prefix inputs and outputs with &apos;I_&apos; and &apos;O_&apos; respectively:</source>
+        <translation>Ajouter un préfixe &apos;I_&apos; ou &apos;O_&apos; respectivement aux entrées et aux sorties :</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
     </message>
 </context>
 </TS>

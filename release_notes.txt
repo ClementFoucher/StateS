@@ -2,6 +2,7 @@
 * StateS v. 0.2 *
 *****************
 
+- 2015-02-17 - V 0.2.2 - Added basic support for FSM export to VHDL (still no support for pulse actions on states and all actions on transitions).
 - 2015-02-15 - V 0.2.1 - Added a selection window when multiple target states available in simulation.
 - 2015-02-09 - V 0.2   - * Warning! Save files compatibility broken! * Added support for multiple bits signals, constants, signals initial value and equal/diff equations. Simulation input now has a real implementation instead of a list.
 

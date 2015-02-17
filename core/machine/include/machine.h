@@ -58,7 +58,9 @@ public:
 
     QList<Signal*> getWrittableSignals() const;
     QList<Signal*> getReadableSignals() const;
+    QList<Signal*> getReadableVariableSignals() const;
     QList<Signal*> getAllVariables() const;
+    QList<Signal*> getIOs() const;
     QList<Signal*> getAllSignals() const;
 
     virtual void saveMachine(const QString& path) = 0;
