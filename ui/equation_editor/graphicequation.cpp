@@ -30,11 +30,15 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
+// Debug
+#include <QDebug>
+
 // StateS classes
 #include "equationmimedata.h"
 #include "equation.h"
 #include "contextmenu.h"
 #include "inverterbar.h"
+#include "equationeditor.h"
 
 
 // A graphic equation can either represent
@@ -60,7 +64,7 @@ void GraphicEquation::buildEquation()
     delete this->layout();
 
     QHBoxLayout* equationLayout = new QHBoxLayout();
-    Equation* complexEquation = dynamic_cast<Equation*> (equation);
+    Equation* complexEquation = dynamic_cast<Equation*> (this->equation);
 
     if (complexEquation != nullptr)
     {
@@ -118,7 +122,7 @@ void GraphicEquation::buildEquation()
             for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
             {
                 // Add operand
-                graphicOperands[i] = new GraphicEquation(complexEquation->getOperand(i), isTemplate, this);
+                graphicOperands[i] = new GraphicEquation(complexEquation->getOperand(i), false, this);
                 equationLayout->addWidget(graphicOperands[i]);
 
                 // Add operator, except for last operand
@@ -201,7 +205,9 @@ void GraphicEquation::buildEquation()
             this->setStyleSheet("GraphicEquation {border: 1px solid red; border-radius: 10px}");
         }
         else
+        {
             this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
+        }
     }
 }
 
@@ -215,58 +221,49 @@ void GraphicEquation::childEnteredEvent()
     this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
 }
 
-void GraphicEquation::replaceEquation(Signal* newSignal)
+void GraphicEquation::replaceEquation(Signal* newEquation)
 {
-    // Delete current equation if it is not a single variable
-    Equation* currentEquation = dynamic_cast <Equation*> (equation);
-    if (currentEquation != nullptr)
-        delete currentEquation;
-    else if ( (equation != nullptr) ) //&& (equation->isSystemConstant()) )
-        delete equation;
-
-    this->equation = nullptr;
-
-    // Test if equation is actually equation or just single variable
-    if (newSignal != nullptr)
-    {
-        Equation* equation = dynamic_cast <Equation*> (newSignal);
-        if (equation != nullptr)
-            this->equation = equation->clone();
-        else
-            this->equation = newSignal;
-    }
-    else
-        this->equation = nullptr;
-
-    buildEquation();
-
     GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
+
     if (parentEquation != nullptr)
-        parentEquation->updateEquation();
+        parentEquation->updateEquation(this->equation, newEquation);
+    else
+    {
+        // If no parent graphic equation, we are top level
+
+        Equation* complexEquation = dynamic_cast<Equation*>(this->equation);
+        if (complexEquation != nullptr)
+            delete complexEquation;
+
+        this->equation = newEquation;
+
+        buildEquation();
+    }
 }
 
 // This function is used to update the logic equation
 // based on graphical changes made by user
-void GraphicEquation::updateEquation()
+void GraphicEquation::updateEquation(Signal* oldOperand, Signal* newOperand)
 {
     // If equation is variable: nothing to do.
     // Else, set operands based on current displays
     Equation* complexEquation = dynamic_cast<Equation*> (equation);
 
-    if (complexEquation != nullptr)
+    if (complexEquation != nullptr) // MUST be true, because we are called by an operand of ours
     {
         for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
         {
-            if (graphicOperands[i]->getLogicEquation() != complexEquation->getOperand(i))
+            if (complexEquation->getOperand(i) == oldOperand)
             {
-                complexEquation->setOperand(i, graphicOperands[i]->getLogicEquation());
+                complexEquation->setOperand(i, newOperand);
+                break;
             }
         }
-    }
 
-    GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
-    if (parentEquation != nullptr)
-        parentEquation->updateEquation();
+        buildEquation();
+    }
+    else
+        qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
 }
 
 Signal* GraphicEquation::getLogicEquation() const
@@ -380,8 +377,8 @@ void GraphicEquation::dropEvent(QDropEvent* event)
         // Obtain new equation
         droppedEquation = mimeData->getEquation()->getLogicEquation();
 
-        // Check operand size for adequation with parent
-        if ( /*(!droppedEquation->isSystemConstant()) &&*/ (droppedEquation->getSize() != 0) )
+        // Check operand size for consistency with parent
+        if ( droppedEquation->getSize() != 0 )
         {
             GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
             if (parentEquation != nullptr)
@@ -443,7 +440,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
                     a->setText(actionText);
 
                     // Build tooltip
-                    Equation* newEquation = (Equation*)droppedComplexEquation->clone();
+                    Equation* newEquation = droppedComplexEquation->clone();
                     newEquation->setOperand(i, this->equation);
 
                     a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
@@ -481,10 +478,6 @@ void GraphicEquation::treatMenu(QAction* action)
         complexEquation->increaseOperandCount();
 
         this->buildEquation();
-
-        GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
-        if (parentEquation != nullptr)
-            parentEquation->updateEquation();
     }
     else if (action->text() == tr("Remove one operand from that operator"))
     {
@@ -504,10 +497,6 @@ void GraphicEquation::treatMenu(QAction* action)
             complexEquation->decreaseOperandCount();
 
             this->buildEquation();
-
-            GraphicEquation* parentEquation = dynamic_cast<GraphicEquation*>(this->parentWidget());
-            if (parentEquation != nullptr)
-                parentEquation->updateEquation();
         }
     }
     else
@@ -534,9 +523,8 @@ void GraphicEquation::treatMenu(QAction* action)
                 Equation* newEquation = droppedComplexEquation->clone();
                 newEquation->setOperand(i, this->equation);
 
-                this->equation = newEquation;
+                this->replaceEquation(newEquation);
 
-                buildEquation();
                 break;
             }
         }

@@ -57,6 +57,9 @@ public:
 public slots:
     void clearCondition();
 
+signals:
+    void conditionChanged();
+
 private:
     FsmGraphicalTransition* graphicalRepresentation = nullptr;
 

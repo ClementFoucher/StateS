@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.2.2 *
+* StateS v. 0.2.3 *
 *******************
 
 // The following behaviors are known.

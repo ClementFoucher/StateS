@@ -40,14 +40,13 @@ class ActionEditor : public QWidget
     Q_OBJECT
 
 public:
-    explicit ActionEditor(MachineActuatorComponent* actuator, QString title = QString(), QWidget* parent = 0);
+    explicit ActionEditor(MachineActuatorComponent* actuator, QString title = QString(), QWidget* parent = nullptr);
 
     void changeActuator(MachineActuatorComponent* actuator);
 
-public slots:
+private slots:
     void updateContent();
 
-private slots:
     void addAction();
     void removeAction();
     void treatMenuAdd(QAction*);

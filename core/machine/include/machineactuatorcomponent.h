@@ -46,7 +46,7 @@ public:
     explicit MachineActuatorComponent(Machine* owningMachine);
 
     QList<Signal*> getActions() const;
-    void setActions(const QList<Signal *> &newActions);
+    void setActions(const QList<Signal*>& newActions);
     void clearActions();
 
     void addActionByName(const QString& signalName);
@@ -58,8 +58,11 @@ public:
     void setActionType(Signal* signal, action_types type);
     bool setActionValue(Signal* signal, LogicValue value);
 
-    action_types getActionType(Signal *variable);
-    LogicValue getActionValue(Signal *variable);
+    action_types getActionType(Signal* variable);
+    LogicValue getActionValue(Signal* variable);
+
+signals:
+    void actionListChanged();
 
 public slots:
     void removeAction(Signal* signal);

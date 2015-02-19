@@ -38,6 +38,7 @@ ActionEditor::ActionEditor(MachineActuatorComponent* actuator, QString title, QW
     QWidget(parent)
 {
     this->actuator = actuator;
+    connect(this->actuator, &MachineActuatorComponent::actionListChanged, this, &ActionEditor::updateContent);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -73,9 +74,12 @@ ActionEditor::ActionEditor(MachineActuatorComponent* actuator, QString title, QW
 
 void ActionEditor::changeActuator(MachineActuatorComponent *actuator)
 {
-    this->actuator = actuator;
+    disconnect(this->actuator, &MachineActuatorComponent::actionListChanged, this, &ActionEditor::updateContent);
 
+    this->actuator = actuator;
     updateContent();
+
+    connect(this->actuator, &MachineActuatorComponent::actionListChanged, this, &ActionEditor::updateContent);
 }
 
 void ActionEditor::updateContent()

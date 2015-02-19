@@ -19,26 +19,22 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMVHDLEXPORT_H
-#define FSMVHDLEXPORT_H
+#ifndef TRUTHTABLEDISPLAY_H
+#define TRUTHTABLEDISPLAY_H
 
-// Qt classes
-#include <QString>
+// Parent
+#include <QTableWidget>
 
 // StateS classes
-class Fsm;
-class Equation;
-class Signal;
+class TruthTable;
 
 
-class FsmVhdlExport
+class TruthTableDisplay : public QTableWidget
 {
-public:
-    static void exportFSM(Fsm* machine, QString path, bool resetLogicPositive, bool prefixIOs);
+    Q_OBJECT
 
-private:
-    static QString correctName(QString name);
-    static QString equationText(Signal* equation, Fsm* machine, bool prefixIOs);
+public:
+    explicit TruthTableDisplay(const TruthTable* truthTable, QWidget* parent = nullptr);
 };
 
-#endif // FSMVHDLEXPORT_H
+#endif // TRUTHTABLEDISPLAY_H

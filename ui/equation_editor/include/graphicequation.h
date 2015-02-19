@@ -31,6 +31,8 @@
 
 // StateS classes
 class Signal;
+class EquationEditor;
+
 
 class GraphicEquation : public QFrame
 {
@@ -39,7 +41,7 @@ class GraphicEquation : public QFrame
 public:
     explicit GraphicEquation(Signal* equation, bool isTemplate = false, QWidget* parent = nullptr);
 
-    void updateEquation();
+    void updateEquation(Signal *oldOperand, Signal *newOperand);
 
     Signal* getLogicEquation() const;
 
@@ -55,7 +57,7 @@ private slots:
     void treatMenu(QAction* action);
 
 private:
-    void replaceEquation(Signal* newSignal);
+    void replaceEquation(Signal* newEquation);
     void buildEquation();
     void childLeavedEvent();
     void childEnteredEvent();

@@ -78,7 +78,7 @@ Equation::Equation(nature function, uint operandCount) :
 Equation::~Equation()
 {
     for (uint i = 0 ; i < allowedOperandCount ; i++)
-        clearOperand(i);
+        clearOperand(i, true);
 }
 
 Equation* Equation::clone() const
@@ -207,7 +207,8 @@ bool Equation::setOperand(uint i, Signal* newOperand)
     }
     else
     {
-        clearOperand(i);
+        if (operands[i] != nullptr)
+            clearOperand(i);
 
         if (newOperand != nullptr)
         {
@@ -250,7 +251,7 @@ bool Equation::setOperand(uint i, Signal* newOperand)
 }
 
 
-void Equation::clearOperand(uint i)
+void Equation::clearOperand(uint i, bool quiet)
 {
     if (operands[i] != nullptr)
     {
@@ -289,7 +290,8 @@ void Equation::clearOperand(uint i)
         }
 
         // In order to actualize display
-        emit signalConfigurationChangedEvent();
+        if (!quiet)
+            emit signalConfigurationChangedEvent();
     }
 }
 
@@ -478,7 +480,7 @@ void Equation::operandResizedEvent()
     {
         for(uint i = 0 ; i < allowedOperandCount ; i++)
         {
-            if ( (operands[i] != nullptr) /*&& (!operands[i]->isSystemConstant())*/ && (operands[i]->getSize() != this->currentSignalSize) )
+            if ( (operands[i] != nullptr) && (operands[i]->getSize() != this->currentSignalSize) )
             {
                 this->currentSignalSize = operands[i]->getSize();
                 //adjustSize();
@@ -489,7 +491,7 @@ void Equation::operandResizedEvent()
     {
         for(uint i = 0 ; i < allowedOperandCount ; i++)
         {
-            if ( (operands[i] != nullptr) && (operands[i]->getSize() != this->currentSignalSize) )
+            if ( (operands[i] != nullptr) && (operands[i]->getSize() != this->currentSignalSize) && (operands[i]->getSize() != 0))
             {
                 clearOperand(i);
             }

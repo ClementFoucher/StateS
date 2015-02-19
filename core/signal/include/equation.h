@@ -103,7 +103,7 @@ public:
 
     Signal* getOperand(uint i) const;
     bool setOperand(uint i, Signal* newOperand);
-    void clearOperand(uint i);
+    void clearOperand(uint i, bool quiet = false);
 
     const QVector<Signal*>& getOperands() const;
 

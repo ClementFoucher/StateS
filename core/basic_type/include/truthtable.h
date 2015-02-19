@@ -19,26 +19,35 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMVHDLEXPORT_H
-#define FSMVHDLEXPORT_H
+#ifndef TRUTHTABLE_H
+#define TRUTHTABLE_H
 
 // Qt classes
-#include <QString>
+#include <QVector>
+#include <QList>
 
 // StateS classes
-class Fsm;
-class Equation;
 class Signal;
+class LogicValue;
+class Equation;
 
 
-class FsmVhdlExport
+class TruthTable
 {
 public:
-    static void exportFSM(Fsm* machine, QString path, bool resetLogicPositive, bool prefixIOs);
+    explicit TruthTable(Equation* equation);
+
+    QVector<Signal*>             getSignals() const;
+    QVector<QVector<LogicValue>> getInputTable() const;
+    QVector<LogicValue>          getOutputTable() const;
 
 private:
-    static QString correctName(QString name);
-    static QString equationText(Signal* equation, Fsm* machine, bool prefixIOs);
+    QSet<Signal*> extractSignals(Equation* equation) const;
+    void buildTable(Equation* equation);
+
+    QVector<Signal*>             signalTable;
+    QVector<QVector<LogicValue>> inputTable;
+    QVector<LogicValue>          outputTable;
 };
 
-#endif // FSMVHDLEXPORT_H
+#endif // TRUTHTABLE_H

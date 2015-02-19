@@ -26,7 +26,8 @@
 #include <QVector>
 
 // Qt classes
-#include <QString>
+class QString;
+
 
 class LogicValue : private QVector<bool>
 {
@@ -67,6 +68,7 @@ public:
     LogicValue operator&=(const LogicValue& otherValue);
     LogicValue operator|=(const LogicValue& otherValue);
     LogicValue operator^=(const LogicValue& otherValue);
+    bool increment();
 
     bool& operator[](uint memberNumber);
     bool operator[](uint memberNumber) const;

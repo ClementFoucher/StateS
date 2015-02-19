@@ -45,8 +45,6 @@ private slots:
     void updateContent();
 
 private:
-    void updateLocalContent();
-
     FsmState* state = nullptr;
 
     DynamicLineEdit* textStateName = nullptr;

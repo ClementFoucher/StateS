@@ -25,15 +25,11 @@
 // Parent
 #include "componenteditortab.h"
 
-// Qt classes
-#include <QGridLayout>
-#include <QPushButton>
-#include <QWidget>
-#include <QLabel>
-
 // StateS classes
 class FsmTransition;
 class ActionEditor;
+class ConditionEditor;
+
 
 class TransitionEditorTab : public ComponentEditorTab
 {
@@ -44,25 +40,9 @@ public:
 
     void changeEditedTransition(FsmTransition* transition);
 
-private slots:
-    void setCondition();
-    void clearCondition();
-    void treatMenuSetCondition(QAction*);
-    void updateContent();
-
 private:
-    void updateLocalContent();
-
-    FsmTransition* transition = nullptr;
-
-    QGridLayout* layout = nullptr;
-
-    ActionEditor* actionEditor = nullptr;
-
-    QLabel* conditionText        = nullptr;
-    QLabel* conditionWarningText = nullptr;
-    QPushButton* buttonSetCondition   = nullptr;
-    QPushButton* buttonClearCondition = nullptr;
+    ActionEditor*    actionEditor    = nullptr;
+    ConditionEditor* conditionEditor = nullptr;
 };
 
 #endif // TRANSITIONEDITORTAB_H

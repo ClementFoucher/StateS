@@ -73,7 +73,10 @@ SOURCES += \
     ui/resource_bar/simulator_tab/inputsselector.cpp \
     ui/resource_bar/simulator_tab/inputsignalselector.cpp \
     core/machine/fsm/fsmvhdlexport.cpp \
-    ui/vhdlexportoptions.cpp
+    ui/vhdlexportoptions.cpp \
+    core/basic_type/truthtable.cpp \
+    ui/truthtabledisplay.cpp \
+    ui/resource_bar/component_editor/conditioneditor.cpp
 
 
 HEADERS  += \
@@ -131,7 +134,10 @@ HEADERS  += \
     ui/resource_bar/simulator_tab/include/inputbitselector.h \
     ui/resource_bar/simulator_tab/include/inputsselector.h \
     core/machine/fsm/include/fsmvhdlexport.h \
-    ui/include/vhdlexportoptions.h
+    ui/include/vhdlexportoptions.h \
+    core/basic_type/include/truthtable.h \
+    ui/include/truthtabledisplay.h \
+    ui/resource_bar/component_editor/include/conditioneditor.h
 
 QMAKE_CXXFLAGS += \
 # Need C++ 11 for dynamic cast and nullptr

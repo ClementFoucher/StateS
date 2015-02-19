@@ -22,6 +22,9 @@
 // Current class header
 #include "logicvalue.h"
 
+// Qt classes
+#include <QString>
+
 
 LogicValue LogicValue::getValue0(uint size)
 {
@@ -243,6 +246,29 @@ LogicValue LogicValue::operator^=(const LogicValue& otherValue)
         *this = result;
 
     return result;
+}
+
+// Return value for increment indicates if there is a carry
+bool LogicValue::increment()
+{
+    uint lastI = this->getSize();
+
+    for (int i = 0 ; i < this->size() ; i++)
+    {
+        if ((*this)[i] == true)
+            (*this)[i] = false;
+        else
+        {
+            lastI = i;
+            (*this)[i] = true;
+            break;
+        }
+    }
+
+    if (lastI == this->getSize())
+        return true;
+    else
+        return false;
 }
 
 bool& LogicValue::operator[](uint memberNumber)

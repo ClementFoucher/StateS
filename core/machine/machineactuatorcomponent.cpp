@@ -77,6 +77,7 @@ void MachineActuatorComponent::signalResizedEventHandler()
         }
     }
 
+    emit actionListChanged();
     emit elementConfigurationChangedEvent();
 }
 
@@ -105,6 +106,7 @@ void MachineActuatorComponent::clearActions()
 
     actionType.clear();
 
+    emit actionListChanged();
     emit elementConfigurationChangedEvent();
 }
 
@@ -123,6 +125,7 @@ void MachineActuatorComponent::addAction(Signal* signal)
     connect(signal, &Signal::signalConfigurationChangedEvent, this, &MachineActuatorComponent::elementConfigurationChangedEvent);
     connect(signal, &Signal::signalStateChangedEvent,               this, &MachineActuatorComponent::elementStateChangedEvent);
 
+    emit actionListChanged();
     emit elementConfigurationChangedEvent();
 }
 
@@ -150,6 +153,7 @@ void MachineActuatorComponent::removeAction(Signal* signal)
     actionType. remove(signal);
     actionValue.remove(signal);
 
+    emit actionListChanged();
     emit elementConfigurationChangedEvent();
 }
 
@@ -212,6 +216,7 @@ void MachineActuatorComponent::setActionType(Signal* signal, action_types type)
             actionValue[signal] = LogicValue::getValue0(signal->getSize());
     }
 
+    emit actionListChanged();
     emit elementConfigurationChangedEvent();
 }
 
@@ -220,6 +225,8 @@ bool MachineActuatorComponent::setActionValue(Signal* signal, LogicValue value)
     if (signal->getSize() == value.getSize())
     {
         actionValue[signal] = value;
+
+        emit actionListChanged();
         emit elementConfigurationChangedEvent();
 
         return true;

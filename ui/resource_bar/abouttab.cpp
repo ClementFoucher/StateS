@@ -43,7 +43,7 @@ AboutTab::AboutTab(QWidget* parent) :
     versionLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(versionLabel);
 
-    QLabel* copyrightLabel = new QLabel("© 2014 Clément Foucher");
+    QLabel* copyrightLabel = new QLabel("© 2014-2015 Clément Foucher");
     copyrightLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(copyrightLabel);
 

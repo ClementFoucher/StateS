@@ -117,11 +117,11 @@ Signal* FsmTransition::getCondition() const
 
 void FsmTransition::setCondition(Signal* signal)
 {
-    if (condition != nullptr)
+    if (this->condition != nullptr)
     {
-        disconnect(signal, &Signal::signalConfigurationChangedEvent, this, &MachineComponent::elementConfigurationChangedEvent);
-        disconnect(signal, &Signal::signalStateChangedEvent,               this, &MachineComponent::elementStateChangedEvent);
-        disconnect(signal, &Signal::signalDeletedEvent,                    this, &FsmTransition::clearCondition);
+        disconnect(this->condition, &Signal::signalConfigurationChangedEvent, this, &MachineComponent::elementConfigurationChangedEvent);
+        disconnect(this->condition, &Signal::signalStateChangedEvent,         this, &MachineComponent::elementStateChangedEvent);
+        disconnect(this->condition, &Signal::signalDeletedEvent,              this, &FsmTransition::clearCondition);
     }
 
     Equation* temp = dynamic_cast <Equation*> (condition);
@@ -133,10 +133,11 @@ void FsmTransition::setCondition(Signal* signal)
     if (this->condition != nullptr)
     {
         connect(this->condition, &Signal::signalConfigurationChangedEvent, this, &MachineComponent::elementConfigurationChangedEvent);
-        connect(this->condition, &Signal::signalStateChangedEvent,               this, &MachineComponent::elementStateChangedEvent);
-        connect(this->condition, &Signal::signalDeletedEvent,                    this, &FsmTransition::clearCondition);
+        connect(this->condition, &Signal::signalStateChangedEvent,         this, &MachineComponent::elementStateChangedEvent);
+        connect(this->condition, &Signal::signalDeletedEvent,              this, &FsmTransition::clearCondition);
     }
 
+    emit conditionChanged();
     emit elementConfigurationChangedEvent();
 }
 

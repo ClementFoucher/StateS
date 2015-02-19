@@ -310,7 +310,7 @@ QString FsmVhdlExport::correctName(QString name)
     return newName;
 }
 
-QString FsmVhdlExport::equationText(Signal* equation, Fsm* fsm, bool prefixIOs)
+QString FsmVhdlExport::equationText(Signal* equation, Fsm* machine, bool prefixIOs)
 {
     QString text;
 
@@ -327,7 +327,7 @@ QString FsmVhdlExport::equationText(Signal* equation, Fsm* fsm, bool prefixIOs)
 
         for (int i = 0 ; i < operands.count() ; i++)
         {
-            text += equationText(operands.at(i), fsm, prefixIOs);
+            text += equationText(operands.at(i), machine, prefixIOs);
 
             if (i < operands.count() - 1)
             {
@@ -369,9 +369,9 @@ QString FsmVhdlExport::equationText(Signal* equation, Fsm* fsm, bool prefixIOs)
     {
         if ( (prefixIOs) && (dynamic_cast<Input*>(equation) != nullptr))
             text += "I_";
-        else if (fsm->getLocalVariables().contains(equation))
+        else if (machine->getLocalVariables().contains(equation))
             text += "SIG_";
-        else if (fsm->getConstants().contains(equation))
+        else if (machine->getConstants().contains(equation))
             text += "CST_";
 
         text += correctName(equation->getName());

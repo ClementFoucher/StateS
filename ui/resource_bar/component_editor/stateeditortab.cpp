@@ -55,7 +55,7 @@ StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     actionEditor = new ActionEditor(state, tr("Actions triggered at state activation") + "<br />" + tr("(pulses are maintained while state is active)"));
     this->layout()->addWidget(actionEditor);
 
-    updateLocalContent();
+    updateContent();
 }
 
 void StateEditorTab::changeEditedState(FsmState* newState)
@@ -77,12 +77,6 @@ void StateEditorTab::setEditName()
 }
 
 void StateEditorTab::updateContent()
-{
-    updateLocalContent();
-    actionEditor->updateContent();
-}
-
-void StateEditorTab::updateLocalContent()
 {
     textStateName->setText(state->getName());
 }

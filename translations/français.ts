@@ -98,6 +98,49 @@
     </message>
 </context>
 <context>
+    <name>ConditionEditor</name>
+    <message>
+        <source>Condition</source>
+        <translation>Condition</translation>
+    </message>
+    <message>
+        <source>Set condition</source>
+        <translation>Définir la condition</translation>
+    </message>
+    <message>
+        <source>Clear condition</source>
+        <translation>Effacer la condition</translation>
+    </message>
+    <message>
+        <source>Display truth table</source>
+        <translation>Afficher la table de vérité</translation>
+    </message>
+    <message>
+        <source>Collapse truth table</source>
+        <translation>Masquer la table de vérité</translation>
+    </message>
+    <message>
+        <source>Warning: equation representing condition is not valid.</source>
+        <translation>Attention : l&apos;équation représentant la trasition est invalide.</translation>
+    </message>
+    <message>
+        <source>Thus, the current transition will never be crossed.</source>
+        <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
+    </message>
+    <message>
+        <source>Warning: equation representing condition is size</source>
+        <translation>Attention : l&apos;équation représentant la trasition est de taille</translation>
+    </message>
+    <message>
+        <source>Conditions must be size one to allow being treated as booleans.</source>
+        <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
+    </message>
+    <message>
+        <source>No compatible signal!</source>
+        <translation>Aucun signal compatible !</translation>
+    </message>
+</context>
+<context>
     <name>EquationEditor</name>
     <message>
         <source>Equation editor</source>
@@ -238,6 +281,21 @@
     <message>
         <source>Add transition</source>
         <translation>Ajouter une transition</translation>
+    </message>
+</context>
+<context>
+    <name>FsmVerificator</name>
+    <message>
+        <source>No FSM</source>
+        <translation>Aucune FSM</translation>
+    </message>
+    <message>
+        <source>Empty FSM</source>
+        <translation>FSM vide</translation>
+    </message>
+    <message>
+        <source>No initial state</source>
+        <translation>Aucun état n&apos;est marqué comme initial</translation>
     </message>
 </context>
 <context>
@@ -613,10 +671,6 @@
         <translation>Effacer la machine</translation>
     </message>
     <message>
-        <source>Export</source>
-        <translation type="vanished">Exporter</translation>
-    </message>
-    <message>
         <source>Export machine to PDF file</source>
         <translation>Exporter la machine au format PDF</translation>
     </message>
@@ -664,44 +718,19 @@
         <translation>Éditeur de transition</translation>
     </message>
     <message>
-        <source>Condition</source>
-        <translation>Condition</translation>
-    </message>
-    <message>
-        <source>Set condition</source>
-        <translation>Définir la condition</translation>
-    </message>
-    <message>
-        <source>Clear condition</source>
-        <translation>Effacer la condition</translation>
-    </message>
-    <message>
         <source>Actions triggered when transition is crossed</source>
         <translation>Actions déclechées au franchissement de la transition</translation>
-    </message>
-    <message>
-        <source>No compatible signal!</source>
-        <translation>Aucun signal compatible !</translation>
     </message>
     <message>
         <source>Warning: equation representing condition is size </source>
         <translation type="obsolete">Attention : l&apos;équation représentant la trasition est de taille</translation>
     </message>
+</context>
+<context>
+    <name>TruthTableDisplay</name>
     <message>
-        <source>Conditions must be size one to allow being treated as booleans.</source>
-        <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
-    </message>
-    <message>
-        <source>Thus, the current transition will never be crossed.</source>
-        <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
-    </message>
-    <message>
-        <source>Warning: equation representing condition is size</source>
-        <translation>Attention : l&apos;équation représentant la trasition est de taille</translation>
-    </message>
-    <message>
-        <source>Warning: equation representing condition is not valid.</source>
-        <translation>Attention : l&apos;équation représentant la trasition est invalide</translation>
+        <source>Result</source>
+        <translation>Résultat</translation>
     </message>
 </context>
 <context>
