@@ -25,6 +25,7 @@
 // Qt classes
 #include <QVector>
 #include <QList>
+#include <QString>
 
 // StateS classes
 class Signal;
@@ -36,18 +37,24 @@ class TruthTable
 {
 public:
     explicit TruthTable(Equation* equation);
+    explicit TruthTable(QList<Equation*> equations);
 
     QVector<Signal*>             getSignals() const;
     QVector<QVector<LogicValue>> getInputTable() const;
-    QVector<LogicValue>          getOutputTable() const;
+    QVector<QString>             getEquationTable() const;
+    QVector<QVector<LogicValue>> getOutputTable() const;
+    QVector<LogicValue>          getSingleOutputTable() const;
+
+    uint getOutputCount() const;
 
 private:
     QSet<Signal*> extractSignals(Equation* equation) const;
-    void buildTable(Equation* equation);
+    void buildTable(QVector<Equation*> equations);
 
     QVector<Signal*>             signalTable;
     QVector<QVector<LogicValue>> inputTable;
-    QVector<LogicValue>          outputTable;
+    QVector<QString>             equationTable;
+    QVector<QVector<LogicValue>> outputTable;
 };
 
 #endif // TRUTHTABLE_H

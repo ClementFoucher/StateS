@@ -101,6 +101,9 @@ void GraphicEquation::buildEquation()
             case Equation::nature::diffOp:
                 text += "difference";
                 break;
+            case Equation::nature::identity:
+                // Nothing
+                break;
             }
 
             if ( (complexEquation->getFunction() != Equation::nature::notOp)   &&
@@ -151,6 +154,7 @@ void GraphicEquation::buildEquation()
                         operatorText = new QLabel("≠");
                         break;
                     case Equation::nature::notOp:
+                    case Equation::nature::identity:
                         // No intermediate sign
                         break;
                     }

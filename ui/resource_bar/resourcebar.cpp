@@ -33,6 +33,7 @@
 #include "transitioneditortab.h"
 #include "simulatortab.h"
 #include "abouttab.h"
+#include "verifiertab.h"
 
 
 ResourceBar::ResourceBar(QWidget* parent, Machine* machine) :
@@ -92,6 +93,7 @@ void ResourceBar::setMachine(Machine* machine)
         this->toolResources      = new MachineBuilderTab(machine->getType());
         this->interfaceResources = new SignalEditorTab(machine);
         this->simulatorTab       = new SimulatorTab((Fsm*)machine);
+        this->verifierTab        = new VerifierTab((Fsm*)machine);
 
         connect(this->simulatorTab, &SimulatorTab::beginSimulation, this, &ResourceBar::beginSimulation);
         connect(this->simulatorTab, &SimulatorTab::endSimulation,   this, &ResourceBar::terminateSimulation);
@@ -100,7 +102,8 @@ void ResourceBar::setMachine(Machine* machine)
         this->insertTab(1, interfaceResources, tr("Signals"));
         this->insertTab(2, new QWidget(),      tr("Editor"));
         this->insertTab(3, simulatorTab,       tr("Simulator"));
-        this->insertTab(4, new QWidget(),      tr("Options"));
+        this->insertTab(4, verifierTab,        tr("Verifier"));
+//        this->insertTab(4, new QWidget(),      tr("Options"));
         this->insertTab(5, new AboutTab(),     tr("About"));
 
         this->setTabEnabled(2, false);
@@ -115,13 +118,15 @@ void ResourceBar::setMachine(Machine* machine)
         this->insertTab(1, new QWidget(),  tr("Signals"));
         this->insertTab(2, new QWidget(),  tr("Editor"));
         this->insertTab(3, new QWidget(),  tr("Simulator"));
-        this->insertTab(4, new QWidget(),  tr("Options"));
+        this->insertTab(4, new QWidget(),  tr("Verifier"));
+//        this->insertTab(4, new QWidget(),  tr("Options"));
         this->insertTab(5, new AboutTab(), tr("About"));
 
         this->setTabEnabled(0, false);
         this->setTabEnabled(1, false);
         this->setTabEnabled(2, false);
         this->setTabEnabled(3, false);
+        this->setTabEnabled(4, false);
 
         this->setCurrentIndex(5);
 

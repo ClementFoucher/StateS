@@ -591,6 +591,8 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, Signal* equation) const
             break;
         case Equation::nature::diffOp:
             stream.writeAttribute("Nature", "differs");
+        case Equation::nature::identity:
+            qDebug() << "(Fsm) Error! Trying to write identity to save file, while this should be an internal type. Ignored.";
             break;
         }
 

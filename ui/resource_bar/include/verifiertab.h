@@ -19,43 +19,50 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "states.h"
+#ifndef VERIFIERTAB_H
+#define VERIFIERTAB_H
+
+// Parent
+#include <QWidget>
 
 // Qt classes
-#include <QPainter>
-#include <QSvgRenderer>
+class QListWidget;
+class QLabel;
+class QListWidgetItem;
+class QPushButton;
 
 // StateS classes
-#include "statesui.h"
+class Fsm;
+class FsmVerifier;
+class TruthTable;
+class TruthTableDisplay;
 
 
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+class VerifierTab : public QWidget
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+    Q_OBJECT
 
-    return pixmap;
-}
+public:
+    explicit VerifierTab(Fsm* machine, QWidget* parent = nullptr);
+    ~VerifierTab();
 
-StateS::StateS()
-{
-    drawingWindow = new StatesUi();
+    void changeMachine(Fsm* machine);
 
-    drawingWindow->show();
-}
+private slots:
+    void checkNow();
+    void clear();
 
-StateS::~StateS()
-{
-    drawingWindow->setMachine(nullptr);
+    void proofRequested(QListWidgetItem* item);
 
-    delete drawingWindow;
-}
+private:
+    Fsm* machine = nullptr;
 
-QString StateS::getVersion()
-{
-    return "0.2.4";
-}
+    FsmVerifier* verifier = nullptr;
+
+    QLabel* listTitle = nullptr;
+    QListWidget* list = nullptr;
+    QPushButton* buttonClear = nullptr;
+    TruthTableDisplay* truthTable = nullptr;
+};
+
+#endif // VERIFIERTAB_H

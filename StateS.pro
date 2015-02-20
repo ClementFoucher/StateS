@@ -76,7 +76,9 @@ SOURCES += \
     ui/vhdlexportoptions.cpp \
     core/basic_type/truthtable.cpp \
     ui/truthtabledisplay.cpp \
-    ui/resource_bar/component_editor/conditioneditor.cpp
+    ui/resource_bar/component_editor/conditioneditor.cpp \
+    core/machine/fsm/fsmverifier.cpp \
+    ui/resource_bar/verifiertab.cpp
 
 
 HEADERS  += \
@@ -137,12 +139,12 @@ HEADERS  += \
     ui/include/vhdlexportoptions.h \
     core/basic_type/include/truthtable.h \
     ui/include/truthtabledisplay.h \
-    ui/resource_bar/component_editor/include/conditioneditor.h
+    ui/resource_bar/component_editor/include/conditioneditor.h \
+    core/machine/fsm/include/fsmverifier.h \
+    ui/resource_bar/include/verifiertab.h
 
 QMAKE_CXXFLAGS += \
-# Need C++ 11 for dynamic cast and nullptr
     -std=c++11 \
-# I AM pedantic. Why should GCC not be?
     -pedantic
 
 INCLUDEPATH += \

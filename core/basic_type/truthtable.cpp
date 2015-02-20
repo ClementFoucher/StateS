@@ -36,7 +36,15 @@
 
 TruthTable::TruthTable(Equation* equation)
 {
-    buildTable(equation);
+    QList<Equation*> equations;
+    equations.append(equation);
+
+    buildTable(equations.toVector());
+}
+
+TruthTable::TruthTable(QList<Equation*> equations)
+{
+    buildTable(equations.toVector());
 }
 
 QVector<Signal*> TruthTable::getSignals() const
@@ -49,9 +57,32 @@ QVector<QVector<LogicValue> > TruthTable::getInputTable() const
     return this->inputTable;
 }
 
-QVector<LogicValue> TruthTable::getOutputTable() const
+QVector<QString> TruthTable::getEquationTable() const
+{
+    return this->equationTable;
+}
+
+QVector<QVector<LogicValue> > TruthTable::getOutputTable() const
 {
     return this->outputTable;
+}
+
+// If there is only one output, get a simplified (vertical) vector
+QVector<LogicValue> TruthTable::getSingleOutputTable() const
+{
+    QVector<LogicValue> output;
+
+    foreach(QVector<LogicValue> currentRow, this->outputTable)
+    {
+        output.append(currentRow[0]);
+    }
+
+    return output;
+}
+
+uint TruthTable::getOutputCount() const
+{
+    return this->outputTable.count();
 }
 
 QSet<Signal*> TruthTable::extractSignals(Equation* equation) const
@@ -75,9 +106,17 @@ QSet<Signal*> TruthTable::extractSignals(Equation* equation) const
     return list;
 }
 
-void TruthTable::buildTable(Equation* equation)
+void TruthTable::buildTable(QVector<Equation*> equations)
 {
-    signalTable = (extractSignals(equation).toList()).toVector();
+    QSet<Signal*> signalSet;
+
+    foreach(Equation* equation, equations)
+    {
+        signalSet += extractSignals(equation);
+        this->equationTable.append(equation->getText());
+    }
+
+    signalTable = (signalSet.toList()).toVector();
 
     uint inputCount = 0;
     foreach(Signal* sig, signalTable)
@@ -85,6 +124,7 @@ void TruthTable::buildTable(Equation* equation)
         inputCount += sig->getSize();
     }
 
+    // Compute initial row
     QVector<LogicValue> currentRow;
     foreach(Signal* sig, signalTable)
     {
@@ -101,7 +141,13 @@ void TruthTable::buildTable(Equation* equation)
         {
             signalTable[i]->setCurrentValue(currentRow[i]);
         }
-        outputTable.append(equation->getCurrentValue());
+
+        QVector<LogicValue> currentResultLine;
+        foreach(Equation* equation, equations)
+        {
+            currentResultLine.append(equation->getCurrentValue());
+        }
+        this->outputTable.append(currentResultLine);
 
         // Prepare next row
         for (int i = currentRow.count() - 1 ; i >= 0 ; i--)

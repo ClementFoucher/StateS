@@ -19,43 +19,40 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "states.h"
+#ifndef FSMVERIFIER_H
+#define FSMVERIFIER_H
+
+// Parent
+#include <QObject>
 
 // Qt classes
-#include <QPainter>
-#include <QSvgRenderer>
+#include <QHash>
 
 // StateS classes
-#include "statesui.h"
+#include "truthtable.h"
+class Fsm;
 
 
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+class FsmVerifier : public QObject
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+    Q_OBJECT
 
-    return pixmap;
-}
+public:
+    explicit FsmVerifier(Fsm* machine);
+    ~FsmVerifier();
 
-StateS::StateS()
-{
-    drawingWindow = new StatesUi();
+    QList<QString> verifyFsm();
+    QVector<TruthTable*> getProofs();
+    QHash<TruthTable*, QList<int>> getProofsHighlight();
 
-    drawingWindow->show();
-}
+private:
+    void clearProofs();
 
-StateS::~StateS()
-{
-    drawingWindow->setMachine(nullptr);
+    Fsm* machine = nullptr;
+    QList<TruthTable> internalProofs;
 
-    delete drawingWindow;
-}
+    QVector<TruthTable*> proofs;
+    QHash<TruthTable*, QList<int>> proofsHighlight;
+};
 
-QString StateS::getVersion()
-{
-    return "0.2.4";
-}
+#endif // FSMVERIFIER_H

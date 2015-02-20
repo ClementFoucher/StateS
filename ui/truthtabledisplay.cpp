@@ -37,7 +37,13 @@ TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* pare
 
     QVector<Signal*> sigs = truthTable->getSignals();
     QVector<QVector<LogicValue>> inputTable = truthTable->getInputTable();
-    QVector<LogicValue> outputTable = truthTable->getOutputTable();
+    QVector<LogicValue> outputTable;
+    QVector<QVector<LogicValue>> outputTableMulti;
+
+    if (truthTable->getOutputCount() == 1)
+        outputTable = truthTable->getSingleOutputTable();
+    else
+        outputTableMulti = truthTable->getOutputTable();
 
     // Headers
     for (int i = 0 ; i < sigs.count() ; i++)
@@ -46,8 +52,21 @@ TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* pare
         labelsList.append(sigs[i]->getName());
     }
 
-    this->insertColumn(sigs.count());
-    labelsList.append(tr("Result"));
+    if (truthTable->getOutputCount() == 1)
+    {
+        this->insertColumn(this->columnCount());
+        labelsList.append(tr("Result"));
+    }
+    else
+    {
+        QVector<QString> equationTable = truthTable->getEquationTable();
+
+        foreach(QString equationText, equationTable)
+        {
+            this->insertColumn(this->columnCount());
+            labelsList.append(tr("Result") + ": " + equationText);
+        }
+    }
 
     this->setHorizontalHeaderLabels(labelsList);
 
@@ -63,9 +82,22 @@ TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* pare
             this->setItem(i, j, item);
         }
 
-        QTableWidgetItem* item = new QTableWidgetItem(outputTable[i].toString());
+        if (truthTable->getOutputCount() == 1)
+        {
+            QTableWidgetItem* item = new QTableWidgetItem(outputTable[i].toString());
+            this->setItem(i, sigs.count(), item);
+        }
+        else
+        {
+            for(int j = 0 ; j < outputTableMulti[i].count() ; j++)
+            {
+                QTableWidgetItem* item = new QTableWidgetItem(outputTableMulti[i][j].toString());
+                this->setItem(i, sigs.count()+j, item);
+            }
 
-        this->setItem(i, sigs.count(), item);
+        }
+
+
     }
 }
 

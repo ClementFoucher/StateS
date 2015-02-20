@@ -284,18 +284,58 @@
     </message>
 </context>
 <context>
-    <name>FsmVerificator</name>
+    <name>FsmVerifier</name>
     <message>
-        <source>No FSM</source>
-        <translation>Aucune FSM</translation>
+        <source>No FSM.</source>
+        <translation>Aucune FSM.</translation>
     </message>
     <message>
-        <source>Empty FSM</source>
-        <translation>FSM vide</translation>
+        <source>Empty FSM.</source>
+        <translation>FSM vide.</translation>
     </message>
     <message>
-        <source>No initial state</source>
-        <translation>Aucun état n&apos;est marqué comme initial</translation>
+        <source>No initial state.</source>
+        <translation>Aucun état initial défini.</translation>
+    </message>
+    <message>
+        <source>Error on transition condition from state</source>
+        <translation>Erreur sur la condition d&apos;une transition venant de l&apos;état</translation>
+    </message>
+    <message>
+        <source>Please correct this equation:</source>
+        <translation>Veuillez corriger cette équation :</translation>
+    </message>
+    <message>
+        <source>Multiple transitions from state</source>
+        <translation>Plusieurs transitions venant de l&apos;état</translation>
+    </message>
+    <message>
+        <source>have a condition value always true.</source>
+        <translation>ont une condition définie comme toujours vraie.</translation>
+    </message>
+    <message>
+        <source>One transition from state</source>
+        <translation>Une trnsition venant de l&apos;état</translation>
+    </message>
+    <message>
+        <source>has a condition value always true.</source>
+        <translation>a une condition toujours vraie.</translation>
+    </message>
+    <message>
+        <source>Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.</source>
+        <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
+    </message>
+    <message>
+        <source>Transitions from state</source>
+        <translation>Les transitions venant de l&apos;état</translation>
+    </message>
+    <message>
+        <source>are not mutually exclusive.</source>
+        <translation>ne sont pas mutuellement exclusives.</translation>
+    </message>
+    <message>
+        <source>Two transitions or more can be active at the same time.</source>
+        <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
     </message>
 </context>
 <context>
@@ -449,10 +489,6 @@
         <translation>Simulateur</translation>
     </message>
     <message>
-        <source>Options</source>
-        <translation>Options</translation>
-    </message>
-    <message>
         <source>About</source>
         <translation>À propos</translation>
     </message>
@@ -467,6 +503,10 @@
     <message>
         <source>Transition</source>
         <translation>Transition</translation>
+    </message>
+    <message>
+        <source>Verifier</source>
+        <translation>Vérificateur</translation>
     </message>
 </context>
 <context>
@@ -731,6 +771,29 @@
     <message>
         <source>Result</source>
         <translation>Résultat</translation>
+    </message>
+</context>
+<context>
+    <name>VerifierTab</name>
+    <message>
+        <source>Verifier tool</source>
+        <translation>Outil de vérification</translation>
+    </message>
+    <message>
+        <source>Check machine</source>
+        <translation>Vérifier la machine</translation>
+    </message>
+    <message>
+        <source>No errors!</source>
+        <translation>Aucune erreur !</translation>
+    </message>
+    <message>
+        <source>Double-click on red items to detail error:</source>
+        <translation>Double-cliquez sur une erreur affichée en rouge pour obtenir le détail de l&apos;erreur :</translation>
+    </message>
+    <message>
+        <source>Clear verification</source>
+        <translation>Effacer la vérification</translation>
     </message>
 </context>
 <context>

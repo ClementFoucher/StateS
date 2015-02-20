@@ -80,7 +80,8 @@ public:
                       norOp,
                       xnorOp,
                       equalOp, // Equal equations always have exactly two operand and are size one
-                      diffOp   // Diff  equations always have exactly two operand and are size one
+                      diffOp,  // Diff  equations always have exactly two operand and are size one
+                      identity // For internal use only, exactly one operand
                      };
 
 public:

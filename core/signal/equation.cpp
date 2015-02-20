@@ -40,7 +40,7 @@ Equation::Equation(nature function, uint operandCount) :
 {
     this->function = function;
 
-    if (this->function == nature::notOp)
+    if ( (this->function == nature::notOp) | (this->function == nature::identity) )
     {
         this->allowedOperandCount = 1;
         if (operandCount != 1)
@@ -142,7 +142,7 @@ Equation::nature Equation::getFunction() const
 
 void Equation::setFunction(const nature& newFunction)
 {
-    if (newFunction == nature::notOp)
+    if ( (newFunction == nature::notOp) | (newFunction == nature::identity) )
     {
         // Delete operands beyond one
         while (allowedOperandCount > 1)
@@ -345,6 +345,7 @@ QString Equation::getText(bool colored) const
                 text += " ≠ ";
                 break;
             case Equation::nature::notOp:
+            case Equation::nature::identity:
                 break;
             }
         }
@@ -365,6 +366,10 @@ LogicValue Equation::getCurrentValue() const
         if (function == nature::notOp)
         {
             return ! ( operands[0]->getCurrentValue() );
+        }
+        else if (function == nature::identity)
+        {
+            return ( operands[0]->getCurrentValue() );
         }
         else if ( (function == nature::equalOp) || (function == nature::diffOp) )
         {
@@ -421,6 +426,8 @@ LogicValue Equation::getCurrentValue() const
             case nature::equalOp:
             case nature::diffOp:
             case nature::notOp:
+            case nature::identity:
+                // Not handled here
                 break;
             }
 
@@ -442,6 +449,7 @@ bool Equation::isInverted() const
     case nature::xnorOp:
         return true;
         break;
+    case nature::identity:
     case nature::andOp:
     case nature::orOp:
     case nature::xorOp:
@@ -518,8 +526,9 @@ uint Equation::getOperandCount() const
 bool Equation::increaseOperandCount(bool force)
 {
     if ( ( force ) ||
-         ( (function != nature::notOp)   &&
-           (function != nature::equalOp) &&
+         ( (function != nature::notOp)    &&
+           (function != nature::identity) &&
+           (function != nature::equalOp)  &&
            (function != nature::diffOp)
          )
        )
@@ -539,8 +548,9 @@ bool Equation::increaseOperandCount(bool force)
 bool Equation::decreaseOperandCount(bool force)
 {
     if ( ( force ) ||
-         ( (function != nature::notOp)   &&
-           (function != nature::equalOp) &&
+         ( (function != nature::notOp)    &&
+           (function != nature::identity) &&
+           (function != nature::equalOp)  &&
            (function != nature::diffOp)
          )
        )

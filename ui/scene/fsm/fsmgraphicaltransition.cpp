@@ -857,7 +857,7 @@ void FsmGraphicalTransition::quitNeighboorhood()
 
     if (neighbors != nullptr)
     {
-        connect(this->neighbors, &FsmGraphicalTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicalTransition::updateDisplay);
+        disconnect(this->neighbors, &FsmGraphicalTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicalTransition::updateDisplay);
         neighbors->removeAndNotify(this);
         neighbors = nullptr;
     }

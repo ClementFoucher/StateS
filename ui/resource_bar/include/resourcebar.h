@@ -35,6 +35,7 @@ class FsmState;
 class FsmTransition;
 class SimulatorTab;
 class AboutTab;
+class VerifierTab;
 
 class ResourceBar : public QTabWidget
 {
@@ -74,6 +75,7 @@ private:
     SignalEditorTab    * interfaceResources = nullptr;
     ComponentEditorTab * editorTab          = nullptr;
     SimulatorTab       * simulatorTab       = nullptr;
+    VerifierTab        * verifierTab        = nullptr;
     AboutTab           * aboutTab           = nullptr;
 
     mode currentMode = mode::voidMode;
