@@ -99,7 +99,8 @@ QSet<Signal*> TruthTable::extractSignals(Equation* equation) const
         }
         else
         {
-            list.insert(sig);
+            if (!sig->getIsConstant())
+                list.insert(sig);
         }
     }
 
