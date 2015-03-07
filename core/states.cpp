@@ -57,5 +57,5 @@ StateS::~StateS()
 
 QString StateS::getVersion()
 {
-    return "0.2.5";
+    return "0.2.6";
 }

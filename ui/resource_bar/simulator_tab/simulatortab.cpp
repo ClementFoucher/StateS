@@ -92,12 +92,15 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 this->simulationTools->layout()->addWidget(buttonReset);
                 this->simulationTools->layout()->addWidget(buttonNextStep);
 
-                QLabel* inputListTitle = new QLabel(tr("Click on bits from the list below to switch value:"));
-                inputListTitle->setAlignment(Qt::AlignCenter);
-                this->simulationTools->layout()->addWidget(inputListTitle);
+                if (this->machine->getInputs().count() != 0)
+                {
+                    QLabel* inputListTitle = new QLabel(tr("Click on bits from the list below to switch value:"));
+                    inputListTitle->setAlignment(Qt::AlignCenter);
+                    this->simulationTools->layout()->addWidget(inputListTitle);
 
-                inputList = new InputsSelector(this->machine->getInputs());
-                this->simulationTools->layout()->addWidget(inputList);
+                    inputList = new InputsSelector(this->machine->getInputs());
+                    this->simulationTools->layout()->addWidget(inputList);
+                }
 
                 this->reset();
 
