@@ -240,10 +240,12 @@ void SimulatorTab::buttonLauchAutoStepClicked()
     if (this->buttonTriggerAutoStep->isChecked())
     {
         this->clock->start(this->autoStepValue->text().toInt() * 1000);
+        this->buttonTriggerAutoStep->setText(tr("Suspend"));
     }
     else
     {
         this->clock->stop();
+        this->buttonTriggerAutoStep->setText(tr("Launch"));
     }
 }
 

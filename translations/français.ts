@@ -121,7 +121,7 @@
     </message>
     <message>
         <source>Warning: equation representing condition is not valid.</source>
-        <translation>Attention : l&apos;équation représentant la trasition est invalide.</translation>
+        <translation>Attention : l&apos;équation représentant la transition est invalide.</translation>
     </message>
     <message>
         <source>Thus, the current transition will never be crossed.</source>
@@ -129,7 +129,7 @@
     </message>
     <message>
         <source>Warning: equation representing condition is size</source>
-        <translation>Attention : l&apos;équation représentant la trasition est de taille</translation>
+        <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
         <source>Conditions must be size one to allow being treated as booleans.</source>
@@ -617,6 +617,14 @@
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
+    <message>
+        <source>Detach as independant window</source>
+        <translation>Détacher en tant que fenêtre indépendante</translation>
+    </message>
+    <message>
+        <source>Attach to main window</source>
+        <translation>Attacher à la fenêtre principale</translation>
+    </message>
 </context>
 <context>
     <name>SimulatorTab</name>
@@ -656,6 +664,34 @@
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
+    <message>
+        <source>Do one step</source>
+        <translation>Avancer d&apos;un pas</translation>
+    </message>
+    <message>
+        <source>View timeline</source>
+        <translation>Voir le chronogramme</translation>
+    </message>
+    <message>
+        <source>Do one step every</source>
+        <translation>Avancer d&apos;un pas toutes les</translation>
+    </message>
+    <message>
+        <source>second(s)</source>
+        <translation>seconde(s)</translation>
+    </message>
+    <message>
+        <source>Launch</source>
+        <translation>Démarrer</translation>
+    </message>
+    <message>
+        <source>View machine</source>
+        <translation>Voir la machine</translation>
+    </message>
+    <message>
+        <source>Suspend</source>
+        <translation>Suspendre</translation>
+    </message>
 </context>
 <context>
     <name>StateEditorTab</name>
@@ -693,14 +729,6 @@
     <message>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
-    </message>
-    <message>
-        <source>New FSM</source>
-        <translation>Nouvelle FSM</translation>
-    </message>
-    <message>
-        <source>Create new FSM</source>
-        <translation>Créer une nouvelle FSM</translation>
     </message>
     <message>
         <source>Clear</source>
@@ -760,10 +788,6 @@
     <message>
         <source>Actions triggered when transition is crossed</source>
         <translation>Actions déclechées au franchissement de la transition</translation>
-    </message>
-    <message>
-        <source>Warning: equation representing condition is size </source>
-        <translation type="obsolete">Attention : l&apos;équation représentant la trasition est de taille</translation>
     </message>
 </context>
 <context>
