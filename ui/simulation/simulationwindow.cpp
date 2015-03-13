@@ -29,6 +29,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPrinter>
+#include <QToolBar>
+#include <QVBoxLayout>
 
 // StateS classes
 #include "states.h"
@@ -42,7 +44,6 @@
 SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* parent) :
     QMainWindow(parent)
 {
-
     this->machine = machine;
 
     this->toolBar = this->addToolBar(tr("Tools"));
@@ -52,8 +53,11 @@ SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* pare
     QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
     connect(action, &QAction::triggered, this, &SimulationWindow::exportToPDF);
 
-    this->toolBar->addAction(action);
+    this->actionDetach = new QAction(tr("Detach as independant window"), this);
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
 
+    this->toolBar->addAction(action);
+    this->toolBar->addAction(this->actionDetach);
 
     this->setCentralWidget(new QWidget());
     this->layout = new QVBoxLayout(this->centralWidget());
@@ -162,4 +166,24 @@ void SimulationWindow::exportToPDF()
 
         centralWidget()->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);
     }
+}
+
+void SimulationWindow::setMeFree()
+{
+    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
+
+    emit detachTimeline(true);
+
+    this->actionDetach->setText(tr("Attach to main window"));
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::bindMe);
+}
+
+void SimulationWindow::bindMe()
+{
+    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::bindMe);
+
+    emit detachTimeline(false);
+
+    this->actionDetach->setText(tr("Detach as independant window"));
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
 }

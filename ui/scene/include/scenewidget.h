@@ -37,8 +37,8 @@ class SceneWidget : public QGraphicsView
     Q_OBJECT
 
 public:
-    explicit SceneWidget(Machine *machine, ResourceBar *resources, QWidget* parent);
-    explicit SceneWidget(QWidget* parent);
+    explicit SceneWidget(Machine *machine, ResourceBar *resources, QWidget* parent = nullptr);
+    explicit SceneWidget(QWidget* parent = nullptr);
 
     void setMachine(Machine* Machine, ResourceBar *resources);
 

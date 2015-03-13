@@ -36,6 +36,7 @@ class FsmTransition;
 class SimulatorTab;
 class AboutTab;
 class VerifierTab;
+class SimulationWindow;
 
 class ResourceBar : public QTabWidget
 {
@@ -49,6 +50,7 @@ public:
     ~ResourceBar();
 
     MachineTools* getBuildTools() const;
+    SimulationWindow* getTimeline() const;
 
     void setMachine(Machine* value);
 
@@ -64,6 +66,7 @@ public slots:
 
 signals:
     void simulationToggled();
+    void triggerView();
 
 private slots:
     void tabChanged(int index);

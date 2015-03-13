@@ -232,6 +232,8 @@ void ResourceBar::beginSimulation()
     this->setTabEnabled(0, false);
     this->setTabEnabled(1, false);
 
+    connect(this->simulatorTab, &SimulatorTab::triggerView, this, &ResourceBar::triggerView);
+
     currentMode = mode::simulateMode;
 
     emit simulationToggled();
@@ -242,6 +244,8 @@ void ResourceBar::terminateSimulation()
     this->setTabEnabled(0, true);
     this->setTabEnabled(1, true);
 
+    disconnect(this->simulatorTab, &SimulatorTab::triggerView, this, &ResourceBar::triggerView);
+
     currentMode = mode::editMode;
 
     emit simulationToggled();
@@ -251,6 +255,14 @@ MachineTools* ResourceBar::getBuildTools() const
 {
     if (toolResources != nullptr)
         return toolResources->getBuildTools();
+    else
+        return nullptr;
+}
+
+SimulationWindow* ResourceBar::getTimeline() const
+{
+    if (this->simulatorTab != nullptr)
+        return this->simulatorTab->getTimeline();
     else
         return nullptr;
 }

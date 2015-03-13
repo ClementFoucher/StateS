@@ -30,6 +30,8 @@
 #include <QToolBar>
 #include <QApplication>
 #include <QSplitter>
+#include <QAction>
+#include <QStackedWidget>
 
 // StateS classes
 #include "states.h"
@@ -39,6 +41,7 @@
 #include "genericscene.h"
 #include "fsmvhdlexport.h"
 #include "vhdlexportoptions.h"
+#include "simulationwindow.h"
 
 
 //
@@ -81,18 +84,19 @@ StatesUi::StatesUi(Machine* machine) :
 
     mainToolBar->addSeparator();
 
-    this->actionNewFsm = new QAction(this);
+    /*this->actionNewFsm = new QAction(this);
     this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
     this->actionNewFsm->setText(tr("New FSM"));
     this->actionNewFsm->setToolTip(tr("Create new FSM"));
     connect(this->actionNewFsm, &QAction::triggered, this, &StatesUi::newMachineRequestEvent);
-    mainToolBar->addAction(this->actionNewFsm);
+    mainToolBar->addAction(this->actionNewFsm);*/
 
     this->actionClear = new QAction(this);
     this->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionClear->setText(tr("Clear"));
     this->actionClear->setToolTip(tr("Clear machine"));
-    connect(this->actionClear, &QAction::triggered, this, &StatesUi::clearMachineRequestEvent);
+    connect(this->actionClear, &QAction::triggered, this, &StatesUi::newMachineRequestEvent);
+    //connect(this->actionClear, &QAction::triggered, this, &StatesUi::clearMachineRequestEvent);
     mainToolBar->addAction(this->actionClear);
 
     mainToolBar->addSeparator();
@@ -117,7 +121,9 @@ StatesUi::StatesUi(Machine* machine) :
     splitter->setChildrenCollapsible(false);
     this->setCentralWidget(splitter);
 
-    this->machineDisplayArea = new SceneWidget(splitter);
+    this->mainDisplayArea = new QStackedWidget(splitter);
+    this->machineDisplayArea = new SceneWidget();
+    this->mainDisplayArea->addWidget(this->machineDisplayArea);
     this->resourcesBar = new ResourceBar(splitter);
 
     QList<int> length;
@@ -126,8 +132,12 @@ StatesUi::StatesUi(Machine* machine) :
     splitter->setSizes(length);
 
     connect(this->resourcesBar, &ResourceBar::simulationToggled, this, &StatesUi::handleSimulationToggled);
+    connect(this->resourcesBar, &ResourceBar::triggerView, this, &StatesUi::triggerView);
 
-    this->setMachine(machine);
+    if (machine != nullptr)
+        this->setMachine(machine);
+    else
+        this->setMachine(new Fsm());
 }
 
 //
@@ -136,7 +146,6 @@ StatesUi::StatesUi(Machine* machine) :
 
 void StatesUi::setMachine(Machine* machine)
 {
-//    this->centralWidget->setMachine(machine);
     this->resourcesBar->setMachine(machine);
     this->machineDisplayArea->setMachine(machine, resourcesBar);
 
@@ -306,6 +315,37 @@ void StatesUi::loadMachineRequestEvent()
 
 void StatesUi::handleSimulationToggled()
 {
-    ((GenericScene*)(machineDisplayArea->scene()))->simulationModeChanged();
+    ((GenericScene*)(this->machineDisplayArea->scene()))->simulationModeChanged();
+
+    this->timeline = this->resourcesBar->getTimeline();
+    if (this->timeline != nullptr)
+    {
+        this->mainDisplayArea->addWidget(this->timeline);
+        connect(this->timeline, &SimulationWindow::detachTimeline, this, &StatesUi::detachTimeline);
+    }
+}
+
+void StatesUi::triggerView()
+{
+    if (this->mainDisplayArea->count() > 1)
+    {
+        if (this->mainDisplayArea->currentIndex() == 0)
+            this->mainDisplayArea->setCurrentIndex(1);
+        else
+            this->mainDisplayArea->setCurrentIndex(0);
+    }
+}
+
+void StatesUi::detachTimeline(bool detach)
+{
+    if (detach)
+    {
+        this->timeline->setParent(nullptr);
+        this->timeline->show();
+    }
+    else
+    {
+        this->mainDisplayArea->addWidget(this->timeline);
+    }
 }
 

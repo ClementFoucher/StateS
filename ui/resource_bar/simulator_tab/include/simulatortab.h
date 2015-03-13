@@ -26,8 +26,9 @@
 #include <QWidget>
 
 // Qt classes
-#include <QPushButton>
-#include <QSignalMapper>
+class QPushButton;
+class QSignalMapper;
+class QLineEdit;
 
 // StateS classes
 class Fsm;
@@ -44,9 +45,12 @@ public:
     explicit SimulatorTab(Fsm* machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
+    SimulationWindow* getTimeline() const;
+
 signals:
     void beginSimulation();
     void endSimulation();
+    void triggerView();
 
 private slots:
     void triggerSimulationMode(bool enabled);
@@ -55,6 +59,8 @@ private slots:
     void clockEvent();
     void resetEvent();
     void targetStateSelectionMade(QObject *choosenTransition);
+    void buttonTriggerViewClicked();
+    void buttonLauchAutoStepClicked();
 
 private:
     Fsm* machine = nullptr;
@@ -64,6 +70,9 @@ private:
     SimulationWindow* timeLine = nullptr;
 
     QPushButton* buttonTriggerSimulation = nullptr;
+    QPushButton* buttonTriggerView = nullptr;
+    QPushButton* buttonTriggerAutoStep = nullptr;
+    QLineEdit* autoStepValue = nullptr;
     QWidget* simulationTools = nullptr;
 
     InputsSelector* inputList = nullptr;

@@ -34,6 +34,17 @@ void Clock::nextStep()
     emit clockEvent();
 }
 
+void Clock::start(uint intervalms)
+{
+    this->timer.setInterval(intervalms);
+    this->timer.start();
+}
+
+void Clock::stop()
+{
+    this->timer.stop();
+}
+
 void Clock::reset()
 {
     emit resetEvent();

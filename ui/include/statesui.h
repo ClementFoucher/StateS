@@ -26,12 +26,14 @@
 #include <QMainWindow>
 
 // Qt classes
-#include <QAction>
+class QAction;
+class QStackedWidget;
 
 // StateS classes
 class Machine;
 class ResourceBar;
 class SceneWidget;
+class SimulationWindow;
 
 class StatesUi : public QMainWindow
 {
@@ -57,6 +59,8 @@ private slots:
     void saveMachineRequestEvent();
     void loadMachineRequestEvent();
     void handleSimulationToggled();
+    void triggerView();
+    void detachTimeline(bool detach);
 
 private:
     QAction* actionSave       = nullptr;
@@ -66,8 +70,10 @@ private:
     QAction* actionExportPdf  = nullptr;
     QAction* actionExportVhdl = nullptr;
 
-    SceneWidget* machineDisplayArea = nullptr;
-    ResourceBar* resourcesBar       = nullptr;
+    QStackedWidget*   mainDisplayArea    = nullptr;
+    SceneWidget*      machineDisplayArea = nullptr;
+    ResourceBar*      resourcesBar       = nullptr;
+    SimulationWindow* timeline           = nullptr;
 
     // For debug only
     Machine* machine = nullptr;

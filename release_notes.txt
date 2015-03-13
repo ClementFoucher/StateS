@@ -2,6 +2,7 @@
 * StateS v. 0.2 *
 *****************
 
+- 2015-03-13 - V 0.2.7 - Reorganized simulation, added auto step feature; Reorganized new FSM / clear FSM.
 - 2015-03-07 - V 0.2.6 - Bugfix: Starting simulation no longer results in a crash when no inputs declared.
 - 2015-02-20 - V 0.2.5 - Constants are now constant in truth tables.
 - 2015-02-20 - V 0.2.4 - Added a verifier tool.

@@ -36,6 +36,8 @@ public:
     explicit Clock(QObject* parent = nullptr);
 
     void nextStep();
+    void start(uint intervalms);
+    void stop();
     void reset();
 
 signals:

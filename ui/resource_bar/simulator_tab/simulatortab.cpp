@@ -24,6 +24,10 @@
 
 // Qt classes
 #include <QLabel>
+#include <QPushButton>
+#include <QSignalMapper>
+#include <QVBoxLayout>
+#include <QLineEdit>
 
 // Debug
 #include <QDebug>
@@ -63,6 +67,11 @@ SimulatorTab::~SimulatorTab()
     this->triggerSimulationMode(false);
 }
 
+SimulationWindow *SimulatorTab::getTimeline() const
+{
+    return this->timeLine;
+}
+
 void SimulatorTab::triggerSimulationMode(bool enabled)
 {
     if (enabled)
@@ -84,13 +93,31 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 this->layout()->addWidget(this->simulationTools);
 
                 QPushButton* buttonReset    = new QPushButton(tr("Reset"));
-                QPushButton* buttonNextStep = new QPushButton(">");
+                QPushButton* buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
+                this->buttonTriggerView     = new QPushButton(tr("View timeline"));
 
-                connect(buttonReset,    &QAbstractButton::clicked, this, &SimulatorTab::reset);
-                connect(buttonNextStep, &QAbstractButton::clicked, this, &SimulatorTab::nextStep);
+                QHBoxLayout* autoStepLayout = new QHBoxLayout();
+                QLabel* autoStepBeginText = new QLabel(">> " + tr("Do one step every"));
+                this->autoStepValue = new QLineEdit("1");
+                QLabel* autoStepUnit = new QLabel(tr("second(s)") + " >>");
+                this->buttonTriggerAutoStep = new QPushButton(tr("Launch"));
+                this->buttonTriggerAutoStep->setCheckable(true);
+                autoStepLayout->addWidget(autoStepBeginText);
+                autoStepLayout->addWidget(this->autoStepValue);
+                autoStepLayout->addWidget(autoStepUnit);
+                autoStepLayout->addWidget(this->buttonTriggerAutoStep);
 
+                this->buttonTriggerView->setCheckable(true);
+
+                connect(buttonReset,                 &QPushButton::clicked, this, &SimulatorTab::reset);
+                connect(buttonNextStep,              &QPushButton::clicked, this, &SimulatorTab::nextStep);
+                connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
+                connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this, &SimulatorTab::buttonLauchAutoStepClicked);
+
+                this->simulationTools->layout()->addWidget(this->buttonTriggerView);
                 this->simulationTools->layout()->addWidget(buttonReset);
                 this->simulationTools->layout()->addWidget(buttonNextStep);
+                ((QVBoxLayout*)this->simulationTools->layout())->addLayout(autoStepLayout);
 
                 if (this->machine->getInputs().count() != 0)
                 {
@@ -105,7 +132,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 this->reset();
 
                 this->timeLine = new SimulationWindow(this->machine, this->clock, 0);
-                this->timeLine->show();
 
                 emit beginSimulation();
             }
@@ -196,6 +222,29 @@ void SimulatorTab::targetStateSelectionMade(QObject* choosenTransition)
 
     currentState = actualTransition->getTarget();
     currentState->setActive(true);
+}
+
+void SimulatorTab::buttonTriggerViewClicked()
+{
+    if (this->buttonTriggerView->isChecked())
+        this->buttonTriggerView->setText(tr("View machine"));
+    else
+        this->buttonTriggerView->setText(tr("View timeline"));
+
+
+    emit triggerView();
+}
+
+void SimulatorTab::buttonLauchAutoStepClicked()
+{
+    if (this->buttonTriggerAutoStep->isChecked())
+    {
+        this->clock->start(this->autoStepValue->text().toInt() * 1000);
+    }
+    else
+    {
+        this->clock->stop();
+    }
 }
 
 void SimulatorTab::clockEvent()

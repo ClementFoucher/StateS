@@ -26,9 +26,10 @@
 #include <QMainWindow>
 
 // Qt classes
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QToolBar>
+class QWidget;
+class QVBoxLayout;
+class QToolBar;
+class QAction;
 
 // StateS classes
 class Machine;
@@ -41,12 +42,17 @@ class SimulationWindow : public QMainWindow
 public:
     explicit SimulationWindow(Machine* machine, Clock* clock, QWidget* parent = nullptr);
 
+signals:
+    void detachTimeline(bool detach);
+
 protected slots:
     void mousePressEvent(QMouseEvent*) override;
     void mouseMoveEvent(QMouseEvent*) override;
 
 private slots:
     void exportToPDF();
+    void setMeFree();
+    void bindMe();
 
 protected:
     void paintEvent(QPaintEvent*) override;
@@ -57,6 +63,8 @@ private:
     Clock* clock = nullptr;
 
     QVBoxLayout* layout = nullptr;
+
+    QAction* actionDetach = nullptr;
 
     QToolBar* toolBar = nullptr;
 
