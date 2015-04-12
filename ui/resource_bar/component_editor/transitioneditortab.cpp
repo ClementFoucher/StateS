@@ -32,7 +32,7 @@
 #include "fsmtransition.h"
 
 
-TransitionEditorTab::TransitionEditorTab(FsmTransition* transition, QWidget* parent) :
+TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent) :
     ComponentEditorTab(parent)
 {
     new QVBoxLayout(this);
@@ -48,7 +48,7 @@ TransitionEditorTab::TransitionEditorTab(FsmTransition* transition, QWidget* par
     this->layout()->addWidget(this->actionEditor);
 }
 
-void TransitionEditorTab::changeEditedTransition(FsmTransition* transition)
+void TransitionEditorTab::changeEditedTransition(shared_ptr<FsmTransition> transition)
 {
     conditionEditor->updateTransition(transition);
     actionEditor->changeActuator(transition);

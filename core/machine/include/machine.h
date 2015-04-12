@@ -25,6 +25,10 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QList>
 #include <QHash>
@@ -37,36 +41,43 @@ class Signal;
 class Input;
 class Output;
 
+
 class Machine : public QObject
 {
     Q_OBJECT
 
 public:
     enum class type{FSM};
-    enum class signal_types{Input, Output, LocalVariable, Constant};
+    enum class signal_type{Input, Output, LocalVariable, Constant};
 
 public:
     explicit Machine();
-    virtual ~Machine();
 
     virtual Machine::type getType() const = 0;
 
-    QList<Input*>  getInputs() const;
-    QList<Output*> getOutputs() const;
-    QList<Signal*> getLocalVariables() const;
-    QList<Signal*> getConstants() const;
+    QList<shared_ptr<Input>>  getInputs()         const;
+    QList<shared_ptr<Output>> getOutputs()        const;
+    QList<shared_ptr<Signal>> getLocalVariables() const;
+    QList<shared_ptr<Signal>> getConstants()      const;
 
-    QList<Signal*> getWrittableSignals() const;
-    QList<Signal*> getReadableSignals() const;
-    QList<Signal*> getReadableVariableSignals() const;
-    QList<Signal*> getAllVariables() const;
-    QList<Signal*> getIOs() const;
-    QList<Signal*> getAllSignals() const;
+    QList<shared_ptr<Signal>> getWrittableSignals()        const;
+    QList<shared_ptr<Signal>> getReadableSignals()         const;
+    QList<shared_ptr<Signal>> getReadableVariableSignals() const;
+    QList<shared_ptr<Signal>> getVariablesSignals()        const;
+    QList<shared_ptr<Signal>> getIoSignals()               const;
+    QList<shared_ptr<Signal>> getAllSignals()              const;
 
+    QList<shared_ptr<Signal>> getInputsAsSignals()  const;
+    QList<shared_ptr<Signal>> getOutputsAsSignals() const;
+
+    virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
     virtual void saveMachine(const QString& path) = 0;
 
+    virtual void clear();
+    virtual bool isEmpty() const;
+
 public slots:
-    bool addSignal(signal_types type, const QString& name);
+    shared_ptr<Signal> addSignal(signal_type type, const QString& name);
     bool deleteSignal(const QString& name);
     bool renameSignal(const QString& oldName, const QString& newName);
     bool resizeSignal(const QString& name, uint newSize);
@@ -79,15 +90,16 @@ signals:
     void outputListChangedEvent();
     void localVariableListChangedEvent();
     void constantListChangedEvent();
+    void machineLoadedEvent();
 
 protected:
-    QHash<QString, Input*>  inputs;
-    QHash<QString, Output*> outputs;
-    QHash<QString, Signal*> localVariables;
-    QHash<QString, Signal*> constants;
+    QHash<QString, shared_ptr<Input>>  inputs;
+    QHash<QString, shared_ptr<Output>> outputs;
+    QHash<QString, shared_ptr<Signal>> localVariables;
+    QHash<QString, shared_ptr<Signal>> constants;
 
 private:
-    QHash<QString, Signal*> getAllSignalsMap() const;
+    QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 };
 
 #endif // MACHINE_H

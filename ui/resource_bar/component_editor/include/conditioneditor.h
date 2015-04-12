@@ -25,6 +25,10 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 class QLabel;
 class QPushButton;
@@ -41,10 +45,10 @@ class ConditionEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ConditionEditor(FsmTransition* transition, QWidget* parent = nullptr);
+    explicit ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
     ~ConditionEditor();
 
-    void updateTransition(FsmTransition* newTransition);
+    void updateTransition(shared_ptr<FsmTransition> newTransition);
 
 private slots:
     void editCondition();
@@ -59,7 +63,7 @@ private:
     void collapseTruthTable();
     bool isTruthTableDisplayed();
 
-    FsmTransition* transition = nullptr;
+    weak_ptr<FsmTransition> transition;
     TruthTable* truthTable = nullptr;
 
     QGridLayout* layout = nullptr;

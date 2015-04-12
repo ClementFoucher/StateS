@@ -26,12 +26,12 @@
 #include <QObject>
 #include <QGraphicsItemGroup>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QGraphicsItem>
-#include <QGraphicsLineItem>
-#include <QGraphicsRectItem>
-#include <QPen>
-#include <QAction>
+class QAction;
 
 // StateS classes
 class FsmGraphicalState;
@@ -63,13 +63,13 @@ private:
 
 public:
     // This is static build of transition, we already have a logic element to represent
-    explicit FsmGraphicalTransition(FsmTransition* logicTransition);
+    explicit FsmGraphicalTransition(shared_ptr<FsmTransition> logicTransition);
     // This constructor toggles dynamic mode on target. This is used when drawing a transition graphically
     explicit FsmGraphicalTransition(FsmGraphicalState* source, const QPointF& dynamicMousePosition);
     ~FsmGraphicalTransition();
 
-    void setLogicalTransition(FsmTransition* transition);
-    FsmTransition* getLogicalTransition() const;
+    void setLogicalTransition(shared_ptr<FsmTransition> transition);
+    shared_ptr<FsmTransition> getLogicalTransition() const;
 
     bool setSourceState(FsmGraphicalState* newSource);
     bool setTargetState(FsmGraphicalState* newTarget);
@@ -92,9 +92,9 @@ public:
     QGraphicsItemGroup * getActionsBox()    const;
 
 signals:
-    void callEdit(FsmTransition* state);
-    void callDynamicSource(FsmGraphicalTransition*);
-    void callDynamicTarget(FsmGraphicalTransition*);
+    void editCalledEvent(shared_ptr<FsmTransition>);
+    void dynamicSourceCalledEvent(FsmGraphicalTransition*);
+    void dynamicTargetCalledEvent(FsmGraphicalTransition*);
 
 protected slots:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
@@ -114,7 +114,7 @@ private:
     void quitNeighboorhood();  // Ohhh... So sad
 
     //
-    FsmTransition* logicalTransition = nullptr;
+    weak_ptr<FsmTransition> logicalTransition;
 
     // A FSM graphical transition must always have at least a source (may not have target when first drawing)
     FsmGraphicalState* source = nullptr;

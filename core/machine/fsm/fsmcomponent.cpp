@@ -22,17 +22,21 @@
 // Current class header
 #include "fsmcomponent.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 #include "fsm.h"
 
 
-FsmComponent::FsmComponent(Fsm* owningFsm) :
-    MachineActuatorComponent(owningFsm)
+FsmComponent::FsmComponent(shared_ptr<Fsm> owningFsm) :
+    MachineActuatorComponent(dynamic_pointer_cast<Machine>(owningFsm))
 {
 
 }
 
-Fsm* FsmComponent::getOwningFsm() const
+shared_ptr<Fsm> FsmComponent::getOwningFsm() const
 {
-    return (Fsm*) this->getOwningMachine();
+    return dynamic_pointer_cast<Fsm>(this->getOwningMachine());
 }

@@ -22,6 +22,7 @@
 // Current class header
 #include "scenewidget.h"
 
+
 // Qt classes
 #include <QResizeEvent>
 #include <QStyle>
@@ -35,7 +36,7 @@
 #include "machinetools.h"
 
 
-SceneWidget::SceneWidget(Machine* machine, ResourceBar* resources, QWidget* parent) :
+SceneWidget::SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent) :
     SceneWidget(parent)
 {
     this->resourcesBar = resources;
@@ -55,7 +56,7 @@ SceneWidget::SceneWidget(QWidget* parent) :
     connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 }
 
-void SceneWidget::setMachine(Machine* machine, ResourceBar* resources)
+void SceneWidget::setMachine(shared_ptr<Machine> machine, ResourceBar* resources)
 {
     delete this->scene();
 
@@ -65,7 +66,7 @@ void SceneWidget::setMachine(Machine* machine, ResourceBar* resources)
     {
         if (machine->getType() == Machine::type::FSM)
         {
-            FsmScene* newScene = new FsmScene(resources, (Fsm*)machine);
+            FsmScene* newScene = new FsmScene(dynamic_pointer_cast<Fsm>(machine), resources);
             newScene->setDisplaySize(this->size());
 
             this->setScene(newScene);

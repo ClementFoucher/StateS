@@ -25,27 +25,32 @@
 // Parent
 #include "componenteditortab.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class FsmState;
 class DynamicLineEdit;
 class ActionEditor;
+
 
 class StateEditorTab : public ComponentEditorTab
 {
     Q_OBJECT
 
 public:
-    explicit StateEditorTab(FsmState* state, QWidget* parent = nullptr);
+    explicit StateEditorTab(shared_ptr<FsmState> state, QWidget* parent = nullptr);
 
-    void changeEditedState(FsmState* state);
+    void changeEditedState(shared_ptr<FsmState> state);
     void setEditName();
 
 private slots:
-    void nameChanged(const QString& name);
+    void nameChangedEventHandler(const QString& name);
     void updateContent();
 
 private:
-    FsmState* state = nullptr;
+    weak_ptr<FsmState> state;
 
     DynamicLineEdit* textStateName = nullptr;
     ActionEditor* actionEditor = nullptr;

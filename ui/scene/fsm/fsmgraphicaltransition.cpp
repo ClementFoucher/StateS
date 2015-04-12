@@ -85,18 +85,19 @@ FsmGraphicalTransition::FsmGraphicalTransition(FsmGraphicalState* source, const 
     finishInitialize();
 }
 
-FsmGraphicalTransition::FsmGraphicalTransition(FsmTransition* logicTransition) :
+FsmGraphicalTransition::FsmGraphicalTransition(shared_ptr<FsmTransition> logicTransition) :
     FsmGraphicalTransition()
 {
-    this->logicalTransition = logicTransition;
-    this->logicalTransition->setGraphicalRepresentation(this);
-    connect(this->logicalTransition, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &FsmGraphicalTransition::updateText);
-    connect(this->logicalTransition, &MachineActuatorComponent::elementStateChangedEvent,         this, &FsmGraphicalTransition::updateText);
+    logicTransition->setGraphicalRepresentation(this);
+    connect(logicTransition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicalTransition::updateText);
+    connect(logicTransition.get(), &FsmTransition::componentDynamicStateChangedEvent,                   this, &FsmGraphicalTransition::updateText);
 
     currentMode = mode::initMode;
-    this->setSourceState(this->logicalTransition->getSource()->getGraphicalRepresentation());
-    this->setTargetState(this->logicalTransition->getTarget()->getGraphicalRepresentation());
+    this->setSourceState(logicTransition->getSource()->getGraphicalRepresentation());
+    this->setTargetState(logicTransition->getTarget()->getGraphicalRepresentation());
     currentMode = mode::standardMode;
+
+    this->logicalTransition = logicTransition;
 
     checkNeighboors();
     finishInitialize();
@@ -116,27 +117,30 @@ FsmGraphicalTransition::~FsmGraphicalTransition()
     delete conditionText;
     delete actionsBox;
 
-    if (logicalTransition != nullptr)
-        logicalTransition->clearGraphicalRepresentation();
+    shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
+    if (transition != nullptr)
+        transition->clearGraphicalRepresentation();
 }
 
-void FsmGraphicalTransition::setLogicalTransition(FsmTransition* transition)
+void FsmGraphicalTransition::setLogicalTransition(shared_ptr<FsmTransition> transition)
 {
     // This function can be called only once, we never reaffect a graphical transition
-    if (this->logicalTransition == nullptr)
+    if (this->logicalTransition.lock() == nullptr)
     {
+        connect(transition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicalTransition::updateText);
+        connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                    this, &FsmGraphicalTransition::updateText);
+
         this->logicalTransition = transition;
-        connect(this->logicalTransition, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &FsmGraphicalTransition::updateText);
-        connect(this->logicalTransition, &MachineActuatorComponent::elementStateChangedEvent,         this, &FsmGraphicalTransition::updateText);
+
         this->updateText();
     }
     else
         qDebug() << "(FSM Graphical Transition:) ERROR! Trying to reaffect logical transition while already linked! Ignored call.";
 }
 
-FsmTransition* FsmGraphicalTransition::getLogicalTransition() const
+shared_ptr<FsmTransition> FsmGraphicalTransition::getLogicalTransition() const
 {
-    return logicalTransition;
+    return logicalTransition.lock();
 }
 
 bool FsmGraphicalTransition::setSourceState(FsmGraphicalState* newSource)
@@ -148,7 +152,7 @@ bool FsmGraphicalTransition::setSourceState(FsmGraphicalState* newSource)
         this->source = newSource;
 
         // Connect to new state
-        connect(this->source, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+        connect(this->source, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
 
         return true;
     }
@@ -163,7 +167,7 @@ bool FsmGraphicalTransition::setSourceState(FsmGraphicalState* newSource)
             // Disconnect existing signal
             // If we were a single-state transition, do not disconnect as we still have target connected!
             if (this->source != this->target)
-                disconnect(this->source, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+                disconnect(this->source, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newSource)
@@ -172,7 +176,7 @@ bool FsmGraphicalTransition::setSourceState(FsmGraphicalState* newSource)
             this->source = newSource;
 
             // Connect to new state
-            connect(this->source, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+            connect(this->source, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newSource)
@@ -214,7 +218,7 @@ bool FsmGraphicalTransition::setTargetState(FsmGraphicalState* newTarget)
         this->target = newTarget;
 
         // Connect to new state
-        connect(this->target, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+        connect(this->target, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
 
         return true;
     }
@@ -231,7 +235,7 @@ bool FsmGraphicalTransition::setTargetState(FsmGraphicalState* newTarget)
             {
                 // If we were a single-state transition, do not disconnect as we still have source connected!
                 if (this->source != this->target)
-                    disconnect(this->target, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+                    disconnect(this->target, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
             }
 
             // If dynamic target state exists, we are already in the right neighborhood
@@ -242,7 +246,7 @@ bool FsmGraphicalTransition::setTargetState(FsmGraphicalState* newTarget)
             this->target = newTarget;
 
             // Connect to new state
-            connect(this->target, &FsmGraphicalState::moving, this, &FsmGraphicalTransition::updateDisplay);
+            connect(this->target, &FsmGraphicalState::stateMovingEvent, this, &FsmGraphicalTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newTarget)
@@ -351,21 +355,22 @@ void FsmGraphicalTransition::treatSelectionBox()
 
 void FsmGraphicalTransition::updateText()
 {
+    shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
     //
     // Condition
 
     // Should also make background semi-transparent... (we could avoid color?)
-    if (logicalTransition != nullptr)
+    if (transition != nullptr)
     {
         if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourceBar::mode::simulateMode) )
         {
-            if (logicalTransition->getCondition() == nullptr)
+            if (transition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
             else
-                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + logicalTransition->getCondition()->getText(true) + "</div>");
+                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + transition->getCondition()->getText(true) + "</div>");
             if (conditionLine != nullptr)
             {
-                if (logicalTransition->getCondition()->isTrue())
+                if (transition->getCondition()->isTrue())
                     conditionLine->setPen(activePen);
                 else
                     conditionLine->setPen(inactivePen);
@@ -373,10 +378,10 @@ void FsmGraphicalTransition::updateText()
         }
         else
         {
-            if (logicalTransition->getCondition() == nullptr)
+            if (transition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
             else
-                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + logicalTransition->getCondition()->getText() + "</div>");
+                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + transition->getCondition()->getText() + "</div>");
             if (conditionLine != nullptr)
                 conditionLine->setPen(standardPen);
         }
@@ -387,12 +392,12 @@ void FsmGraphicalTransition::updateText()
     //
     // Actions
 
-    if (logicalTransition != nullptr)
+    if (transition != nullptr)
     {
         qDeleteAll(actionsBox->childItems());
         actionsBox->childItems().clear();
 
-        QList<Signal *> actions = logicalTransition->getActions();
+        QList<shared_ptr<Signal>> actions = transition->getActions();
 
         qreal maxTextWidth = 0;
 
@@ -409,9 +414,9 @@ void FsmGraphicalTransition::updateText()
                 currentActionText = actions[i]->getText(false);
 
 
-            if (logicalTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
+            if (transition->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
                 currentActionText += " = 1";
-            else if (logicalTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
+            else if (transition->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
                 currentActionText += " = 0";
 
             actionText->setHtml(currentActionText);
@@ -722,6 +727,7 @@ bool FsmGraphicalTransition::setDynamicTargetMode(const QPointF& mousePosition)
 
 bool FsmGraphicalTransition::endDynamicMode(bool keepChanges)
 {
+    shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
     this->autoTransitionNeedsRedraw = true;
 
     if (keepChanges)
@@ -734,15 +740,29 @@ bool FsmGraphicalTransition::endDynamicMode(bool keepChanges)
         {
             currentMode = mode::standardMode;
             setSourceState(dynamicState);
-            if (logicalTransition!=nullptr)
-                logicalTransition->setSource(dynamicState->getLogicalState());
+            if (transition != nullptr)
+            {
+                shared_ptr<FsmState> oldOwner = transition->getSource();
+                shared_ptr<FsmState> newOwner = dynamicState->getLogicalState();
+
+                transition->setSource(newOwner);
+                oldOwner->removeOutgoingTransition(transition);
+                newOwner->addOutgoingTransition(transition);
+            }
         }
         else if (currentMode == mode::dynamicTargetMode)
         {
             currentMode = mode::standardMode;
             setTargetState(dynamicState);
-            if (logicalTransition!=nullptr)
-                logicalTransition->setTarget(dynamicState->getLogicalState());
+            if (transition != nullptr)
+            {
+                shared_ptr<FsmState> oldTarget = transition->getTarget();
+                shared_ptr<FsmState> newTarget = dynamicState->getLogicalState();
+
+                transition->setTarget(newTarget);
+                oldTarget->removeIncomingTransition(transition);
+                newTarget->addIncomingTransition(transition);
+            }
         }
     }
 
@@ -789,9 +809,9 @@ void FsmGraphicalTransition::checkNeighboors()
         actualTargetState = target;
     }
 
-    FsmTransition* newFriend = nullptr;
+    shared_ptr<FsmTransition> newFriend;
 
-    foreach (FsmTransition* neighboor, actualSourceState->getLogicalState()->getOutgoingTransitions())
+    foreach (shared_ptr<FsmTransition> neighboor, actualSourceState->getLogicalState()->getOutgoingTransitions())
     {
         if ( (neighboor->getGraphicalRepresentation() != nullptr) && (neighboor->getGraphicalRepresentation() != this) ) // Needed, as in dynamic mode I still belong to states!
         {
@@ -805,7 +825,7 @@ void FsmGraphicalTransition::checkNeighboors()
 
     if (newFriend == nullptr)
     {
-        foreach (FsmTransition* neighboor, actualTargetState->getLogicalState()->getOutgoingTransitions())
+        foreach (shared_ptr<FsmTransition> neighboor, actualTargetState->getLogicalState()->getOutgoingTransitions())
         {
             if ( (neighboor->getGraphicalRepresentation() != nullptr) && (neighboor->getGraphicalRepresentation() != this) ) // Needed, as in dynamic mode I still belong to states!
             {
@@ -888,27 +908,32 @@ void FsmGraphicalTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* ev
         menu->popup(event->screenPos());
 
         connect(menu, &QMenu::triggered, this, &FsmGraphicalTransition::treatMenu);
+        connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
     }
 }
 
 void FsmGraphicalTransition::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Delete)
-        delete logicalTransition;
+    {
+        shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
+        transition->getSource()->removeOutgoingTransition(transition);
+    }
 }
 
 void FsmGraphicalTransition::treatMenu(QAction* action)
 {
     if (action->text() == tr("Change source"))
-        emit callDynamicSource(this);
+        emit dynamicSourceCalledEvent(this);
     else if (action->text() == tr("Change target"))
-        emit callDynamicTarget(this);
+        emit dynamicTargetCalledEvent(this);
     if (action->text() == tr("Edit"))
-        emit callEdit(logicalTransition);
+        emit editCalledEvent(logicalTransition.lock());
     else if (action->text() == tr("Delete"))
     {
         // This call will destroy the current object as consequence of the logical object destruction
-        delete logicalTransition;
+        shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
+        transition->getSource()->removeOutgoingTransition(transition);
     }
 
 }

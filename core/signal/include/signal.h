@@ -25,17 +25,23 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QString>
 
 // StateS basic types
 #include "logicvalue.h"
 
-class Signal : public QObject
+
+class Signal : public QObject, public enable_shared_from_this<Signal>
 {
     Q_OBJECT
 
 public:
+    explicit Signal(const QString& name, const LogicValue& initialValue, const LogicValue& currentValue, bool isConstant);
     explicit Signal(const QString& name, const LogicValue& initialValue, bool isConstant = false);
     explicit Signal(const QString& name, uint bitCount);
 
@@ -75,10 +81,17 @@ public:
     bool getIsConstant() const;
 
 signals:
-    void signalConfigurationChangedEvent();
+    // General events
+    void signalStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
+    void signalDynamicStateChangedEvent(); // Triggered when object "discardable" values are modified
+
+    // Specific events detail
+    void signalRenamedEvent();
     void signalResizedEvent();
-    void signalStateChangedEvent();
-    void signalDeletedEvent(Signal* emitter);
+    void SignalinitialValueChangedEvent();
+
+    // Deletion event
+    void signalDeletedEvent();
 
 private:
     // Static

@@ -34,14 +34,15 @@
 #include "simulatortab.h"
 #include "abouttab.h"
 #include "verifiertab.h"
+#include "fsm.h"
 
 
-ResourceBar::ResourceBar(QWidget* parent, Machine* machine) :
+ResourceBar::ResourceBar(shared_ptr<Machine> machine, QWidget* parent) :
     QTabWidget(parent)
 {
-    setMachine(machine);
-
     connect(this, &QTabWidget::currentChanged, this, &ResourceBar::tabChanged);
+
+    setMachine(machine);
 }
 
 ResourceBar::~ResourceBar()
@@ -54,17 +55,22 @@ ResourceBar::~ResourceBar()
     delete interfaceResources;
     delete editorTab;
     delete simulatorTab;
+    delete verifierTab;
 }
 
-void ResourceBar::setMachine(Machine* machine)
+void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 {
-    if (this->machine != nullptr)
-        disconnect(this, &ResourceBar::simulationToggled, machine, &Machine::simulationModeChanged);
+    shared_ptr<Machine> oldMachine = this->machine.lock();
+    if (oldMachine != nullptr)
+    {
+        disconnect(this, &ResourceBar::simulationToggledEvent, oldMachine.get(), &Machine::simulationModeChanged);
+        oldMachine.reset();
+    }
 
-    this->machine = machine;
+    this->machine = newMachine;
 
-    if (this->machine != nullptr)
-        connect(this, &ResourceBar::simulationToggled, machine, &Machine::simulationModeChanged);
+    if (newMachine != nullptr)
+        connect(this, &ResourceBar::simulationToggledEvent, newMachine.get(), &Machine::simulationModeChanged);
 
     // Clear
     this->clear();
@@ -78,25 +84,28 @@ void ResourceBar::setMachine(Machine* machine)
     delete editorTab;
     editorTab = nullptr;
 
+    delete verifierTab;
+    verifierTab = nullptr;
+
     if (simulatorTab != nullptr)
     {
-        disconnect(this->simulatorTab, &SimulatorTab::beginSimulation, this, &ResourceBar::beginSimulation);
-        disconnect(this->simulatorTab, &SimulatorTab::endSimulation,   this, &ResourceBar::terminateSimulation);
+        disconnect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
+        disconnect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
 
         delete simulatorTab;
         simulatorTab = nullptr;
     }
 
     // Build
-    if (machine != nullptr)
+    if (newMachine != nullptr)
     {
-        this->toolResources      = new MachineBuilderTab(machine->getType());
-        this->interfaceResources = new SignalEditorTab(machine);
-        this->simulatorTab       = new SimulatorTab((Fsm*)machine);
-        this->verifierTab        = new VerifierTab((Fsm*)machine);
+        this->toolResources      = new MachineBuilderTab(newMachine->getType());
+        this->interfaceResources = new SignalEditorTab(newMachine);
+        this->simulatorTab       = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
+        this->verifierTab        = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
 
-        connect(this->simulatorTab, &SimulatorTab::beginSimulation, this, &ResourceBar::beginSimulation);
-        connect(this->simulatorTab, &SimulatorTab::endSimulation,   this, &ResourceBar::terminateSimulation);
+        connect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
+        connect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
 
         this->insertTab(0, toolResources,      tr("Builder"));
         this->insertTab(1, interfaceResources, tr("Signals"));
@@ -134,7 +143,7 @@ void ResourceBar::setMachine(Machine* machine)
     }
 }
 
-void ResourceBar::selectedState(FsmState* state, bool showTab, bool editName)
+void ResourceBar::selectedState(shared_ptr<FsmState> state, bool showTab, bool editName)
 {
     if (state == nullptr)
     {
@@ -171,7 +180,7 @@ void ResourceBar::selectedState(FsmState* state, bool showTab, bool editName)
     }
 }
 
-void ResourceBar::selectedTransition(FsmTransition* transition, bool showTab)
+void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool showTab)
 {
     if (transition == nullptr)
     {
@@ -232,11 +241,11 @@ void ResourceBar::beginSimulation()
     this->setTabEnabled(0, false);
     this->setTabEnabled(1, false);
 
-    connect(this->simulatorTab, &SimulatorTab::triggerView, this, &ResourceBar::triggerView);
+    connect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
 
     currentMode = mode::simulateMode;
 
-    emit simulationToggled();
+    emit simulationToggledEvent();
 }
 
 void ResourceBar::terminateSimulation()
@@ -244,11 +253,11 @@ void ResourceBar::terminateSimulation()
     this->setTabEnabled(0, true);
     this->setTabEnabled(1, true);
 
-    disconnect(this->simulatorTab, &SimulatorTab::triggerView, this, &ResourceBar::triggerView);
+    disconnect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
 
     currentMode = mode::editMode;
 
-    emit simulationToggled();
+    emit simulationToggledEvent();
 }
 
 MachineTools* ResourceBar::getBuildTools() const

@@ -26,7 +26,8 @@
 #include <QLineEdit>
 
 // Qt classes
-#include <QValidator>
+class QValidator;
+
 
 class DynamicLineEdit : public QLineEdit
 {
@@ -38,14 +39,14 @@ public:
     void refuseText();
 
 signals:
-    void newTextAvailable(const QString& text);
+    void newTextAvailableEvent(const QString& text);
 
 protected slots:
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
 
 private slots:
-    void userValidated();
+    void userValidatedEventHandler();
 
 private:
     bool textRefused = false;

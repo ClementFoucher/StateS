@@ -26,8 +26,9 @@
 #include "machinetools.h"
 
 // Qt classes
-#include <QWidget>
-#include <QPushButton>
+class QWidget;
+class QPushButton;
+
 
 class FsmTools : public MachineTools
 {

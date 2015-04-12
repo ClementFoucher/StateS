@@ -22,6 +22,10 @@
 // Current class header
 #include "fsmvhdlexport.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QDate>
 #include <QFile>
@@ -37,7 +41,7 @@
 #include "equation.h"
 
 
-void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositive, bool prefixIOs)
+void FsmVhdlExport::exportFSM(shared_ptr<Fsm> machine, QString path, bool resetLogicPositive, bool prefixIOs)
 {
     QFile* file = new QFile(path);
     file->open(QIODevice::WriteOnly);
@@ -60,9 +64,9 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
 
 
-    QList<Input*> inputs = machine->getInputs();
+    QList<shared_ptr<Input>> inputs = machine->getInputs();
 
-    foreach (Input* input, inputs)
+    foreach (shared_ptr<Input> input, inputs)
     {
         if (prefixIOs == true)
             stream << "I_";
@@ -79,9 +83,9 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
         stream << ";\n       ";
     }
 
-    QList<Output*> outputs = machine->getOutputs();
+    QList<shared_ptr<Output>> outputs = machine->getOutputs();
 
-    foreach (Output* output, outputs)
+    foreach (shared_ptr<Output> output, outputs)
     {
         if (prefixIOs == true)
             stream << "O_";
@@ -110,8 +114,8 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
     stream << "  type state_type is (";
 
-    QList<FsmState*> states = machine->getStates();
-    foreach(FsmState* state, states)
+    QList<shared_ptr<FsmState>> states = machine->getStates();
+    foreach(shared_ptr<FsmState> state, states)
     {
         stream << "S_" << correctName(state->getName());
 
@@ -124,8 +128,8 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
     stream << "  signal current_state : state_type;\n";
     stream << "  signal next_state    : state_type;\n\n";
 
-    QList<Signal*> localVars = machine->getLocalVariables();
-    foreach(Signal* localVar, localVars)
+    QList<shared_ptr<Signal>> localVars = machine->getLocalVariables();
+    foreach(shared_ptr<Signal> localVar, localVars)
     {
         stream << "  signal SIG_" << correctName(localVar->getName()) << " : std_logic";
 
@@ -145,7 +149,7 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
     stream << "\n";
 
-    foreach(Signal* constant, machine->getConstants())
+    foreach(shared_ptr<Signal> constant, machine->getConstants())
     {
         stream << "  constant CST_" << correctName(constant->getName()) << " : std_logic";
 
@@ -168,7 +172,7 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
     // Next step computation : asynchronous process
     stream << "  compute_next_step : process(current_state,\n";
 
-    foreach (Input* input, inputs)
+    foreach (shared_ptr<Input> input, inputs)
     {
         stream << "                              ";
         if (prefixIOs == true)
@@ -185,7 +189,7 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
         }
     }
 
-    foreach (Signal* localVar, localVars)
+    foreach (shared_ptr<Signal> localVar, localVars)
     {
         stream << "                              SIG_" << correctName(localVar->getName());
 
@@ -203,12 +207,12 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
     stream << "    case current_state is\n";
 
-    foreach(FsmState* state, states)
+    foreach(shared_ptr<FsmState> state, states)
     {
         stream << "    when S_" << correctName(state->getName()) << " =>\n";
 
-        QList<FsmTransition*> transitions = state->getOutgoingTransitions();
-        foreach (FsmTransition* transition, transitions)
+        QList<shared_ptr<FsmTransition>> transitions = state->getOutgoingTransitions();
+        foreach (shared_ptr<FsmTransition> transition, transitions)
         {
             stream << "      ";
             if (transition != transitions.first())
@@ -245,16 +249,16 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
     stream << "    case current_state is\n";
 
-    foreach(FsmState* state, states)
+    foreach(shared_ptr<FsmState> state, states)
     {
         stream << "    when S_" << correctName(state->getName()) << " =>\n";
 
-        foreach(Signal* sig, state->getActions())
+        foreach(shared_ptr<Signal> sig, state->getActions())
         {
             MachineActuatorComponent::action_types type = state->getActionType(sig);
 
             stream << "      ";
-            if ( (prefixIOs) && (dynamic_cast<Output*>(sig) != nullptr))
+            if ( (prefixIOs) && (dynamic_pointer_cast<Output>(sig) != nullptr))
                 stream << "O_";
             else if (machine->getLocalVariables().contains(sig))
                 stream << "SIG_";
@@ -263,6 +267,9 @@ void FsmVhdlExport::exportFSM(Fsm* machine, QString path, bool resetLogicPositiv
 
             switch(type)
             {
+            case MachineActuatorComponent::action_types::activeOnState:
+                stream << "'1'";
+                break;
             case MachineActuatorComponent::action_types::pulse:
                 stream << "'1'";
                 break;
@@ -310,11 +317,11 @@ QString FsmVhdlExport::correctName(QString name)
     return newName;
 }
 
-QString FsmVhdlExport::equationText(Signal* equation, Fsm* machine, bool prefixIOs)
+QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<Fsm> machine, bool prefixIOs)
 {
     QString text;
 
-    Equation* complexEquation = dynamic_cast<Equation*> (equation);
+    shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation>(equation);
 
     if (complexEquation != nullptr)
     {
@@ -323,7 +330,7 @@ QString FsmVhdlExport::equationText(Signal* equation, Fsm* machine, bool prefixI
         else
             text += "(";
 
-        QVector<Signal*> operands = complexEquation->getOperands();
+        QVector<shared_ptr<Signal>> operands = complexEquation->getOperands();
 
         for (int i = 0 ; i < operands.count() ; i++)
         {
@@ -367,7 +374,7 @@ QString FsmVhdlExport::equationText(Signal* equation, Fsm* machine, bool prefixI
     }
     else if (equation != nullptr)
     {
-        if ( (prefixIOs) && (dynamic_cast<Input*>(equation) != nullptr))
+        if ( (prefixIOs) && (dynamic_pointer_cast<Input>(equation) != nullptr))
             text += "I_";
         else if (machine->getLocalVariables().contains(equation))
             text += "SIG_";

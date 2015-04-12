@@ -28,14 +28,15 @@
 // StateS classes
 class Fsm;
 
+
 class FsmComponent : public MachineActuatorComponent
 {
     Q_OBJECT
 
 public:
-    explicit FsmComponent(Fsm* owningFsm);
+    explicit FsmComponent(shared_ptr<Fsm> owningFsm);
 
-    Fsm* getOwningFsm() const;
+    shared_ptr<Fsm> getOwningFsm() const;
 };
 
 #endif // FSMCOMPONENT_H

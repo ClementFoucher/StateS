@@ -25,29 +25,34 @@
 // Parent
 #include <QDialog>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QGridLayout>
-#include <QPushButton>
+class QWidget;
+class QHBoxLayout;
+class QVBoxLayout;
+class QGridLayout;
+class QPushButton;
 
 // StateS classes
 class Machine;
 class GraphicEquation;
 class Signal;
 
+
 class EquationEditor : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit EquationEditor(Machine* machine, Signal* initialEquation, QWidget* parent = nullptr);
+    explicit EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
 
-    Signal* getResultEquation() const;
+    shared_ptr<Signal> getResultEquation() const;
 
 private:
-    Machine* machine = nullptr;
+    weak_ptr<Machine> machine;
 
     QVBoxLayout* mainLayout         = nullptr;
 

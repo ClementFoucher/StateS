@@ -26,13 +26,11 @@
 #include "clock.h"
 
 
-GraphicClockTimeLine::GraphicClockTimeLine(Clock* clock, QWidget* parent) :
+GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     GraphicTimeLine(false, parent)
 {
-    this->clock = clock;
-
-    connect(this->clock, &Clock::clockEvent, this, &GraphicClockTimeLine::clockEvent);
-    connect(this->clock, &Clock::resetEvent, this, &GraphicClockTimeLine::resetEvent);
+    connect(clock.get(), &Clock::clockEvent, this, &GraphicClockTimeLine::clockEvent);
+    connect(clock.get(), &Clock::resetEvent, this, &GraphicClockTimeLine::resetEvent);
 }
 
 void GraphicClockTimeLine::clockEvent()

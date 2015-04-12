@@ -25,6 +25,10 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QList>
 
@@ -33,22 +37,22 @@ class Signal;
 class Clock;
 class GraphicTimeLine;
 
+
 class SignalTimeline : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SignalTimeline(Signal* variable, Clock* clock, bool dynamic = false, QWidget* parent = 0);
+    explicit SignalTimeline(shared_ptr<Signal> variable, shared_ptr<Clock> clock, bool dynamic = false, QWidget* parent = nullptr);
 
 private slots:
-    void clockEvent();
-    void prepareClockEvent();
-    void resetEvent();
+    void clockEventHandler();
+    void prepareClockEventHandler();
+    void resetEventHandler();
 
 private:
     bool isDynamic;
-    Signal* variable  = nullptr;
-    Clock* clock  = nullptr;
+    weak_ptr<Signal> variable;
 
     QList<GraphicTimeLine*> variableLineDisplay;
 };

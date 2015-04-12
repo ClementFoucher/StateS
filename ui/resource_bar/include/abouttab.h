@@ -25,6 +25,7 @@
 // Parent
 #include <QWidget>
 
+
 class AboutTab : public QWidget
 {
     Q_OBJECT

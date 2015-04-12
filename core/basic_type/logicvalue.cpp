@@ -104,12 +104,12 @@ bool LogicValue::isAllOnes() const
     return true;
 }
 
-LogicValue LogicValue::getValue0()
+LogicValue LogicValue::getValue0() const
 {
     return LogicValue(this->size(), false);
 }
 
-LogicValue LogicValue::getValue1()
+LogicValue LogicValue::getValue1() const
 {
     return LogicValue(this->size(), true);
 }

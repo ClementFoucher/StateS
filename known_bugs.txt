@@ -1,7 +1,7 @@
 
-*******************
-* StateS v. 0.2.7 *
-*******************
+*****************
+* StateS v. 0.3 *
+*****************
 
 // The following behaviors are known.
 // They may be buggy, or just uninmplemented code.
@@ -10,24 +10,21 @@
 - Begin/end simulation: conditions only containing constants/state actions: color is not updated,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
-- Signal pulse on state is not correctly handled in VHDL export: signal value is maintained when leaving state,
-- Actions on transitions are ignored when FSM is exported to VHDL.
+- Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
+- Actions on transitions are ignored when FSM is exported to VHDL,
+- Multiple "_" can be generated in a VHDL signal name, which is not a correct syntax,
+- A delay is added between clock and output generation in simulation => should be optional.
 
 // Not bugs, but still
 
 - Transition selection box for straight lines is only on line, so very difficult to catch,
 - Context menu when simulating should change with appropriate options: force state activation,
 - Should allow cancel renaming/adding signals while editing not validated,
-- Display current state on simu (add tooltip),
+- Should display current state on simu (add tooltip),
 - Should not allow to stack states (ugly state/transition stacking),
 - Sould support box selection on scene,
-- Equation editor and time line window should use a scroll bar when too much variables,
+- Time line window should use a scroll bar when too much variables,
 - Should be able to move condition text along transitions,
 - Signals values should be writtable in hexa,
 - No check on signals names => should at least refuse "/", "+", and other operators.
-- A confirmation message should be displayed when deleting or resizing signal will break an equation.
-
-// Devlopping side
-
-- Contextual menus memory is never reclaimed => memory leak.
-- reinterpret_cast in signal lists causing compilation warning => see if a built-in QList mechanism could do the job?
+- A confirmation message should be displayed when deleting a signal will break an equation.

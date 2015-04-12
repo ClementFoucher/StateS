@@ -32,41 +32,35 @@
 #include "signal.h"
 
 
-FsmState::FsmState(Fsm* parent) :
+FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name) :
     FsmComponent(parent)
 {
-    // Build name dynamically to ensure uniqueness
-    this->setUniqueName();
+    this->name = name;
 
-    this->getOwningFsm()->addState(this);
-}
+    this->setAllowedActionTypes(activeOnState | pulse | set | reset | assign);
 
-FsmState::FsmState(Fsm* parent, const QString& name) :
-    FsmComponent(parent)
-{
-    // Try given name, but ignore if not unique
-    if (!setName(name))
-    {
-        this->setUniqueName();
-        qDebug() << "(Fsm state:) WARNING! Ignore given name " + name + " because already existing in machine. Used name " + this->name + " instead.";
-    }
-
-    this->getOwningFsm()->addState(this);
+    // Propagates local events to the more general events
+    connect(this, &FsmState::stateRenamedEvent,           this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    connect(this, &FsmState::stateLogicStateChangedEvent, this, &MachineComponent::componentDynamicStateChangedEvent);
 }
 
 FsmState::~FsmState()
 {
-    clearActions();
+    // For each incoming transition, contact owner to explicitly delete it
 
-    // Delete transitions
-    QList<FsmTransition *> allTransitions = inputTransitions;
-    allTransitions += outputTransitions;
-    // Deal with transitions with both ends connected to state
-    QSet<FsmTransition*> uniqueTransitions = allTransitions.toSet();
+    this->cleanIncomingTransitionsList(); // Clean first so that all transitions are valid
 
-    qDeleteAll(uniqueTransitions);
+    QList<weak_ptr<FsmTransition>> transitions = this->inputTransitions;
 
-    getOwningFsm()->removeState(this);
+    foreach(weak_ptr<FsmTransition> transition, transitions)
+    {
+        shared_ptr<FsmTransition> transitionL = transition.lock();
+
+        // Source CAN be nullptr... for auto-transitions!
+        // Indeed current object is already out of any shared pointer at deletion time
+        if (transitionL->getSource() != nullptr)
+            transitionL->getSource()->removeOutgoingTransition(transitionL);
+    }
 
     // Delete graphics representation
     delete graphicalRepresentation;
@@ -90,85 +84,69 @@ void FsmState::clearGraphicalRepresentation()
     graphicalRepresentation = nullptr;
 }
 
+void FsmState::cleanIncomingTransitionsList()
+{
+    QList<weak_ptr<FsmTransition>> newList;
+
+    foreach(weak_ptr<FsmTransition> transition, this->inputTransitions)
+    {
+        // Keep all transitions except expired ones
+        if (!transition.expired())
+            newList.append(transition);
+    }
+
+    this->inputTransitions = newList;
+}
+
 QString FsmState::getName() const
 {
-    return name;
+    return this->name;
 }
 
-bool FsmState::setName(const QString& newName)
+void FsmState::setName(const QString& newName)
 {
-    bool nameIsValid = true;
-
-    foreach(FsmState* colleage, getOwningFsm()->getStates())
-    {
-        if (colleage->getName() == newName)
-        {
-            nameIsValid = false;
-            break;
-        }
-    }
-
-    if(nameIsValid)
-    {
-        name = newName;
-        emit elementConfigurationChangedEvent();
-    }
-
-    return nameIsValid;
+    this->name = newName;
+    emit stateRenamedEvent();
 }
 
-void FsmState::setUniqueName()
-{
-    QString baseName = "State #";
-    QString currentName;
-
-    uint i = 0;
-    bool nameIsValid = false;
-
-    while (!nameIsValid)
-    {
-        currentName = baseName + QString::number(i);
-
-        nameIsValid = true;
-        foreach(FsmState* colleage, this->getOwningFsm()->getStates())
-        {
-            if (colleage->getName() == currentName)
-            {
-                nameIsValid = false;
-                i++;
-                break;
-            }
-        }
-    }
-    this->name = currentName;
-}
-
-void FsmState::addIncomingTransition(FsmTransition* transition)
-{
-    this->inputTransitions.append(transition);
-}
-
-void FsmState::addOutgoingTransition(FsmTransition* transition)
+void FsmState::addOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
     this->outputTransitions.append(transition);
 }
 
-void FsmState::removeIncomingTransition(FsmTransition* transition)
-{
-    this->inputTransitions.removeAll(transition);
-}
-
-void FsmState::removeOutgoingTransition(FsmTransition* transition)
+void FsmState::removeOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
     this->outputTransitions.removeAll(transition);
 }
 
-const QList<FsmTransition*>& FsmState::getOutgoingTransitions() const
+const QList<shared_ptr<FsmTransition>> FsmState::getOutgoingTransitions() const
 {
     return this->outputTransitions;
 }
-const QList<FsmTransition*>& FsmState::getIncomingTransitions() const
+
+void FsmState::addIncomingTransition(shared_ptr<FsmTransition> transition)
 {
+    this->cleanIncomingTransitionsList();
+    this->inputTransitions.append(transition);
+}
+
+void FsmState::removeIncomingTransition(shared_ptr<FsmTransition> transition)
+{
+    this->cleanIncomingTransitionsList();
+
+    QList<weak_ptr<FsmTransition>> newList;
+    foreach(weak_ptr<FsmTransition> oldTransition, this->inputTransitions)
+    {
+        // Keep all transitions except the one being removed
+        if (! (oldTransition.lock() == transition))
+            newList.append(transition);
+    }
+    this->inputTransitions = newList;
+}
+
+const QList<weak_ptr<FsmTransition>> FsmState::getIncomingTransitions()
+{
+    this->cleanIncomingTransitionsList();
     return this->inputTransitions;
 }
 
@@ -186,24 +164,39 @@ void FsmState::setActive(bool value)
         this->activateActions();
     else
     {
-        // Disable pulse actions on state leave
-        foreach(Signal* sig, this->actions)
+        // Disable active on state actions on state leave
+        foreach(weak_ptr<Signal> sig, this->actions)
         {
-            if (actionType[sig] == MachineActuatorComponent::action_types::pulse)
-                sig->resetValue();
+            shared_ptr<Signal> signal = sig.lock();
+
+            if (signal != nullptr)
+            {
+                if (actionType[signal->getName()] == MachineActuatorComponent::action_types::activeOnState)
+                    signal->resetValue();
+            }
         }
     }
 
-    emit elementStateChangedEvent();
+    emit stateLogicStateChangedEvent();
 }
 
 bool FsmState::isInitial() const
 {
-    return (getOwningFsm()->getInitialState() == this);
+    shared_ptr<Fsm> owningFsm = this->getOwningFsm();
+    if (owningFsm != nullptr)
+    {
+        return (owningFsm->getInitialState().get() == this);
+    }
+    else
+        return false;
 }
 
 void FsmState::setInitial()
 {
-    getOwningFsm()->setInitialState(this);
+    shared_ptr<Fsm> owningFsm = this->getOwningFsm();
+    if (owningFsm != nullptr)
+    {
+        owningFsm->setInitialState(this->name);
+    }
 }
 

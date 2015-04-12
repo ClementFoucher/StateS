@@ -22,37 +22,40 @@
 // Current class header
 #include "signal.h"
 
-
-Signal::Signal(const QString &name, const LogicValue& initialValue, bool isConstant) :
+Signal::Signal(const QString& name, const LogicValue& initialValue, const LogicValue& currentValue, bool isConstant) :
     initialValue(initialValue),
-    currentValue(initialValue)
+    currentValue(currentValue)
 {
     this->name = name;
-
     this->isConstant = isConstant;
+
+    // Link specific events signals to general events
+    connect(this, &Signal::signalRenamedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
+    connect(this, &Signal::signalResizedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
+    connect(this, &Signal::SignalinitialValueChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+
+    // This event also impacts dynamic values
+    connect(this, &Signal::signalResizedEvent, this, &Signal::signalDynamicStateChangedEvent);
+}
+
+Signal::Signal(const QString &name, const LogicValue& initialValue, bool isConstant) :
+    Signal(name, initialValue, initialValue, isConstant)
+{
 }
 
 Signal::Signal(const QString &name, uint bitCount) :
-    initialValue(bitCount),
-    currentValue(bitCount)
+    Signal(name, LogicValue(bitCount), LogicValue(bitCount), false)
 {
-    this->name = name;
-
-    this->isConstant = false;
 }
 
 Signal::Signal(const QString &name, bool initialValue, bool isConstant) :
-    initialValue(1, initialValue),
-    currentValue(1, initialValue)
+    Signal(name, LogicValue(1, initialValue), LogicValue(1, initialValue), isConstant)
 {
-    this->name = name;
-
-    this->isConstant = isConstant;
 }
 
 Signal::~Signal()
 {
-    emit signalDeletedEvent(this);
+    emit signalDeletedEvent();
 }
 
 QString Signal::getName() const
@@ -63,7 +66,7 @@ QString Signal::getName() const
 void Signal::setName(const QString& value)
 {
     name = value;
-    emit signalConfigurationChangedEvent();
+    emit signalRenamedEvent();
 }
 
 uint Signal::getSize() const
@@ -79,7 +82,6 @@ bool Signal::resize(uint newSize)
         this->initialValue.resize(newSize);
 
         emit signalResizedEvent();
-        emit signalConfigurationChangedEvent();
         return true;
     }
     else
@@ -108,7 +110,7 @@ bool Signal::setCurrentValue(const LogicValue &value)
     if ( (!this->isConstant) && (value.getSize() == this->getSize()) )
     {
         this->currentValue = value;
-        emit signalStateChangedEvent();
+        emit signalDynamicStateChangedEvent();
 
         return true;
     }
@@ -137,7 +139,7 @@ bool Signal::setInitialValue(const LogicValue &newInitialValue)
         if (this->isConstant)
             this->currentValue = this->initialValue;
 
-        emit signalConfigurationChangedEvent();
+        emit SignalinitialValueChangedEvent();
 
         return true;
     }
@@ -150,7 +152,7 @@ bool Signal::setInitialValue(const LogicValue &newInitialValue)
 void Signal::reinitialize()
 {
     this->currentValue = this->initialValue;
-    emit signalStateChangedEvent();
+    emit signalDynamicStateChangedEvent();
 }
 
 bool Signal::resetValue()

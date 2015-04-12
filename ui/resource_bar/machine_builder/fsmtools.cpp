@@ -24,6 +24,7 @@
 
 // Qt classes
 #include <QGridLayout>
+#include <QPushButton>
 
 // Debug
 #include <QDebug>

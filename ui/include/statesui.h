@@ -25,7 +25,12 @@
 // Parent
 #include <QMainWindow>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
+class QString;
 class QAction;
 class QStackedWidget;
 
@@ -35,49 +40,62 @@ class ResourceBar;
 class SceneWidget;
 class SimulationWindow;
 
+
 class StatesUi : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit StatesUi(Machine* machine = nullptr);
+    explicit StatesUi(shared_ptr<Machine> machine);
 
-    void setMachine(Machine* machine);
+    void setMachine(shared_ptr<Machine> machine);
 
 public slots:
     void clearMachine();
-    void newMachine();
+
+signals:
+    void newFsmRequestEvent();
+    void clearMachineRequestEvent();
+    void loadMachineRequestEvent(const QString& path);
+    void machineSavedEvent(const QString& path);
+    QString getCurrentFileEvent();
 
 protected slots:
     void closeEvent(QCloseEvent*) override;
 
 private slots:
-    void newMachineRequestEvent();
-    void clearMachineRequestEvent();
-    void exportPdfRequestEvent();
-    void exportVhdlRequestEvent();
-    void saveMachineRequestEvent();
-    void loadMachineRequestEvent();
-    void handleSimulationToggled();
-    void triggerView();
-    void detachTimeline(bool detach);
+    void newMachineRequestEventHandler();
+    void clearMachineRequestEventHandler();
+    void exportPdfRequestEventHandler();
+    void exportVhdlRequestEventHandler();
+    void saveMachineRequestEventHandler();
+    void loadMachineRequestEventHandler();
+    void simulationToggledEventHandler();
+    void triggerViewEventHandler();
+    void detachTimelineEventHandler(bool detach);
+    void machineLoadedEventHandler();
+    void saveMachineOnCurrentFileEventHandler();
 
 private:
-    QAction* actionSave       = nullptr;
-    QAction* actionLoad       = nullptr;
-    QAction* actionNewFsm     = nullptr;
-    QAction* actionClear      = nullptr;
-    QAction* actionExportPdf  = nullptr;
-    QAction* actionExportVhdl = nullptr;
+    // Action bar
+    QAction* actionSave        = nullptr;
+    QAction* actionSaveCurrent = nullptr;
+    QAction* actionLoad        = nullptr;
+    QAction* actionNewFsm      = nullptr;
+    QAction* actionClear       = nullptr;
+    QAction* actionExportPdf   = nullptr;
+    QAction* actionExportVhdl  = nullptr;
 
+    // Display area
     QStackedWidget*   mainDisplayArea    = nullptr;
     SceneWidget*      machineDisplayArea = nullptr;
-    ResourceBar*      resourcesBar       = nullptr;
     SimulationWindow* timeline           = nullptr;
 
-    // For debug only
-    Machine* machine = nullptr;
+    // Resource bar
+    ResourceBar* resourcesBar = nullptr;
 
+    // Owned machine
+    weak_ptr<Machine> machine;
 };
 
 #endif // STATESUI_H

@@ -24,36 +24,39 @@
 
 // Qt classes
 #include <QVBoxLayout>
+#include <QApplication>
+#include <QTranslator>
+#include <QLabel>
 
 // StateS classes
 #include "reactivebutton.h"
 #include "states.h"
 
 
-LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* parent) :
+LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent) :
     QDialog(parent)
 {
     this->application = application;
     this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
 
-    this->translator = new QTranslator();
+    this->translator = shared_ptr<QTranslator>(new QTranslator());
     this->translator->load(":/translations/français/français");
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    new QVBoxLayout(this);
 
     this->title = new QLabel();
     this->title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+    this->layout()->addWidget(this->title);
 
-    this->buttonEnglish = new ReactiveButton("English");
-    connect(this->buttonEnglish, &QAbstractButton::clicked, this, &LangSelectionDialog::accept);
-    layout->addWidget(this->buttonEnglish);
+    ReactiveButton* buttonEnglish = new ReactiveButton("English");
+    connect(buttonEnglish, &QAbstractButton::clicked, this, &LangSelectionDialog::accept);
+    this->layout()->addWidget(buttonEnglish);
 
-    this->buttonFrench = new ReactiveButton("Français");
-    connect(this->buttonFrench, &ReactiveButton::mouseEnterEvent, this, &LangSelectionDialog::setFrench);
-    connect(this->buttonFrench, &ReactiveButton::mouseLeaveEvent, this, &LangSelectionDialog::setEnglish);
-    connect(this->buttonFrench, &QAbstractButton::clicked,        this, &LangSelectionDialog::accept);
-    layout->addWidget(this->buttonFrench);
+    ReactiveButton* buttonFrench = new ReactiveButton("Français");
+    connect(buttonFrench, &ReactiveButton::mouseEnterEvent, this, &LangSelectionDialog::setFrench);
+    connect(buttonFrench, &ReactiveButton::mouseLeaveEvent, this, &LangSelectionDialog::setEnglish);
+    connect(buttonFrench, &QAbstractButton::clicked,        this, &LangSelectionDialog::accept);
+    this->layout()->addWidget(buttonFrench);
 
     retranslateUi();
 }
@@ -65,17 +68,17 @@ void LangSelectionDialog::retranslateUi()
 
 void LangSelectionDialog::setEnglish()
 {
-    this->application->removeTranslator(translator);
+    this->application->removeTranslator(translator.get());
     retranslateUi();
 }
 
 void LangSelectionDialog::setFrench()
 {
-    this->application->installTranslator(translator);
+    this->application->installTranslator(translator.get());
     retranslateUi();
 }
 
-QTranslator* LangSelectionDialog::getTranslator()
+shared_ptr<QTranslator> LangSelectionDialog::getTranslator()
 {
     return this->translator;
 }

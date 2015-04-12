@@ -40,18 +40,18 @@
 #include "contextmenu.h"
 
 
-FsmScene::FsmScene(ResourceBar* resources, Fsm* machine) :
+FsmScene::FsmScene(shared_ptr<Fsm> machine, ResourceBar* resources) :
     GenericScene(resources)
 {
     this->machine = machine;
     connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
-    foreach(FsmState* state, ((Fsm*)machine)->getStates())
+    foreach(shared_ptr<FsmState> state, machine->getStates())
     {
         addState(state, state->position);
     }
 
-    foreach(FsmTransition* transition, ((Fsm*)machine)->getTransitions())
+    foreach(shared_ptr<FsmTransition> transition, machine->getTransitions())
     {
         FsmGraphicalTransition* graphicalTransition = new FsmGraphicalTransition(transition);
         addTransition(graphicalTransition);
@@ -118,7 +118,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
             if (currentTool == MachineTools::tool::state)
             {
                 // Create logical state
-                FsmState* logicState = new FsmState(machine);
+                shared_ptr<FsmState> logicState = machine->addState();
 
                 // Create graphical state
                 addState(logicState, me->scenePos());
@@ -129,7 +129,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
             else if (currentTool == FsmTools::tool::initial_state)
             {
                 // Create logical state
-                FsmState* logicState = new FsmState(machine);
+                shared_ptr<FsmState> logicState = machine->addState();
 
                 // Create graphical state
                 addState(logicState, me->scenePos());
@@ -213,6 +213,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 this->mousePos = me->scenePos();
 
                 connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
+                connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
             }
             GenericScene::mousePressEvent(me);
         }
@@ -290,7 +291,12 @@ void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
                 currentTransition->setTargetState(stateUnderMouse);
                 currentTransition->endDynamicMode(true);
 
-                FsmTransition* logicTransition = new FsmTransition(machine, currentTransition->getSource()->getLogicalState(), currentTransition->getTarget()->getLogicalState(), currentTransition);
+                shared_ptr<FsmState> source = currentTransition->getSource()->getLogicalState();
+                shared_ptr<FsmState> target = currentTransition->getTarget()->getLogicalState();
+
+                shared_ptr<FsmTransition> logicTransition(new FsmTransition(machine, source, target, nullptr, currentTransition));
+                source->addOutgoingTransition(logicTransition);
+                target->addIncomingTransition(logicTransition);
                 currentTransition->setLogicalTransition(logicTransition);
             }
             else
@@ -373,7 +379,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
         GenericScene::contextMenuEvent(event);
 }
 
-void FsmScene::transitionCallsDynamicSource(FsmGraphicalTransition* transition)
+void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* transition)
 {
     isEditingTransitionSource = true;
     currentTransition = transition;
@@ -384,7 +390,7 @@ void FsmScene::transitionCallsDynamicSource(FsmGraphicalTransition* transition)
     currentTransition->setDynamicSourceMode(QPointF());
 }
 
-void FsmScene::transitionCallsDynamicTarget(FsmGraphicalTransition* transition)
+void FsmScene::transitionCallsDynamicTargetEventHandler(FsmGraphicalTransition* transition)
 {
     isEditingTransitionTarget = true;
     currentTransition = transition;
@@ -513,14 +519,14 @@ void FsmScene::updateSceneRect()
     this->setSceneRect(finalDisplayRectangle);
 }
 
-void FsmScene::stateCallsEdit(FsmState* state)
+void FsmScene::stateCallsEditEventHandler(shared_ptr<FsmState> state)
 {
     clearSelection();
     state->getGraphicalRepresentation()->setSelected(true);
     resources->selectedState(state, true);
 }
 
-void FsmScene::stateCallsRename(FsmState* state)
+void FsmScene::stateCallsRenameEventHandler(shared_ptr<FsmState> state)
 {
     clearSelection();
     state->getGraphicalRepresentation()->setSelected(true);
@@ -531,27 +537,27 @@ void FsmScene::treatMenu(QAction* action)
 {
     if (action->text() == tr("Add state"))
     {
-        FsmState* logicState = new FsmState(machine);
+        shared_ptr<FsmState> logicState = machine->addState();
 
         addState(logicState, this->mousePos);
     }
     else if (action->text() == tr("Add initial state"))
     {
-        FsmState* logicState = new FsmState(machine);
+        shared_ptr<FsmState> logicState = machine->addState();
         logicState->setInitial();
 
         addState(logicState, this->mousePos);
     }
 }
 
-void FsmScene::transitionCallsEdit(FsmTransition* transition)
+void FsmScene::transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition)
 {
     clearSelection();
     transition->getGraphicalRepresentation()->setSelected(true);
     resources->selectedTransition(transition, true);
 }
 
-FsmGraphicalState* FsmScene::addState(FsmState* logicState, QPointF location)
+FsmGraphicalState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF location)
 {
     // Create graphical state
     FsmGraphicalState *newState = new FsmGraphicalState(logicState);
@@ -563,17 +569,17 @@ FsmGraphicalState* FsmScene::addState(FsmState* logicState, QPointF location)
     addItem(actionsBox);
     actionsBox->setZValue(3);
 
-    connect(newState, &FsmGraphicalState::callEdit, this, &FsmScene::stateCallsEdit);
-    connect(newState, &FsmGraphicalState::callRename, this, &FsmScene::stateCallsRename);
+    connect(newState, &FsmGraphicalState::editStateCalledEvent, this, &FsmScene::stateCallsEditEventHandler);
+    connect(newState, &FsmGraphicalState::renameStateCalledEvent, this, &FsmScene::stateCallsRenameEventHandler);
 
     return newState;
 }
 
 void FsmScene::addTransition(FsmGraphicalTransition* newTransition)
 {
-    connect(newTransition, &FsmGraphicalTransition::callDynamicSource, this, &FsmScene::transitionCallsDynamicSource);
-    connect(newTransition, &FsmGraphicalTransition::callDynamicTarget, this, &FsmScene::transitionCallsDynamicTarget);
-    connect(newTransition, &FsmGraphicalTransition::callEdit, this, &FsmScene::transitionCallsEdit);
+    connect(newTransition, &FsmGraphicalTransition::dynamicSourceCalledEvent, this, &FsmScene::transitionCallsDynamicSourceEventHandler);
+    connect(newTransition, &FsmGraphicalTransition::dynamicTargetCalledEvent, this, &FsmScene::transitionCallsDynamicTargetEventHandler);
+    connect(newTransition, &FsmGraphicalTransition::editCalledEvent, this, &FsmScene::transitionCallsEditEventHandler);
 
     addItem(newTransition);
     newTransition->setZValue(2);

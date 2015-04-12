@@ -25,15 +25,20 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Signal;
+
 
 class InputSignalSelector : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit InputSignalSelector(Signal* relatedSignal, QWidget *parent = nullptr);
+    explicit InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget* parent = nullptr);
 };
 
 #endif // INPUTVSIGNALSELECTOR_H

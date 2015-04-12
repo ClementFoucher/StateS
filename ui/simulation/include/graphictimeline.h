@@ -28,6 +28,7 @@
 // Qt classes
 #include <QPolygon>
 
+
 class GraphicTimeLine : public QWidget
 {
     Q_OBJECT

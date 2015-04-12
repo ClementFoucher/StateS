@@ -22,10 +22,13 @@
 #ifndef TRUTHTABLE_H
 #define TRUTHTABLE_H
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QVector>
-#include <QList>
-#include <QString>
+class QString;
 
 // StateS classes
 class Signal;
@@ -36,10 +39,10 @@ class Equation;
 class TruthTable
 {
 public:
-    explicit TruthTable(Equation* equation);
-    explicit TruthTable(QList<Equation*> equations);
+    explicit TruthTable(shared_ptr<Equation> equation);
+    explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
-    QVector<Signal*>             getSignals() const;
+    QVector<shared_ptr<Signal>>  getSignals() const;
     QVector<QVector<LogicValue>> getInputTable() const;
     QVector<QString>             getEquationTable() const;
     QVector<QVector<LogicValue>> getOutputTable() const;
@@ -48,10 +51,10 @@ public:
     uint getOutputCount() const;
 
 private:
-    QSet<Signal*> extractSignals(Equation* equation) const;
-    void buildTable(QVector<Equation*> equations);
+    QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
+    void buildTable(QVector<shared_ptr<Equation>> equations);
 
-    QVector<Signal*>             signalTable;
+    QVector<weak_ptr<Signal>>    signalTable;
     QVector<QVector<LogicValue>> inputTable;
     QVector<QString>             equationTable;
     QVector<QVector<LogicValue>> outputTable;

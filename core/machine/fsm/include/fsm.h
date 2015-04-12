@@ -25,58 +25,71 @@
 // Parent
 #include "machine.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QDomElement>
 #include <QList>
-#include <QXmlStreamWriter>
+class QDomElement;
+class QXmlStreamWriter;
+class QString;
 
 // StateS classes
 class FsmState;
 class FsmTransition;
 class MachineActuatorComponent;
 
-class Fsm : public Machine
+
+class Fsm : public Machine, public enable_shared_from_this<Fsm>
 {
     Q_OBJECT
 
 public:
     explicit Fsm();
-    explicit Fsm(const QString& filePath);
-    ~Fsm() override;
 
-    void addState(FsmState* state);
-    void removeState(FsmState* state);
+    void loadFromFile(const QString& filePath, bool eraseFirst = false) override;
 
-    void setInitialState(FsmState* state);
-    FsmState* getInitialState() const;
+    shared_ptr<FsmState> addState(QString name = QString());
+    void removeState(shared_ptr<FsmState> state);
+    bool renameState(shared_ptr<FsmState> state, QString newName);
 
-    void addTransition(FsmTransition* transition);
-    void removeTransition(FsmTransition* transition);
+    QList<shared_ptr<FsmTransition>> getTransitions() const;
+
+    void setInitialState(const QString &name);
+    shared_ptr<FsmState> getInitialState() const;
 
     Machine::type getType() const override;
 
-    const QList<FsmState *>& getStates() const;
-
-    const QList<FsmTransition *>& getTransitions() const;
+    const QList<shared_ptr<FsmState>>& getStates() const;
 
     void saveMachine(const QString& path) override;
+
+    void clear() override;
 
     // This is an overriden slot
     void simulationModeChanged() override;
 
+    bool isEmpty() const override;
+
 private:
+    QString getUniqueStateName(QString nameProposal);
+    shared_ptr<FsmState> getStateByName(const QString& name) const;
+
+    // XML Parser
     void parseXML(const QString& path);
     void parseSignals(QDomElement element);
     void parseStates(QDomElement element);
     void parseTransitions(QDomElement element);
-    Signal* parseEquation(QDomElement element) const;
-    void parseActions(QDomElement element, MachineActuatorComponent *component) const;
-    void writeLogicEquation(QXmlStreamWriter& stream, Signal* equation) const;
-    void writeActions(QXmlStreamWriter& stream, MachineActuatorComponent* component) const;
+    shared_ptr<Signal> parseEquation(QDomElement element) const;
+    void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component) const;
+    // WML Writer
+    void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation) const;
+    void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component) const;
 
-    QList<FsmState*> states;
-    QList<FsmTransition*> transitions;
-    FsmState* initialState = nullptr;
+
+    QList<shared_ptr<FsmState>> states;
+    weak_ptr<FsmState> initialState;
 };
 
 #endif // FSM_H

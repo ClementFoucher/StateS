@@ -30,13 +30,14 @@
 #include "fsmstate.h"
 #include "dynamiclineedit.h"
 #include "actioneditor.h"
+#include "fsm.h"
 
 
-StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
+StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
     ComponentEditorTab(parent)
 {
     this->state = state;
-    connect(this->state, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &StateEditorTab::updateContent);
+    connect(state.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
     this->setLayout(new QVBoxLayout());
 
@@ -49,7 +50,7 @@ StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     this->layout()->addWidget(nameEditTitle);
 
     textStateName = new DynamicLineEdit(state->getName());
-    connect(textStateName, &DynamicLineEdit::newTextAvailable, this, &StateEditorTab::nameChanged);
+    connect(textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameChangedEventHandler);
     this->layout()->addWidget(textStateName);
 
     actionEditor = new ActionEditor(state, tr("Actions triggered at state activation") + "<br />" + tr("(pulses are maintained while state is active)"));
@@ -58,16 +59,16 @@ StateEditorTab::StateEditorTab(FsmState* state, QWidget* parent) :
     updateContent();
 }
 
-void StateEditorTab::changeEditedState(FsmState* newState)
+void StateEditorTab::changeEditedState(shared_ptr<FsmState> newState)
 {
-    disconnect(this->state, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &StateEditorTab::updateContent);
+    disconnect(this->state.lock().get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
     this->state = newState;
-    actionEditor->changeActuator(state);
+    actionEditor->changeActuator(newState);
 
     updateContent();
 
-    connect(this->state, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &StateEditorTab::updateContent);
+    connect(newState.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 }
 
 void StateEditorTab::setEditName()
@@ -78,14 +79,16 @@ void StateEditorTab::setEditName()
 
 void StateEditorTab::updateContent()
 {
-    textStateName->setText(state->getName());
+    textStateName->setText(this->state.lock()->getName());
 }
 
-void StateEditorTab::nameChanged(const QString& name)
+void StateEditorTab::nameChangedEventHandler(const QString& name)
 {
+    shared_ptr<FsmState> state = this->state.lock();
+
     if (name != state->getName())
     {
-        if (!state->setName(name))
+        if ( !(state->getOwningFsm()->renameState(state, name)) )
         {
             textStateName->refuseText();
         }

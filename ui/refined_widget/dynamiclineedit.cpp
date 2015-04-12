@@ -33,9 +33,9 @@ DynamicLineEdit::DynamicLineEdit(const QString& content, bool beginAsRefused, QV
         refuseText();
 }
 
-void DynamicLineEdit::userValidated()
+void DynamicLineEdit::userValidatedEventHandler()
 {
-    disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidated);
+    disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
 
     this->setStyleSheet( QString( "background-color: white"));
     this->setModified(false);
@@ -43,7 +43,7 @@ void DynamicLineEdit::userValidated()
 
     this->textRefused = false;
 
-    emit newTextAvailable(this->text());
+    emit newTextAvailableEvent(this->text());
 }
 
 void DynamicLineEdit::refuseText()
@@ -59,7 +59,7 @@ void DynamicLineEdit::focusInEvent(QFocusEvent* event)
     else
         this->setStyleSheet( QString( "background-color: red"));
 
-    connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidated);
+    connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
 
     emit QLineEdit::focusInEvent(event);
 }
@@ -67,7 +67,7 @@ void DynamicLineEdit::focusInEvent(QFocusEvent* event)
 void DynamicLineEdit::focusOutEvent(QFocusEvent* event)
 {
     if (this->isModified())
-        userValidated();
+        userValidatedEventHandler();
 
     emit QLineEdit::focusOutEvent(event);
 }

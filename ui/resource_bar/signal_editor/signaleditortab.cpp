@@ -25,12 +25,16 @@
 // Qt classes
 #include <QLabel>
 #include <QToolBox>
+#include <QVBoxLayout>
+//#include <QGridLayout>
+//#include <QTableWidget>
+//#include <QPushButton>
 
 // StateS classes
 #include "signallisteditor.h"
 
 
-SignalEditorTab::SignalEditorTab(Machine* machine, QWidget* parent) :
+SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
     QWidget(parent)
 {
     this->setLayout(new QVBoxLayout());
@@ -66,13 +70,13 @@ SignalEditorTab::SignalEditorTab(Machine* machine, QWidget* parent) :
     QLabel* varTitle = new QLabel(tr("Variables"));
     varTitle->setAlignment(Qt::AlignCenter);
     locals->layout()->addWidget(varTitle);
-    SignalListEditor* variablesToolBox = new SignalListEditor(machine, Machine::signal_types::LocalVariable);
+    SignalListEditor* variablesToolBox = new SignalListEditor(machine, Machine::signal_type::LocalVariable);
     locals->layout()->addWidget(variablesToolBox);
 
     QLabel* constTitle = new QLabel(tr("Constants"));
     constTitle->setAlignment(Qt::AlignCenter);
     locals->layout()->addWidget(constTitle);
-    SignalListEditor* constantsToolBox = new SignalListEditor(machine, Machine::signal_types::Constant);
+    SignalListEditor* constantsToolBox = new SignalListEditor(machine, Machine::signal_type::Constant);
     locals->layout()->addWidget(constantsToolBox);
 
     toolBox->addItem(locals, tr("Local signals"));
@@ -84,13 +88,13 @@ SignalEditorTab::SignalEditorTab(Machine* machine, QWidget* parent) :
     QLabel* inputsTitle = new QLabel(tr("Inputs"));
     inputsTitle->setAlignment(Qt::AlignCenter);
     ios->layout()->addWidget(inputsTitle);
-    SignalListEditor* inputToolBox = new SignalListEditor(machine, Machine::signal_types::Input);
+    SignalListEditor* inputToolBox = new SignalListEditor(machine, Machine::signal_type::Input);
     ios->layout()->addWidget(inputToolBox);
 
     QLabel* outputsTitle = new QLabel(tr("Outputs"));
     outputsTitle->setAlignment(Qt::AlignCenter);
     ios->layout()->addWidget(outputsTitle);
-    SignalListEditor* outputToolBox = new SignalListEditor(machine, Machine::signal_types::Output);
+    SignalListEditor* outputToolBox = new SignalListEditor(machine, Machine::signal_type::Output);
     ios->layout()->addWidget(outputToolBox);
 
     toolBox->addItem(ios, tr("I/O"));

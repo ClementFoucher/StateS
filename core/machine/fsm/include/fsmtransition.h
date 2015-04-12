@@ -25,25 +25,31 @@
 // Parent
 #include "fsmcomponent.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Fsm;
 class FsmState;
 class FsmGraphicalTransition;
 class Signal;
+class Equation;
+
 
 class FsmTransition : public FsmComponent
 {
     Q_OBJECT
 
 public:
-    explicit FsmTransition(Fsm* parent, FsmState* source, FsmState* target, FsmGraphicalTransition* graphicalRepresentation, Signal* condition = nullptr);
+    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicalTransition* graphicalRepresentation = nullptr);
     ~FsmTransition();
 
-    FsmState* getTarget() const;
-    void setTarget(FsmState* value);
+    shared_ptr<FsmState> getTarget() const;
+    void setTarget(shared_ptr<FsmState> value);
 
-    FsmState* getSource() const;
-    void setSource(FsmState* value);
+    shared_ptr<FsmState> getSource() const;
+    void setSource(shared_ptr<FsmState> value);
 
     FsmGraphicalTransition* getGraphicalRepresentation() const;
     void setGraphicalRepresentation(FsmGraphicalTransition* representation);
@@ -51,22 +57,22 @@ public:
 
     void setCrossed() const;
 
-    Signal* getCondition() const;
-    void setCondition(Signal* signal);
+    shared_ptr<Signal> getCondition() const;
+    void setCondition(shared_ptr<Signal> signalNewCondition);
 
 public slots:
-    void clearCondition();
+    void clearConditionEventHandler(shared_ptr<Signal> = nullptr);
 
 signals:
-    void conditionChanged();
+    void conditionChangedEvent();
 
 private:
     FsmGraphicalTransition* graphicalRepresentation = nullptr;
 
-    FsmState* source = nullptr;
-    FsmState* target = nullptr;
+    weak_ptr<FsmState> source;
+    weak_ptr<FsmState> target;
 
-    Signal* condition = nullptr;
+    shared_ptr<Equation> condition;
 };
 
 #endif // FSMTRANSITION_H

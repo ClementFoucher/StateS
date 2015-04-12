@@ -22,20 +22,26 @@
 // Current class header
 #include "signallisteditor.h"
 
+// Qt classes
+#include <QGridLayout>
+#include <QTableWidget>
+#include <QPushButton>
+
 // StateS classes
 #include "dynamiclineedit.h"
 #include "signal.h"
 #include "dynamictableitemdelegate.h"
 
 
-SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types editorType)
+SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget *parent) :
+    QWidget(parent)
 {
     this->machine = machine;
     this->editorType = editorType;
 
     layout = new QGridLayout(this);
 
-    if (editorType == Machine::signal_types::Input)
+    if (editorType == Machine::signal_type::Input)
     {
         signalsList = new QTableWidget(0, 3);
 
@@ -45,18 +51,18 @@ SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types edito
         signalsList->setHorizontalHeaderItem(2, new QTableWidgetItem());
         signalsList->horizontalHeaderItem(2)->setText(tr("Initial value"));
 
-        connect(machine, &Machine::inputListChangedEvent, this, &SignalListEditor::updateList);
+        connect(machine.get(), &Machine::inputListChangedEvent, this, &SignalListEditor::updateList);
     }
-    else if (editorType == Machine::signal_types::Output)
+    else if (editorType == Machine::signal_type::Output)
     {
         signalsList = new QTableWidget(0, 2);
 
         signalsList->setHorizontalHeaderItem(0, new QTableWidgetItem());
         signalsList->horizontalHeaderItem(0)->setText(tr("Output"));
 
-        connect(machine, &Machine::outputListChangedEvent, this, &SignalListEditor::updateList);
+        connect(machine.get(), &Machine::outputListChangedEvent, this, &SignalListEditor::updateList);
     }
-    else if (editorType == Machine::signal_types::LocalVariable)
+    else if (editorType == Machine::signal_type::LocalVariable)
     {
         signalsList = new QTableWidget(0, 3);
 
@@ -66,9 +72,9 @@ SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types edito
         signalsList->setHorizontalHeaderItem(2, new QTableWidgetItem());
         signalsList->horizontalHeaderItem(2)->setText(tr("Initial value"));
 
-        connect(machine, &Machine::localVariableListChangedEvent, this, &SignalListEditor::updateList);
+        connect(machine.get(), &Machine::localVariableListChangedEvent, this, &SignalListEditor::updateList);
     }
-    else if (editorType == Machine::signal_types::Constant)
+    else if (editorType == Machine::signal_type::Constant)
     {
         signalsList = new QTableWidget(0, 3);
 
@@ -78,7 +84,7 @@ SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types edito
         signalsList->setHorizontalHeaderItem(2, new QTableWidgetItem());
         signalsList->horizontalHeaderItem(2)->setText(tr("Value"));
 
-        connect(machine, &Machine::constantListChangedEvent, this, &SignalListEditor::updateList);
+        connect(machine.get(), &Machine::constantListChangedEvent, this, &SignalListEditor::updateList);
     }
 
     signalsList->setHorizontalHeaderItem(1, new QTableWidgetItem());
@@ -95,11 +101,11 @@ SignalListEditor::SignalListEditor(Machine* machine, Machine::signal_types edito
     this->layout->addWidget(buttonAdd,    2, 0, 1, 1);
     this->layout->addWidget(buttonRemove, 2, 1, 1, 1);
 
-    connect(this, &SignalListEditor::addSignalEvent,                machine, &Machine::addSignal);
-    connect(this, &SignalListEditor::removeSignalEvent,             machine, &Machine::deleteSignal);
-    connect(this, &SignalListEditor::renameSignalEvent,             machine, &Machine::renameSignal);
-    connect(this, &SignalListEditor::resizeSignalEvent,             machine, &Machine::resizeSignal);
-    connect(this, &SignalListEditor::changeSignalInitialValueEvent, machine, &Machine::changeSignalInitialValue);
+    connect(this, &SignalListEditor::addSignalEvent,                machine.get(), &Machine::addSignal);
+    connect(this, &SignalListEditor::removeSignalEvent,             machine.get(), &Machine::deleteSignal);
+    connect(this, &SignalListEditor::renameSignalEvent,             machine.get(), &Machine::renameSignal);
+    connect(this, &SignalListEditor::resizeSignalEvent,             machine.get(), &Machine::resizeSignal);
+    connect(this, &SignalListEditor::changeSignalInitialValueEvent, machine.get(), &Machine::changeSignalInitialValue);
 
     connect(buttonAdd,    &QAbstractButton::clicked, this, &SignalListEditor::beginAddSignal);
     connect(buttonRemove, &QAbstractButton::clicked, this, &SignalListEditor::removeSelectedSignals);
@@ -125,120 +131,130 @@ void SignalListEditor::updateList()
 
     switchMode(mode::standard);
 
-    // Get signals I have to deal with
-    QList<Signal*> signalsToAdd;
+    shared_ptr<Machine> machine = this->machine.lock();
 
-    if (editorType == Machine::signal_types::Input)
+    if (machine != nullptr)
     {
-        QList<Input*> inputs = machine->getInputs();
-        signalsToAdd = *reinterpret_cast<QList<Signal*>*> (&inputs);
-    }
-    else if (editorType == Machine::signal_types::Output)
-    {
-        QList<Output*> outputs = machine->getOutputs();
-        signalsToAdd = *reinterpret_cast<QList<Signal*>*> (&outputs);
-    }
-    else if (editorType == Machine::signal_types::LocalVariable)
-    {
-        signalsToAdd = machine->getLocalVariables();
-    }
-    else if (editorType == Machine::signal_types::Constant)
-    {
-        signalsToAdd = machine->getConstants();
-    }
 
-    foreach (Signal *sig, signalsToAdd)
-    {
-        signalsList->insertRow(signalsList->rowCount());
+        // Get signals I have to deal with
+        QList<shared_ptr<Signal>> signalsToAdd;
 
-        // Signal name
-        QTableWidgetItem* currentItem = new QTableWidgetItem(sig->getName());
-        currentItem->setWhatsThis(currentItem->text()); // What's this is used for line editor to identify errors
-        signalsList->setItem(signalsList->rowCount()-1, 0, currentItem);
-        associatedSignals[currentItem] = sig;
-
-        // Signal size
-        currentItem = new QTableWidgetItem(QString::number(sig->getSize()));
-        currentItem->setWhatsThis(currentItem->text());
-
-        signalsList->setItem(signalsList->rowCount()-1, 1, currentItem);
-        associatedSignals[currentItem] = sig;
-
-        // Signal (initial) value
-        if (signalsList->columnCount() == 3)
+        if (editorType == Machine::signal_type::Input)
         {
-            currentItem = new QTableWidgetItem(sig->getInitialValue().toString());
-            currentItem->setWhatsThis(currentItem->text());
-            signalsList->setItem(signalsList->rowCount()-1, 2, currentItem);
-            associatedSignals[currentItem] = sig;
+            signalsToAdd = machine->getInputsAsSignals();
+        }
+        else if (editorType == Machine::signal_type::Output)
+        {
+            signalsToAdd = machine->getOutputsAsSignals();
+        }
+        else if (editorType == Machine::signal_type::LocalVariable)
+        {
+            signalsToAdd = machine->getLocalVariables();
+        }
+        else if (editorType == Machine::signal_type::Constant)
+        {
+            signalsToAdd = machine->getConstants();
         }
 
-        // Select signal if it was selected before list clear
-        if (selection.contains(sig->getName()))
-            currentItem->setSelected(true);
+        foreach (shared_ptr<Signal> sig, signalsToAdd)
+        {
+            signalsList->insertRow(signalsList->rowCount());
+
+            // Signal name
+            QTableWidgetItem* currentItem = new QTableWidgetItem(sig->getName());
+            currentItem->setWhatsThis(currentItem->text()); // What's this is used for line editor to identify errors
+            signalsList->setItem(signalsList->rowCount()-1, 0, currentItem);
+            associatedSignals[currentItem] = sig;
+
+            // Signal size
+            currentItem = new QTableWidgetItem(QString::number(sig->getSize()));
+            currentItem->setWhatsThis(currentItem->text());
+
+            signalsList->setItem(signalsList->rowCount()-1, 1, currentItem);
+            associatedSignals[currentItem] = sig;
+
+            // Signal (initial) value
+            if (signalsList->columnCount() == 3)
+            {
+                currentItem = new QTableWidgetItem(sig->getInitialValue().toString());
+                currentItem->setWhatsThis(currentItem->text());
+                signalsList->setItem(signalsList->rowCount()-1, 2, currentItem);
+                associatedSignals[currentItem] = sig;
+            }
+
+            // Select signal if it was selected before list clear
+            if (selection.contains(sig->getName()))
+                currentItem->setSelected(true);
+        }
     }
 }
 
 void SignalListEditor::beginAddSignal()
 {
-    QString baseName;
-    QString currentName;
+    shared_ptr<Machine> machine = this->machine.lock();
 
-    if (editorType == Machine::signal_types::Input)
+    if (machine != nullptr)
     {
-        baseName = "Input #";
-    }
-    else if (editorType == Machine::signal_types::Output)
-    {
-        baseName = "Output #";
-    }
-    else if (editorType == Machine::signal_types::LocalVariable)
-    {
-        baseName = "Variable #";
-    }
-    else if (editorType == Machine::signal_types::Constant)
-    {
-        baseName = "Constant #";
-    }
+        QString baseName;
+        QString currentName;
 
-    uint i = 0;
-    bool nameIsValid = false;
-
-    while (!nameIsValid)
-    {
-        currentName = baseName + QString::number(i);
-
-        nameIsValid = true;
-        foreach(Signal* colleage, machine->getAllSignals())
+        if (editorType == Machine::signal_type::Input)
         {
-            if (colleage->getName() == currentName)
+            baseName = "Input #";
+        }
+        else if (editorType == Machine::signal_type::Output)
+        {
+            baseName = "Output #";
+        }
+        else if (editorType == Machine::signal_type::LocalVariable)
+        {
+            baseName = "Variable #";
+        }
+        else if (editorType == Machine::signal_type::Constant)
+        {
+            baseName = "Constant #";
+        }
+
+        uint i = 0;
+        bool nameIsValid = false;
+
+
+        while (!nameIsValid)
+        {
+            currentName = baseName + QString::number(i);
+
+            nameIsValid = true;
+            foreach(shared_ptr<Signal> colleage, machine->getAllSignals())
             {
-                nameIsValid = false;
-                i++;
-                break;
+                if (colleage->getName() == currentName)
+                {
+                    nameIsValid = false;
+                    i++;
+                    break;
+                }
             }
         }
-    }
 
-    signalsList->insertRow(signalsList->rowCount());
+        signalsList->insertRow(signalsList->rowCount());
 
-    QTableWidgetItem* currentItem = new QTableWidgetItem(currentName);
-    currentItem->setWhatsThis(currentItem->text());
-    signalsList->setItem(signalsList->rowCount()-1, 0, currentItem);
-    currentTableItem = currentItem;
-
-    currentItem = new QTableWidgetItem("1");
-    currentItem->setWhatsThis(currentItem->text());
-    signalsList->setItem(signalsList->rowCount()-1, 1, currentItem);
-
-    if (signalsList->columnCount() == 3)
-    {
-        currentItem = new QTableWidgetItem("0");
+        QTableWidgetItem* currentItem = new QTableWidgetItem(currentName);
         currentItem->setWhatsThis(currentItem->text());
-        signalsList->setItem(signalsList->rowCount()-1, 2, currentItem);
-    }
+        signalsList->setItem(signalsList->rowCount()-1, 0, currentItem);
+        currentTableItem = currentItem;
 
-    switchMode(mode::addingSignal);
+        currentItem = new QTableWidgetItem("1");
+        currentItem->setWhatsThis(currentItem->text());
+        signalsList->setItem(signalsList->rowCount()-1, 1, currentItem);
+
+        if (signalsList->columnCount() == 3)
+        {
+            currentItem = new QTableWidgetItem("0");
+            currentItem->setWhatsThis(currentItem->text());
+            signalsList->setItem(signalsList->rowCount()-1, 2, currentItem);
+        }
+
+        switchMode(mode::addingSignal);
+    }
 }
 
 
@@ -249,9 +265,9 @@ void SignalListEditor::endAddSignal(QWidget* signalNameWidget)
 
     // If success, reloads list through events.
     // This resets mode.
-    bool success = addSignalEvent(this->editorType, finalName);
+    shared_ptr<Signal> newSignal = addSignalEvent(this->editorType, finalName);
 
-    if (!success)
+    if (newSignal != nullptr)
     {
         // If case call fails, list has not been reloaded:
         // currentItem is preserved, put it back in edit mode
@@ -289,9 +305,11 @@ void SignalListEditor::endRenameSignal(QWidget *signalNameWidget)
     QLineEdit* editor = reinterpret_cast<QLineEdit*>(signalNameWidget);
     QString finalName = editor->text();
 
-    if (finalName != associatedSignals[currentTableItem]->getName())
+    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+    if ( (currentSignal != nullptr) && (finalName != currentSignal->getName()) )
     {
-        bool success = renameSignalEvent(associatedSignals[currentTableItem]->getName(), finalName);
+        bool success = renameSignalEvent(currentSignal->getName(), finalName);
 
         if (!success)
         {
@@ -315,9 +333,11 @@ void SignalListEditor::endResizeSignal(QWidget *signalSizeWidget)
     QLineEdit* editor = reinterpret_cast<QLineEdit*>(signalSizeWidget);
     uint finalSize = (uint)editor->text().toInt();
 
-    if (finalSize != associatedSignals[currentTableItem]->getSize())
+    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+    if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
     {
-        bool success = resizeSignalEvent(associatedSignals[currentTableItem]->getName(), finalSize);
+        bool success = resizeSignalEvent(currentSignal->getName(), finalSize);
 
         if (!success)
         {
@@ -341,9 +361,11 @@ void SignalListEditor::endChangeSignalInitialValue(QWidget* signalInitialValueWi
     QLineEdit* editor = reinterpret_cast<QLineEdit*>(signalInitialValueWidget);
     LogicValue newInitialValue = LogicValue::fromString(editor->text());
 
-    if (newInitialValue != associatedSignals[currentTableItem]->getInitialValue())
+    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+    if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
     {
-        bool success = changeSignalInitialValueEvent(associatedSignals[currentTableItem]->getName(), newInitialValue);
+        bool success = changeSignalInitialValueEvent(currentSignal->getName(), newInitialValue);
 
         if (!success)
         {
@@ -463,10 +485,15 @@ void SignalListEditor::switchMode(mode newMode)
         }
         else if (newMode == mode::changingSignalInitialValue)
         {
-            QRegularExpression re("[01]{" + QString::number(associatedSignals[currentTableItem]->getSize()) + "}");
-            listDelegate->setValidator(new QRegularExpressionValidator(re, 0));
+            shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
 
-            connect(listDelegate, &QAbstractItemDelegate::closeEditor, this, &SignalListEditor::endChangeSignalInitialValue);
+            if (currentSignal != nullptr)
+            {
+                QRegularExpression re("[01]{" + QString::number(currentSignal->getSize()) + "}");
+                listDelegate->setValidator(new QRegularExpressionValidator(re, 0));
+
+                connect(listDelegate, &QAbstractItemDelegate::closeEditor, this, &SignalListEditor::endChangeSignalInitialValue);
+            }
         }
 
         Qt::ItemFlags currentFlags = currentTableItem->flags();

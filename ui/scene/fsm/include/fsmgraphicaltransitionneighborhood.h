@@ -27,11 +27,13 @@
 
 // Qt classes
 #include <QMap>
-#include <QGraphicsPathItem>
+class QGraphicsPathItem;
+class QGraphicsLineItem;
 
 // StateS classes
 class FsmGraphicalTransition;
 class FsmGraphicalState;
+
 
 class FsmGraphicalTransitionNeighborhood : public QObject
 {

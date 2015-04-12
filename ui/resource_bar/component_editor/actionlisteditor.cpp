@@ -25,24 +25,34 @@
 // StateS classes
 #include "machineactuatorcomponent.h"
 #include "signal.h"
+#include "states.h"
 
 
-ActionListEditor::ActionListEditor(MachineActuatorComponent* actuator, Signal* signal, QWidget* parent) :
+ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent) :
     QComboBox(parent)
 {
     this->actuator = actuator;
     this->signal = signal;
 
+    uint allowedActionTypes = actuator->getAllowedActionTypes();
+
     if (signal->getSize() == 1)
     {
-        this->addItem(tr("Pulse"));
-        this->addItem(tr("Set"));
-        this->addItem(tr("Reset"));
+        if ((allowedActionTypes  & MachineActuatorComponent::pulse) != 0 )
+            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
+        if ((allowedActionTypes  & MachineActuatorComponent::activeOnState) != 0 )
+            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
+        if ((allowedActionTypes  & MachineActuatorComponent::set) != 0 )
+            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
+        if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
+            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
     }
     else
     {
-        this->addItem(tr("Assign"));
-        this->addItem(tr("Reset"));
+        if ((allowedActionTypes  & MachineActuatorComponent::assign) != 0 )
+            this->addItem(tr("Assign"));
+        if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
+            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
     }
 
     updateIndex();
@@ -53,62 +63,71 @@ ActionListEditor::ActionListEditor(MachineActuatorComponent* actuator, Signal* s
 
 void ActionListEditor::treatIndexChanged(int index)
 {
-    if (signal->getSize() == 1)
+    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
+    shared_ptr<Signal> signal = this->signal.lock();
+
+    if ( (signal != nullptr) && (actuator != nullptr) )
     {
-        if (index == 0)
+        if (this->itemText(index) == tr("Pulse"))
         {
-            actuator->setActionType(this->signal, MachineActuatorComponent::action_types::pulse);
+            actuator->setActionType(signal, MachineActuatorComponent::action_types::pulse);
         }
-        else if (index == 1)
+        else if (this->itemText(index) == tr("Active on state"))
         {
-            actuator->setActionType(this->signal, MachineActuatorComponent::action_types::set);
+            actuator->setActionType(signal, MachineActuatorComponent::action_types::activeOnState);
         }
-        else if (index == 2)
+        else if (this->itemText(index) == tr("Set"))
         {
-            actuator->setActionType(this->signal, MachineActuatorComponent::action_types::reset);
+            actuator->setActionType(signal, MachineActuatorComponent::action_types::set);
+        }
+        else if (this->itemText(index) == tr("Reset"))
+        {
+            actuator->setActionType(signal, MachineActuatorComponent::action_types::reset);
+        }
+        else if (this->itemText(index) == tr("Assign"))
+        {
+            actuator->setActionType(signal, MachineActuatorComponent::action_types::assign);
         }
     }
     else
     {
-        if (index == 0)
-        {
-            actuator->setActionType(this->signal, MachineActuatorComponent::action_types::assign);
-        }
-        else if (index == 1)
-        {
-            actuator->setActionType(this->signal, MachineActuatorComponent::action_types::reset);
-        }
+        this->clear();
     }
 }
 
 void ActionListEditor::updateIndex()
 {
-    MachineActuatorComponent::action_types currentActionType = actuator->getActionType(signal);
+    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
+    shared_ptr<Signal> signal = this->signal.lock();
 
-    if (signal->getSize() == 1)
+    if ( (signal != nullptr) && (actuator != nullptr) )
     {
+
+        MachineActuatorComponent::action_types currentActionType = actuator->getActionType(signal);
+
         if (currentActionType == MachineActuatorComponent::action_types::pulse)
         {
-            this->setCurrentIndex(0);
+            this->setCurrentText(tr("Pulse"));
+        }
+        else if (currentActionType == MachineActuatorComponent::action_types::activeOnState)
+        {
+            this->setCurrentText(tr("Active on state"));
         }
         else if (currentActionType == MachineActuatorComponent::action_types::set)
         {
-            this->setCurrentIndex(1);
+            this->setCurrentText(tr("Set"));
         }
         else if (currentActionType == MachineActuatorComponent::action_types::reset)
         {
-            this->setCurrentIndex(2);
+            this->setCurrentText(tr("Reset"));
+        }
+        else if (currentActionType == MachineActuatorComponent::action_types::assign)
+        {
+            this->setCurrentText(tr("Assign"));
         }
     }
     else
     {
-        if (currentActionType == MachineActuatorComponent::action_types::assign)
-        {
-            this->setCurrentIndex(0);
-        }
-        else if (currentActionType == MachineActuatorComponent::action_types::reset)
-        {
-            this->setCurrentIndex(1);
-        }
+        this->clear();
     }
 }

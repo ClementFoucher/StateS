@@ -25,6 +25,10 @@
 // Parent
 #include "componenteditortab.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class FsmTransition;
 class ActionEditor;
@@ -36,9 +40,9 @@ class TransitionEditorTab : public ComponentEditorTab
     Q_OBJECT
 
 public:
-    explicit TransitionEditorTab(FsmTransition* transition, QWidget* parent = nullptr);
+    explicit TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
 
-    void changeEditedTransition(FsmTransition* transition);
+    void changeEditedTransition(shared_ptr<FsmTransition> transition);
 
 private:
     ActionEditor*    actionEditor    = nullptr;

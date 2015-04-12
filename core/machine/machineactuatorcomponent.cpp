@@ -27,69 +27,132 @@
 #include "machine.h"
 
 
-MachineActuatorComponent::MachineActuatorComponent(Machine* owningMachine) :
+MachineActuatorComponent::MachineActuatorComponent(shared_ptr<Machine> owningMachine) :
     MachineComponent(owningMachine)
 {
+    // Propagates local events to the more general "configuration changed" event
+    connect(this, &MachineActuatorComponent::actionListChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
 }
 
 void MachineActuatorComponent::signalResizedEventHandler()
 {
-    foreach(Signal* sig, this->actions)
-    {
-        // If signal is reset, nothig to care about.
+    this->cleanActionList();
 
+    bool listChanged = false;
+    foreach(weak_ptr<Signal> s, this->actions)
+    {
         // Assign values must be resized
 
         // If signal was size one and is now more or conversly,
         // we must change action type.
 
+        shared_ptr<Signal> sig = s.lock();
+
+        QString signame = sig->getName();
+
         if (sig->getSize() != 1)
         {
-            if (actionType[sig] == action_types::pulse)
+            if (actionType[signame] == action_types::activeOnState)
             {
                 // This signal changed size (was size 1)
-                actionType[sig] = action_types::assign;
-                actionValue[sig] = LogicValue::getValue1(sig->getSize());
+                actionType[signame] = action_types::assign;
+                actionValue[signame] = LogicValue::getValue1(sig->getSize());
+
+                listChanged = true;
             }
-            else if (actionType[sig] == action_types::set)
+            else if (actionType[signame] == action_types::pulse)
             {
                 // This signal changed size (was size 1)
-                actionType[sig] = action_types::assign;
-                actionValue[sig] = LogicValue::getValue1(sig->getSize());
+                actionType[signame] = action_types::assign;
+                actionValue[signame] = LogicValue::getValue1(sig->getSize());
+
+                listChanged = true;
             }
-            else if (actionType[sig] == action_types::assign)
+            else if (actionType[signame] == action_types::set)
             {
-                if (actionValue[sig].getSize() != sig->getSize())
+                // This signal changed size (was size 1)
+                actionType[signame] = action_types::assign;
+                actionValue[signame] = LogicValue::getValue1(sig->getSize());
+
+                listChanged = true;
+            }
+            else if (actionType[signame] == action_types::assign)
+            {
+                if (actionValue[signame].getSize() != sig->getSize())
                 {
                     // This signal changed size
-                    actionValue[sig].resize(sig->getSize());
+                    actionValue[signame].resize(sig->getSize());
+
+                    listChanged = true;
                 }
             }
         }
         else // Signal size is 1
         {
-            if (actionType[sig] == action_types::assign)
+            if (actionType[signame] == action_types::assign)
             {
                 // This signal changed size (was size > 1)
-                actionType[sig] = action_types::set;
-                actionValue.remove(sig);
+                actionType[signame] = action_types::set;
+                actionValue.remove(signame);
+
+                listChanged = true;
             }
         }
     }
 
-    emit actionListChanged();
-    emit elementConfigurationChangedEvent();
-}
-
-QList<Signal*> MachineActuatorComponent::getActions() const
-{
-    return actions;
-}
-
-void MachineActuatorComponent::setActions(const QList<Signal*>& newActions)
-{
-    foreach(Signal* sig, newActions)
+    if (listChanged) // Must be true, but anyway...
     {
+        emit actionListChangedEvent();
+    }
+}
+
+void MachineActuatorComponent::cleanActionList()
+{
+    QList<weak_ptr<Signal>> newActionList;
+
+    foreach(weak_ptr<Signal> sig, this->actions)
+    {
+        if (!sig.expired())
+            newActionList.append(sig);
+    }
+
+    bool listChanged = false;
+    if (newActionList.count() != this->actions.count())
+        listChanged = true;
+
+    this->actions = newActionList;
+
+    if (listChanged)
+    {
+        emit actionListChangedEvent();
+    }
+
+    // At this pont, should clean action type and value too,
+    // but we would have to iterate over both lists to check wich
+    // one remains...
+    // As this function is called frequently, we will limit
+    // operations here. Lost fragments will not survive save/load anyway.
+}
+
+QList<shared_ptr<Signal> > MachineActuatorComponent::getActions()
+{
+    this->cleanActionList();
+
+    QList<shared_ptr<Signal>> list;
+
+    foreach(weak_ptr<Signal> sig, this->actions)
+    {
+        list.append(sig.lock());
+    }
+
+    return list;
+}
+
+void MachineActuatorComponent::setActions(const QList<shared_ptr<Signal> > &newActions)
+{
+    foreach(shared_ptr<Signal> sig, newActions)
+    {
+        // cleanActionList() is already done by addAction()
         addAction(sig);
     }
 }
@@ -97,70 +160,112 @@ void MachineActuatorComponent::setActions(const QList<Signal*>& newActions)
 
 void MachineActuatorComponent::clearActions()
 {
-    QList<Signal*> actionsToDelete = actions;
+    this->cleanActionList();
 
-    foreach(Signal* sig, actionsToDelete)
+    bool listChanged = false;
+    if (this->actions.count() != 0)
+        listChanged = true;
+
+    QList<weak_ptr<Signal>> actionsToDelete = this->actions;
+
+    foreach(weak_ptr<Signal> sig, actionsToDelete)
     {
-        removeAction(sig);
+        // Must be done to disconnect Qt signals
+        removeAction(sig.lock());
     }
 
+    // In case there were lost fragments (see comment in cleanActionList())
     actionType.clear();
+    actionValue.clear();
 
-    emit actionListChanged();
-    emit elementConfigurationChangedEvent();
+    if (listChanged)
+    {
+        emit actionListChangedEvent();
+    }
 }
 
-void MachineActuatorComponent::addAction(Signal* signal)
+void MachineActuatorComponent::addAction(shared_ptr<Signal> signal)
 {
-    actions.append(signal);
+    this->cleanActionList();
+
+    this->actions.append(signal);
     if (signal->getSize() == 1)
-        actionType[signal] = action_types::pulse;
+    {
+        if ((this->allowedActionTypes & activeOnState) != 0)
+            actionType[signal->getName()] = action_types::activeOnState;
+        else
+            actionType[signal->getName()] = action_types::pulse;
+    }
     else
-        actionType[signal] = action_types::reset;
+        actionType[signal->getName()] = action_types::reset;
 
     // Handle these events
-    connect(signal, &Signal::signalDeletedEvent,       this, &MachineActuatorComponent::removeAction);
-    connect(signal, &Signal::signalResizedEvent, this, &MachineActuatorComponent::signalResizedEventHandler);
-    // Propagate these events
-    connect(signal, &Signal::signalConfigurationChangedEvent, this, &MachineActuatorComponent::elementConfigurationChangedEvent);
-    connect(signal, &Signal::signalStateChangedEvent,               this, &MachineActuatorComponent::elementStateChangedEvent);
+    connect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+    connect(signal.get(), &Signal::signalResizedEvent, this, &MachineActuatorComponent::signalResizedEventHandler);
+    // Propagate these events : any change to the signals are considered changes to the component
+    connect(signal.get(), &Signal::signalStaticConfigurationChangedEvent, this, &MachineActuatorComponent::componentStaticConfigurationChangedEvent);
+    connect(signal.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineActuatorComponent::componentDynamicStateChangedEvent);
 
-    emit actionListChanged();
-    emit elementConfigurationChangedEvent();
+    emit actionListChangedEvent();
 }
 
 void MachineActuatorComponent::addActionByName(const QString& signalName)
 {
-    foreach (Signal* var, getOwningMachine()->getWrittableSignals())
+    shared_ptr<Machine> owningMachine = this->getOwningMachine();
+
+    if (owningMachine != nullptr)
     {
-        if (var->getName() == signalName)
+        foreach (shared_ptr<Signal> var, owningMachine->getWrittableSignals())
         {
-            addAction(var);
-            break;
+            if (var->getName() == signalName)
+            {
+                addAction(var);
+                break;
+            }
         }
     }
 }
 
-void MachineActuatorComponent::removeAction(Signal* signal)
+void MachineActuatorComponent::removeAction(shared_ptr<Signal> signal)
 {
-    disconnect(signal, &Signal::signalDeletedEvent,                    this, &MachineActuatorComponent::removeAction);
-    disconnect(signal, &Signal::signalResizedEvent,              this, &MachineActuatorComponent::signalResizedEventHandler);
-    disconnect(signal, &Signal::signalConfigurationChangedEvent, this, &MachineActuatorComponent::elementConfigurationChangedEvent);
-    disconnect(signal, &Signal::signalStateChangedEvent,               this, &MachineActuatorComponent::elementStateChangedEvent);
+    if (signal != nullptr)
+    {
+        disconnect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+        disconnect(signal.get(), &Signal::signalResizedEvent, this, &MachineActuatorComponent::signalResizedEventHandler);
+        disconnect(signal.get(), &Signal::signalStaticConfigurationChangedEvent, this, &MachineActuatorComponent::componentStaticConfigurationChangedEvent);
+        disconnect(signal.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineActuatorComponent::componentDynamicStateChangedEvent);
 
-    actions.removeAll(signal);
+        foreach(weak_ptr<Signal> s, this->actions)
+        {
+            if (s.lock() == signal)
+            {
+                s.reset();
+            }
+        }
 
-    actionType. remove(signal);
-    actionValue.remove(signal);
+        actionType. remove(signal->getName());
+        actionValue.remove(signal->getName());
 
-    emit actionListChanged();
-    emit elementConfigurationChangedEvent();
+        this->cleanActionList();
+
+        emit actionListChangedEvent();
+    }
+}
+
+void MachineActuatorComponent::setAllowedActionTypes(uint flags)
+{
+    this->allowedActionTypes = flags;
+}
+
+uint MachineActuatorComponent::getAllowedActionTypes() const
+{
+    return this->allowedActionTypes;
 }
 
 
 bool MachineActuatorComponent::removeActionByName(const QString& signalName)
 {
-    foreach (Signal* sig, actions)
+    foreach (shared_ptr<Signal> sig, this->getActions())
     {
         if (sig->getName() == signalName)
         {
@@ -174,60 +279,69 @@ bool MachineActuatorComponent::removeActionByName(const QString& signalName)
 
 void MachineActuatorComponent::activateActions()
 {
-    foreach (Signal* sig, actions)
+    foreach (shared_ptr<Signal> sig, this->getActions())
     {
-        if (actionType[sig] == action_types::pulse)
+        QString signame = sig->getName();
+
+        if (actionType[signame] == action_types::activeOnState)
         {
             sig->set();
         }
-        else if (actionType[sig] == action_types::set)
+        else if (actionType[signame] == action_types::pulse)
+        {
+            sig->set();
+        }
+        else if (actionType[signame] == action_types::set)
         {
             if (sig->getSize() == 1)
                 sig->set();
             else
-                sig->setCurrentValue(actionValue[sig]);
+                sig->setCurrentValue(actionValue[signame]);
         }
-        else if (actionType[sig] == action_types::reset)
+        else if (actionType[signame] == action_types::reset)
         {
             sig->resetValue();
         }
-        else if (actionType[sig] == action_types::assign)
+        else if (actionType[signame] == action_types::assign)
         {
-            sig->setCurrentValue(actionValue[sig]);
+            sig->setCurrentValue(actionValue[signame]);
         }
     }
 }
 
-void MachineActuatorComponent::setActionType(Signal* signal, action_types type)
+void MachineActuatorComponent::setActionType(shared_ptr<Signal> signal, action_types type)
 {
-    actionType[signal] = type;
+    this->cleanActionList();
 
-    if ( (type == action_types::pulse) ||
+    QString signame = signal->getName();
+
+    actionType[signame] = type;
+
+    if ( (type == action_types::activeOnState) ||
+         (type == action_types::pulse) ||
          (type == action_types::reset) ||
          (type == action_types::set)
          )
     {
-        if (actionValue.contains(signal))
-            actionValue.remove(signal);
+        if (actionValue.contains(signame))
+            actionValue.remove(signame);
     }
     else
     {
-        if (!actionValue.contains(signal))
-            actionValue[signal] = LogicValue::getValue0(signal->getSize());
+        if (!actionValue.contains(signame))
+            actionValue[signame] = LogicValue::getValue0(signal->getSize());
     }
 
-    emit actionListChanged();
-    emit elementConfigurationChangedEvent();
+    emit actionListChangedEvent();
 }
 
-bool MachineActuatorComponent::setActionValue(Signal* signal, LogicValue value)
+bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicValue value)
 {
     if (signal->getSize() == value.getSize())
     {
-        actionValue[signal] = value;
+        actionValue[signal->getName()] = value;
 
-        emit actionListChanged();
-        emit elementConfigurationChangedEvent();
+        emit actionListChangedEvent();
 
         return true;
     }
@@ -236,15 +350,17 @@ bool MachineActuatorComponent::setActionValue(Signal* signal, LogicValue value)
 }
 
 
-MachineActuatorComponent::action_types MachineActuatorComponent::getActionType(Signal* variable)
+MachineActuatorComponent::action_types MachineActuatorComponent::getActionType(shared_ptr<Signal> variable)
 {
-    return actionType[variable];
+    this->cleanActionList();
+
+    return actionType[variable->getName()];
 }
 
-LogicValue MachineActuatorComponent::getActionValue(Signal *variable)
+LogicValue MachineActuatorComponent::getActionValue(shared_ptr<Signal> variable)
 {
-    if (actionValue.contains(variable))
-        return actionValue[variable];
+    if (actionValue.contains(variable->getName()))
+        return actionValue[variable->getName()];
     else
         return LogicValue::getNullValue();
 }

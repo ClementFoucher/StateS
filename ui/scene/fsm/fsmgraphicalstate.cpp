@@ -33,6 +33,7 @@
 #include "signal.h"
 #include "scenewidget.h"
 #include "contextmenu.h"
+#include "fsm.h"
 
 
 //
@@ -87,7 +88,7 @@ FsmGraphicalState::FsmGraphicalState()
     this->setPen(pen);
 }
 
-FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
+FsmGraphicalState::FsmGraphicalState(shared_ptr<FsmState> logicState) :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
     this->setPen(pen);
@@ -99,10 +100,11 @@ FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
 
     this->actionsBox = new QGraphicsItemGroup();
 
+    logicState->setGraphicalRepresentation(this);
+    connect(logicState.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicalState::rebuildRepresentation);
+    connect(logicState.get(), &FsmState::componentDynamicStateChangedEvent,                        this, &FsmGraphicalState::rebuildRepresentation);
+
     this->logicalState = logicState;
-    this->logicalState->setGraphicalRepresentation(this);
-    connect(this->logicalState, &MachineActuatorComponent::elementConfigurationChangedEvent, this, &FsmGraphicalState::rebuildRepresentation);
-    connect(this->logicalState, &MachineActuatorComponent::elementStateChangedEvent,         this, &FsmGraphicalState::rebuildRepresentation);
 
     rebuildRepresentation();
 }
@@ -110,19 +112,22 @@ FsmGraphicalState::FsmGraphicalState(FsmState* logicState) :
 FsmGraphicalState::~FsmGraphicalState()
 {
     delete actionsBox;
-    logicalState->clearGraphicalRepresentation();
+
+    shared_ptr<FsmState> state = this->logicalState.lock();
+    if (state != nullptr)
+        state->clearGraphicalRepresentation();
 }
 
-FsmState* FsmGraphicalState::getLogicalState() const
+shared_ptr<FsmState> FsmGraphicalState::getLogicalState() const
 {
-    return this->logicalState;
+    return this->logicalState.lock();
 }
 
 QVariant FsmGraphicalState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
     // Inform connected transitions we are moving
     if ((change == GraphicsItemChange::ItemPositionChange) || (change == GraphicsItemChange::ItemPositionHasChanged))
-        emit moving();
+        emit stateMovingEvent();
 
     // Reposition action box
     if (scene() != nullptr)
@@ -135,9 +140,11 @@ QVariant FsmGraphicalState::itemChange(GraphicsItemChange change, const QVariant
 void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
     ContextMenu* menu = new ContextMenu();
-    menu->addTitle(tr("State") + " <i>" + logicalState->getName() + "</i>");
+    shared_ptr<FsmState> currentState = logicalState.lock();
 
-    if (!logicalState->isInitial())
+    menu->addTitle(tr("State") + " <i>" + currentState->getName() + "</i>");
+
+    if (!currentState->isInitial())
         menu->addAction(tr("Set initial"));
     menu->addAction(tr("Edit"));
     menu->addAction(tr("Draw transition from this state"));
@@ -147,6 +154,7 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
     menu->popup(event->screenPos());
 
     connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
+    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
 }
 
 void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
@@ -188,6 +196,8 @@ void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
             this->setPos(this->pos() + QPointF(0, -10));
         else if (event->key() == Qt::Key_Down)
             this->setPos(this->pos() + QPointF(0, 10));
+        else if (event->key() == Qt::Key_F2)
+            emit renameStateCalledEvent(this->logicalState.lock());
     }
 }
 
@@ -195,15 +205,15 @@ void FsmGraphicalState::treatMenu(QAction* action)
 {
     if (action->text() == tr("Edit"))
     {
-        emit callEdit(logicalState);
+        emit editStateCalledEvent(logicalState.lock());
     }
     else if (action->text() == tr("Set initial"))
     {
-        logicalState->setInitial();
+        logicalState.lock()->setInitial();
     }
     else if (action->text() == tr("Rename"))
     {
-        emit callRename(logicalState);
+        emit renameStateCalledEvent(logicalState.lock());
     }
     else if (action->text() == tr("Delete"))
     {
@@ -217,7 +227,10 @@ void FsmGraphicalState::treatMenu(QAction* action)
 
 void FsmGraphicalState::askDelete()
 {
-    int linkedTransitions = this->logicalState->getOutgoingTransitions().count() + this->logicalState->getIncomingTransitions().count();
+    shared_ptr<FsmState> state = this->logicalState.lock();
+    shared_ptr<Fsm> owningFsm = state->getOwningFsm();
+
+    int linkedTransitions = state->getOutgoingTransitions().count() + state->getIncomingTransitions().count();
     if (linkedTransitions != 0)
     {
         QString messageText = tr("Delete current state?") + "<br />";
@@ -231,11 +244,11 @@ void FsmGraphicalState::askDelete()
         if (reply == QMessageBox::StandardButton::Ok)
         {
             // This call will destroy the current object as consequence of the logical object destruction
-            delete logicalState;
+            owningFsm->removeState(state);
         }
     }
     else
-        delete logicalState;
+        owningFsm->removeState(state);
 }
 
 QGraphicsItemGroup* FsmGraphicalState::getActionsBox() const
@@ -249,16 +262,18 @@ void FsmGraphicalState::rebuildRepresentation()
     qDeleteAll(this->childItems());
     this->childItems().clear();
 
-    if (logicalState->getIsActive())
+    shared_ptr<FsmState> state = this->logicalState.lock();
+
+    if (state->getIsActive())
         this->setBrush(activeBrush);
     else
         this->setBrush(inactiveBrush);
 
-    stateName = new QGraphicsTextItem(logicalState->getName(), this);
+    stateName = new QGraphicsTextItem(state->getName(), this);
 
     stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
 
-    if (logicalState->isInitial())
+    if (state->isInitial())
     {
         QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
         insideCircle->setPen(pen);
@@ -267,7 +282,7 @@ void FsmGraphicalState::rebuildRepresentation()
     qDeleteAll(actionsBox->childItems());
     actionsBox->childItems().clear();
 
-    QList<Signal *> actions = logicalState->getActions();
+    QList<shared_ptr<Signal>> actions = state->getActions();
     if (actions.count() != 0)
     {
         qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
@@ -284,17 +299,17 @@ void FsmGraphicalState::rebuildRepresentation()
             else
                 currentActionText = actions[i]->getText(false);
 
-            if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
+            if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
                 currentActionText += " = 1";
-            else if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
+            else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
             {
                 if (actions[i]->getSize() == 1)
                     currentActionText += " = 0";
                 else
                     currentActionText += " = " + LogicValue::getValue0(actions[i]->getSize()).toString() + "<sub>b</sub>";
             }
-            else if (logicalState->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
-                currentActionText += " = " + logicalState->getActionValue(actions[i]).toString() + "<sub>b</sub>";
+            else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
+                currentActionText += " = " + state->getActionValue(actions[i]).toString() + "<sub>b</sub>";
 
             actionText->setHtml(currentActionText);
 

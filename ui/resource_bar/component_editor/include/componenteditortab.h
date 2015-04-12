@@ -25,6 +25,7 @@
 // Parent
 #include <QWidget>
 
+
 class ComponentEditorTab : public QWidget
 {
     Q_OBJECT

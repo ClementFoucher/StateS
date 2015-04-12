@@ -182,6 +182,17 @@
         <source>Constants</source>
         <translation>Constantes</translation>
     </message>
+    <message>
+        <source>StateS equation editor</source>
+        <translation>Editeur d&apos;équation de StateS</translation>
+    </message>
+</context>
+<context>
+    <name>Fsm</name>
+    <message>
+        <source>State</source>
+        <translation>État</translation>
+    </message>
 </context>
 <context>
     <name>FsmGraphicalState</name>
@@ -625,6 +636,10 @@
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>
+    <message>
+        <source>StateS timeline visualizer</source>
+        <translation>Visualiseur de chronogramme de StateS</translation>
+    </message>
 </context>
 <context>
     <name>SimulatorTab</name>
@@ -751,10 +766,6 @@
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <source>Unsaved changes will be lost</source>
-        <translation>Les changements non enregistrés seront perdus</translation>
-    </message>
-    <message>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
@@ -777,6 +788,34 @@
     <message>
         <source>Export machine to VHDL</source>
         <translation>Exporter la machine en VHDL</translation>
+    </message>
+    <message>
+        <source>Save machine in a new file</source>
+        <translation>Enregistrer la machine dans un nouveau fichier</translation>
+    </message>
+    <message>
+        <source>Save as</source>
+        <translation>Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>Update saved file with current content</source>
+        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
+    </message>
+    <message>
+        <source>Load machine from file</source>
+        <translation>Charger une machine depuis un fichier</translation>
+    </message>
+    <message>
+        <source>Unsaved changes will be lost.</source>
+        <translation>Les changements non enregistrés seront perdus.</translation>
+    </message>
+    <message>
+        <source>Update content of file</source>
+        <translation>Mettre à jour le contenu du fichier</translation>
+    </message>
+    <message>
+        <source>with current machine?</source>
+        <translation>avec la machine actuelle ?</translation>
     </message>
 </context>
 <context>

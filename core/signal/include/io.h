@@ -26,7 +26,8 @@
 #include "signal.h"
 
 // Qt classes
-#include <QString>
+class QString;
+
 
 class IO : public Signal
 {

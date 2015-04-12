@@ -19,6 +19,13 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// C++ classes
+#include <memory>
+using namespace std;
+
+// Qt classes
+#include <QApplication>
+
 // StateS classes
 #include "langselectiondialog.h"
 #include "states.h"
@@ -26,20 +33,33 @@
 
 int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
+    // Create application
+    shared_ptr<QApplication> app(new QApplication(argc, argv));
 
-    LangSelectionDialog* langageSelectionWindow = new LangSelectionDialog(&a);
+    // Show language seletion dialog and obtain translator from it
+    unique_ptr<LangSelectionDialog> langageSelectionWindow(new LangSelectionDialog(app));
     langageSelectionWindow->setWindowFlags(Qt::Dialog | langageSelectionWindow->windowFlags());
     langageSelectionWindow->setWindowTitle("StateS");
     langageSelectionWindow->exec();
-    QTranslator* translator = langageSelectionWindow->getTranslator();
-    delete langageSelectionWindow;
 
-    StateS s;
+    shared_ptr<QTranslator> translator = langageSelectionWindow->getTranslator();
 
-    int res = a.exec();
+    // This wont be used again in application lifetime
+    // Clear associated resources
+    langageSelectionWindow.reset();
 
-    delete translator;
+    // Build StateS main object and begin execution
+    unique_ptr<StateS> states(new StateS());
+    states->run();
 
+    // Event loop
+    int res = app->exec();
+
+    // Clear everyting
+    states.reset();
+    translator.reset();
+    app.reset();
+
+    // The end
     return res;
 }

@@ -23,12 +23,12 @@
 #include "machinecomponent.h"
 
 
-MachineComponent::MachineComponent(Machine* owningMachine)
+MachineComponent::MachineComponent(shared_ptr<Machine> owningMachine)
 {
     this->owningMachine = owningMachine;
 }
 
-Machine* MachineComponent::getOwningMachine() const
+shared_ptr<Machine> MachineComponent::getOwningMachine() const
 {
-    return this->owningMachine;
+    return this->owningMachine.lock();
 }

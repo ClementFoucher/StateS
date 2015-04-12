@@ -26,25 +26,33 @@
 #include <QDebug>
 
 
-Equation::Equation(nature function, const QVector<Signal*>& operandList) :
-    Equation(function, operandList.count())
-{
-    for (uint i = 0 ; i < this->allowedOperandCount ; i++)
-    {
-        this->setOperand(i, operandList[i]);
-    }
-}
-
+// Main constructor
 Equation::Equation(nature function, uint operandCount) :
-    Signal("<sub>(equation)</sub>")
+    Signal("<sub>(equation)</sub>"),
+    signalOperands(operandCount),
+    equationOperands(operandCount)
 {
     this->function = function;
+
+    // Local signals to more general ones
+    connect(this, &Equation::equationOperandChangedEvent,      this, &Signal::signalStaticConfigurationChangedEvent);
+    connect(this, &Equation::equationOperandCountChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+    connect(this, &Equation::equationFunctionChangedEvent,     this, &Signal::signalStaticConfigurationChangedEvent);
+    // Dynamic value is impacted by those changes
+    connect(this, &Equation::equationOperandChangedEvent,      this, &Equation::computeCurrentValue);
+    connect(this, &Equation::equationOperandCountChangedEvent, this, &Equation::computeCurrentValue);
+    connect(this, &Equation::equationFunctionChangedEvent,     this, &Equation::computeCurrentValue);
 
     if ( (this->function == nature::notOp) | (this->function == nature::identity) )
     {
         this->allowedOperandCount = 1;
         if (operandCount != 1)
+        {
+            signalOperands.resize(1);
+            equationOperands.resize(1);
+
             qDebug() << "(Equation) Error ! Trying to create a NOT equation with size != 1 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 1.";
+        }
     }
     else if ( (this->function == nature::equalOp) || (this->function == nature::diffOp))
     {
@@ -52,6 +60,9 @@ Equation::Equation(nature function, uint operandCount) :
 
         if (operandCount != 2)
         {
+            signalOperands.resize(2);
+            equationOperands.resize(2);
+
             if (function == nature::equalOp)
                 qDebug() << "(Equation) Error ! Trying to create a EQUAL equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
             else
@@ -63,69 +74,43 @@ Equation::Equation(nature function, uint operandCount) :
         if (operandCount < 2)
         {
             this->allowedOperandCount = 2;
+
+            signalOperands.resize(2);
+            equationOperands.resize(2);
+
             qDebug() << "(Equation) Error ! Trying to create an equation with size < 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
         }
         else
             this->allowedOperandCount = operandCount;
     }
-
-    for (uint i = 0 ; i < allowedOperandCount ; i++)
-    {
-        operands.append(nullptr);
-    }
 }
 
-Equation::~Equation()
+Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList) :
+    Equation(function, operandList.count())
 {
-    for (uint i = 0 ; i < allowedOperandCount ; i++)
-        clearOperand(i, true);
-}
-
-Equation* Equation::clone() const
-{
-    QVector<Signal*> newEquationOperands;
-
-    for (uint i = 0 ; i < this->allowedOperandCount ; i++)
+    for (int i = 0 ; i < operandList.count() ; i++)
     {
-        // For equation operands (and system constants,) clone them.
-        // For signal operands, reference them.
-
-        if (operands[i] != nullptr)
-        {
-            Signal* currentSignalOperand = this->operands[i];
-            Equation* currentEquationOperand = dynamic_cast <Equation*> (currentSignalOperand);
-
-            if (currentEquationOperand != nullptr)
-            {
-                newEquationOperands.append(currentEquationOperand->clone());
-            }
-            else
-            {
-                newEquationOperands.append(currentSignalOperand);
-            }
-        }
-        else
-            newEquationOperands.append(nullptr);
+        // Do not compute value as done in a mute way
+        this->setOperand(i, operandList[i], true);
     }
 
-    return new Equation(function, newEquationOperands);
+    // Causes recomputation
+    this->computeCurrentValue();
+}
+
+shared_ptr<Equation> Equation::clone() const
+{
+    return shared_ptr<Equation>(new Equation(this->function, this->getOperands()));
 }
 
 /**
- * @brief getSize returns the apparent size of the object. 0 means no current size
+ * @brief getSize returns the apparent size of the equation.
+ * 0 means current size is not defined => result will be a null signal.
  * @return
  */
 uint Equation::getSize() const
 {
-    if (this->sizedOperandCount == this->allowedOperandCount)
-    {
-        if ( (this->function == nature::equalOp) || (this->function == nature::diffOp))
-            return 1;
-        else
-            return currentSignalSize;
-    }
-    else
-        return 0;
+    return currentValue.getSize();
 }
 
 bool Equation::resize(uint)
@@ -147,6 +132,7 @@ void Equation::setFunction(const nature& newFunction)
         // Delete operands beyond one
         while (allowedOperandCount > 1)
         {
+            // Muted: do not causes recomputation
             decreaseOperandCount(true);
         }
     }
@@ -155,6 +141,7 @@ void Equation::setFunction(const nature& newFunction)
         // At least two operands for all other equation types
         if (allowedOperandCount == 1)
         {
+            // Muted: do not causes recomputation
             increaseOperandCount(true);
         }
         else if ( (newFunction == nature::equalOp) || (newFunction == nature::diffOp) )
@@ -165,6 +152,7 @@ void Equation::setFunction(const nature& newFunction)
                 // Delete operands beyond two
                 while (allowedOperandCount > 2)
                 {
+                    // Muted: do not causes recomputation
                     decreaseOperandCount(true);
                 }
             }
@@ -172,17 +160,28 @@ void Equation::setFunction(const nature& newFunction)
     }
 
     this->function = newFunction;
+
+    // Causes recomputation
+    emit equationFunctionChangedEvent();
 }
 
-Signal* Equation::getOperand(uint i) const
+shared_ptr<Signal> Equation::getOperand(uint i) const
 {
     if (i < this->allowedOperandCount)
-        return this->operands[i];
+        return this->getOperands()[i];
     else
         return nullptr;
 }
 
-bool Equation::setOperand(uint i, Signal* newOperand)
+/**
+ * @brief Equation::setOperand
+ * @param i
+ * @param newOperand
+ * Equation always owns its own Equation operands.
+ * All given operands that are equation will be cloned.
+ * @return
+ */
+bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet)
 {
     // Do not allow placing an operand outside defined range
     if (i >= this->allowedOperandCount)
@@ -190,108 +189,81 @@ bool Equation::setOperand(uint i, Signal* newOperand)
         return false;
     }
 
-    // Check if operand size matches current size
-    if ( (this->sizedOperandCount != 0) && ( this->signalHasSize(newOperand) ) )
-    {
-        if (this->currentSignalSize != newOperand->getSize())
-            return false;
-    }
-
-    // It's OK, let's begin replacement
-
     // Only proceed to set if new operand is not the same as the current one.
     // If it is, just return success
-    if (operands[i] == newOperand)
+    if (this->getOperand(i) == newOperand)
     {
         return true;
     }
     else
     {
-        if (operands[i] != nullptr)
-            clearOperand(i);
+        // Muted: do not causes recomputation
+        clearOperand(i, true);
 
         if (newOperand != nullptr)
         {
             // Assign operand
 
-            Equation* newEquationOperand = dynamic_cast <Equation*> (newOperand);
+            shared_ptr<Equation> newEquationOperand = dynamic_pointer_cast <Equation> (newOperand);
+            shared_ptr<Signal> actualNewOperand;
 
             if (newEquationOperand != nullptr)
-                operands[i] = newEquationOperand->clone();
-            else
-                operands[i] = newOperand;
-
-            connect(operands[i], &Signal::signalStateChangedEvent,         this, &Signal::signalStateChangedEvent);
-            connect(operands[i], &Signal::signalConfigurationChangedEvent, this, &Signal::signalConfigurationChangedEvent);
-            connect(operands[i], &Signal::signalDeletedEvent,              this, &Equation::operandDeletedEvent);
-            connect(operands[i], &Signal::signalResizedEvent,              this, &Equation::operandResizedEvent);
-
-            if (signalHasSize(operands[i]))
             {
-                if (sizedOperandCount == 0)
-                {
-                    currentSignalSize = operands[i]->getSize();
-
-                    emit signalResizedEvent();
-                    emit signalConfigurationChangedEvent();
-                }
-
-                sizedOperandCount++;
+                equationOperands[i] = newEquationOperand->clone();
+                actualNewOperand = dynamic_pointer_cast<Signal>(equationOperands[i]);
+            }
+            else
+            {
+                connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Equation::computeCurrentValue);
+                connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+                signalOperands[i] = newOperand;
+                actualNewOperand = newOperand;
             }
 
 
-            actualOperandCount++;
+            // Structural changes are propagated
+            connect(actualNewOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+            // Local stuff
+            connect(actualNewOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+            connect(actualNewOperand.get(), &Signal::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
         }
 
-        // In order to actualize display
-        emit signalConfigurationChangedEvent();
+        if (!quiet)
+        {
+            // Causes recomputation
+            emit equationOperandChangedEvent();
+        }
 
         return true;
     }
 }
 
-
 void Equation::clearOperand(uint i, bool quiet)
 {
-    if (operands[i] != nullptr)
+    shared_ptr<Signal> oldOperand = this->getOperand(i);
+
+    if (oldOperand != nullptr)
     {
+        // Signal propagation
+        disconnect(oldOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+        // Local stuff
+        disconnect(oldOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+        disconnect(oldOperand.get(), &Signal::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 
-        disconnect(operands[i], &Signal::signalStateChangedEvent,         this, &Signal::signalStateChangedEvent);
-        disconnect(operands[i], &Signal::signalConfigurationChangedEvent, this, &Signal::signalConfigurationChangedEvent);
-        disconnect(operands[i], &Signal::signalDeletedEvent,              this, &Equation::operandDeletedEvent);
-        disconnect(operands[i], &Signal::signalResizedEvent,              this, &Equation::operandResizedEvent);
-
-
-        Equation* equationOperand = dynamic_cast <Equation*> (operands[i]);
-        if (equationOperand != nullptr)
+        if (! (signalOperands[i].expired()) )
         {
-            // We hold our own copy of equations: delete it
-
-            if (equationOperand->getSize() != 0)
-            {
-                sizedOperandCount--;
-            }
-
-            delete equationOperand;
-        }
-        else // Signal
-        {
-            sizedOperandCount--;
+            disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Equation::computeCurrentValue);
+            disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
         }
 
-        actualOperandCount--;
-        operands[i] = nullptr;
+        equationOperands[i].reset();
+        signalOperands[i].reset();
 
-        if (sizedOperandCount == 0)
-        {
-            this->currentSignalSize = 0;
-
-            emit signalResizedEvent();
-        }
-
-        // In order to actualize display
         if (!quiet)
-            emit signalConfigurationChangedEvent();
+        {
+            // Causes recomputation
+            emit equationOperandChangedEvent();
+        }
     }
 }
 
@@ -312,13 +284,17 @@ QString Equation::getText(bool colored) const
 
     for (uint i = 0 ; i < this->allowedOperandCount ; i++)
     {
-        if (operands[i] != nullptr)
+        shared_ptr<Signal> operand = getOperand(i);
+        if (operand != nullptr)
         {
-            text += operands[i]->getText(colored);
+            text += operand->getText(colored);
         }
-        else if (this->currentSignalSize != 0)
+        else
         {
-            text += "..."; //LogicValue::getValue0(this->currentSignalSize).toString(); // Should handle color
+            if (colored)
+                text += "<font color=\"red\">...</font>";
+            else
+                text += "...";
         }
 
         // Add operator, except for last operand
@@ -359,84 +335,12 @@ QString Equation::getText(bool colored) const
 
 LogicValue Equation::getCurrentValue() const
 {
-    if (this->allowedOperandCount != this->sizedOperandCount)
-        return LogicValue::getNullValue();
-    else
-    {
-        if (function == nature::notOp)
-        {
-            return ! ( operands[0]->getCurrentValue() );
-        }
-        else if (function == nature::identity)
-        {
-            return ( operands[0]->getCurrentValue() );
-        }
-        else if ( (function == nature::equalOp) || (function == nature::diffOp) )
-        {
-            LogicValue result(1);
+    return this->currentValue;
+}
 
-            if (function == nature::equalOp)
-            {
-                result[0] = ((operands[0]->getCurrentValue() == operands[1]->getCurrentValue()));
-            }
-            else if (function == nature::diffOp)
-            {
-                result[0] = ((operands[0]->getCurrentValue() != operands[1]->getCurrentValue()));
-            }
-
-            return result;
-        }
-        else
-        {
-            LogicValue partialResult(currentSignalSize);
-
-            switch (function)
-            {
-            case nature::andOp:
-            case nature::nandOp:
-
-                partialResult = LogicValue(currentSignalSize, true);
-
-                foreach(Signal* operand, operands)
-                {
-                    partialResult &= operand->getCurrentValue();
-                }
-
-                break;
-
-            case nature::orOp:
-            case nature::norOp:
-
-                foreach(Signal* operand, operands)
-                {
-                    partialResult |= operand->getCurrentValue();
-                }
-
-                break;
-
-            case nature::xorOp:
-            case nature::xnorOp:
-
-                foreach(Signal* operand, operands)
-                {
-                    partialResult ^= operand->getCurrentValue();
-                }
-
-                break;
-            case nature::equalOp:
-            case nature::diffOp:
-            case nature::notOp:
-            case nature::identity:
-                // Not handled here
-                break;
-            }
-
-            if (this->isInverted())
-                partialResult = !partialResult;
-
-            return partialResult;
-        }
-    }
+Equation::computationFailureCause Equation::getComputationFailureCause() const
+{
+    return this->failureCause;
 }
 
 bool Equation::isInverted() const
@@ -465,50 +369,153 @@ bool Equation::isInverted() const
     }
 }
 
-const QVector<Signal*>& Equation::getOperands() const
+/**
+ * @brief Equation::getOperands
+ * Warning: this function returns pointers to Equation operands.
+ * This must not be used to take ownership of operands.
+ * @return
+ */
+QVector<shared_ptr<Signal>> Equation::getOperands() const
 {
+    QVector<shared_ptr<Signal>> operands(this->allowedOperandCount);
+
+    for (uint i = 0 ; i < this->allowedOperandCount ; i++)
+    {
+        if (!signalOperands[i].expired())
+            operands[i] = signalOperands[i].lock();
+        else if (equationOperands[i] != nullptr)
+            operands[i] = equationOperands[i];
+    }
+
     return operands;
 }
 
-void Equation::operandDeletedEvent(Signal* var)
+void Equation::computeCurrentValue()
 {
-    for (uint i = 0 ; i < this->allowedOperandCount ; i++)
+    bool doCompute = true;
+
+    uint operandsSize = 0;
+
+    foreach(shared_ptr<Signal> currentOperand, this->getOperands())
     {
-        if (var == operands[i])
+        if (currentOperand == nullptr)
         {
-            clearOperand(i);
+            this->failureCause = computationFailureCause::nullOperand;
+            doCompute = false;
             break;
         }
+        else if ( currentOperand->getSize() == 0)
+        {
+            this->failureCause = computationFailureCause::incompleteOperand;
+            doCompute = false;
+            break;
+        }
+        else if ( (operandsSize != 0) && (currentOperand->getSize() != operandsSize) )
+        {
+            this->failureCause = computationFailureCause::sizeMismatch;
+            doCompute = false;
+            break;
+        }
+        else if (operandsSize == 0)
+            operandsSize = currentOperand->getSize();
     }
+
+    LogicValue previousValue = this->currentValue;
+
+    if (doCompute)
+    {
+        QVector<shared_ptr<Signal>> operands = this->getOperands();
+
+        if (function == nature::notOp)
+        {
+            this->currentValue = ! ( operands[0]->getCurrentValue() );
+        }
+        else if (function == nature::identity)
+        {
+            this->currentValue = operands[0]->getCurrentValue();
+        }
+        else if ( (function == nature::equalOp) || (function == nature::diffOp) )
+        {
+            LogicValue result(1);
+
+            if (function == nature::equalOp)
+            {
+                result[0] = ((operands[0]->getCurrentValue() == operands[1]->getCurrentValue()));
+            }
+            else if (function == nature::diffOp)
+            {
+                result[0] = ((operands[0]->getCurrentValue() != operands[1]->getCurrentValue()));
+            }
+
+            this->currentValue = result;
+        }
+        else
+        {
+            LogicValue partialResult(operandsSize);
+
+            switch (function)
+            {
+            case nature::andOp:
+            case nature::nandOp:
+
+                partialResult = LogicValue(operandsSize, true);
+
+                foreach(shared_ptr<Signal> operand, operands)
+                {
+                    partialResult &= operand->getCurrentValue();
+                }
+
+                break;
+
+            case nature::orOp:
+            case nature::norOp:
+
+                foreach(shared_ptr<Signal> operand, operands)
+                {
+                    partialResult |= operand->getCurrentValue();
+                }
+
+                break;
+
+            case nature::xorOp:
+            case nature::xnorOp:
+
+                foreach(shared_ptr<Signal> operand, operands)
+                {
+                    partialResult ^= operand->getCurrentValue();
+                }
+
+                break;
+            case nature::equalOp:
+            case nature::diffOp:
+            case nature::notOp:
+            case nature::identity:
+                // Not handled here
+                break;
+            }
+
+            if (this->isInverted())
+                partialResult = !partialResult;
+
+            this->currentValue = partialResult;
+
+        }
+
+        this->failureCause = computationFailureCause::nofail;
+    }
+    else
+    {
+        this->currentValue = LogicValue::getNullValue();
+    }
+
+    if (previousValue != this->currentValue)
+        emit signalDynamicStateChangedEvent();
+
+    if (previousValue.getSize() != this->currentValue.getSize())
+        emit signalResizedEvent();
 }
 
-void Equation::operandResizedEvent()
-{
-    if (this->sizedOperandCount == 1)
-    {
-        for(uint i = 0 ; i < allowedOperandCount ; i++)
-        {
-            if ( (operands[i] != nullptr) && (operands[i]->getSize() != this->currentSignalSize) )
-            {
-                this->currentSignalSize = operands[i]->getSize();
-                //adjustSize();
-            }
-        }
-    }
-    else // Sized operand count > 1
-    {
-        for(uint i = 0 ; i < allowedOperandCount ; i++)
-        {
-            if ( (operands[i] != nullptr) && (operands[i]->getSize() != this->currentSignalSize) && (operands[i]->getSize() != 0))
-            {
-                clearOperand(i);
-            }
-        }
-    }
-
-}
-
-bool Equation::signalHasSize(Signal *sig)
+bool Equation::signalHasSize(shared_ptr<Signal> sig) const
 {
     if (sig == nullptr)
         return false;
@@ -523,9 +530,9 @@ uint Equation::getOperandCount() const
     return allowedOperandCount;
 }
 
-bool Equation::increaseOperandCount(bool force)
+bool Equation::increaseOperandCount(bool quiet)
 {
-    if ( ( force ) ||
+    if ( ( quiet ) ||
          ( (function != nature::notOp)    &&
            (function != nature::identity) &&
            (function != nature::equalOp)  &&
@@ -533,11 +540,14 @@ bool Equation::increaseOperandCount(bool force)
          )
        )
     {
-        this->operands.append(nullptr);
         this->allowedOperandCount++;
 
-        // In order to actualize display
-        emit signalConfigurationChangedEvent();
+        this->signalOperands.resize(this->allowedOperandCount);
+        this->equationOperands.resize(this->allowedOperandCount);
+
+        if (!quiet)
+            // Causes recomputation
+            emit equationOperandCountChangedEvent();
 
         return true;
     }
@@ -545,9 +555,9 @@ bool Equation::increaseOperandCount(bool force)
         return false;
 }
 
-bool Equation::decreaseOperandCount(bool force)
+bool Equation::decreaseOperandCount(bool quiet)
 {
-    if ( ( force ) ||
+    if ( ( quiet ) ||
          ( (function != nature::notOp)    &&
            (function != nature::identity) &&
            (function != nature::equalOp)  &&
@@ -555,14 +565,17 @@ bool Equation::decreaseOperandCount(bool force)
          )
        )
     {
-        if ( (force) || (this->allowedOperandCount > 2) )
+        if ( (quiet) || (this->allowedOperandCount > 2) )
         {
             clearOperand(allowedOperandCount-1);
-            operands.removeLast();
             this->allowedOperandCount--;
 
-            // In order to actualize display
-            emit signalConfigurationChangedEvent();
+            this->signalOperands.resize(this->allowedOperandCount);
+            this->equationOperands.resize(this->allowedOperandCount);
+
+            if (!quiet)
+                // Causes recomputation
+                emit equationOperandCountChangedEvent();
 
             return true;
         }

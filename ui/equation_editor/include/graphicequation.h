@@ -26,49 +26,65 @@
 // Parent
 #include <QFrame>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QMap>
 
 // StateS classes
 class Signal;
 class EquationEditor;
+//class ContextMenu;
 
 
 class GraphicEquation : public QFrame
 {
     Q_OBJECT
 
+private:
+    enum CommonAction { Cancel = 0 };
+    enum DropAction { ReplaceExisting = 1, ExistingAsOperand = 2};
+    enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5};
+
 public:
-    explicit GraphicEquation(Signal* equation, bool isTemplate = false, QWidget* parent = nullptr);
+    explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, QWidget* parent = nullptr);
 
-    void updateEquation(Signal *oldOperand, Signal *newOperand);
+    void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand);
 
-    Signal* getLogicEquation() const;
+    shared_ptr<Signal> getLogicEquation() const;
 
 protected slots:
-    void enterEvent(QEvent* event) override;
-    void leaveEvent(QEvent* event) override;
+    void enterEvent(QEvent*) override;
+    void leaveEvent(QEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent*) override;
     void dropEvent(QDropEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
+    void enterChildrenEvent();
+    void leaveChildren();
 
 private slots:
-    void treatMenu(QAction* action);
+    void treatMenuEventHandler(QAction* action);
 
 private:
-    void replaceEquation(Signal* newEquation);
+    void setDefaultBorderColor();
+    void setHilightedBorderColor();
+
+    void replaceEquation(shared_ptr<Signal> newEquation);
     void buildEquation();
-    void childLeavedEvent();
-    void childEnteredEvent();
+
+    GraphicEquation* parentEquation() const;
 
     bool isTemplate = false;
 
-    Signal* equation = nullptr;
+    weak_ptr<Signal> equation;
+    // Only top-level GraphicEquation holds root Equation
+    shared_ptr<Signal> rootEquation;
 
-    QMap<uint, GraphicEquation*> graphicOperands;
-
-    Signal* droppedEquation = nullptr;
+    shared_ptr<Signal> droppedEquation;
 };
 
 #endif // GRAPHICEQUATION_H

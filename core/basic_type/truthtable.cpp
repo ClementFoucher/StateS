@@ -25,31 +25,37 @@
 // C++ classes
 #include <math.h>
 
-// Qt classes
-#include <QSet>
-
 // StateS classes
 #include "signal.h"
 #include "equation.h"
 #include "logicvalue.h"
 
 
-TruthTable::TruthTable(Equation* equation)
+TruthTable::TruthTable(shared_ptr<Equation> equation)
 {
-    QList<Equation*> equations;
+    QList<shared_ptr<Equation>> equations;
     equations.append(equation);
 
     buildTable(equations.toVector());
 }
 
-TruthTable::TruthTable(QList<Equation*> equations)
+TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
 {
     buildTable(equations.toVector());
 }
 
-QVector<Signal*> TruthTable::getSignals() const
+QVector<shared_ptr<Signal> > TruthTable::getSignals() const
 {
-    return this->signalTable;
+    QVector<shared_ptr<Signal>> list;
+
+    foreach(weak_ptr<Signal> sig, this->signalTable)
+    {
+        shared_ptr<Signal> sigL = sig.lock();
+
+        list.append(sigL);
+    }
+
+    return list;
 }
 
 QVector<QVector<LogicValue> > TruthTable::getInputTable() const
@@ -85,13 +91,13 @@ uint TruthTable::getOutputCount() const
     return this->outputTable.count();
 }
 
-QSet<Signal*> TruthTable::extractSignals(Equation* equation) const
+QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equation) const
 {
-    QSet<Signal*> list;
+    QList<shared_ptr<Signal>> list;
 
-    foreach(Signal* sig, equation->getOperands())
+    foreach(shared_ptr<Signal> sig, equation->getOperands())
     {
-        Equation* complexOperand = dynamic_cast<Equation*>(sig);
+        shared_ptr<Equation> complexOperand = dynamic_pointer_cast<Equation>(sig);
 
         if (complexOperand != nullptr)
         {
@@ -100,34 +106,45 @@ QSet<Signal*> TruthTable::extractSignals(Equation* equation) const
         else
         {
             if (!sig->getIsConstant())
-                list.insert(sig);
+                list.append(sig);
         }
     }
 
     return list;
 }
 
-void TruthTable::buildTable(QVector<Equation*> equations)
+void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 {
-    QSet<Signal*> signalSet;
+    QList<shared_ptr<Signal>> signalList;
 
-    foreach(Equation* equation, equations)
+    foreach(shared_ptr<Equation> equation, equations)
     {
-        signalSet += extractSignals(equation);
+        signalList += extractSignals(equation);
         this->equationTable.append(equation->getText());
     }
 
-    signalTable = (signalSet.toList()).toVector();
+    QVector<shared_ptr<Signal>> signalVector;
+
+    foreach(shared_ptr<Signal> signal, signalList)
+    {
+        if (!signalVector.contains(signal))
+        {
+            signalVector.append(signal);
+            this->signalTable.append(signal);
+        }
+    }
+
+    //signalTable = (signalSet.toList()).toVector();
 
     uint inputCount = 0;
-    foreach(Signal* sig, signalTable)
+    foreach(shared_ptr<Signal> sig, signalVector)
     {
         inputCount += sig->getSize();
     }
 
     // Compute initial row
     QVector<LogicValue> currentRow;
-    foreach(Signal* sig, signalTable)
+    foreach(shared_ptr<Signal> sig, signalVector)
     {
         currentRow.append(LogicValue(sig->getSize(), false));
     }
@@ -135,16 +152,16 @@ void TruthTable::buildTable(QVector<Equation*> equations)
     for (uint i = 0 ; i < pow(2, inputCount) ; i++)
     {
         // Get current row
-        inputTable.append(currentRow);
+        this->inputTable.append(currentRow);
 
         // Compute outputs for this row
-        for (int i = 0 ; i < signalTable.count() ; i++)
+        for (int i = 0 ; i < signalVector.count() ; i++)
         {
-            signalTable[i]->setCurrentValue(currentRow[i]);
+            signalVector[i]->setCurrentValue(currentRow[i]);
         }
 
         QVector<LogicValue> currentResultLine;
-        foreach(Equation* equation, equations)
+        foreach(shared_ptr<Equation> equation, equations)
         {
             currentResultLine.append(equation->getCurrentValue());
         }

@@ -14,6 +14,10 @@ Export_PDF.svg            | Epok__        | Creative Commons Attribution-ShareAl
 Export_VHDL.svg           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 Save.svg                  | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 Load.svg                  | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Rising_edge.svg           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Falling_edge.svg          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Pulse.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Active_on_state.svg       | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 
 
 

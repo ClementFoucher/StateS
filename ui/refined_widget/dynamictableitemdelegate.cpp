@@ -22,6 +22,9 @@
 // Current class header
 #include "dynamictableitemdelegate.h"
 
+// Qt classes
+#include <QTableWidgetItem>
+
 // StateS classes
 #include "dynamiclineedit.h"
 

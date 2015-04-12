@@ -1,4 +1,10 @@
 *****************
+* StateS v. 0.3 *
+*****************
+
+- 2013-04-12 - V 0.3   - (Internal) Moved to smart pointers for objects management, except for QWidgets. UI improvements.
+
+*****************
 * StateS v. 0.2 *
 *****************
 

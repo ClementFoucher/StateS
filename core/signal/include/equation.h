@@ -25,11 +25,16 @@
 // Parent
 #include "signal.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QVector>
 
 // StateS classes
 class Operator;
+
 
 /**
  * @brief
@@ -37,33 +42,21 @@ class Operator;
  * Equations are thus "compouned signals", which value is dynamic and depends
  * on the values of operands at each moment.
  *
+ * Equation size in bits is also dynamic and depends on operands size,
+ * except for equality and difference operators, which size is always 1.
+ *
  * An equation can store as operand:
  * - nullptr => operand is not set
- * (- system constants)
  * - machine signals
  * - equations with a size
  * - equations with no size
  *
- * Equation size in bits is also dynamic and depends on oprands size,
- * except for equality and difference operators, which size is always 1.
+ * An equation with any of its operands set to nullptr or to unsized equations
+ * will have no visible size, and always returns a null logic value.
+ * An equation with operands of different sizes will behave the same.
  *
- * An equation with all its operands set to nullptr will have no size,
- * and always returns a null logic value.
- *
- * An equation with only (system constants,) usized equations and nullptr operands
- * will have no size neither(, but its value will be computed and return a size 1
- * result. Its null oprands will be ignored in value computation.)
- *
- * An equation containing at least one signal defined in a machine, or one equation
- * with a size, have a fixed size, and does not accept operands with a different size.
- * (Operands with no size and system constants can still be used as operands.)
- *
- * (Equations with no size value should be interpreted as a system constant, and resized
- * before use if necessary.)
- *
- * Equation store copies of all dynamic elements (equations (and system constants)).
- * References to machine signals are not copied.
- * At operand assignment, we make copy of needed elements.
+ * An equation store its own copy (cloned at initialization) of Equation operands => shared_ptr.
+ * Machine Signals are primary held by the machine => weak_ptr.
  *
  */
 
@@ -84,12 +77,18 @@ public:
                       identity // For internal use only, exactly one operand
                      };
 
-public:
-    explicit Equation(nature function, const QVector<Signal*>& operandList);
-    explicit Equation(nature function, uint allowedOperandCount);
-    ~Equation();
+    enum class computationFailureCause{uncomputed,
+                                       nofail,
+                                       nullOperand,
+                                       incompleteOperand,
+                                       sizeMismatch
+                                      };
 
-    Equation* clone() const; //override;
+public:
+    explicit Equation(nature function, uint allowedOperandCount);
+    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
+
+    shared_ptr<Equation> clone() const;
 
     uint getSize() const override;
     bool resize(uint) override;
@@ -97,45 +96,47 @@ public:
     QString getText(bool colored = false) const override;
 
     LogicValue getCurrentValue() const override;
+    computationFailureCause getComputationFailureCause() const;
 
     nature getFunction() const;
     void setFunction(const nature& newFunction);
     bool isInverted() const;
 
-    Signal* getOperand(uint i) const;
-    bool setOperand(uint i, Signal* newOperand);
+    shared_ptr<Signal> getOperand(uint i) const;
+    bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false);
     void clearOperand(uint i, bool quiet = false);
 
-    const QVector<Signal*>& getOperands() const;
+    QVector<shared_ptr<Signal>> getOperands() const;
 
     uint getOperandCount() const;
-    bool increaseOperandCount(bool force = false);
-    bool decreaseOperandCount(bool force = false);
+    bool increaseOperandCount(bool quiet = false);
+    bool decreaseOperandCount(bool quiet = false);
+
+signals:
+    void equationOperandChangedEvent();
+    void equationOperandCountChangedEvent();
+    void equationFunctionChangedEvent();
 
 private slots:
-    void operandDeletedEvent(Signal* var);
-    void operandResizedEvent();
+    void computeCurrentValue();
 
 private:
-    bool signalHasSize(Signal* sig);
+    bool signalHasSize(shared_ptr<Signal> sig) const;
+
+    // Current value is stored instead of dynamically computed
+    // to avoid emit change events if value acually didn't changed
+    LogicValue currentValue = LogicValue::getNullValue();
+    computationFailureCause failureCause = computationFailureCause::uncomputed;
 
     nature function;
-    QVector<Signal*> operands;
+    // Different storage for different ownership
+    QVector<weak_ptr<Signal>> signalOperands;
+    QVector<shared_ptr<Equation>> equationOperands;
 
     // This size hold the maximum operands count
     // It can be increased or decreased (min 2 operands)
-    // except for constant size operators (not, eq, diff)
+    // except for constant size operators (ident, not, eq, diff)
     uint allowedOperandCount = 0;
-
-    // This holds the number of operands that are not nullptr
-    uint actualOperandCount = 0;
-
-    // This holds the number of operands with a size
-    uint sizedOperandCount = 0;
-
-    // Current size is dynamically computed size based on operands size
-    // If operands contain at least 1 sized signal, then equation size is set
-    uint currentSignalSize = 0;
 };
 
 #endif // EQUATION_H

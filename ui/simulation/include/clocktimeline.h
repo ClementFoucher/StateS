@@ -25,15 +25,20 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Clock;
+
 
 class ClockTimeLine : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ClockTimeLine(Clock* clock, QWidget* parent = nullptr);
+    explicit ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 };
 
 #endif // CLOCKTIMELINE_H

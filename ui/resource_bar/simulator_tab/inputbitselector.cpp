@@ -25,12 +25,13 @@
 // Qt classes
 #include <QHBoxLayout>
 #include <QStyle>
+#include <QLabel>
 
 // StateS classes
 #include "signal.h"
 
 
-InputBitSelector::InputBitSelector(Signal* signalToCommand, uint bitNumber, QWidget *parent) :
+InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent) :
     QFrame(parent)
 {
     this->signalToCommand = signalToCommand;
@@ -44,7 +45,7 @@ InputBitSelector::InputBitSelector(Signal* signalToCommand, uint bitNumber, QWid
 
     this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-    connect(this->signalToCommand, &Signal::signalStateChangedEvent, this, &InputBitSelector::signalValueChanged);
+    connect(this->signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEvent* event)
@@ -71,7 +72,7 @@ void InputBitSelector::mousePressEvent(QMouseEvent*)
     this->signalToCommand->setCurrentValue(signalValue);
 }
 
-void InputBitSelector::signalValueChanged()
+void InputBitSelector::signalValueChangedEventHandler()
 {
     this->bitValue->setText(QString::number(this->signalToCommand->getCurrentValue()[this->bitNumber]));
 }

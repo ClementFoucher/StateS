@@ -25,8 +25,15 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QHash>
+#include <QList>
+#include <QVector>
+class QString;
 
 // StateS classes
 #include "truthtable.h"
@@ -38,7 +45,7 @@ class FsmVerifier : public QObject
     Q_OBJECT
 
 public:
-    explicit FsmVerifier(Fsm* machine);
+    explicit FsmVerifier(shared_ptr<Fsm> machine);
     ~FsmVerifier();
 
     QList<QString> verifyFsm();
@@ -48,7 +55,7 @@ public:
 private:
     void clearProofs();
 
-    Fsm* machine = nullptr;
+    weak_ptr<Fsm> machine;
     QList<TruthTable> internalProofs;
 
     QVector<TruthTable*> proofs;

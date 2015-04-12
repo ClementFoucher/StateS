@@ -25,24 +25,29 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Machine;
+
 
 class MachineComponent : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MachineComponent(Machine* owningMachine);
+    explicit MachineComponent(shared_ptr<Machine> owningMachine);
 
-    Machine* getOwningMachine() const;
+    shared_ptr<Machine> getOwningMachine() const;
 
 signals:
-    void elementConfigurationChangedEvent();
-    void elementStateChangedEvent();
+    void componentStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
+    void componentDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
 
-protected:
-    Machine* owningMachine = nullptr;
+private:
+    weak_ptr<Machine> owningMachine;
 };
 
 #endif // MACHINECOMPONENT_H

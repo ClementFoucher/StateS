@@ -25,24 +25,29 @@
 // Parent
 #include <QComboBox>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Signal;
 class MachineActuatorComponent;
+
 
 class ActionListEditor : public QComboBox
 {
     Q_OBJECT
 
 public:
-    explicit ActionListEditor(MachineActuatorComponent *actuator, Signal* signal, QWidget* parent = nullptr);
+    explicit ActionListEditor(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent = nullptr);
 
 private slots:
     void treatIndexChanged(int index);
     void updateIndex();
 
 private:
-    Signal* signal = nullptr;
-    MachineActuatorComponent* actuator = nullptr;
+    weak_ptr<Signal> signal;
+    weak_ptr<MachineActuatorComponent> actuator;
 };
 
 #endif // ACTIONLISTEDITOR_H

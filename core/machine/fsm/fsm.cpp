@@ -24,6 +24,8 @@
 
 // Qt classes
 #include <QFile>
+#include <QDomElement>
+#include <QXmlStreamWriter>
 
 // Debug
 #include <QDebug>
@@ -42,19 +44,14 @@ Fsm::Fsm()
 
 }
 
-Fsm::Fsm(const QString& filePath)
+void Fsm::loadFromFile(const QString& filePath, bool eraseFirst)
 {
+    if (eraseFirst)
+        this->clear();
+
     parseXML(filePath);
-}
 
-Fsm::~Fsm()
-{
-    // Get lists, then delete them (delete process calls back events that changes the lists, have to copy)
-    QList<FsmTransition*> transitionsToDelete = transitions;
-    qDeleteAll(transitionsToDelete);
-
-    QList<FsmState*> statesToDelete = states;
-    qDeleteAll(statesToDelete);
+    emit machineLoadedEvent();
 }
 
 Machine::type Fsm::getType() const
@@ -62,66 +59,138 @@ Machine::type Fsm::getType() const
     return Machine::type::FSM;
 }
 
-const QList<FsmState *>& Fsm::getStates() const
+const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 {
     return states;
 }
 
-void Fsm::addState(FsmState* state)
+shared_ptr<FsmState> Fsm::addState(QString name)
 {
+    shared_ptr<FsmState> state(new FsmState(shared_from_this(), getUniqueStateName(name)));
     states.append(state);
+
+    return state;
 }
 
-void Fsm::removeState(FsmState* state)
+void Fsm::removeState(shared_ptr<FsmState> state)
 {
     states.removeAll(state);
-
-    if (state == initialState)
-        setInitialState(nullptr);
 }
 
-void Fsm::addTransition(FsmTransition* transition)
+bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
 {
-    transitions.append(transition);
-}
+    QString actualName = getUniqueStateName(newName);
 
-void Fsm::removeTransition(FsmTransition* transition)
-{
-    transitions.removeAll(transition);
+    if (actualName == newName)
+    {
+        state->setName(newName);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void Fsm::simulationModeChanged()
 {
-    foreach (Signal* var, getReadableSignals())
+    // Check if useful, may be placed elsewere
+    foreach (shared_ptr<Signal> var, getReadableSignals())
     {
-        emit var->signalStateChangedEvent();
+        emit var->signalDynamicStateChangedEvent();
     }
 }
 
-const QList<FsmTransition *>& Fsm::getTransitions() const
+bool Fsm::isEmpty() const
 {
-    return transitions;
+    if (Machine::isEmpty() && this->states.isEmpty())
+        return true;
+    else
+        return false;
 }
 
-void Fsm::setInitialState(FsmState* newInitialState)
+void Fsm::clear()
 {
-    if (newInitialState != initialState)
+    this->setInitialState(nullptr);
+    states.clear();
+
+    Machine::clear();
+}
+
+QString Fsm::getUniqueStateName(QString nameProposal)
+{
+    QString baseName;
+    QString currentName;
+    uint i;
+
+    if (nameProposal.isEmpty())
     {
-        FsmState* previousInitialState = initialState;
+        baseName = tr("State");
+        currentName = baseName + " #0";
+        i = 0;
+    }
+    else
+    {
+        baseName = nameProposal;
+        currentName = nameProposal;
+        i = 1;
+    }
 
-        initialState = newInitialState;
+    bool nameIsValid = false;
+    while (!nameIsValid)
+    {
+        nameIsValid = true;
+        foreach(shared_ptr<FsmState> colleage, this->states)
+        {
+            if (colleage->getName() == currentName)
+            {
+                nameIsValid = false;
+                i++;
+                currentName = baseName + " #" + QString::number(i);
+                break;
+            }
+        }
+    }
 
-        if (initialState != nullptr)
-            emit initialState->elementConfigurationChangedEvent();
+    return currentName;
+}
 
-        if (previousInitialState != nullptr)
-            emit previousInitialState->elementConfigurationChangedEvent();
+QList<shared_ptr<FsmTransition>> Fsm::getTransitions() const
+{
+    QList<shared_ptr<FsmTransition>> transitionList;
+
+    foreach(shared_ptr<FsmState> state, this->states)
+    {
+        transitionList += state->getOutgoingTransitions();
+    }
+
+    return transitionList;
+}
+
+void Fsm::setInitialState(const QString& name)
+{
+    shared_ptr<FsmState> newInitialState = this->getStateByName(name);
+
+    if (newInitialState != nullptr)
+    {
+        shared_ptr<FsmState> previousInitialState = this->initialState.lock();
+
+        if (newInitialState != previousInitialState)
+        {
+            this->initialState = newInitialState;
+
+            if (newInitialState != nullptr)
+                emit newInitialState->componentStaticConfigurationChangedEvent();
+
+            if (previousInitialState != nullptr)
+                emit previousInitialState->componentStaticConfigurationChangedEvent();
+        }
     }
 }
 
-FsmState* Fsm::getInitialState() const
+shared_ptr<FsmState> Fsm::getInitialState() const
 {
-    return initialState;
+    return this->initialState.lock();
 }
 
 void Fsm::saveMachine(const QString& path)
@@ -137,12 +206,12 @@ void Fsm::saveMachine(const QString& path)
 
 
     stream.writeStartElement("Signals");
-    foreach (Signal* var, getAllSignals())
+    foreach (shared_ptr<Signal> var, getAllSignals())
     {
         // Type
-        if (dynamic_cast<Input*>(var) != nullptr)
+        if (dynamic_pointer_cast<Input>(var) != nullptr)
             stream.writeStartElement("Input");
-        else if (dynamic_cast<Output*>(var) != nullptr)
+        else if (dynamic_pointer_cast<Output>(var) != nullptr)
             stream.writeStartElement("Output");
         else if (var->getIsConstant())
             stream.writeStartElement("Constant");
@@ -156,7 +225,7 @@ void Fsm::saveMachine(const QString& path)
         stream.writeAttribute("Size", QString::number(var->getSize()));
 
         // Initial value (except for outputs)
-        if (dynamic_cast<Output*>(var) == nullptr)
+        if (dynamic_pointer_cast<Output>(var) == nullptr)
             stream.writeAttribute("Initial_value", var->getInitialValue().toString());
 
         stream.writeEndElement();
@@ -165,7 +234,7 @@ void Fsm::saveMachine(const QString& path)
 
 
     stream.writeStartElement("States");
-    foreach (FsmState* state, states)
+    foreach (shared_ptr<FsmState> state, states)
     {
         stream.writeStartElement("State");
 
@@ -188,7 +257,7 @@ void Fsm::saveMachine(const QString& path)
     stream.writeEndElement(); // Transitions
 
     stream.writeStartElement("Transitions");
-    foreach (FsmTransition* transition, transitions)
+    foreach (shared_ptr<FsmTransition> transition, this->getTransitions())
     {
         stream.writeStartElement("Transition");
 
@@ -287,19 +356,19 @@ void Fsm::parseSignals(QDomElement element)
 
         if (currentElement.tagName() == "Input")
         {
-            addSignal(signal_types::Input, currentElement.attribute("Name"));
+            addSignal(signal_type::Input, currentElement.attribute("Name"));
         }
         else if (currentElement.tagName() == "Output")
         {
-            addSignal(signal_types::Output, currentElement.attribute("Name"));
+            addSignal(signal_type::Output, currentElement.attribute("Name"));
         }
         else if (currentElement.tagName() == "Variable")
         {
-            addSignal(signal_types::LocalVariable, currentElement.attribute("Name"));
+            addSignal(signal_type::LocalVariable, currentElement.attribute("Name"));
         }
         else if (currentElement.tagName() == "Constant")
         {
-            addSignal(signal_types::Constant, currentElement.attribute("Name"));
+            addSignal(signal_type::Constant, currentElement.attribute("Name"));
         }
         else
         {
@@ -336,7 +405,7 @@ void Fsm::parseStates(QDomElement element)
             qreal x = currentElement.attribute("X").toDouble();
             qreal y = currentElement.attribute("Y").toDouble();
 
-            FsmState* state = new FsmState(this, currentElement.attribute("Name"));
+            shared_ptr<FsmState> state = this->addState(currentElement.attribute("Name"));
             state->position = QPointF(x, y);
 
             if (currentElement.attribute("IsInitial").count() != 0)
@@ -380,18 +449,12 @@ void Fsm::parseTransitions(QDomElement element)
             QString sourceName = currentElement.attribute("Source");
             QString targetName = currentElement.attribute("Target");
 
-            FsmState* source = nullptr;
-            FsmState* target = nullptr;
-            foreach (FsmState* state, states)
-            {
-                if (state->getName() == sourceName)
-                    source = state;
+            shared_ptr<FsmState> source = getStateByName(sourceName);
+            shared_ptr<FsmState> target = getStateByName(targetName);
 
-                if (state->getName() == targetName)
-                    target = state;
-            }
-
-            FsmTransition* transition = new FsmTransition(this, source, target, nullptr);
+            shared_ptr<FsmTransition> transition(new FsmTransition(shared_from_this(), source, target, nullptr));
+            source->addOutgoingTransition(transition);
+            target->addIncomingTransition(transition);
 
             QDomNodeList childNodes = currentElement.childNodes();
 
@@ -422,14 +485,14 @@ void Fsm::parseTransitions(QDomElement element)
     }
 }
 
-void Fsm::parseActions(QDomElement element, MachineActuatorComponent* component) const
+void Fsm::parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component) const
 {
     QDomNodeList childNodes = element.childNodes();
 
     for (int i = 0 ; i < childNodes.count() ; i++)
     {
         QDomElement currentElement = childNodes.at(i).toElement();
-        Signal* signal = nullptr;
+        shared_ptr<Signal> signal;
 
         if (currentElement.attribute("Signal_Type") == "Output")
             signal = outputs[currentElement.attribute("Name")];
@@ -448,6 +511,10 @@ void Fsm::parseActions(QDomElement element, MachineActuatorComponent* component)
         if (actionType == "Pulse")
         {
             component->setActionType(signal, MachineActuatorComponent::action_types::pulse);
+        }
+        else if (actionType == "ActiveOnState")
+        {
+            component->setActionType(signal, MachineActuatorComponent::action_types::activeOnState);
         }
         else if (actionType == "Set")
         {
@@ -470,9 +537,9 @@ void Fsm::parseActions(QDomElement element, MachineActuatorComponent* component)
     }
 }
 
-Signal* Fsm::parseEquation(QDomElement element) const
+shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
 {
-    Signal* equation = nullptr;
+    shared_ptr<Signal> equation;
 
     QDomNodeList equationNodes = element.childNodes();
 
@@ -482,7 +549,7 @@ Signal* Fsm::parseEquation(QDomElement element) const
 
         if (currentElement.tagName() == "LogicVariable")
         {
-            foreach (Signal* var, getReadableSignals())
+            foreach (shared_ptr<Signal> var, this->getReadableSignals())
             {
                 if (var->getName() == currentElement.attribute("Name"))
                     equation = var;
@@ -518,7 +585,7 @@ Signal* Fsm::parseEquation(QDomElement element) const
 
             QDomNodeList childNodes = currentElement.childNodes();
 
-            QMap<int, Signal*> operandsMap;
+            QMap<int, shared_ptr<Signal>> operandsMap;
 
             for (int i = 0 ; i < childNodes.count() ; i++)
             {
@@ -536,14 +603,14 @@ Signal* Fsm::parseEquation(QDomElement element) const
             }
 
             // Create equation
-            QVector<Signal*> operands;
+            QVector<shared_ptr<Signal>> operands;
 
             for (int i = 0 ; i < operandsMap.count() ; i++)
             {
                 operands.append(operandsMap[i]);
             }
 
-            equation = new Equation(equationType, operands);
+            equation = shared_ptr<Signal>(new Equation(equationType, operands));
 
         }
         else
@@ -556,9 +623,9 @@ Signal* Fsm::parseEquation(QDomElement element) const
     return equation;
 }
 
-void Fsm::writeLogicEquation(QXmlStreamWriter& stream, Signal* equation) const
+void Fsm::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation) const
 {
-    Equation* complexEquation = dynamic_cast<Equation*> (equation);
+    shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (equation);
 
     if (complexEquation != nullptr)
     {
@@ -613,16 +680,16 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, Signal* equation) const
     stream.writeEndElement(); // LogicEquation | LogicVariable
 }
 
-void Fsm::writeActions(QXmlStreamWriter& stream, MachineActuatorComponent* component) const
+void Fsm::writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component) const
 {
     if (component->getActions().count() != 0)
     {
         stream.writeStartElement("Actions");
-        foreach (Signal* action, component->getActions())
+        foreach (shared_ptr<Signal> action, component->getActions())
         {
             stream.writeStartElement("Action");
 
-            if ((dynamic_cast<Output*> (action)) != nullptr)
+            if ((dynamic_pointer_cast<Output> (action)) != nullptr)
                 stream.writeAttribute("Signal_Type", "Output");
             else
                 stream.writeAttribute("Signal_Type", "Variable");
@@ -631,6 +698,9 @@ void Fsm::writeActions(QXmlStreamWriter& stream, MachineActuatorComponent* compo
 
             switch(component->getActionType(action))
             {
+            case MachineActuatorComponent::action_types::activeOnState:
+                stream.writeAttribute("Action_Type", "ActiveOnState");
+                break;
             case MachineActuatorComponent::action_types::pulse:
                 stream.writeAttribute("Action_Type", "Pulse");
                 break;
@@ -650,4 +720,20 @@ void Fsm::writeActions(QXmlStreamWriter& stream, MachineActuatorComponent* compo
         }
         stream.writeEndElement(); // Actions
     }
+}
+
+shared_ptr<FsmState> Fsm::getStateByName(const QString &name) const
+{
+    shared_ptr<FsmState> ret = nullptr;
+
+    foreach(shared_ptr<FsmState> ptr, this->states)
+    {
+        if (ptr->getName() == name)
+        {
+            ret = ptr;
+            break;
+        }
+    }
+
+    return ret;
 }

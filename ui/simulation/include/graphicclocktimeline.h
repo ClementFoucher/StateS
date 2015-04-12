@@ -25,22 +25,24 @@
 // Parent
 #include "graphictimeline.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Clock;
+
 
 class GraphicClockTimeLine : public GraphicTimeLine
 {
     Q_OBJECT
 
 public:
-    explicit GraphicClockTimeLine(Clock* clock, QWidget* parent = nullptr);
+    explicit GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 private slots:
     void clockEvent();
     void resetEvent();
-
-private:
-    Clock* clock = nullptr;
 };
 
 #endif // GRAPHICCLOCKTIMELINE_H

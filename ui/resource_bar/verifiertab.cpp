@@ -33,7 +33,7 @@
 #include "truthtabledisplay.h"
 
 
-VerifierTab::VerifierTab(Fsm *machine, QWidget* parent) :
+VerifierTab::VerifierTab(shared_ptr<Fsm> machine, QWidget* parent) :
     QWidget(parent)
 {
     this->machine = machine;
@@ -56,7 +56,7 @@ VerifierTab::~VerifierTab()
     delete this->truthTable;
 }
 
-void VerifierTab::changeMachine(Fsm* machine)
+void VerifierTab::changeMachine(shared_ptr<Fsm> machine)
 {
     this->clear();
 
@@ -69,7 +69,7 @@ void VerifierTab::changeMachine(Fsm* machine)
 void VerifierTab::checkNow()
 {
     if (this->verifier == nullptr)
-        this->verifier = new FsmVerifier(machine);
+        this->verifier = new FsmVerifier(machine.lock());
 
     QList<QString> errors = this->verifier->verifyFsm();
 

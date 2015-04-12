@@ -23,14 +23,15 @@
 #include "states.h"
 
 // Qt classes
+#include <QPixmap>
 #include <QPainter>
 #include <QSvgRenderer>
 
 // StateS classes
 #include "statesui.h"
+#include "fsm.h"
 
-
-QPixmap StateS::getPixmapFromSvg(const QString &path)
+QPixmap StateS::getPixmapFromSvg(const QString& path)
 {
     QSvgRenderer svgRenderer(path);
     QPixmap pixmap(svgRenderer.defaultSize());
@@ -41,21 +42,63 @@ QPixmap StateS::getPixmapFromSvg(const QString &path)
     return pixmap;
 }
 
+QString StateS::getVersion()
+{
+    return "0.3";
+}
+
 StateS::StateS()
 {
-    drawingWindow = new StatesUi();
-
-    drawingWindow->show();
 }
 
 StateS::~StateS()
 {
-    drawingWindow->setMachine(nullptr);
-
-    delete drawingWindow;
+    // Clear references to machine in UI before deletion
+    if (this->statesUi != nullptr)
+        statesUi->setMachine(nullptr);
 }
 
-QString StateS::getVersion()
+void StateS::run()
 {
-    return "0.2.7";
+    this->machine = shared_ptr<Fsm>(new Fsm());
+    this->statesUi = unique_ptr<StatesUi>(new StatesUi(this->machine));
+
+    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,       this, &StateS::newFsmRequestedEventHandler);
+    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent, this, &StateS::clearMachineEventHandler);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,  this, &StateS::loadMachineEventHandler);
+    connect(this->statesUi.get(), &StatesUi::getCurrentFileEvent,      this, &StateS::getCurrentFileEventHandler);
+    connect(this->statesUi.get(), &StatesUi::machineSavedEvent,        this, &StateS::machineSavedEventHandler);
+
+    statesUi->show();
+}
+
+void StateS::newFsmRequestedEventHandler()
+{
+    this->machine = shared_ptr<Fsm>(new Fsm());
+    this->statesUi->setMachine(this->machine);
+    this->currentFile.clear();
+}
+
+void StateS::clearMachineEventHandler()
+{
+    this->statesUi->setMachine(nullptr);
+    this->currentFile.clear();
+    this->machine.reset();
+}
+
+void StateS::loadMachineEventHandler(const QString& path)
+{
+    this->newFsmRequestedEventHandler();
+    this->currentFile = path;
+    dynamic_pointer_cast<Fsm>(this->machine)->loadFromFile(path);
+}
+
+void StateS::machineSavedEventHandler(const QString &path)
+{
+    this->currentFile = path;
+}
+
+QString StateS::getCurrentFileEventHandler()
+{
+    return this->currentFile;
 }

@@ -25,6 +25,10 @@
 // Parent
 #include "fsmcomponent.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QList>
 #include <QPointF>
@@ -34,22 +38,24 @@ class Fsm;
 class FsmTransition;
 class FsmGraphicalState;
 
+
 class FsmState : public FsmComponent
 {
     Q_OBJECT
 
 public:
-    explicit FsmState(Fsm* parent);
-    explicit FsmState(Fsm* parent, const QString& name);
+    explicit FsmState(shared_ptr<Fsm> parent, const QString& name);
     ~FsmState();
 
-    void addIncomingTransition(FsmTransition* transition);
-    void addOutgoingTransition(FsmTransition* transition);
-    void removeIncomingTransition(FsmTransition* transition);
-    void removeOutgoingTransition(FsmTransition* transition);
+    // An FsmState owns its outgoing transitions
+    void addOutgoingTransition(shared_ptr<FsmTransition> transition);
+    void removeOutgoingTransition(shared_ptr<FsmTransition> transition);
+    const QList<shared_ptr<FsmTransition>> getOutgoingTransitions() const;
 
-    const QList<FsmTransition*>& getOutgoingTransitions() const;
-    const QList<FsmTransition*>& getIncomingTransitions() const;
+    // An FsmState only weak-references incoming transitions
+    void addIncomingTransition(shared_ptr<FsmTransition> transition);
+    void removeIncomingTransition(shared_ptr<FsmTransition> transition);
+    const QList<weak_ptr<FsmTransition>> getIncomingTransitions();
 
     bool getIsActive() const;
     void setActive(bool value);
@@ -58,8 +64,7 @@ public:
     void setInitial();
 
     QString getName() const;
-    bool setName(const QString& value);
-    void setUniqueName();
+    void setName(const QString& value);
 
     FsmGraphicalState* getGraphicalRepresentation() const;
     void setGraphicalRepresentation(FsmGraphicalState* representation);
@@ -67,9 +72,15 @@ public:
 
     QPointF position; // Public because we don't care, just used by loader
 
+signals:
+    void stateRenamedEvent();
+    void stateLogicStateChangedEvent();
+
 private:
-    QList<FsmTransition*> inputTransitions;
-    QList<FsmTransition*> outputTransitions;
+    void cleanIncomingTransitionsList();
+
+    QList<weak_ptr<FsmTransition>> inputTransitions;
+    QList<shared_ptr<FsmTransition>> outputTransitions;
 
     FsmGraphicalState* graphicalRepresentation = nullptr;
     QString name;

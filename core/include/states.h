@@ -22,26 +22,47 @@
 #ifndef STATES_H
 #define STATES_H
 
+// Parent
+#include <QObject>
+
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QPixmap>
+class QPixmap;
 
 // StateS classes
 class StatesUi;
 class Machine;
 
-class StateS
+
+class StateS : public QObject
 {
-public:
+    Q_OBJECT
+
+public: // Static
     static QPixmap getPixmapFromSvg(const QString& path);
+    static QString getVersion();
 
 public:
     explicit StateS();
     ~StateS();
 
-    static QString getVersion();
+    void run();
+
+private slots:
+    void newFsmRequestedEventHandler();
+    void clearMachineEventHandler();
+    void loadMachineEventHandler(const QString& path);
+    void machineSavedEventHandler(const QString& path);
+    QString getCurrentFileEventHandler();
 
 private:
-    StatesUi* drawingWindow = nullptr;
+    unique_ptr<StatesUi> statesUi;
+    shared_ptr<Machine>  machine;
+
+    QString currentFile;
 };
 
 #endif // STATES_H

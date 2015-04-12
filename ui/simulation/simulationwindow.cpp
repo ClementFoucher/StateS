@@ -31,6 +31,7 @@
 #include <QPrinter>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <QScrollArea>
 
 // StateS classes
 #include "states.h"
@@ -41,10 +42,13 @@
 #include "output.h"
 
 
-SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* parent) :
+SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent) :
     QMainWindow(parent)
 {
     this->machine = machine;
+
+    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowTitle(tr("StateS timeline visualizer"));
 
     this->toolBar = this->addToolBar(tr("Tools"));
     this->toolBar->setIconSize(QSize(64, 64));
@@ -59,8 +63,21 @@ SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* pare
     this->toolBar->addAction(action);
     this->toolBar->addAction(this->actionDetach);
 
-    this->setCentralWidget(new QWidget());
-    this->layout = new QVBoxLayout(this->centralWidget());
+
+    // Add resources in a scroll area
+    QScrollArea* scrollArea = new QScrollArea();
+    scrollArea->setAlignment(Qt::AlignHCenter);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+
+    scrollArea->setWidget(new QWidget());
+
+    this->setCentralWidget(scrollArea);
+
+
+
+    QVBoxLayout* layout = new QVBoxLayout(this->centralWidget());
+    scrollArea->widget()->setLayout(layout);
 
     QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
     titleClock->setAlignment(Qt::AlignCenter);
@@ -75,7 +92,7 @@ SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* pare
 
         layout->addWidget(titleInputs);
 
-        foreach (Input* var, machine->getInputs())
+        foreach (shared_ptr<Input> var, machine->getInputs())
         {
             SignalTimeline* varTL = new SignalTimeline(var, clock, true);
             layout->addWidget(varTL);
@@ -89,7 +106,7 @@ SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* pare
 
         layout->addWidget(titleOutputs);
 
-        foreach (Output* var, machine->getOutputs())
+        foreach (shared_ptr<Output> var, machine->getOutputs())
         {
             SignalTimeline* varTL = new SignalTimeline(var, clock);
             layout->addWidget(varTL);
@@ -103,7 +120,7 @@ SimulationWindow::SimulationWindow(Machine* machine, Clock* clock, QWidget* pare
 
         layout->addWidget(titleVariables);
 
-        foreach (Signal* var, machine->getLocalVariables())
+        foreach (shared_ptr<Signal> var, machine->getLocalVariables())
         {
             SignalTimeline* varTL = new SignalTimeline(var, clock);
             layout->addWidget(varTL);

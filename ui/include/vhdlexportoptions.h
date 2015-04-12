@@ -26,7 +26,7 @@
 #include <QDialog>
 
 // Qt classes
-#include <QComboBox>
+class QComboBox;
 
 
 class VhdlExportOptions : public QDialog

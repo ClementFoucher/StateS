@@ -25,22 +25,27 @@
 // Parent
 #include <QDialog>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QLabel>
-#include <QApplication>
-#include <QTranslator>
+class QLabel;
+class QApplication;
+class QTranslator;
 
 // StateS classes
 class ReactiveButton;
+
 
 class LangSelectionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit LangSelectionDialog(QApplication* application, QWidget* parent = nullptr);
+    explicit LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent = nullptr);
 
-    QTranslator* getTranslator();
+    shared_ptr<QTranslator> getTranslator();
 
 private slots:
     void setEnglish();
@@ -49,13 +54,10 @@ private slots:
 private:
     void retranslateUi();
 
-    QTranslator* translator;
+    shared_ptr<QTranslator>  translator;
+    shared_ptr<QApplication> application;
 
-    QApplication* application = nullptr;
-
-    QLabel*         title         = nullptr;
-    ReactiveButton* buttonEnglish = nullptr;
-    ReactiveButton* buttonFrench  = nullptr;
+    QLabel* title = nullptr;
 };
 
 #endif // LANGSELECTIONDIALOG_H

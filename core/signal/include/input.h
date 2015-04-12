@@ -26,7 +26,8 @@
 #include "io.h"
 
 // Qt classes
-#include <QString>
+class QString;
+
 
 class Input : public IO
 {

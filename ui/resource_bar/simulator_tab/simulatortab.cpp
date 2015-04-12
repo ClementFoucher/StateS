@@ -28,6 +28,8 @@
 #include <QSignalMapper>
 #include <QVBoxLayout>
 #include <QLineEdit>
+#include <QCheckBox>
+#include <QGroupBox>
 
 // Debug
 #include <QDebug>
@@ -37,13 +39,13 @@
 #include "fsm.h"
 #include "fsmtransition.h"
 #include "signal.h"
-#include "clock.h"
 #include "simulationwindow.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
+#include "fsmsimulator.h"
 
 
-SimulatorTab::SimulatorTab(Fsm* machine, QWidget* parent) :
+SimulatorTab::SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent) :
     QWidget(parent)
 {
     this->machine = machine;
@@ -67,36 +69,56 @@ SimulatorTab::~SimulatorTab()
     this->triggerSimulationMode(false);
 }
 
-SimulationWindow *SimulatorTab::getTimeline() const
+SimulationWindow* SimulatorTab::getTimeline() const
 {
     return this->timeLine;
 }
 
 void SimulatorTab::triggerSimulationMode(bool enabled)
 {
+    shared_ptr<Fsm> machine = this->machine.lock();
+
     if (enabled)
     {
         if (this->simulationTools == nullptr)
         {
-            if (this->machine->getInitialState() != nullptr)
+            if (machine->getInitialState() != nullptr)
             {
                 // First thing to do would be to check machine correctness
 
                 this->buttonTriggerSimulation->setText(tr("End simulation"));
 
-                this->clock = new Clock();
-                connect(this->clock, &Clock::clockEvent, this, &SimulatorTab::clockEvent);
-                connect(this->clock, &Clock::resetEvent, this, &SimulatorTab::resetEvent);
+                this->simulator = unique_ptr<FsmSimulator>(new FsmSimulator(machine));
 
                 this->simulationTools = new QWidget();
                 this->simulationTools->setLayout(new QVBoxLayout());
                 this->layout()->addWidget(this->simulationTools);
 
+                //
+                // Options
+                QGroupBox* optionsGroup = new QGroupBox(tr("Options"));
+                QVBoxLayout* optionsLayout = new QVBoxLayout(optionsGroup);
+
+                this->buttonTriggerView  = new QPushButton(tr("View timeline"));
+                this->buttonTriggerView->setCheckable(true);
+                optionsLayout->addWidget(this->buttonTriggerView);
+                connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
+
+//                this->checkBoxDelay = new QCheckBox(tr("Add delay from clock rising edge to outputs events on timeline"));
+//                connect(this->checkBoxDelay, &QCheckBox::clicked, this, &SimulatorTab::delayOutputEventOptionTriggered);
+//                optionsLayout->addWidget(this->checkBoxDelay);
+
+                this->simulationTools->layout()->addWidget(optionsGroup);
+
+                //
+                // Time manager
+                QGroupBox* timeManagerGroup = new QGroupBox(tr("Time manager"));
+                QVBoxLayout* timeManagerLayout = new QVBoxLayout(timeManagerGroup);
+
                 QPushButton* buttonReset    = new QPushButton(tr("Reset"));
                 QPushButton* buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
-                this->buttonTriggerView     = new QPushButton(tr("View timeline"));
 
-                QHBoxLayout* autoStepLayout = new QHBoxLayout();
+                QHBoxLayout* autoStepLayout = new QHBoxLayout(optionsGroup);
                 QLabel* autoStepBeginText = new QLabel(">> " + tr("Do one step every"));
                 this->autoStepValue = new QLineEdit("1");
                 QLabel* autoStepUnit = new QLabel(tr("second(s)") + " >>");
@@ -107,33 +129,39 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 autoStepLayout->addWidget(autoStepUnit);
                 autoStepLayout->addWidget(this->buttonTriggerAutoStep);
 
-                this->buttonTriggerView->setCheckable(true);
-
-                connect(buttonReset,                 &QPushButton::clicked, this, &SimulatorTab::reset);
-                connect(buttonNextStep,              &QPushButton::clicked, this, &SimulatorTab::nextStep);
-                connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
+                connect(buttonReset,                 &QPushButton::clicked, this->simulator.get(), &FsmSimulator::reset);
+                connect(buttonNextStep,              &QPushButton::clicked, this->simulator.get(), &FsmSimulator::doStep);
                 connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this, &SimulatorTab::buttonLauchAutoStepClicked);
 
-                this->simulationTools->layout()->addWidget(this->buttonTriggerView);
-                this->simulationTools->layout()->addWidget(buttonReset);
-                this->simulationTools->layout()->addWidget(buttonNextStep);
-                ((QVBoxLayout*)this->simulationTools->layout())->addLayout(autoStepLayout);
+                timeManagerLayout->addWidget(buttonReset);
+                timeManagerLayout->addWidget(buttonNextStep);
+                timeManagerLayout->addLayout(autoStepLayout);
 
-                if (this->machine->getInputs().count() != 0)
+                this->simulationTools->layout()->addWidget(timeManagerGroup);
+
+                //
+                // Inputs
+                QGroupBox* inputsGroup = new QGroupBox(tr("Inputs"));
+                QVBoxLayout* inputsLayout = new QVBoxLayout(inputsGroup);
+
+                shared_ptr<Fsm> machine = this->machine.lock();
+
+                if ( (machine != nullptr) && (machine->getInputs().count() != 0) )
                 {
                     QLabel* inputListTitle = new QLabel(tr("Click on bits from the list below to switch value:"));
                     inputListTitle->setAlignment(Qt::AlignCenter);
-                    this->simulationTools->layout()->addWidget(inputListTitle);
+                    inputsLayout->addWidget(inputListTitle);
 
-                    inputList = new InputsSelector(this->machine->getInputs());
-                    this->simulationTools->layout()->addWidget(inputList);
+                    inputList = new InputsSelector(machine->getInputs());
+                    inputsLayout->addWidget(inputList);
                 }
 
-                this->reset();
+                this->simulationTools->layout()->addWidget(inputsGroup);
 
-                this->timeLine = new SimulationWindow(this->machine, this->clock, 0);
+                this->timeLine = new SimulationWindow(machine, this->simulator->getClock());
+                this->timeLine->show();
 
-                emit beginSimulation();
+                emit beginSimulationEvent();
             }
             else
             {
@@ -161,67 +189,19 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             delete this->timeLine;
             this->timeLine = nullptr;
 
-            delete this->clock;
-            this->clock = nullptr;
+            //this->clock.reset();
+            this->simulator.reset();
 
-            foreach(FsmState* state, this->machine->getStates())
+            foreach(shared_ptr<FsmState> state, machine->getStates())
             {
                 state->setActive(false);
             }
 
             this->buttonTriggerSimulation->setText(tr("Start simulation"));
 
-            emit endSimulation();
+            emit endSimulationEvent();
         }
     }
-}
-
-
-void SimulatorTab::nextStep()
-{
-    clock->nextStep();
-}
-
-void SimulatorTab::reset()
-{
-    clock->reset();
-}
-
-void SimulatorTab::resetEvent()
-{
-    if (machine->getInitialState() != nullptr)
-    {
-        foreach(FsmState* state, machine->getStates())
-        {
-            state->setActive(false);
-        }
-
-        currentState = machine->getInitialState();
-        currentState->setActive(true);
-    }
-
-    foreach(Signal* sig, machine->getAllVariables())
-    {
-        sig->reinitialize();
-    }
-}
-
-void SimulatorTab::targetStateSelectionMade(QObject* choosenTransition)
-{
-    delete targetStateSelection;
-    targetStateSelection = nullptr;
-    delete signalMapper;
-    signalMapper = nullptr;
-
-    FsmTransition* actualTransition = (FsmTransition*)choosenTransition;
-
-    if (actualTransition->getCondition() != nullptr)
-        actualTransition->activateActions();
-
-    currentState->setActive(false);
-
-    currentState = actualTransition->getTarget();
-    currentState->setActive(true);
 }
 
 void SimulatorTab::buttonTriggerViewClicked()
@@ -232,83 +212,31 @@ void SimulatorTab::buttonTriggerViewClicked()
         this->buttonTriggerView->setText(tr("View timeline"));
 
 
-    emit triggerView();
+    emit triggerViewRequestEvent();
 }
 
 void SimulatorTab::buttonLauchAutoStepClicked()
 {
     if (this->buttonTriggerAutoStep->isChecked())
     {
-        this->clock->start(this->autoStepValue->text().toInt() * 1000);
+        float value = this->autoStepValue->text().toFloat() * 1000;
+        if (value != 0)
+            this->simulator->start(value);
+        else
+            this->simulator->start(1000);
+
         this->buttonTriggerAutoStep->setText(tr("Suspend"));
     }
     else
     {
-        this->clock->stop();
+        //this->clock->stop();
+        this->simulator->suspend();
         this->buttonTriggerAutoStep->setText(tr("Launch"));
     }
 }
 
-void SimulatorTab::clockEvent()
+/*void SimulatorTab::delayOutputEventOptionTriggered(bool checked)
 {
-    QList<FsmTransition*> potentialTransitions;
 
-    foreach(FsmTransition* transition, currentState->getOutgoingTransitions())
-    {
-        if (transition->getCondition() != nullptr)
-        {
-            if (transition->getCondition()->isTrue())
-            {
-                potentialTransitions.append(transition);
-            }
-        }
-        else
-        {
-            potentialTransitions.append(transition);
-        }
-    }
-
-    if (potentialTransitions.count() == 1)
-    {
-        if (potentialTransitions[0]->getCondition() != nullptr)
-            potentialTransitions[0]->activateActions();
-
-        currentState->setActive(false);
-
-        currentState = potentialTransitions[0]->getTarget();
-        currentState->setActive(true);
-
-    }
-    else if (potentialTransitions.count() > 1)
-    {
-        // If multiple transitions leading to the same state, no way to differentiate them,
-        // but this is anyway a small instant patch, user should correct his machine.
-
-        targetStateSelection = new QWidget();
-        QVBoxLayout* choiceWindowLayout = new QVBoxLayout(targetStateSelection);
-
-        QLabel* choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
-                                                     + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
-                                                     + tr("For current simulation, just choose the target state in the following list:"));
-
-        choiceWindowLayout->addWidget(choiceWindowWarningText);
-
-        signalMapper = new QSignalMapper();
-
-        connect(signalMapper, static_cast<void (QSignalMapper::*)(QObject*)>(&QSignalMapper::mapped), this, &SimulatorTab::targetStateSelectionMade);
-
-        foreach(FsmTransition* transition, potentialTransitions)
-        {
-            QPushButton* button = new QPushButton(transition->getTarget()->getName());
-
-            signalMapper->setMapping(button, transition);
-
-            connect(button, &QPushButton::clicked, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-            connect(button, &QPushButton::clicked, targetStateSelection, &QWidget::close);
-
-            choiceWindowLayout->addWidget(button);
-        }
-
-        targetStateSelection->show();
-    }
 }
+*/

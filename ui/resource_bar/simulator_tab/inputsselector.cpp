@@ -31,14 +31,14 @@
 #include "inputsignalselector.h"
 
 
-InputsSelector::InputsSelector(QList<Input*> inputList, QWidget *parent) :
+InputsSelector::InputsSelector(QList<shared_ptr<Input> > inputList, QWidget *parent) :
     QScrollArea(parent)
 {
     this->setWidget(new QWidget());
 
     QVBoxLayout* layout = new QVBoxLayout(this->widget());
 
-    foreach (Input* currentInput, inputList)
+    foreach (shared_ptr<Input> currentInput, inputList)
     {
         InputSignalSelector* currentSignalSelector = new InputSignalSelector(currentInput);
         layout->addWidget(currentSignalSelector);

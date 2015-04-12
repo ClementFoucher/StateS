@@ -29,180 +29,178 @@
 
 Machine::Machine()
 {
-
 }
 
-Machine::~Machine()
+QList<shared_ptr<Input> > Machine::getInputs() const
 {
-    qDeleteAll(inputs);
-    qDeleteAll(outputs);
-    qDeleteAll(localVariables);
-    qDeleteAll(constants);
+    return this->inputs.values();
 }
 
-QList<Input*> Machine::getInputs() const
+QList<shared_ptr<Output> > Machine::getOutputs() const
 {
-    return inputs.values();
+    return this->outputs.values();
 }
 
-QList<Output*> Machine::getOutputs() const
+QList<shared_ptr<Signal> > Machine::getLocalVariables() const
 {
-    return outputs.values();
+    return this->localVariables.values();
 }
 
-QList<Signal*> Machine::getLocalVariables() const
+QList<shared_ptr<Signal> > Machine::getConstants() const
 {
-    return localVariables.values();
+    return this->constants.values();
 }
 
-QList<Signal*> Machine::getConstants() const
+QList<shared_ptr<Signal> > Machine::getWrittableSignals() const
 {
-    return constants.values();
-}
+    QList<shared_ptr<Signal>> writtableVariables;
 
-QList<Signal *> Machine::getWrittableSignals() const
-{
-    QList<Signal*> writtableVariables;
-
-    QList<Output*> outputList = outputs.values();
-    writtableVariables += *reinterpret_cast<QList<Signal*>*> (&outputList);
-    writtableVariables += localVariables.values();
+    writtableVariables += this->getOutputsAsSignals();
+    writtableVariables += this->localVariables.values();
 
     return writtableVariables;
 }
 
-QList<Signal*> Machine::getReadableSignals() const
+QList<shared_ptr<Signal> > Machine::getReadableSignals() const
 {
-    QList<Signal*> readableSignals;
+    QList<shared_ptr<Signal>> readableSignals;
 
-    QList<Input*> inputList = inputs.values();
-
-    readableSignals += *reinterpret_cast<QList<Signal*>*> (&inputList);
-    readableSignals += localVariables.values();
-    readableSignals += constants.values();
+    readableSignals += this->getInputsAsSignals();
+    readableSignals += this->localVariables.values();
+    readableSignals += this->constants.values();
 
     return readableSignals;
 }
 
-QList<Signal *> Machine::getReadableVariableSignals() const
+QList<shared_ptr<Signal> > Machine::getReadableVariableSignals() const
 {
-    QList<Signal*> readableVariables;
+    QList<shared_ptr<Signal>> readableVariables;
 
-    QList<Input*> inputList = inputs.values();
-
-    readableVariables += *reinterpret_cast<QList<Signal*>*> (&inputList);
-    readableVariables += localVariables.values();
+    readableVariables += this->getInputsAsSignals();
+    readableVariables += this->localVariables.values();
 
     return readableVariables;
 }
 
-QList<Signal*> Machine::getAllVariables() const
+QList<shared_ptr<Signal> > Machine::getVariablesSignals() const
 {
-    QList<Signal*> allVariables;
+    QList<shared_ptr<Signal>> allVariables;
 
-    QList<Input*> inputList = inputs.values();
-    QList<Output*> outputList = outputs.values();
-
-    allVariables += *reinterpret_cast<QList<Signal*>*> (&inputList);
-    allVariables += *reinterpret_cast<QList<Signal*>*> (&outputList);
-    allVariables += localVariables.values();
+    allVariables += this->getInputsAsSignals();
+    allVariables += this->getOutputsAsSignals();
+    allVariables += this->localVariables.values();
 
     return allVariables;
 }
 
-QList<Signal*> Machine::getIOs() const
+QList<shared_ptr<Signal> > Machine::getIoSignals() const
 {
-    QList<Signal*> IOs;
+    QList<shared_ptr<Signal>> IOs;
 
-    QList<Input*> inputList = inputs.values();
-    QList<Output*> outputList = outputs.values();
-
-    IOs += *reinterpret_cast<QList<Signal*>*> (&inputList);
-    IOs += *reinterpret_cast<QList<Signal*>*> (&outputList);
+    IOs += this->getInputsAsSignals();
+    IOs += this->getOutputsAsSignals();
 
     return IOs;
 }
 
-QList<Signal*> Machine::getAllSignals() const
+QList<shared_ptr<Signal> > Machine::getAllSignals() const
 {
-    QList<Signal*> allSignals;
+    QList<shared_ptr<Signal>> allSignals;
 
-    QList<Input*> inputList = inputs.values();
-    QList<Output*> outputList = outputs.values();
-
-    allSignals += *reinterpret_cast<QList<Signal*>*> (&inputList);
-    allSignals += *reinterpret_cast<QList<Signal*>*> (&outputList);
+    allSignals += this->getInputsAsSignals();
+    allSignals += this->getOutputsAsSignals();
     allSignals += localVariables.values();
     allSignals += constants.values();
 
     return allSignals;
 }
 
-bool Machine::addSignal(signal_types type, const QString& name)
+void Machine::clear()
+{
+    this->inputs.clear();
+    this->outputs.clear();
+    this->localVariables.clear();
+    this->constants.clear();
+}
+
+bool Machine::isEmpty() const
+{
+    if (this->inputs.isEmpty() &&
+        this->outputs.isEmpty() &&
+        this->localVariables.isEmpty() &&
+        this->constants.isEmpty()
+       )
+        return true;
+    else
+        return false;
+}
+
+shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
 {
     // First check if name doesn't already exist
-    foreach (Signal* signal, getAllSignals())
+    foreach (shared_ptr<Signal> signal, getAllSignals())
     {
         if (signal->getName() == name)
-            return false;
+            return nullptr;
     }
 
     // Determine list to reference signal in
+    shared_ptr<Signal> result;
     switch(type)
     {
-    case signal_types::Input:
-        inputs[name] = new Input(name);
+    case signal_type::Input:
+        inputs[name] = shared_ptr<Input>(new Input(name));
+        result = inputs[name];
         emit inputListChangedEvent();
         break;
-    case signal_types::Output:
-        outputs[name] = new Output(name);
+    case signal_type::Output:
+        outputs[name] = shared_ptr<Output>(new Output(name));
+        result = outputs[name];
         emit outputListChangedEvent();
         break;
-    case signal_types::LocalVariable:
-        localVariables[name] = new Signal(name);
+    case signal_type::LocalVariable:
+        result = shared_ptr<Signal>(new Signal(name));
+        localVariables[name] = result;
         emit localVariableListChangedEvent();
         break;
-    case signal_types::Constant:
-        constants[name] = new Signal(name, false, true);
+    case signal_type::Constant:
+        result = shared_ptr<Signal>(new Signal(name, false, true));
+        constants[name] = result;
         emit constantListChangedEvent();
         break;
     }
 
-    return true;
+    return result;
 }
 
 bool Machine::deleteSignal(const QString& name)
 {
     if (inputs.contains(name))
     {
-        IO * toDelete = inputs[name];
         inputs.remove(name);
-        delete toDelete;
         emit inputListChangedEvent();
+
         return true;
     }
     else if (outputs.contains(name))
     {
-        IO * toDelete = outputs[name];
         outputs.remove(name);
-        delete toDelete;
         emit outputListChangedEvent();
+
         return true;
     }
     else if (localVariables.contains(name))
     {
-        Signal* toDelete = localVariables[name];
         localVariables.remove(name);
-        delete toDelete;
         emit localVariableListChangedEvent();
+
         return true;
     }
     else if (constants.contains(name))
     {
-        Signal* toDelete = constants[name];
         constants.remove(name);
-        delete toDelete;
         emit constantListChangedEvent();
+
         return true;
     }
     else
@@ -211,7 +209,7 @@ bool Machine::deleteSignal(const QString& name)
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
-    QHash<QString, Signal*> allSignals = getAllSignalsMap();
+    QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
     if ( !allSignals.contains(oldName) ) // First check if signal exists
         return false;
@@ -222,20 +220,20 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
     else
     {
         // Renaming process
-        Signal* itemToRename = allSignals[oldName];
+        shared_ptr<Signal> itemToRename = allSignals[oldName];
         itemToRename->setName(newName);
 
         // Update map
         if (inputs.contains(oldName))
         {
             inputs.remove(oldName);
-            inputs[newName] = (Input*)itemToRename;
+            inputs[newName] = dynamic_pointer_cast<Input>(itemToRename);
             emit inputListChangedEvent();
         }
         else if (outputs.contains(oldName))
         {
             outputs.remove(oldName);
-            outputs[newName] = (Output*)itemToRename;
+            outputs[newName] = dynamic_pointer_cast<Output>(itemToRename);
             emit outputListChangedEvent();
         }
         else if (localVariables.contains(oldName))
@@ -259,7 +257,7 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 
 bool Machine::resizeSignal(const QString &name, uint newSize)
 {
-    QHash<QString, Signal*> allSignals = getAllSignalsMap();
+    QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
     if ( !allSignals.contains(name) ) // First check if signal exists
         return false;
@@ -295,7 +293,7 @@ bool Machine::resizeSignal(const QString &name, uint newSize)
 
 bool Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
 {
-    QHash<QString, Signal*> allSignals = getAllSignalsMap();
+    QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
     if ( !allSignals.contains(name) ) // First check if signal exists
         return false;
@@ -329,11 +327,35 @@ bool Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
     }
 }
 
-QHash<QString, Signal*> Machine::getAllSignalsMap() const
+QList<shared_ptr<Signal> > Machine::getInputsAsSignals() const
 {
-    QHash<QString, Signal*> allSignals;
+    QList<shared_ptr<Signal>> signalInputs;
 
-    foreach (Signal* signal, getAllSignals())
+    foreach(shared_ptr<Input> input, this->inputs)
+    {
+        signalInputs.append(dynamic_pointer_cast<Signal>(input));
+    }
+
+    return signalInputs;
+}
+
+QList<shared_ptr<Signal> > Machine::getOutputsAsSignals() const
+{
+    QList<shared_ptr<Signal>> signalOutputs;
+
+    foreach(shared_ptr<Output> output, this->outputs)
+    {
+        signalOutputs.append(dynamic_pointer_cast<Signal>(output));
+    }
+
+    return signalOutputs;
+}
+
+QHash<QString, shared_ptr<Signal> > Machine::getAllSignalsMap() const
+{
+    QHash<QString, shared_ptr<Signal>> allSignals;
+
+    foreach (shared_ptr<Signal> signal, getAllSignals())
     {
         allSignals[signal->getName()] = signal;
     }

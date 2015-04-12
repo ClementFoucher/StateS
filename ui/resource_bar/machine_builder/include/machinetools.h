@@ -25,6 +25,7 @@
 // Parent
 #include <QWidget>
 
+
 class MachineTools : public QWidget
 {
     Q_OBJECT

@@ -19,56 +19,59 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATIONWINDOW_H
-#define SIMULATIONWINDOW_H
+#ifndef FSMSIMULATOR_H
+#define FSMSIMULATOR_H
 
 // Parent
-#include <QMainWindow>
+#include <QObject>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
 // Qt classes
-class QWidget;
-class QToolBar;
-class QAction;
+#include <QMap>
+class QSignalMapper;
 
 // StateS classes
-class Machine;
 class Clock;
+class Fsm;
+class FsmState;
+class FsmTransition;
 
 
-class SimulationWindow : public QMainWindow
+class FsmSimulator : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+    explicit FsmSimulator(shared_ptr<Fsm> machine);
 
-signals:
-    void detachTimeline(bool detach);
+    shared_ptr<Clock> getClock() const;
 
-protected slots:
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
+    void reset();
+    void doStep();
+    void start(uint period);
+    void suspend();
+    void targetStateSelectionMadeEventHandler(int i);
 
 private slots:
-    void exportToPDF();
-    void setMeFree();
-    void bindMe();
-
-protected:
-    void paintEvent(QPaintEvent*) override;
+    void clockEvent();
+    void resetEvent();
 
 private:
-    weak_ptr<Machine> machine;
+    void activateTransition(shared_ptr<FsmTransition> transition); // Should use smart pointers, but how with signalmapper???
 
-    QAction* actionDetach = nullptr;
+    shared_ptr<Clock> clock;
+    weak_ptr<Fsm> machine;
 
-    QToolBar* toolBar = nullptr;
+    weak_ptr<FsmState> currentState;
+    weak_ptr<FsmTransition> latestTransitionCrossed;
+    QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
 
-    uint separatorPosition = 0;
+    QWidget* targetStateSelector = nullptr;
+    QSignalMapper* signalMapper  = nullptr;
+
 };
 
-#endif // SIMULATIONWINDOW_H
+#endif // FSMSIMULATOR_H

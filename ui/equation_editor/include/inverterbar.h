@@ -25,6 +25,7 @@
 // Parent
 #include <QWidget>
 
+
 class InverterBar : public QWidget
 {
     Q_OBJECT

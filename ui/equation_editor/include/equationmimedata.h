@@ -28,6 +28,7 @@
 // StateS classes
 class GraphicEquation;
 
+
 class EquationMimeData : public QMimeData
 {
     Q_OBJECT

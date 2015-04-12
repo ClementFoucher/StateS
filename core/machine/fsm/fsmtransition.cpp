@@ -32,54 +32,40 @@
 #include "fsmgraphicaltransition.h"
 
 
-FsmTransition::FsmTransition(Fsm* parent, FsmState* source, FsmState* target, FsmGraphicalTransition* graphicalRepresentation, Signal* condition) :
+FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicalTransition* graphicalRepresentation) :
     FsmComponent(parent)
 {
-
     this->source = source;
     this->target = target;
 
-    if (condition != nullptr)
-        this->condition = condition;
+    this->setAllowedActionTypes(pulse | set | reset | assign);
 
-    source->addOutgoingTransition(this);
-    target->addIncomingTransition(this);
+    this->setCondition(condition);
 
-    this->getOwningFsm()->addTransition(this);
+    this->setGraphicalRepresentation(graphicalRepresentation);
 
-    setGraphicalRepresentation(graphicalRepresentation);
+    // Propagates local events to the more general "configuration changed" event
+    connect(this, &FsmTransition::conditionChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
 }
 
 FsmTransition::~FsmTransition()
 {
-    clearCondition();
-
-    source->removeOutgoingTransition(this);
-    target->removeIncomingTransition(this);
-
-    this->getOwningFsm()->removeTransition(this);
-
-    delete graphicalRepresentation;
+    delete this->graphicalRepresentation;
 }
 
-FsmState* FsmTransition::getSource() const
+shared_ptr<FsmState> FsmTransition::getSource() const
 {
-    return source;
+    return this->source.lock();
 }
 
-void FsmTransition::setSource(FsmState* newSource)
+void FsmTransition::setSource(shared_ptr<FsmState> newSource)
 {
-    if (source != nullptr)
-        source->removeOutgoingTransition(this);
-
-    source = newSource;
-
-    source->addOutgoingTransition(this);
+    this->source = newSource;
 }
 
 FsmGraphicalTransition* FsmTransition::getGraphicalRepresentation() const
 {
-    return graphicalRepresentation;
+    return this->graphicalRepresentation;
 }
 
 void FsmTransition::setGraphicalRepresentation(FsmGraphicalTransition* representation)
@@ -92,56 +78,55 @@ void FsmTransition::setGraphicalRepresentation(FsmGraphicalTransition* represent
 
 void FsmTransition::clearGraphicalRepresentation()
 {
-    graphicalRepresentation = nullptr;
+    this->graphicalRepresentation = nullptr;
 }
 
-FsmState* FsmTransition::getTarget() const
+shared_ptr<FsmState> FsmTransition::getTarget() const
 {
-    return target;
+    return target.lock();
 }
 
-void FsmTransition::setTarget(FsmState* newTarget)
+void FsmTransition::setTarget(shared_ptr<FsmState> newTarget)
 {
-    if (target != nullptr)
-        target->removeIncomingTransition(this);
-
-    target = newTarget;
-
-    target->addIncomingTransition(this);
+    this->target = newTarget;
 }
 
-Signal* FsmTransition::getCondition() const
+shared_ptr<Signal> FsmTransition::getCondition() const
 {
-    return condition;
+    if (this->condition->getFunction() != Equation::nature::identity)
+        return this->condition;
+    else
+        return this->condition->getOperand(0);
 }
 
-void FsmTransition::setCondition(Signal* signal)
+void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 {
     if (this->condition != nullptr)
     {
-        disconnect(this->condition, &Signal::signalConfigurationChangedEvent, this, &MachineComponent::elementConfigurationChangedEvent);
-        disconnect(this->condition, &Signal::signalStateChangedEvent,         this, &MachineComponent::elementStateChangedEvent);
-        disconnect(this->condition, &Signal::signalDeletedEvent,              this, &FsmTransition::clearCondition);
+        disconnect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentDynamicStateChangedEvent);
+        disconnect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEvent);
     }
 
-    Equation* temp = dynamic_cast <Equation*> (condition);
-    if (temp != nullptr)
-        delete condition;
+    shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(signalNewCondition);
+    if (equationNewCondition == nullptr)
+    {
+        equationNewCondition = shared_ptr<Equation>(new Equation(Equation::nature::identity, 1));
+        equationNewCondition->setOperand(0, signalNewCondition);
+    }
 
-    this->condition = signal;
+    this->condition = equationNewCondition;
 
     if (this->condition != nullptr)
     {
-        connect(this->condition, &Signal::signalConfigurationChangedEvent, this, &MachineComponent::elementConfigurationChangedEvent);
-        connect(this->condition, &Signal::signalStateChangedEvent,         this, &MachineComponent::elementStateChangedEvent);
-        connect(this->condition, &Signal::signalDeletedEvent,              this, &FsmTransition::clearCondition);
+        // Propagate events
+        connect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentDynamicStateChangedEvent);
+        connect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEvent);
     }
 
-    emit conditionChanged();
-    emit elementConfigurationChangedEvent();
+    emit conditionChangedEvent();
 }
 
-void FsmTransition::clearCondition()
+void FsmTransition::clearConditionEventHandler(shared_ptr<Signal>)
 {
     setCondition(nullptr);
 }

@@ -7,5 +7,10 @@
         <file alias="export_PDF">art/svg/Export_PDF.svg</file>
         <file alias="StateS">art/svg/StateS.svg</file>
         <file alias="export_VHDL">art/svg/Export_VHDL.svg</file>
+        <file alias="save_as">art/svg/Save_as.svg</file>
+        <file alias="rising_edge">art/svg/Rising_edge.svg</file>
+        <file alias="falling_edge">art/svg/Falling_edge.svg</file>
+        <file alias="pulse">art/svg/Pulse.svg</file>
+        <file alias="active_on_state">art/svg/Active_on_state.svg</file>
     </qresource>
 </RCC>

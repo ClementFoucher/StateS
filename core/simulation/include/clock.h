@@ -28,12 +28,13 @@
 // Qt classes
 #include <QTimer>
 
+
 class Clock : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Clock(QObject* parent = nullptr);
+    explicit Clock();
 
     void nextStep();
     void start(uint intervalms);

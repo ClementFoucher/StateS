@@ -25,18 +25,23 @@
 // Parent
 #include <QFrame>
 
+// C++classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QLabel>
+class QLabel;
 
 // StateS classes
 class Signal;
+
 
 class InputBitSelector : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit InputBitSelector(Signal* signalToCommand, uint bitNumber, QWidget *parent = nullptr);
+    explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent = nullptr);
 
 protected slots:
     void enterEvent(QEvent* event) override;
@@ -44,10 +49,10 @@ protected slots:
     void mousePressEvent(QMouseEvent*) override;
 
 private slots:
-    void signalValueChanged();
+    void signalValueChangedEventHandler();
 
 private:
-    Signal* signalToCommand = nullptr;
+    shared_ptr<Signal> signalToCommand; // Should be weak
     uint bitNumber = 0;
 
     QLabel* bitValue = nullptr;

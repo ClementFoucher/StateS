@@ -25,6 +25,7 @@
 // Parent
 #include <QPushButton>
 
+
 class ReactiveButton : public QPushButton
 {
     Q_OBJECT

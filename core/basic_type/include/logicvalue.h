@@ -31,7 +31,7 @@ class QString;
 
 class LogicValue : private QVector<bool>
 {
-public:
+public: // Static
     static LogicValue getValue0(uint size);
     static LogicValue getValue1(uint size);
     static LogicValue getNullValue();
@@ -48,8 +48,8 @@ public:
     bool isAllZeros() const;
     bool isAllOnes() const;
 
-    LogicValue getValue0();
-    LogicValue getValue1();
+    LogicValue getValue0() const;
+    LogicValue getValue1() const;
 
     bool isNull() const;
 

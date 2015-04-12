@@ -25,8 +25,14 @@
 // Parent
 #include "machinecomponent.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QMap>
+#include <QList>
+class QString;
 
 // StateS basic types
 #include "logicvalue.h"
@@ -35,46 +41,57 @@
 class Machine;
 class Signal;
 
+
 class MachineActuatorComponent : public MachineComponent
 {
     Q_OBJECT
 
 public:
-    enum class action_types { pulse, set, reset, assign };
+    enum class action_types { activeOnState, pulse, set, reset, assign };
+    typedef enum { none = 0x0, activeOnState = 0x1, pulse = 0x2, set = 0x4, reset = 0x8, assign = 0x10 } allowed_action_types;
 
 public:
-    explicit MachineActuatorComponent(Machine* owningMachine);
+    explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
 
-    QList<Signal*> getActions() const;
-    void setActions(const QList<Signal*>& newActions);
+    QList<shared_ptr<Signal>> getActions();
+    void setActions(const QList<shared_ptr<Signal>>& newActions);
     void clearActions();
 
     void addActionByName(const QString& signalName);
-    void addAction(Signal* signal);
+    void addAction(shared_ptr<Signal> signal);
     bool removeActionByName(const QString& signalName);
 
     void activateActions();
 
-    void setActionType(Signal* signal, action_types type);
-    bool setActionValue(Signal* signal, LogicValue value);
+    void setActionType(shared_ptr<Signal> signal, action_types type);
+    bool setActionValue(shared_ptr<Signal> signal, LogicValue value);
 
-    action_types getActionType(Signal* variable);
-    LogicValue getActionValue(Signal* variable);
+    action_types getActionType(shared_ptr<Signal> variable);
+    LogicValue getActionValue(shared_ptr<Signal> variable);
+
+    uint getAllowedActionTypes() const;
 
 signals:
-    void actionListChanged();
+    void actionListChangedEvent();
 
 public slots:
-    void removeAction(Signal* signal);
+    void removeAction(shared_ptr<Signal> signal);
 
 protected:
-    QList<Signal*> actions;
+    void setAllowedActionTypes(uint flags);
 
-    QMap<Signal*, action_types> actionType;
-    QMap<Signal*, LogicValue> actionValue;
+    QList<weak_ptr<Signal>> actions;
+
+    // Reference signals by name as we can assert they are unique
+    QMap<QString, action_types> actionType;
+    QMap<QString, LogicValue>   actionValue;
 
 private slots:
     void signalResizedEventHandler();
+    void cleanActionList();
+
+private:
+    uint allowedActionTypes = none;
 };
 
 #endif // MACHINEACTUATORCOMPONENT_H

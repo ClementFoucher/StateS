@@ -25,60 +25,58 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 class QPushButton;
-class QSignalMapper;
+//class QSignalMapper;
 class QLineEdit;
+class QCheckBox;
 
 // StateS classes
-class Fsm;
-class FsmState;
-class Clock;
 class SimulationWindow;
 class InputsSelector;
+class FsmSimulator;
+class Fsm;
+
 
 class SimulatorTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SimulatorTab(Fsm* machine, QWidget* parent = nullptr);
+    explicit SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
     SimulationWindow* getTimeline() const;
 
 signals:
-    void beginSimulation();
-    void endSimulation();
-    void triggerView();
+    void beginSimulationEvent();
+    void endSimulationEvent();
+    void triggerViewRequestEvent();
 
 private slots:
     void triggerSimulationMode(bool enabled);
-    void reset();
-    void nextStep();
-    void clockEvent();
-    void resetEvent();
-    void targetStateSelectionMade(QObject *choosenTransition);
     void buttonTriggerViewClicked();
     void buttonLauchAutoStepClicked();
+//    void delayOutputEventOptionTriggered(bool checked);
 
 private:
-    Fsm* machine = nullptr;
-    FsmState* currentState = nullptr;
+    weak_ptr<Fsm> machine;
+    unique_ptr<FsmSimulator> simulator;
 
-    Clock* clock = nullptr;
     SimulationWindow* timeLine = nullptr;
 
     QPushButton* buttonTriggerSimulation = nullptr;
-    QPushButton* buttonTriggerView = nullptr;
-    QPushButton* buttonTriggerAutoStep = nullptr;
-    QLineEdit* autoStepValue = nullptr;
-    QWidget* simulationTools = nullptr;
+    QPushButton* buttonTriggerView       = nullptr;
+    QPushButton* buttonTriggerAutoStep   = nullptr;
+    QCheckBox*   checkBoxDelay           = nullptr;
+    QLineEdit*   autoStepValue           = nullptr;
+    QWidget*     simulationTools         = nullptr;
 
     InputsSelector* inputList = nullptr;
-
-    QWidget* targetStateSelection = nullptr;
-    QSignalMapper* signalMapper = nullptr;
 };
 
 #endif // SIMULATORTAB_H

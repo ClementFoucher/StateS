@@ -1,7 +1,7 @@
 
-*******************
-* StateS v. 0.2.7 *
-*******************
+*****************
+* StateS v. 0.3 *
+*****************
 
 This software is intended to be a simple and effective discrete event machines drawer.
 
@@ -50,7 +50,7 @@ StateS code license (GNU GPL V2) can be consulted using file LICENSE.txt, or at 
 To obtain code, use command:
 git clone git://git.code.sf.net/p/states/code states-code
 To compile, use commands `qmake` on .pro file, then `make`
-Qt 5.4 is needed, as well as a compiler supporting -std=c++11 flag.
+Qt 5.4 is needed, as well as a compiler supporting c++ 2011.
 
 Most art used in the software is, or is based on, third-party art work released under open source licences.
 Authors information and corresponding licences can be found in "art" folder.

@@ -25,6 +25,10 @@
 // Parent
 #include <QTabWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class MachineBuilderTab;
 class MachineTools;
@@ -38,6 +42,7 @@ class AboutTab;
 class VerifierTab;
 class SimulationWindow;
 
+
 class ResourceBar : public QTabWidget
 {
     Q_OBJECT
@@ -46,18 +51,18 @@ public:
     enum class mode{voidMode, editMode, simulateMode};
 
 public:
-    explicit ResourceBar(QWidget* parent, Machine* machine = nullptr);
+    explicit ResourceBar(shared_ptr<Machine> machine, QWidget* parent = nullptr);
     ~ResourceBar();
 
     MachineTools* getBuildTools() const;
     SimulationWindow* getTimeline() const;
 
-    void setMachine(Machine* value);
+    void setMachine(shared_ptr<Machine> newMachine);
 
     mode getCurrentMode() const;
 
-    void selectedState(FsmState* state, bool showTab = false, bool editName = false);
-    void selectedTransition(FsmTransition* transition, bool showTab = false);
+    void selectedState(shared_ptr<FsmState> state, bool showTab = false, bool editName = false);
+    void selectedTransition(shared_ptr<FsmTransition> transition, bool showTab = false);
 
 public slots:
     void clearSelection();
@@ -65,14 +70,14 @@ public slots:
     void terminateSimulation();
 
 signals:
-    void simulationToggled();
-    void triggerView();
+    void simulationToggledEvent();
+    void triggerViewRequestEvent();
 
 private slots:
     void tabChanged(int index);
 
 private:
-    Machine* machine = nullptr;
+    weak_ptr<Machine> machine;
 
     MachineBuilderTab  * toolResources      = nullptr;
     SignalEditorTab    * interfaceResources = nullptr;

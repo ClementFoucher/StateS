@@ -26,15 +26,16 @@
 #include <QObject>
 #include <QGraphicsEllipseItem>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QBrush>
-#include <QPen>
-#include <QGraphicsTextItem>
-#include <QAction>
-#include <QPixmap>
+class QAction;
 
 // StateS classes
 class FsmState;
+
 
 class FsmGraphicalState : public QObject, public QGraphicsEllipseItem
 {
@@ -56,10 +57,10 @@ private:
 
     // Public
 public:
-    explicit FsmGraphicalState(FsmState *logicState);
+    explicit FsmGraphicalState(shared_ptr<FsmState> logicState);
     ~FsmGraphicalState();
 
-    FsmState* getLogicalState() const;
+    shared_ptr<FsmState> getLogicalState() const;
 
     static qreal getRadius();
 
@@ -69,9 +70,9 @@ public slots:
     void rebuildRepresentation();
 
 signals:
-    void moving();
-    void callEdit(FsmState* state);
-    void callRename(FsmState* state);
+    void stateMovingEvent();
+    void editStateCalledEvent(shared_ptr<FsmState> state);
+    void renameStateCalledEvent(shared_ptr<FsmState> state);
 
     // Private
 protected slots:
@@ -87,7 +88,8 @@ private slots:
 private:
     void askDelete();
 
-    FsmState*           logicalState = nullptr;
+    weak_ptr<FsmState> logicalState;
+
     QGraphicsTextItem*  stateName    = nullptr;
     QGraphicsItemGroup* actionsBox   = nullptr;
 

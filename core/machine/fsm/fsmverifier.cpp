@@ -30,7 +30,7 @@
 #include "equation.h"
 
 
-FsmVerifier::FsmVerifier(Fsm *machine) :
+FsmVerifier::FsmVerifier(shared_ptr<Fsm> machine) :
     QObject()
 {
     this->machine = machine;
@@ -47,13 +47,15 @@ QList<QString> FsmVerifier::verifyFsm()
 
     this->clearProofs();
 
-    if (this->machine == nullptr)
+    shared_ptr<Fsm> machine = this->machine.lock();
+
+    if (machine == nullptr)
     {
         errors.append(tr("No FSM."));
         proofs.append(nullptr);
 
     }
-    else if (this->machine->getStates().isEmpty())
+    else if (machine->getStates().isEmpty())
     {
         errors.append(tr("Empty FSM."));
         proofs.append(nullptr);
@@ -61,34 +63,34 @@ QList<QString> FsmVerifier::verifyFsm()
     else
     {
         // Check initial state
-        if (this->machine->getInitialState() == nullptr)
+        if (machine->getInitialState() == nullptr)
         {
             errors.append(tr("No initial state."));
             proofs.append(nullptr);
         }
 
         // Check transitions
-        foreach(FsmState* state, this->machine->getStates())
+        foreach(shared_ptr<FsmState> state, machine->getStates())
         {
-            QList<Equation*> equations;
+            QList<shared_ptr<Equation>> equations;
 
             bool errorOnTransition = false;
 
-            foreach(FsmTransition* transition, state->getOutgoingTransitions())
+            foreach(shared_ptr<FsmTransition> transition, state->getOutgoingTransitions())
             {
-                Signal* condition = transition->getCondition();
+                shared_ptr<Signal> condition = transition->getCondition();
 
                 if (condition != nullptr)
                 {
                     if (condition->getSize() != 0)
                     {
-                        Equation* equation = dynamic_cast<Equation*>(condition);
+                        shared_ptr<Equation> equation = dynamic_pointer_cast<Equation>(condition);
 
                         if (equation == nullptr)
                         {
-                            QVector<Signal*> operand;
+                            QVector<shared_ptr<Signal>> operand;
                             operand.append(condition);
-                            equation = new Equation(Equation::nature::identity, operand);
+                            equation = shared_ptr<Equation>(new Equation(Equation::nature::identity, operand));
 
                         }
 

@@ -25,15 +25,20 @@
 // Parent
 #include <QScrollArea>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Input;
+
 
 class InputsSelector : public QScrollArea
 {
     Q_OBJECT
 
 public:
-    explicit InputsSelector(QList<Input*> inputList, QWidget *parent = nullptr);
+    explicit InputsSelector(QList<shared_ptr<Input>> inputList, QWidget* parent = nullptr);
 
 protected:
     void resizeEvent(QResizeEvent*) override;

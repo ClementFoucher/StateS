@@ -31,6 +31,7 @@
 // StateS classes
 class MachineTools;
 
+
 class MachineBuilderTab : public QWidget
 {
     Q_OBJECT

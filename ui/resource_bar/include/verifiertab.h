@@ -25,6 +25,10 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include "memory"
+using namespace std;
+
 // Qt classes
 class QListWidget;
 class QLabel;
@@ -43,10 +47,10 @@ class VerifierTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit VerifierTab(Fsm* machine, QWidget* parent = nullptr);
+    explicit VerifierTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
     ~VerifierTab();
 
-    void changeMachine(Fsm* machine);
+    void changeMachine(shared_ptr<Fsm> machine);
 
 private slots:
     void checkNow();
@@ -55,7 +59,7 @@ private slots:
     void proofRequested(QListWidgetItem* item);
 
 private:
-    Fsm* machine = nullptr;
+    weak_ptr<Fsm> machine;
 
     FsmVerifier* verifier = nullptr;
 

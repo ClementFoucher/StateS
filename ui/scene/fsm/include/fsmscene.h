@@ -25,6 +25,10 @@
 // Parent
 #include "genericscene.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // To access enums
 #include "resourcebar.h"
 
@@ -35,12 +39,13 @@ class Fsm;
 class FsmState;
 class FsmTransition;
 
+
 class FsmScene : public GenericScene
 {
     Q_OBJECT
 
 public:
-    explicit FsmScene(ResourceBar* resources, Fsm* machine);
+    explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resources);
     ~FsmScene() override;
 
     void setDisplaySize(const QSize& newSize) override;
@@ -60,22 +65,22 @@ protected slots:
 
 private slots:
     void handleSelection();
-    void stateCallsEdit(FsmState* state);
-    void stateCallsRename(FsmState* state);
+    void stateCallsEditEventHandler(shared_ptr<FsmState> state);
+    void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
     void treatMenu(QAction*);
 
     void updateSceneRect();
 
-    void transitionCallsDynamicSource(FsmGraphicalTransition* transition);
-    void transitionCallsDynamicTarget(FsmGraphicalTransition* transition);
-    void transitionCallsEdit(FsmTransition* transition);
+    void transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* transition);
+    void transitionCallsDynamicTargetEventHandler(FsmGraphicalTransition* transition);
+    void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
 
 private:
     FsmGraphicalState* getStateAt(const QPointF& location) const;
-    FsmGraphicalState* addState(FsmState *logicState, QPointF location);
+    FsmGraphicalState* addState(shared_ptr<FsmState> logicState, QPointF location);
     void addTransition(FsmGraphicalTransition* newTransition);
 
-    Fsm* machine = nullptr;
+    shared_ptr<Fsm> machine;
 
     bool isDrawingTransition = false;
     bool isEditingTransitionSource = false;

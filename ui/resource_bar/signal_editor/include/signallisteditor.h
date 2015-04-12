@@ -25,17 +25,23 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QGridLayout>
-#include <QTableWidget>
-#include <QPushButton>
 #include <QMap>
+class QGridLayout;
+class QTableWidget;
+class QPushButton;
+class QTableWidgetItem;
 
 // To access enums
 #include "machine.h"
 
 // StateS classes
 class DynamicTableItemDelegate;
+
 
 class SignalListEditor : public QWidget
 {
@@ -45,13 +51,13 @@ private:
     enum class mode{initMode, standard, addingSignal, renamingSignal, resizingSignal, changingSignalInitialValue};
 
 public:
-    explicit SignalListEditor(Machine* machine, Machine::signal_types editorType);
+    explicit SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent = nullptr);
 
 public slots:
     void updateList();
 
 signals:
-    bool addSignalEvent(Machine::signal_types, const QString& name);
+    shared_ptr<Signal> addSignalEvent(Machine::signal_type, const QString& name);
     bool removeSignalEvent(const QString& name);
     bool renameSignalEvent(const QString& oldName, const QString& newName);
     bool resizeSignalEvent(const QString& name, uint newSize);
@@ -72,8 +78,8 @@ private:
 
     mode currentMode = mode::initMode;
 
-    Machine* machine = nullptr;
-    Machine::signal_types editorType;
+    weak_ptr<Machine> machine;
+    Machine::signal_type editorType;
 
     QGridLayout* layout = nullptr;
 
@@ -85,7 +91,7 @@ private:
 //    QPushButton * buttonCancel = nullptr;
 
     QTableWidgetItem* currentTableItem = nullptr;
-    QMap<QTableWidgetItem*, Signal*> associatedSignals;
+    QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;
 };
 
 #endif // SIGNALLISTEDITOR_H

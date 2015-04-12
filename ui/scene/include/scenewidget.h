@@ -25,6 +25,10 @@
 // Parent
 #include <QGraphicsView>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QPushButton>
 
@@ -37,10 +41,10 @@ class SceneWidget : public QGraphicsView
     Q_OBJECT
 
 public:
-    explicit SceneWidget(Machine *machine, ResourceBar *resources, QWidget* parent = nullptr);
+    explicit SceneWidget(shared_ptr<Machine> machine, ResourceBar *resources, QWidget* parent = nullptr);
     explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(Machine* Machine, ResourceBar *resources);
+    void setMachine(shared_ptr<Machine> machine, ResourceBar* resources);
 
 protected:
     void mousePressEvent(QMouseEvent*) override;

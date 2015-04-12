@@ -23,15 +23,10 @@
 #include "clock.h"
 
 
-Clock::Clock(QObject* parent) :
-    QObject(parent)
+Clock::Clock() :
+    QObject()
 {
     connect(&(this->timer), &QTimer::timeout, this, &Clock::clockEvent);
-}
-
-void Clock::nextStep()
-{
-    emit clockEvent();
 }
 
 void Clock::start(uint intervalms)
@@ -43,6 +38,11 @@ void Clock::start(uint intervalms)
 void Clock::stop()
 {
     this->timer.stop();
+}
+
+void Clock::nextStep()
+{
+    emit clockEvent();
 }
 
 void Clock::reset()

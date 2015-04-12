@@ -25,24 +25,30 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QString>
-#include <QPushButton>
-#include <QTableWidget>
 #include <QMap>
+class QString;
+class QPushButton;
+class QTableWidget;
+class QTableWidgetItem;
 
 // StateS Classes
 class MachineActuatorComponent;
 class Signal;
+
 
 class ActionEditor : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ActionEditor(MachineActuatorComponent* actuator, QString title = QString(), QWidget* parent = nullptr);
+    explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
 
-    void changeActuator(MachineActuatorComponent* actuator);
+    void changeActuator(shared_ptr<MachineActuatorComponent> actuator);
 
 private slots:
     void updateContent();
@@ -50,12 +56,12 @@ private slots:
     void addAction();
     void removeAction();
     void treatMenuAdd(QAction*);
-    void itemValueChanged(QTableWidgetItem* item);
+    void itemValueChangedEventHandler(QTableWidgetItem* item);
 
 private:
-    MachineActuatorComponent* actuator;
+    weak_ptr<MachineActuatorComponent> actuator;
 
-    QMap<QTableWidgetItem*, Signal*> tableItemsMapping;
+    QMap<QTableWidgetItem*, weak_ptr<Signal>> tableItemsMapping;
 
     QTableWidget* actionList = nullptr;
 

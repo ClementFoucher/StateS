@@ -30,7 +30,7 @@
 #include "graphicclocktimeline.h"
 
 
-ClockTimeLine::ClockTimeLine(Clock* clock, QWidget* parent) :
+ClockTimeLine::ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
     QLabel* title = new QLabel(tr("Clock"));

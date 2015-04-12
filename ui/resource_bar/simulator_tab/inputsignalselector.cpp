@@ -23,14 +23,15 @@
 #include "inputsignalselector.h"
 
 // Qt classes
-#include "QHBoxLayout"
+#include <QHBoxLayout>
+#include <QLabel>
 
 // StateS classes
 #include "signal.h"
 #include "inputbitselector.h"
 
 
-InputSignalSelector::InputSignalSelector(Signal *relatedSignal, QWidget *parent) :
+InputSignalSelector::InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget *parent) :
     QWidget(parent)
 {
     QHBoxLayout* globalLayout = new QHBoxLayout(this);

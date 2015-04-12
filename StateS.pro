@@ -78,7 +78,8 @@ SOURCES += \
     ui/truthtabledisplay.cpp \
     ui/resource_bar/component_editor/conditioneditor.cpp \
     core/machine/fsm/fsmverifier.cpp \
-    ui/resource_bar/verifiertab.cpp
+    ui/resource_bar/verifiertab.cpp \
+    core/simulation/fsmsimulator.cpp
 
 
 HEADERS  += \
@@ -141,7 +142,8 @@ HEADERS  += \
     ui/include/truthtabledisplay.h \
     ui/resource_bar/component_editor/include/conditioneditor.h \
     core/machine/fsm/include/fsmverifier.h \
-    ui/resource_bar/include/verifiertab.h
+    ui/resource_bar/include/verifiertab.h \
+    core/simulation/include/fsmsimulator.h
 
 QMAKE_CXXFLAGS += \
     -std=c++11 \

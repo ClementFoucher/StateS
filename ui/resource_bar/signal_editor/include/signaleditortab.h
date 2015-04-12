@@ -25,15 +25,20 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
 class Machine;
+
 
 class SignalEditorTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SignalEditorTab(Machine* machine, QWidget* parent = nullptr);
+    explicit SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 };
 
 #endif // SIGNALSEDITORTAB_H

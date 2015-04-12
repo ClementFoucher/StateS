@@ -26,8 +26,9 @@
 #include <QItemDelegate>
 
 // Qt classes
-#include <QTableWidgetItem>
-#include <QValidator>
+class QTableWidgetItem;
+class QValidator;
+
 
 class DynamicTableItemDelegate  : public QItemDelegate
 {

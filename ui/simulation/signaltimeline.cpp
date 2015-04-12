@@ -32,11 +32,10 @@
 #include "graphictimeline.h"
 
 
-SignalTimeline::SignalTimeline(Signal* signal, Clock* clock, bool dynamic, QWidget* parent) :
+SignalTimeline::SignalTimeline(shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
     QWidget(parent)
 {
     this->variable = signal;
-    this->clock = clock;
     this->isDynamic = dynamic;
 
     QHBoxLayout* globalLayout = new QHBoxLayout(this);
@@ -78,35 +77,50 @@ SignalTimeline::SignalTimeline(Signal* signal, Clock* clock, bool dynamic, QWidg
 
     if (isDynamic)
     {
-        connect(signal, &Signal::signalStateChangedEvent, this, &SignalTimeline::prepareClockEvent);
+        connect(signal.get(), &Signal::signalDynamicStateChangedEvent, this, &SignalTimeline::prepareClockEventHandler);
     }
 
-    connect(clock, &Clock::clockEvent, this, &SignalTimeline::clockEvent);
-    connect(clock, &Clock::resetEvent, this, &SignalTimeline::resetEvent);
+    connect(clock.get(), &Clock::clockEvent, this, &SignalTimeline::clockEventHandler);
+    connect(clock.get(), &Clock::resetEvent, this, &SignalTimeline::resetEventHandler);
 }
 
-void SignalTimeline::clockEvent()
+void SignalTimeline::clockEventHandler()
 {
-    for (uint i = 0 ; i < variable->getSize() ; i++)
+    shared_ptr<Signal> variable = this->variable.lock();
+
+    if (variable != nullptr)
     {
-        variableLineDisplay[i]->addPointConst();
-        variableLineDisplay[i]->addPoint(variable->getCurrentValue()[i]);
+        for (uint i = 0 ; i < variable->getSize() ; i++)
+        {
+            variableLineDisplay[i]->addPointConst();
+            variableLineDisplay[i]->addPoint(variable->getCurrentValue()[i]);
+        }
     }
 }
 
 // This is used for input, because state may have changed since previous clock
-void SignalTimeline::prepareClockEvent()
+void SignalTimeline::prepareClockEventHandler()
 {
-    for (uint i = 0 ; i < variable->getSize() ; i++)
+    shared_ptr<Signal> variable = this->variable.lock();
+
+    if (variable != nullptr)
     {
-        variableLineDisplay[i]->updateLastPoint(variable->getCurrentValue()[i]);
+        for (uint i = 0 ; i < variable->getSize() ; i++)
+        {
+            variableLineDisplay[i]->updateLastPoint(variable->getCurrentValue()[i]);
+        }
     }
 }
 
-void SignalTimeline::resetEvent()
+void SignalTimeline::resetEventHandler()
 {
-    for (uint i = 0 ; i < variable->getSize() ; i++)
+    shared_ptr<Signal> variable = this->variable.lock();
+
+    if (variable != nullptr)
     {
-        variableLineDisplay[i]->reset(variable->getInitialValue()[i]);
+        for (uint i = 0 ; i < variable->getSize() ; i++)
+        {
+            variableLineDisplay[i]->reset(variable->getInitialValue()[i]);
+        }
     }
 }
