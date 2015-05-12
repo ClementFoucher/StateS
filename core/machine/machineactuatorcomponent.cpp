@@ -235,11 +235,11 @@ void MachineActuatorComponent::removeAction(shared_ptr<Signal> signal)
         disconnect(signal.get(), &Signal::signalStaticConfigurationChangedEvent, this, &MachineActuatorComponent::componentStaticConfigurationChangedEvent);
         disconnect(signal.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineActuatorComponent::componentDynamicStateChangedEvent);
 
-        foreach(weak_ptr<Signal> s, this->actions)
+        for (int i = 0 ; i < this->actions.count() ; i++)
         {
-            if (s.lock() == signal)
+            if (this->actions[i].lock() == signal)
             {
-                s.reset();
+                this->actions[i].reset();
             }
         }
 

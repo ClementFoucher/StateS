@@ -1,7 +1,7 @@
 
-*****************
-* StateS v. 0.3 *
-*****************
+*******************
+* StateS v. 0.3.1 *
+*******************
 
 // The following behaviors are known.
 // They may be buggy, or just uninmplemented code.
