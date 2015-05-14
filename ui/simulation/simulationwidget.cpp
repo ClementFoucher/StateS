@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "simulationwindow.h"
+#include "simulationwidget.h"
 
 // Qt classes
 #include <QAction>
@@ -40,11 +40,15 @@
 #include "clocktimeline.h"
 #include "input.h"
 #include "output.h"
+#include "simulatortab.h"
 
 
-SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent) :
+SimulationWidget::SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent) :
     QMainWindow(parent)
 {
+    // Relay option change event
+    connect(simulatorTab, &SimulatorTab::delayOutputOptionTriggeredEvent, this, &SimulationWidget::delayOutputOptionTriggered);
+
     this->machine = machine;
 
     this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
@@ -55,10 +59,10 @@ SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock
 
     QIcon exportPdfIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF")));
     QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
-    connect(action, &QAction::triggered, this, &SimulationWindow::exportToPDF);
+    connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
 
     this->actionDetach = new QAction(tr("Detach as independant window"), this);
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
     this->toolBar->addAction(action);
     this->toolBar->addAction(this->actionDetach);
@@ -66,18 +70,17 @@ SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock
 
     // Add resources in a scroll area
     QScrollArea* scrollArea = new QScrollArea();
-    scrollArea->setAlignment(Qt::AlignHCenter);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setStyleSheet("background-color: transparent");
 
     scrollArea->setWidget(new QWidget());
 
     this->setCentralWidget(scrollArea);
 
 
-
-    QVBoxLayout* layout = new QVBoxLayout(this->centralWidget());
-    scrollArea->widget()->setLayout(layout);
+    QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
+    layout->setAlignment(Qt::AlignTop);
 
     QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
     titleClock->setAlignment(Qt::AlignCenter);
@@ -94,7 +97,7 @@ SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock
 
         foreach (shared_ptr<Input> var, machine->getInputs())
         {
-            SignalTimeline* varTL = new SignalTimeline(var, clock, true);
+            SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock, true);
             layout->addWidget(varTL);
         }
     }
@@ -108,7 +111,7 @@ SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock
 
         foreach (shared_ptr<Output> var, machine->getOutputs())
         {
-            SignalTimeline* varTL = new SignalTimeline(var, clock);
+            SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
             layout->addWidget(varTL);
         }
     }
@@ -122,13 +125,13 @@ SimulationWindow::SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock
 
         foreach (shared_ptr<Signal> var, machine->getLocalVariables())
         {
-            SignalTimeline* varTL = new SignalTimeline(var, clock);
+            SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
             layout->addWidget(varTL);
         }
     }
 }
 
-void SimulationWindow::mousePressEvent(QMouseEvent* event)
+void SimulationWidget::mousePressEvent(QMouseEvent* event)
 {
     separatorPosition = event->x();
 
@@ -137,7 +140,7 @@ void SimulationWindow::mousePressEvent(QMouseEvent* event)
     repaint();
 }
 
-void SimulationWindow::mouseMoveEvent(QMouseEvent* event)
+void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
 {
     separatorPosition = event->x();
 
@@ -146,7 +149,7 @@ void SimulationWindow::mouseMoveEvent(QMouseEvent* event)
     repaint();
 }
 
-void SimulationWindow::paintEvent(QPaintEvent*)
+void SimulationWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
 
@@ -154,7 +157,7 @@ void SimulationWindow::paintEvent(QPaintEvent*)
 
 }
 
-void SimulationWindow::exportToPDF()
+void SimulationWidget::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export time line to PDF"), QString(), "*.pdf");
 
@@ -185,22 +188,30 @@ void SimulationWindow::exportToPDF()
     }
 }
 
-void SimulationWindow::setMeFree()
+void SimulationWidget::setMeFree()
 {
-    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
+    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
     emit detachTimeline(true);
 
     this->actionDetach->setText(tr("Attach to main window"));
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::bindMe);
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 }
 
-void SimulationWindow::bindMe()
+void SimulationWidget::bindMe()
 {
-    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::bindMe);
+    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 
     emit detachTimeline(false);
 
     this->actionDetach->setText(tr("Detach as independant window"));
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWindow::setMeFree);
+    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+}
+
+void SimulationWidget::delayOutputOptionTriggered(bool activated)
+{
+    if (activated)
+        emit outputDelayChangedEvent(1);
+    else
+        emit outputDelayChangedEvent(0);
 }

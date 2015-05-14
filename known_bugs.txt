@@ -1,30 +1,20 @@
 
 *******************
-* StateS v. 0.3.1 *
+* StateS v. 0.3.2 *
 *******************
 
 // The following behaviors are known.
 // They may be buggy, or just uninmplemented code.
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-- Begin/end simulation: conditions only containing constants/state actions: color is not updated,
+- Begin/end simulation: color update is not complete,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
-- Multiple "_" can be generated in a VHDL signal name, which is not a correct syntax,
-- A delay is added between clock and output generation in simulation => should be optional.
+- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax,
 
 // Not bugs, but still
 
-- Transition selection box for straight lines is only on line, so very difficult to catch,
-- Context menu when simulating should change with appropriate options: force state activation,
-- Should allow cancel renaming/adding signals while editing not validated,
-- Should display current state on simu (add tooltip),
-- Should not allow to stack states (ugly state/transition stacking),
-- Sould support box selection on scene,
-- Time line window should use a scroll bar when too much variables,
-- Should be able to move condition text along transitions,
-- Signals values should be writtable in hexa,
-- No check on signals names => should at least refuse "/", "+", and other operators.
-- A confirmation message should be displayed when deleting a signal will break an equation.
+- Transition selection for straight lines is only done by clicking exactly on the line, so very difficult to catch,
+- Should allow cancel renaming/adding signals while editing not validated.

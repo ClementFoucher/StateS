@@ -26,82 +26,109 @@
 #include <QPainter>
 
 
-GraphicTimeLine::GraphicTimeLine(bool initialState, QWidget* parent) :
+GraphicTimeLine::GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent) :
     QWidget(parent)
 {
-    stepLength = 10;
+    this->pointsPerCycle = pointsPerCycle;
+    this->eventDelay    = eventDelay;
 
-    timeLinePoly.append(QPoint(0, initialState?1:0));
-    addPoint(initialState);
+    this->stepLength = 5;
+
+    this->reset(initialValue);
 }
 
 void GraphicTimeLine::addPoint(bool state)
 {
+    this->points.append(state);
 
-    QPoint lastPosition = timeLinePoly.last();
-
-    if ((lastPosition.y() == 0) && (state == true))
+    for (uint i = 0 ; i < this->pointsPerCycle ; i++)
     {
-        // Rising edge
-        timeLinePoly.append(QPoint(lastPosition.x(), 1));
-    }
-    else if ((lastPosition.y() == 1) && (state == false))
-    {
-        // Falling edge
-        timeLinePoly.append(QPoint(lastPosition.x(), 0));
+        QPoint lastPosition = timeLinePoly.last();
+
+        if (i < this->eventDelay)
+        {
+            // Horizontal line with current value before delay
+            timeLinePoly.append(QPoint(lastPosition.x() + 1, lastPosition.y()));
+        }
+        else if (i == this->eventDelay)
+        {
+            // Edge + horizontal line with new value on delay
+
+            if ((lastPosition.y() == 0) && (state == true))
+            {
+                // Rising edge
+                timeLinePoly.append(QPoint(lastPosition.x(), 1));
+            }
+            else if ((lastPosition.y() == 1) && (state == false))
+            {
+                // Falling edge
+                timeLinePoly.append(QPoint(lastPosition.x(), 0));
+            }
+
+            // Horizontal line
+            timeLinePoly.append(QPoint(lastPosition.x() + 1, state?1:0));
+        }
+        else // (i >= this->eventDelay)
+        {
+            // Horizontal line with new value after delay
+            timeLinePoly.append(QPoint(lastPosition.x() + 1, state?1:0));
+        }
+
     }
 
-    // Horizontal line
-    timeLinePoly.append(QPoint(lastPosition.x() + 1, state?1:0));
-
-    this->setMinimumWidth(lastPosition.x()*stepLength + 2*stepLength);
-    this->setMaximumWidth(lastPosition.x()*stepLength + 2*stepLength);
+    this->setMinimumWidth(timeLinePoly.last().x()*this->stepLength + 5*this->stepLength);
+    this->setMaximumWidth(timeLinePoly.last().x()*this->stepLength + 5*this->stepLength);
 
     repaint();
-}
-
-void GraphicTimeLine::addPointConst()
-{
-    if (timeLinePoly.last().y() == 1)
-        addPoint(true);
-    else
-        addPoint(false);
 }
 
 void GraphicTimeLine::updateLastPoint(bool state)
 {
     // If no change to do, return
-    if (((timeLinePoly.last().y() == 1) && (state == true)) ||
-            ((timeLinePoly.last().y() == 0) && (state == false)))
+    if (this->points.last() == state)
         return;
 
-    // Else remove last point
-    timeLinePoly.removeLast();
-
-
-    if (timeLinePoly.count() > 2)
+    // Else change last point
+    if (this->points.count() > 1)
     {
-        // Check if there was a edge before, and remove it if so
-        if (timeLinePoly[timeLinePoly.count()-1].x() == timeLinePoly[timeLinePoly.count()-2].x())
-            timeLinePoly.removeLast();
+        this->removeLastPoint();
+        this->addPoint(state);
     }
     else
     {
         // Replace first point
-        timeLinePoly.removeLast();
-        timeLinePoly.append(QPoint(0, state?1:0));
+        this->reset(state);
     }
-
-
-    addPoint(state);
 }
 
-void GraphicTimeLine::reset(bool initialState)
+void GraphicTimeLine::reset(bool initialValue)
 {
-    timeLinePoly.clear();
+    this->points.clear();
+    this->points.append(initialValue);
 
-    timeLinePoly.append(QPoint(0, initialState?1:0));
-    addPoint(initialState);
+    timeLinePoly.clear();
+    // Starting point of graphical vector: not a real point
+    timeLinePoly.append(QPoint(0, initialValue?1:0));
+    // Actual initial point
+    timeLinePoly.append(QPoint(1, initialValue?1:0));
+
+    this->setMinimumWidth(5*this->stepLength);
+    this->setMaximumWidth(5*this->stepLength);
+
+    repaint();
+}
+
+void GraphicTimeLine::chageEventDelay(uint eventDelay)
+{
+    this->eventDelay = eventDelay;
+
+    QVector<bool> oldPointVector = this->points;
+    this->reset(oldPointVector[0]);
+
+    for (int i = 1 ; i < oldPointVector.count() ; i++)
+    {
+        this->addPoint(oldPointVector[i]);
+    }
 }
 
 
@@ -121,6 +148,21 @@ void GraphicTimeLine::paintEvent(QPaintEvent*)
         target.setY( (timeLinePoly[i+1].y() == 1)?5:this->height()-5 );
 
         painter.drawLine(source, target);
+    }
+}
+
+void GraphicTimeLine::removeLastPoint()
+{
+    if (this->points.count() > 1) // First point can't be handled: we need an initial value
+    {
+        for (uint i = 0 ; i < this->pointsPerCycle ; i++)
+        {
+            this->timeLinePoly.removeLast();
+
+            // Check if there was a edge before, and remove it if so
+            if (timeLinePoly[timeLinePoly.count()-1].y() != timeLinePoly[timeLinePoly.count()-2].y())
+                timeLinePoly.removeLast();
+        }
     }
 }
 

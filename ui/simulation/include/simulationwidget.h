@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATIONWINDOW_H
-#define SIMULATIONWINDOW_H
+#ifndef SIMULATIONWIDGET_H
+#define SIMULATIONWIDGET_H
 
 // Parent
 #include <QMainWindow>
@@ -37,17 +37,19 @@ class QAction;
 // StateS classes
 class Machine;
 class Clock;
+class SimulatorTab;
 
 
-class SimulationWindow : public QMainWindow
+class SimulationWidget : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit SimulationWindow(shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+    explicit SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 signals:
     void detachTimeline(bool detach);
+    void outputDelayChangedEvent(uint newDelay);
 
 protected slots:
     void mousePressEvent(QMouseEvent*) override;
@@ -57,6 +59,7 @@ private slots:
     void exportToPDF();
     void setMeFree();
     void bindMe();
+    void delayOutputOptionTriggered(bool activated);
 
 protected:
     void paintEvent(QPaintEvent*) override;
@@ -71,4 +74,4 @@ private:
     uint separatorPosition = 0;
 };
 
-#endif // SIMULATIONWINDOW_H
+#endif // SIMULATIONWIDGET_H

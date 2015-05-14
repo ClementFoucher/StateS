@@ -27,6 +27,7 @@
 
 // Qt classes
 #include <QPolygon>
+#include <QVector>
 
 
 class GraphicTimeLine : public QWidget
@@ -34,20 +35,24 @@ class GraphicTimeLine : public QWidget
     Q_OBJECT
 
 public:
-    GraphicTimeLine(bool initialState, QWidget* parent = nullptr);
+    GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
 
     void addPoint(bool state);
-    void addPointConst();
     void updateLastPoint(bool state);
-    void reset(bool initialState);
+    void reset(bool initialValue);
+    void chageEventDelay(uint eventDelay);
 
 protected:
     uint stepLength;
 
 private:
     void paintEvent(QPaintEvent *) override;
+    void removeLastPoint();
 
     QPolygon timeLinePoly;
+    QVector<bool> points;
+    uint pointsPerCycle;
+    uint eventDelay;
 
 };
 

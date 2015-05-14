@@ -919,6 +919,10 @@ void FsmGraphicalTransition::keyPressEvent(QKeyEvent* event)
         shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
         transition->getSource()->removeOutgoingTransition(transition);
     }
+    else
+    {
+        event->ignore();
+    }
 }
 
 void FsmGraphicalTransition::treatMenu(QAction* action)

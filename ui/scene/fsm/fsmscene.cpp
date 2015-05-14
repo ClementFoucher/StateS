@@ -333,32 +333,17 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
             currentTransition = nullptr;
         }
     }
-    if (this->selectedItems().count() == 1)
+    else if ( (event->key() == Qt::Key_Right) ||
+              (event->key() == Qt::Key_Left) ||
+              (event->key() == Qt::Key_Up) ||
+              (event->key() == Qt::Key_Down)
+            )
     {
-        // Handle deletion applying to dynamic transition
-        if (isDrawingTransition || isEditingTransitionSource || isEditingTransitionTarget)
+        if (this->selectedItems().count() > 1)
         {
-            // We have no knowledge of your doings
-            isDrawingTransition = false;
-            isEditingTransitionSource = false;
-            isEditingTransitionTarget = false;
-            currentTransition = nullptr;
+            // Only transmit move orders to states when multiple childs:
+            // Single selected states are not handled here
 
-            // Transmit deletion order
-            GenericScene::keyPressEvent(event);
-        }
-        else
-            GenericScene::keyPressEvent(event);
-    }
-    else
-    {
-        // Only transmit move orders to states when multiple childs
-        if ( (event->key() == Qt::Key_Right) ||
-             (event->key() == Qt::Key_Left) ||
-             (event->key() == Qt::Key_Up) ||
-             (event->key() == Qt::Key_Down)
-           )
-        {
             foreach (QGraphicsItem* item, this->selectedItems())
             {
                 FsmGraphicalState* state = dynamic_cast<FsmGraphicalState*>(item);
@@ -367,6 +352,21 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
                     state->keyPressEvent(event);
             }
         }
+        else if (this->selectedItems().count() == 1)
+        {
+            FsmGraphicalState* state = dynamic_cast<FsmGraphicalState*>(this->selectedItems()[0]);
+
+            if (state != nullptr)
+                state->keyPressEvent(event);
+            else
+                event->ignore();
+        }
+        else
+            event->ignore();
+    }
+    else
+    {
+        event->ignore();
     }
 }
 

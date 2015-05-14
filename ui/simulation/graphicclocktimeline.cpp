@@ -27,7 +27,7 @@
 
 
 GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
-    GraphicTimeLine(false, parent)
+    GraphicTimeLine(2, 0, false, parent)
 {
     connect(clock.get(), &Clock::clockEvent, this, &GraphicClockTimeLine::clockEvent);
     connect(clock.get(), &Clock::resetEvent, this, &GraphicClockTimeLine::resetEvent);

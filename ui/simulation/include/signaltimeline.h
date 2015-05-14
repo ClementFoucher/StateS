@@ -36,6 +36,7 @@ using namespace std;
 class Signal;
 class Clock;
 class GraphicTimeLine;
+class SimulationWidget;
 
 
 class SignalTimeline : public QWidget
@@ -43,18 +44,19 @@ class SignalTimeline : public QWidget
     Q_OBJECT
 
 public:
-    explicit SignalTimeline(shared_ptr<Signal> variable, shared_ptr<Clock> clock, bool dynamic = false, QWidget* parent = nullptr);
+    explicit SignalTimeline(uint delay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic = false, QWidget* parent = nullptr);
 
 private slots:
     void clockEventHandler();
     void prepareClockEventHandler();
     void resetEventHandler();
+    void updateDelayOutputOption(uint delay);
 
 private:
     bool isDynamic;
-    weak_ptr<Signal> variable;
+    weak_ptr<Signal> signal;
 
-    QList<GraphicTimeLine*> variableLineDisplay;
+    QList<GraphicTimeLine*> signalLineDisplay;
 };
 
 #endif // SIGNALTIMELINE_H

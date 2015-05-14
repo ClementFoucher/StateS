@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.3.1 *
+* StateS v. 0.3.2 *
 *******************
 
 This software is intended to be a simple and effective discrete event machines drawer.
@@ -11,30 +11,14 @@ What the software can do for now:
 
 - Draw a FSM,
 - Simulate and verify it,
-- Export it to VHDL,
+- Export it to VHDL (very experimental),
 - Export to PDF.
 
 Qt 5.4 is required to execute this application.
 
 You can test interacting with a machine by loading file "Demo.SfsmS".
 
-This is early stage of the software development.
-Currently, there are NO UNDO when editing machine.
-
-Here is what I plan to support (this list is only thoughts, items will maybe, or maybe not, actually implemented):
-- Ability to save/load timeline, and load stimuli vector,
-- Add machine display customization in order to make it look as you're used to.
-
-And, longer term (even maybe never), but I would love to implement these:
-- Support a coupling interface to send outputs/receive inputs from another software (or more generally, another environment -- hardware?),
-- Export machines using standard save formats (do standard representations exist?).
-
-This list reflects what I have in mind currently about the software I want to build.
-But some of these features may be complex to implement, and I can't guarantee I'll actually do.
-
-What I want most is to keep StateS simple to use on any platform.
-And most of all, I do not want to add UI too much complexity.
-
+*** This is early stage of the software development. ***
 
 If you think you found a bug in StateS, please report it at address https://sourceforge.net/p/states/tickets/
 But please check known_bugs.txt file first.

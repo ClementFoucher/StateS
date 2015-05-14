@@ -38,7 +38,7 @@ class QStackedWidget;
 class Machine;
 class ResourceBar;
 class SceneWidget;
-class SimulationWindow;
+class SimulationWidget;
 
 
 class StatesUi : public QMainWindow
@@ -50,9 +50,6 @@ public:
 
     void setMachine(shared_ptr<Machine> machine);
 
-public slots:
-    void clearMachine();
-
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
@@ -62,6 +59,7 @@ signals:
 
 protected slots:
     void closeEvent(QCloseEvent*) override;
+    void keyPressEvent(QKeyEvent*) override;
 
 private slots:
     void newMachineRequestEventHandler();
@@ -89,7 +87,7 @@ private:
     // Display area
     QStackedWidget*   mainDisplayArea    = nullptr;
     SceneWidget*      machineDisplayArea = nullptr;
-    SimulationWindow* timeline           = nullptr;
+    SimulationWidget* timeline           = nullptr;
 
     // Resource bar
     ResourceBar* resourcesBar = nullptr;

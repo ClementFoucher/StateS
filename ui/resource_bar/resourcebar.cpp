@@ -268,7 +268,7 @@ MachineTools* ResourceBar::getBuildTools() const
         return nullptr;
 }
 
-SimulationWindow* ResourceBar::getTimeline() const
+SimulationWidget* ResourceBar::getTimeline() const
 {
     if (this->simulatorTab != nullptr)
         return this->simulatorTab->getTimeline();

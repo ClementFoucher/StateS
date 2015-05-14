@@ -30,13 +30,19 @@
 #include "signal.h"
 #include "clock.h"
 #include "graphictimeline.h"
+#include "simulationwidget.h"
+#include "output.h"
 
 
-SignalTimeline::SignalTimeline(shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget *simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
     QWidget(parent)
 {
-    this->variable = signal;
-    this->isDynamic = dynamic;
+    // If this parameter is not null, this is only for this connection
+    if (simulationWidget != nullptr)
+        connect(simulationWidget, &SimulationWidget::outputDelayChangedEvent, this, &SignalTimeline::updateDelayOutputOption);
+
+    this->signal      = signal;
+    this->isDynamic   = dynamic;
 
     QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
@@ -45,10 +51,10 @@ SignalTimeline::SignalTimeline(shared_ptr<Signal> signal, shared_ptr<Clock> cloc
 
     if (signal->getSize() == 1)
     {
-        GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(signal->getInitialValue()[0]);
+        GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(4, outputDelay, signal->getInitialValue()[0]);
         timeLineDisplay->setMinimumHeight(20);
         timeLineDisplay->setMaximumHeight(20);
-        variableLineDisplay.append(timeLineDisplay);
+        this->signalLineDisplay.append(timeLineDisplay);
 
         globalLayout->addWidget(timeLineDisplay);
     }
@@ -63,10 +69,10 @@ SignalTimeline::SignalTimeline(shared_ptr<Signal> signal, shared_ptr<Clock> cloc
             QLabel* bitNumber = new QLabel(QString::number(i));
             innerLayout->addWidget(bitNumber);
 
-            GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(signal->getInitialValue()[i]);
+            GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(4, outputDelay, signal->getInitialValue()[i]);
             timeLineDisplay->setMinimumHeight(20);
             timeLineDisplay->setMaximumHeight(20);
-            variableLineDisplay.append(timeLineDisplay);
+            this->signalLineDisplay.append(timeLineDisplay);
             innerLayout->addWidget(timeLineDisplay);
 
             bitsLayout->addLayout(innerLayout);
@@ -86,14 +92,13 @@ SignalTimeline::SignalTimeline(shared_ptr<Signal> signal, shared_ptr<Clock> cloc
 
 void SignalTimeline::clockEventHandler()
 {
-    shared_ptr<Signal> variable = this->variable.lock();
+    shared_ptr<Signal> signal = this->signal.lock();
 
-    if (variable != nullptr)
+    if (signal != nullptr)
     {
-        for (uint i = 0 ; i < variable->getSize() ; i++)
+        for (uint i = 0 ; i < signal->getSize() ; i++)
         {
-            variableLineDisplay[i]->addPointConst();
-            variableLineDisplay[i]->addPoint(variable->getCurrentValue()[i]);
+            this->signalLineDisplay[i]->addPoint(signal->getCurrentValue()[i]);
         }
     }
 }
@@ -101,26 +106,34 @@ void SignalTimeline::clockEventHandler()
 // This is used for input, because state may have changed since previous clock
 void SignalTimeline::prepareClockEventHandler()
 {
-    shared_ptr<Signal> variable = this->variable.lock();
+    shared_ptr<Signal> signal = this->signal.lock();
 
-    if (variable != nullptr)
+    if (signal != nullptr)
     {
-        for (uint i = 0 ; i < variable->getSize() ; i++)
+        for (uint i = 0 ; i < signal->getSize() ; i++)
         {
-            variableLineDisplay[i]->updateLastPoint(variable->getCurrentValue()[i]);
+            this->signalLineDisplay[i]->updateLastPoint(signal->getCurrentValue()[i]);
         }
     }
 }
 
 void SignalTimeline::resetEventHandler()
 {
-    shared_ptr<Signal> variable = this->variable.lock();
+    shared_ptr<Signal> signal = this->signal.lock();
 
-    if (variable != nullptr)
+    if (signal != nullptr)
     {
-        for (uint i = 0 ; i < variable->getSize() ; i++)
+        for (uint i = 0 ; i < signal->getSize() ; i++)
         {
-            variableLineDisplay[i]->reset(variable->getInitialValue()[i]);
+            this->signalLineDisplay[i]->reset(signal->getInitialValue()[i]);
         }
+    }
+}
+
+void SignalTimeline::updateDelayOutputOption(uint delay)
+{
+    foreach (GraphicTimeLine* gtl, this->signalLineDisplay)
+    {
+        gtl->chageEventDelay(delay);
     }
 }

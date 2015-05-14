@@ -39,7 +39,7 @@
 #include "fsm.h"
 #include "fsmtransition.h"
 #include "signal.h"
-#include "simulationwindow.h"
+#include "simulationwidget.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
 #include "fsmsimulator.h"
@@ -69,7 +69,7 @@ SimulatorTab::~SimulatorTab()
     this->triggerSimulationMode(false);
 }
 
-SimulationWindow* SimulatorTab::getTimeline() const
+SimulationWidget* SimulatorTab::getTimeline() const
 {
     return this->timeLine;
 }
@@ -104,9 +104,9 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 optionsLayout->addWidget(this->buttonTriggerView);
                 connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
 
-//                this->checkBoxDelay = new QCheckBox(tr("Add delay from clock rising edge to outputs events on timeline"));
-//                connect(this->checkBoxDelay, &QCheckBox::clicked, this, &SimulatorTab::delayOutputEventOptionTriggered);
-//                optionsLayout->addWidget(this->checkBoxDelay);
+                this->checkBoxDelay = new QCheckBox(tr("Add delay from clock rising edge to outputs events on timeline"));
+                connect(this->checkBoxDelay, &QCheckBox::clicked, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
+                optionsLayout->addWidget(this->checkBoxDelay);
 
                 this->simulationTools->layout()->addWidget(optionsGroup);
 
@@ -118,7 +118,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 QPushButton* buttonReset    = new QPushButton(tr("Reset"));
                 QPushButton* buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
 
-                QHBoxLayout* autoStepLayout = new QHBoxLayout(optionsGroup);
+                QHBoxLayout* autoStepLayout = new QHBoxLayout();
                 QLabel* autoStepBeginText = new QLabel(">> " + tr("Do one step every"));
                 this->autoStepValue = new QLineEdit("1");
                 QLabel* autoStepUnit = new QLabel(tr("second(s)") + " >>");
@@ -158,7 +158,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 this->simulationTools->layout()->addWidget(inputsGroup);
 
-                this->timeLine = new SimulationWindow(machine, this->simulator->getClock());
+                this->timeLine = new SimulationWidget(this, machine, this->simulator->getClock());
                 this->timeLine->show();
 
                 emit beginSimulationEvent();
@@ -189,7 +189,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             delete this->timeLine;
             this->timeLine = nullptr;
 
-            //this->clock.reset();
             this->simulator.reset();
 
             foreach(shared_ptr<FsmState> state, machine->getStates())
@@ -234,9 +233,3 @@ void SimulatorTab::buttonLauchAutoStepClicked()
         this->buttonTriggerAutoStep->setText(tr("Launch"));
     }
 }
-
-/*void SimulatorTab::delayOutputEventOptionTriggered(bool checked)
-{
-
-}
-*/

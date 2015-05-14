@@ -67,7 +67,6 @@ SOURCES += \
     core/machine/machineactuatorcomponent.cpp \
     core/machine/fsm/fsmcomponent.cpp \
     core/basic_type/logicvalue.cpp \
-    ui/simulation/simulationwindow.cpp \
     ui/simulation/signaltimeline.cpp \
     ui/resource_bar/simulator_tab/inputbitselector.cpp \
     ui/resource_bar/simulator_tab/inputsselector.cpp \
@@ -79,7 +78,8 @@ SOURCES += \
     ui/resource_bar/component_editor/conditioneditor.cpp \
     core/machine/fsm/fsmverifier.cpp \
     ui/resource_bar/verifiertab.cpp \
-    core/simulation/fsmsimulator.cpp
+    core/simulation/fsmsimulator.cpp \
+    ui/simulation/simulationwidget.cpp
 
 
 HEADERS  += \
@@ -131,7 +131,6 @@ HEADERS  += \
     core/machine/include/machineactuatorcomponent.h \
     core/machine/fsm/include/fsmcomponent.h \
     core/basic_type/include/logicvalue.h \
-    ui/simulation/include/simulationwindow.h \
     ui/simulation/include/signaltimeline.h \
     ui/resource_bar/simulator_tab/include/inputsignalselector.h \
     ui/resource_bar/simulator_tab/include/inputbitselector.h \
@@ -143,7 +142,8 @@ HEADERS  += \
     ui/resource_bar/component_editor/include/conditioneditor.h \
     core/machine/fsm/include/fsmverifier.h \
     ui/resource_bar/include/verifiertab.h \
-    core/simulation/include/fsmsimulator.h
+    core/simulation/include/fsmsimulator.h \
+    ui/simulation/include/simulationwidget.h
 
 QMAKE_CXXFLAGS += \
     -std=c++11 \
@@ -179,7 +179,8 @@ OTHER_FILES += \
     release_notes.txt \
     core/basic_type/README.txt \
     art/AUTHORS \
-    art/AUTHORS.txt
+    art/AUTHORS.txt \
+    TODO
 
 RESOURCES += \
     art.qrc \
@@ -187,3 +188,4 @@ RESOURCES += \
 
 TRANSLATIONS += \
     translations/français.ts
+

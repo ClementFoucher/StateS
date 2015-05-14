@@ -79,6 +79,13 @@ void FsmSimulator::resetEvent()
 {
     shared_ptr<Fsm> machine = this->machine.lock();
 
+    // First reset signals.
+    // Must be done before states as initial state can activate some.
+    foreach(shared_ptr<Signal> sig, machine->getVariablesSignals())
+    {
+        sig->reinitialize();
+    }
+
     if (machine->getInitialState() != nullptr)
     {
         foreach(shared_ptr<FsmState> state, machine->getStates())
@@ -90,11 +97,6 @@ void FsmSimulator::resetEvent()
         initialState->setActive(true);
 
         this->currentState = initialState;
-    }
-
-    foreach(shared_ptr<Signal> sig, machine->getVariablesSignals())
-    {
-        sig->reinitialize();
     }
 }
 

@@ -36,7 +36,7 @@ class QLineEdit;
 class QCheckBox;
 
 // StateS classes
-class SimulationWindow;
+class SimulationWidget;
 class InputsSelector;
 class FsmSimulator;
 class Fsm;
@@ -50,24 +50,24 @@ public:
     explicit SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
-    SimulationWindow* getTimeline() const;
+    SimulationWidget* getTimeline() const;
 
 signals:
     void beginSimulationEvent();
     void endSimulationEvent();
     void triggerViewRequestEvent();
+    void delayOutputOptionTriggeredEvent(bool activated);
 
 private slots:
     void triggerSimulationMode(bool enabled);
     void buttonTriggerViewClicked();
     void buttonLauchAutoStepClicked();
-//    void delayOutputEventOptionTriggered(bool checked);
 
 private:
     weak_ptr<Fsm> machine;
     unique_ptr<FsmSimulator> simulator;
 
-    SimulationWindow* timeLine = nullptr;
+    SimulationWidget* timeLine = nullptr;
 
     QPushButton* buttonTriggerSimulation = nullptr;
     QPushButton* buttonTriggerView       = nullptr;

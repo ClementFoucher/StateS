@@ -160,7 +160,9 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Delete)
+    {
         askDelete();
+    }
     else if (event->key() == Qt::Key_Menu)
     {
         QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
@@ -174,32 +176,47 @@ void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
 
         this->contextMenuEvent(contextEvent);
     }
-    else if ((event->modifiers() & Qt::ShiftModifier) != 0)
+    else if ( (event->key() == Qt::Key_Right) |
+              (event->key() == Qt::Key_Left) |
+              (event->key() == Qt::Key_Up) |
+              (event->key() == Qt::Key_Down)
+            )
     {
-        // Small moves
-        if (event->key() == Qt::Key_Right)
-            this->setPos(this->pos() + QPointF(1,0));
-        else if (event->key() == Qt::Key_Left)
-            this->setPos(this->pos() + QPointF(-1,0));
-        else if (event->key() == Qt::Key_Up)
-            this->setPos(this->pos() + QPointF(0, -1));
-        else if (event->key() == Qt::Key_Down)
-            this->setPos(this->pos() + QPointF(0, 1));
+        if ((event->modifiers() & Qt::ShiftModifier) != 0)
+        {
+            // Small moves
+            if (event->key() == Qt::Key_Right)
+                this->setPos(this->pos() + QPointF(1,0));
+            else if (event->key() == Qt::Key_Left)
+                this->setPos(this->pos() + QPointF(-1,0));
+            else if (event->key() == Qt::Key_Up)
+                this->setPos(this->pos() + QPointF(0, -1));
+            else if (event->key() == Qt::Key_Down)
+                this->setPos(this->pos() + QPointF(0, 1));
+        }
+        else
+        {
+            if (event->key() == Qt::Key_Right)
+                this->setPos(this->pos() + QPointF(10,0));
+            else if (event->key() == Qt::Key_Left)
+                this->setPos(this->pos() + QPointF(-10,0));
+            else if (event->key() == Qt::Key_Up)
+                this->setPos(this->pos() + QPointF(0, -10));
+            else if (event->key() == Qt::Key_Down)
+                this->setPos(this->pos() + QPointF(0, 10));
+        }
+    }
+    else if (event->key() == Qt::Key_F2)
+    {
+        emit renameStateCalledEvent(this->logicalState.lock());
     }
     else
     {
-        if (event->key() == Qt::Key_Right)
-            this->setPos(this->pos() + QPointF(10,0));
-        else if (event->key() == Qt::Key_Left)
-            this->setPos(this->pos() + QPointF(-10,0));
-        else if (event->key() == Qt::Key_Up)
-            this->setPos(this->pos() + QPointF(0, -10));
-        else if (event->key() == Qt::Key_Down)
-            this->setPos(this->pos() + QPointF(0, 10));
-        else if (event->key() == Qt::Key_F2)
-            emit renameStateCalledEvent(this->logicalState.lock());
+        event->ignore();
     }
 }
+
+
 
 void FsmGraphicalState::treatMenu(QAction* action)
 {

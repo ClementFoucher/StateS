@@ -2,7 +2,8 @@
 * StateS v. 0.3 *
 *****************
 
-- 2015-05-12 - V 0.3.1 - Bug fix: unable to remove actions from states and transitions.
+-            - V 0.3.2 - Output delay from clock event is now facultative. Ctrl-S shortcut support. Better keyboard event handling. Cursor is back on simulaion timeline. Actions on initial state are now activated on reset.
+- 2015-05-12 - V 0.3.1 - Bugfix: Action removal from states and transitions now working.
 - 2015-04-12 - V 0.3   - (Internal) Moved to smart pointers for objects management, except for QWidgets. UI improvements.
 
 *****************

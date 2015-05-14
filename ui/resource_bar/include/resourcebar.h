@@ -40,7 +40,7 @@ class FsmTransition;
 class SimulatorTab;
 class AboutTab;
 class VerifierTab;
-class SimulationWindow;
+class SimulationWidget;
 
 
 class ResourceBar : public QTabWidget
@@ -55,7 +55,7 @@ public:
     ~ResourceBar();
 
     MachineTools* getBuildTools() const;
-    SimulationWindow* getTimeline() const;
+    SimulationWidget* getTimeline() const;
 
     void setMachine(shared_ptr<Machine> newMachine);
 

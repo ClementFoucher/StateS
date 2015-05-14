@@ -32,6 +32,7 @@
 #include <QSplitter>
 #include <QAction>
 #include <QStackedWidget>
+#include <QKeyEvent>
 
 // StateS classes
 #include "states.h"
@@ -41,7 +42,7 @@
 #include "genericscene.h"
 #include "fsmvhdlexport.h"
 #include "vhdlexportoptions.h"
-#include "simulationwindow.h"
+#include "simulationwidget.h"
 
 
 //
@@ -179,11 +180,6 @@ void StatesUi::setMachine(shared_ptr<Machine> machine)
     this->machine = machine;
 }
 
-void StatesUi::clearMachine()
-{
-    this->setMachine(nullptr);
-}
-
 void StatesUi::newMachineRequestEventHandler()
 {
     bool doNew = false;
@@ -209,10 +205,12 @@ void StatesUi::newMachineRequestEventHandler()
     {
         doNew = true;
     }
+
     if (doNew)
     {
         emit newFsmRequestEvent();
         this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
+        this->actionSaveCurrent->setEnabled(false);
     }
 }
 
@@ -255,6 +253,27 @@ void StatesUi::closeEvent(QCloseEvent*)
     // and close such windows (not checked)
     setMachine(nullptr);
 
+}
+
+void StatesUi::keyPressEvent(QKeyEvent* event)
+{
+    if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
+    {
+        if (this->actionSaveCurrent->isEnabled())
+        {
+            machine.lock()->saveMachine(this->getCurrentFileEvent());
+            // Should make button blink for one second.
+            // How to without locking UI?
+        }
+        else
+        {
+            this->saveMachineRequestEventHandler();
+        }
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 void StatesUi::exportPdfRequestEventHandler()
@@ -359,7 +378,7 @@ void StatesUi::simulationToggledEventHandler()
     if (this->timeline != nullptr)
     {
         this->mainDisplayArea->addWidget(this->timeline);
-        connect(this->timeline, &SimulationWindow::detachTimeline, this, &StatesUi::detachTimelineEventHandler);
+        connect(this->timeline, &SimulationWidget::detachTimeline, this, &StatesUi::detachTimelineEventHandler);
     }
 }
 
