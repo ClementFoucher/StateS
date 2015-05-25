@@ -28,6 +28,7 @@
 // StateS classes
 class ResourceBar;
 
+
 class GenericScene : public QGraphicsScene
 {
     Q_OBJECT

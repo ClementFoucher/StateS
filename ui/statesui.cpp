@@ -143,7 +143,7 @@ StatesUi::StatesUi(shared_ptr<Machine> machine) :
     length.append(50);
     splitter->setSizes(length);
 
-    connect(this->resourcesBar, &ResourceBar::simulationToggledEvent, this, &StatesUi::simulationToggledEventHandler);
+    connect(this->resourcesBar, &ResourceBar::simulationToggledEvent,  this, &StatesUi::simulationToggledEventHandler);
     connect(this->resourcesBar, &ResourceBar::triggerViewRequestEvent, this, &StatesUi::triggerViewEventHandler);
 
     this->setMachine(machine);

@@ -45,13 +45,20 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, QWidget* parent)
 
     QString instructions;
 
-    instructions += tr("Use <i>mouse center button</i> to move scene");
+    instructions += tr("Use <i>mouse center button (wheel)</i> to move scene:");
+    instructions += "<br />";
+    instructions += tr("Press and hold wheel for free move,");
+    instructions += "<br />";
+    instructions += tr("Scroll wheel to move vertically,");
+    instructions += "<br />";
+    instructions += tr("Scroll wheel while holding <i>shift</i> to move horizontally.");
     instructions += "<br />";
     instructions += "<br />";
     instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out");
     instructions += "<br />";
     instructions += "<br />";
     instructions += tr("Use <i>right-click</i> to unselect current tool") + "<br />" + tr("or display context menu if no tool selected");
+    instructions += "<br />";
 
     QLabel* instructionsLabel = new QLabel(instructions);
     instructionsLabel->setAlignment(Qt::AlignCenter);

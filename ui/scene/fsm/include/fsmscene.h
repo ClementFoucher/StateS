@@ -85,6 +85,7 @@ private:
     bool isDrawingTransition = false;
     bool isEditingTransitionSource = false;
     bool isEditingTransitionTarget = false;
+    bool isSimulating = false;
     FsmGraphicalTransition * currentTransition = nullptr;
 
     QPointF mousePos;

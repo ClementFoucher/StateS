@@ -205,6 +205,13 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
     this->activateTransition(this->potentialTransitions[i]);
 }
 
+void FsmSimulator::forceStateActivation(shared_ptr<FsmState> stateToActivate)
+{
+    this->currentState.lock()->setActive(false);
+    this->currentState = stateToActivate;
+    stateToActivate->setActive(true);
+}
+
 
 void FsmSimulator::activateTransition(shared_ptr<FsmTransition> transition)
 {

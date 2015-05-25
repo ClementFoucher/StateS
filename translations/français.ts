@@ -89,6 +89,10 @@
         <source>Assign</source>
         <translation>Affecter</translation>
     </message>
+    <message>
+        <source>Active on state</source>
+        <translation>Actif sur état</translation>
+    </message>
 </context>
 <context>
     <name>ClockTimeLine</name>
@@ -138,6 +142,10 @@
     <message>
         <source>No compatible signal!</source>
         <translation>Aucun signal compatible !</translation>
+    </message>
+    <message>
+        <source>Edit condition to view errors</source>
+        <translation>Éditez la condition pour visualiser les erreurs</translation>
     </message>
 </context>
 <context>
@@ -240,6 +248,10 @@
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
+    <message>
+        <source>Set active</source>
+        <translation>Activer</translation>
+    </message>
 </context>
 <context>
     <name>FsmGraphicalTransition</name>
@@ -273,6 +285,21 @@
     <message>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
+    </message>
+</context>
+<context>
+    <name>FsmSimulator</name>
+    <message>
+        <source>Warning! There are multiple active transitions going out the current state!</source>
+        <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
+    </message>
+    <message>
+        <source>This means your FSM is wrong by construction. This should be fixed.</source>
+        <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
+    </message>
+    <message>
+        <source>For current simulation, just choose the target state in the following list:</source>
+        <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
 </context>
 <context>
@@ -372,22 +399,6 @@
         <translation>La nouvelle équation serait :</translation>
     </message>
     <message>
-        <source>st</source>
-        <translation>ère</translation>
-    </message>
-    <message>
-        <source>nd</source>
-        <translation>nd</translation>
-    </message>
-    <message>
-        <source>rd</source>
-        <translation>ème</translation>
-    </message>
-    <message>
-        <source>th</source>
-        <translation>ème</translation>
-    </message>
-    <message>
         <source>Add one operand to that operator</source>
         <translation>Ajouter une opérande à cet opérateur</translation>
     </message>
@@ -420,24 +431,40 @@
         <translation>La nouvelle équation serait :</translation>
     </message>
     <message>
-        <source>Set existing equation as</source>
-        <translation>Définir l&apos;équation existante en tant que</translation>
-    </message>
-    <message>
-        <source>operand of dropped equation</source>
-        <translation>opérande de l&apos;équation déposée</translation>
-    </message>
-    <message>
         <source>Content is:</source>
         <translation>Son contenu est :</translation>
     </message>
     <message>
-        <source>Error: equation size is</source>
-        <translation>Erreur : la taille de l&apos;équiation est</translation>
+        <source>This equation</source>
+        <translation>Cette équation</translation>
     </message>
     <message>
-        <source>while dropped operand size is</source>
-        <translation>alots que la taille de l&apos;éqution déposée est</translation>
+        <source>is size</source>
+        <translation>est de taille</translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation>Signal</translation>
+    </message>
+    <message>
+        <source>Empty operand</source>
+        <translation>Opérande vide</translation>
+    </message>
+    <message>
+        <source>One operand is not correct</source>
+        <translation>Une opérande n&apos;est pas correcte</translation>
+    </message>
+    <message>
+        <source>The sizes of operands does not match between each other</source>
+        <translation>Les opérandes sont de taille différente</translation>
+    </message>
+    <message>
+        <source>Set existing equation as operand of dropped equation</source>
+        <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de l&apos;équation déposée</translation>
+    </message>
+    <message>
+        <source>Delete equation?</source>
+        <translation>Supprimer l&apos;équation ?</translation>
     </message>
 </context>
 <context>
@@ -465,10 +492,6 @@
         <translation>Navigation</translation>
     </message>
     <message>
-        <source>Use &lt;i&gt;mouse center button&lt;/i&gt; to move scene</source>
-        <translation>Utilisez le &lt;i&gt;bouton central de la sours&lt;/i&gt; pour déplacer la vue</translation>
-    </message>
-    <message>
         <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out</source>
         <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
     </message>
@@ -483,6 +506,22 @@
     <message>
         <source>FSM editor</source>
         <translation>Éditeur de FSM</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;mouse center button (wheel)&lt;/i&gt; to move scene:</source>
+        <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
+    </message>
+    <message>
+        <source>Press and hold wheel for free move,</source>
+        <translation>Appuyez et maintenez la molette pour un déplacement libre,</translation>
+    </message>
+    <message>
+        <source>Scroll wheel to move vertically,</source>
+        <translation>Faites tourner la molette pour vous déplacer verticallement,</translation>
+    </message>
+    <message>
+        <source>Scroll wheel while holding &lt;i&gt;shift&lt;/i&gt; to move horizontally.</source>
+        <translation>Faites tourner la molette en maintenant &lt;i&gt;shift&lt;/&gt; pour vous déplacer horizontalement.</translation>
     </message>
 </context>
 <context>
@@ -599,7 +638,11 @@
     </message>
 </context>
 <context>
-    <name>SimulationWindow</name>
+    <name>SimulationWidget</name>
+    <message>
+        <source>StateS timeline visualizer</source>
+        <translation>Visualiseur de chronogramme de StateS</translation>
+    </message>
     <message>
         <source>Tools</source>
         <translation>Outils</translation>
@@ -607,6 +650,10 @@
     <message>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
+    </message>
+    <message>
+        <source>Detach as independant window</source>
+        <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
         <source>Clock</source>
@@ -629,16 +676,8 @@
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <source>Detach as independant window</source>
-        <translation>Détacher en tant que fenêtre indépendante</translation>
-    </message>
-    <message>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
-    </message>
-    <message>
-        <source>StateS timeline visualizer</source>
-        <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
 </context>
 <context>
@@ -668,18 +707,6 @@
         <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
     </message>
     <message>
-        <source>Warning! There are multiple active transitions going out the current state!</source>
-        <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
-    </message>
-    <message>
-        <source>This means your FSM is wrong by construction. This should be fixed.</source>
-        <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
-    </message>
-    <message>
-        <source>For current simulation, just choose the target state in the following list:</source>
-        <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
-    </message>
-    <message>
         <source>Do one step</source>
         <translation>Avancer d&apos;un pas</translation>
     </message>
@@ -706,6 +733,22 @@
     <message>
         <source>Suspend</source>
         <translation>Suspendre</translation>
+    </message>
+    <message>
+        <source>Options</source>
+        <translation>Options</translation>
+    </message>
+    <message>
+        <source>Add delay from clock rising edge to outputs events on timeline</source>
+        <translation>Ajouter un délai entre le front montant de l&apos;horloge et les sorties</translation>
+    </message>
+    <message>
+        <source>Time manager</source>
+        <translation>Gestion du temps</translation>
+    </message>
+    <message>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
     </message>
 </context>
 <context>
@@ -816,6 +859,10 @@
     <message>
         <source>with current machine?</source>
         <translation>avec la machine actuelle ?</translation>
+    </message>
+    <message>
+        <source>Unsaved machine</source>
+        <translation>Machine non enregistrée</translation>
     </message>
 </context>
 <context>

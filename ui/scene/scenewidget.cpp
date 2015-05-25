@@ -91,7 +91,7 @@ void SceneWidget::mousePressEvent(QMouseEvent *me)
 {
     if (me->button() == Qt::LeftButton)
     {
- //       this->setDragMode(QGraphicsView::RubberBandDrag);
+        this->setDragMode(QGraphicsView::RubberBandDrag);
     }
     if (me->button() == Qt::MiddleButton)
     {
@@ -111,12 +111,7 @@ void SceneWidget::mousePressEvent(QMouseEvent *me)
 
 void SceneWidget::mouseReleaseEvent(QMouseEvent *me)
 {
-    if (this->dragMode() == QGraphicsView::RubberBandDrag)
-    {
-        //this->setDragMode(QGraphicsView::NoDrag);
-
-    }
-    else if (this->dragMode() == QGraphicsView::ScrollHandDrag)
+    if (this->dragMode() == QGraphicsView::ScrollHandDrag)
     {
         this->movingScene = false;
         this->setDragMode(QGraphicsView::NoDrag);
@@ -157,6 +152,16 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
         {
             scale(1.0 / scaleFactor, 1.0 / scaleFactor);
         }
+    }
+    else if ( (event->modifiers() & Qt::ShiftModifier) != 0)
+    {
+        QScrollBar *hBar = horizontalScrollBar();
+        hBar->setValue(hBar->value() - event->delta());
+    }
+    else
+    {
+        QScrollBar *vBar = verticalScrollBar();
+        vBar->setValue(vBar->value() - event->delta());
     }
 }
 

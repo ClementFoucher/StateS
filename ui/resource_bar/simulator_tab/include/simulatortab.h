@@ -65,7 +65,7 @@ private slots:
 
 private:
     weak_ptr<Fsm> machine;
-    unique_ptr<FsmSimulator> simulator;
+    shared_ptr<FsmSimulator> simulator;
 
     SimulationWidget* timeLine = nullptr;
 

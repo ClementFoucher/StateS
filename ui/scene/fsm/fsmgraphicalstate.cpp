@@ -144,17 +144,34 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
     menu->addTitle(tr("State") + " <i>" + currentState->getName() + "</i>");
 
-    if (!currentState->isInitial())
-        menu->addAction(tr("Set initial"));
-    menu->addAction(tr("Edit"));
-    menu->addAction(tr("Draw transition from this state"));
-    menu->addAction(tr("Rename"));
-    menu->addAction(tr("Delete"));
+    if (((FsmScene*)this->scene())->getMode() == ResourceBar::mode::editMode )
+    {
+        if (!currentState->isInitial())
+            menu->addAction(tr("Set initial"));
+        menu->addAction(tr("Edit"));
+        menu->addAction(tr("Draw transition from this state"));
+        menu->addAction(tr("Rename"));
+        menu->addAction(tr("Delete"));
+    }
+    else if (((FsmScene*)this->scene())->getMode() == ResourceBar::mode::simulateMode )
+    {
+        if (!this->logicalState.lock()->getIsActive())
+        {
+            menu->addAction(tr("Set active"));
+        }
+    }
 
-    menu->popup(event->screenPos());
+    if (menu->actions().count() > 1) // > 1 because title is always here
+    {
+        menu->popup(event->screenPos());
 
-    connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
-    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+        connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
+        connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+    }
+    else
+    {
+        delete menu;
+    }
 }
 
 void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
@@ -239,6 +256,10 @@ void FsmGraphicalState::treatMenu(QAction* action)
     else if (action->text() == tr("Draw transition from this state"))
     {
         ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
+    }
+    else if (action->text() == tr("Set active"))
+    {
+        this->logicalState.lock()->getOwningFsm()->forceStateActivation(this->logicalState.lock());
     }
 }
 

@@ -205,15 +205,18 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
             else
             {
                 // Display context menu
-                ContextMenu* menu = new ContextMenu();
-                menu->addAction(tr("Add state"));
-                menu->addAction(tr("Add initial state"));
-                menu->popup(me->screenPos());
+                if (!this->isSimulating) // Adding state is not allowed in simulation mode
+                {
+                    ContextMenu* menu = new ContextMenu();
+                    menu->addAction(tr("Add state"));
+                    menu->addAction(tr("Add initial state"));
+                    menu->popup(me->screenPos());
 
-                this->mousePos = me->scenePos();
+                    this->mousePos = me->scenePos();
 
-                connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
-                connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+                    connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
+                    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+                }
             }
             GenericScene::mousePressEvent(me);
         }
@@ -460,6 +463,11 @@ void FsmScene::simulationModeChanged()
     if (resources->getCurrentMode() == ResourceBar::mode::editMode)
     {
         handleSelection();
+        this->isSimulating = false;
+    }
+    else if (resources->getCurrentMode() == ResourceBar::mode::simulateMode)
+    {
+        this->isSimulating = true;
     }
 }
 
@@ -469,7 +477,7 @@ void FsmScene::updateSceneRect()
     // When mouse button release (can be item moved).
     // Not dynamically linked to item moving event,
     // as it caused too much difficulty with asynchonous
-    // events. Mutex did not good as it desynchonized item
+    // events. Mutex did no good as it desynchonized item
     // position and mouse position.
 
 
@@ -495,7 +503,7 @@ void FsmScene::updateSceneRect()
     foreach(QGraphicsItem* item, this->items())
     {
         // Get item's boundig box scene coordinates
-        // Use two point instead of the rect to avoid polygon conversion
+        // Use two points instead of the rect to avoid polygon conversion
         QPointF itemTopLeftF = item->mapToScene(item->boundingRect().topLeft());
         QPoint itemTopLeft = itemTopLeftF.toPoint();
         QPointF itemBottomRightF = item->mapToScene(item->boundingRect().bottomRight());

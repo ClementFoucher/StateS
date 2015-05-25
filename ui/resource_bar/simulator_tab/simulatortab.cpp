@@ -88,7 +88,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 this->buttonTriggerSimulation->setText(tr("End simulation"));
 
-                this->simulator = unique_ptr<FsmSimulator>(new FsmSimulator(machine));
+                this->simulator = shared_ptr<FsmSimulator>(new FsmSimulator(machine));
+                machine->setSimulator(this->simulator);
 
                 this->simulationTools = new QWidget();
                 this->simulationTools->setLayout(new QVBoxLayout());
@@ -189,6 +190,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             delete this->timeLine;
             this->timeLine = nullptr;
 
+            this->machine.lock()->setSimulator(nullptr);
             this->simulator.reset();
 
             foreach(shared_ptr<FsmState> state, machine->getStates())

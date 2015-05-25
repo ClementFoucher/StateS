@@ -54,13 +54,14 @@ public:
     void start(uint period);
     void suspend();
     void targetStateSelectionMadeEventHandler(int i);
+    void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private slots:
     void clockEvent();
     void resetEvent();
 
 private:
-    void activateTransition(shared_ptr<FsmTransition> transition); // Should use smart pointers, but how with signalmapper???
+    void activateTransition(shared_ptr<FsmTransition> transition);
 
     shared_ptr<Clock> clock;
     weak_ptr<Fsm> machine;

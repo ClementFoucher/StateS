@@ -39,6 +39,7 @@ class QString;
 class FsmState;
 class FsmTransition;
 class MachineActuatorComponent;
+class FsmSimulator;
 
 
 class Fsm : public Machine, public enable_shared_from_this<Fsm>
@@ -67,6 +68,9 @@ public:
 
     void clear() override;
 
+    void setSimulator(shared_ptr<FsmSimulator> simulator);
+    void forceStateActivation(shared_ptr<FsmState> stateToActivate);
+
     // This is an overriden slot
     void simulationModeChanged() override;
 
@@ -90,6 +94,7 @@ private:
 
     QList<shared_ptr<FsmState>> states;
     weak_ptr<FsmState> initialState;
+    weak_ptr<FsmSimulator> simulator;
 };
 
 #endif // FSM_H

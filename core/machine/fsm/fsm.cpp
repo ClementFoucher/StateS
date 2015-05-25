@@ -37,6 +37,7 @@
 #include "input.h"
 #include "output.h"
 #include "fsmgraphicalstate.h"
+#include "fsmsimulator.h"
 
 
 Fsm::Fsm()
@@ -115,6 +116,20 @@ void Fsm::clear()
     states.clear();
 
     Machine::clear();
+}
+
+void Fsm::setSimulator(shared_ptr<FsmSimulator> simulator)
+{
+    this->simulator = simulator;
+}
+
+void Fsm::forceStateActivation(shared_ptr<FsmState> stateToActivate)
+{
+    shared_ptr<FsmSimulator> simulator = this->simulator.lock();
+    if (simulator != nullptr)
+    {
+        simulator->forceStateActivation(stateToActivate);
+    }
 }
 
 QString Fsm::getUniqueStateName(QString nameProposal)
