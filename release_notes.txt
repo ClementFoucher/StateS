@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+- (Unreleased)-V 0.3.4 - Added machine visualization.
 - 2015-05-25 - V 0.3.3 - Added rubber band selection; Added ability to force state activation in simulation mode; wheel navigation improvement.
 - 2015-05-14 - V 0.3.2 - Output delay from clock event is now facultative. Ctrl-S shortcut support. Better keyboard event handling. Cursor is back on simulaion timeline. Actions on initial state are now activated on reset.
 - 2015-05-12 - V 0.3.1 - Bugfix: Action removal from states and transitions now working.

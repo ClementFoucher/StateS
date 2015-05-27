@@ -25,17 +25,22 @@
 // Qt classes
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QGraphicsView>
+#include <QGraphicsItem>
 
 // Debug
 #include <QDebug>
 
 // StateS classes
 #include "fsmtools.h"
+#include "machine.h"
 
 
-MachineBuilderTab::MachineBuilderTab(Machine::type machineType, QWidget* parent) :
+MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machine> machine, QWidget* parent) :
     QWidget(parent)
 {
+    this->machine = machine;
+
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setAlignment(Qt::AlignTop);
 
@@ -78,10 +83,34 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, QWidget* parent)
         qDebug() << "(Drawing tool bar:) Error, unknown machine type";
     }
 
+    QLabel* visuTitle = new QLabel("<b>" + tr("Machine visualization") + "</b>");
+    visuTitle ->setAlignment(Qt::AlignCenter);
+    layout->addWidget(visuTitle);
+
+    componentVisualization = new QGraphicsView();
+    componentVisualization->setScene(new QGraphicsScene());
+    this->updateMachineVisualization();
+    layout->addWidget(componentVisualization);
+
+    connect(machine.get(), &Machine::inputListChangedEvent,  this, &MachineBuilderTab::updateMachineVisualization);
+    connect(machine.get(), &Machine::outputListChangedEvent, this, &MachineBuilderTab::updateMachineVisualization);
+
     this->setLayout(layout);
 }
 
 MachineTools* MachineBuilderTab::getBuildTools() const
 {
     return buildTools;
+}
+
+void MachineBuilderTab::updateMachineVisualization()
+{
+    componentVisualization->scene()->clear();
+
+    QGraphicsItem* component = machine.lock()->getComponentVisualization();
+    componentVisualization->scene()->addItem(component);
+
+    /*QRectF bound = componentVisualization->scene()->sceneRect();
+    bound.adjust(0, -10, 0, 10);
+    componentVisualization->scene()->setSceneRect(bound);*/
 }

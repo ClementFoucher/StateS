@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.3.3 *
+* StateS v. 0.3.4 *
 *******************
 
 // The following behaviors are known.
@@ -12,7 +12,7 @@
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
-- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax,
+- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax.
 
 // Not bugs, but still
 

@@ -22,6 +22,9 @@
 // Current class header
 #include "machine.h"
 
+// Qt classes
+#include <QGraphicsItem>
+
 // StateS classes
 #include "input.h"
 #include "output.h"
@@ -133,6 +136,75 @@ bool Machine::isEmpty() const
         return true;
     else
         return false;
+}
+
+QGraphicsItem* Machine::getComponentVisualization()
+{
+    QGraphicsItem* visu = new QGraphicsItemGroup();
+
+    uint componentWidth = 0;
+    uint componentHeigh = 0;
+    uint horizontalSignalsSpace = 50;
+
+    uint inputsXSize = 0;
+    QList<shared_ptr<Input>> inputs = this->getInputs();
+    for(int i = 0 ; i < inputs.count() ; i++)
+    {
+        QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText(), visu);
+        text->setPos(0, 25 + i*20);
+        if (text->boundingRect().width() > inputsXSize)
+            inputsXSize = text->boundingRect().width();
+
+        uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
+        new QGraphicsLineItem(-10, lineHeigh, 0, lineHeigh, visu);
+    }
+    componentWidth += inputsXSize;
+
+    uint outputsXSize = 0;
+    QList<shared_ptr<Output>> outputs = this->getOutputs();
+    QList<QGraphicsTextItem*> graphicsOutputs;
+    for(int i = 0 ; i < outputs.count() ; i++)
+    {
+        QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText(), visu);
+        text->setPos(inputsXSize + 50, 25 + i*20);
+        if (text->boundingRect().width() > outputsXSize)
+            outputsXSize = text->boundingRect().width();
+
+        graphicsOutputs.append(text);
+    }
+    componentWidth += horizontalSignalsSpace + outputsXSize;
+
+    foreach(QGraphicsTextItem* text, graphicsOutputs)
+    {
+        text->setX(componentWidth - text->boundingRect().width());
+
+        uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
+        new QGraphicsLineItem(componentWidth, lineHeigh, componentWidth + 10, lineHeigh, visu);
+    }
+
+    uint maxSignalsCount = max(this->inputs.count(), this->outputs.count());
+
+    QGraphicsTextItem* title = new QGraphicsTextItem(visu);
+    title->setHtml("<b>" + tr("Machine") + "</b>");
+
+    if (componentWidth <= title->boundingRect().width() + horizontalSignalsSpace)
+    {
+        componentWidth = title->boundingRect().width() + horizontalSignalsSpace;
+    }
+
+    title->setPos((componentWidth-title->boundingRect().width())/2, 5);
+
+    componentHeigh = 40 + 20*maxSignalsCount;
+
+    QPolygonF borderPolygon;
+    borderPolygon.append(QPoint(0,              0));
+    borderPolygon.append(QPoint(componentWidth, 0));
+    borderPolygon.append(QPoint(componentWidth, componentHeigh));
+    borderPolygon.append(QPoint(0,              componentHeigh));
+
+    new QGraphicsPolygonItem(borderPolygon, visu);
+
+    return visu;
 }
 
 shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)

@@ -25,6 +25,9 @@
 // Parent
 #include <QWidget>
 
+// Qt classes
+class QGraphicsView;
+
 // To access enums
 #include "machine.h"
 
@@ -37,12 +40,17 @@ class MachineBuilderTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit MachineBuilderTab(Machine::type machineType, QWidget* parent = nullptr);
+    explicit MachineBuilderTab(Machine::type machineType, shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
     MachineTools* getBuildTools() const;
 
+private slots:
+    void updateMachineVisualization();
+
 private:
+    weak_ptr<Machine> machine;
     MachineTools* buildTools = nullptr;
+    QGraphicsView* componentVisualization = nullptr;
 };
 
 #endif // MACHINEBUILDERTAB_H

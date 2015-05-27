@@ -145,7 +145,7 @@ HEADERS  += \
     core/simulation/include/fsmsimulator.h \
     ui/simulation/include/simulationwidget.h
 
-QMAKE_CXXFLAGS += \
+unix:QMAKE_CXXFLAGS += \
     -std=c++11 \
     -pedantic
 

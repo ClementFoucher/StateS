@@ -32,6 +32,7 @@ using namespace std;
 // Qt classes
 #include <QList>
 #include <QHash>
+class QGraphicsItem;
 
 // StateS basic types
 #include "logicvalue.h"
@@ -75,6 +76,8 @@ public:
 
     virtual void clear();
     virtual bool isEmpty() const;
+
+    QGraphicsItem* getComponentVisualization();
 
 public slots:
     shared_ptr<Signal> addSignal(signal_type type, const QString& name);

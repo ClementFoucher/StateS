@@ -99,7 +99,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     // Build
     if (newMachine != nullptr)
     {
-        this->toolResources      = new MachineBuilderTab(newMachine->getType());
+        this->toolResources      = new MachineBuilderTab(newMachine->getType(), newMachine);
         this->interfaceResources = new SignalEditorTab(newMachine);
         this->simulatorTab       = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
         this->verifierTab        = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
