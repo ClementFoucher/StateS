@@ -41,6 +41,7 @@ class SimulatorTab;
 class AboutTab;
 class VerifierTab;
 class SimulationWidget;
+class QGraphicsScene;
 
 
 class ResourceBar : public QTabWidget
@@ -63,6 +64,8 @@ public:
 
     void selectedState(shared_ptr<FsmState> state, bool showTab = false, bool editName = false);
     void selectedTransition(shared_ptr<FsmTransition> transition, bool showTab = false);
+
+    QGraphicsScene* getComponentVisualizationScene();
 
 public slots:
     void clearSelection();

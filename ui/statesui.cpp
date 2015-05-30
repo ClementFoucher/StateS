@@ -33,6 +33,9 @@
 #include <QAction>
 #include <QStackedWidget>
 #include <QKeyEvent>
+#include <QGraphicsItem>
+#include <QSvgGenerator>
+#include <QPixmap>
 
 // StateS classes
 #include "states.h"
@@ -43,6 +46,7 @@
 #include "fsmvhdlexport.h"
 #include "vhdlexportoptions.h"
 #include "simulationwidget.h"
+#include "imageexportoptions.h"
 
 
 //
@@ -113,12 +117,12 @@ StatesUi::StatesUi(shared_ptr<Machine> machine) :
 
     mainToolBar->addSeparator();
 
-    this->actionExportPdf = new QAction(this);
-    this->actionExportPdf->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF"))));
-    this->actionExportPdf->setText(tr("Export to PDF"));
-    this->actionExportPdf->setToolTip(tr("Export machine to PDF file"));
-    connect(this->actionExportPdf, &QAction::triggered, this, &StatesUi::exportPdfRequestEventHandler);
-    mainToolBar->addAction(this->actionExportPdf);
+    this->actionExportImage = new QAction(this);
+    this->actionExportImage->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_image"))));
+    this->actionExportImage->setText(tr("Export to image file"));
+    this->actionExportImage->setToolTip(tr("Export machine to an image file"));
+    connect(this->actionExportImage, &QAction::triggered, this, &StatesUi::exportImageRequestEventHandler);
+    mainToolBar->addAction(this->actionExportImage);
 
     this->actionExportVhdl = new QAction(this);
     this->actionExportVhdl->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
@@ -164,14 +168,14 @@ void StatesUi::setMachine(shared_ptr<Machine> machine)
 
     if (machine != nullptr)
     {
-        this->actionExportPdf->setEnabled(true);
+        this->actionExportImage->setEnabled(true);
         this->actionExportVhdl->setEnabled(true);
         this->actionSave->setEnabled(true);
         this->actionClear->setEnabled(true);
     }
     else
     {
-        this->actionExportPdf->setEnabled(false);
+        this->actionExportImage->setEnabled(false);
         this->actionExportVhdl->setEnabled(false);
         this->actionSave->setEnabled(false);
         this->actionClear->setEnabled(true);
@@ -276,26 +280,148 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
     }
 }
 
-void StatesUi::exportPdfRequestEventHandler()
+void StatesUi::exportImageRequestEventHandler()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export machine to PDF"), QString(), "*.pdf");
+    unique_ptr<ImageExportOptions> exportOptions(new ImageExportOptions());
+    exportOptions->setModal(true);
 
-    if (!fileName.isEmpty())
+    exportOptions->exec();
+
+    if (exportOptions->result() == QDialog::Accepted)
     {
-        if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
-            fileName += ".pdf";
+        ImageExportOptions::imageFormat selectedFormat = exportOptions->getImageFormat();
 
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName(fileName);
-        printer.setPageSize(QPrinter::A4);
-        printer.setPageOrientation(QPageLayout::Landscape);
+        QString fileName;
+        unique_ptr<QPainter> painter = nullptr;
+        unique_ptr<QPrinter> printer = nullptr;
+        unique_ptr<QSvgGenerator> generator = nullptr;
+        unique_ptr<QPixmap> pixmap = nullptr;
 
-        QPainter painter(&printer);
+        if (selectedFormat == ImageExportOptions::imageFormat::pdf)
+        {
+            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Pdf"), QString(), "*.pdf");
 
-        QGraphicsScene* scene = this->machineDisplayArea->scene();
-        scene->clearSelection();
-        scene->render(&painter);
+            if (!fileName.isEmpty())
+            {
+                if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+                    fileName += ".pdf";
+
+                printer = unique_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
+                printer->setOutputFormat(QPrinter::PdfFormat);
+                printer->setOutputFileName(fileName);
+                printer->setPageSize(QPrinter::A4);
+                printer->setPageOrientation(QPageLayout::Landscape);
+
+                painter = unique_ptr<QPainter>(new QPainter());
+
+                painter->begin(printer.get());
+
+
+            }
+        }
+        else if (selectedFormat == ImageExportOptions::imageFormat::svg)
+        {
+            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Svg"), QString(), "*.svg");
+
+            if (!fileName.isEmpty())
+            {
+                if (!fileName.endsWith(".svg", Qt::CaseInsensitive))
+                    fileName += ".svg";
+
+                generator = unique_ptr<QSvgGenerator>(new QSvgGenerator());
+
+                generator->setFileName(fileName);
+                QRectF size = this->machineDisplayArea->scene()->sceneRect();
+                generator->setSize(size.size().toSize());
+                generator->setTitle(tr("Machine"));
+                generator->setDescription(tr("Created with") + " StateS v." + StateS::getVersion());
+
+                painter = unique_ptr<QPainter>(new QPainter());
+
+                painter->begin(generator.get());
+
+            }
+        }
+        else if (selectedFormat == ImageExportOptions::imageFormat::png)
+        {
+            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Png"), QString(), "*.png");
+
+            if (!fileName.isEmpty())
+            {
+                if (!fileName.endsWith(".png", Qt::CaseInsensitive))
+                    fileName += ".png";
+
+                QRectF size = this->machineDisplayArea->scene()->sceneRect();
+                pixmap = unique_ptr<QPixmap>(new QPixmap(size.width(), size.height()));
+                pixmap->fill();
+
+                painter = unique_ptr<QPainter>(new QPainter());
+
+                painter->begin(pixmap.get());
+
+                painter->setRenderHint(QPainter::Antialiasing);
+            }
+        }
+        else if (selectedFormat == ImageExportOptions::imageFormat::jpg)
+        {
+            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), QString(), "*.jpg");
+
+            if (!fileName.isEmpty())
+            {
+                if (!fileName.endsWith(".jpg", Qt::CaseInsensitive))
+                    fileName += ".jpg";
+
+                QRectF size = this->machineDisplayArea->scene()->sceneRect();
+                pixmap = unique_ptr<QPixmap>(new QPixmap(size.width(), size.height()));
+                pixmap->fill();
+
+                painter = unique_ptr<QPainter>(new QPainter());
+
+                painter->begin(pixmap.get());
+
+                painter->setRenderHint(QPainter::Antialiasing);
+            }
+        }
+
+
+
+        if (painter != nullptr)
+        {
+            QGraphicsScene* scene = this->machineDisplayArea->scene();
+            scene->clearSelection();
+            scene->render(painter.get());
+
+            if (exportOptions->includeComponent() == true)
+            {
+                QRectF totalSceneSize = scene->sceneRect();
+
+                scene = resourcesBar->getComponentVisualizationScene();
+                QRectF componentSize;
+
+                if (selectedFormat == ImageExportOptions::imageFormat::pdf)
+                {
+                    componentSize.setWidth(3000);
+                    componentSize.setHeight(2000);
+                    componentSize.translate(50,50);
+                }
+                else
+                {
+                    // Make component a size of 1/5th the machine
+                    componentSize.setWidth(totalSceneSize.width()/5);
+                    componentSize.setHeight(totalSceneSize.height()/5);
+                    componentSize.translate(50,50);
+                }
+
+                scene->render(painter.get(), componentSize);
+            }
+
+            painter->end();
+        }
+
+        if (pixmap != nullptr)
+        {
+            pixmap->save(fileName);
+        }
     }
 }
 

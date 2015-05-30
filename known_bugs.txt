@@ -10,11 +10,13 @@
 - Begin/end simulation: color update is not complete,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
+
+// VHDL export issues
+
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
 - Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax.
 
 // Not bugs, but still
 
-- Transition selection for straight lines is only done by clicking exactly on the line, so very difficult to catch,
-- Should allow cancel renaming/adding signals while editing not validated.
+- Straight line transitions selection is only done by clicking exactly on the line, so very difficult to catch,

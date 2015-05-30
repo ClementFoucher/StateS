@@ -19,42 +19,33 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINEBUILDERTAB_H
-#define MACHINEBUILDERTAB_H
+#ifndef IMAGEEXPORTOPTIONS_H
+#define IMAGEEXPORTOPTIONS_H
 
 // Parent
-#include <QWidget>
+#include <QDialog>
 
 // Qt classes
-class QGraphicsView;
-class QGraphicsScene;
-
-// To access enums
-#include "machine.h"
-
-// StateS classes
-class MachineTools;
+class QComboBox;
+class QCheckBox;
 
 
-class MachineBuilderTab : public QWidget
+class ImageExportOptions : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MachineBuilderTab(Machine::type machineType, shared_ptr<Machine> machine, QWidget* parent = nullptr);
+    enum class imageFormat{pdf, svg, png, jpg};
 
-    MachineTools* getBuildTools() const;
+public:
+    explicit ImageExportOptions(QWidget* parent = nullptr);
 
-    QGraphicsScene* getComponentVisualizationScene();
-
-private slots:
-    void updateMachineVisualization();
+    bool includeComponent();
+    imageFormat getImageFormat();
 
 private:
-    weak_ptr<Machine> machine;
-    MachineTools* buildTools = nullptr;
-    QGraphicsView* componentVisualization = nullptr;
+    QComboBox* imageFormatSelectionBox = nullptr;
+    QCheckBox* includeComponentCheckBox = nullptr;
 };
 
-#endif // MACHINEBUILDERTAB_H
-
+#endif // IMAGEEXPORTOPTIONS_H

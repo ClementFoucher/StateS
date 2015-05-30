@@ -20,36 +20,37 @@
  */
 
 // Current class header
-#include "vhdlexportoptions.h"
+#include "imageexportoptions.h"
 
 // Qt classes
 #include <QFormLayout>
 #include <QLabel>
-#include <QComboBox>
+#include <QCheckBox>
 #include <QPushButton>
+#include <QComboBox>
 
 
-VhdlExportOptions::VhdlExportOptions(QWidget *parent) :
+ImageExportOptions::ImageExportOptions(QWidget *parent) :
     QDialog(parent)
 {
     QVBoxLayout* layout = new QVBoxLayout(this);
 
-    QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
+    QLabel* title = new QLabel("<b>" + tr("Choose image options:") + "</b>");
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
     QFormLayout* formLayout = new QFormLayout();
     layout->addLayout(formLayout);
 
-    this->resetLogicSelectionBox = new QComboBox();
-    this->resetLogicSelectionBox->addItem(tr("Positive"));
-    this->resetLogicSelectionBox->addItem(tr("Negative"));
-    formLayout->addRow(tr("Reset logic:"), this->resetLogicSelectionBox);
+    this->imageFormatSelectionBox = new QComboBox();
+    this->imageFormatSelectionBox->addItem("Pdf");
+    this->imageFormatSelectionBox->addItem("Svg");
+    this->imageFormatSelectionBox->addItem("Png");
+    this->imageFormatSelectionBox->addItem("Jpeg");
+    formLayout->addRow(tr("Image format:"), this->imageFormatSelectionBox);
 
-    this->addPrefixSelectionBox = new QComboBox();
-    this->addPrefixSelectionBox->addItem(tr("No"));
-    this->addPrefixSelectionBox->addItem(tr("Yes"));
-    formLayout->addRow(tr("Prefix inputs and outputs with 'I_' and 'O_' respectively:"), this->addPrefixSelectionBox);
+    this->includeComponentCheckBox = new QCheckBox();
+    formLayout->addRow(tr("Include component external view:"), this->includeComponentCheckBox);
 
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     layout->addLayout(buttonsLayout);
@@ -63,20 +64,20 @@ VhdlExportOptions::VhdlExportOptions(QWidget *parent) :
     buttonsLayout->addWidget(buttonCancel);
 }
 
-bool VhdlExportOptions::isResetPositive()
+bool ImageExportOptions::includeComponent()
 {
-    if (this->resetLogicSelectionBox->currentIndex() == 0)
-        return true;
-    else
-        return false;
+    return this->includeComponentCheckBox->isChecked();
 }
 
-bool VhdlExportOptions::prefixIOs()
+ImageExportOptions::imageFormat ImageExportOptions::getImageFormat()
 {
-    if (this->addPrefixSelectionBox->currentIndex() == 0)
-        return false;
-    else
-        return true;
+    if (this->imageFormatSelectionBox->currentText() == "Pdf")
+        return ImageExportOptions::imageFormat::pdf;
+    else if (this->imageFormatSelectionBox->currentText() == "Svg")
+        return ImageExportOptions::imageFormat::svg;
+    else if (this->imageFormatSelectionBox->currentText() == "Png")
+        return ImageExportOptions::imageFormat::png;
+    else // if (this->imageFormatSelectionBox->currentText() == "Jpeg")
+        return ImageExportOptions::imageFormat::jpg;
 }
-
 

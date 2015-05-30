@@ -64,7 +64,7 @@ protected slots:
 private slots:
     void newMachineRequestEventHandler();
     void clearMachineRequestEventHandler();
-    void exportPdfRequestEventHandler();
+    void exportImageRequestEventHandler();
     void exportVhdlRequestEventHandler();
     void saveMachineRequestEventHandler();
     void loadMachineRequestEventHandler();
@@ -81,7 +81,7 @@ private:
     QAction* actionLoad        = nullptr;
     QAction* actionNewFsm      = nullptr;
     QAction* actionClear       = nullptr;
-    QAction* actionExportPdf   = nullptr;
+    QAction* actionExportImage = nullptr;
     QAction* actionExportVhdl  = nullptr;
 
     // Display area

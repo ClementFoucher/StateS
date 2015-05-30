@@ -216,6 +216,11 @@ void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool 
     }
 }
 
+QGraphicsScene* ResourceBar::getComponentVisualizationScene()
+{
+    return toolResources->getComponentVisualizationScene();
+}
+
 void ResourceBar::clearSelection()
 {
     uint currentTab = this->currentIndex();

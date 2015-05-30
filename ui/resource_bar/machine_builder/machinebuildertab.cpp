@@ -103,6 +103,11 @@ MachineTools* MachineBuilderTab::getBuildTools() const
     return buildTools;
 }
 
+QGraphicsScene* MachineBuilderTab::getComponentVisualizationScene()
+{
+    return this->componentVisualization->scene();
+}
+
 void MachineBuilderTab::updateMachineVisualization()
 {
     componentVisualization->scene()->clear();

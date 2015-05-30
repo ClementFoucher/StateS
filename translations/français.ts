@@ -468,6 +468,29 @@
     </message>
 </context>
 <context>
+    <name>ImageExportOptions</name>
+    <message>
+        <source>Choose image options:</source>
+        <translation>Sélectionnez les options de l&apos;image :</translation>
+    </message>
+    <message>
+        <source>Image format:</source>
+        <translation>Format de l&apos;image :</translation>
+    </message>
+    <message>
+        <source>Include component external view:</source>
+        <translation>Inclure la vue externe du compoant :</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+</context>
+<context>
     <name>InputBitSelector</name>
     <message>
         <source>Bit</source>
@@ -483,6 +506,13 @@
     <message>
         <source>Choose your language</source>
         <translation>Sélectionnez votre langue</translation>
+    </message>
+</context>
+<context>
+    <name>Machine</name>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
     </message>
 </context>
 <context>
@@ -522,6 +552,10 @@
     <message>
         <source>Scroll wheel while holding &lt;i&gt;shift&lt;/i&gt; to move horizontally.</source>
         <translation>Faites tourner la molette en maintenant &lt;i&gt;shift&lt;/&gt; pour vous déplacer horizontalement.</translation>
+    </message>
+    <message>
+        <source>Machine visualization</source>
+        <translation>Visualisation de la machine</translation>
     </message>
 </context>
 <context>
@@ -798,7 +832,7 @@
     </message>
     <message>
         <source>Export machine to PDF file</source>
-        <translation>Exporter la machine au format PDF</translation>
+        <translation type="vanished">Exporter la machine au format PDF</translation>
     </message>
     <message>
         <source>User confirmation needed</source>
@@ -814,7 +848,7 @@
     </message>
     <message>
         <source>Export machine to PDF</source>
-        <translation>Exporter la machine en PDF</translation>
+        <translation type="vanished">Exporter la machine en PDF</translation>
     </message>
     <message>
         <source>Overwrite current machine?</source>
@@ -822,7 +856,7 @@
     </message>
     <message>
         <source>Export to PDF</source>
-        <translation>Exporter en PDF</translation>
+        <translation type="vanished">Exporter en PDF</translation>
     </message>
     <message>
         <source>Export to VHDL</source>
@@ -863,6 +897,38 @@
     <message>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
+    </message>
+    <message>
+        <source>Export to image file</source>
+        <translation>Exporter vers un fichier image</translation>
+    </message>
+    <message>
+        <source>Export machine to an image file</source>
+        <translation>Exporter la machine vers un fichier image</translation>
+    </message>
+    <message>
+        <source>Export machine to Pdf</source>
+        <translation>Exporter la machine en Pdf</translation>
+    </message>
+    <message>
+        <source>Export machine to Svg</source>
+        <translation>Exporter la machine en Svg</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
+    </message>
+    <message>
+        <source>Created with</source>
+        <translation>Créé avec</translation>
+    </message>
+    <message>
+        <source>Export machine to Png</source>
+        <translation>Exporter la machine en Png</translation>
+    </message>
+    <message>
+        <source>Export machine to Jpeg</source>
+        <translation>Exporter la machine en Jpeg</translation>
     </message>
 </context>
 <context>
