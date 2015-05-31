@@ -29,17 +29,17 @@
 GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     GraphicTimeLine(2, 0, false, parent)
 {
-    connect(clock.get(), &Clock::clockEvent, this, &GraphicClockTimeLine::clockEvent);
-    connect(clock.get(), &Clock::resetEvent, this, &GraphicClockTimeLine::resetEvent);
+    connect(clock.get(), &Clock::clockEvent, this, &GraphicClockTimeLine::clockEventHandler);
+    connect(clock.get(), &Clock::resetEvent, this, &GraphicClockTimeLine::resetEventHandler);
 }
 
-void GraphicClockTimeLine::clockEvent()
+void GraphicClockTimeLine::clockEventHandler()
 {
     this->addPoint(true);
     this->addPoint(false);
 }
 
-void GraphicClockTimeLine::resetEvent()
+void GraphicClockTimeLine::resetEventHandler()
 {
     this->reset(false);
 }

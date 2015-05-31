@@ -44,7 +44,7 @@ QPixmap StateS::getPixmapFromSvg(const QString& path)
 
 QString StateS::getVersion()
 {
-    return "0.3.4";
+    return "0.3.5";
 }
 
 StateS::StateS()
@@ -63,42 +63,42 @@ void StateS::run()
     this->machine = shared_ptr<Fsm>(new Fsm());
     this->statesUi = unique_ptr<StatesUi>(new StatesUi(this->machine));
 
-    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,       this, &StateS::newFsmRequestedEventHandler);
-    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent, this, &StateS::clearMachineEventHandler);
-    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,  this, &StateS::loadMachineEventHandler);
-    connect(this->statesUi.get(), &StatesUi::getCurrentFileEvent,      this, &StateS::getCurrentFileEventHandler);
-    connect(this->statesUi.get(), &StatesUi::machineSavedEvent,        this, &StateS::machineSavedEventHandler);
+    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,       this, &StateS::generateNewFsm);
+    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent, this, &StateS::clearMachine);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,  this, &StateS::loadMachine);
+    connect(this->statesUi.get(), &StatesUi::getCurrentFileEvent,      this, &StateS::getCurrentFile);
+    connect(this->statesUi.get(), &StatesUi::machineSavedEvent,        this, &StateS::updateSaveFilePath);
 
     statesUi->show();
 }
 
-void StateS::newFsmRequestedEventHandler()
+void StateS::generateNewFsm()
 {
     this->machine = shared_ptr<Fsm>(new Fsm());
     this->statesUi->setMachine(this->machine);
     this->currentFile.clear();
 }
 
-void StateS::clearMachineEventHandler()
+void StateS::clearMachine()
 {
     this->statesUi->setMachine(nullptr);
     this->currentFile.clear();
     this->machine.reset();
 }
 
-void StateS::loadMachineEventHandler(const QString& path)
+void StateS::loadMachine(const QString& path)
 {
-    this->newFsmRequestedEventHandler();
+    this->generateNewFsm();
     this->currentFile = path;
     dynamic_pointer_cast<Fsm>(this->machine)->loadFromFile(path);
 }
 
-void StateS::machineSavedEventHandler(const QString &path)
+void StateS::updateSaveFilePath(const QString &path)
 {
     this->currentFile = path;
 }
 
-QString StateS::getCurrentFileEventHandler()
+QString StateS::getCurrentFile()
 {
     return this->currentFile;
 }

@@ -41,8 +41,8 @@ public:
     explicit GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 private slots:
-    void clockEvent();
-    void resetEvent();
+    void clockEventHandler();
+    void resetEventHandler();
 };
 
 #endif // GRAPHICCLOCKTIMELINE_H

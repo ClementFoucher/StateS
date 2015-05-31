@@ -504,7 +504,7 @@ void StatesUi::simulationToggledEventHandler()
     if (this->timeline != nullptr)
     {
         this->mainDisplayArea->addWidget(this->timeline);
-        connect(this->timeline, &SimulationWidget::detachTimeline, this, &StatesUi::detachTimelineEventHandler);
+        connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &StatesUi::detachTimelineEventHandler);
     }
 }
 

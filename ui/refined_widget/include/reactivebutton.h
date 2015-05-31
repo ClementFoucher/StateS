@@ -38,7 +38,7 @@ signals:
     void mouseEnterEvent();
     void mouseLeaveEvent();
 
-protected slots:
+protected:
     void enterEvent(QEvent*) override;
     void leaveEvent(QEvent*) override;
 

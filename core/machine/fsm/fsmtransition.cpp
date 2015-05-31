@@ -126,7 +126,7 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
     emit conditionChangedEvent();
 }
 
-void FsmTransition::clearConditionEventHandler(shared_ptr<Signal>)
+void FsmTransition::clearCondition()
 {
     setCondition(nullptr);
 }

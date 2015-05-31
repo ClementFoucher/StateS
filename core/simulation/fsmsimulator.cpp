@@ -42,8 +42,8 @@ FsmSimulator::FsmSimulator(shared_ptr<Fsm> machine) :
     QObject()
 {
     this->clock = shared_ptr<Clock>(new Clock());
-    connect(this->clock.get(), &Clock::clockEvent, this, &FsmSimulator::clockEvent);
-    connect(this->clock.get(), &Clock::resetEvent, this, &FsmSimulator::resetEvent);
+    connect(this->clock.get(), &Clock::clockEvent, this, &FsmSimulator::clockEventHandler);
+    connect(this->clock.get(), &Clock::resetEvent, this, &FsmSimulator::resetEventHandler);
 
     this->machine = machine;
 
@@ -75,7 +75,7 @@ void FsmSimulator::suspend()
     this->clock->stop();
 }
 
-void FsmSimulator::resetEvent()
+void FsmSimulator::resetEventHandler()
 {
     shared_ptr<Fsm> machine = this->machine.lock();
 
@@ -100,7 +100,7 @@ void FsmSimulator::resetEvent()
     }
 }
 
-void FsmSimulator::clockEvent()
+void FsmSimulator::clockEventHandler()
 {
     shared_ptr<FsmState> currentState = this->currentState.lock();
     shared_ptr<FsmTransition> latestTransitionCrossed = this->latestTransitionCrossed.lock();
@@ -115,7 +115,8 @@ void FsmSimulator::clockEvent()
 
             if (signal != nullptr)
             {
-                if (currentState->getActionType(signal) == MachineActuatorComponent::action_types::pulse)
+                MachineActuatorComponent::action_types temp = latestTransitionCrossed->getActionType(signal);
+                if (temp == MachineActuatorComponent::action_types::pulse)
                     signal->resetValue();
             }
         }

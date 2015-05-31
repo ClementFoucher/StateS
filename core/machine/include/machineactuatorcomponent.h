@@ -71,11 +71,11 @@ public:
 
     uint getAllowedActionTypes() const;
 
-signals:
-    void actionListChangedEvent();
-
 public slots:
     void removeAction(shared_ptr<Signal> signal);
+
+signals:
+    void actionListChangedEvent();
 
 protected:
     void setAllowedActionTypes(uint flags);

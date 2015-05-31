@@ -41,7 +41,7 @@ public:
 signals:
     void newTextAvailableEvent(const QString& text);
 
-protected slots:
+protected:
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
 

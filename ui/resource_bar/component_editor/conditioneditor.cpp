@@ -232,7 +232,7 @@ void ConditionEditor::editCondition()
 
 void ConditionEditor::clearCondition()
 {
-    this->transition.lock()->clearConditionEventHandler();
+    this->transition.lock()->clearCondition();
 }
 
 void ConditionEditor::treatMenuSetCondition(QAction* action)

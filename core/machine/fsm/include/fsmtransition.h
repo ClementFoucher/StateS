@@ -60,8 +60,7 @@ public:
     shared_ptr<Signal> getCondition() const;
     void setCondition(shared_ptr<Signal> signalNewCondition);
 
-public slots:
-    void clearConditionEventHandler(shared_ptr<Signal> = nullptr);
+    void clearCondition();
 
 signals:
     void conditionChangedEvent();

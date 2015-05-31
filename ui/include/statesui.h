@@ -57,7 +57,7 @@ signals:
     void machineSavedEvent(const QString& path);
     QString getCurrentFileEvent();
 
-protected slots:
+protected:
     void closeEvent(QCloseEvent*) override;
     void keyPressEvent(QKeyEvent*) override;
 

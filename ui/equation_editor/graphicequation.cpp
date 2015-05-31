@@ -355,7 +355,7 @@ void GraphicEquation::enterEvent(QEvent*)
     GraphicEquation* parentEquation = this->parentEquation();
 
     if (parentEquation != nullptr)
-        parentEquation->enterChildrenEvent();
+        parentEquation->enterChildrenEventHandler();
 
     this->setHilightedBorderColor();
 }
@@ -367,7 +367,7 @@ void GraphicEquation::leaveEvent(QEvent*)
     GraphicEquation* parentEquation = this->parentEquation();
 
     if (parentEquation != nullptr)
-        parentEquation->leaveChildren();
+        parentEquation->leaveChildrenEventHandler();
 
     this->setDefaultBorderColor();
 }
@@ -469,13 +469,13 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
-void GraphicEquation::enterChildrenEvent()
+void GraphicEquation::enterChildrenEventHandler()
 {
     this->setDefaultBorderColor();
 }
 
 
-void GraphicEquation::leaveChildren()
+void GraphicEquation::leaveChildrenEventHandler()
 {
     this->setHilightedBorderColor();
 }

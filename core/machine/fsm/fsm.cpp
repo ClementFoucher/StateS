@@ -93,15 +93,6 @@ bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
     }
 }
 
-void Fsm::simulationModeChanged()
-{
-    // Check if useful, may be placed elsewere
-    foreach (shared_ptr<Signal> var, getReadableSignals())
-    {
-        emit var->signalDynamicStateChangedEvent();
-    }
-}
-
 bool Fsm::isEmpty() const
 {
     if (Machine::isEmpty() && this->states.isEmpty())

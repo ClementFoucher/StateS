@@ -48,21 +48,19 @@ public:
     explicit SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 signals:
-    void detachTimeline(bool detach);
+    void detachTimelineEvent(bool detach);
     void outputDelayChangedEvent(uint newDelay);
 
-protected slots:
+protected:
     void mousePressEvent(QMouseEvent*) override;
     void mouseMoveEvent(QMouseEvent*) override;
+    void paintEvent(QPaintEvent*) override;
 
 private slots:
     void exportToPDF();
     void setMeFree();
     void bindMe();
     void delayOutputOptionTriggered(bool activated);
-
-protected:
-    void paintEvent(QPaintEvent*) override;
 
 private:
     weak_ptr<Machine> machine;

@@ -96,7 +96,7 @@ signals:
     void dynamicSourceCalledEvent(FsmGraphicalTransition*);
     void dynamicTargetCalledEvent(FsmGraphicalTransition*);
 
-protected slots:
+protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
 

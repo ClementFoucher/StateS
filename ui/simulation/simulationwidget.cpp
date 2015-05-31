@@ -192,7 +192,7 @@ void SimulationWidget::setMeFree()
 {
     disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
-    emit detachTimeline(true);
+    emit detachTimelineEvent(true);
 
     this->actionDetach->setText(tr("Attach to main window"));
     connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
@@ -202,7 +202,7 @@ void SimulationWidget::bindMe()
 {
     disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 
-    emit detachTimeline(false);
+    emit detachTimelineEvent(false);
 
     this->actionDetach->setText(tr("Detach as independant window"));
     connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);

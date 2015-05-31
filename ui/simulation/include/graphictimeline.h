@@ -43,10 +43,11 @@ public:
     void chageEventDelay(uint eventDelay);
 
 protected:
+    void paintEvent(QPaintEvent *) override;
+
     uint stepLength;
 
 private:
-    void paintEvent(QPaintEvent *) override;
     void removeLastPoint();
 
     QPolygon timeLinePoly;

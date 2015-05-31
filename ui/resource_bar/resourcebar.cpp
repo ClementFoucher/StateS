@@ -63,14 +63,10 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     shared_ptr<Machine> oldMachine = this->machine.lock();
     if (oldMachine != nullptr)
     {
-        disconnect(this, &ResourceBar::simulationToggledEvent, oldMachine.get(), &Machine::simulationModeChanged);
         oldMachine.reset();
     }
 
     this->machine = newMachine;
-
-    if (newMachine != nullptr)
-        connect(this, &ResourceBar::simulationToggledEvent, newMachine.get(), &Machine::simulationModeChanged);
 
     // Clear
     this->clear();

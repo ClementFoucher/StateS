@@ -55,7 +55,7 @@ public:
 
     shared_ptr<Signal> getLogicEquation() const;
 
-protected slots:
+protected:
     void enterEvent(QEvent*) override;
     void leaveEvent(QEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -63,8 +63,10 @@ protected slots:
     void dragLeaveEvent(QDragLeaveEvent*) override;
     void dropEvent(QDropEvent* event) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
-    void enterChildrenEvent();
-    void leaveChildren();
+
+protected slots:
+    void enterChildrenEventHandler();
+    void leaveChildrenEventHandler();
 
 private slots:
     void treatMenuEventHandler(QAction* action);

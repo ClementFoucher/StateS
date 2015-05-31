@@ -43,7 +43,7 @@ public:
     void addSubTitle(const QString& titleText);
     void setListStyle();
 
-protected slots:
+public:
     bool event(QEvent* e) override;
 };
 

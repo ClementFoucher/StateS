@@ -57,8 +57,8 @@ public:
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private slots:
-    void clockEvent();
-    void resetEvent();
+    void clockEventHandler();
+    void resetEventHandler();
 
 private:
     void activateTransition(shared_ptr<FsmTransition> transition);

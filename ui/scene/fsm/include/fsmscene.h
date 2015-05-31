@@ -46,7 +46,7 @@ class FsmScene : public GenericScene
 
 public:
     explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resources);
-    ~FsmScene() override;
+    ~FsmScene();
 
     void setDisplaySize(const QSize& newSize) override;
 
@@ -56,7 +56,7 @@ public:
 
     void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
 
-protected slots:
+protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent*) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;

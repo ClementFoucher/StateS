@@ -86,8 +86,6 @@ public slots:
     bool resizeSignal(const QString& name, uint newSize);
     bool changeSignalInitialValue(const QString& name, LogicValue newValue);
 
-    virtual void simulationModeChanged() = 0;
-
 signals:
     void inputListChangedEvent();
     void outputListChangedEvent();

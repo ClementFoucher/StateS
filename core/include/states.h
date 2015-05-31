@@ -52,11 +52,11 @@ public:
     void run();
 
 private slots:
-    void newFsmRequestedEventHandler();
-    void clearMachineEventHandler();
-    void loadMachineEventHandler(const QString& path);
-    void machineSavedEventHandler(const QString& path);
-    QString getCurrentFileEventHandler();
+    void generateNewFsm();
+    void clearMachine();
+    void loadMachine(const QString& path);
+    void updateSaveFilePath(const QString& path);
+    QString getCurrentFile();
 
 private:
     unique_ptr<StatesUi> statesUi;

@@ -66,6 +66,9 @@ public:
 
     QGraphicsItemGroup* getActionsBox() const;
 
+    // Raised visibility (should be protected) to allow direct calls
+    void keyPressEvent(QKeyEvent* event) override;
+
 public slots:
     void rebuildRepresentation();
 
@@ -74,13 +77,9 @@ signals:
     void editStateCalledEvent(shared_ptr<FsmState> state);
     void renameStateCalledEvent(shared_ptr<FsmState> state);
 
-    // Private
-protected slots:
+protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-
-public slots:
-    void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
     void treatMenu(QAction* action);

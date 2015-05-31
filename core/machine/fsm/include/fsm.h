@@ -71,9 +71,6 @@ public:
     void setSimulator(shared_ptr<FsmSimulator> simulator);
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
-    // This is an overriden slot
-    void simulationModeChanged() override;
-
     bool isEmpty() const override;
 
 private:
