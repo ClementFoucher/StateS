@@ -9,7 +9,7 @@
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Begin/end simulation: color update is not complete,
 - Problem when error on rename signal (red), then begin other action while not resolving error,
-- Biggest transition selection box hides smaller transitions when multiple transitions between states,
+- Biggest transition selection box hides smaller transitions when multiple transitions between states.
 
 // VHDL export issues
 
@@ -19,4 +19,4 @@
 
 // Not bugs, but still
 
-- Straight line transitions selection is only done by clicking exactly on the line, so very difficult to catch,
+- Straight line transitions selection is only done by clicking exactly on the line, so very difficult to catch.
