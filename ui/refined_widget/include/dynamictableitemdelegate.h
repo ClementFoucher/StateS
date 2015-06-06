@@ -29,13 +29,16 @@
 class QTableWidgetItem;
 class QValidator;
 
+// StateS classes
+class DynamicLineEdit;
+
 
 class DynamicTableItemDelegate  : public QItemDelegate
 {
     Q_OBJECT
 
 public:
-    DynamicTableItemDelegate(QTableWidgetItem** currentVar, QObject* parent = nullptr);
+    DynamicTableItemDelegate(QObject* parent = nullptr);
 
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option, const QModelIndex& index) const override;
 
@@ -45,9 +48,12 @@ public:
 
     void setValidator(QValidator* validator);
 
+    DynamicLineEdit* getCurentEditor() const;
+
 private:
-    QTableWidgetItem** currentVariable = nullptr;
     QValidator* validator = nullptr;
+
+    mutable DynamicLineEdit* latestEditor = nullptr;
 
 };
 

@@ -29,33 +29,32 @@
 #include "dynamiclineedit.h"
 
 
-DynamicTableItemDelegate::DynamicTableItemDelegate(QTableWidgetItem** currentVariable, QObject* parent) :
+DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
     QItemDelegate(parent)
 {
-    this->currentVariable = currentVariable;
 }
 
 QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /* option */, const QModelIndex& index ) const
 {
-    if ((*currentVariable)->whatsThis() != (*currentVariable)->text())
-    {
-        // This indicates there has been an error in previous edit
-        return new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), true, validator, parent);
-    }
-    else
-        return new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, validator, parent);
+    this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, validator, parent);
 
+    return this->latestEditor;
 }
 
 void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
     QString content = index.model()->data(index, Qt::EditRole).toString();
 
-    DynamicLineEdit *lineEdit = static_cast<DynamicLineEdit*>(editor);
+    DynamicLineEdit* lineEdit = static_cast<DynamicLineEdit*>(editor);
     lineEdit->setText(content);
 }
 
-void DynamicTableItemDelegate::setValidator(QValidator *validator)
+void DynamicTableItemDelegate::setValidator(QValidator* validator)
 {
     this->validator = validator;
+}
+
+DynamicLineEdit* DynamicTableItemDelegate::getCurentEditor() const
+{
+    return this->latestEditor;
 }

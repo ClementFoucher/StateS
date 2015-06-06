@@ -29,6 +29,9 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+class QGraphicsView;
+
 // StateS classes
 class Machine;
 
@@ -39,6 +42,16 @@ class SignalEditorTab : public QWidget
 
 public:
     explicit SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+
+protected:
+    void showEvent(QShowEvent*);
+
+private slots:
+    void updateMachineVisualization();
+
+private:
+    weak_ptr<Machine> machine;
+    QGraphicsView* componentVisualization = nullptr;
 };
 
 #endif // SIGNALSEDITORTAB_H

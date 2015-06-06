@@ -44,7 +44,7 @@ QPixmap StateS::getPixmapFromSvg(const QString& path)
 
 QString StateS::getVersion()
 {
-    return "0.3.5";
+    return "0.3.6";
 }
 
 StateS::StateS()

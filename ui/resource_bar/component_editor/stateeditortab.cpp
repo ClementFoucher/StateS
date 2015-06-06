@@ -49,8 +49,9 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
     nameEditTitle->setAlignment(Qt::AlignCenter);
     this->layout()->addWidget(nameEditTitle);
 
-    textStateName = new DynamicLineEdit(state->getName());
+    textStateName = new DynamicLineEdit(state->getName(), true);
     connect(textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameChangedEventHandler);
+    connect(textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
     this->layout()->addWidget(textStateName);
 
     actionEditor = new ActionEditor(state, tr("Actions triggered at state activation") + "<br />" + tr("(pulses are maintained while state is active)"));
@@ -77,8 +78,19 @@ void StateEditorTab::setEditName()
     textStateName->setFocus();
 }
 
+/**
+ * @brief StateEditorTab::mousePressEvent
+ * Used to allow validation of name wherever we click,
+ * otherwise clicks inside this widget won't validate input.
+ */
+void StateEditorTab::mousePressEvent(QMouseEvent*)
+{
+    this->textStateName->clearFocus();
+}
+
 void StateEditorTab::updateContent()
 {
+    textStateName->resetView();
     textStateName->setText(this->state.lock()->getName());
 }
 
@@ -90,7 +102,7 @@ void StateEditorTab::nameChangedEventHandler(const QString& name)
     {
         if ( !(state->getOwningFsm()->renameState(state, name)) )
         {
-            textStateName->refuseText();
+            textStateName->markAsErroneous();
         }
     }
 }

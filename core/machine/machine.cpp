@@ -124,6 +124,8 @@ void Machine::clear()
     this->outputs.clear();
     this->localVariables.clear();
     this->constants.clear();
+
+    this->rebuildComponentVisualization();
 }
 
 bool Machine::isEmpty() const
@@ -138,9 +140,14 @@ bool Machine::isEmpty() const
         return false;
 }
 
-QGraphicsItem* Machine::getComponentVisualization()
+shared_ptr<QGraphicsItem> Machine::getComponentVisualization() const
 {
-    QGraphicsItem* visu = new QGraphicsItemGroup();
+    return this->componentVisu;
+}
+
+void Machine::rebuildComponentVisualization()
+{
+    shared_ptr<QGraphicsItem> visu = shared_ptr<QGraphicsItem>(new QGraphicsItemGroup());
 
     uint componentWidth = 0;
     uint componentHeigh = 0;
@@ -150,13 +157,13 @@ QGraphicsItem* Machine::getComponentVisualization()
     QList<shared_ptr<Input>> inputs = this->getInputs();
     for(int i = 0 ; i < inputs.count() ; i++)
     {
-        QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText(), visu);
+        QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText(), visu.get());
         text->setPos(0, 25 + i*20);
         if (text->boundingRect().width() > inputsXSize)
             inputsXSize = text->boundingRect().width();
 
         uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
-        new QGraphicsLineItem(-10, lineHeigh, 0, lineHeigh, visu);
+        new QGraphicsLineItem(-10, lineHeigh, 0, lineHeigh, visu.get());
     }
     componentWidth += inputsXSize;
 
@@ -165,7 +172,7 @@ QGraphicsItem* Machine::getComponentVisualization()
     QList<QGraphicsTextItem*> graphicsOutputs;
     for(int i = 0 ; i < outputs.count() ; i++)
     {
-        QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText(), visu);
+        QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText(), visu.get());
         text->setPos(inputsXSize + 50, 25 + i*20);
         if (text->boundingRect().width() > outputsXSize)
             outputsXSize = text->boundingRect().width();
@@ -179,12 +186,12 @@ QGraphicsItem* Machine::getComponentVisualization()
         text->setX(componentWidth - text->boundingRect().width());
 
         uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
-        new QGraphicsLineItem(componentWidth, lineHeigh, componentWidth + 10, lineHeigh, visu);
+        new QGraphicsLineItem(componentWidth, lineHeigh, componentWidth + 10, lineHeigh, visu.get());
     }
 
     uint maxSignalsCount = max(this->inputs.count(), this->outputs.count());
 
-    QGraphicsTextItem* title = new QGraphicsTextItem(visu);
+    QGraphicsTextItem* title = new QGraphicsTextItem(visu.get());
     title->setHtml("<b>" + tr("Machine") + "</b>");
 
     if (componentWidth <= title->boundingRect().width() + horizontalSignalsSpace)
@@ -202,9 +209,10 @@ QGraphicsItem* Machine::getComponentVisualization()
     borderPolygon.append(QPoint(componentWidth, componentHeigh));
     borderPolygon.append(QPoint(0,              componentHeigh));
 
-    new QGraphicsPolygonItem(borderPolygon, visu);
+    new QGraphicsPolygonItem(borderPolygon, visu.get());
 
-    return visu;
+    this->componentVisu = visu;
+    emit componentVisualizationUpdatedEvent();
 }
 
 shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
@@ -216,6 +224,11 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
             return nullptr;
     }
 
+    // Then check for illegal characters
+    QString cleanName = name;
+    if (!this->cleanSignalName(cleanName))
+        return nullptr;
+
     // Determine list to reference signal in
     shared_ptr<Signal> result;
     switch(type)
@@ -223,11 +236,13 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
     case signal_type::Input:
         inputs[name] = shared_ptr<Input>(new Input(name));
         result = inputs[name];
+        this->rebuildComponentVisualization();
         emit inputListChangedEvent();
         break;
     case signal_type::Output:
         outputs[name] = shared_ptr<Output>(new Output(name));
         result = outputs[name];
+        this->rebuildComponentVisualization();
         emit outputListChangedEvent();
         break;
     case signal_type::LocalVariable:
@@ -247,47 +262,57 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
 
 bool Machine::deleteSignal(const QString& name)
 {
+    bool result;
+
     if (inputs.contains(name))
     {
         inputs.remove(name);
+        this->rebuildComponentVisualization();
         emit inputListChangedEvent();
 
-        return true;
+        result = true;
     }
     else if (outputs.contains(name))
     {
         outputs.remove(name);
+        this->rebuildComponentVisualization();
         emit outputListChangedEvent();
 
-        return true;
+        result = true;
     }
     else if (localVariables.contains(name))
     {
         localVariables.remove(name);
         emit localVariableListChangedEvent();
 
-        return true;
+        result = true;
     }
     else if (constants.contains(name))
     {
         constants.remove(name);
         emit constantListChangedEvent();
 
-        return true;
+        result = true;
     }
     else
-        return false;
+        result = false;
+
+    return result;
 }
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
     QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
+    QString nonConstNewName = newName;
+
     if ( !allSignals.contains(oldName) ) // First check if signal exists
         return false;
     else if (oldName == newName) // Rename to same name is always success
         return true;
     else if ( allSignals.contains(newName) ) // Do not allow rename to existing name
+        return false;
+    else if ( ! this->cleanSignalName(nonConstNewName) ) // Check for name correctness
         return false;
     else
     {
@@ -300,24 +325,30 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
         {
             inputs.remove(oldName);
             inputs[newName] = dynamic_pointer_cast<Input>(itemToRename);
+            this->rebuildComponentVisualization();
+
             emit inputListChangedEvent();
         }
         else if (outputs.contains(oldName))
         {
             outputs.remove(oldName);
             outputs[newName] = dynamic_pointer_cast<Output>(itemToRename);
+            this->rebuildComponentVisualization();
+
             emit outputListChangedEvent();
         }
         else if (localVariables.contains(oldName))
         {
             localVariables.remove(oldName);
             localVariables[newName] = itemToRename;
+
             emit localVariableListChangedEvent();
         }
         else if (constants.contains(oldName))
         {
             constants.remove(oldName);
             constants[newName] = itemToRename;
+
             emit constantListChangedEvent();
         }
         else // Should not happen as we checked all lists
@@ -339,10 +370,12 @@ bool Machine::resizeSignal(const QString &name, uint newSize)
         {
             if (inputs.contains(name))
             {
+                this->rebuildComponentVisualization();
                 emit inputListChangedEvent();
             }
             else if (outputs.contains(name))
             {
+                this->rebuildComponentVisualization();
                 emit outputListChangedEvent();
             }
             else if (localVariables.contains(name))
@@ -421,6 +454,71 @@ QList<shared_ptr<Signal> > Machine::getOutputsAsSignals() const
     }
 
     return signalOutputs;
+}
+
+/**
+ * @brief Machine::cleanSignalName
+ * @param nameToClean
+ * @return
+ *  True if name was clean,
+ *  False if string has been cleaned.
+ */
+bool Machine::cleanSignalName(QString& nameToClean) const
+{
+    bool clean = true;
+    QString cleanName;
+
+    foreach (QChar c, nameToClean)
+    {
+        if ( ( (c.isLetterOrNumber()) ) ||
+             ( (c == '_')             ) ||
+             ( (c == '#')             ) ||
+             ( (c == '@')             ) ||
+             ( (c == '-')             ) ||
+             ( (c.isSpace() )         )
+           )
+        {
+            cleanName += c;
+        }
+        else
+        {
+            clean = false;
+        }
+    }
+
+    if (!clean)
+        nameToClean = cleanName;
+
+    return clean;
+}
+
+QString Machine::getUniqueSignalName(const QString& prefix) const
+{
+    QString baseName = prefix;
+    this->cleanSignalName(baseName);
+
+    QString currentName;
+
+    uint i = 0;
+    bool nameIsValid = false;
+
+    while (!nameIsValid)
+    {
+        currentName = baseName + QString::number(i);
+
+        nameIsValid = true;
+        foreach(shared_ptr<Signal> colleage, this->getAllSignals())
+        {
+            if (colleage->getName() == currentName)
+            {
+                nameIsValid = false;
+                i++;
+                break;
+            }
+        }
+    }
+
+    return currentName;
 }
 
 QHash<QString, shared_ptr<Signal> > Machine::getAllSignalsMap() const

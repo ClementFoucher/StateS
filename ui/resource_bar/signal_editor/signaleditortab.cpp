@@ -26,9 +26,8 @@
 #include <QLabel>
 #include <QToolBox>
 #include <QVBoxLayout>
-//#include <QGridLayout>
-//#include <QTableWidget>
-//#include <QPushButton>
+#include <QGraphicsView>
+#include <QTabWidget>
 
 // StateS classes
 #include "signallisteditor.h"
@@ -37,6 +36,8 @@
 SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
     QWidget(parent)
 {
+    this->machine = machine;
+
     this->setLayout(new QVBoxLayout());
 
     //
@@ -49,56 +50,58 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
     //
     // Help line
 
-    QLabel* hint = new QLabel(tr("Switch between I/Os and local signals editors using tabs below")
+    QLabel* hint = new QLabel(tr("Switch between signals types using tabs below.")
                               + "<br />"
-                              + tr("Signals length can not exceed 64 bits")
+                              + tr("Signals length can not exceed 64 bits.")
+                              + "<br />"
+                              + tr("Allowed characters are alphanumerical ones,")
+                              + "<br />"
+                              + tr("space and")
+                              + " {'_', '@', '#', '-'}."
+                              + "<br />"
+                              + tr("Double-click on a value to edit it.")
                               );
     hint->setAlignment(Qt::AlignCenter);
     this->layout()->addWidget(hint);
 
     //
-    // Toolbox
+    // Signals
 
-    QToolBox* toolBox = new QToolBox();
-    this->layout()->addWidget(toolBox);
+    QTabWidget* signalsTabs = new QTabWidget();
+    this->layout()->addWidget(signalsTabs);
 
-    // Local
+    signalsTabs->insertTab(0, new SignalListEditor(machine, Machine::signal_type::Input), tr("Inputs"));
+    signalsTabs->insertTab(1, new SignalListEditor(machine, Machine::signal_type::Output), tr("Outputs"));
+    signalsTabs->insertTab(2, new SignalListEditor(machine, Machine::signal_type::LocalVariable), tr("Variables"));
+    signalsTabs->insertTab(3, new SignalListEditor(machine, Machine::signal_type::Constant), tr("Constants"));
 
-    QWidget* locals = new QWidget();
-    locals->setLayout(new QVBoxLayout());
+    signalsTabs->setCurrentIndex(0);
 
-    QLabel* varTitle = new QLabel(tr("Variables"));
-    varTitle->setAlignment(Qt::AlignCenter);
-    locals->layout()->addWidget(varTitle);
-    SignalListEditor* variablesToolBox = new SignalListEditor(machine, Machine::signal_type::LocalVariable);
-    locals->layout()->addWidget(variablesToolBox);
+    //
+    // Machine visualization
+    QLabel* visuTitle = new QLabel("<b>" + tr("Machine visualization")  + "</b>");
+    visuTitle->setAlignment(Qt::AlignCenter);
+    this->layout()->addWidget(visuTitle);
 
-    QLabel* constTitle = new QLabel(tr("Constants"));
-    constTitle->setAlignment(Qt::AlignCenter);
-    locals->layout()->addWidget(constTitle);
-    SignalListEditor* constantsToolBox = new SignalListEditor(machine, Machine::signal_type::Constant);
-    locals->layout()->addWidget(constantsToolBox);
-
-    toolBox->addItem(locals, tr("Local signals"));
-
-    // I/O
-    QWidget* ios = new QWidget();
-    ios->setLayout(new QVBoxLayout());
-
-    QLabel* inputsTitle = new QLabel(tr("Inputs"));
-    inputsTitle->setAlignment(Qt::AlignCenter);
-    ios->layout()->addWidget(inputsTitle);
-    SignalListEditor* inputToolBox = new SignalListEditor(machine, Machine::signal_type::Input);
-    ios->layout()->addWidget(inputToolBox);
-
-    QLabel* outputsTitle = new QLabel(tr("Outputs"));
-    outputsTitle->setAlignment(Qt::AlignCenter);
-    ios->layout()->addWidget(outputsTitle);
-    SignalListEditor* outputToolBox = new SignalListEditor(machine, Machine::signal_type::Output);
-    ios->layout()->addWidget(outputToolBox);
-
-    toolBox->addItem(ios, tr("I/O"));
-
-    toolBox->setCurrentIndex(1);
+    componentVisualization = new QGraphicsView();
+    componentVisualization->setScene(new QGraphicsScene());
+    this->updateMachineVisualization();
+    this->layout()->addWidget(componentVisualization);
+    connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &SignalEditorTab::updateMachineVisualization);
 }
 
+void SignalEditorTab::showEvent(QShowEvent*)
+{
+    this->updateMachineVisualization();
+}
+
+void SignalEditorTab::updateMachineVisualization()
+{
+    if (this->isVisible())
+    {
+        componentVisualization->scene()->clear();
+
+        shared_ptr<QGraphicsItem> component = machine.lock()->getComponentVisualization();
+        componentVisualization->scene()->addItem(component.get());
+    }
+}

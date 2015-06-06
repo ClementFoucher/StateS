@@ -34,22 +34,25 @@ class DynamicLineEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    explicit DynamicLineEdit(const QString& content, bool beginAsRefused = false, QValidator* validator = nullptr, QWidget* parent = nullptr);
+    explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator = nullptr, QWidget* parent = nullptr);
 
-    void refuseText();
+    void markAsErroneous();
+    void resetView();
 
 signals:
     void newTextAvailableEvent(const QString& text);
+    void userCancelEvent();
 
 protected:
     void focusInEvent(QFocusEvent* event) override;
-    void focusOutEvent(QFocusEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
     void userValidatedEventHandler();
 
 private:
-    bool textRefused = false;
+    bool erroneous = false;
+    bool selfManaged = false;
 };
 
 #endif // DYNAMICLINEEDIT_H

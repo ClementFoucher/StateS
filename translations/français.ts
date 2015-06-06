@@ -523,7 +523,7 @@
     </message>
     <message>
         <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out</source>
-        <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
+        <translation type="vanished">Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
     </message>
     <message>
         <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool</source>
@@ -531,7 +531,7 @@
     </message>
     <message>
         <source>or display context menu if no tool selected</source>
-        <translation>ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
+        <translation type="vanished">ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
     </message>
     <message>
         <source>FSM editor</source>
@@ -556,6 +556,14 @@
     <message>
         <source>Machine visualization</source>
         <translation>Visualisation de la machine</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out.</source>
+        <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer.</translation>
+    </message>
+    <message>
+        <source>or display context menu if no tool selected.</source>
+        <translation>ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné.</translation>
     </message>
 </context>
 <context>
@@ -609,7 +617,7 @@
     </message>
     <message>
         <source>Local signals</source>
-        <translation>Signaux locaux</translation>
+        <translation type="vanished">Signaux locaux</translation>
     </message>
     <message>
         <source>Inputs</source>
@@ -621,15 +629,47 @@
     </message>
     <message>
         <source>I/O</source>
-        <translation>I/O</translation>
+        <translation type="vanished">I/O</translation>
     </message>
     <message>
         <source>Signals length can not exceed 64 bits</source>
-        <translation>La taille des signaux ne peut excéder 64 bits</translation>
+        <translation type="vanished">La taille des signaux ne peut excéder 64 bits</translation>
     </message>
     <message>
         <source>Switch between I/Os and local signals editors using tabs below</source>
-        <translation>Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaux ci-dessous</translation>
+        <translation type="vanished">Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaux ci-dessous</translation>
+    </message>
+    <message>
+        <source>Allowed characters are alphanumerical ones, space and</source>
+        <translation type="vanished">Les caractères autorisés sont les charactères alphanumériques, l&apos;espace et</translation>
+    </message>
+    <message>
+        <source>Switch between I/Os and local signals editors using tabs below.</source>
+        <translation type="obsolete">Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaux ci-dessous.</translation>
+    </message>
+    <message>
+        <source>Signals length can not exceed 64 bits.</source>
+        <translation>La taille des signaux ne peut excéder 64 bits.</translation>
+    </message>
+    <message>
+        <source>Allowed characters are alphanumerical ones,</source>
+        <translation>Les caractères autorisés sont les charactères alphanumériques,</translation>
+    </message>
+    <message>
+        <source>space and</source>
+        <translation>l&apos;espace et</translation>
+    </message>
+    <message>
+        <source>Double-click on a value to edit it.</source>
+        <translation>Double-cliquez sur une valeur pour la modifier.</translation>
+    </message>
+    <message>
+        <source>Machine visualization</source>
+        <translation>Visualisation de la machine</translation>
+    </message>
+    <message>
+        <source>Switch between signals types using tabs below.</source>
+        <translation>Naviguez entre les types de signaux&lt;br /&gt;à l&apos;aide des onglets ci-dessous.</translation>
     </message>
 </context>
 <context>
@@ -669,6 +709,14 @@
     <message>
         <source>Remove</source>
         <translation>Supprimer</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>

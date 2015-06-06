@@ -214,6 +214,10 @@ void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool 
 
 QGraphicsScene* ResourceBar::getComponentVisualizationScene()
 {
+    // Make sure toolsResources is visible
+    // so that it displays the visu
+    this->setCurrentIndex(0);
+
     return toolResources->getComponentVisualizationScene();
 }
 

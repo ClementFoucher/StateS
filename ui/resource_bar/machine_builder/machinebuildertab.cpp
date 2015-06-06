@@ -59,10 +59,10 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
     instructions += tr("Scroll wheel while holding <i>shift</i> to move horizontally.");
     instructions += "<br />";
     instructions += "<br />";
-    instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out");
+    instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out.");
     instructions += "<br />";
     instructions += "<br />";
-    instructions += tr("Use <i>right-click</i> to unselect current tool") + "<br />" + tr("or display context menu if no tool selected");
+    instructions += tr("Use <i>right-click</i> to unselect current tool") + "<br />" + tr("or display context menu if no tool selected.");
     instructions += "<br />";
 
     QLabel* instructionsLabel = new QLabel(instructions);
@@ -92,8 +92,7 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
     this->updateMachineVisualization();
     layout->addWidget(componentVisualization);
 
-    connect(machine.get(), &Machine::inputListChangedEvent,  this, &MachineBuilderTab::updateMachineVisualization);
-    connect(machine.get(), &Machine::outputListChangedEvent, this, &MachineBuilderTab::updateMachineVisualization);
+    connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineBuilderTab::updateMachineVisualization);
 
     this->setLayout(layout);
 }
@@ -108,14 +107,22 @@ QGraphicsScene* MachineBuilderTab::getComponentVisualizationScene()
     return this->componentVisualization->scene();
 }
 
+void MachineBuilderTab::showEvent(QShowEvent*)
+{
+    this->updateMachineVisualization();
+}
+
 void MachineBuilderTab::updateMachineVisualization()
 {
-    componentVisualization->scene()->clear();
+    if (this->isVisible())
+    {
+        componentVisualization->scene()->clear();
 
-    QGraphicsItem* component = machine.lock()->getComponentVisualization();
-    componentVisualization->scene()->addItem(component);
+        shared_ptr<QGraphicsItem> component = machine.lock()->getComponentVisualization();
+        componentVisualization->scene()->addItem(component.get());
 
-    /*QRectF bound = componentVisualization->scene()->sceneRect();
-    bound.adjust(0, -10, 0, 10);
-    componentVisualization->scene()->setSceneRect(bound);*/
+        /*QRectF bound = componentVisualization->scene()->sceneRect();
+        bound.adjust(0, -10, 0, 10);
+        componentVisualization->scene()->setSceneRect(bound);*/
+    }
 }

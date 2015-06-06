@@ -47,6 +47,9 @@ public:
 
     QGraphicsScene* getComponentVisualizationScene();
 
+protected:
+    void showEvent(QShowEvent*);
+
 private slots:
     void updateMachineVisualization();
 

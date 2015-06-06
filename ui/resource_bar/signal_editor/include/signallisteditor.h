@@ -63,34 +63,48 @@ signals:
     bool resizeSignalEvent(const QString& name, uint newSize);
     bool changeSignalInitialValueEvent(const QString& name, LogicValue newValue);
 
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
+
 private slots:
     void removeSelectedSignals();
     void updateButtonsEnableState();
     void beginAddSignal();
-    void endAddSignal(QWidget* signalNameWidget);
     void beginEditSignal(QTableWidgetItem* characteristicToEdit);
-    void endRenameSignal(QWidget* signalNameWidget);
-    void endResizeSignal(QWidget* signalSizeWidget);
-    void endChangeSignalInitialValue(QWidget* signalInitialValueWidget);
+    void validateCurrentEdit();
+    void cancelCurrentEdit();
 
 private:
     void switchMode(mode newMode);
 
-    mode currentMode = mode::initMode;
+    void endAddSignal();
+    void endRenameSignal();
+    void endResizeSignal();
+    void endChangeSignalInitialValue();
 
+    // Static
     weak_ptr<Machine> machine;
     Machine::signal_type editorType;
+    QString newSignalsPrefix;
 
+    // Dynamic
+    mode currentMode = mode::initMode;
+
+    // Widgets
     QGridLayout* layout = nullptr;
 
     QTableWidget* signalsList = nullptr;
     DynamicTableItemDelegate* listDelegate = nullptr;
 
-    QPushButton * buttonAdd = nullptr;
-    QPushButton * buttonRemove = nullptr;
-//    QPushButton * buttonCancel = nullptr;
+    QPushButton* buttonAdd    = nullptr;
+    QPushButton* buttonRemove = nullptr;
+    QPushButton* buttonCancel = nullptr;
+    QPushButton* buttonOK     = nullptr;
 
+    // Cell under edition
     QTableWidgetItem* currentTableItem = nullptr;
+
+    // Used to know which signal is associated to each cell in table
     QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;
 };
 

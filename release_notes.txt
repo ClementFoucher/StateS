@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+- 2015-06-06 - V 0.3.6 - Restricted allowed characters in signals names; Signal creation/edition and state renaming now allows for cancel using button or escape key; Reorganized signal editor tab.
 - 2015-06-01 - V 0.3.5 - Corrected issue with actions on transition being maintained.
 - 2015-05-30 - V 0.3.4 - Extended export options to new image formats; Added machine external view.
 - 2015-05-25 - V 0.3.3 - Added rubber band selection; Added ability to force state activation in simulation mode; wheel navigation improvement.

@@ -71,13 +71,16 @@ public:
     QList<shared_ptr<Signal>> getInputsAsSignals()  const;
     QList<shared_ptr<Signal>> getOutputsAsSignals() const;
 
+    bool cleanSignalName(QString& nameToClean) const;
+    QString getUniqueSignalName(const QString& prefix) const;
+
     virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
     virtual void saveMachine(const QString& path) = 0;
 
     virtual void clear();
     virtual bool isEmpty() const;
 
-    QGraphicsItem* getComponentVisualization();
+    shared_ptr<QGraphicsItem> getComponentVisualization() const;
 
 public slots:
     shared_ptr<Signal> addSignal(signal_type type, const QString& name);
@@ -92,6 +95,7 @@ signals:
     void localVariableListChangedEvent();
     void constantListChangedEvent();
     void machineLoadedEvent();
+    void componentVisualizationUpdatedEvent();
 
 protected:
     QHash<QString, shared_ptr<Input>>  inputs;
@@ -100,7 +104,9 @@ protected:
     QHash<QString, shared_ptr<Signal>> constants;
 
 private:
+    void rebuildComponentVisualization();
     QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
+    shared_ptr<QGraphicsItem> componentVisu = nullptr;
 };
 
 #endif // MACHINE_H

@@ -1,15 +1,16 @@
 
 *******************
-* StateS v. 0.3.5 *
+* StateS v. 0.3.6 *
 *******************
 
 // The following behaviors are known.
 // They may be buggy, or just uninmplemented code.
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-- Begin/end simulation: color update is not complete,
-- Problem when error on rename signal (red), then begin other action while not resolving error,
-- Biggest transition selection box hides smaller transitions when multiple transitions between states.
+- Begin/end simulation: machine's colors update is not complete,
+- Biggest transition selection box hides smaller transitions when multiple transitions between states,
+- Escape key have to be pushed twice to cancel signal creation/edition,
+- Signals name at a bottom of a list are partially hidden on creation/edition.
 
 // VHDL export issues
 
@@ -19,4 +20,5 @@
 
 // Not bugs, but still
 
+- Signals are not sorted anywhere, which can be annoying when there are legion,
 - Straight line transitions selection is only done by clicking exactly on the line, so very difficult to catch.

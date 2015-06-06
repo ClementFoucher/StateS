@@ -45,6 +45,9 @@ public:
     void changeEditedState(shared_ptr<FsmState> state);
     void setEditName();
 
+protected:
+    void mousePressEvent(QMouseEvent*) override;
+
 private slots:
     void nameChangedEventHandler(const QString& name);
     void updateContent();
