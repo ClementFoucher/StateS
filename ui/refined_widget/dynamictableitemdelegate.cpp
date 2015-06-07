@@ -34,18 +34,11 @@ DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
 {
 }
 
-/**
- * @brief DynamicTableItemDelegate::createEditor
- * This deletes the previous editor.
- * @param parent
- * @param index
- * @return
- */
 QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /* option */, const QModelIndex& index ) const
 {
-    this->latestEditor = shared_ptr<DynamicLineEdit>(new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator, parent));
+    this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator, parent);
 
-    return this->latestEditor.get();
+    return this->latestEditor;
 }
 
 void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
@@ -61,7 +54,7 @@ void DynamicTableItemDelegate::setValidator(shared_ptr<QValidator> validator)
     this->validator = validator;
 }
 
-shared_ptr<DynamicLineEdit> DynamicTableItemDelegate::getCurentEditor() const
+DynamicLineEdit* DynamicTableItemDelegate::getCurentEditor() const
 {
     return this->latestEditor;
 }

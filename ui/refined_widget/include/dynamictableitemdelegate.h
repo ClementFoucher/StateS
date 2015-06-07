@@ -53,12 +53,13 @@ public:
     // This function takes ownership of the validator
     void setValidator(shared_ptr<QValidator> validator);
 
-    shared_ptr<DynamicLineEdit> getCurentEditor() const;
+    DynamicLineEdit* getCurentEditor() const;
 
 private:
     shared_ptr<QValidator> validator;
 
-    mutable shared_ptr<DynamicLineEdit> latestEditor = nullptr;
+    // QWidget with a parent
+    mutable DynamicLineEdit* latestEditor = nullptr;
 
 };
 

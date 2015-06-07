@@ -296,7 +296,7 @@ void SignalListEditor::cancelCurrentEdit()
 
 void SignalListEditor::endAddSignal()
 {
-    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
     if (editor != nullptr)
     {
@@ -317,7 +317,7 @@ void SignalListEditor::endAddSignal()
 
 void SignalListEditor::endRenameSignal()
 {
-    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
     if (editor != nullptr)
     {
@@ -342,7 +342,7 @@ void SignalListEditor::endRenameSignal()
 
 void SignalListEditor::endResizeSignal()
 {
-    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
     if (editor != nullptr)
     {
@@ -366,7 +366,7 @@ void SignalListEditor::endResizeSignal()
 
 void SignalListEditor::endChangeSignalInitialValue()
 {
-    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
     if (editor != nullptr)
     {
@@ -489,10 +489,10 @@ void SignalListEditor::switchMode(mode newMode)
 
         signalsList->openPersistentEditor(currentTableItem);
 
-        shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
         if (editor != nullptr)
         {
-            connect(editor.get(), &DynamicLineEdit::returnPressed, this, &SignalListEditor::validateCurrentEdit);
+            connect(editor, &DynamicLineEdit::returnPressed, this, &SignalListEditor::validateCurrentEdit);
         }
     }
 }
