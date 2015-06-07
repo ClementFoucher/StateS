@@ -144,8 +144,8 @@
         <translation>Aucun signal compatible !</translation>
     </message>
     <message>
-        <source>Edit condition to view errors</source>
-        <translation>Éditez la condition pour visualiser les erreurs</translation>
+        <source>Edit condition to view errors.</source>
+        <translation>Éditez la condition pour visualiser les erreurs.</translation>
     </message>
 </context>
 <context>
@@ -184,7 +184,7 @@
     </message>
     <message>
         <source>You can also use right-click on equation members to edit</source>
-        <translation>Vous pouvez également utiliser le clic-droit&lt;br /&gt;sur un membre de l&apos;équation pour l&apos;éditer</translation>
+        <translation>Vous pouvez également utiliser le clic-droit sur un membre de l&apos;équation pour l&apos;éditer</translation>
     </message>
     <message>
         <source>Constants</source>
@@ -522,18 +522,6 @@
         <translation>Navigation</translation>
     </message>
     <message>
-        <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out</source>
-        <translation type="vanished">Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer</translation>
-    </message>
-    <message>
-        <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool</source>
-        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; pour déselectionner l&apos;outil courant</translation>
-    </message>
-    <message>
-        <source>or display context menu if no tool selected</source>
-        <translation type="vanished">ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné</translation>
-    </message>
-    <message>
         <source>FSM editor</source>
         <translation>Éditeur de FSM</translation>
     </message>
@@ -562,8 +550,8 @@
         <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer.</translation>
     </message>
     <message>
-        <source>or display context menu if no tool selected.</source>
-        <translation>ou pour afficher un menu contextuel&lt;br /&gt;si aucun outil n&apos;est sélectionné.</translation>
+        <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool or display context menu if no tool selected.</source>
+        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; pour déselectionner l&apos;outil courant ou pour afficher un menu contextuel si aucun outil n&apos;est sélectionné.</translation>
     </message>
 </context>
 <context>
@@ -616,10 +604,6 @@
         <translation>Constantes</translation>
     </message>
     <message>
-        <source>Local signals</source>
-        <translation type="vanished">Signaux locaux</translation>
-    </message>
-    <message>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
@@ -628,36 +612,12 @@
         <translation>Sorties</translation>
     </message>
     <message>
-        <source>I/O</source>
-        <translation type="vanished">I/O</translation>
-    </message>
-    <message>
-        <source>Signals length can not exceed 64 bits</source>
-        <translation type="vanished">La taille des signaux ne peut excéder 64 bits</translation>
-    </message>
-    <message>
-        <source>Switch between I/Os and local signals editors using tabs below</source>
-        <translation type="vanished">Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaux ci-dessous</translation>
-    </message>
-    <message>
         <source>Allowed characters are alphanumerical ones, space and</source>
-        <translation type="vanished">Les caractères autorisés sont les charactères alphanumériques, l&apos;espace et</translation>
-    </message>
-    <message>
-        <source>Switch between I/Os and local signals editors using tabs below.</source>
-        <translation type="obsolete">Naviguez entre l&apos;éditeur d&apos;I/O et l&apos;éditeur de signaux locaux ci-dessous.</translation>
+        <translation>Les caractères autorisés sont les charactères alphanumériques, l&apos;espace et</translation>
     </message>
     <message>
         <source>Signals length can not exceed 64 bits.</source>
         <translation>La taille des signaux ne peut excéder 64 bits.</translation>
-    </message>
-    <message>
-        <source>Allowed characters are alphanumerical ones,</source>
-        <translation>Les caractères autorisés sont les charactères alphanumériques,</translation>
-    </message>
-    <message>
-        <source>space and</source>
-        <translation>l&apos;espace et</translation>
     </message>
     <message>
         <source>Double-click on a value to edit it.</source>
@@ -669,7 +629,7 @@
     </message>
     <message>
         <source>Switch between signals types using tabs below.</source>
-        <translation>Naviguez entre les types de signaux&lt;br /&gt;à l&apos;aide des onglets ci-dessous.</translation>
+        <translation>Naviguez entre les types de signaux à l&apos;aide des onglets ci-dessous.</translation>
     </message>
 </context>
 <context>
@@ -844,12 +804,8 @@
         <translation>Nom de l&apos;état</translation>
     </message>
     <message>
-        <source>Actions triggered at state activation</source>
-        <translation>Actions déclencées à l&apos;activation de l&apos;état</translation>
-    </message>
-    <message>
-        <source>(pulses are maintained while state is active)</source>
-        <translation>(les impulsions sont maintenues tant que l&apos;état est actif)</translation>
+        <source>Actions triggered at state activation:</source>
+        <translation>Actions déclencées à l&apos;activation de l&apos;état :</translation>
     </message>
 </context>
 <context>
@@ -879,10 +835,6 @@
         <translation>Effacer la machine</translation>
     </message>
     <message>
-        <source>Export machine to PDF file</source>
-        <translation type="vanished">Exporter la machine au format PDF</translation>
-    </message>
-    <message>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
@@ -895,16 +847,8 @@
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <source>Export machine to PDF</source>
-        <translation type="vanished">Exporter la machine en PDF</translation>
-    </message>
-    <message>
         <source>Overwrite current machine?</source>
         <translation>Écraser la machine courante ?</translation>
-    </message>
-    <message>
-        <source>Export to PDF</source>
-        <translation type="vanished">Exporter en PDF</translation>
     </message>
     <message>
         <source>Export to VHDL</source>
@@ -986,8 +930,8 @@
         <translation>Éditeur de transition</translation>
     </message>
     <message>
-        <source>Actions triggered when transition is crossed</source>
-        <translation>Actions déclechées au franchissement de la transition</translation>
+        <source>Actions triggered when transition is crossed:</source>
+        <translation>Actions déclechées au franchissement de la transition :</translation>
     </message>
 </context>
 <context>

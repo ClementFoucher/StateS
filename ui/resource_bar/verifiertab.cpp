@@ -79,14 +79,16 @@ void VerifierTab::checkNow()
     {
         this->listTitle = new QLabel(tr("No errors!"));
         this->listTitle->setAlignment(Qt::AlignCenter);
+        this->listTitle->setWordWrap(true);
         this->layout()->addWidget(this->listTitle);
     }
     else
     {
         this->listTitle = new QLabel();
+        this->listTitle->setWordWrap(true);
+        this->listTitle->setText(tr("Double-click on red items to detail error:"));
         this->layout()->addWidget(this->listTitle);
 
-        this->listTitle->setText(tr("Double-click on red items to detail error:"));
 
         this->list = new QListWidget();
         connect(this->list, &QListWidget::itemDoubleClicked, this, &VerifierTab::proofRequested);

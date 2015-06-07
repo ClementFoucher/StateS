@@ -44,7 +44,7 @@ TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, Q
     this->conditionEditor = new ConditionEditor(transition);
     this->layout()->addWidget(this->conditionEditor);
 
-    this->actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed"));
+    this->actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"));
     this->layout()->addWidget(this->actionEditor);
 }
 

@@ -62,11 +62,12 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
     instructions += tr("Use <i>ctrl+mouse wheel</i> to zoom in/out.");
     instructions += "<br />";
     instructions += "<br />";
-    instructions += tr("Use <i>right-click</i> to unselect current tool") + "<br />" + tr("or display context menu if no tool selected.");
+    instructions += tr("Use <i>right-click</i> to unselect current tool or display context menu if no tool selected.");
     instructions += "<br />";
 
     QLabel* instructionsLabel = new QLabel(instructions);
     instructionsLabel->setAlignment(Qt::AlignCenter);
+    instructionsLabel->setWordWrap(true);
     layout->addWidget(instructionsLabel);
 
     if (machineType == Machine::type::FSM)

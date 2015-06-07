@@ -48,6 +48,7 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     {
         QLabel* actionListTitle = new QLabel(title);
         actionListTitle->setAlignment(Qt::AlignCenter);
+        actionListTitle->setWordWrap(true);
         layout->addWidget(actionListTitle, 0, 0, 1, 2);
     }
 

@@ -54,14 +54,13 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
                               + "<br />"
                               + tr("Signals length can not exceed 64 bits.")
                               + "<br />"
-                              + tr("Allowed characters are alphanumerical ones,")
-                              + "<br />"
-                              + tr("space and")
+                              + tr("Allowed characters are alphanumerical ones, space and")
                               + " {'_', '@', '#', '-'}."
                               + "<br />"
                               + tr("Double-click on a value to edit it.")
                               );
     hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
     this->layout()->addWidget(hint);
 
     //

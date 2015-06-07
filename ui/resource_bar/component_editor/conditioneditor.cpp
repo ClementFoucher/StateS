@@ -172,9 +172,10 @@ void ConditionEditor::updateContent()
                 this->conditionWarningText = new QLabel("<font color=red>" +
                                                         tr("Warning: equation representing condition is not valid.") +
                                                         "<br />" + tr("Thus, the current transition will never be crossed.") +
-                                                        "<br />" + tr("Edit condition to view errors") +
+                                                        "<br />" + tr("Edit condition to view errors.") +
                                                         "</font>"
                                                         );
+                this->conditionWarningText->setWordWrap(true);
             }
             else
             {
@@ -184,6 +185,7 @@ void ConditionEditor::updateContent()
                                                         "<br />" + tr("Thus, the current transition will never be crossed.") +
                                                         "</font>"
                                                         );
+                this->conditionWarningText->setWordWrap(true);
             }
 
             this->conditionWarningText->setAlignment(Qt::AlignCenter);

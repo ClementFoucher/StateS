@@ -47,6 +47,7 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
 
     QLabel* nameEditTitle = new QLabel(tr("State name"));
     nameEditTitle->setAlignment(Qt::AlignCenter);
+    nameEditTitle->setWordWrap(true);
     this->layout()->addWidget(nameEditTitle);
 
     textStateName = new DynamicLineEdit(state->getName(), true);
@@ -54,7 +55,7 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
     connect(textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
     this->layout()->addWidget(textStateName);
 
-    actionEditor = new ActionEditor(state, tr("Actions triggered at state activation") + "<br />" + tr("(pulses are maintained while state is active)"));
+    actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"));
     this->layout()->addWidget(actionEditor);
 
     updateContent();

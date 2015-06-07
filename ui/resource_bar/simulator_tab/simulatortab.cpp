@@ -149,9 +149,10 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 if ( (machine != nullptr) && (machine->getInputs().count() != 0) )
                 {
-                    QLabel* inputListTitle = new QLabel(tr("Click on bits from the list below to switch value:"));
-                    inputListTitle->setAlignment(Qt::AlignCenter);
-                    inputsLayout->addWidget(inputListTitle);
+                    QLabel* inputListHint = new QLabel(tr("Click on bits from the list below to switch value:"));
+                    inputListHint->setAlignment(Qt::AlignCenter);
+                    inputListHint->setWordWrap(true);
+                    inputsLayout->addWidget(inputListHint);
 
                     inputList = new InputsSelector(machine->getInputs());
                     inputsLayout->addWidget(inputList);
