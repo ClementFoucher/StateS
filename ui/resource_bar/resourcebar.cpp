@@ -35,6 +35,7 @@
 #include "abouttab.h"
 #include "verifiertab.h"
 #include "fsm.h"
+#include "machinecomponentvisualizer.h"
 
 
 ResourceBar::ResourceBar(shared_ptr<Machine> machine, QWidget* parent) :
@@ -51,8 +52,8 @@ ResourceBar::~ResourceBar()
     // Widgets are not deleted on tab removal...
     // Is this the same on widget deletion?
     // Does QTabWidget take parenthood of tab widgets?
-    delete toolResources;
-    delete interfaceResources;
+    delete machineBuildTab;
+    delete signalsTab;
     delete editorTab;
     delete simulatorTab;
     delete verifierTab;
@@ -66,22 +67,25 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
         oldMachine.reset();
     }
 
+    this->machineComponentScene.reset();
+
     this->machine = newMachine;
 
-    // Clear
+    // Clear (does not delete widgets, but needed for tab change issues)
     this->clear();
 
-    delete toolResources;
-    toolResources = nullptr;
+    delete machineBuildTab;
+    machineBuildTab = nullptr;
 
-    delete interfaceResources;
-    interfaceResources = nullptr;
+    delete signalsTab;
+    signalsTab = nullptr;
 
     delete editorTab;
     editorTab = nullptr;
 
     delete verifierTab;
     verifierTab = nullptr;
+
 
     if (simulatorTab != nullptr)
     {
@@ -95,21 +99,23 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     // Build
     if (newMachine != nullptr)
     {
-        this->toolResources      = new MachineBuilderTab(newMachine->getType(), newMachine);
-        this->interfaceResources = new SignalEditorTab(newMachine);
+        this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
+
+        this->machineBuildTab      = new MachineBuilderTab(newMachine->getType(), this->machineComponentScene);
+        this->signalsTab = new SignalEditorTab(newMachine, this->machineComponentScene);
         this->simulatorTab       = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
         this->verifierTab        = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
 
         connect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
         connect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
 
-        this->insertTab(0, toolResources,      tr("Builder"));
-        this->insertTab(1, interfaceResources, tr("Signals"));
-        this->insertTab(2, new QWidget(),      tr("Editor"));
-        this->insertTab(3, simulatorTab,       tr("Simulator"));
-        this->insertTab(4, verifierTab,        tr("Verifier"));
-//        this->insertTab(4, new QWidget(),      tr("Options"));
-        this->insertTab(5, new AboutTab(),     tr("About"));
+        this->insertTab(0, machineBuildTab, tr("Builder"));
+        this->insertTab(1, signalsTab,      tr("Signals"));
+        this->insertTab(2, new QWidget(),   tr("Editor"));
+        this->insertTab(3, simulatorTab,    tr("Simulator"));
+        this->insertTab(4, verifierTab,     tr("Verifier"));
+//        this->insertTab(4, new QWidget(),   tr("Options"));
+        this->insertTab(5, new AboutTab(),  tr("About"));
 
         this->setTabEnabled(2, false);
 
@@ -137,6 +143,8 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 
         this->currentMode = mode::voidMode;
     }
+
+
 }
 
 void ResourceBar::selectedState(shared_ptr<FsmState> state, bool showTab, bool editName)
@@ -212,13 +220,9 @@ void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool 
     }
 }
 
-QGraphicsScene* ResourceBar::getComponentVisualizationScene()
+shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene()
 {
-    // Make sure toolsResources is visible
-    // so that it displays the visu
-    this->setCurrentIndex(0);
-
-    return toolResources->getComponentVisualizationScene();
+    return this->machineComponentScene->getComponentVisualizationScene();
 }
 
 void ResourceBar::clearSelection()
@@ -267,8 +271,8 @@ void ResourceBar::terminateSimulation()
 
 MachineTools* ResourceBar::getBuildTools() const
 {
-    if (toolResources != nullptr)
-        return toolResources->getBuildTools();
+    if (machineBuildTab != nullptr)
+        return machineBuildTab->getBuildTools();
     else
         return nullptr;
 }
@@ -284,8 +288,8 @@ SimulationWidget* ResourceBar::getTimeline() const
 void ResourceBar::tabChanged(int index)
 {
     // Clear selected tool on tab change
-    if ((toolResources != nullptr) && (index != 0))
-        toolResources->getBuildTools()->setTool(MachineTools::tool::none);
+    if ((machineBuildTab != nullptr) && (index != 0))
+        machineBuildTab->getBuildTools()->setTool(MachineTools::tool::none);
 }
 
 ResourceBar::mode ResourceBar::getCurrentMode() const

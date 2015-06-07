@@ -69,12 +69,13 @@ private:
 
     SimulationWidget* timeLine = nullptr;
 
-    QPushButton* buttonTriggerSimulation = nullptr;
-    QPushButton* buttonTriggerView       = nullptr;
-    QPushButton* buttonTriggerAutoStep   = nullptr;
-    QCheckBox*   checkBoxDelay           = nullptr;
-    QLineEdit*   autoStepValue           = nullptr;
-    QWidget*     simulationTools         = nullptr;
+    // QWidgets with parent
+    QPushButton * buttonTriggerSimulation = nullptr;
+    QPushButton * buttonTriggerView       = nullptr;
+    QPushButton * buttonTriggerAutoStep   = nullptr;
+    QCheckBox   * checkBoxDelay           = nullptr;
+    QLineEdit   * autoStepValue           = nullptr;
+    QWidget     * simulationTools         = nullptr;
 
     InputsSelector* inputList = nullptr;
 };

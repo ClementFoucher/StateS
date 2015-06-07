@@ -52,9 +52,10 @@ private slots:
     void signalValueChangedEventHandler();
 
 private:
-    shared_ptr<Signal> signalToCommand; // Should be weak
+    weak_ptr<Signal> signalToCommand;
     uint bitNumber = 0;
 
+    // QWidget with parent
     QLabel* bitValue = nullptr;
 };
 

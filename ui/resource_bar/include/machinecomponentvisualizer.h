@@ -19,34 +19,47 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGEEXPORTOPTIONS_H
-#define IMAGEEXPORTOPTIONS_H
+#ifndef MACHINECOMPONENTVISUALIZER_H
+#define MACHINECOMPONENTVISUALIZER_H
 
 // Parent
-#include <QDialog>
+#include <QWidget>
+
+// C++ classes
+#include <memory>
+using namespace std;
 
 // Qt classes
-class QComboBox;
-class QCheckBox;
+class QGraphicsScene;
+class QGraphicsView;
+class QMouseEvent;
+
+// StateS classes
+class Machine;
 
 
-class ImageExportOptions : public QDialog
+class MachineComponentVisualizer : public QWidget
 {
     Q_OBJECT
 
 public:
-    enum class imageFormat{pdf, svg, png, jpg};
+    explicit MachineComponentVisualizer(shared_ptr<Machine> machine);
 
-public:
-    explicit ImageExportOptions(QWidget* parent = nullptr);
+    shared_ptr<QGraphicsScene> getComponentVisualizationScene();
 
-    bool includeComponent();
-    imageFormat getImageFormat();
+protected:
+    void wheelEvent(QWheelEvent* event) override;
+
+private slots:
+    void updateMachineVisualization();
 
 private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* imageFormatSelectionBox = nullptr;
-    QCheckBox* includeComponentCheckBox = nullptr;
+    weak_ptr<Machine> machine;
+
+    shared_ptr<QGraphicsScene> scene;
+
+    // Qwidget with parent
+    QGraphicsView* view = nullptr;
 };
 
-#endif // IMAGEEXPORTOPTIONS_H
+#endif // MACHINECOMPONENTVISUALIZER_H

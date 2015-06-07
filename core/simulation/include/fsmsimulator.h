@@ -31,6 +31,7 @@ using namespace std;
 
 // Qt classes
 #include <QMap>
+#include <QWidget>
 class QSignalMapper;
 
 // StateS classes
@@ -70,8 +71,8 @@ private:
     weak_ptr<FsmTransition> latestTransitionCrossed;
     QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
 
-    QWidget* targetStateSelector = nullptr;
-    QSignalMapper* signalMapper  = nullptr;
+    unique_ptr<QWidget> targetStateSelector;
+    QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
 
 };
 

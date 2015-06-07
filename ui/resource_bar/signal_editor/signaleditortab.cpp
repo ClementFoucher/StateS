@@ -31,12 +31,14 @@
 
 // StateS classes
 #include "signallisteditor.h"
+#include "machinecomponentvisualizer.h"
 
 
-SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
+SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
     this->machine = machine;
+    this->machineComponentView = machineComponentView;
 
     this->setLayout(new QVBoxLayout());
 
@@ -78,29 +80,16 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent) :
 
     //
     // Machine visualization
-    QLabel* visuTitle = new QLabel("<b>" + tr("Machine visualization")  + "</b>");
-    visuTitle->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(visuTitle);
-
-    componentVisualization = new QGraphicsView();
-    componentVisualization->setScene(new QGraphicsScene());
-    this->updateMachineVisualization();
-    this->layout()->addWidget(componentVisualization);
-    connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &SignalEditorTab::updateMachineVisualization);
+    this->layout()->addWidget(machineComponentView.get());
 }
 
-void SignalEditorTab::showEvent(QShowEvent*)
+void SignalEditorTab::showEvent(QShowEvent *)
 {
-    this->updateMachineVisualization();
-}
+    // Ensure we get the view back
+    shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
 
-void SignalEditorTab::updateMachineVisualization()
-{
-    if (this->isVisible())
+    if (machineComponentView != nullptr)
     {
-        componentVisualization->scene()->clear();
-
-        shared_ptr<QGraphicsItem> component = machine.lock()->getComponentVisualization();
-        componentVisualization->scene()->addItem(component.get());
+        this->layout()->addWidget(machineComponentView.get());
     }
 }

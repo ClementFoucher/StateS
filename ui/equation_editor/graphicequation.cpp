@@ -464,7 +464,6 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
             menu->popup(this->mapToGlobal(event->pos()));
 
             connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
-            connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
         }
     }
 }
@@ -541,7 +540,6 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             menu->popup(this->mapToGlobal(event->pos()));
 
             connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
-            connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
         }
 
         event->acceptProposedAction();

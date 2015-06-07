@@ -543,7 +543,7 @@
     </message>
     <message>
         <source>Machine visualization</source>
-        <translation>Visualisation de la machine</translation>
+        <translation type="vanished">Visualisation de la machine</translation>
     </message>
     <message>
         <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out.</source>
@@ -552,6 +552,13 @@
     <message>
         <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool or display context menu if no tool selected.</source>
         <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; pour déselectionner l&apos;outil courant ou pour afficher un menu contextuel si aucun outil n&apos;est sélectionné.</translation>
+    </message>
+</context>
+<context>
+    <name>MachineComponentVisualizer</name>
+    <message>
+        <source>Machine visualization</source>
+        <translation>Visualisation de la machine</translation>
     </message>
 </context>
 <context>
@@ -625,7 +632,7 @@
     </message>
     <message>
         <source>Machine visualization</source>
-        <translation>Visualisation de la machine</translation>
+        <translation type="vanished">Visualisation de la machine</translation>
     </message>
     <message>
         <source>Switch between signals types using tabs below.</source>

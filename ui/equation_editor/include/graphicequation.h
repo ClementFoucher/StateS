@@ -78,6 +78,7 @@ private:
     void replaceEquation(shared_ptr<Signal> newEquation);
     void buildEquation();
 
+    // Use pointer because this is a QWidget with a parent
     GraphicEquation* parentEquation() const;
 
     bool isTemplate = false;

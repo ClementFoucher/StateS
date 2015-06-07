@@ -39,13 +39,13 @@ InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitN
 
     QHBoxLayout* layout = new QHBoxLayout(this);
 
-    this->bitValue = new QLabel(QString::number(this->signalToCommand->getCurrentValue()[this->bitNumber]));
-    this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + this->signalToCommand->getName());
+    this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+    this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + signalToCommand->getName());
     layout->addWidget(this->bitValue);
 
     this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-    connect(this->signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
+    connect(signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEvent* event)
@@ -65,14 +65,24 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-    LogicValue signalValue = this->signalToCommand->getCurrentValue();
+    shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
 
-    signalValue[this->bitNumber] = !signalValue[this->bitNumber];
+    if (signalToCommand != nullptr)
+    {
+        LogicValue signalValue = signalToCommand->getCurrentValue();
 
-    this->signalToCommand->setCurrentValue(signalValue);
+        signalValue[this->bitNumber] = !signalValue[this->bitNumber];
+
+        signalToCommand->setCurrentValue(signalValue);
+    }
 }
 
 void InputBitSelector::signalValueChangedEventHandler()
 {
-    this->bitValue->setText(QString::number(this->signalToCommand->getCurrentValue()[this->bitNumber]));
+    shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
+
+    if (signalToCommand != nullptr)
+    {
+        this->bitValue->setText(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+    }
 }

@@ -54,19 +54,8 @@ public:
 private:
     weak_ptr<Machine> machine;
 
-    QVBoxLayout* mainLayout         = nullptr;
-
-    QHBoxLayout* resourcesLayout    = nullptr;
-    QVBoxLayout* inputListLayout    = nullptr;
-    QVBoxLayout* variableListLayout = nullptr;
-    QVBoxLayout* constantListLayout = nullptr;
-    QGridLayout* operatorListLayout = nullptr;
-    QHBoxLayout* buttonsLayout      = nullptr;
-
-    GraphicEquation* equation = nullptr;
-
-    QPushButton* buttonOK     = nullptr;
-    QPushButton* buttonCancel = nullptr;
+    // Use pointer because this is a QWidget with a parent
+    GraphicEquation* equationDisplay = nullptr;
 };
 
 #endif // EQUATIONEDITOR_H

@@ -39,6 +39,9 @@ class QString;
 #include "truthtable.h"
 class Fsm;
 
+// For now, use pointers to TruthTables for storage reasons
+// (QHash vs shared_ptr).
+// Should be reviewd a some point.
 
 class FsmVerifier : public QObject
 {

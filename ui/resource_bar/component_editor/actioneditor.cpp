@@ -178,7 +178,6 @@ void ActionEditor::addAction()
                 }
 
                 connect(menu, &QMenu::triggered, this, &ActionEditor::treatMenuAdd);
-                connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
             }
             else
             {

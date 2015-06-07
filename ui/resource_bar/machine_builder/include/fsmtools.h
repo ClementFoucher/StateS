@@ -47,6 +47,7 @@ private slots:
     void buttonNotToolPushed(bool);
 
 private:
+    // QWidgets with parent
     QPushButton* buttonAddState        = nullptr;
     QPushButton* buttonAddInitialState = nullptr;
     QPushButton* buttonAddTransition   = nullptr;

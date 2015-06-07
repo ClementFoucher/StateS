@@ -34,6 +34,7 @@ class QGraphicsView;
 
 // StateS classes
 class Machine;
+class MachineComponentVisualizer;
 
 
 class SignalEditorTab : public QWidget
@@ -41,17 +42,14 @@ class SignalEditorTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit SignalEditorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+    explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
     void showEvent(QShowEvent*);
 
-private slots:
-    void updateMachineVisualization();
-
 private:
+    weak_ptr<MachineComponentVisualizer> machineComponentView;
     weak_ptr<Machine> machine;
-    QGraphicsView* componentVisualization = nullptr;
 };
 
 #endif // SIGNALSEDITORTAB_H

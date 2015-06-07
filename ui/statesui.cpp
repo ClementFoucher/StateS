@@ -212,9 +212,9 @@ void StatesUi::newMachineRequestEventHandler()
 
     if (doNew)
     {
-        emit newFsmRequestEvent();
         this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
         this->actionSaveCurrent->setEnabled(false);
+        emit newFsmRequestEvent();
     }
 }
 
@@ -395,7 +395,7 @@ void StatesUi::exportImageRequestEventHandler()
             {
                 QRectF totalSceneSize = scene->sceneRect();
 
-                scene = resourcesBar->getComponentVisualizationScene();
+                scene = resourcesBar->getComponentVisualizationScene().get();
                 QRectF componentSize;
 
                 if (selectedFormat == ImageExportOptions::imageFormat::pdf)

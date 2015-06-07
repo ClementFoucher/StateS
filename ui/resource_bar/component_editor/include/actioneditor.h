@@ -63,6 +63,7 @@ private:
 
     QMap<QTableWidgetItem*, weak_ptr<Signal>> tableItemsMapping;
 
+    // Qwidgets with parent
     QTableWidget* actionList = nullptr;
 
     QPushButton* buttonAddAction = nullptr;

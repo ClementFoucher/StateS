@@ -45,7 +45,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
     this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->setWindowTitle(tr("StateS equation editor"));
 
-    mainLayout = new QVBoxLayout(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
     //
     // Title
@@ -60,12 +60,12 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
     mainLayout->addWidget(resourcesTitle);
 
     QWidget* resourcesWidget = new QWidget();
-    resourcesLayout = new QHBoxLayout(resourcesWidget);
+    QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
 
     // Display signals
     if (machine->getInputs().count() != 0)
     {
-        inputListLayout = new QVBoxLayout();
+        QVBoxLayout* inputListLayout = new QVBoxLayout();
         inputListLayout->setAlignment(Qt::AlignTop);
         resourcesLayout->addLayout(inputListLayout);
 
@@ -82,7 +82,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 
     if (machine->getLocalVariables().count() != 0)
     {
-        variableListLayout = new QVBoxLayout();
+        QVBoxLayout* variableListLayout = new QVBoxLayout();
         variableListLayout->setAlignment(Qt::AlignTop);
         resourcesLayout->addLayout(variableListLayout);
 
@@ -99,7 +99,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 
     if (machine->getConstants().count() != 0)
     {
-        constantListLayout = new QVBoxLayout();
+        QVBoxLayout* constantListLayout = new QVBoxLayout();
         constantListLayout->setAlignment(Qt::AlignTop);
         resourcesLayout->addLayout(constantListLayout);
 
@@ -115,7 +115,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
     }
 
     // Display operators
-    operatorListLayout = new QGridLayout();
+    QGridLayout* operatorListLayout = new QGridLayout();
     operatorListLayout->setAlignment(Qt::AlignTop);
     resourcesLayout->addLayout(operatorListLayout);
 
@@ -159,18 +159,18 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 
     if (initialEquation != nullptr)
     {
-        shared_ptr<Equation> equation = dynamic_pointer_cast<Equation>(initialEquation);
-        if (equation != nullptr)
-            this->equation = new GraphicEquation(equation->clone(), false);
+        shared_ptr<Equation> newEquation = dynamic_pointer_cast<Equation>(initialEquation);
+        if (newEquation != nullptr)
+            this->equationDisplay = new GraphicEquation(newEquation->clone(), false);
         else
-            this->equation = new GraphicEquation(initialEquation, false);
+            this->equationDisplay = new GraphicEquation(initialEquation, false);
     }
     else
     {
-        this->equation = new GraphicEquation(nullptr, false);
+        this->equationDisplay = new GraphicEquation(nullptr, false);
     }
 
-    mainLayout->addWidget(equation, 0, Qt::AlignHCenter);
+    mainLayout->addWidget(this->equationDisplay, 0, Qt::AlignHCenter);
 
     QLabel* equationInfo= new QLabel(tr("You can also use right-click on equation members to edit"));
     equationInfo->setAlignment(Qt::AlignCenter);
@@ -178,19 +178,19 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 
     //
     // Buttons
-    buttonsLayout = new QHBoxLayout();
+    QHBoxLayout* buttonsLayout = new QHBoxLayout();
     mainLayout->addLayout(buttonsLayout);
 
-    buttonOK = new QPushButton(tr("OK"));
+    QPushButton* buttonOK = new QPushButton(tr("OK"));
     buttonsLayout->addWidget(buttonOK);
     connect(buttonOK, &QAbstractButton::clicked, this, &EquationEditor::accept);
 
-    buttonCancel = new QPushButton(tr("Cancel"));
+    QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
     buttonsLayout->addWidget(buttonCancel);
     connect(buttonCancel, &QAbstractButton::clicked, this, &EquationEditor::reject);
 }
 
 shared_ptr<Signal> EquationEditor::getResultEquation() const
 {
-    return equation->getLogicEquation();
+    return this->equationDisplay->getLogicEquation();
 }

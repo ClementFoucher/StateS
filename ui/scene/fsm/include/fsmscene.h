@@ -86,7 +86,7 @@ private:
     bool isEditingTransitionSource = false;
     bool isEditingTransitionTarget = false;
     bool isSimulating = false;
-    FsmGraphicalTransition * currentTransition = nullptr;
+    FsmGraphicalTransition* currentTransition = nullptr;
 
     QPointF mousePos;
 

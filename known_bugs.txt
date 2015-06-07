@@ -1,24 +1,24 @@
 
-*******************
-* StateS v. 0.3.7 *
-*******************
+******************************
+* StateS v. 0.3.7 Known Bugs *
+******************************
 
-// The following behaviors are known.
-// They may be buggy, or just uninmplemented code.
+// The following behaviors are known:
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Begin/end simulation: machine's colors update is not complete,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
 - Escape key have to be pushed twice to cancel signal creation/edition,
-- Signals name at a bottom of a list are partially hidden on creation/edition.
+- Signals names at a bottom of an edition list are partially hidden on creation/edition,
+- Machine component visualization: scrolling and zoom are interfering.
 
-// VHDL export issues
+// VHDL export issues:
 
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
 - Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax.
 
-// Not bugs, but still
+// Not bugs, but still:
 
 - Signals are not sorted anywhere, which can be annoying when there are legion,
 - Straight line transitions selection is only done by clicking exactly on the line, so very difficult to catch.

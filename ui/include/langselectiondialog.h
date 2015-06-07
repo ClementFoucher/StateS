@@ -57,6 +57,7 @@ private:
     shared_ptr<QTranslator>  translator;
     shared_ptr<QApplication> application;
 
+    // Use pointer because this is a QWidget with a parent
     QLabel* title = nullptr;
 };
 

@@ -215,7 +215,6 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                     this->mousePos = me->scenePos();
 
                     connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
-                    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
                 }
             }
             GenericScene::mousePressEvent(me);
@@ -335,41 +334,50 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
             currentTransition->endDynamicMode(false);
             currentTransition = nullptr;
         }
+        else
+        {
+            // Transmit to scene objects
+            GenericScene::keyPressEvent(event);
+        }
     }
     else if ( (event->key() == Qt::Key_Right) ||
-              (event->key() == Qt::Key_Left) ||
-              (event->key() == Qt::Key_Up) ||
+              (event->key() == Qt::Key_Left)  ||
+              (event->key() == Qt::Key_Up)    ||
               (event->key() == Qt::Key_Down)
             )
     {
-        if (this->selectedItems().count() > 1)
+        if (this->selectedItems().count() == 0)
         {
-            // Only transmit move orders to states when multiple childs:
-            // Single selected states are not handled here
-
+            // Ignore event => transmitted to view widget
+            // which will handle it as view move
+            event->ignore();
+        }
+        else
+        {
+            bool atLeastOneState = false;
+            // Transmit event to each state in the list
             foreach (QGraphicsItem* item, this->selectedItems())
             {
                 FsmGraphicalState* state = dynamic_cast<FsmGraphicalState*>(item);
 
                 if (state != nullptr)
+                {
+                    atLeastOneState = true;
                     state->keyPressEvent(event);
+                }
+            }
+
+            if (!atLeastOneState)
+            {
+                // Same as if there were no selected items at all
+                event->ignore();
             }
         }
-        else if (this->selectedItems().count() == 1)
-        {
-            FsmGraphicalState* state = dynamic_cast<FsmGraphicalState*>(this->selectedItems()[0]);
-
-            if (state != nullptr)
-                state->keyPressEvent(event);
-            else
-                event->ignore();
-        }
-        else
-            event->ignore();
     }
     else
     {
-        event->ignore();
+        // All other events are passed directly to items
+        GenericScene::keyPressEvent(event);
     }
 }
 

@@ -80,7 +80,8 @@ SOURCES += \
     ui/resource_bar/verifiertab.cpp \
     core/simulation/fsmsimulator.cpp \
     ui/simulation/simulationwidget.cpp \
-    ui/imageexportoptions.cpp
+    ui/imageexportoptions.cpp \
+    ui/resource_bar/machinecomponentvisualizer.cpp
 
 
 HEADERS  += \
@@ -145,7 +146,8 @@ HEADERS  += \
     ui/resource_bar/include/verifiertab.h \
     core/simulation/include/fsmsimulator.h \
     ui/simulation/include/simulationwidget.h \
-    ui/include/imageexportoptions.h
+    ui/include/imageexportoptions.h \
+    ui/resource_bar/include/machinecomponentvisualizer.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \
@@ -190,4 +192,7 @@ RESOURCES += \
 
 TRANSLATIONS += \
     translations/français.ts
+
+DISTFILES += \
+    upcoming_features.txt
 

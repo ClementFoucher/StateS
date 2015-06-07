@@ -26,7 +26,7 @@
 #include <QKeyEvent>
 
 
-DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
+DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, shared_ptr<QValidator> validator, QWidget* parent) :
     QLineEdit(content, parent)
 {
     this->selfManaged = selfManaged;
@@ -35,7 +35,7 @@ DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QVali
         connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
 
     if (validator != nullptr)
-        this->setValidator(validator);
+        this->setValidator(validator.get());
 }
 
 void DynamicLineEdit::userValidatedEventHandler()

@@ -296,80 +296,96 @@ void SignalListEditor::cancelCurrentEdit()
 
 void SignalListEditor::endAddSignal()
 {
-    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-    QString finalName = editor->text();
+    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
 
-    // If success, list is reloaded through events,
-    // which resets mode.
-    shared_ptr<Signal> newSignal = addSignalEvent(this->editorType, finalName);
-
-    // If adding signal failed, continue editing signal name
-    if (newSignal == nullptr)
+    if (editor != nullptr)
     {
-        editor->markAsErroneous();
+        QString finalName = editor->text();
+
+        // If success, list is reloaded through events,
+        // which resets mode.
+        shared_ptr<Signal> newSignal = addSignalEvent(this->editorType, finalName);
+
+        // If adding signal failed, continue editing signal name
+        if (newSignal == nullptr)
+        {
+            editor->markAsErroneous();
+        }
     }
 }
 
 
 void SignalListEditor::endRenameSignal()
 {
-    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-    QString finalName = editor->text();
+    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
 
-    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
-
-    if ( (currentSignal != nullptr) && (finalName != currentSignal->getName()) )
+    if (editor != nullptr)
     {
-        bool success = renameSignalEvent(currentSignal->getName(), finalName);
+        QString finalName = editor->text();
 
-        if (!success)
+        shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+        if ( (currentSignal != nullptr) && (finalName != currentSignal->getName()) )
         {
-            editor->markAsErroneous();
-        }
+            bool success = renameSignalEvent(currentSignal->getName(), finalName);
 
+            if (!success)
+            {
+                editor->markAsErroneous();
+            }
+
+        }
+        else
+            updateList();
     }
-    else
-        updateList();
 }
 
 void SignalListEditor::endResizeSignal()
 {
-    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-    uint finalSize = (uint)editor->text().toInt();
+    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
 
-    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
-
-    if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
+    if (editor != nullptr)
     {
-        bool success = resizeSignalEvent(currentSignal->getName(), finalSize);
+        uint finalSize = (uint)editor->text().toInt();
 
-        if (!success)
+        shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+        if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
         {
-            editor->markAsErroneous();
+            bool success = resizeSignalEvent(currentSignal->getName(), finalSize);
+
+            if (!success)
+            {
+                editor->markAsErroneous();
+            }
         }
+        else
+            updateList();
     }
-    else
-        updateList();
 }
 
 void SignalListEditor::endChangeSignalInitialValue()
 {
-    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-    LogicValue newInitialValue = LogicValue::fromString(editor->text());
+    shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
 
-    shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
-
-    if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
+    if (editor != nullptr)
     {
-        bool success = changeSignalInitialValueEvent(currentSignal->getName(), newInitialValue);
+        LogicValue newInitialValue = LogicValue::fromString(editor->text());
 
-        if (!success)
+        shared_ptr<Signal> currentSignal = associatedSignals[currentTableItem].lock();
+
+        if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
         {
-            editor->markAsErroneous();
+            bool success = changeSignalInitialValueEvent(currentSignal->getName(), newInitialValue);
+
+            if (!success)
+            {
+                editor->markAsErroneous();
+            }
         }
+        else
+            updateList();
     }
-    else
-        updateList();
 }
 
 void SignalListEditor::removeSelectedSignals()
@@ -439,7 +455,7 @@ void SignalListEditor::switchMode(mode newMode)
 
         if (newMode == mode::resizingSignal)
         {
-            listDelegate->setValidator(new QIntValidator(1, 64));
+            listDelegate->setValidator(shared_ptr<QValidator>(new QIntValidator(1, 64)));
         }
         else if (newMode == mode::changingSignalInitialValue)
         {
@@ -448,7 +464,7 @@ void SignalListEditor::switchMode(mode newMode)
             if (currentSignal != nullptr)
             {
                 QRegularExpression re("[01]{" + QString::number(currentSignal->getSize()) + "}");
-                listDelegate->setValidator(new QRegularExpressionValidator(re, 0));
+                listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
             }
         }
 
@@ -473,7 +489,10 @@ void SignalListEditor::switchMode(mode newMode)
 
         signalsList->openPersistentEditor(currentTableItem);
 
-        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-        connect(editor, &DynamicLineEdit::returnPressed, this, &SignalListEditor::validateCurrentEdit);
+        shared_ptr<DynamicLineEdit> editor = this->listDelegate->getCurentEditor();
+        if (editor != nullptr)
+        {
+            connect(editor.get(), &DynamicLineEdit::returnPressed, this, &SignalListEditor::validateCurrentEdit);
+        }
     }
 }

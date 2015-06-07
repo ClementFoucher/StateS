@@ -166,8 +166,8 @@ void FsmSimulator::clockEventHandler()
 
         this->clock->stop();
 
-        this->targetStateSelector = new QWidget();
-        QVBoxLayout* choiceWindowLayout = new QVBoxLayout(targetStateSelector);
+        targetStateSelector = unique_ptr<QWidget>(new QWidget());
+        QVBoxLayout* choiceWindowLayout = new QVBoxLayout(targetStateSelector.get());
 
         QLabel* choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
                                                      + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
@@ -186,7 +186,7 @@ void FsmSimulator::clockEventHandler()
             this->signalMapper->setMapping(button, i);
 
             connect(button, &QPushButton::clicked, this->signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-            connect(button, &QPushButton::clicked, this->targetStateSelector, &QWidget::close);
+            connect(button, &QPushButton::clicked, this->targetStateSelector.get(), &QWidget::close);
 
             choiceWindowLayout->addWidget(button);
         }
@@ -197,8 +197,7 @@ void FsmSimulator::clockEventHandler()
 
 void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 {
-    delete this->targetStateSelector;
-    this->targetStateSelector = nullptr;
+    this->targetStateSelector.reset();
 
     this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
     this->signalMapper = nullptr;

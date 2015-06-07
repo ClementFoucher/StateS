@@ -54,19 +54,20 @@ public:
 
 private slots:
     void checkNow();
-    void clear();
+    void clearDisplay();
 
     void proofRequested(QListWidgetItem* item);
 
 private:
     weak_ptr<Fsm> machine;
 
-    FsmVerifier* verifier = nullptr;
+    unique_ptr<FsmVerifier> verifier;
 
-    QLabel* listTitle = nullptr;
-    QListWidget* list = nullptr;
-    QPushButton* buttonClear = nullptr;
-    TruthTableDisplay* truthTable = nullptr;
+    // QWidgets with parent
+    QLabel            * listTitle   = nullptr;
+    QListWidget       * list        = nullptr;
+    QPushButton       * buttonClear = nullptr;
+    TruthTableDisplay * truthTable  = nullptr;
 };
 
 #endif // VERIFIERTAB_H

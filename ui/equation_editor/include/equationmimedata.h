@@ -39,6 +39,7 @@ public:
     GraphicEquation* getEquation() const;
 
 private:
+    // Use pointer because this is a QWidget with a parent
     GraphicEquation* equation = nullptr;
 };
 

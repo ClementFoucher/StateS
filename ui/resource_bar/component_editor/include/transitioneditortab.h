@@ -45,6 +45,7 @@ public:
     void changeEditedTransition(shared_ptr<FsmTransition> transition);
 
 private:
+    // QWidgets with parent
     ActionEditor*    actionEditor    = nullptr;
     ConditionEditor* conditionEditor = nullptr;
 };

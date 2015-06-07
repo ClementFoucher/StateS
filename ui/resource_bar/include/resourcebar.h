@@ -29,6 +29,9 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+class QGraphicsScene;
+
 // StateS classes
 class MachineBuilderTab;
 class MachineTools;
@@ -41,7 +44,7 @@ class SimulatorTab;
 class AboutTab;
 class VerifierTab;
 class SimulationWidget;
-class QGraphicsScene;
+class MachineComponentVisualizer;
 
 
 class ResourceBar : public QTabWidget
@@ -65,7 +68,7 @@ public:
     void selectedState(shared_ptr<FsmState> state, bool showTab = false, bool editName = false);
     void selectedTransition(shared_ptr<FsmTransition> transition, bool showTab = false);
 
-    QGraphicsScene* getComponentVisualizationScene();
+    shared_ptr<QGraphicsScene> getComponentVisualizationScene();
 
 public slots:
     void clearSelection();
@@ -81,13 +84,15 @@ private slots:
 
 private:
     weak_ptr<Machine> machine;
+    shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-    MachineBuilderTab  * toolResources      = nullptr;
-    SignalEditorTab    * interfaceResources = nullptr;
-    ComponentEditorTab * editorTab          = nullptr;
-    SimulatorTab       * simulatorTab       = nullptr;
-    VerifierTab        * verifierTab        = nullptr;
-    AboutTab           * aboutTab           = nullptr;
+    // QWdigets with parent
+    MachineBuilderTab  * machineBuildTab = nullptr;
+    SignalEditorTab    * signalsTab      = nullptr;
+    ComponentEditorTab * editorTab       = nullptr;
+    SimulatorTab       * simulatorTab    = nullptr;
+    VerifierTab        * verifierTab     = nullptr;
+    AboutTab           * aboutTab        = nullptr;
 
     mode currentMode = mode::voidMode;
 };

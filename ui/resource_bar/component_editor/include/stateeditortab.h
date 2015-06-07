@@ -55,6 +55,7 @@ private slots:
 private:
     weak_ptr<FsmState> state;
 
+    // QWidgets with parent
     DynamicLineEdit* textStateName = nullptr;
     ActionEditor* actionEditor = nullptr;
 };

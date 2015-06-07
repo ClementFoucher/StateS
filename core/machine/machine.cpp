@@ -140,79 +140,208 @@ bool Machine::isEmpty() const
         return false;
 }
 
-shared_ptr<QGraphicsItem> Machine::getComponentVisualization() const
+/**
+ * @brief Machine::getComponentVisualization
+ * Object calling this function takes ownership op
+ * visu. We need to rebuild it, but silently as this
+ * is not an update, just a kind of copy.
+ * @return
+ */
+QGraphicsItem* Machine::getComponentVisualization()
 {
-    return this->componentVisu;
+    QGraphicsItem* currentVisu = this->componentVisu;
+    this->componentVisu = nullptr;
+
+    inhibateEvent = true;
+    rebuildComponentVisualization();
+    inhibateEvent = false;
+
+    return currentVisu;
 }
 
 void Machine::rebuildComponentVisualization()
 {
-    shared_ptr<QGraphicsItem> visu = shared_ptr<QGraphicsItem>(new QGraphicsItemGroup());
+    // /!\ QGraphicsItemGroup bounding box seems not to be updated
+    // if item is added using its constructor's parent parameter
 
-    uint componentWidth = 0;
-    uint componentHeigh = 0;
-    uint horizontalSignalsSpace = 50;
+    delete this->componentVisu;
+    this->componentVisu = nullptr;
 
-    uint inputsXSize = 0;
-    QList<shared_ptr<Input>> inputs = this->getInputs();
-    for(int i = 0 ; i < inputs.count() ; i++)
+    QGraphicsItemGroup* visu = new QGraphicsItemGroup();
+
+    //
+    // Main sizes
+
+    qreal signalsLinesWidth = 20;
+    qreal horizontalSignalsNamesSpacer = 50;
+    qreal verticalElementsSpacer = 5;
+    qreal busesLineHeight = 10;
+    qreal busesLineWidth = 5;
+
+
+    //
+    // Draw inputs
+
+    QGraphicsItemGroup* inputsGroup = new QGraphicsItemGroup();
+
     {
-        QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText(), visu.get());
-        text->setPos(0, 25 + i*20);
-        if (text->boundingRect().width() > inputsXSize)
-            inputsXSize = text->boundingRect().width();
+        // Items position wrt. subgroup:
+        // All items @ Y = 0, and rising
+        // Signals names @ X > 0
+        // Lines @ X < 0
 
-        uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
-        new QGraphicsLineItem(-10, lineHeigh, 0, lineHeigh, visu.get());
+        QList<shared_ptr<Input>> inputs = this->getInputs();
+
+        qreal currentInputY = 0;
+        for(int i = 0 ; i < inputs.count() ; i++)
+        {
+            QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText());//, inputsGroup);
+            inputsGroup->addToGroup(text);
+            text->setPos(0, currentInputY);
+
+            qreal currentLineY = currentInputY + text->boundingRect().height()/2;
+            inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth, currentLineY, 0, currentLineY));//, inputsGroup);
+
+            if (inputs[i]->getSize() > 1)
+            {
+                inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+                QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(inputs[i]->getSize()));
+                inputsGroup->addToGroup(sizeText);
+                sizeText->setPos(-signalsLinesWidth/2 - sizeText->boundingRect().width(), currentLineY - sizeText->boundingRect().height());
+            }
+
+            currentInputY += text->boundingRect().height();
+        }
     }
-    componentWidth += inputsXSize;
 
-    uint outputsXSize = 0;
-    QList<shared_ptr<Output>> outputs = this->getOutputs();
-    QList<QGraphicsTextItem*> graphicsOutputs;
-    for(int i = 0 ; i < outputs.count() ; i++)
+
+    //
+    // Draw outputs
+
+    QGraphicsItemGroup* outputsGroup = new QGraphicsItemGroup();
+
     {
-        QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText(), visu.get());
-        text->setPos(inputsXSize + 50, 25 + i*20);
-        if (text->boundingRect().width() > outputsXSize)
-            outputsXSize = text->boundingRect().width();
+        // Items position wrt. subgroup:
+        // All items @ Y = 0, and rising
+        // Signals names @ X < 0
+        // Lines @ X > 0
 
-        graphicsOutputs.append(text);
+        QList<shared_ptr<Output>> outputs = this->getOutputs();
+
+        qreal currentOutputY = 0;
+        for(int i = 0 ; i < outputs.count() ; i++)
+        {
+            QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText()); //, outputsGroup);
+            outputsGroup->addToGroup(text);
+            text->setPos(-text->boundingRect().width(), currentOutputY);
+
+            qreal currentLineY = currentOutputY + text->boundingRect().height()/2;
+            outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, signalsLinesWidth, currentLineY));
+
+            if (outputs[i]->getSize() > 1)
+            {
+                outputsGroup->addToGroup(new QGraphicsLineItem(signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+                QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(outputs[i]->getSize()));
+                outputsGroup->addToGroup(sizeText);
+                sizeText->setPos(signalsLinesWidth/2, currentLineY - sizeText->boundingRect().height());
+            }
+
+            currentOutputY += text->boundingRect().height();
+        }
     }
-    componentWidth += horizontalSignalsSpace + outputsXSize;
 
-    foreach(QGraphicsTextItem* text, graphicsOutputs)
+    //
+    // Draw component name
+
+    QGraphicsTextItem* title = new QGraphicsTextItem();
+
     {
-        text->setX(componentWidth - text->boundingRect().width());
-
-        uint lineHeigh = text->pos().y() + text->boundingRect().height()/2;
-        new QGraphicsLineItem(componentWidth, lineHeigh, componentWidth + 10, lineHeigh, visu.get());
+        title->setHtml("<b>" + tr("Machine") + "</b>");
     }
 
-    uint maxSignalsCount = max(this->inputs.count(), this->outputs.count());
 
-    QGraphicsTextItem* title = new QGraphicsTextItem(visu.get());
-    title->setHtml("<b>" + tr("Machine") + "</b>");
+    //
+    // Compute component size
 
-    if (componentWidth <= title->boundingRect().width() + horizontalSignalsSpace)
+    qreal componentWidth;
+    qreal componentHeight;
+
     {
-        componentWidth = title->boundingRect().width() + horizontalSignalsSpace;
+        // Width
+
+        qreal inputsNamesWidth = inputsGroup->boundingRect().width() - signalsLinesWidth;
+        qreal outputsNamesWidth = outputsGroup->boundingRect().width() - signalsLinesWidth;
+
+        componentWidth = inputsNamesWidth + horizontalSignalsNamesSpacer + outputsNamesWidth;
+
+        if (componentWidth <= title->boundingRect().width() + horizontalSignalsNamesSpacer)
+        {
+            componentWidth = title->boundingRect().width() + horizontalSignalsNamesSpacer;
+        }
+
+        // Height
+
+        qreal maxSignalsHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
+
+        componentHeight =
+                verticalElementsSpacer +
+                title->boundingRect().height() +
+                verticalElementsSpacer +
+                maxSignalsHeight +
+                verticalElementsSpacer;
+
     }
 
-    title->setPos((componentWidth-title->boundingRect().width())/2, 5);
+    //
+    // Draw component border
 
-    componentHeigh = 40 + 20*maxSignalsCount;
+    QGraphicsPolygonItem* border = nullptr;
 
-    QPolygonF borderPolygon;
-    borderPolygon.append(QPoint(0,              0));
-    borderPolygon.append(QPoint(componentWidth, 0));
-    borderPolygon.append(QPoint(componentWidth, componentHeigh));
-    borderPolygon.append(QPoint(0,              componentHeigh));
+    {
+        QPolygonF borderPolygon;
+        borderPolygon.append(QPoint(0,              0));
+        borderPolygon.append(QPoint(componentWidth, 0));
+        borderPolygon.append(QPoint(componentWidth, componentHeight));
+        borderPolygon.append(QPoint(0,              componentHeight));
 
-    new QGraphicsPolygonItem(borderPolygon, visu.get());
+        border = new QGraphicsPolygonItem(borderPolygon);
+    }
+
+    //
+    // Place components in main group
+
+    {
+        // Items position wrt. main group:
+        // Component top left corner @ (0; 0)
+
+        visu->addToGroup(border);
+        visu->addToGroup(title);
+        visu->addToGroup(inputsGroup);
+        visu->addToGroup(outputsGroup);
+
+
+        border->setPos(0, 0);
+
+        title->setPos( (componentWidth-title->boundingRect().width())/2, verticalElementsSpacer);
+
+        qreal verticalSignalsNameOffset = title->boundingRect().bottom() + verticalElementsSpacer;
+
+        qreal inoutsDeltaHeight = inputsGroup->boundingRect().height() - outputsGroup->boundingRect().height();
+        qreal additionalInputsOffet  = (inoutsDeltaHeight > 0 ? 0 : -inoutsDeltaHeight/2);
+        qreal additionalOutputsOffet = (inoutsDeltaHeight < 0 ? 0 : inoutsDeltaHeight/2);
+
+        inputsGroup-> setPos(0,              verticalSignalsNameOffset + additionalInputsOffet);
+        outputsGroup->setPos(componentWidth, verticalSignalsNameOffset + additionalOutputsOffet);
+    }
+
+
+    //
+    // Done
 
     this->componentVisu = visu;
-    emit componentVisualizationUpdatedEvent();
+
+    if (!inhibateEvent)
+        emit componentVisualizationUpdatedEvent();
 }
 
 shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)

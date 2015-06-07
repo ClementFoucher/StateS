@@ -66,7 +66,8 @@ public:
 
     QGraphicsItemGroup* getActionsBox() const;
 
-    // Raised visibility (should be protected) to allow direct calls
+    // Raised visibility (should be protected) to allow direct calls:
+    // Needed cause an event can be manually transmitted to various items
     void keyPressEvent(QKeyEvent* event) override;
 
 public slots:

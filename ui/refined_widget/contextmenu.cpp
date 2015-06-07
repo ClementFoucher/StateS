@@ -35,6 +35,7 @@ const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px d
 ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)
 {
+    connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
     this->setStyleSheet( QString( "border: 1px solid"));
 }
 

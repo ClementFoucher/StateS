@@ -25,6 +25,10 @@
 // Parent
 #include <QLineEdit>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 class QValidator;
 
@@ -34,7 +38,7 @@ class DynamicLineEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator = nullptr, QWidget* parent = nullptr);
+    explicit DynamicLineEdit(const QString& content, bool selfManaged, shared_ptr<QValidator> validator = nullptr, QWidget* parent = nullptr);
 
     void markAsErroneous();
     void resetView();

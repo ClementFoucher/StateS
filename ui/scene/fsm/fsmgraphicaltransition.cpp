@@ -908,7 +908,6 @@ void FsmGraphicalTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* ev
         menu->popup(event->screenPos());
 
         connect(menu, &QMenu::triggered, this, &FsmGraphicalTransition::treatMenu);
-        connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
     }
 }
 

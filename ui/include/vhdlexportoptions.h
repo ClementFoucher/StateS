@@ -40,6 +40,7 @@ public:
     bool prefixIOs();
 
 private:
+    // Use pointers because these are QWidgets with a parent
     QComboBox* resetLogicSelectionBox = nullptr;
     QComboBox* addPrefixSelectionBox  = nullptr;
 };

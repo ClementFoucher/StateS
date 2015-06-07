@@ -82,8 +82,8 @@ void StateS::generateNewFsm()
 void StateS::clearMachine()
 {
     this->statesUi->setMachine(nullptr);
-    this->currentFile.clear();
     this->machine.reset();
+    this->currentFile.clear();
 }
 
 void StateS::loadMachine(const QString& path)

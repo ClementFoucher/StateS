@@ -26,12 +26,19 @@
 #include <QMenu>
 
 
+/**
+ * @brief The ContextMenu class
+ * This class muse be used only using standard pointers,
+ * as deletion is automatic on component hide.
+ */
+
+
 class ContextMenu : public QMenu
 {
     Q_OBJECT
 
 public:
-    static ContextMenu* createErrorMenu(const QString& text, QWidget *parent = nullptr);
+    static ContextMenu* createErrorMenu(const QString& text, QWidget* parent = nullptr);
 
     static const QString errorStyle;
     static const QString listStyle;

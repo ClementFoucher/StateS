@@ -43,7 +43,7 @@ public:
     void chageEventDelay(uint eventDelay);
 
 protected:
-    void paintEvent(QPaintEvent *) override;
+    void paintEvent(QPaintEvent*) override;
 
     uint stepLength;
 

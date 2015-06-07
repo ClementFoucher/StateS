@@ -66,6 +66,7 @@ private:
     weak_ptr<FsmTransition> transition;
     TruthTable* truthTable = nullptr;
 
+    // QWidgets with parent
     QGridLayout* layout = nullptr;
 
     QLabel* conditionText        = nullptr;

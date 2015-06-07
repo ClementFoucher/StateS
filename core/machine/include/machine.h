@@ -80,7 +80,7 @@ public:
     virtual void clear();
     virtual bool isEmpty() const;
 
-    shared_ptr<QGraphicsItem> getComponentVisualization() const;
+    QGraphicsItem* getComponentVisualization();
 
 public slots:
     shared_ptr<Signal> addSignal(signal_type type, const QString& name);
@@ -106,7 +106,11 @@ protected:
 private:
     void rebuildComponentVisualization();
     QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
-    shared_ptr<QGraphicsItem> componentVisu = nullptr;
+
+    // Local copy of visu => pointer because scene takes ownership
+    QGraphicsItem* componentVisu = nullptr;
+
+    bool inhibateEvent = false;
 };
 
 #endif // MACHINE_H

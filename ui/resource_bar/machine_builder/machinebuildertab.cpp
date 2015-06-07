@@ -34,12 +34,13 @@
 // StateS classes
 #include "fsmtools.h"
 #include "machine.h"
+#include "machinecomponentvisualizer.h"
 
 
-MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machine> machine, QWidget* parent) :
+MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
-    this->machine = machine;
+    this->machineComponentView = machineComponentView;
 
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setAlignment(Qt::AlignTop);
@@ -84,16 +85,7 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
         qDebug() << "(Drawing tool bar:) Error, unknown machine type";
     }
 
-    QLabel* visuTitle = new QLabel("<b>" + tr("Machine visualization") + "</b>");
-    visuTitle ->setAlignment(Qt::AlignCenter);
-    layout->addWidget(visuTitle);
-
-    componentVisualization = new QGraphicsView();
-    componentVisualization->setScene(new QGraphicsScene());
-    this->updateMachineVisualization();
-    layout->addWidget(componentVisualization);
-
-    connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineBuilderTab::updateMachineVisualization);
+    layout->addWidget(machineComponentView.get());
 
     this->setLayout(layout);
 }
@@ -103,27 +95,13 @@ MachineTools* MachineBuilderTab::getBuildTools() const
     return buildTools;
 }
 
-QGraphicsScene* MachineBuilderTab::getComponentVisualizationScene()
-{
-    return this->componentVisualization->scene();
-}
-
 void MachineBuilderTab::showEvent(QShowEvent*)
 {
-    this->updateMachineVisualization();
-}
+    // Ensure we get the view back
+    shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
 
-void MachineBuilderTab::updateMachineVisualization()
-{
-    if (this->isVisible())
+    if (machineComponentView != nullptr)
     {
-        componentVisualization->scene()->clear();
-
-        shared_ptr<QGraphicsItem> component = machine.lock()->getComponentVisualization();
-        componentVisualization->scene()->addItem(component.get());
-
-        /*QRectF bound = componentVisualization->scene()->sceneRect();
-        bound.adjust(0, -10, 0, 10);
-        componentVisualization->scene()->setSceneRect(bound);*/
+        this->layout()->addWidget(machineComponentView.get());
     }
 }

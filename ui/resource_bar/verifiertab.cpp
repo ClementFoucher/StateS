@@ -52,16 +52,14 @@ VerifierTab::VerifierTab(shared_ptr<Fsm> machine, QWidget* parent) :
 
 VerifierTab::~VerifierTab()
 {
-    delete this->verifier;
     delete this->truthTable;
 }
 
 void VerifierTab::changeMachine(shared_ptr<Fsm> machine)
 {
-    this->clear();
+    this->clearDisplay();
 
-    delete this->verifier;
-    this->verifier = nullptr;
+    this->verifier.reset();
 
     this->machine = machine;
 }
@@ -69,11 +67,11 @@ void VerifierTab::changeMachine(shared_ptr<Fsm> machine)
 void VerifierTab::checkNow()
 {
     if (this->verifier == nullptr)
-        this->verifier = new FsmVerifier(machine.lock());
+        this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(machine.lock()));
 
     QList<QString> errors = this->verifier->verifyFsm();
 
-    this->clear();
+    this->clearDisplay();
 
     if (errors.count() == 0)
     {
@@ -107,10 +105,10 @@ void VerifierTab::checkNow()
 
     this->buttonClear = new QPushButton(tr("Clear verification"));
     this->layout()->addWidget(this->buttonClear);
-    connect(this->buttonClear, &QPushButton::clicked, this, &VerifierTab::clear);
+    connect(this->buttonClear, &QPushButton::clicked, this, &VerifierTab::clearDisplay);
 }
 
-void VerifierTab::clear()
+void VerifierTab::clearDisplay()
 {
     delete this->listTitle;
     this->listTitle = nullptr;
@@ -125,7 +123,7 @@ void VerifierTab::clear()
     this->buttonClear = nullptr;
 }
 
-void VerifierTab::proofRequested(QListWidgetItem *item)
+void VerifierTab::proofRequested(QListWidgetItem* item)
 {
     QVector<TruthTable*> proofs = this->verifier->getProofs();
 

@@ -25,6 +25,10 @@
 // Parent
 #include <QItemDelegate>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 class QTableWidgetItem;
 class QValidator;
@@ -46,14 +50,15 @@ public:
 
     void refuseEdition();
 
-    void setValidator(QValidator* validator);
+    // This function takes ownership of the validator
+    void setValidator(shared_ptr<QValidator> validator);
 
-    DynamicLineEdit* getCurentEditor() const;
+    shared_ptr<DynamicLineEdit> getCurentEditor() const;
 
 private:
-    QValidator* validator = nullptr;
+    shared_ptr<QValidator> validator;
 
-    mutable DynamicLineEdit* latestEditor = nullptr;
+    mutable shared_ptr<DynamicLineEdit> latestEditor = nullptr;
 
 };
 
