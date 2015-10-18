@@ -13,7 +13,8 @@ These features will be implemented... some day.
 
 ** Core **
 
-- Integer type signals support, allowing basic operations like increment.
+- Integer type signals support, allowing basic operations like increment,
+- Signal to signal affectation.
 
 ** Long-term **
 

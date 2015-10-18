@@ -358,13 +358,15 @@ void FsmGraphicalTransition::treatSelectionBox()
 void FsmGraphicalTransition::updateText()
 {
     shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
-    Machine::mode currentMode = getLogicalTransition()->getOwningFsm()->getCurrentMode();
+
     //
     // Condition
 
     // Should also make background semi-transparent... (we could avoid color?)
     if (transition != nullptr)
     {
+        Machine::mode currentMode = transition->getOwningFsm()->getCurrentMode();
+
         if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
         {
             if (transition->getCondition() == nullptr)
@@ -404,6 +406,7 @@ void FsmGraphicalTransition::updateText()
 
         qreal maxTextWidth = 0;
 
+        Machine::mode currentMode = transition->getOwningFsm()->getCurrentMode();
 
         for (int i = 0 ; i < actions.count() ; i++)
         {
