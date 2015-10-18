@@ -29,8 +29,11 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+class QAction;
+
 // To access enums
-#include "resourcebar.h"
+#include "machine.h"
 
 // StateS classes
 class FsmGraphicalTransition;
@@ -38,6 +41,7 @@ class FsmGraphicalState;
 class Fsm;
 class FsmState;
 class FsmTransition;
+class ResourceBar;
 
 
 class FsmScene : public GenericScene
@@ -45,14 +49,10 @@ class FsmScene : public GenericScene
     Q_OBJECT
 
 public:
-    explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resources);
+    explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resourceBar);
     ~FsmScene();
 
     void setDisplaySize(const QSize& newSize) override;
-
-    void simulationModeChanged() override;
-
-    ResourceBar::mode getMode() const;
 
     void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
 
@@ -64,6 +64,8 @@ protected:
     void keyPressEvent(QKeyEvent*) override;
 
 private slots:
+    void simulationModeChanged(Machine::mode newMode);
+
     void handleSelection();
     void stateCallsEditEventHandler(shared_ptr<FsmState> state);
     void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
@@ -81,6 +83,7 @@ private:
     void addTransition(FsmGraphicalTransition* newTransition);
 
     shared_ptr<Fsm> machine;
+    ResourceBar* resources;
 
     bool isDrawingTransition = false;
     bool isEditingTransitionSource = false;

@@ -143,8 +143,9 @@ StatesUi::StatesUi(shared_ptr<Machine> machine) :
     this->resourcesBar = new ResourceBar(nullptr, splitter);
 
     QList<int> length;
-    length.append(splitter->sizeHint().width()-50);
-    length.append(50);
+    // Begin with 2/3 - 1/3
+    length.append( ( 66 * splitter->sizeHint().width() ) / 100 );
+    length.append( ( 33 * splitter->sizeHint().width() ) / 100 );
     splitter->setSizes(length);
 
     connect(this->resourcesBar, &ResourceBar::simulationToggledEvent,  this, &StatesUi::simulationToggledEventHandler);
@@ -498,8 +499,6 @@ void StatesUi::loadMachineRequestEventHandler()
 
 void StatesUi::simulationToggledEventHandler()
 {
-    ((GenericScene*)(this->machineDisplayArea->scene()))->simulationModeChanged();
-
     this->timeline = this->resourcesBar->getTimeline();
     if (this->timeline != nullptr)
     {

@@ -28,38 +28,107 @@
 // StateS classes
 #include "input.h"
 #include "output.h"
+#include "machinebuilder.h"
 
 
 Machine::Machine()
 {
+    this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
 }
 
-QList<shared_ptr<Input> > Machine::getInputs() const
+// General lists obtention
+
+QList<shared_ptr<Signal> > Machine::getInputsAsSignals() const
 {
-    return this->inputs.values();
+    return getRankedSignalList(&this->inputs, &this->inputsRanks);
 }
 
-QList<shared_ptr<Output> > Machine::getOutputs() const
+QList<shared_ptr<Signal> > Machine::getOutputsAsSignals() const
 {
-    return this->outputs.values();
+    return getRankedSignalList(&this->outputs, &this->outputsRanks);
 }
 
 QList<shared_ptr<Signal> > Machine::getLocalVariables() const
 {
-    return this->localVariables.values();
+    return getRankedSignalList(&this->localVariables, &this->localVariablesRanks);
 }
 
 QList<shared_ptr<Signal> > Machine::getConstants() const
 {
-    return this->constants.values();
+    return getRankedSignalList(&this->constants, &this->constantsRanks);
 }
+
+QList<shared_ptr<Signal>> Machine::getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const
+{
+    QList<shared_ptr<Signal> > rankedList;
+
+    if (signalHash->count() != rankHash->count())
+    {
+        // Return empty list to signify error
+        // TODO: do something better
+        return rankedList;
+    }
+
+    for (int i = 0 ; i < signalHash->count() ; i++)
+    {
+        QString signalName = rankHash->key(i);
+        rankedList.append((*signalHash)[signalName]);
+    }
+
+    return rankedList;
+}
+
+// Casted lists obtention
+
+QList<shared_ptr<Input> > Machine::getInputs() const
+{
+    QList<shared_ptr<Input> > inputSignals;
+
+    if (inputs.count() != inputsRanks.count())
+    {
+        // Return empty list to signify error
+        // TODO: do something better
+        return inputSignals;
+    }
+
+    for (int i = 0 ; i < this->inputs.count() ; i++)
+    {
+        QString signalName = this->inputsRanks.key(i);
+        inputSignals.append(dynamic_pointer_cast<Input>(inputs[signalName]));
+    }
+
+    return inputSignals;
+}
+
+QList<shared_ptr<Output> > Machine::getOutputs() const
+{
+    QList<shared_ptr<Output> > outputSignals;
+
+    if (outputs.count() != outputsRanks.count())
+    {
+        // Return empty list to signify error
+        // TODO: do something better
+        return outputSignals;
+    }
+
+    for (int i = 0 ; i < this->outputs.count() ; i++)
+    {
+        QString signalName = this->outputsRanks.key(i);
+        outputSignals.append(dynamic_pointer_cast<Output>(outputs[signalName]));
+    }
+
+    return outputSignals;
+}
+
+
+// Aggregate lists obtention
 
 QList<shared_ptr<Signal> > Machine::getWrittableSignals() const
 {
     QList<shared_ptr<Signal>> writtableVariables;
 
     writtableVariables += this->getOutputsAsSignals();
-    writtableVariables += this->localVariables.values();
+    writtableVariables += this->getLocalVariables();
 
     return writtableVariables;
 }
@@ -69,8 +138,8 @@ QList<shared_ptr<Signal> > Machine::getReadableSignals() const
     QList<shared_ptr<Signal>> readableSignals;
 
     readableSignals += this->getInputsAsSignals();
-    readableSignals += this->localVariables.values();
-    readableSignals += this->constants.values();
+    readableSignals += this->getLocalVariables();
+    readableSignals += this->getConstants();
 
     return readableSignals;
 }
@@ -80,7 +149,7 @@ QList<shared_ptr<Signal> > Machine::getReadableVariableSignals() const
     QList<shared_ptr<Signal>> readableVariables;
 
     readableVariables += this->getInputsAsSignals();
-    readableVariables += this->localVariables.values();
+    readableVariables += this->getLocalVariables();
 
     return readableVariables;
 }
@@ -91,7 +160,7 @@ QList<shared_ptr<Signal> > Machine::getVariablesSignals() const
 
     allVariables += this->getInputsAsSignals();
     allVariables += this->getOutputsAsSignals();
-    allVariables += this->localVariables.values();
+    allVariables += this->getLocalVariables();
 
     return allVariables;
 }
@@ -112,11 +181,13 @@ QList<shared_ptr<Signal> > Machine::getAllSignals() const
 
     allSignals += this->getInputsAsSignals();
     allSignals += this->getOutputsAsSignals();
-    allSignals += localVariables.values();
-    allSignals += constants.values();
+    allSignals += this->getLocalVariables();
+    allSignals += this->getConstants();
 
     return allSignals;
 }
+
+//
 
 void Machine::clear()
 {
@@ -124,6 +195,11 @@ void Machine::clear()
     this->outputs.clear();
     this->localVariables.clear();
     this->constants.clear();
+
+    this->inputsRanks.clear();
+    this->outputsRanks.clear();
+    this->localVariablesRanks.clear();
+    this->constantsRanks.clear();
 
     this->rebuildComponentVisualization();
 }
@@ -138,6 +214,22 @@ bool Machine::isEmpty() const
         return true;
     else
         return false;
+}
+
+void Machine::setMode(Machine::mode newMode)
+{
+    this->currentMode = newMode;
+    emit changedModeEvent(newMode);
+}
+
+Machine::mode Machine::getCurrentMode()
+{
+    return this->currentMode;
+}
+
+shared_ptr<MachineBuilder> Machine::getMachineBuilder() const
+{
+    return this->machineBuilder;
 }
 
 /**
@@ -346,6 +438,31 @@ void Machine::rebuildComponentVisualization()
 
 shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
 {
+    uint rank;
+
+    switch(type)
+    {
+    case signal_type::Input:
+        rank = this->inputs.count();
+        break;
+    case signal_type::Output:
+        rank = this->outputs.count();
+        break;
+    case signal_type::LocalVariable:
+        rank = this->localVariables.count();
+        break;
+    case signal_type::Constant:
+        rank = this->constants.count();
+        break;
+    default:
+        return nullptr;
+    }
+
+    return this->addSignalAtRank(type, name, rank);
+}
+
+shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank)
+{
     // First check if name doesn't already exist
     foreach (shared_ptr<Signal> signal, getAllSignals())
     {
@@ -359,34 +476,64 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
         return nullptr;
 
     // Determine list to reference signal in
-    shared_ptr<Signal> result;
+    shared_ptr<Signal> signal;
     switch(type)
     {
     case signal_type::Input:
-        inputs[name] = shared_ptr<Input>(new Input(name));
-        result = inputs[name];
+        signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name)));
+        this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
+
         this->rebuildComponentVisualization();
+
         emit inputListChangedEvent();
+
         break;
     case signal_type::Output:
-        outputs[name] = shared_ptr<Output>(new Output(name));
-        result = outputs[name];
+        signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name)));
+        this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
+
         this->rebuildComponentVisualization();
+
         emit outputListChangedEvent();
+
         break;
     case signal_type::LocalVariable:
-        result = shared_ptr<Signal>(new Signal(name));
-        localVariables[name] = result;
+        signal = shared_ptr<Signal>(new Signal(name));
+        this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
+
         emit localVariableListChangedEvent();
+
         break;
     case signal_type::Constant:
-        result = shared_ptr<Signal>(new Signal(name, false, true));
-        constants[name] = result;
+        signal = shared_ptr<Signal>(new Signal(name, false, true));
+        this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
+
         emit constantListChangedEvent();
+
         break;
     }
 
-    return result;
+    return signal;
+}
+
+void Machine::addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
+{
+    // Fix rank to avoid not-continuous ranks
+    uint actualRank = ((int)rank < signalHash->count()) ? rank : signalHash->count();
+
+    // Shift all upper signals ranks, beginning from top
+    if ((int)rank < signalHash->count())
+    {
+        for (int i = signalHash->count()-1 ; i >= (int)actualRank; i--)
+        {
+            QString signalName = rankHash->key(i);
+            (*rankHash)[signalName]++;
+        }
+    }
+
+    // Add signal to lists
+    (*signalHash)[signal->getName()] = signal;
+    (*rankHash)[signal->getName()]   = actualRank;
 }
 
 bool Machine::deleteSignal(const QString& name)
@@ -395,30 +542,36 @@ bool Machine::deleteSignal(const QString& name)
 
     if (inputs.contains(name))
     {
-        inputs.remove(name);
+        this->deleteSignalFromList(name, &this->inputs, &this->inputsRanks);
+
         this->rebuildComponentVisualization();
+
         emit inputListChangedEvent();
 
         result = true;
     }
     else if (outputs.contains(name))
     {
-        outputs.remove(name);
+        this->deleteSignalFromList(name, &this->outputs, &this->outputsRanks);
+
         this->rebuildComponentVisualization();
+
         emit outputListChangedEvent();
 
         result = true;
     }
     else if (localVariables.contains(name))
     {
-        localVariables.remove(name);
+        this->deleteSignalFromList(name, &this->localVariables, &this->localVariablesRanks);
+
         emit localVariableListChangedEvent();
 
         result = true;
     }
     else if (constants.contains(name))
     {
-        constants.remove(name);
+        this->deleteSignalFromList(name, &this->constants, &this->constantsRanks);
+
         emit constantListChangedEvent();
 
         result = true;
@@ -428,6 +581,33 @@ bool Machine::deleteSignal(const QString& name)
 
     return result;
 }
+
+bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
+{
+    if (!signalHash->contains(name))
+        return false;
+
+    // Store rank
+    uint signalRank = (*rankHash)[name];
+
+    // Remove
+    signalHash->remove(name);
+    rankHash->remove(name);
+
+    // Shift upper signals
+    if ((int)signalRank < signalHash->count())
+    {
+        for (int i = signalRank+1 ; i <= signalHash->count(); i++)
+        {
+            QString signalName = rankHash->key(i);
+            (*rankHash)[signalName]--;
+        }
+    }
+
+    // Done
+    return true;
+}
+
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
@@ -445,38 +625,30 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
         return false;
     else
     {
-        // Renaming process
-        shared_ptr<Signal> itemToRename = allSignals[oldName];
-        itemToRename->setName(newName);
-
         // Update map
         if (inputs.contains(oldName))
         {
-            inputs.remove(oldName);
-            inputs[newName] = dynamic_pointer_cast<Input>(itemToRename);
+            this->renameSignalInList(oldName, newName, &this->inputs, &this->inputsRanks);
             this->rebuildComponentVisualization();
 
             emit inputListChangedEvent();
         }
         else if (outputs.contains(oldName))
         {
-            outputs.remove(oldName);
-            outputs[newName] = dynamic_pointer_cast<Output>(itemToRename);
+            this->renameSignalInList(oldName, newName, &this->outputs, &this->outputsRanks);
             this->rebuildComponentVisualization();
 
             emit outputListChangedEvent();
         }
         else if (localVariables.contains(oldName))
         {
-            localVariables.remove(oldName);
-            localVariables[newName] = itemToRename;
+            this->renameSignalInList(oldName, newName, &this->localVariables, &this->localVariablesRanks);
 
             emit localVariableListChangedEvent();
         }
         else if (constants.contains(oldName))
         {
-            constants.remove(oldName);
-            constants[newName] = itemToRename;
+            this->renameSignalInList(oldName, newName, &this->constants, &this->constantsRanks);
 
             emit constantListChangedEvent();
         }
@@ -485,6 +657,23 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 
         return true;
     }
+}
+
+bool Machine::renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal> > *signalHash, QHash<QString, uint> *rankHash)
+{
+    if (!signalHash->contains(oldName))
+        return false;
+
+    shared_ptr<Signal> itemToRename = (*signalHash)[oldName];
+    itemToRename->setName(newName);
+
+    signalHash->remove(oldName);
+    (*signalHash)[newName] = itemToRename;
+
+    (*rankHash)[newName] = (*rankHash)[oldName];
+    rankHash->remove(oldName);
+
+    return true;
 }
 
 bool Machine::resizeSignal(const QString &name, uint newSize)
@@ -561,28 +750,98 @@ bool Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
     }
 }
 
-QList<shared_ptr<Signal> > Machine::getInputsAsSignals() const
+bool Machine::changeSignalRank(const QString& name, uint newRank)
 {
-    QList<shared_ptr<Signal>> signalInputs;
+    QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
-    foreach(shared_ptr<Input> input, this->inputs)
+    if ( !allSignals.contains(name) ) // First check if signal exists
+        return false;
+    else
     {
-        signalInputs.append(dynamic_pointer_cast<Signal>(input));
+        if (inputs.contains(name))
+        {
+            this->changeRankInList(name, newRank, &this->inputs, &this->inputsRanks);
+            this->rebuildComponentVisualization();
+
+            emit inputListChangedEvent();
+        }
+        else if (outputs.contains(name))
+        {
+            this->changeRankInList(name, newRank, &this->outputs, &this->outputsRanks);
+            this->rebuildComponentVisualization();
+
+            emit outputListChangedEvent();
+        }
+        else if (localVariables.contains(name))
+        {
+            this->changeRankInList(name, newRank, &this->localVariables, &this->localVariablesRanks);
+
+            emit localVariableListChangedEvent();
+        }
+        else if (constants.contains(name))
+        {
+            this->changeRankInList(name, newRank, &this->constants, &this->constantsRanks);
+
+            emit constantListChangedEvent();
+        }
+        else // Should not happen as we checked all lists
+            return false;
+
+        return true;
+
     }
 
-    return signalInputs;
 }
 
-QList<shared_ptr<Signal> > Machine::getOutputsAsSignals() const
+bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
 {
-    QList<shared_ptr<Signal>> signalOutputs;
+    if (!signalHash->contains(name))
+        return false;
+    else if ((int)newRank >= signalHash->count())
+        return false;
 
-    foreach(shared_ptr<Output> output, this->outputs)
+    // Store rank
+    uint oldRank = (*rankHash)[name];
+
+    if (oldRank == newRank)
+        return true;
+
+    // Algorithm is a as follows:
+    // The list is divided in 3 parts:
+    // - The lower part, before low(oldRank, newRank) is untouched
+    // - The middle part is all messed up
+    // - The upper part, after high(oldRank, newRank) is untouched
+    // We call lower bound and upper bound the boundaries of the middle part (with boudaries belonging to middle part)
+    uint lowerBound = min(oldRank, newRank);
+    uint upperBound = max(oldRank, newRank);
+
+    // Extract reRanked signal from list (place it at a higher rank than the higest rank)
+    (*rankHash)[name] = signalHash->count();
+
+    // Shift other signals
+    if (oldRank < newRank)
     {
-        signalOutputs.append(dynamic_pointer_cast<Signal>(output));
+        for (int i = (int)lowerBound+1 ; i <= (int)upperBound ; i++)
+        {
+            QString signalName = rankHash->key(i);
+            (*rankHash)[signalName]--;
+        }
+    }
+    else
+    {
+        for (int i = (int)upperBound-1 ; i >= (int)lowerBound ; i--)
+        {
+            QString signalName = rankHash->key(i);
+            (*rankHash)[signalName]++;
+        }
     }
 
-    return signalOutputs;
+    // Reintegrate extracted signal
+    (*rankHash)[name] = newRank;
+
+    // Done
+    return true;
+
 }
 
 /**

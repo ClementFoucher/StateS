@@ -33,8 +33,8 @@ using namespace std;
 #include "machine.h"
 
 // StateS classes
-class MachineTools;
 class MachineComponentVisualizer;
+class MachineBuilder;
 
 
 class MachineBuilderTab : public QWidget
@@ -42,18 +42,13 @@ class MachineBuilderTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit MachineBuilderTab(Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
-
-    MachineTools* getBuildTools() const;
+    explicit MachineBuilderTab(shared_ptr<MachineBuilder> machineBuilder, Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
     void showEvent(QShowEvent*);
 
 private:
     weak_ptr<MachineComponentVisualizer> machineComponentView;
-
-    // QWidget with parent
-    MachineTools* buildTools = nullptr;
 };
 
 #endif // MACHINEBUILDERTAB_H

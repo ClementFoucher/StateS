@@ -99,6 +99,7 @@ signals:
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private slots:
     void updateDisplay();

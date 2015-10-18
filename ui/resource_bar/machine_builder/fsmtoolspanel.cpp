@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmtools.h"
+#include "fsmtoolspanel.h"
 
 // Qt classes
 #include <QGridLayout>
@@ -34,8 +34,8 @@
 #include "fsmgraphicaltransition.h"
 
 
-FsmTools::FsmTools(QWidget* parent) :
-    MachineTools(parent)
+FsmToolsPanel::FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
+    MachineToolsPanel(machineBuilder, parent)
 {
     this->buttonNoTool          = new QPushButton(tr("Mouse"));
     this->buttonAddInitialState = new QPushButton(tr("Add initial state"));
@@ -55,10 +55,12 @@ FsmTools::FsmTools(QWidget* parent) :
     this->buttonNoTool->setChecked(true);
     this->buttonNoTool->setEnabled(false);
 
-    connect(this->buttonNoTool,          &QAbstractButton::clicked, this, &FsmTools::buttonNotToolPushed);
-    connect(this->buttonAddInitialState, &QAbstractButton::clicked, this, &FsmTools::buttonAddInitialStatePushed);
-    connect(this->buttonAddState,        &QAbstractButton::clicked, this, &FsmTools::buttonAddStatePushed);
-    connect(this->buttonAddTransition,   &QAbstractButton::clicked, this, &FsmTools::buttonAddTransitionPushed);
+    connect(this->buttonNoTool,          &QAbstractButton::clicked, this, &FsmToolsPanel::buttonNotToolPushed);
+    connect(this->buttonAddInitialState, &QAbstractButton::clicked, this, &FsmToolsPanel::buttonAddInitialStatePushed);
+    connect(this->buttonAddState,        &QAbstractButton::clicked, this, &FsmToolsPanel::buttonAddStatePushed);
+    connect(this->buttonAddTransition,   &QAbstractButton::clicked, this, &FsmToolsPanel::buttonAddTransitionPushed);
+
+    connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmToolsPanel::toolChangedEventHandler);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->addWidget(this->buttonNoTool,          0, 0, 1, 2);
@@ -67,89 +69,125 @@ FsmTools::FsmTools(QWidget* parent) :
     layout->addWidget(this->buttonAddTransition,   2, 1, 1, 1);
 }
 
-void FsmTools::buttonAddStatePushed(bool activated)
+void FsmToolsPanel::buttonAddStatePushed(bool activated)
 {
-    if (activated)
-        setTool(MachineTools::tool::state);
+    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+
+    if (machineBuilder != nullptr)
+    {
+        if (activated)
+            machineBuilder->setTool(MachineBuilder::tool::state);
+        else
+            machineBuilder->setTool(MachineBuilder::tool::none);
+    }
     else
-        setTool(MachineTools::tool::none);
+        this->lockOnError();
 }
 
-void FsmTools::buttonAddInitialStatePushed(bool activated)
+void FsmToolsPanel::buttonAddInitialStatePushed(bool activated)
 {
-    if (activated)
-        setTool(MachineTools::tool::initial_state);
+    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+
+    if (machineBuilder != nullptr)
+    {
+        if (activated)
+            machineBuilder->setTool(MachineBuilder::tool::initial_state);
+        else
+            machineBuilder->setTool(MachineBuilder::tool::none);
+    }
     else
-        setTool(MachineTools::tool::none);
+        this->lockOnError();
 }
 
-void FsmTools::buttonAddTransitionPushed(bool activated)
+void FsmToolsPanel::buttonAddTransitionPushed(bool activated)
 {
-    if (activated)
-        setTool(MachineTools::tool::transition);
+    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+
+    if (machineBuilder != nullptr)
+    {
+        if (activated)
+            machineBuilder->setTool(MachineBuilder::tool::transition);
+        else
+            machineBuilder->setTool(MachineBuilder::tool::none);
+    }
     else
-        setTool(MachineTools::tool::none);
+        this->lockOnError();
 }
 
-void FsmTools::buttonNotToolPushed(bool)
+void FsmToolsPanel::buttonNotToolPushed(bool)
 {
-    setTool(MachineTools::tool::none);
-}
+    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
 
-FsmTools::tool FsmTools::getTool() const
-{
-    if (this->buttonAddTransition->isChecked())
-        return tool::transition;
-    else if (this->buttonAddState->isChecked())
-        return tool::state;
-    else if (this->buttonAddInitialState->isChecked())
-        return tool::initial_state;
+    if (machineBuilder != nullptr)
+    {
+        machineBuilder->setTool(MachineBuilder::tool::none);
+    }
     else
-        return tool::none;
+        this->lockOnError();
 }
 
-bool FsmTools::setTool(MachineTools::tool newTool)
+void FsmToolsPanel::lockOnError()
 {
+    this->buttonNoTool->         setChecked(true);
+    this->buttonAddState->       setChecked(false);
+    this->buttonAddInitialState->setChecked(false);
+    this->buttonAddTransition->  setChecked(false);
+
+    this->buttonNoTool->         setEnabled(false);
+    this->buttonAddState->       setEnabled(false);
+    this->buttonAddInitialState->setEnabled(false);
+    this->buttonAddTransition->  setEnabled(false);
+}
+
+bool FsmToolsPanel::toolChangedEventHandler(MachineBuilder::tool newTool)
+{
+    bool result = false;
+
     switch (newTool)
     {
-    case MachineTools::tool::state:
+    case MachineBuilder::tool::state:
         this->buttonNoTool->         setChecked(false);
         this->buttonAddState->       setChecked(true);
         this->buttonAddInitialState->setChecked(false);
         this->buttonAddTransition->  setChecked(false);
         this->buttonNoTool->         setEnabled(true);
 
-        return true;
+        result = true;
+        break;
 
-    case MachineTools::tool::transition:
+    case MachineBuilder::tool::transition:
         this->buttonNoTool->         setChecked(false);
         this->buttonAddState->       setChecked(false);
         this->buttonAddInitialState->setChecked(false);
         this->buttonAddTransition->  setChecked(true);
         this->buttonNoTool->         setEnabled(true);
 
-        return true;
+        result = true;
+        break;
 
-    case MachineTools::tool::initial_state:
+    case MachineBuilder::tool::initial_state:
         this->buttonNoTool->         setChecked(false);
         this->buttonAddState->       setChecked(false);
         this->buttonAddInitialState->setChecked(true);
         this->buttonAddTransition->  setChecked(false);
         this->buttonNoTool->         setEnabled(true);
 
-        return true;
+        result = true;
+        break;
 
-    case MachineTools::tool::none:
+    case MachineBuilder::tool::none:
         this->buttonNoTool->         setChecked(true);
         this->buttonAddState->       setChecked(false);
         this->buttonAddInitialState->setChecked(false);
         this->buttonAddTransition->  setChecked(false);
         this->buttonNoTool->         setEnabled(false);
 
-        return true;
+        result =  true;
+        break;
 
     default:
         qDebug() << "(FSM Tool bar:) I can't use this tool!";
-        return false;
     }
+
+    return result;
 }

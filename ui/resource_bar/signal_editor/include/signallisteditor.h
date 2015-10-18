@@ -32,7 +32,6 @@ using namespace std;
 // Qt classes
 #include <QMap>
 class QGridLayout;
-class QTableWidget;
 class QPushButton;
 class QTableWidgetItem;
 
@@ -41,6 +40,7 @@ class QTableWidgetItem;
 
 // StateS classes
 class DynamicTableItemDelegate;
+class TableWidgetWithResizeEvent;
 
 
 class SignalListEditor : public QWidget
@@ -62,6 +62,7 @@ signals:
     bool renameSignalEvent(const QString& oldName, const QString& newName);
     bool resizeSignalEvent(const QString& name, uint newSize);
     bool changeSignalInitialValueEvent(const QString& name, LogicValue newValue);
+    bool changeSignalRank(const QString& name, uint newRank);
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
@@ -73,6 +74,8 @@ private slots:
     void beginEditSignal(QTableWidgetItem* characteristicToEdit);
     void validateCurrentEdit();
     void cancelCurrentEdit();
+    void raiseSignal();
+    void lowerSignal();
 
 private:
     void switchMode(mode newMode);
@@ -81,6 +84,8 @@ private:
     void endRenameSignal();
     void endResizeSignal();
     void endChangeSignalInitialValue();
+
+    void handleListResizedEvent();
 
     // Static
     weak_ptr<Machine> machine;
@@ -91,18 +96,21 @@ private:
     mode currentMode = mode::initMode;
 
     // Widgets
-    QGridLayout* layout = nullptr;
+    QGridLayout* buttonLayout = nullptr;
 
-    QTableWidget* signalsList = nullptr;
+    TableWidgetWithResizeEvent* signalsList = nullptr;
     DynamicTableItemDelegate* listDelegate = nullptr;
 
     QPushButton* buttonAdd    = nullptr;
     QPushButton* buttonRemove = nullptr;
     QPushButton* buttonCancel = nullptr;
     QPushButton* buttonOK     = nullptr;
+    QPushButton* buttonUp     = nullptr;
+    QPushButton* buttonDown   = nullptr;
 
     // Cell under edition
     QTableWidgetItem* currentTableItem = nullptr;
+    QString signalUnderEdition = QString::null;
 
     // Used to know which signal is associated to each cell in table
     QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;

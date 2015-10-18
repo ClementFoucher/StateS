@@ -25,26 +25,15 @@
 // Parent
 #include <QGraphicsScene>
 
-// StateS classes
-class ResourceBar;
-
 
 class GenericScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    explicit GenericScene(ResourceBar *resources);
+    explicit GenericScene(QObject* parent = nullptr);
 
-    virtual void setDisplaySize(const QSize &newSize) = 0;
-
-    virtual void simulationModeChanged() = 0;
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent*) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
-
-    ResourceBar* resources = nullptr;
+    virtual void setDisplaySize(const QSize& newSize) = 0;
 };
 
 #endif // GENERICSCENE_H

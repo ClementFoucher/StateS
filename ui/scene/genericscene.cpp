@@ -22,31 +22,8 @@
 // Current class header
 #include "genericscene.h"
 
-// Qt classes
-#include <QGraphicsSceneMouseEvent>
 
-
-GenericScene::GenericScene(ResourceBar* resources) :
-    QGraphicsScene()
+GenericScene::GenericScene(QObject* parent) :
+    QGraphicsScene(parent)
 {
-    this->resources = resources;
-}
-
-void GenericScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
-{
-    if (me->button() == Qt::RightButton)
-    {
-        // Ignore right-click, except if there is a tool selected: unselect it
-    /*    if (this->resources->getBuildTools()->getTool() != MachineTools::tool::none)
-        {
-            this->resources->getBuildTools()->setTool(MachineTools::tool::none);
-        }*/
-    }
-    else
-        QGraphicsScene::mousePressEvent(me);
-}
-
-void GenericScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)
-{
-    // Ignore double-clicks
 }

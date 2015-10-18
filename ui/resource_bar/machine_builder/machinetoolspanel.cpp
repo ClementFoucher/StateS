@@ -19,27 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINETOOLS_H
-#define MACHINETOOLS_H
-
-// Parent
-#include <QWidget>
+// Current class header
+#include "machinetoolspanel.h"
 
 
-class MachineTools : public QWidget
+MachineToolsPanel::MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
+    QWidget(parent)
 {
-    Q_OBJECT
-
-public:
-    enum class tool {none,
-                     state, transition, initial_state
-                    };
-
-public:
-    explicit MachineTools(QWidget* parent = nullptr);
-
-    virtual tool getTool() const = 0;
-    virtual bool setTool(tool newTool) = 0;
-};
-
-#endif // MACHINETOOLS_H
+    this->machineBuilder = machineBuilder;
+}

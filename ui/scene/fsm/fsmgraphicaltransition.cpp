@@ -24,8 +24,9 @@
 
 // Qt classes
 #include <QGraphicsSceneContextMenuEvent>
-#include <QResizeEvent>
+#include <QKeyEvent>
 #include <QPainter>
+#include <QGraphicsView>
 
 // Debug
 #include <QDebug>
@@ -33,11 +34,12 @@
 // States classes
 #include "fsmgraphicalstate.h"
 #include "fsmstate.h"
-#include "fsmscene.h"
+#include "machine.h"
 #include "fsmtransition.h"
 #include "fsmgraphicaltransitionneighborhood.h"
 #include "signal.h"
 #include "contextmenu.h"
+#include "fsm.h"
 
 
 qreal FsmGraphicalTransition::arrowEndSize = 10;
@@ -356,13 +358,14 @@ void FsmGraphicalTransition::treatSelectionBox()
 void FsmGraphicalTransition::updateText()
 {
     shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
+    Machine::mode currentMode = getLogicalTransition()->getOwningFsm()->getCurrentMode();
     //
     // Condition
 
     // Should also make background semi-transparent... (we could avoid color?)
     if (transition != nullptr)
     {
-        if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourceBar::mode::simulateMode) )
+        if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
         {
             if (transition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
@@ -408,7 +411,7 @@ void FsmGraphicalTransition::updateText()
 
             QString currentActionText;
 
-            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourceBar::mode::simulateMode) )
+            if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
                 currentActionText = actions[i]->getText(true);
             else
                 currentActionText = actions[i]->getText(false);
@@ -913,7 +916,20 @@ void FsmGraphicalTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* ev
 
 void FsmGraphicalTransition::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Delete)
+    if (event->key() == Qt::Key_Menu)
+    {
+        QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
+
+        QGraphicsView* view = scene()->views()[0];
+
+        QPoint posOnParent = view->mapFromScene(this->scenePos());
+
+        QPoint posOnScreen = view->mapToGlobal(posOnParent);
+        contextEvent->setScreenPos(posOnScreen);
+
+        this->contextMenuEvent(contextEvent);
+    }
+    else if (event->key() == Qt::Key_Delete)
     {
         shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
         transition->getSource()->removeOutgoingTransition(transition);
@@ -922,6 +938,27 @@ void FsmGraphicalTransition::keyPressEvent(QKeyEvent* event)
     {
         event->ignore();
     }
+}
+
+QVariant FsmGraphicalTransition::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
+{
+    if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
+    {
+        // If changing to selected
+        if (value.toBool() == true)
+        {
+            // Refuse selection if there are other item(s) already selected
+            if (this->scene()->selectedItems().count() != 0)
+                return (QVariant)false;
+        }
+    }
+    else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
+    {
+        this->treatSelectionBox();
+    }
+
+    return QGraphicsItem::itemChange(change, value);
+
 }
 
 void FsmGraphicalTransition::treatMenu(QAction* action)

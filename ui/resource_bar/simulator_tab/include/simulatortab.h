@@ -33,13 +33,13 @@ using namespace std;
 class QPushButton;
 //class QSignalMapper;
 class QLineEdit;
-class QCheckBox;
 
 // StateS classes
 class SimulationWidget;
 class InputsSelector;
 class FsmSimulator;
 class Fsm;
+class CheckBoxHtml;
 
 
 class SimulatorTab : public QWidget
@@ -70,12 +70,12 @@ private:
     SimulationWidget* timeLine = nullptr;
 
     // QWidgets with parent
-    QPushButton * buttonTriggerSimulation = nullptr;
-    QPushButton * buttonTriggerView       = nullptr;
-    QPushButton * buttonTriggerAutoStep   = nullptr;
-    QCheckBox   * checkBoxDelay           = nullptr;
-    QLineEdit   * autoStepValue           = nullptr;
-    QWidget     * simulationTools         = nullptr;
+    QPushButton  * buttonTriggerSimulation = nullptr;
+    QPushButton  * buttonTriggerView       = nullptr;
+    QPushButton  * buttonTriggerAutoStep   = nullptr;
+    CheckBoxHtml * checkBoxDelay           = nullptr;
+    QLineEdit    * autoStepValue           = nullptr;
+    QWidget      * simulationTools         = nullptr;
 
     InputsSelector* inputList = nullptr;
 };

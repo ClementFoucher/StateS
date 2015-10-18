@@ -25,19 +25,16 @@
 // Qt classes
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QGraphicsView>
-#include <QGraphicsItem>
 
 // Debug
 #include <QDebug>
 
 // StateS classes
-#include "fsmtools.h"
-#include "machine.h"
+#include "fsmtoolspanel.h"
 #include "machinecomponentvisualizer.h"
 
 
-MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+MachineBuilderTab::MachineBuilderTab(shared_ptr<MachineBuilder> machineBuilder, Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
     this->machineComponentView = machineComponentView;
@@ -77,8 +74,7 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
         title->setAlignment(Qt::AlignCenter);
         layout->addWidget(title);
 
-        buildTools = new FsmTools();
-        layout->addWidget(buildTools);
+        layout->addWidget(new FsmToolsPanel(machineBuilder));
     }
     else
     {
@@ -88,11 +84,6 @@ MachineBuilderTab::MachineBuilderTab(Machine::type machineType, shared_ptr<Machi
     layout->addWidget(machineComponentView.get());
 
     this->setLayout(layout);
-}
-
-MachineTools* MachineBuilderTab::getBuildTools() const
-{
-    return buildTools;
 }
 
 void MachineBuilderTab::showEvent(QShowEvent*)

@@ -35,12 +35,10 @@ SOURCES += \
     ui/simulation/graphictimeline.cpp \
     ui/simulation/graphicclocktimeline.cpp \
     ui/simulation/clocktimeline.cpp \
-    ui/resource_bar/machine_builder/fsmtools.cpp \
     ui/resource_bar/component_editor/transitioneditortab.cpp \
     ui/resource_bar/component_editor/stateeditortab.cpp \
     ui/equation_editor/equationeditor.cpp \
     ui/equation_editor/graphicequation.cpp \
-    ui/resource_bar/machine_builder/machinetools.cpp \
     ui/equation_editor/equationmimedata.cpp \
     ui/resource_bar/abouttab.cpp \
     core/signal/output.cpp \
@@ -81,7 +79,13 @@ SOURCES += \
     core/simulation/fsmsimulator.cpp \
     ui/simulation/simulationwidget.cpp \
     ui/imageexportoptions.cpp \
-    ui/resource_bar/machinecomponentvisualizer.cpp
+    ui/resource_bar/machinecomponentvisualizer.cpp \
+    ui/refined_widget/tablewidgetwithresizeevent.cpp \
+    ui/refined_widget/checkboxhtml.cpp \
+    ui/refined_widget/labelwithclickevent.cpp \
+    core/machine/machinebuilder.cpp \
+    ui/resource_bar/machine_builder/fsmtoolspanel.cpp \
+    ui/resource_bar/machine_builder/machinetoolspanel.cpp
 
 
 HEADERS  += \
@@ -100,10 +104,8 @@ HEADERS  += \
     core/simulation/include/clock.h \
     ui/simulation/include/graphictimeline.h \
     ui/simulation/include/graphicclocktimeline.h \
-    ui/resource_bar/machine_builder/include/fsmtools.h \
     ui/resource_bar/component_editor/include/stateeditortab.h \
     ui/resource_bar/component_editor/include/transitioneditortab.h \
-    ui/resource_bar/machine_builder/include/machinetools.h \
     ui/equation_editor/include/equationeditor.h \
     ui/equation_editor/include/graphicequation.h \
     ui/equation_editor/include/equationmimedata.h \
@@ -147,7 +149,13 @@ HEADERS  += \
     core/simulation/include/fsmsimulator.h \
     ui/simulation/include/simulationwidget.h \
     ui/include/imageexportoptions.h \
-    ui/resource_bar/include/machinecomponentvisualizer.h
+    ui/resource_bar/include/machinecomponentvisualizer.h \
+    ui/refined_widget/include/tablewidgetwithresizeevent.h \
+    ui/refined_widget/include/checkboxhtml.h \
+    ui/refined_widget/include/labelwithclickevent.h \
+    core/machine/include/machinebuilder.h \
+    ui/resource_bar/machine_builder/include/fsmtoolspanel.h \
+    ui/resource_bar/machine_builder/include/machinetoolspanel.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

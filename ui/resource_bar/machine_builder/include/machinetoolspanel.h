@@ -19,36 +19,33 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGEEXPORTOPTIONS_H
-#define IMAGEEXPORTOPTIONS_H
+#ifndef MACHINETOOLSPANEL_H
+#define MACHINETOOLSPANEL_H
 
 // Parent
-#include <QDialog>
+#include <QWidget>
 
-// Qt classes
-class QComboBox;
+// C++ classes
+#include <memory>
+using namespace std;
 
-// StateS classes
-class CheckBoxHtml;
+// For enums
+#include "machinebuilder.h"
 
 
-class ImageExportOptions : public QDialog
+class MachineToolsPanel : public QWidget
 {
     Q_OBJECT
 
-public:
-    enum class imageFormat{pdf, svg, png, jpg};
+protected:
+    weak_ptr<MachineBuilder> machineBuilder;
 
 public:
-    explicit ImageExportOptions(QWidget* parent = nullptr);
+    explicit MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
-    bool includeComponent();
-    imageFormat getImageFormat();
+public slots:
+    virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
 
-private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* imageFormatSelectionBox = nullptr;
-    CheckBoxHtml* includeComponentCheckBox = nullptr;
 };
 
-#endif // IMAGEEXPORTOPTIONS_H
+#endif // MACHINETOOLSPANEL_H

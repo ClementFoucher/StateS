@@ -19,11 +19,25 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "machinetools.h"
+#ifndef LABELWITHCLICKEVENT_H
+#define LABELWITHCLICKEVENT_H
+
+// Parent
+#include <QLabel>
 
 
-MachineTools::MachineTools(QWidget* parent) :
-    QWidget(parent)
+class LabelWithClickEvent : public QLabel
 {
-}
+    Q_OBJECT
+
+public:
+    LabelWithClickEvent(const QString& text);
+
+signals:
+    void clicked();
+
+protected:
+    void mousePressEvent(QMouseEvent*) override;
+};
+
+#endif // LABELWITHCLICKEVENT_H

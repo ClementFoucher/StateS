@@ -19,36 +19,25 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGEEXPORTOPTIONS_H
-#define IMAGEEXPORTOPTIONS_H
+#ifndef TABLEWIDGETWITHRESIZEEVENT_H
+#define TABLEWIDGETWITHRESIZEEVENT_H
 
 // Parent
-#include <QDialog>
-
-// Qt classes
-class QComboBox;
-
-// StateS classes
-class CheckBoxHtml;
+#include <QTableWidget>
 
 
-class ImageExportOptions : public QDialog
+class TableWidgetWithResizeEvent : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    enum class imageFormat{pdf, svg, png, jpg};
+    explicit TableWidgetWithResizeEvent(int rows, int columns);
 
-public:
-    explicit ImageExportOptions(QWidget* parent = nullptr);
+signals:
+    void resized();
 
-    bool includeComponent();
-    imageFormat getImageFormat();
-
-private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* imageFormatSelectionBox = nullptr;
-    CheckBoxHtml* includeComponentCheckBox = nullptr;
+protected:
+    void resizeEvent(QResizeEvent*) override;
 };
 
-#endif // IMAGEEXPORTOPTIONS_H
+#endif // TABLEWIDGETWITHRESIZEEVENT_H

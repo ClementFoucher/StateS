@@ -24,14 +24,17 @@
 
 // Qt classes
 #include <QGraphicsSceneContextMenuEvent>
-#include <QResizeEvent>
 #include <QMessageBox>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QKeyEvent>
 
 // StateS classes
+#include "machine.h"
+#include "fsmgraphicaltransition.h"
 #include "fsmstate.h"
 #include "fsmscene.h"
 #include "signal.h"
-#include "scenewidget.h"
 #include "contextmenu.h"
 #include "fsm.h"
 
@@ -128,6 +131,19 @@ QVariant FsmGraphicalState::itemChange(GraphicsItemChange change, const QVariant
     // Inform connected transitions we are moving
     if ((change == GraphicsItemChange::ItemPositionChange) || (change == GraphicsItemChange::ItemPositionHasChanged))
         emit stateMovingEvent();
+    else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
+    {
+        // If changing to selected
+        if (value.toBool() == true)
+        {
+            // Refuse selection if there is a transition already selected
+            foreach(QGraphicsItem* selectedItem, this->scene()->selectedItems())
+            {
+                if (dynamic_cast<FsmGraphicalTransition*>(selectedItem) != nullptr)
+                    return (QVariant)false;
+            }
+        }
+    }
 
     // Reposition action box
     if (scene() != nullptr)
@@ -144,7 +160,10 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
     menu->addTitle(tr("State") + " <i>" + currentState->getName() + "</i>");
 
-    if (((FsmScene*)this->scene())->getMode() == ResourceBar::mode::editMode )
+
+    Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
+
+    if (currentMode == Machine::mode::editMode )
     {
         if (!currentState->isInitial())
             menu->addAction(tr("Set initial"));
@@ -153,7 +172,7 @@ void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
         menu->addAction(tr("Rename"));
         menu->addAction(tr("Delete"));
     }
-    else if (((FsmScene*)this->scene())->getMode() == ResourceBar::mode::simulateMode )
+    else if (currentMode == Machine::mode::simulateMode )
     {
         if (!this->logicalState.lock()->getIsActive())
         {
@@ -231,8 +250,6 @@ void FsmGraphicalState::keyPressEvent(QKeyEvent *event)
         event->ignore();
     }
 }
-
-
 
 void FsmGraphicalState::treatMenu(QAction* action)
 {
@@ -331,7 +348,9 @@ void FsmGraphicalState::rebuildRepresentation()
 
             QString currentActionText;
 
-            if ( (scene() != nullptr) && (((FsmScene*)scene())->getMode() == ResourceBar::mode::simulateMode) )
+            Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
+
+            if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
                 currentActionText = actions[i]->getText(true);
             else
                 currentActionText = actions[i]->getText(false);

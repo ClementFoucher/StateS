@@ -19,36 +19,35 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGEEXPORTOPTIONS_H
-#define IMAGEEXPORTOPTIONS_H
+#ifndef CHECKBOXHTML_H
+#define CHECKBOXHTML_H
 
 // Parent
-#include <QDialog>
+#include <QWidget>
 
 // Qt classes
-class QComboBox;
+class QCheckBox;
 
-// StateS classes
-class CheckBoxHtml;
+// StateS clases
+class LabelWithClickEvent;
 
 
-class ImageExportOptions : public QDialog
+class CheckBoxHtml : public QWidget
 {
     Q_OBJECT
 
 public:
-    enum class imageFormat{pdf, svg, png, jpg};
+    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
 
-public:
-    explicit ImageExportOptions(QWidget* parent = nullptr);
+    void setText(QString newText);
+    bool isChecked();
 
-    bool includeComponent();
-    imageFormat getImageFormat();
+signals:
+    void clicked(bool checked = false);
 
 private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* imageFormatSelectionBox = nullptr;
-    CheckBoxHtml* includeComponentCheckBox = nullptr;
+    LabelWithClickEvent* label;
+    QCheckBox* checkBox;
 };
 
-#endif // IMAGEEXPORTOPTIONS_H
+#endif // CHECKBOXHTML_H

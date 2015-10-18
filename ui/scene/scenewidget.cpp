@@ -27,20 +27,18 @@
 #include <QResizeEvent>
 #include <QStyle>
 #include <QScrollBar>
+#include <QPushButton>
 
 // StateS classes
 #include "fsmscene.h"
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
-#include "machinetools.h"
 
 
 SceneWidget::SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent) :
     SceneWidget(parent)
 {
-    this->resourcesBar = resources;
-
     this->setMachine(machine, resources);
 }
 
@@ -56,17 +54,27 @@ SceneWidget::SceneWidget(QWidget* parent) :
     connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 }
 
-void SceneWidget::setMachine(shared_ptr<Machine> machine, ResourceBar* resources)
+void SceneWidget::setMachine(shared_ptr<Machine> newMachine, ResourceBar* resources)
 {
+    // Clear
     delete this->scene();
 
-    this->resourcesBar = resources;
+    // Disconnect
+    shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
+    if (oldMachineBuilder != nullptr)
+        disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
 
-    if (machine != nullptr)
+    // Initialize
+    if (newMachine != nullptr)
     {
-        if (machine->getType() == Machine::type::FSM)
+        shared_ptr<MachineBuilder> newMachineBuiler = newMachine->getMachineBuilder();
+        this->machineBuilder = newMachineBuiler;
+
+        connect(newMachineBuiler.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
+
+        if (newMachine->getType() == Machine::type::FSM)
         {
-            FsmScene* newScene = new FsmScene(dynamic_pointer_cast<Fsm>(machine), resources);
+            FsmScene* newScene = new FsmScene(dynamic_pointer_cast<Fsm>(newMachine), resources);
             newScene->setDisplaySize(this->size());
 
             this->setScene(newScene);
@@ -74,10 +82,45 @@ void SceneWidget::setMachine(shared_ptr<Machine> machine, ResourceBar* resources
     }
 }
 
+void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
+{
+    // TODO when add other machines types: will need to test machine type
+
+    if      (newTool == MachineBuilder::tool::none)
+    {
+        this->unsetCursor();
+    }
+    else if (newTool == MachineBuilder::tool::state)
+    {
+        QPixmap pixmap = FsmGraphicalState::getPixmap(32, false, true);
+        this->setCursor(QCursor(pixmap, 0, 0));
+    }
+    else if (newTool == MachineBuilder::tool::initial_state)
+    {
+        QPixmap pixmap = FsmGraphicalState::getPixmap(32, true, true);
+
+        this->setCursor(QCursor(pixmap, 0, 0));
+    }
+    else if (newTool == MachineBuilder::tool::transition)
+    {
+        QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
+        QCursor cursor(pixmap, 0 , 0);
+
+        this->setCursor(cursor);
+    }
+    else
+        this->unsetCursor();
+
+}
+
 void SceneWidget::resizeEvent(QResizeEvent* event)
 {
+    // Inform scene view has been modified
+
     if (scene() != nullptr)
         ((GenericScene*)scene())->setDisplaySize(event->size());
+
+    // Relocate overlay buttons
 
     int rightAlign = 10;
     if (this->verticalScrollBar()->isVisible())
@@ -85,60 +128,99 @@ void SceneWidget::resizeEvent(QResizeEvent* event)
 
     buttonZoomIn->move(this->width() - buttonZoomIn->width() - rightAlign, 10);
     buttonZoomOut->move(this->width() - buttonZoomOut->width() - rightAlign, buttonZoomIn->height() + 20);
+
+    // Transmit event
+
+    QGraphicsView::resizeEvent(event);
 }
 
-void SceneWidget::mousePressEvent(QMouseEvent *me)
+void SceneWidget::mousePressEvent(QMouseEvent* me)
 {
+    // In this function, do not transmit event in case we handle it
+    bool transmitEvent = true;
+
+    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+
     if (me->button() == Qt::LeftButton)
     {
-        this->setDragMode(QGraphicsView::RubberBandDrag);
+        if (machineBuilder != nullptr)
+        {
+            if (machineBuilder->getTool() == MachineBuilder::tool::none)
+            {
+                this->setDragMode(QGraphicsView::RubberBandDrag);
+                // We changed drag mode, but now it is handled by some component in stack: need to transmit event
+            }
+
+        }
     }
-    if (me->button() == Qt::MiddleButton)
+    else if (me->button() == Qt::MiddleButton)
     {
         this->movingScene = true;
-        this->setDragMode(QGraphicsView::ScrollHandDrag);
+        this->setDragMode(QGraphicsView::ScrollHandDrag); // Just for mouse icon, not using its properties
+        transmitEvent = false;
     }
     else if (me->button() == Qt::RightButton)
     {
-        if (this->resourcesBar->getBuildTools() != nullptr)
+        if (machineBuilder != nullptr)
         {
-            this->unsetCursor();
+            if (machineBuilder->getTool() != MachineBuilder::tool::none)
+            {
+                machineBuilder->setTool(MachineBuilder::tool::none);
+                transmitEvent = false;
+            }
         }
     }
 
-    QGraphicsView::mousePressEvent(me);
+    if (transmitEvent)
+        QGraphicsView::mousePressEvent(me);
+
 }
 
-void SceneWidget::mouseReleaseEvent(QMouseEvent *me)
+void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 {
-    if (this->dragMode() == QGraphicsView::ScrollHandDrag)
+    // In this function, do not transmit event in case we handle it
+    bool transmitEvent = true;
+
+    // In this function, drag mode is handled by some component in stack, so we need to transmit event
+
+    if (this->dragMode() == QGraphicsView::ScrollHandDrag) // Or use movingScene?
     {
         this->movingScene = false;
         this->setDragMode(QGraphicsView::NoDrag);
+        transmitEvent = false;
     }
 
-    QGraphicsView::mouseReleaseEvent(me);
+    if (transmitEvent)
+        QGraphicsView::mouseReleaseEvent(me);
 }
 
-void SceneWidget::mouseMoveEvent(QMouseEvent *me)
+void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 {
     static QPoint lastMouseEventPos(0, 0);
+
+    // In this function, do not transmit event in case we handle it
+    bool transmitEvent = true;
+
     if (this->movingScene)
     {
-        QScrollBar *hBar = horizontalScrollBar();
-        QScrollBar *vBar = verticalScrollBar();
+        QScrollBar* hBar = horizontalScrollBar();
+        QScrollBar* vBar = verticalScrollBar();
         QPoint delta = me->pos() - lastMouseEventPos;
         hBar->setValue(hBar->value() + -delta.x());
         vBar->setValue(vBar->value() - delta.y());
+        transmitEvent = false;
     }
 
     lastMouseEventPos = me->pos();
 
-    QGraphicsView::mouseMoveEvent(me);
+    if (transmitEvent)
+        QGraphicsView::mouseMoveEvent(me);
 }
 
 void SceneWidget::wheelEvent(QWheelEvent* event)
 {
+    // In this function, do never transmit event: we always handle it
+
     if ( (event->modifiers() & Qt::ControlModifier) != 0)
     {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -163,41 +245,6 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
         QScrollBar *vBar = verticalScrollBar();
         vBar->setValue(vBar->value() - event->delta());
     }
-}
-
-void SceneWidget::enterEvent(QEvent*)
-{
-    if (this->resourcesBar->getBuildTools() != nullptr)
-    {
-        if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::none)
-        {
-            this->unsetCursor();
-        }
-        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::state)
-        {
-            // Should test is FSM mode before
-            QPixmap pixmap = FsmGraphicalState::getPixmap(32, false, true);
-            this->setCursor(QCursor(pixmap, 0, 0));
-        }
-        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::initial_state)
-        {
-            // Should test is FSM mode before
-            QPixmap pixmap = FsmGraphicalState::getPixmap(32, true, true);
-
-            this->setCursor(QCursor(pixmap, 0, 0));
-        }
-        else if (this->resourcesBar->getBuildTools()->getTool() == MachineTools::tool::transition)
-        {
-            // Should test is FSM mode before
-            QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
-            QCursor cursor(pixmap, 0 , 0);
-
-            this->setCursor(cursor);
-        }
-        else
-            this->unsetCursor();
-    }
-
 }
 
 void SceneWidget::zoomIn()

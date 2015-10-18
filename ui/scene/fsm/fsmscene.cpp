@@ -24,7 +24,8 @@
 
 // Qt classes
 #include <QGraphicsSceneMouseEvent>
-#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QGraphicsView>
 
 // Debug
 #include <QDebug>
@@ -32,19 +33,22 @@
 // StateS classes
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
-#include "fsmtools.h"
 #include "fsm.h"
-#include "scenewidget.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "contextmenu.h"
+#include "resourcebar.h"
+#include "machinebuilder.h"
 
 
-FsmScene::FsmScene(shared_ptr<Fsm> machine, ResourceBar* resources) :
-    GenericScene(resources)
+FsmScene::FsmScene(shared_ptr<Fsm> machine, ResourceBar* resourceBar) :
+    GenericScene()
 {
     this->machine = machine;
+    this->resources = resourceBar;
     connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
+    connect(machine.get(), &Fsm::changedModeEvent, this, &FsmScene::simulationModeChanged);
+
 
     foreach(shared_ptr<FsmState> state, machine->getStates())
     {
@@ -86,11 +90,6 @@ FsmScene::~FsmScene()
     qDeleteAll(states);
 }
 
-ResourceBar::mode FsmScene::getMode() const
-{
-    return resources->getCurrentMode();
-}
-
 void FsmScene::beginDrawTransition(FsmGraphicalState *source, const QPointF& currentMousePos)
 {
     isDrawingTransition = true;
@@ -113,9 +112,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
     {
         if ((!isEditingTransitionSource) && (!isEditingTransitionTarget)) // Means normal mode, as isDrawingTransition can't have a click (wait for button release)
         {
-            MachineTools::tool currentTool = resources->getBuildTools()->getTool();
+            MachineBuilder::tool currentTool = machine->getMachineBuilder()->getTool();
 
-            if (currentTool == MachineTools::tool::state)
+            if (currentTool == MachineBuilder::tool::state)
             {
                 // Create logical state
                 shared_ptr<FsmState> logicState = machine->addState();
@@ -126,7 +125,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 // Maintains state under mouse until button is relased
                 GenericScene::mousePressEvent(me);
             }
-            else if (currentTool == FsmTools::tool::initial_state)
+            else if (currentTool == MachineBuilder::tool::initial_state)
             {
                 // Create logical state
                 shared_ptr<FsmState> logicState = machine->addState();
@@ -140,9 +139,8 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 // Maintains state under mouse until button is relased
                 GenericScene::mousePressEvent(me);
             }
-            else if (currentTool == FsmTools::tool::transition)
+            else if (currentTool == MachineBuilder::tool::transition)
             {
-
                 FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
                 if ( stateUnderMouse != nullptr)
@@ -150,20 +148,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                     beginDrawTransition(stateUnderMouse, me->scenePos());
                 }
             }
-            else if (currentTool == FsmTools::tool::none)
+            else if (currentTool == MachineBuilder::tool::none)
             {
                 // If no tool, this is selection mode.
                 GenericScene::mousePressEvent(me);
-
-                // Update transitions selection box as it is a manual box
-                foreach(QGraphicsItem* item, items())
-                {
-                    FsmGraphicalTransition* currentTransition = dynamic_cast<FsmGraphicalTransition*>(item);
-
-                    if (currentTransition != nullptr)
-                        currentTransition->treatSelectionBox();
-                }
-
             }
             else
             {
@@ -196,9 +184,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
              )
         {
             // If there is a tool selected: unselect it
-            if (this->resources->getBuildTools()->getTool() != MachineTools::tool::none)
+            if (this->machine->getMachineBuilder()->getTool() != MachineBuilder::tool::none)
             {
-                this->resources->getBuildTools()->setTool(MachineTools::tool::none);
+                this->machine->getMachineBuilder()->setTool(MachineBuilder::tool::none);
 
                 GenericScene::mousePressEvent(me);
             }
@@ -336,8 +324,7 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            // Transmit to scene objects
-            GenericScene::keyPressEvent(event);
+            this->clearSelection();
         }
     }
     else if ( (event->key() == Qt::Key_Right) ||
@@ -466,14 +453,14 @@ void FsmScene::setDisplaySize(const QSize& newSize)
     updateSceneRect();
 }
 
-void FsmScene::simulationModeChanged()
+void FsmScene::simulationModeChanged(Machine::mode newMode)
 {
-    if (resources->getCurrentMode() == ResourceBar::mode::editMode)
+    if (newMode == Machine::mode::editMode)
     {
         handleSelection();
         this->isSimulating = false;
     }
-    else if (resources->getCurrentMode() == ResourceBar::mode::simulateMode)
+    else if (newMode == Machine::mode::simulateMode)
     {
         this->isSimulating = true;
     }

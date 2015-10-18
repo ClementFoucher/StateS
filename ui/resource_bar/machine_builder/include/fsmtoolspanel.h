@@ -19,34 +19,42 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMTOOLS_H
-#define FSMTOOLS_H
+#ifndef FSMTOOLSPANEL_H
+#define FSMTOOLSPANEL_H
 
 // Parent
-#include "machinetools.h"
+#include "machinetoolspanel.h"
+
+// C++ classes
+#include <memory>
+using namespace std;
 
 // Qt classes
 class QWidget;
 class QPushButton;
 
+// StateS classes
+class MachineBuilder;
 
-class FsmTools : public MachineTools
+
+class FsmToolsPanel : public MachineToolsPanel
 {
     Q_OBJECT
 
 public:
-    explicit FsmTools(QWidget* parent = nullptr);
-
-    tool getTool() const override;
-    bool setTool(MachineTools::tool newTool) override;
+    explicit FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
 private slots:
+    bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
+
     void buttonAddStatePushed(bool activated);
     void buttonAddInitialStatePushed(bool activated);
     void buttonAddTransitionPushed(bool activated);
     void buttonNotToolPushed(bool);
 
 private:
+    void lockOnError();
+
     // QWidgets with parent
     QPushButton* buttonAddState        = nullptr;
     QPushButton* buttonAddInitialState = nullptr;
@@ -54,4 +62,4 @@ private:
     QPushButton* buttonNoTool          = nullptr;
 };
 
-#endif // FSMTOOLS_H
+#endif // FSMTOOLSPANEL_H

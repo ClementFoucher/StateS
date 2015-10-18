@@ -30,21 +30,25 @@
 using namespace std;
 
 // Qt classes
-#include <QPushButton>
+class QPushButton;
+
+// For enum
+#include "machinebuilder.h"
 
 // StateS classes
 class Machine;
 class ResourceBar;
+
 
 class SceneWidget : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    explicit SceneWidget(shared_ptr<Machine> machine, ResourceBar *resources, QWidget* parent = nullptr);
+    explicit SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent = nullptr);
     explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> machine, ResourceBar* resources);
+    void setMachine(shared_ptr<Machine> newMachine, ResourceBar* resources);
 
 protected:
     void mousePressEvent(QMouseEvent*) override;
@@ -52,18 +56,21 @@ protected:
     void mouseMoveEvent(QMouseEvent*) override;
     void resizeEvent(QResizeEvent*) override;
     void wheelEvent(QWheelEvent*) override;
-    void enterEvent(QEvent*) override;
 
 private slots:
+    void toolChangedEventHandler(MachineBuilder::tool newTool);
     void zoomIn();
     void zoomOut();
 
 private:
-    ResourceBar* resourcesBar = nullptr;
+    // References
+    weak_ptr<MachineBuilder> machineBuilder;
 
-    QPushButton* buttonZoomIn = nullptr;
+    // Local widgets
+    QPushButton* buttonZoomIn  = nullptr;
     QPushButton* buttonZoomOut = nullptr;
 
+    // Local variables
     bool movingScene = false;
 };
 

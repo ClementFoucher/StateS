@@ -32,11 +32,12 @@ using namespace std;
 // Qt classes
 class QGraphicsScene;
 
+// For enums
+#include "machine.h"
+
 // StateS classes
 class MachineBuilderTab;
-class MachineTools;
 class SignalEditorTab;
-class Machine;
 class ComponentEditorTab;
 class FsmState;
 class FsmTransition;
@@ -52,18 +53,12 @@ class ResourceBar : public QTabWidget
     Q_OBJECT
 
 public:
-    enum class mode{voidMode, editMode, simulateMode};
-
-public:
     explicit ResourceBar(shared_ptr<Machine> machine, QWidget* parent = nullptr);
     ~ResourceBar();
 
-    MachineTools* getBuildTools() const;
     SimulationWidget* getTimeline() const;
 
     void setMachine(shared_ptr<Machine> newMachine);
-
-    mode getCurrentMode() const;
 
     void selectedState(shared_ptr<FsmState> state, bool showTab = false, bool editName = false);
     void selectedTransition(shared_ptr<FsmTransition> transition, bool showTab = false);
@@ -80,7 +75,7 @@ signals:
     void triggerViewRequestEvent();
 
 private slots:
-    void tabChanged(int index);
+    void tabChanged(int);
 
 private:
     weak_ptr<Machine> machine;
@@ -93,8 +88,6 @@ private:
     SimulatorTab       * simulatorTab    = nullptr;
     VerifierTab        * verifierTab     = nullptr;
     AboutTab           * aboutTab        = nullptr;
-
-    mode currentMode = mode::voidMode;
 };
 
 #endif // RESOURCEBAR_H

@@ -28,7 +28,6 @@
 #include <QSignalMapper>
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include <QCheckBox>
 #include <QGroupBox>
 
 // Debug
@@ -43,6 +42,7 @@
 #include "contextmenu.h"
 #include "inputsselector.h"
 #include "fsmsimulator.h"
+#include "checkboxhtml.h"
 
 
 SimulatorTab::SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent) :
@@ -105,8 +105,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 optionsLayout->addWidget(this->buttonTriggerView);
                 connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
 
-                this->checkBoxDelay = new QCheckBox(tr("Add delay from clock rising edge to outputs events on timeline"));
-                connect(this->checkBoxDelay, &QCheckBox::clicked, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
+                this->checkBoxDelay = new CheckBoxHtml(tr("Add delay from clock rising edge to outputs events on timeline"));
+                connect(this->checkBoxDelay, &CheckBoxHtml::clicked, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
                 optionsLayout->addWidget(this->checkBoxDelay);
 
                 this->simulationTools->layout()->addWidget(optionsGroup);

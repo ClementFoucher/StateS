@@ -25,9 +25,11 @@
 // Qt classes
 #include <QFormLayout>
 #include <QLabel>
-#include <QCheckBox>
 #include <QPushButton>
 #include <QComboBox>
+
+// StateS classes
+#include <checkboxhtml.h>
 
 
 ImageExportOptions::ImageExportOptions(QWidget *parent) :
@@ -40,17 +42,16 @@ ImageExportOptions::ImageExportOptions(QWidget *parent) :
     layout->addWidget(title);
 
     QFormLayout* formLayout = new QFormLayout();
-    layout->addLayout(formLayout);
-
     this->imageFormatSelectionBox = new QComboBox();
     this->imageFormatSelectionBox->addItem("Pdf");
     this->imageFormatSelectionBox->addItem("Svg");
     this->imageFormatSelectionBox->addItem("Png");
     this->imageFormatSelectionBox->addItem("Jpeg");
     formLayout->addRow(tr("Image format:"), this->imageFormatSelectionBox);
+    layout->addLayout(formLayout);
 
-    this->includeComponentCheckBox = new QCheckBox();
-    formLayout->addRow(tr("Include component external view:"), this->includeComponentCheckBox);
+    this->includeComponentCheckBox = new CheckBoxHtml(tr("Include component external view:"));
+    layout->addWidget(this->includeComponentCheckBox);
 
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     layout->addLayout(buttonsLayout);
