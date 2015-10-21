@@ -27,9 +27,7 @@
 
 // Qt classes
 class QCheckBox;
-
-// StateS clases
-class LabelWithClickEvent;
+class QLabel;
 
 
 class CheckBoxHtml : public QWidget
@@ -45,8 +43,11 @@ public:
 signals:
     void clicked(bool checked = false);
 
+protected:
+    void mousePressEvent(QMouseEvent*) override;
+
 private:
-    LabelWithClickEvent* label;
+    QLabel*    label;
     QCheckBox* checkBox;
 };
 

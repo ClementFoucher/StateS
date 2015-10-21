@@ -46,9 +46,7 @@ public:
 
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option, const QModelIndex& index) const override;
 
-    void setEditorData(QWidget* editor, const QModelIndex& index) const override;
-
-    void refuseEdition();
+    //void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 
     // This function takes ownership of the validator
     void setValidator(shared_ptr<QValidator> validator);

@@ -24,10 +24,8 @@
 
 // Qt classes
 #include <QCheckBox>
+#include <QLabel>
 #include <QHBoxLayout>
-
-// StateS classes
-#include "labelwithclickevent.h"
 
 
 CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool allowLink, QWidget* parent) :
@@ -38,7 +36,7 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
     this->checkBox = new QCheckBox();
     connect(this->checkBox, &QCheckBox::clicked, this, &CheckBoxHtml::clicked);
 
-    this->label = new LabelWithClickEvent(text);
+    this->label = new QLabel(text);
     this->label->setTextFormat(Qt::RichText);
     if (allowLink)
     {
@@ -56,8 +54,13 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
         layout->addWidget(this->label);
         layout->addWidget(this->checkBox);
     }
+}
 
-    connect(this->label, &LabelWithClickEvent::clicked, this->checkBox, &QCheckBox::toggle);
+void CheckBoxHtml::mousePressEvent(QMouseEvent*)
+{
+    // Ideally, should only transmit events to the check box so that
+    // it reacts on the whole widget with the exact same behavior
+    this->checkBox->toggle();
 }
 
 void CheckBoxHtml::setText(QString newText)

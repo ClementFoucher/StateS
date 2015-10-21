@@ -83,6 +83,6 @@ void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
     {
         emit userCancelEvent();
     }
-
-    emit QLineEdit::keyPressEvent(event);
+    else
+        QLineEdit::keyPressEvent(event);
 }

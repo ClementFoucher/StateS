@@ -240,8 +240,8 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
     {
         this->cancelCurrentEdit();
     }
-
-    emit QWidget::keyPressEvent(event);
+    else
+        QWidget::keyPressEvent(event);
 }
 
 void SignalListEditor::beginAddSignal()
@@ -434,6 +434,9 @@ void SignalListEditor::endChangeSignalInitialValue()
 
         if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
         {
+            if (newInitialValue.getSize() < currentSignal->getSize())
+                newInitialValue.resize(currentSignal->getSize());
+
             bool success = changeSignalInitialValueEvent(currentSignal->getName(), newInitialValue);
 
             if (!success)
@@ -554,7 +557,8 @@ void SignalListEditor::switchMode(mode newMode)
 
             if (currentSignal != nullptr)
             {
-                QRegularExpression re("[01]{" + QString::number(currentSignal->getSize()) + "}");
+                // A string made of only '0' and '1' chars, witch length is between 0 and size
+                QRegularExpression re("[01]{0," + QString::number(currentSignal->getSize()) + "}");
                 listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
             }
         }
