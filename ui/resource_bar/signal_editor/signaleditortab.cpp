@@ -32,6 +32,7 @@
 // StateS classes
 #include "signallisteditor.h"
 #include "machinecomponentvisualizer.h"
+#include "collapsiblewidgetwithtitle.h"
 
 
 SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
@@ -80,16 +81,19 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
 
     //
     // Machine visualization
-    this->layout()->addWidget(machineComponentView.get());
+    this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Machine visualization") , machineComponentView.get());
+    this->layout()->addWidget(this->machineDisplay);
 }
 
-void SignalEditorTab::showEvent(QShowEvent *)
+void SignalEditorTab::showEvent(QShowEvent* e)
 {
     // Ensure we get the view back
     shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
 
     if (machineComponentView != nullptr)
     {
-        this->layout()->addWidget(machineComponentView.get());
+        this->machineDisplay->setContent(tr("Machine visualization"), machineComponentView.get());
     }
+
+    QWidget::showEvent(e);
 }

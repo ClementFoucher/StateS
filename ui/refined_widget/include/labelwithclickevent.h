@@ -34,10 +34,10 @@ public:
     LabelWithClickEvent(const QString& text);
 
 signals:
-    void clicked();
+    bool clicked(QMouseEvent* e);
 
 protected:
-    void mousePressEvent(QMouseEvent*) override;
+    bool event(QEvent* e) override;
 };
 
 #endif // LABELWITHCLICKEVENT_H

@@ -106,7 +106,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
 
                 this->checkBoxDelay = new CheckBoxHtml(tr("Add delay from clock rising edge to outputs events on timeline"));
-                connect(this->checkBoxDelay, &CheckBoxHtml::clicked, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
+                connect(this->checkBoxDelay, &CheckBoxHtml::toggled, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
                 optionsLayout->addWidget(this->checkBoxDelay);
 
                 this->simulationTools->layout()->addWidget(optionsGroup);

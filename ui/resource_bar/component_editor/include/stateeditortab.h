@@ -46,7 +46,7 @@ public:
     void setEditName();
 
 protected:
-    void mousePressEvent(QMouseEvent*) override;
+    void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
     void nameChangedEventHandler(const QString& name);

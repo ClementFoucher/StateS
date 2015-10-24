@@ -40,3 +40,8 @@ void MachineBuilder::setTool(tool newTool)
     emit changedToolEvent(this->currentTool);
 }
 
+void MachineBuilder::setSingleUseTool(MachineBuilder::singleUseTool t)
+{
+    emit this->singleUseToolSelected(t);
+}
+

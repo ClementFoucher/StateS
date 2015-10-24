@@ -24,8 +24,12 @@
 
 // Qt classes
 #include <QCheckBox>
-#include <QLabel>
 #include <QHBoxLayout>
+#include <QCoreApplication>
+#include <QMouseEvent>
+
+// StateS classes
+#include "labelwithclickevent.h"
 
 
 CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool allowLink, QWidget* parent) :
@@ -34,9 +38,11 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
     QHBoxLayout* layout = new QHBoxLayout(this);
 
     this->checkBox = new QCheckBox();
-    connect(this->checkBox, &QCheckBox::clicked, this, &CheckBoxHtml::clicked);
+    connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
 
-    this->label = new QLabel(text);
+    this->label = new LabelWithClickEvent(text);
+    connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::event);
+
     this->label->setTextFormat(Qt::RichText);
     if (allowLink)
     {
@@ -56,11 +62,40 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
     }
 }
 
-void CheckBoxHtml::mousePressEvent(QMouseEvent*)
+bool CheckBoxHtml::event(QEvent* e)
 {
-    // Ideally, should only transmit events to the check box so that
-    // it reacts on the whole widget with the exact same behavior
-    this->checkBox->toggle();
+    static bool doNotResend = false; // Used as we transmit event to a children: do not retransmit in a loop if it gives it back to its parent (this object)
+
+    if (doNotResend == false)
+    {
+        QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
+
+        if ( (mouseEvent != nullptr) && (mouseEvent->button() == Qt::MouseButton::LeftButton) )
+        {
+            if ( (mouseEvent->type() == QEvent::Type::MouseButtonPress) ||
+                 (mouseEvent->type() == QEvent::Type::MouseButtonRelease) ||
+                 (mouseEvent->type() == QEvent::Type::MouseButtonDblClick) ||
+                 (mouseEvent->type() == QEvent::Type::MouseMove)
+                 )
+            {
+
+                // Fake an event on the checkbox so that it handles it
+                QMouseEvent newEvent(mouseEvent->type(),
+                                     QPointF(0,0),
+                                     mouseEvent->button(),
+                                     mouseEvent->buttons(),
+                                     mouseEvent->modifiers()
+                                     );
+
+                doNotResend = true;
+                bool res = QCoreApplication::sendEvent(this->checkBox, &newEvent);
+                doNotResend = false;
+                return res;
+            }
+        }
+    }
+
+    return QWidget::event(e);
 }
 
 void CheckBoxHtml::setText(QString newText)

@@ -27,6 +27,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTableWidget>
+#include <QKeyEvent>
 
 // StateS classes
 #include "machineactuatorcomponent.h"
@@ -60,6 +61,7 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     actionList->horizontalHeaderItem(1)->setText(tr("Signal"));
     actionList->horizontalHeaderItem(2)->setText(tr("Value"));
     actionList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    connect(actionList, &QTableWidget::itemSelectionChanged, this, &ActionEditor::updateButtonsState);
     layout->addWidget(actionList, 1, 0, 1, 2);
 
     buttonAddAction = new QPushButton(tr("Add action"));
@@ -83,6 +85,20 @@ void ActionEditor::changeActuator(shared_ptr<MachineActuatorComponent> actuator)
     this->updateContent();
 
     connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this, &ActionEditor::updateContent);
+}
+
+void ActionEditor::keyPressEvent(QKeyEvent* e)
+{
+    if (e->key() == Qt::Key::Key_Delete)
+    {
+        if (actionList->selectedItems().count() >= 1)
+        {
+            removeAction();
+            return;
+        }
+    }
+
+    QWidget::keyPressEvent(e);
 }
 
 void ActionEditor::updateContent()
@@ -145,6 +161,22 @@ void ActionEditor::updateContent()
     }
 
     connect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
+    this->updateButtonsState();
+}
+
+void ActionEditor::updateButtonsState()
+{
+    QList<QTableWidgetItem*> selection = actionList->selectedItems();
+
+    // TODO: handle multiple items when undo is implemented
+    if (selection.count() == 1)
+    {
+        this->buttonRemoveAction->setEnabled(true);
+    }
+    else
+    {
+        this->buttonRemoveAction->setEnabled(false);
+    }
 }
 
 void ActionEditor::addAction()
@@ -201,12 +233,10 @@ void ActionEditor::removeAction()
     {
         QList<QTableWidgetItem*> selection = actionList->selectedItems();
 
-        foreach (QTableWidgetItem* currentItem, selection)
+        // TODO: handle multiple items when undo is implemented
+        if (selection.count() == 1)
         {
-            if (currentItem->column() == 1)
-            {
-                actuator->removeActionByName(currentItem->text());
-            }
+            actuator->removeActionByName(selection[0]->text());
         }
     }
     else

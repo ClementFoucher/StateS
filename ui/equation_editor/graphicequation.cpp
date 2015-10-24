@@ -388,10 +388,8 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
             drag->exec();
         }
     }
-    else
-    {
-        QFrame::mousePressEvent(event);
-    }
+
+    QFrame::mousePressEvent(event);
 }
 
 // Triggered when mouse enters widget while dragging an object

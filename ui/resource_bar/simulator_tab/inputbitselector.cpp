@@ -77,6 +77,21 @@ void InputBitSelector::mousePressEvent(QMouseEvent*)
     }
 }
 
+void InputBitSelector::mouseMoveEvent(QMouseEvent*)
+{
+    // Just because this class never sends event to parent
+}
+
+void InputBitSelector::mouseReleaseEvent(QMouseEvent*)
+{
+    // Just because this class never sends event to parent
+}
+
+void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
+{
+    // Just because this class never sends event to parent
+}
+
 void InputBitSelector::signalValueChangedEventHandler()
 {
     shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();

@@ -35,6 +35,7 @@ class QGraphicsView;
 // StateS classes
 class Machine;
 class MachineComponentVisualizer;
+class CollapsibleWidgetWithTitle;
 
 
 class SignalEditorTab : public QWidget
@@ -45,11 +46,13 @@ public:
     explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
-    void showEvent(QShowEvent*);
+    void showEvent(QShowEvent* e) override;
 
 private:
-    weak_ptr<MachineComponentVisualizer> machineComponentView;
     weak_ptr<Machine> machine;
+
+    CollapsibleWidgetWithTitle*          machineDisplay;
+    weak_ptr<MachineComponentVisualizer> machineComponentView;
 };
 
 #endif // SIGNALSEDITORTAB_H

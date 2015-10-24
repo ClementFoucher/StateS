@@ -47,6 +47,9 @@ protected slots:
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
     void mousePressEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void mouseDoubleClickEvent(QMouseEvent*) override;
 
 private slots:
     void signalValueChangedEventHandler();

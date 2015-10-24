@@ -23,7 +23,7 @@
 #define MACHINECOMPONENTVISUALIZER_H
 
 // Parent
-#include <QWidget>
+#include <QGraphicsView>
 
 // C++ classes
 #include <memory>
@@ -38,12 +38,12 @@ class QMouseEvent;
 class Machine;
 
 
-class MachineComponentVisualizer : public QWidget
+class MachineComponentVisualizer : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    explicit MachineComponentVisualizer(shared_ptr<Machine> machine);
+    explicit MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
     shared_ptr<QGraphicsScene> getComponentVisualizationScene();
 

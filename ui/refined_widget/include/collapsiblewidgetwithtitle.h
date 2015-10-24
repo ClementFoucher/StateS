@@ -19,38 +19,41 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHECKBOXHTML_H
-#define CHECKBOXHTML_H
+#ifndef COLLAPSIBLEWIDGETWITHTITLE_H_
+#define COLLAPSIBLEWIDGETWITHTITLE_H_
 
 // Parent
-#include <QWidget>
+#include <QFrame>
 
 // Qt classes
-class QCheckBox;
+class QWidget;
+class QPushButton;
+class QLabel;
+class QGridLayout;
+class QResizeEvent;
 
-// StateS classes
-class LabelWithClickEvent;
 
-
-class CheckBoxHtml : public QWidget
+class CollapsibleWidgetWithTitle : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
+    explicit CollapsibleWidgetWithTitle(const QString& title = QString(), QWidget* content = nullptr, QWidget* parent = nullptr);
 
-    void setText(QString newText);
-    bool isChecked();
+    void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
 
-signals:
-    void toggled(bool checked = false);
-
-protected:
-    bool event(QEvent* e) override;
+private slots:
+    void updateVisibility(bool show);
 
 private:
-    LabelWithClickEvent* label;
-    QCheckBox*           checkBox;
+    QGridLayout* layout         = nullptr;
+    QPushButton* buttonCollapse = nullptr;
+    QLabel*      title          = nullptr;
+    QWidget*     content        = nullptr;
+
+    void collapse();
+    void extend();
+
 };
 
-#endif // CHECKBOXHTML_H
+#endif // COLLAPSIBLEWIDGETWITHTITLE_H_

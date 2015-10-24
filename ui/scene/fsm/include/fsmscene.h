@@ -48,6 +48,16 @@ class FsmScene : public GenericScene
 {
     Q_OBJECT
 
+private:
+    enum sceneMode_e
+    {
+        idle,
+        drawingTransition,
+        editingTransitionSource,
+        editingTransitionTarget,
+        simulating
+    };
+
 public:
     explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resourceBar);
     ~FsmScene();
@@ -60,6 +70,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent*) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent*) override;
     void keyPressEvent(QKeyEvent*) override;
 
@@ -78,6 +89,8 @@ private slots:
     void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
 
 private:
+    bool cancellingAction = false;
+    bool askedForMenu = false;
     FsmGraphicalState* getStateAt(const QPointF& location) const;
     FsmGraphicalState* addState(shared_ptr<FsmState> logicState, QPointF location);
     void addTransition(FsmGraphicalTransition* newTransition);
@@ -85,10 +98,11 @@ private:
     shared_ptr<Fsm> machine;
     ResourceBar* resources;
 
-    bool isDrawingTransition = false;
-    bool isEditingTransitionSource = false;
-    bool isEditingTransitionTarget = false;
-    bool isSimulating = false;
+    sceneMode_e sceneMode;
+    //bool isDrawingTransition = false;
+    //bool isEditingTransitionSource = false;
+    //bool isEditingTransitionTarget = false;
+    //bool isSimulating = false;
     FsmGraphicalTransition* currentTransition = nullptr;
 
     QPointF mousePos;

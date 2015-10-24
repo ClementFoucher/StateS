@@ -84,9 +84,11 @@ void StateEditorTab::setEditName()
  * Used to allow validation of name wherever we click,
  * otherwise clicks inside this widget won't validate input.
  */
-void StateEditorTab::mousePressEvent(QMouseEvent*)
+void StateEditorTab::mousePressEvent(QMouseEvent* e)
 {
     this->textStateName->clearFocus();
+
+    ComponentEditorTab::mousePressEvent(e);
 }
 
 void StateEditorTab::updateContent()

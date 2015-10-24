@@ -44,8 +44,10 @@
 FsmScene::FsmScene(shared_ptr<Fsm> machine, ResourceBar* resourceBar) :
     GenericScene()
 {
-    this->machine = machine;
+    this->machine   = machine;
     this->resources = resourceBar;
+    this->sceneMode = sceneMode_e::idle;
+
     connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
     connect(machine.get(), &Fsm::changedModeEvent, this, &FsmScene::simulationModeChanged);
 
@@ -90,9 +92,10 @@ FsmScene::~FsmScene()
     qDeleteAll(states);
 }
 
-void FsmScene::beginDrawTransition(FsmGraphicalState *source, const QPointF& currentMousePos)
+void FsmScene::beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos)
 {
-    isDrawingTransition = true;
+    this->sceneMode = sceneMode_e::drawingTransition;
+
 
     if (!currentMousePos.isNull())
         currentTransition = new FsmGraphicalTransition(source, currentMousePos);
@@ -106,11 +109,13 @@ void FsmScene::beginDrawTransition(FsmGraphicalState *source, const QPointF& cur
     addTransition(currentTransition);
 }
 
-void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
+void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 {
+    bool transmitEvent = true;
+
     if (me->button() == Qt::LeftButton)
     {
-        if ((!isEditingTransitionSource) && (!isEditingTransitionTarget)) // Means normal mode, as isDrawingTransition can't have a click (wait for button release)
+        if (this->sceneMode == sceneMode_e::idle)
         {
             MachineBuilder::tool currentTool = machine->getMachineBuilder()->getTool();
 
@@ -122,8 +127,8 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 // Create graphical state
                 addState(logicState, me->scenePos());
 
-                // Maintains state under mouse until button is relased
-                GenericScene::mousePressEvent(me);
+                // Transmitting event so that new state is selected
+                // and can be moved within the same click
             }
             else if (currentTool == MachineBuilder::tool::initial_state)
             {
@@ -136,8 +141,8 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 // Set state initial
                 logicState->setInitial();
 
-                // Maintains state under mouse until button is relased
-                GenericScene::mousePressEvent(me);
+                // Transmitting event so that new state is selected
+                // and can be moved within the same click
             }
             else if (currentTool == MachineBuilder::tool::transition)
             {
@@ -146,98 +151,103 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent *me)
                 if ( stateUnderMouse != nullptr)
                 {
                     beginDrawTransition(stateUnderMouse, me->scenePos());
+                    this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::beginDrawTransitionFromTool);
+                    transmitEvent = false;
                 }
             }
             else if (currentTool == MachineBuilder::tool::none)
             {
                 // If no tool, this is selection mode.
-                GenericScene::mousePressEvent(me);
+                // Just do nothing and transmit event.
             }
             else
             {
                 qDebug() << "(FSM display:) Unsupported tool!";
-                GenericScene::mousePressEvent(me);
             }
         }
-        else if (isEditingTransitionSource || isEditingTransitionTarget)
+        else if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
         {
             FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+
+            // TODO: Does left click on nothing should cancel insertion?
             if (stateUnderMouse != nullptr)
                 currentTransition->endDynamicMode(true);
             else
                 currentTransition->endDynamicMode(false);
 
-            isEditingTransitionSource = false;
-            isEditingTransitionTarget = false;
+            this->sceneMode = sceneMode_e::idle;
+            this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
             currentTransition = nullptr;
+
+            this->cancellingAction = true;
+            transmitEvent = false;
         }
     }
     else if (me->button() == Qt::RightButton)
     {
-        // Ignore right-click while a transition is in dynamic mode (do not deselect current tool)
-        if ( ( (!isDrawingTransition)        &&
-               (!isEditingTransitionSource)  &&
-               (!isEditingTransitionTarget)
-               ) &&
-             // and also if there is an item under mouse (this is a context menu event)
-             (this->items(me->scenePos(), Qt::IntersectsItemShape, Qt::DescendingOrder).count() == 0)
-             )
-        {
-            // If there is a tool selected: unselect it
-            if (this->machine->getMachineBuilder()->getTool() != MachineBuilder::tool::none)
-            {
-                this->machine->getMachineBuilder()->setTool(MachineBuilder::tool::none);
-
-                GenericScene::mousePressEvent(me);
-            }
-            else
-            {
-                // Display context menu
-                if (!this->isSimulating) // Adding state is not allowed in simulation mode
-                {
-                    ContextMenu* menu = new ContextMenu();
-                    menu->addAction(tr("Add state"));
-                    menu->addAction(tr("Add initial state"));
-                    menu->popup(me->screenPos());
-
-                    this->mousePos = me->scenePos();
-
-                    connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
-                }
-            }
-            GenericScene::mousePressEvent(me);
-        }
-        else if (isEditingTransitionSource || isEditingTransitionTarget)
+        if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
         {
             // Cancel transition edition
-            isEditingTransitionSource = false;
-            isEditingTransitionTarget = false;
+            this->sceneMode = sceneMode_e::idle;
+            this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
             currentTransition->endDynamicMode(false);
             currentTransition = nullptr;
+
+            this->cancellingAction = true;
+            transmitEvent = false;
         }
-        else if (isDrawingTransition)
+        else if (this->sceneMode == sceneMode_e::drawingTransition)
         {
-            isDrawingTransition = false;
+            // Cancel transition insertion
+            this->sceneMode = sceneMode_e::idle;
+            this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
             delete currentTransition;
             currentTransition = nullptr;
+
+            this->cancellingAction = true;
+            transmitEvent = false;
+        }
+        // Ignore right-click if there is an item under mouse (this is a context menu event on that particular item)
+        else if (this->items(me->scenePos(), Qt::IntersectsItemShape, Qt::DescendingOrder).count() == 0)
+        {
+            // Display context menu
+            if (this->sceneMode != sceneMode_e::simulating) // Adding states is not allowed in simulation mode
+            {
+                ContextMenu* menu = new ContextMenu();
+                menu->addAction(tr("Add state"));
+                menu->addAction(tr("Add initial state"));
+                menu->popup(me->screenPos());
+
+                this->mousePos = me->scenePos();
+
+                connect(menu, &QMenu::triggered, this, &FsmScene::treatMenu);
+
+                this->askedForMenu = true;
+                transmitEvent = false;
+            }
         }
     }
-    else
+
+    if (transmitEvent)
         GenericScene::mousePressEvent(me);
 
 }
 
 void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
 {
+    bool transmitEvent = true;
     static FsmGraphicalState* previousStatePointed = nullptr;
 
-    if (isDrawingTransition || isEditingTransitionSource || isEditingTransitionTarget)
+    if ( (this->sceneMode == sceneMode_e::drawingTransition) ||
+         (this->sceneMode == sceneMode_e::editingTransitionSource) ||
+         (this->sceneMode == sceneMode_e::editingTransitionTarget)
+       )
     {
         FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
         if (stateUnderMouse != nullptr)
         {
-            if (isDrawingTransition || isEditingTransitionTarget)
+            if ( (this->sceneMode == sceneMode_e::drawingTransition) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
             {
                 if (stateUnderMouse != previousStatePointed)
                 {
@@ -260,65 +270,96 @@ void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
             currentTransition->setMousePosition(me->scenePos());
             previousStatePointed = nullptr;
         }
+
+        transmitEvent = false;
     }
-    else
+    else if ( (this->cancellingAction) || (this->cancellingAction) )
     {
-        GenericScene::mouseMoveEvent(me);
+        transmitEvent = false;
     }
+
+    if (transmitEvent)
+        GenericScene::mouseMoveEvent(me);
 }
 
 void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
 {
-    if (me->button() == Qt::LeftButton)
+    bool transmitEvent = true;
+
+    if (this->sceneMode == sceneMode_e::drawingTransition)
     {
-        if (isDrawingTransition)
+        FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+
+        // Do not allow same-state transition while no representation available
+        if ((stateUnderMouse != nullptr) /*&& (stateUnderMouse != currentTransition->getSource())*/)
         {
-            FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+            currentTransition->setTargetState(stateUnderMouse);
+            currentTransition->endDynamicMode(true);
 
-            // Do not allow same-state transition while no representation available
-            if ((stateUnderMouse != nullptr) /*&& (stateUnderMouse != currentTransition->getSource())*/)
-            {
-                currentTransition->setTargetState(stateUnderMouse);
-                currentTransition->endDynamicMode(true);
+            shared_ptr<FsmState> source = currentTransition->getSource()->getLogicalState();
+            shared_ptr<FsmState> target = currentTransition->getTarget()->getLogicalState();
 
-                shared_ptr<FsmState> source = currentTransition->getSource()->getLogicalState();
-                shared_ptr<FsmState> target = currentTransition->getTarget()->getLogicalState();
-
-                shared_ptr<FsmTransition> logicTransition(new FsmTransition(machine, source, target, nullptr, currentTransition));
-                source->addOutgoingTransition(logicTransition);
-                target->addIncomingTransition(logicTransition);
-                currentTransition->setLogicalTransition(logicTransition);
-            }
-            else
-                delete currentTransition;
-
-            currentTransition = nullptr;
-            isDrawingTransition = false;
+            shared_ptr<FsmTransition> logicTransition(new FsmTransition(machine, source, target, nullptr, currentTransition));
+            source->addOutgoingTransition(logicTransition);
+            target->addIncomingTransition(logicTransition);
+            currentTransition->setLogicalTransition(logicTransition);
         }
         else
-            GenericScene::mouseReleaseEvent(me);
+            delete currentTransition;
+
+        currentTransition = nullptr;
+        this->sceneMode = sceneMode_e::idle;
+        this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
+        transmitEvent = false;
     }
-    else
+    else if ( (this->cancellingAction) || (this->askedForMenu) )
+    {
+        this->cancellingAction = false;
+        this->askedForMenu     = false;
+
+        transmitEvent = false;
+    }
+
+
+    if (transmitEvent)
         GenericScene::mouseReleaseEvent(me);
 
+    // TODO: better place for this call?
     updateSceneRect();
+}
+
+void FsmScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* me)
+{
+    bool transmitEvent = true;
+
+    if (this->sceneMode == sceneMode_e::drawingTransition)
+        transmitEvent = false;
+    else if (this->cancellingAction)
+        transmitEvent = false;
+    else if (this->askedForMenu)
+        transmitEvent = false;
+
+
+    if (transmitEvent)
+        GenericScene::mouseReleaseEvent(me);
 }
 
 void FsmScene::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Escape)
     {
-        if (isDrawingTransition)
+        if (this->sceneMode == sceneMode_e::drawingTransition)
         {
-            isDrawingTransition = false;
+            this->sceneMode = sceneMode_e::idle;
+            this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
             delete currentTransition;
             currentTransition = nullptr;
         }
-        else if (isEditingTransitionSource || isEditingTransitionTarget)
+        else if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
         {
             // Cancel transition edition
-            isEditingTransitionSource = false;
-            isEditingTransitionTarget = false;
+            this->sceneMode = sceneMode_e::idle;
+            this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
             currentTransition->endDynamicMode(false);
             currentTransition = nullptr;
         }
@@ -371,15 +412,14 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
 void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
     // Do not show menus while a transition is in dynamic mode
-    if ((!isDrawingTransition) &&
-            (!isEditingTransitionSource) &&
-            (!isEditingTransitionTarget))
+    if ( (this->sceneMode == sceneMode_e::idle) || (this->sceneMode == sceneMode_e::simulating) )
         GenericScene::contextMenuEvent(event);
 }
 
 void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* transition)
 {
-    isEditingTransitionSource = true;
+    this->sceneMode = sceneMode_e::editingTransitionSource;
+    this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::editTransitionSource);
     currentTransition = transition;
 
     clearSelection();
@@ -390,7 +430,8 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* 
 
 void FsmScene::transitionCallsDynamicTargetEventHandler(FsmGraphicalTransition* transition)
 {
-    isEditingTransitionTarget = true;
+    this->sceneMode = sceneMode_e::editingTransitionTarget;
+    this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::editTransitionTarget);
     currentTransition = transition;
 
     clearSelection();
@@ -458,11 +499,13 @@ void FsmScene::simulationModeChanged(Machine::mode newMode)
     if (newMode == Machine::mode::editMode)
     {
         handleSelection();
-        this->isSimulating = false;
+        this->sceneMode = sceneMode_e::idle;
+        this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
     }
     else if (newMode == Machine::mode::simulateMode)
     {
-        this->isSimulating = true;
+        this->sceneMode = sceneMode_e::simulating;
+        this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
     }
 }
 

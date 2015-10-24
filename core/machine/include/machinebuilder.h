@@ -34,14 +34,23 @@ public:
     enum class tool {none,
                      state, transition, initial_state
                     };
+
+    enum class singleUseTool { none,
+                               drawTransitionFromScene,
+                               beginDrawTransitionFromTool,
+                               editTransitionSource,
+                               editTransitionTarget
+                             };
 public:
     explicit MachineBuilder(QObject* parent = nullptr);
 
     tool getTool() const;
     void setTool(tool newTool);
+    void setSingleUseTool(singleUseTool t);
 
 signals:
     void changedToolEvent(tool t);
+    void singleUseToolSelected(singleUseTool t);
 
 private:
     tool currentTool = tool::none;

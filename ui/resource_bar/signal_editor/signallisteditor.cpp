@@ -236,11 +236,24 @@ void SignalListEditor::updateList()
 
 void SignalListEditor::keyPressEvent(QKeyEvent* event)
 {
+    bool transmitEvent = true;
+
     if (event->key() == Qt::Key::Key_Escape)
     {
         this->cancelCurrentEdit();
+        transmitEvent = false;
     }
-    else
+    else if (event->key() == Qt::Key::Key_Delete)
+    {
+        // TODO: hanlde multiple deletion when undo is implemented
+        if (signalsList->selectionModel()->selectedRows().count() == 1)
+        {
+            removeSelectedSignals();
+            transmitEvent = false;
+        }
+    }
+
+    if (transmitEvent)
         QWidget::keyPressEvent(event);
 }
 

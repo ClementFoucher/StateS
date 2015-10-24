@@ -85,7 +85,8 @@ SOURCES += \
     ui/refined_widget/labelwithclickevent.cpp \
     core/machine/machinebuilder.cpp \
     ui/resource_bar/machine_builder/fsmtoolspanel.cpp \
-    ui/resource_bar/machine_builder/machinetoolspanel.cpp
+    ui/resource_bar/machine_builder/machinetoolspanel.cpp \
+    ui/refined_widget/collapsiblewidgetwithtitle.cpp
 
 
 HEADERS  += \
@@ -155,7 +156,8 @@ HEADERS  += \
     ui/refined_widget/include/labelwithclickevent.h \
     core/machine/include/machinebuilder.h \
     ui/resource_bar/machine_builder/include/fsmtoolspanel.h \
-    ui/resource_bar/machine_builder/include/machinetoolspanel.h
+    ui/resource_bar/machine_builder/include/machinetoolspanel.h \
+    ui/refined_widget/include/collapsiblewidgetwithtitle.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

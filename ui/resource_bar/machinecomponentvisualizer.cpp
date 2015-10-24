@@ -33,25 +33,16 @@
 #include "machine.h"
 
 
-MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machine)
+MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent) :
+    QGraphicsView(parent)
 {
     this->machine = machine;
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->setAlignment(Qt::AlignTop);
-
-    QLabel* visuTitle = new QLabel("<b>" + tr("Machine visualization") + "</b>");
-    visuTitle ->setAlignment(Qt::AlignCenter);
-    layout->addWidget(visuTitle);
-
     this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
 
-    this->view = new QGraphicsView();
-    this->view->setDragMode(QGraphicsView::ScrollHandDrag);
-    this->view->setScene(this->scene.get());
-    layout->addWidget(this->view);
+    this->setDragMode(QGraphicsView::ScrollHandDrag);
+    this->setScene(this->scene.get());
 
-    this->setLayout(layout);
 
     this->updateMachineVisualization();
 
@@ -65,16 +56,16 @@ shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualization
 
 void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
 {
-    this->view->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     double scaleFactor = 1.15;
     if(event->delta() > 0)
     {
-        this->view->scale(scaleFactor, scaleFactor);
+        this->scale(scaleFactor, scaleFactor);
     }
     else
     {
-        this->view->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+        this->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
     }
 }
 

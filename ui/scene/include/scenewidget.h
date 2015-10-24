@@ -52,8 +52,9 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent*) override;
-    void mouseReleaseEvent(QMouseEvent*) override;
     void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void mouseDoubleClickEvent(QMouseEvent*) override;
     void resizeEvent(QResizeEvent*) override;
     void wheelEvent(QWheelEvent*) override;
 
@@ -72,6 +73,7 @@ private:
 
     // Local variables
     bool movingScene = false;
+    bool clearingTool = false;
 };
 
 #endif // SCENEWIDGET_H

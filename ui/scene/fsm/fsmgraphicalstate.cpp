@@ -37,6 +37,7 @@
 #include "signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
+#include "machinebuilder.h"
 
 
 //
@@ -272,6 +273,7 @@ void FsmGraphicalState::treatMenu(QAction* action)
     else if (action->text() == tr("Draw transition from this state"))
     {
         ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
+        this->logicalState.lock()->getOwningFsm()->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::drawTransitionFromScene);
     }
     else if (action->text() == tr("Set active"))
     {

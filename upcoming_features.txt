@@ -8,17 +8,17 @@ These features will be implemented... some day.
 ** Interface **
 
 - Full rebuild of simulation window, current behavior is too basic,
-- Support of hexadecimal notation for bit vector signals,
-- Textual equations edition.
+- Support of hexadecimal notation for bit vector signals
 
 ** Core **
 
 - Integer type signals support, allowing basic operations like increment,
-- Signal to signal affectation.
+- Signal to signal affectation, instad of just constant to signal.
 
 ** Long-term **
 
 - Ability to save/load timeline, and load stimuli vector,
+- Textual equations edition,
 - Grafcet-type machines.
 
 ** Very long-term **

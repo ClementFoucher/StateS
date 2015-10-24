@@ -50,8 +50,12 @@ public:
 
     void changeActuator(shared_ptr<MachineActuatorComponent> actuator);
 
+protected:
+    void keyPressEvent(QKeyEvent* e) override;
+
 private slots:
     void updateContent();
+    void updateButtonsState();
 
     void addAction();
     void removeAction();

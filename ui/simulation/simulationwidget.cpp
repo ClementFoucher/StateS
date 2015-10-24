@@ -133,20 +133,21 @@ SimulationWidget::SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machin
 
 void SimulationWidget::mousePressEvent(QMouseEvent* event)
 {
+    // TODO: handle only left button
     separatorPosition = event->x();
+    repaint();
 
     QWidget::mousePressEvent(event);
-
-    repaint();
 }
 
 void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
 {
+    // This event is only called if we have clicked first
     separatorPosition = event->x();
+    repaint();
 
     QWidget::mouseMoveEvent(event);
 
-    repaint();
 }
 
 void SimulationWidget::paintEvent(QPaintEvent*)

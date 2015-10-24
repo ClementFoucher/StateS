@@ -29,12 +29,13 @@
 using namespace std;
 #include "memory.h"
 
-// To access enums
-#include "machine.h"
-
 // StateS classes
+class CollapsibleWidgetWithTitle;
 class MachineComponentVisualizer;
-class MachineBuilder;
+
+// To access enums
+#include "machinebuilder.h"
+#include "machine.h"
 
 
 class MachineBuilderTab : public QWidget
@@ -45,10 +46,20 @@ public:
     explicit MachineBuilderTab(shared_ptr<MachineBuilder> machineBuilder, Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
-    void showEvent(QShowEvent*);
+    void showEvent(QShowEvent* e) override;
+
+
+private slots:
+    void toolChangedEventHandler(MachineBuilder::tool newTool);
+    void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
 
 private:
+    CollapsibleWidgetWithTitle*          hintDisplay;
+    CollapsibleWidgetWithTitle*          machineDisplay;
     weak_ptr<MachineComponentVisualizer> machineComponentView;
+    weak_ptr<MachineBuilder>             machineBuilder;
+
+    void updateHint(MachineBuilder::tool newTool);
 };
 
 #endif // MACHINEBUILDERTAB_H

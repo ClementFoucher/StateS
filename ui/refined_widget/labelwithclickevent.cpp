@@ -22,6 +22,9 @@
 // Current class header
 #include "labelwithclickevent.h"
 
+// Qt classes
+#include <QMouseEvent>
+
 
 LabelWithClickEvent::LabelWithClickEvent(const QString &text) :
     QLabel(text)
@@ -29,12 +32,20 @@ LabelWithClickEvent::LabelWithClickEvent(const QString &text) :
 
 }
 
-void LabelWithClickEvent::mousePressEvent(QMouseEvent* evt)
+/*
+ * Normal QLabel intercepts mouseReleaseEvent (why?)
+ * This allows to redirect all mouse events to a specific signal.
+ * TODO: Should we still transmit event to parent when redirecting signal?
+ *
+ */
+bool LabelWithClickEvent::event(QEvent *e)
 {
-    QLabel::mousePressEvent(evt);
-    emit clicked();
+    QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
+
+    if (mouseEvent != nullptr)
+    {
+        return clicked(mouseEvent);
+    }
+    else
+        return QLabel::event(e);
 }
-
-
-
-

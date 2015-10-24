@@ -166,6 +166,7 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
             if (machineBuilder->getTool() != MachineBuilder::tool::none)
             {
                 machineBuilder->setTool(MachineBuilder::tool::none);
+                this->clearingTool = true;
                 transmitEvent = false;
             }
         }
@@ -174,24 +175,6 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
     if (transmitEvent)
         QGraphicsView::mousePressEvent(me);
 
-}
-
-void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
-{
-    // In this function, do not transmit event in case we handle it
-    bool transmitEvent = true;
-
-    // In this function, drag mode is handled by some component in stack, so we need to transmit event
-
-    if (this->dragMode() == QGraphicsView::ScrollHandDrag) // Or use movingScene?
-    {
-        this->movingScene = false;
-        this->setDragMode(QGraphicsView::NoDrag);
-        transmitEvent = false;
-    }
-
-    if (transmitEvent)
-        QGraphicsView::mouseReleaseEvent(me);
 }
 
 void SceneWidget::mouseMoveEvent(QMouseEvent* me)
@@ -210,8 +193,54 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
         vBar->setValue(vBar->value() - delta.y());
         transmitEvent = false;
     }
+    else if (this->clearingTool)
+    {
+        // Just to NOT transmit event to parent in this case
+        transmitEvent = false;
+    }
 
     lastMouseEventPos = me->pos();
+
+    if (transmitEvent)
+        QGraphicsView::mouseMoveEvent(me);
+}
+
+void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
+{
+    // In this function, do not transmit event in case we handle it
+    bool transmitEvent = true;
+
+    // In this function, drag mode is handled by some component in stack, so we need to transmit event
+
+    if (this->movingScene)
+    {
+        this->movingScene = false;
+        this->setDragMode(QGraphicsView::NoDrag);
+        transmitEvent = false;
+    }
+    else if (this->clearingTool)
+    {
+        // Just to NOT transmit event to parent in this case
+        this->clearingTool = false;
+        transmitEvent = false;
+    }
+
+    if (transmitEvent)
+        QGraphicsView::mouseReleaseEvent(me);
+}
+
+void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
+{
+    bool transmitEvent = true;
+
+    if (this->movingScene)
+    {
+        transmitEvent = false;
+    }
+    else if (this->clearingTool)
+    {
+        transmitEvent = false;
+    }
 
     if (transmitEvent)
         QGraphicsView::mouseMoveEvent(me);
