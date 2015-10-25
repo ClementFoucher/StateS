@@ -51,7 +51,7 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
     this->layout()->addWidget(nameEditTitle);
 
     textStateName = new DynamicLineEdit(state->getName(), true);
-    connect(textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameChangedEventHandler);
+    connect(textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
     connect(textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
     this->layout()->addWidget(textStateName);
 
@@ -97,15 +97,19 @@ void StateEditorTab::updateContent()
     textStateName->setText(this->state.lock()->getName());
 }
 
-void StateEditorTab::nameChangedEventHandler(const QString& name)
+void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 {
     shared_ptr<FsmState> state = this->state.lock();
 
-    if (name != state->getName())
+    if (state != nullptr)
     {
-        if ( !(state->getOwningFsm()->renameState(state, name)) )
+
+       // if (actualName != state->getName())
         {
-            textStateName->markAsErroneous();
+            if ( !(state->getOwningFsm()->renameState(state, name)) )
+            {
+                textStateName->markAsErroneous();
+            }
         }
     }
 }

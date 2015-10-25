@@ -28,6 +28,7 @@
 #include <QGraphicsView>
 #include <QMouseEvent>
 #include <QGraphicsItem>
+#include <QScrollBar>
 
 // StateS classes
 #include "machine.h"
@@ -52,6 +53,70 @@ MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machi
 shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene()
 {
     return this->scene;
+}
+
+void MachineComponentVisualizer::mousePressEvent(QMouseEvent* me)
+{
+    bool transmitEvent = true;
+
+    if ( (me->button() == Qt::LeftButton) || (me->button() == Qt::MiddleButton) )
+    {
+        this->isMoving = true;
+        transmitEvent = false;
+    }
+
+    if (transmitEvent)
+        QGraphicsView::mousePressEvent(me);
+}
+
+void MachineComponentVisualizer::mouseMoveEvent(QMouseEvent* me)
+{
+    static QPoint lastMouseEventPos(0, 0);
+
+    bool transmitEvent = true;
+
+    if (this->isMoving == true)
+    {
+        QScrollBar* hBar = horizontalScrollBar();
+        QScrollBar* vBar = verticalScrollBar();
+        QPoint delta = me->pos() - lastMouseEventPos;
+        hBar->setValue(hBar->value() + -delta.x());
+        vBar->setValue(vBar->value() - delta.y());
+
+        transmitEvent = false;
+    }
+
+    lastMouseEventPos = me->pos();
+
+    if (transmitEvent)
+        QGraphicsView::mouseMoveEvent(me);
+}
+
+void MachineComponentVisualizer::mouseReleaseEvent(QMouseEvent* me)
+{
+    bool transmitEvent = true;
+
+    if (this->isMoving == true)
+    {
+        this->isMoving = false;
+        transmitEvent = false;
+    }
+
+    if (transmitEvent)
+        QGraphicsView::mouseReleaseEvent(me);
+}
+
+void MachineComponentVisualizer::mouseDoubleClickEvent(QMouseEvent* me)
+{
+    bool transmitEvent = true;
+
+    if (this->isMoving == true)
+    {
+        transmitEvent = false;
+    }
+
+    if (transmitEvent)
+        QGraphicsView::mouseMoveEvent(me);
 }
 
 void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)

@@ -32,6 +32,7 @@ using namespace std;
 // StateS classes
 class CollapsibleWidgetWithTitle;
 class MachineComponentVisualizer;
+class DynamicLineEdit;
 
 // To access enums
 #include "machinebuilder.h"
@@ -43,21 +44,25 @@ class MachineBuilderTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit MachineBuilderTab(shared_ptr<MachineBuilder> machineBuilder, Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+    explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
     void showEvent(QShowEvent* e) override;
-
+    void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
     void toolChangedEventHandler(MachineBuilder::tool newTool);
     void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
+    void nameTextChangedEventHandler(const QString& name);
+    void updateContent();
 
 private:
-    CollapsibleWidgetWithTitle*          hintDisplay;
-    CollapsibleWidgetWithTitle*          machineDisplay;
+    CollapsibleWidgetWithTitle*          hintDisplay    = nullptr;
+    CollapsibleWidgetWithTitle*          machineDisplay = nullptr;
     weak_ptr<MachineComponentVisualizer> machineComponentView;
-    weak_ptr<MachineBuilder>             machineBuilder;
+    weak_ptr<Machine>                    machine;
+
+    DynamicLineEdit* stateName = nullptr;
 
     void updateHint(MachineBuilder::tool newTool);
 };

@@ -53,14 +53,11 @@
 // Constructors
 //
 
-StatesUi::StatesUi(shared_ptr<Machine> machine) :
+StatesUi::StatesUi() :
     QMainWindow(nullptr)
 {
     this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
-    if (machine != nullptr)
-        this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
-    else
-        this->setWindowTitle("StateS");
+    this->updateTitle();
     this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
     this->resize(QApplication::desktop()->availableGeometry().size() - QSize(200, 200));
 
@@ -150,19 +147,11 @@ StatesUi::StatesUi(shared_ptr<Machine> machine) :
 
     connect(this->resourcesBar, &ResourceBar::simulationToggledEvent,  this, &StatesUi::simulationToggledEventHandler);
     connect(this->resourcesBar, &ResourceBar::triggerViewRequestEvent, this, &StatesUi::triggerViewEventHandler);
-
-    this->setMachine(machine);
 }
 
-void StatesUi::setMachine(shared_ptr<Machine> machine)
+void StatesUi::setMachine(shared_ptr<Machine> machine, const QString& path)
 {
     shared_ptr<Machine> oldMachine = this->machine.lock();
-
-    if (oldMachine != nullptr)
-        disconnect(oldMachine.get(), &Machine::machineLoadedEvent, this, &StatesUi::machineLoadedEventHandler);
-
-    if (machine != nullptr)
-        connect(machine.get(), &Machine::machineLoadedEvent, this, &StatesUi::machineLoadedEventHandler);
 
     this->resourcesBar->setMachine(machine);
     this->machineDisplayArea->setMachine(machine, resourcesBar);
@@ -183,6 +172,13 @@ void StatesUi::setMachine(shared_ptr<Machine> machine)
     }
 
     this->machine = machine;
+    this->setCurrentFilePath(path);
+}
+
+void StatesUi::setCurrentFilePath(const QString& path)
+{
+    this->currentFilePath = path;
+    this->updateTitle();
 }
 
 void StatesUi::newMachineRequestEventHandler()
@@ -213,8 +209,6 @@ void StatesUi::newMachineRequestEventHandler()
 
     if (doNew)
     {
-        this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
-        this->actionSaveCurrent->setEnabled(false);
         emit newFsmRequestEvent();
     }
 }
@@ -243,8 +237,6 @@ void StatesUi::clearMachineRequestEventHandler()
         if (doClear)
         {
             emit clearMachineRequestEvent();
-            this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
-            this->actionSaveCurrent->setEnabled(false);
         }
     }
 }
@@ -264,20 +256,21 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 {
     if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
-        if (this->actionSaveCurrent->isEnabled())
+        if (this->currentFilePath != QString::null)
         {
-            machine.lock()->saveMachine(this->getCurrentFileEvent());
+            emit this->saveMachineInCurrentFileRequestEvent();
             // Should make button blink for one second.
             // How to without locking UI?
         }
         else
         {
+            // No current file, trigger 'save as' procedure
             this->saveMachineRequestEventHandler();
         }
     }
     else
     {
-        event->ignore();
+        //event->ignore();
     }
 }
 
@@ -456,11 +449,7 @@ void StatesUi::saveMachineRequestEventHandler()
         if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
             fileName += ".SfsmS";
 
-        machine.lock()->saveMachine(fileName);
-        emit this->machineSavedEvent(fileName);
-
-        this->setWindowTitle("StateS — " + this->getCurrentFileEvent());
-        this->actionSaveCurrent->setEnabled(true);
+        emit this->saveMachineRequestEvent(fileName);
     }
 }
 
@@ -531,14 +520,6 @@ void StatesUi::detachTimelineEventHandler(bool detach)
     }
 }
 
-void StatesUi::machineLoadedEventHandler()
-{
-    // Reset display
-    this->machineDisplayArea->setMachine(this->machine.lock(), this->resourcesBar);
-    this->setWindowTitle("StateS — " + this->getCurrentFileEvent());
-    this->actionSaveCurrent->setEnabled(true);
-}
-
 void StatesUi::saveMachineOnCurrentFileEventHandler()
 {
     bool doSave = false;
@@ -546,7 +527,7 @@ void StatesUi::saveMachineOnCurrentFileEventHandler()
     if (this->machine.lock() != nullptr)
     {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->getCurrentFileEvent() + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
+        reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->currentFilePath + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
 
         if (reply == QMessageBox::StandardButton::Ok)
         {
@@ -558,7 +539,25 @@ void StatesUi::saveMachineOnCurrentFileEventHandler()
 
     if (doSave)
     {
-        machine.lock()->saveMachine(this->getCurrentFileEvent());
+        emit saveMachineInCurrentFileRequestEvent();
+    }
+}
+
+void StatesUi::updateTitle()
+{
+    if (this->machine.lock() == nullptr)
+    {
+        this->setWindowTitle("StateS");
+    }
+    else if (this->currentFilePath != QString::null)
+    {
+        this->actionSaveCurrent->setEnabled(true);
+        this->setWindowTitle("StateS — " + this->currentFilePath);
+    }
+    else
+    {
+        this->actionSaveCurrent->setEnabled(false);
+        this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
     }
 }
 

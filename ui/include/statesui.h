@@ -46,19 +46,20 @@ class StatesUi : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit StatesUi(shared_ptr<Machine> machine);
+    explicit StatesUi();
 
-    void setMachine(shared_ptr<Machine> machine);
+    void setMachine(shared_ptr<Machine> machine, const QString& path = QString::null);
+    void setCurrentFilePath(const QString& path);
 
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
     void loadMachineRequestEvent(const QString& path);
-    void machineSavedEvent(const QString& path);
-    QString getCurrentFileEvent();
+    void saveMachineRequestEvent(const QString& path);
+    void saveMachineInCurrentFileRequestEvent();
 
 protected:
-    void closeEvent(QCloseEvent*) override;
+    void closeEvent(QCloseEvent*)  override;
     void keyPressEvent(QKeyEvent*) override;
 
 private slots:
@@ -71,7 +72,6 @@ private slots:
     void simulationToggledEventHandler();
     void triggerViewEventHandler();
     void detachTimelineEventHandler(bool detach);
-    void machineLoadedEventHandler();
     void saveMachineOnCurrentFileEventHandler();
 
 private:
@@ -94,6 +94,9 @@ private:
 
     // Owned machine
     weak_ptr<Machine> machine;
+    QString currentFilePath = QString::null;
+
+    void updateTitle();
 };
 
 #endif // STATESUI_H

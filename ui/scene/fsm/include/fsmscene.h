@@ -52,6 +52,8 @@ private:
     enum sceneMode_e
     {
         idle,
+        goingBackToIdle,
+        askedForMenu,
         drawingTransition,
         editingTransitionSource,
         editingTransitionTarget,
@@ -81,6 +83,7 @@ private slots:
     void stateCallsEditEventHandler(shared_ptr<FsmState> state);
     void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
     void treatMenu(QAction*);
+    void menuHiding();
 
     void updateSceneRect();
 
@@ -89,8 +92,6 @@ private slots:
     void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
 
 private:
-    bool cancellingAction = false;
-    bool askedForMenu = false;
     FsmGraphicalState* getStateAt(const QPointF& location) const;
     FsmGraphicalState* addState(shared_ptr<FsmState> logicState, QPointF location);
     void addTransition(FsmGraphicalTransition* newTransition);

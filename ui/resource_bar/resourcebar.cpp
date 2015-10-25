@@ -101,10 +101,10 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     {
         this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
 
-        this->machineBuildTab      = new MachineBuilderTab(newMachine->getMachineBuilder(), newMachine->getType(), this->machineComponentScene);
-        this->signalsTab = new SignalEditorTab(newMachine, this->machineComponentScene);
-        this->simulatorTab       = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
-        this->verifierTab        = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
+        this->machineBuildTab = new MachineBuilderTab(newMachine, this->machineComponentScene);
+        this->signalsTab      = new SignalEditorTab(newMachine, this->machineComponentScene);
+        this->simulatorTab    = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
+        this->verifierTab     = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
 
         connect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
         connect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);

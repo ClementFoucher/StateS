@@ -48,6 +48,10 @@ public:
     shared_ptr<QGraphicsScene> getComponentVisualizationScene();
 
 protected:
+    void mousePressEvent(QMouseEvent* me) override;
+    void mouseMoveEvent(QMouseEvent* me) override;
+    void mouseReleaseEvent(QMouseEvent* me) override;
+    void mouseDoubleClickEvent(QMouseEvent* me) override;
     void wheelEvent(QWheelEvent* event) override;
 
 private slots:
@@ -60,6 +64,8 @@ private:
 
     // Qwidget with parent
     QGraphicsView* view = nullptr;
+
+    bool isMoving = false;
 };
 
 #endif // MACHINECOMPONENTVISUALIZER_H

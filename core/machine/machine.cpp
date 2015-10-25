@@ -34,6 +34,14 @@
 Machine::Machine()
 {
     this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
+    this->name = tr("Machine");
+
+    this->rebuildComponentVisualization();
+}
+
+QString Machine::getName() const
+{
+    return this->name;
 }
 
 // General lists obtention
@@ -251,6 +259,25 @@ QGraphicsItem* Machine::getComponentVisualization()
     return currentVisu;
 }
 
+bool Machine::setName(const QString& newName)
+{
+    QString correctedName = newName.trimmed();
+
+    if (correctedName.length() != 0)
+    {
+        this->name = correctedName;
+        this->rebuildComponentVisualization();
+
+        emit nameChangedEvent(this->name);
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void Machine::rebuildComponentVisualization()
 {
     // /!\ QGraphicsItemGroup bounding box seems not to be updated
@@ -348,7 +375,7 @@ void Machine::rebuildComponentVisualization()
     QGraphicsTextItem* title = new QGraphicsTextItem();
 
     {
-        title->setHtml("<b>" + tr("Machine") + "</b>");
+        title->setHtml("<b>" + this->name + "</b>");
     }
 
 
@@ -613,42 +640,63 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
     QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
-    QString nonConstNewName = newName;
+    QString correctedNewName = newName;
+    this->cleanSignalName(correctedNewName);
 
     if ( !allSignals.contains(oldName) ) // First check if signal exists
         return false;
     else if (oldName == newName) // Rename to same name is always success
         return true;
-    else if ( allSignals.contains(newName) ) // Do not allow rename to existing name
-        return false;
-    else if ( ! this->cleanSignalName(nonConstNewName) ) // Check for name correctness
+    else if (oldName == correctedNewName)
+    {
+        // Just to update any text with false new name...
+        // A little bit heavy
+        if (inputs.contains(oldName))
+        {
+            emit inputListChangedEvent();
+        }
+        else if (outputs.contains(oldName))
+        {
+            emit outputListChangedEvent();
+        }
+        else if (localVariables.contains(oldName))
+        {
+            emit localVariableListChangedEvent();
+        }
+        else if (constants.contains(oldName))
+        {
+            emit constantListChangedEvent();
+        }
+        return true;
+    }
+    else if ( allSignals.contains(correctedNewName) ) // Do not allow rename to existing name
         return false;
     else
     {
         // Update map
         if (inputs.contains(oldName))
         {
-            this->renameSignalInList(oldName, newName, &this->inputs, &this->inputsRanks);
+            this->renameSignalInList(oldName, correctedNewName, &this->inputs, &this->inputsRanks);
             this->rebuildComponentVisualization();
 
             emit inputListChangedEvent();
         }
         else if (outputs.contains(oldName))
         {
-            this->renameSignalInList(oldName, newName, &this->outputs, &this->outputsRanks);
+            this->renameSignalInList(oldName, correctedNewName, &this->outputs, &this->outputsRanks);
             this->rebuildComponentVisualization();
 
             emit outputListChangedEvent();
         }
         else if (localVariables.contains(oldName))
         {
-            this->renameSignalInList(oldName, newName, &this->localVariables, &this->localVariablesRanks);
+            this->renameSignalInList(oldName, correctedNewName, &this->localVariables, &this->localVariablesRanks);
 
             emit localVariableListChangedEvent();
         }
         else if (constants.contains(oldName))
         {
-            this->renameSignalInList(oldName, newName, &this->constants, &this->constantsRanks);
+            this->renameSignalInList(oldName, correctedNewName, &this->constants, &this->constantsRanks);
 
             emit constantListChangedEvent();
         }
@@ -853,10 +901,10 @@ bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString,
  */
 bool Machine::cleanSignalName(QString& nameToClean) const
 {
-    bool clean = true;
+    QString nameBeingCleaned = nameToClean.trimmed();
     QString cleanName;
 
-    foreach (QChar c, nameToClean)
+    foreach (QChar c, nameBeingCleaned)
     {
         if ( ( (c.isLetterOrNumber()) ) ||
              ( (c == '_')             ) ||
@@ -868,16 +916,15 @@ bool Machine::cleanSignalName(QString& nameToClean) const
         {
             cleanName += c;
         }
-        else
-        {
-            clean = false;
-        }
     }
 
-    if (!clean)
+    if (cleanName != nameToClean)
+    {
         nameToClean = cleanName;
-
-    return clean;
+        return false;
+    }
+    else
+        return true;
 }
 
 QString Machine::getUniqueSignalName(const QString& prefix) const

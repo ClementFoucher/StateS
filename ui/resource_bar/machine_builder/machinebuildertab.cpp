@@ -33,45 +33,71 @@
 #include "fsmtoolspanel.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "dynamiclineedit.h"
+#include "fsm.h"
 
 
-MachineBuilderTab::MachineBuilderTab(shared_ptr<MachineBuilder> machineBuilder, Machine::type machineType, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
     this->machineComponentView = machineComponentView;
-    this->machineBuilder       = machineBuilder;
+    this->machine              = machine;
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->setAlignment(Qt::AlignTop);
-
-    // Tools
-
-    connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
-    connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
-    if (machineType == Machine::type::FSM)
+    if (machine != nullptr)
     {
-        QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
-        title->setAlignment(Qt::AlignCenter);
-        layout->addWidget(title);
+        shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
 
-        layout->addWidget(new FsmToolsPanel(machineBuilder));
+        QVBoxLayout* layout = new QVBoxLayout(this);
+        layout->setAlignment(Qt::AlignTop);
+
+        // Tools
+
+        connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
+        connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
+
+        shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machine);
+
+        if (fsm != nullptr)
+        {
+            QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
+            title->setAlignment(Qt::AlignCenter);
+            layout->addWidget(title);
+
+            layout->addWidget(new FsmToolsPanel(machineBuilder));
+
+            QHBoxLayout* nameLayout = new QHBoxLayout();
+
+            QLabel* machineNameLabel = new QLabel(tr("Component name:"));
+            this->stateName = new DynamicLineEdit(fsm->getName(), true);
+
+            connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
+            connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
+
+            connect(machine.get(), &Machine::nameChangedEvent, this, &MachineBuilderTab::updateContent);
+
+            nameLayout->addWidget(machineNameLabel);
+            nameLayout->addWidget(this->stateName);
+
+            layout->addLayout(nameLayout);
+
+        }
+        else
+        {
+            qDebug() << "(Drawing tool bar:) Error, unknown machine type";
+        }
+
+        // Machine visualization
+        this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+        layout->addWidget(this->machineDisplay);
+
+        // Hints
+
+
+        this->hintDisplay = new CollapsibleWidgetWithTitle();
+        layout->addWidget(this->hintDisplay);
+
+        this->updateHint(MachineBuilder::tool::none);
     }
-    else
-    {
-        qDebug() << "(Drawing tool bar:) Error, unknown machine type";
-    }
-
-    // Machine visualization
-    this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Machine visualization") , machineComponentView.get());
-    layout->addWidget(this->machineDisplay);
-
-    // Hints
-
-
-    this->hintDisplay = new CollapsibleWidgetWithTitle();
-    layout->addWidget(this->hintDisplay);
-
-    this->updateHint(MachineBuilder::tool::none);
 }
 
 void MachineBuilderTab::showEvent(QShowEvent* e)
@@ -81,10 +107,22 @@ void MachineBuilderTab::showEvent(QShowEvent* e)
 
     if (machineComponentView != nullptr)
     {
-        this->machineDisplay->setContent(tr("Machine visualization"), machineComponentView.get());
+        this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
     }
 
     QWidget::showEvent(e);
+}
+
+/**
+ * @brief MachineBuilderTab::mousePressEvent
+ * Used to allow validation of name wherever we click,
+ * otherwise clicks inside this widget won't validate input.
+ */
+void MachineBuilderTab::mousePressEvent(QMouseEvent *e)
+{
+    this->stateName->clearFocus();
+
+    QWidget::mousePressEvent(e);
 }
 
 void MachineBuilderTab::toolChangedEventHandler(MachineBuilder::tool newTool)
@@ -96,9 +134,9 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
 {
     if (tempTool == MachineBuilder::singleUseTool::none)
     {
-        shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-        if (machineBuilder != nullptr)
-            this->updateHint(machineBuilder->getTool());
+        shared_ptr<Machine> machine = this->machine.lock();
+        if (machine!= nullptr)
+            this->updateHint(machine->getMachineBuilder()->getTool());
         else
             this->updateHint(MachineBuilder::tool::none);
     }
@@ -164,6 +202,37 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
         hintText->setWordWrap(true);
 
         this->hintDisplay->setContent(title, hintText, true);
+    }
+}
+
+void MachineBuilderTab::nameTextChangedEventHandler(const QString& name)
+{
+    shared_ptr<Machine> machine = this->machine.lock();
+
+    if (machine != nullptr)
+    {
+        if (name != machine->getName())
+        {
+            bool accepted = machine->setName(name);
+
+            if (!accepted)
+                this->stateName->markAsErroneous();
+        }
+    }
+}
+
+void MachineBuilderTab::updateContent()
+{
+    shared_ptr<Machine> machine = this->machine.lock();
+
+    if (machine != nullptr)
+    {
+        this->stateName->setText(machine->getName());
+    }
+    else
+    {
+        this->stateName->setText("<i>(" + tr("No machine") + ")</i>");
+        this->stateName->setEnabled(false);
     }
 }
 

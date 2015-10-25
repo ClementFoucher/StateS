@@ -49,7 +49,7 @@ protected:
     void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-    void nameChangedEventHandler(const QString& name);
+    void nameTextChangedEventHandler(const QString& name);
     void updateContent();
 
 private:

@@ -81,7 +81,7 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
 
     //
     // Machine visualization
-    this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Machine visualization") , machineComponentView.get());
+    this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
     this->layout()->addWidget(this->machineDisplay);
 }
 
@@ -92,7 +92,7 @@ void SignalEditorTab::showEvent(QShowEvent* e)
 
     if (machineComponentView != nullptr)
     {
-        this->machineDisplay->setContent(tr("Machine visualization"), machineComponentView.get());
+        this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
     }
 
     QWidget::showEvent(e);

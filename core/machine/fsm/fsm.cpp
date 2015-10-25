@@ -55,11 +55,6 @@ void Fsm::loadFromFile(const QString& filePath, bool eraseFirst)
     emit machineLoadedEvent();
 }
 
-Machine::type Fsm::getType() const
-{
-    return Machine::type::FSM;
-}
-
 const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 {
     return states;
@@ -80,11 +75,27 @@ void Fsm::removeState(shared_ptr<FsmState> state)
 
 bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
 {
-    QString actualName = getUniqueStateName(newName);
-
-    if (actualName == newName)
+    if (state->getName() == newName)
     {
-        state->setName(newName);
+        // Nothing to do
+        return true;
+    }
+
+    QString cleanedName = newName.trimmed();
+
+    if (state->getName() == cleanedName)
+    {
+        // Nothing to do, but still force event to reloead text
+        state->setName(cleanedName);
+        return true;
+    }
+
+    // By this point, we know the new name is different from current
+    QString actualName = getUniqueStateName(cleanedName);
+
+    if (actualName == cleanedName)
+    {
+        state->setName(actualName);
         return true;
     }
     else
@@ -209,6 +220,7 @@ void Fsm::saveMachine(const QString& path)
     stream.setAutoFormatting(true);
     stream.writeStartDocument();
     stream.writeStartElement("FSM");
+    stream.writeAttribute("Name", this->name);
 
 
     stream.writeStartElement("Signals");
@@ -312,6 +324,19 @@ void Fsm::parseXML(const QString& path)
         qDebug() << "(Fsm:) Unexpected token found while parsing XML file: expected \"FSM\", got " << rootNode.tagName();
         return;
     }
+
+    QString machineName = rootNode.attribute("Name");
+    if (machineName == QString::null)
+    {
+        machineName = file->fileName();
+        machineName = machineName.section("/", -1, -1);             // Extract file name from path
+        machineName.remove("." + machineName.section(".", -1, -1)); // Remove extension
+    }
+    if (machineName == QString::null) // In case we still have no name (file with no file name?)
+    {
+        machineName = tr("Machine");
+    }
+    this->setName(machineName);
 
     QDomNodeList fsmNodes = rootNode.childNodes();
 

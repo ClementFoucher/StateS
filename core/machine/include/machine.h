@@ -49,14 +49,13 @@ class Machine : public QObject
     Q_OBJECT
 
 public:
-    enum class type{FSM};
     enum class signal_type{Input, Output, LocalVariable, Constant};
     enum class mode{voidMode, editMode, simulateMode};
 
 public:
     explicit Machine();
 
-    virtual Machine::type getType() const = 0;
+    QString getName() const;
 
     QList<shared_ptr<Input>>  getInputs()         const;
     QList<shared_ptr<Output>> getOutputs()        const;
@@ -90,6 +89,7 @@ public:
     QGraphicsItem* getComponentVisualization();
 
 public slots:
+    bool setName(const QString& newName);
     shared_ptr<Signal> addSignal(signal_type type, const QString& name);
     bool deleteSignal(const QString& name);
     bool renameSignal(const QString& oldName, const QString& newName);
@@ -98,6 +98,7 @@ public slots:
     bool changeSignalRank(const QString& name, uint newRank);
 
 signals:
+    void nameChangedEvent(const QString& newName);
     void changedModeEvent(mode newMode);
     void inputListChangedEvent();
     void outputListChangedEvent();
@@ -120,6 +121,8 @@ protected:
     QHash<QString, uint> outputsRanks;
     QHash<QString, uint> localVariablesRanks;
     QHash<QString, uint> constantsRanks;
+
+    QString name;
 
 private:
 

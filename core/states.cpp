@@ -60,45 +60,88 @@ StateS::~StateS()
 
 void StateS::run()
 {
-    this->machine = shared_ptr<Fsm>(new Fsm());
-    this->statesUi = unique_ptr<StatesUi>(new StatesUi(this->machine));
+    // Create interface
+    this->statesUi = unique_ptr<StatesUi>(new StatesUi());
 
-    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,       this, &StateS::generateNewFsm);
-    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent, this, &StateS::clearMachine);
-    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,  this, &StateS::loadMachine);
-    connect(this->statesUi.get(), &StatesUi::getCurrentFileEvent,      this, &StateS::getCurrentFile);
-    connect(this->statesUi.get(), &StatesUi::machineSavedEvent,        this, &StateS::updateSaveFilePath);
+    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                  this, &StateS::generateNewFsm);
+    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,            this, &StateS::clearMachine);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,             this, &StateS::loadMachine);
+    connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,             this, &StateS::saveCurrentMachine);
+    connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent,this, &StateS::saveCurrentMachineInCurrentFile);
 
+    // Generate initial machine
+    this->machine  = shared_ptr<Fsm>(new Fsm());
+    this->statesUi->setMachine(this->machine);
+
+    // Display interface
     statesUi->show();
 }
 
+/*
+ * Replace existing machine with a newly created FSM.
+ * This is the 'New' action.
+ */
 void StateS::generateNewFsm()
 {
+    this->clearMachine();
+
     this->machine = shared_ptr<Fsm>(new Fsm());
     this->statesUi->setMachine(this->machine);
-    this->currentFile.clear();
 }
 
+/*
+ * Just delete current machine.
+ * This is the 'Close' action.
+ */
 void StateS::clearMachine()
 {
     this->statesUi->setMachine(nullptr);
     this->machine.reset();
-    this->currentFile.clear();
+    this->currentFilePath = QString::null;
 }
 
+/*
+ * Load a machine from a saved file.
+ * This is the 'load' action.
+ */
 void StateS::loadMachine(const QString& path)
 {
-    this->generateNewFsm();
-    this->currentFile = path;
-    dynamic_pointer_cast<Fsm>(this->machine)->loadFromFile(path);
+    // TODO: check for path correctness
+
+    this->clearMachine();
+
+    this->currentFilePath = path;
+
+    shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm());
+    if (this->currentFilePath != QString::null)
+        fsm->loadFromFile(this->currentFilePath);
+
+    this->machine = fsm;
+
+    this->statesUi->setMachine(this->machine, this->currentFilePath);
 }
 
-void StateS::updateSaveFilePath(const QString &path)
+/*
+ * Save current machine to file.
+ * This is the 'save as' action.
+ */
+void StateS::saveCurrentMachine(const QString& path)
 {
-    this->currentFile = path;
+    this->currentFilePath = path;
+
+    this->saveCurrentMachineInCurrentFile();
+
+    // TODO: check for path correctness
+    this->statesUi->setCurrentFilePath(this->currentFilePath);
 }
 
-QString StateS::getCurrentFile()
+/*
+ * Save current machine to currently registered save file.
+ * This is the 'save' action.
+ */
+void StateS::saveCurrentMachineInCurrentFile()
 {
-    return this->currentFile;
+    // TODO: check for path correctness
+    if (this->currentFilePath != QString::null)
+        this->machine->saveMachine(this->currentFilePath);
 }

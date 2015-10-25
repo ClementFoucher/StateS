@@ -44,6 +44,9 @@ class SceneWidget : public QGraphicsView
 {
     Q_OBJECT
 
+private:
+    enum class sceneMode_e { noScene, idle, movingScene };
+
 public:
     explicit SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent = nullptr);
     explicit SceneWidget(QWidget* parent = nullptr);
@@ -60,6 +63,7 @@ protected:
 
 private slots:
     void toolChangedEventHandler(MachineBuilder::tool newTool);
+    void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
     void zoomIn();
     void zoomOut();
 
@@ -72,8 +76,9 @@ private:
     QPushButton* buttonZoomOut = nullptr;
 
     // Local variables
-    bool movingScene = false;
-    bool clearingTool = false;
+    sceneMode_e sceneMode;
+
+    void updateDragMode();
 };
 
 #endif // SCENEWIDGET_H

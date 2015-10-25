@@ -49,28 +49,29 @@ class Fsm : public Machine, public enable_shared_from_this<Fsm>
 public:
     explicit Fsm();
 
-    void loadFromFile(const QString& filePath, bool eraseFirst = false) override;
-
+    // States related
     shared_ptr<FsmState> addState(QString name = QString());
+    const QList<shared_ptr<FsmState>>& getStates() const;
     void removeState(shared_ptr<FsmState> state);
-    bool renameState(shared_ptr<FsmState> state, QString newName);
 
-    QList<shared_ptr<FsmTransition>> getTransitions() const;
+    bool renameState(shared_ptr<FsmState> state, QString newName);
 
     void setInitialState(const QString &name);
     shared_ptr<FsmState> getInitialState() const;
 
-    Machine::type getType() const override;
+    // Transitions
+    QList<shared_ptr<FsmTransition>> getTransitions() const;
 
-    const QList<shared_ptr<FsmState>>& getStates() const;
-
+    // Save/load
+    void loadFromFile(const QString& filePath, bool eraseFirst = false) override;
     void saveMachine(const QString& path) override;
 
-    void clear() override;
-
+    // Simulation
     void setSimulator(shared_ptr<FsmSimulator> simulator);
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
+    // Other
+    void clear() override;
     bool isEmpty() const override;
 
 private:

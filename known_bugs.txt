@@ -8,8 +8,7 @@
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Begin/end simulation: machine's colors update is not complete,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
-- Escape key have to be pushed twice to cancel signal creation/edition,
-- Machine component visualization: scrolling and zoom are interfering.
+- Escape key have to be pushed twice to cancel signal creation/edition.
 
 // VHDL export issues:
 

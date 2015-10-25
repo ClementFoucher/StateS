@@ -45,13 +45,18 @@ SceneWidget::SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QW
 SceneWidget::SceneWidget(QWidget* parent) :
     QGraphicsView(parent)
 {
-    this->buttonZoomIn = new QPushButton("+", this);
-    this->buttonZoomIn->resize(QSize(20, 20));
-    connect(buttonZoomIn, &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
+    this->sceneMode = sceneMode_e::noScene;
 
+    this->buttonZoomIn  = new QPushButton("+", this);
     this->buttonZoomOut = new QPushButton("-", this);
+
+    this->buttonZoomIn ->resize(QSize(20, 20));
     this->buttonZoomOut->resize(QSize(20, 20));
+
+    connect(buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
     connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
+
+    this->updateDragMode();
 }
 
 void SceneWidget::setMachine(shared_ptr<Machine> newMachine, ResourceBar* resources)
@@ -62,7 +67,10 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine, ResourceBar* resour
     // Disconnect
     shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
     if (oldMachineBuilder != nullptr)
+    {
         disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
+        disconnect(oldMachineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+    }
 
     // Initialize
     if (newMachine != nullptr)
@@ -71,21 +79,30 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine, ResourceBar* resour
         this->machineBuilder = newMachineBuiler;
 
         connect(newMachineBuiler.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
+        connect(newMachineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
 
-        if (newMachine->getType() == Machine::type::FSM)
+        shared_ptr<Fsm> newFsm = dynamic_pointer_cast<Fsm>(newMachine);
+
+        if (newFsm != nullptr)
         {
-            FsmScene* newScene = new FsmScene(dynamic_pointer_cast<Fsm>(newMachine), resources);
+            FsmScene* newScene = new FsmScene(newFsm, resources);
             newScene->setDisplaySize(this->size());
 
             this->setScene(newScene);
         }
+
+        this->sceneMode = sceneMode_e::idle;
     }
+    else
+    {
+        this->sceneMode = sceneMode_e::noScene;
+    }
+
+    this->updateDragMode();
 }
 
 void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
 {
-    // TODO when add other machines types: will need to test machine type
-
     if      (newTool == MachineBuilder::tool::none)
     {
         this->unsetCursor();
@@ -111,6 +128,30 @@ void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
     else
         this->unsetCursor();
 
+    this->updateDragMode();
+}
+
+void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool)
+{
+    if ( (newTool == MachineBuilder::singleUseTool::drawTransitionFromScene) ||
+         (newTool == MachineBuilder::singleUseTool::editTransitionSource) ||
+         (newTool == MachineBuilder::singleUseTool::editTransitionTarget)
+         )
+    {
+        QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
+        QCursor cursor(pixmap, 0 , 0);
+
+        this->setCursor(cursor);
+        this->updateDragMode();
+    }
+    else
+    {
+        shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+        if (machineBuilder != nullptr)
+        {
+            this->toolChangedEventHandler(machineBuilder->getTool());
+        }
+    }
 }
 
 void SceneWidget::resizeEvent(QResizeEvent* event)
@@ -139,37 +180,11 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
     // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
-    shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-
-    if (me->button() == Qt::LeftButton)
+    if (me->button() == Qt::MiddleButton)
     {
-        if (machineBuilder != nullptr)
-        {
-            if (machineBuilder->getTool() == MachineBuilder::tool::none)
-            {
-                this->setDragMode(QGraphicsView::RubberBandDrag);
-                // We changed drag mode, but now it is handled by some component in stack: need to transmit event
-            }
-
-        }
-    }
-    else if (me->button() == Qt::MiddleButton)
-    {
-        this->movingScene = true;
+        this->sceneMode = sceneMode_e::movingScene;
         this->setDragMode(QGraphicsView::ScrollHandDrag); // Just for mouse icon, not using its properties
         transmitEvent = false;
-    }
-    else if (me->button() == Qt::RightButton)
-    {
-        if (machineBuilder != nullptr)
-        {
-            if (machineBuilder->getTool() != MachineBuilder::tool::none)
-            {
-                machineBuilder->setTool(MachineBuilder::tool::none);
-                this->clearingTool = true;
-                transmitEvent = false;
-            }
-        }
     }
 
     if (transmitEvent)
@@ -184,18 +199,14 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
     // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
-    if (this->movingScene)
+    if (this->sceneMode == sceneMode_e::movingScene)
     {
         QScrollBar* hBar = horizontalScrollBar();
         QScrollBar* vBar = verticalScrollBar();
         QPoint delta = me->pos() - lastMouseEventPos;
         hBar->setValue(hBar->value() + -delta.x());
         vBar->setValue(vBar->value() - delta.y());
-        transmitEvent = false;
-    }
-    else if (this->clearingTool)
-    {
-        // Just to NOT transmit event to parent in this case
+
         transmitEvent = false;
     }
 
@@ -210,18 +221,11 @@ void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
     // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
-    // In this function, drag mode is handled by some component in stack, so we need to transmit event
+    if (this->sceneMode == sceneMode_e::movingScene)
+    {
+        this->sceneMode = sceneMode_e::idle;
+        this->updateDragMode();
 
-    if (this->movingScene)
-    {
-        this->movingScene = false;
-        this->setDragMode(QGraphicsView::NoDrag);
-        transmitEvent = false;
-    }
-    else if (this->clearingTool)
-    {
-        // Just to NOT transmit event to parent in this case
-        this->clearingTool = false;
         transmitEvent = false;
     }
 
@@ -233,11 +237,7 @@ void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
 {
     bool transmitEvent = true;
 
-    if (this->movingScene)
-    {
-        transmitEvent = false;
-    }
-    else if (this->clearingTool)
+    if (this->sceneMode == sceneMode_e::movingScene)
     {
         transmitEvent = false;
     }
@@ -288,4 +288,25 @@ void SceneWidget::zoomOut()
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 
     scale(1/1.15, 1/1.15);
+}
+
+void SceneWidget::updateDragMode()
+{
+    QGraphicsView::DragMode dragMode = QGraphicsView::NoDrag;
+
+    if (this->sceneMode == sceneMode_e::idle)
+    {
+        shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+
+        if (machineBuilder != nullptr)
+        {
+            if (machineBuilder->getTool() == MachineBuilder::tool::none)
+            {
+                dragMode = QGraphicsView::RubberBandDrag;
+            }
+        }
+
+    }
+
+    this->setDragMode(dragMode);
 }

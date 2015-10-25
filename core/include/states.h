@@ -55,14 +55,14 @@ private slots:
     void generateNewFsm();
     void clearMachine();
     void loadMachine(const QString& path);
-    void updateSaveFilePath(const QString& path);
-    QString getCurrentFile();
+    void saveCurrentMachine(const QString& path);
+    void saveCurrentMachineInCurrentFile();
 
 private:
     unique_ptr<StatesUi> statesUi;
     shared_ptr<Machine>  machine;
 
-    QString currentFile;
+    QString currentFilePath = QString::null;
 };
 
 #endif // STATES_H

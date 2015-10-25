@@ -74,9 +74,9 @@ bool ContextMenu::event(QEvent* e)
     {
         if (this->activeAction()->toolTip().count() != 0)
         {
-            const QHelpEvent* helpEvent = static_cast <QHelpEvent*>(e);
+            const QHelpEvent* helpEvent = dynamic_cast <QHelpEvent*>(e);
 
-            if (helpEvent->type() == QEvent::ToolTip)
+            if ( (helpEvent != nullptr) && (helpEvent->type() == QEvent::ToolTip) )
             {
                 QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
             }
