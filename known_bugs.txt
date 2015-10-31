@@ -9,6 +9,7 @@
 - Begin/end simulation: machine's colors update is not complete,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
 - Escape key have to be pushed twice to cancel signal creation/edition.
+- Moving machine part graphically does not trigger unsaved state => No warning messages for unsaved machine
 
 // VHDL export issues:
 

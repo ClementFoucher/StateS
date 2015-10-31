@@ -63,7 +63,8 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
 
 void StateEditorTab::changeEditedState(shared_ptr<FsmState> newState)
 {
-    disconnect(this->state.lock().get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
+    if (! this->state.expired())
+        disconnect(this->state.lock().get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
     this->state = newState;
     actionEditor->changeActuator(newState);
@@ -94,7 +95,9 @@ void StateEditorTab::mousePressEvent(QMouseEvent* e)
 void StateEditorTab::updateContent()
 {
     textStateName->resetView();
-    textStateName->setText(this->state.lock()->getName());
+
+    if (! this->state.expired())
+        textStateName->setText(this->state.lock()->getName());
 }
 
 void StateEditorTab::nameTextChangedEventHandler(const QString& name)
@@ -103,8 +106,7 @@ void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 
     if (state != nullptr)
     {
-
-       // if (actualName != state->getName())
+        if (name != state->getName()) // Must be checked because setting focus triggers this event
         {
             if ( !(state->getOwningFsm()->renameState(state, name)) )
             {

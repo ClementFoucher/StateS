@@ -142,7 +142,7 @@ void FsmGraphicalTransition::setLogicalTransition(shared_ptr<FsmTransition> tran
 
 shared_ptr<FsmTransition> FsmGraphicalTransition::getLogicalTransition() const
 {
-    return logicalTransition.lock();
+    return this->logicalTransition.lock();
 }
 
 bool FsmGraphicalTransition::setSourceState(FsmGraphicalState* newSource)
@@ -514,13 +514,13 @@ void FsmGraphicalTransition::updateDisplay()
     // Redraw arrow body
     QPointF curveMiddle;
 
-    delete this->conditionLine;
-    this->conditionLine = nullptr;
-
     if ( (neighbors == nullptr) && (currentSourceState != currentTargetState) )
     {
-        delete arrowBody;
-        arrowBody = nullptr;
+        delete this->conditionLine;
+        delete this->arrowBody;
+
+        this->conditionLine = nullptr;
+        this->arrowBody     = nullptr;
 
         // If no mates, draw a straight line
 
@@ -582,8 +582,11 @@ void FsmGraphicalTransition::updateDisplay()
 
         if (autoTransitionNeedsRedraw)
         {
-            delete arrowBody;
-            arrowBody = nullptr;
+            delete this->conditionLine;
+            delete this->arrowBody;
+
+            this->conditionLine = nullptr;
+            this->arrowBody     = nullptr;
 
             uint rank;
             if (neighbors != nullptr)
@@ -644,8 +647,11 @@ void FsmGraphicalTransition::updateDisplay()
     }
     else
     {
-        delete arrowBody;
-        arrowBody = nullptr;
+        delete this->conditionLine;
+        delete this->arrowBody;
+
+        this->conditionLine = nullptr;
+        this->arrowBody     = nullptr;
 
         // Take mates in consideration to draw a curve
         // All mates will have a curved body, which curve intensity
@@ -734,6 +740,7 @@ bool FsmGraphicalTransition::setDynamicTargetMode(const QPointF& mousePosition)
 bool FsmGraphicalTransition::endDynamicMode(bool keepChanges)
 {
     shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
+
     this->autoTransitionNeedsRedraw = true;
 
     if (keepChanges)
@@ -935,7 +942,9 @@ void FsmGraphicalTransition::keyPressEvent(QKeyEvent* event)
     else if (event->key() == Qt::Key_Delete)
     {
         shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
-        transition->getSource()->removeOutgoingTransition(transition);
+
+        if (transition != nullptr)
+            transition->getSource()->removeOutgoingTransition(transition);
     }
     else
     {
@@ -971,12 +980,13 @@ void FsmGraphicalTransition::treatMenu(QAction* action)
     else if (action->text() == tr("Change target"))
         emit dynamicTargetCalledEvent(this);
     if (action->text() == tr("Edit"))
-        emit editCalledEvent(logicalTransition.lock());
+        emit editCalledEvent(this->logicalTransition.lock());
     else if (action->text() == tr("Delete"))
     {
         // This call will destroy the current object as consequence of the logical object destruction
         shared_ptr<FsmTransition> transition = this->logicalTransition.lock();
-        transition->getSource()->removeOutgoingTransition(transition);
+        if (transition != nullptr)
+            transition->getSource()->removeOutgoingTransition(transition);
     }
 
 }

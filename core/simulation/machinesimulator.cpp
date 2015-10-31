@@ -19,33 +19,11 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+// Current class header
+#include "machinesimulator.h"
 
-// Parent
-#include <QGraphicsScene>
-
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class MachineComponent;
-
-
-class GenericScene : public QGraphicsScene
+MachineSimulator::MachineSimulator()
 {
-    Q_OBJECT
 
-public:
-    explicit GenericScene(QObject* parent = nullptr);
+}
 
-    virtual void setDisplaySize(const QSize& newSize) = 0;
-
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
-};
-
-#endif // GENERICSCENE_H

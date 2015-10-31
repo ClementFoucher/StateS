@@ -42,6 +42,7 @@ class MachineBuilder;
 class Signal;
 class Input;
 class Output;
+class MachineSimulator;
 
 
 class Machine : public QObject
@@ -50,10 +51,12 @@ class Machine : public QObject
 
 public:
     enum class signal_type{Input, Output, LocalVariable, Constant};
-    enum class mode{voidMode, editMode, simulateMode};
+    enum class mode{editMode, simulateMode};
 
 public:
     explicit Machine();
+
+    // Accessors
 
     QString getName() const;
 
@@ -72,30 +75,43 @@ public:
     QList<shared_ptr<Signal>> getIoSignals()               const;
     QList<shared_ptr<Signal>> getAllSignals()              const;
 
-    bool cleanSignalName(QString& nameToClean) const;
-    QString getUniqueSignalName(const QString& prefix) const;
+    // Mutators
 
-    virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
-    virtual void saveMachine(const QString& path) = 0;
-
-    virtual void clear();
-    virtual bool isEmpty() const;
-
-    void setMode(mode newMode);
-    mode getCurrentMode();
-
-    shared_ptr<MachineBuilder> getMachineBuilder() const;
-
-    QGraphicsItem* getComponentVisualization();
-
-public slots:
     bool setName(const QString& newName);
+
     shared_ptr<Signal> addSignal(signal_type type, const QString& name);
     bool deleteSignal(const QString& name);
     bool renameSignal(const QString& oldName, const QString& newName);
     bool resizeSignal(const QString& name, uint newSize);
     bool changeSignalInitialValue(const QString& name, LogicValue newValue);
     bool changeSignalRank(const QString& name, uint newRank);
+
+    // Handled in sub classes
+
+    virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
+    virtual void saveMachine(const QString& path) = 0;
+
+    virtual shared_ptr<MachineSimulator> getSimulator() const = 0;
+
+    virtual void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const = 0;
+
+    // Other
+
+    virtual void clear();
+    virtual bool isEmpty() const;
+
+    void setMode(mode newMode);
+    mode getCurrentMode() const;
+
+    shared_ptr<MachineBuilder> getMachineBuilder() const;
+
+    QGraphicsItem* getComponentVisualization();
+
+    bool cleanSignalName(QString& nameToClean) const;
+    QString getUniqueSignalName(const QString& prefix) const;
+
+    bool isUnsaved() const;
+    void setUnsavedState(bool unsaved);
 
 signals:
     void nameChangedEvent(const QString& newName);
@@ -106,6 +122,7 @@ signals:
     void constantListChangedEvent();
     void machineLoadedEvent();
     void componentVisualizationUpdatedEvent();
+    void machineUnsavedStateChanged(bool isUnsaved);
 
 protected:
     // Store all signals as shared_ptr<Signal> for helper functions,
@@ -125,7 +142,6 @@ protected:
     QString name;
 
 private:
-
     shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank);
     QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const;
     void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
@@ -134,6 +150,8 @@ private:
     bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
 
     void rebuildComponentVisualization();
+
+private:
     QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 
     // Local copy of visu => pointer because scene takes ownership
@@ -142,6 +160,8 @@ private:
     bool inhibateEvent = false;
     shared_ptr<MachineBuilder> machineBuilder = nullptr;
     mode currentMode = mode::editMode;
+
+    bool unsaved = false;
 };
 
 #endif // MACHINE_H

@@ -176,6 +176,7 @@ bool FsmToolsPanel::toolChangedEventHandler(MachineBuilder::tool newTool)
         break;
 
     case MachineBuilder::tool::none:
+    case MachineBuilder::tool::quittingTool:
         this->buttonNoTool->         setChecked(true);
         this->buttonAddState->       setChecked(false);
         this->buttonAddInitialState->setChecked(false);
@@ -186,7 +187,7 @@ bool FsmToolsPanel::toolChangedEventHandler(MachineBuilder::tool newTool)
         break;
 
     default:
-        qDebug() << "(FSM Tool bar:) I can't use this tool!";
+        qDebug() << "(FSM Tools panel:) I can't use this tool!";
     }
 
     return result;

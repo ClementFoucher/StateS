@@ -36,7 +36,14 @@ class QPixmap;
 class StatesUi;
 class Machine;
 
-
+/**
+ * @brief The StateS class is the root object of this application:
+ * it owns the UI and the current machine under edition.
+ *
+ * It is the only one able to change the current machine.
+ *
+ * This class is also used statically for generic functions.
+ */
 class StateS : public QObject
 {
     Q_OBJECT
@@ -46,7 +53,7 @@ public: // Static
     static QString getVersion();
 
 public:
-    explicit StateS();
+    explicit StateS(const QString& initialFilePath = QString::null);
     ~StateS();
 
     void run();

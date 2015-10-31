@@ -45,7 +45,7 @@ class SimulationWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+    explicit SimulationWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
 signals:
     void detachTimelineEvent(bool detach);
@@ -63,8 +63,6 @@ private slots:
     void delayOutputOptionTriggered(bool activated);
 
 private:
-    weak_ptr<Machine> machine;
-
     QAction* actionDetach = nullptr;
 
     QToolBar* toolBar = nullptr;

@@ -19,30 +19,28 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VHDLEXPORTOPTIONS_H
-#define VHDLEXPORTOPTIONS_H
+#ifndef BLANKSCENE_H
+#define BLANKSCENE_H
 
 // Parent
-#include <QDialog>
+#include "genericscene.h"
 
-// Qt classes
-class QComboBox;
+// Qt calsses
+class QGraphicsTextItem;
 
 
-class VhdlExportOptions : public QDialog
+class BlankScene : public GenericScene
 {
     Q_OBJECT
 
 public:
-    explicit VhdlExportOptions(QWidget* parent = nullptr);
+    explicit BlankScene(QObject* parent = nullptr);
 
-    bool isResetPositive();
-    bool prefixIOs();
+    void setDisplaySize(const QSize&) override;
 
 private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* resetLogicSelectionBox = nullptr;
-    QComboBox* addPrefixSelectionBox  = nullptr;
+    QGraphicsTextItem* text = nullptr;
+    QFont defaultFont;
 };
 
-#endif // VHDLEXPORTOPTIONS_H
+#endif // BLANKSCENE_H

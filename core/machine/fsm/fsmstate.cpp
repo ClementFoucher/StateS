@@ -56,10 +56,13 @@ FsmState::~FsmState()
     {
         shared_ptr<FsmTransition> transitionL = transition.lock();
 
-        // Source CAN be nullptr... for auto-transitions!
-        // Indeed current object is already out of any shared pointer at deletion time
-        if (transitionL->getSource() != nullptr)
-            transitionL->getSource()->removeOutgoingTransition(transitionL);
+        if (transitionL != nullptr)
+        {
+            // Source CAN be nullptr... for auto-transitions!
+            // Indeed current object is already out of any shared pointer at deletion time
+            if (transitionL->getSource() != nullptr)
+                transitionL->getSource()->removeOutgoingTransition(transitionL);
+        }
     }
 
     // Delete graphics representation
@@ -112,11 +115,17 @@ void FsmState::setName(const QString& newName)
 void FsmState::addOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
     this->outputTransitions.append(transition);
+    connect(transition.get(), &FsmTransition::componentStaticConfigurationChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
+
+    emit componentStaticConfigurationChangedEvent();
 }
 
 void FsmState::removeOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
+    disconnect(transition.get(), &FsmTransition::componentStaticConfigurationChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
     this->outputTransitions.removeAll(transition);
+
+    emit componentStaticConfigurationChangedEvent();
 }
 
 const QList<shared_ptr<FsmTransition>> FsmState::getOutgoingTransitions() const
@@ -128,6 +137,7 @@ void FsmState::addIncomingTransition(shared_ptr<FsmTransition> transition)
 {
     this->cleanIncomingTransitionsList();
     this->inputTransitions.append(transition);
+    emit componentStaticConfigurationChangedEvent();
 }
 
 void FsmState::removeIncomingTransition(shared_ptr<FsmTransition> transition)
@@ -137,11 +147,17 @@ void FsmState::removeIncomingTransition(shared_ptr<FsmTransition> transition)
     QList<weak_ptr<FsmTransition>> newList;
     foreach(weak_ptr<FsmTransition> oldTransition, this->inputTransitions)
     {
-        // Keep all transitions except the one being removed
-        if (! (oldTransition.lock() == transition))
-            newList.append(transition);
+        shared_ptr<FsmTransition> oldTransitionL = oldTransition.lock();
+
+        if (oldTransitionL != nullptr)
+        {
+            // Keep all transitions except the one being removed
+            if (oldTransitionL != transition)
+                newList.append(transition);
+        }
     }
     this->inputTransitions = newList;
+    emit componentStaticConfigurationChangedEvent();
 }
 
 const QList<weak_ptr<FsmTransition>> FsmState::getIncomingTransitions()

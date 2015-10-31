@@ -26,6 +26,9 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QSvgRenderer>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
 
 // StateS classes
 #include "statesui.h"
@@ -47,8 +50,28 @@ QString StateS::getVersion()
     return "0.3.8";
 }
 
-StateS::StateS()
+StateS::StateS(const QString& initialFilePath)
 {
+    // Create interface
+    this->statesUi = unique_ptr<StatesUi>(new StatesUi());
+
+    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                  this, &StateS::generateNewFsm);
+    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,            this, &StateS::clearMachine);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,             this, &StateS::loadMachine);
+    connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,             this, &StateS::saveCurrentMachine);
+    connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent,this, &StateS::saveCurrentMachineInCurrentFile);
+
+    // Initialize machine
+    if (! initialFilePath.isEmpty())
+    {
+        this->loadMachine(initialFilePath);
+    }
+    else
+    {
+        this->machine = shared_ptr<Fsm>(new Fsm());
+    }
+
+    this->statesUi->setMachine(this->machine);
 }
 
 StateS::~StateS()
@@ -60,19 +83,6 @@ StateS::~StateS()
 
 void StateS::run()
 {
-    // Create interface
-    this->statesUi = unique_ptr<StatesUi>(new StatesUi());
-
-    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                  this, &StateS::generateNewFsm);
-    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,            this, &StateS::clearMachine);
-    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,             this, &StateS::loadMachine);
-    connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,             this, &StateS::saveCurrentMachine);
-    connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent,this, &StateS::saveCurrentMachineInCurrentFile);
-
-    // Generate initial machine
-    this->machine  = shared_ptr<Fsm>(new Fsm());
-    this->statesUi->setMachine(this->machine);
-
     // Display interface
     statesUi->show();
 }
@@ -106,19 +116,24 @@ void StateS::clearMachine()
  */
 void StateS::loadMachine(const QString& path)
 {
-    // TODO: check for path correctness
+    QFileInfo file(path);
 
-    this->clearMachine();
+    if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
+    {
+        this->clearMachine();
 
-    this->currentFilePath = path;
+        this->currentFilePath = path;
 
-    shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm());
-    if (this->currentFilePath != QString::null)
-        fsm->loadFromFile(this->currentFilePath);
+        // TODO: in one step
+        // shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm(this->currentFilePath));
+        shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm());
+        if (this->currentFilePath != QString::null)
+            fsm->loadFromFile(this->currentFilePath);
 
-    this->machine = fsm;
+        this->machine = fsm;
 
-    this->statesUi->setMachine(this->machine, this->currentFilePath);
+        this->statesUi->setMachine(this->machine, this->currentFilePath);
+    }
 }
 
 /*
@@ -127,12 +142,22 @@ void StateS::loadMachine(const QString& path)
  */
 void StateS::saveCurrentMachine(const QString& path)
 {
-    this->currentFilePath = path;
+    bool fileOk = false;
 
-    this->saveCurrentMachineInCurrentFile();
+    QFileInfo file(path);
+    if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+        fileOk = true;
+    else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+        fileOk = true;
 
-    // TODO: check for path correctness
-    this->statesUi->setCurrentFilePath(this->currentFilePath);
+    if (fileOk)
+    {
+        this->currentFilePath = path;
+
+        this->saveCurrentMachineInCurrentFile();
+
+        this->statesUi->setCurrentFilePath(this->currentFilePath);
+    }
 }
 
 /*
@@ -141,7 +166,16 @@ void StateS::saveCurrentMachine(const QString& path)
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-    // TODO: check for path correctness
-    if (this->currentFilePath != QString::null)
+    bool fileOk = false;
+
+    QFileInfo file(this->currentFilePath);
+    if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+        fileOk = true;
+    else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+        fileOk = true;
+
+    if (fileOk)
+    {
         this->machine->saveMachine(this->currentFilePath);
+    }
 }

@@ -20,21 +20,25 @@
  */
 
 // Current class header
-#include "imageexportoptions.h"
+#include "imageexportdialog.h"
 
 // Qt classes
 #include <QFormLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>
+#include <QFileDialog>
 
 // StateS classes
 #include <checkboxhtml.h>
 
 
-ImageExportOptions::ImageExportOptions(QWidget *parent) :
+ImageExportDialog::ImageExportDialog(const QString& baseFileName, const QString& searchPath, QWidget *parent) :
     QDialog(parent)
 {
+    this->baseFileName = baseFileName;
+    this->searchPath   = searchPath;
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* title = new QLabel("<b>" + tr("Choose image options:") + "</b>");
@@ -65,20 +69,74 @@ ImageExportOptions::ImageExportOptions(QWidget *parent) :
     buttonsLayout->addWidget(buttonCancel);
 }
 
-bool ImageExportOptions::includeComponent()
+bool ImageExportDialog::includeComponent()
 {
     return this->includeComponentCheckBox->isChecked();
 }
 
-ImageExportOptions::imageFormat ImageExportOptions::getImageFormat()
+MachineImageExporter::imageFormat ImageExportDialog::getImageFormat()
 {
     if (this->imageFormatSelectionBox->currentText() == "Pdf")
-        return ImageExportOptions::imageFormat::pdf;
+        return MachineImageExporter::imageFormat::pdf;
     else if (this->imageFormatSelectionBox->currentText() == "Svg")
-        return ImageExportOptions::imageFormat::svg;
+        return MachineImageExporter::imageFormat::svg;
     else if (this->imageFormatSelectionBox->currentText() == "Png")
-        return ImageExportOptions::imageFormat::png;
+        return MachineImageExporter::imageFormat::png;
     else // if (this->imageFormatSelectionBox->currentText() == "Jpeg")
-        return ImageExportOptions::imageFormat::jpg;
+        return MachineImageExporter::imageFormat::jpg;
+}
+
+QString ImageExportDialog::getFilePath()
+{
+    return this->filePath;
+}
+
+void ImageExportDialog::accept()
+{
+    MachineImageExporter::imageFormat format = this->getImageFormat();
+
+    QString defaultFilePath;
+
+    if (! this->searchPath.isEmpty())
+    {
+        defaultFilePath += this->searchPath;
+        defaultFilePath += "/"; // TODO: check if environment dependant!
+    }
+
+    defaultFilePath += this->baseFileName;
+
+    this->filePath = QString::null;
+
+    switch(format)
+    {
+    case MachineImageExporter::imageFormat::pdf:
+        this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Pdf"), defaultFilePath + ".pdf", "*.pdf");
+
+        if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".pdf", Qt::CaseInsensitive)) )
+            this->filePath += ".pdf";
+        break;
+    case MachineImageExporter::imageFormat::svg:
+        this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Svg"), defaultFilePath + ".svg", "*.svg");
+
+        if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".svg", Qt::CaseInsensitive)) )
+            this->filePath += ".svg";
+        break;
+    case MachineImageExporter::imageFormat::png:
+        this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Png"), defaultFilePath + ".png", "*.png");
+
+        if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".png", Qt::CaseInsensitive)) )
+            this->filePath += ".png";
+        break;
+    case MachineImageExporter::imageFormat::jpg:
+        this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), defaultFilePath + ".jpg", "*.jpg");
+
+        if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".jpg", Qt::CaseInsensitive)) )
+            this->filePath += ".jpg";
+
+        break;
+    }
+
+    if (! this->filePath.isEmpty())
+        QDialog::accept();
 }
 

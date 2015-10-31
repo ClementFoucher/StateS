@@ -26,6 +26,8 @@
 #include <QFile>
 #include <QDomElement>
 #include <QXmlStreamWriter>
+#include <QFileInfo>
+#include <QDir>
 
 // Debug
 #include <QDebug>
@@ -38,6 +40,7 @@
 #include "output.h"
 #include "fsmgraphicalstate.h"
 #include "fsmsimulator.h"
+#include "fsmvhdlexport.h"
 
 
 Fsm::Fsm()
@@ -45,14 +48,31 @@ Fsm::Fsm()
 
 }
 
+/*Fsm::Fsm(const QString& fromPath) :
+    Fsm()
+{
+    // TODO: check if path is valid
+    if (! fromPath.isEmpty())
+    {
+        this->loadFromFile(fromPath, false);
+        this->setUnsaved(false);
+    }
+}*/
+
 void Fsm::loadFromFile(const QString& filePath, bool eraseFirst)
 {
-    if (eraseFirst)
-        this->clear();
+    QFileInfo file(filePath);
 
-    parseXML(filePath);
+    if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
+    {
+        if (eraseFirst)
+            this->clear();
 
-    emit machineLoadedEvent();
+        parseXML(filePath);
+
+        emit machineLoadedEvent();
+        this->setUnsavedState(false);
+    }
 }
 
 const QList<shared_ptr<FsmState>>& Fsm::getStates() const
@@ -63,14 +83,19 @@ const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 shared_ptr<FsmState> Fsm::addState(QString name)
 {
     shared_ptr<FsmState> state(new FsmState(shared_from_this(), getUniqueStateName(name)));
+    connect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::stateEditedEventHandler);
     states.append(state);
+
+    this->setUnsavedState(true);
 
     return state;
 }
 
 void Fsm::removeState(shared_ptr<FsmState> state)
 {
+    disconnect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::stateEditedEventHandler);
     states.removeAll(state);
+    this->setUnsavedState(true);
 }
 
 bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
@@ -87,6 +112,7 @@ bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
     {
         // Nothing to do, but still force event to reloead text
         state->setName(cleanedName);
+        this->setUnsavedState(true);
         return true;
     }
 
@@ -96,6 +122,7 @@ bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
     if (actualName == cleanedName)
     {
         state->setName(actualName);
+        this->setUnsavedState(true);
         return true;
     }
     else
@@ -110,6 +137,16 @@ bool Fsm::isEmpty() const
         return true;
     else
         return false;
+}
+
+void Fsm::exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const
+{
+    FsmVhdlExport::exportFSM(this->shared_from_this(), path, resetLogicPositive, prefixIOs);
+}
+
+shared_ptr<MachineSimulator> Fsm::getSimulator() const
+{
+    return this->simulator.lock();
 }
 
 void Fsm::clear()
@@ -201,6 +238,8 @@ void Fsm::setInitialState(const QString& name)
 
             if (previousInitialState != nullptr)
                 emit previousInitialState->componentStaticConfigurationChangedEvent();
+
+            this->setUnsavedState(true);
         }
     }
 }
@@ -212,97 +251,110 @@ shared_ptr<FsmState> Fsm::getInitialState() const
 
 void Fsm::saveMachine(const QString& path)
 {
-    QFile* file = new QFile(path);
-    file->open(QIODevice::WriteOnly);
+    bool fileOk = false;
 
-    QXmlStreamWriter stream(file);
+    QFileInfo file(path);
+    if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+        fileOk = true;
+    else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+        fileOk = true;
 
-    stream.setAutoFormatting(true);
-    stream.writeStartDocument();
-    stream.writeStartElement("FSM");
-    stream.writeAttribute("Name", this->name);
-
-
-    stream.writeStartElement("Signals");
-    foreach (shared_ptr<Signal> var, getAllSignals())
+    if (fileOk)
     {
-        // Type
-        if (dynamic_pointer_cast<Input>(var) != nullptr)
-            stream.writeStartElement("Input");
-        else if (dynamic_pointer_cast<Output>(var) != nullptr)
-            stream.writeStartElement("Output");
-        else if (var->getIsConstant())
-            stream.writeStartElement("Constant");
-        else
-            stream.writeStartElement("Variable");
+        QFile* file = new QFile(path);
+        file->open(QIODevice::WriteOnly);
 
-        // Name
-        stream.writeAttribute("Name", var->getName());
+        QXmlStreamWriter stream(file);
 
-        // Size
-        stream.writeAttribute("Size", QString::number(var->getSize()));
-
-        // Initial value (except for outputs)
-        if (dynamic_pointer_cast<Output>(var) == nullptr)
-            stream.writeAttribute("Initial_value", var->getInitialValue().toString());
-
-        stream.writeEndElement();
-    }
-    stream.writeEndElement(); // Signals
+        stream.setAutoFormatting(true);
+        stream.writeStartDocument();
+        stream.writeStartElement("FSM");
+        stream.writeAttribute("Name", this->name);
 
 
-    stream.writeStartElement("States");
-    foreach (shared_ptr<FsmState> state, states)
-    {
-        stream.writeStartElement("State");
-
-        // Name
-        stream.writeAttribute("Name", state->getName());
-
-        // Initial
-        if (state->isInitial())
-            stream.writeAttribute("IsInitial", "true");
-
-        // Position
-        stream.writeAttribute("X", QString::number(state->getGraphicalRepresentation()->scenePos().x()));
-        stream.writeAttribute("Y", QString::number(state->getGraphicalRepresentation()->scenePos().y()));
-
-        // Actions
-        writeActions(stream, state);
-
-        stream.writeEndElement(); // State
-    }
-    stream.writeEndElement(); // Transitions
-
-    stream.writeStartElement("Transitions");
-    foreach (shared_ptr<FsmTransition> transition, this->getTransitions())
-    {
-        stream.writeStartElement("Transition");
-
-        stream.writeAttribute("Source", transition->getSource()->getName());
-        stream.writeAttribute("Target", transition->getTarget()->getName());
-
-        // Deal with equations
-        if (transition->getCondition() != nullptr)
+        stream.writeStartElement("Signals");
+        foreach (shared_ptr<Signal> var, getAllSignals())
         {
-            stream.writeStartElement("Condition");
-            writeLogicEquation(stream, transition->getCondition());
-            stream.writeEndElement(); // Condition
+            // Type
+            if (dynamic_pointer_cast<Input>(var) != nullptr)
+                stream.writeStartElement("Input");
+            else if (dynamic_pointer_cast<Output>(var) != nullptr)
+                stream.writeStartElement("Output");
+            else if (var->getIsConstant())
+                stream.writeStartElement("Constant");
+            else
+                stream.writeStartElement("Variable");
+
+            // Name
+            stream.writeAttribute("Name", var->getName());
+
+            // Size
+            stream.writeAttribute("Size", QString::number(var->getSize()));
+
+            // Initial value (except for outputs)
+            if (dynamic_pointer_cast<Output>(var) == nullptr)
+                stream.writeAttribute("Initial_value", var->getInitialValue().toString());
+
+            stream.writeEndElement();
         }
+        stream.writeEndElement(); // Signals
 
-        // Actions
-        writeActions(stream, transition);
 
-        stream.writeEndElement(); // Transition
+        stream.writeStartElement("States");
+        foreach (shared_ptr<FsmState> state, states)
+        {
+            stream.writeStartElement("State");
+
+            // Name
+            stream.writeAttribute("Name", state->getName());
+
+            // Initial
+            if (state->isInitial())
+                stream.writeAttribute("IsInitial", "true");
+
+            // Position
+            stream.writeAttribute("X", QString::number(state->getGraphicalRepresentation()->scenePos().x()));
+            stream.writeAttribute("Y", QString::number(state->getGraphicalRepresentation()->scenePos().y()));
+
+            // Actions
+            writeActions(stream, state);
+
+            stream.writeEndElement(); // State
+        }
+        stream.writeEndElement(); // Transitions
+
+        stream.writeStartElement("Transitions");
+        foreach (shared_ptr<FsmTransition> transition, this->getTransitions())
+        {
+            stream.writeStartElement("Transition");
+
+            stream.writeAttribute("Source", transition->getSource()->getName());
+            stream.writeAttribute("Target", transition->getTarget()->getName());
+
+            // Deal with equations
+            if (transition->getCondition() != nullptr)
+            {
+                stream.writeStartElement("Condition");
+                writeLogicEquation(stream, transition->getCondition());
+                stream.writeEndElement(); // Condition
+            }
+
+            // Actions
+            writeActions(stream, transition);
+
+            stream.writeEndElement(); // Transition
+        }
+        stream.writeEndElement(); // Transitions
+
+        stream.writeEndElement(); // FSM
+        stream.writeEndDocument();
+
+        file->flush();
+        file->close();
+        delete file;
+
+        this->setUnsavedState(false);
     }
-    stream.writeEndElement(); // Transitions
-
-    stream.writeEndElement(); // FSM
-    stream.writeEndDocument();
-
-    file->flush();
-    file->close();
-    delete file;
 }
 
 void Fsm::parseXML(const QString& path)
@@ -751,6 +803,11 @@ void Fsm::writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorCompo
         }
         stream.writeEndElement(); // Actions
     }
+}
+
+void Fsm::stateEditedEventHandler()
+{
+    this->setUnsavedState(true);
 }
 
 shared_ptr<FsmState> Fsm::getStateByName(const QString &name) const

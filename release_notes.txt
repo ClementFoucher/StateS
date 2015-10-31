@@ -2,7 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
--(unreleased)- V 0.3.8 - Added explicit sorting for signals within each interface; Added hints on how to draw machine; Many small GUI improvements.
+-(unreleased)- V 0.3.8 - Added explicit sorting for signals within each interface; Added hints on how to draw machine; Added machine naming; Image export now correctly place elements; Many small GUI improvements.
 - 2015-06-07 - V 0.3.7 - Ressources bar labels are now set auto-wrap to avoid excessive minimal width of the bar; Corrected keyboard handeling on scene items.
 - 2015-06-06 - V 0.3.6 - Restricted allowed characters in signals names; Signal creation/edition and state renaming now allows for cancel using button or escape key; Reorganized signal editor tab.
 - 2015-06-01 - V 0.3.5 - Corrected issue with actions on transition being maintained.

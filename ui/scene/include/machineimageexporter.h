@@ -19,33 +19,21 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef MACHINEIMAGEEXPORTER_H
+#define MACHINEIMAGEEXPORTER_H
 
-// Parent
-#include <QGraphicsScene>
-
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class MachineComponent;
+// Qt classes
+class QGraphicsScene;
+class QString;
 
 
-class GenericScene : public QGraphicsScene
+class MachineImageExporter
 {
-    Q_OBJECT
+public:
+    enum class imageFormat{pdf, svg, png, jpg};
 
 public:
-    explicit GenericScene(QObject* parent = nullptr);
-
-    virtual void setDisplaySize(const QSize& newSize) = 0;
-
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+    static void exportMachineAsImage(const QString& path, const QString &title, const QString &creator, imageFormat format, QGraphicsScene* scene, QGraphicsScene* component = nullptr);
 };
 
-#endif // GENERICSCENE_H
+#endif // MACHINEIMAGEEXPORTER_H

@@ -19,33 +19,38 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef VHDLEXPORTDIALOG_H
+#define VHDLEXPORTDIALOG_H
 
 // Parent
-#include <QGraphicsScene>
+#include <QDialog>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class MachineComponent;
+// Qt classes
+class QComboBox;
 
 
-class GenericScene : public QGraphicsScene
+class VhdlExportDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit GenericScene(QObject* parent = nullptr);
+    explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath = QString::null, QWidget* parent = nullptr);
 
-    virtual void setDisplaySize(const QSize& newSize) = 0;
+    bool isResetPositive();
+    bool prefixIOs();
+    QString getFilePath();
 
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+protected:
+    void accept() override;
+
+private:
+    // Use pointers because these are QWidgets with a parent
+    QComboBox* resetLogicSelectionBox = nullptr;
+    QComboBox* addPrefixSelectionBox  = nullptr;
+
+    QString baseFileName;
+    QString searchPath;
+    QString filePath = QString::null;
 };
 
-#endif // GENERICSCENE_H
+#endif // VHDLEXPORTDIALOG_H

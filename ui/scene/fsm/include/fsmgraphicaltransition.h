@@ -129,12 +129,12 @@ private:
     FsmGraphicalState* dynamicState = nullptr;
 
     // Base elements of the arrow
-    QGraphicsItem*      arrowBody = nullptr;
-    QGraphicsItem*      arrowEnd = nullptr;
+    QGraphicsItem*      arrowBody     = nullptr;
+    QGraphicsItem*      arrowEnd      = nullptr;
     QGraphicsTextItem*  conditionText = nullptr;
-    QGraphicsItemGroup* actionsBox   = nullptr;
+    QGraphicsItemGroup* actionsBox    = nullptr;
     QGraphicsLineItem*  conditionLine = nullptr;
-    QGraphicsRectItem*  selectionBox = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
+    QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
     qreal sceneAngle = 0;
 
     // This list will be shared by all graphical transitions that have same {source, parent} couple (either direction)

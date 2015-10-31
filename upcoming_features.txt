@@ -8,7 +8,8 @@ These features will be implemented... some day.
 ** Interface **
 
 - Full rebuild of simulation window, current behavior is too basic,
-- Support of hexadecimal notation for bit vector signals
+- Support of hexadecimal notation for bit vector signals,
+- Allow custom placement of transitions and moving conditions/actions.
 
 ** Core **
 

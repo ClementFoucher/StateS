@@ -38,20 +38,30 @@ class QPushButton;
 // StateS classes
 class Machine;
 class ResourceBar;
+class MachineComponent;
 
 
+/**
+ * @brief The SceneWidget class displays a graphic scene
+ * linked to a machine. Replacing the machine makes the
+ * SceneWidget replace its graphic scene.
+ */
 class SceneWidget : public QGraphicsView
 {
     Q_OBJECT
 
 private:
-    enum class sceneMode_e { noScene, idle, movingScene };
+    enum class sceneMode_e { noScene, idle, withTool, quittingTool, movingScene };
 
 public:
-    explicit SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent = nullptr);
     explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine, ResourceBar* resources);
+    void setMachine(shared_ptr<Machine> newMachine);
+
+signals:
+    void itemSelectedEvent(shared_ptr<MachineComponent> component);
+    void editSelectedItemEvent();
+    void renameSelectedItemEvent();
 
 protected:
     void mousePressEvent(QMouseEvent*) override;
@@ -68,6 +78,10 @@ private slots:
     void zoomOut();
 
 private:
+    void updateSceneMode(sceneMode_e newMode);
+    void updateDragMode();
+
+private:
     // References
     weak_ptr<MachineBuilder> machineBuilder;
 
@@ -76,9 +90,9 @@ private:
     QPushButton* buttonZoomOut = nullptr;
 
     // Local variables
-    sceneMode_e sceneMode;
+    sceneMode_e sceneMode      = sceneMode_e::noScene;
+    sceneMode_e savedSceneMode = sceneMode_e::noScene; // Used to restore correct mode after moving scene
 
-    void updateDragMode();
 };
 
 #endif // SCENEWIDGET_H

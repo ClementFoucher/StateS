@@ -43,7 +43,7 @@ protected:
 public:
     explicit MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
-public slots:
+protected slots:
     virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
 
 };

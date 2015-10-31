@@ -79,7 +79,8 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 
 void ActionEditor::changeActuator(shared_ptr<MachineActuatorComponent> actuator)
 {
-    disconnect(this->actuator.lock().get(), &MachineActuatorComponent::actionListChangedEvent, this, &ActionEditor::updateContent);
+    if (! this->actuator.expired())
+        disconnect(this->actuator.lock().get(), &MachineActuatorComponent::actionListChangedEvent, this, &ActionEditor::updateContent);
 
     this->actuator = actuator;
     this->updateContent();

@@ -50,18 +50,14 @@ public:
     explicit SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
-    SimulationWidget* getTimeline() const;
-
 signals:
     void beginSimulationEvent();
     void endSimulationEvent();
-    void triggerViewRequestEvent();
-    void delayOutputOptionTriggeredEvent(bool activated);
 
 private slots:
     void triggerSimulationMode(bool enabled);
-    void buttonTriggerViewClicked();
     void buttonLauchAutoStepClicked();
+    void delayOptionToggleEventHandler(bool enabled);
 
 private:
     weak_ptr<Fsm> machine;
@@ -71,7 +67,6 @@ private:
 
     // QWidgets with parent
     QPushButton  * buttonTriggerSimulation = nullptr;
-    QPushButton  * buttonTriggerView       = nullptr;
     QPushButton  * buttonTriggerAutoStep   = nullptr;
     CheckBoxHtml * checkBoxDelay           = nullptr;
     QLineEdit    * autoStepValue           = nullptr;

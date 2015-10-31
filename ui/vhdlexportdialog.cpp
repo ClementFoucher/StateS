@@ -20,18 +20,22 @@
  */
 
 // Current class header
-#include "vhdlexportoptions.h"
+#include "vhdlexportdialog.h"
 
 // Qt classes
 #include <QFormLayout>
 #include <QLabel>
 #include <QComboBox>
 #include <QPushButton>
+#include <QFileDialog>
 
 
-VhdlExportOptions::VhdlExportOptions(QWidget *parent) :
+VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, QWidget *parent) :
     QDialog(parent)
 {
+    this->baseFileName = baseFileName;
+    this->searchPath   = searchPath;
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
@@ -63,7 +67,7 @@ VhdlExportOptions::VhdlExportOptions(QWidget *parent) :
     buttonsLayout->addWidget(buttonCancel);
 }
 
-bool VhdlExportOptions::isResetPositive()
+bool VhdlExportDialog::isResetPositive()
 {
     if (this->resetLogicSelectionBox->currentIndex() == 0)
         return true;
@@ -71,7 +75,7 @@ bool VhdlExportOptions::isResetPositive()
         return false;
 }
 
-bool VhdlExportOptions::prefixIOs()
+bool VhdlExportDialog::prefixIOs()
 {
     if (this->addPrefixSelectionBox->currentIndex() == 0)
         return false;
@@ -79,4 +83,28 @@ bool VhdlExportOptions::prefixIOs()
         return true;
 }
 
+QString VhdlExportDialog::getFilePath()
+{
+    return this->filePath;
+}
 
+void VhdlExportDialog::accept()
+{
+    QString defaultFilePath;
+
+    if (! this->searchPath.isEmpty())
+    {
+        defaultFilePath += this->searchPath;
+        defaultFilePath += "/"; // TODO: check if environment dependant!
+    }
+
+    defaultFilePath += this->baseFileName;
+
+    this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), defaultFilePath + ".vhdl", "*.vhdl");
+
+    if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
+        this->filePath += ".vhdl";
+
+    if (! this->filePath.isEmpty())
+        QDialog::accept();
+}

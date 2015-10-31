@@ -30,17 +30,29 @@
 using namespace std;
 
 // Qt classes
-class QString;
-class QAction;
-class QStackedWidget;
+class QSplitter;
 
 // StateS classes
 class Machine;
 class ResourceBar;
-class SceneWidget;
-class SimulationWidget;
+class DisplayArea;
+class MachineComponent;
 
 
+/**
+ * @brief The StatesUi class handles the main window.
+ *
+ * This window has tree areas:
+ * - an action bar (on the left at startup, but can be moved at top or bottom),
+ * - a central widget wichi is a slider made of:
+ * -- The display area, holding notably the machine graphical representation,
+ * -- The resources bar, holding tools to edit and use the machine.
+ *
+ * This object can receive orders to use switch to a different machine
+ * edition, or to update the currently used save file (for display only).
+ *
+ * It can request some actions on the currently edited machine (save, load, new, ...)
+ */
 class StatesUi : public QMainWindow
 {
     Q_OBJECT
@@ -48,7 +60,7 @@ class StatesUi : public QMainWindow
 public:
     explicit StatesUi();
 
-    void setMachine(shared_ptr<Machine> machine, const QString& path = QString::null);
+    void setMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
     void setCurrentFilePath(const QString& path);
 
 signals:
@@ -59,20 +71,27 @@ signals:
     void saveMachineInCurrentFileRequestEvent();
 
 protected:
-    void closeEvent(QCloseEvent*)  override;
-    void keyPressEvent(QKeyEvent*) override;
+    void closeEvent     (QCloseEvent* event) override;
+    void keyPressEvent  (QKeyEvent*   event) override;
+    void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
-    void newMachineRequestEventHandler();
-    void clearMachineRequestEventHandler();
-    void exportImageRequestEventHandler();
-    void exportVhdlRequestEventHandler();
-    void saveMachineRequestEventHandler();
-    void loadMachineRequestEventHandler();
-    void simulationToggledEventHandler();
-    void triggerViewEventHandler();
-    void detachTimelineEventHandler(bool detach);
-    void saveMachineOnCurrentFileEventHandler();
+    void beginSaveAsProcedure();
+    void beginSaveProcedure();
+    void beginLoadProcedure();
+    void beginNewMachineProcedure();
+    void beginClearMachineProcedure();
+    void beginExportImageProcedure();
+    void beginExportVhdlProcedure();
+    void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
+    void editSelectedItem();
+    void renameSelectedItem();
+    void machineUnsavedStateChangedEventHandler(bool);
+
+private:
+    void updateTitle();
+    bool displayUnsavedConfirmation(const QString& cause);
+    QString getCurrentDirPath();
 
 private:
     // Action bar
@@ -80,23 +99,19 @@ private:
     QAction* actionSaveCurrent = nullptr;
     QAction* actionLoad        = nullptr;
     QAction* actionNewFsm      = nullptr;
-    QAction* actionClear       = nullptr;
+    //QAction* actionClear       = nullptr;
     QAction* actionExportImage = nullptr;
     QAction* actionExportVhdl  = nullptr;
 
-    // Display area
-    QStackedWidget*   mainDisplayArea    = nullptr;
-    SceneWidget*      machineDisplayArea = nullptr;
-    SimulationWidget* timeline           = nullptr;
+    // Display area and resource bar
+    QSplitter* splitter = nullptr;
 
-    // Resource bar
+    DisplayArea* displayArea  = nullptr;
     ResourceBar* resourcesBar = nullptr;
 
     // Owned machine
     weak_ptr<Machine> machine;
     QString currentFilePath = QString::null;
-
-    void updateTitle();
 };
 
 #endif // STATESUI_H

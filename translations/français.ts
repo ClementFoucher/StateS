@@ -95,10 +95,32 @@
     </message>
 </context>
 <context>
+    <name>BlankScene</name>
+    <message>
+        <source>No machine loaded</source>
+        <translation>Aucune machine chargée</translation>
+    </message>
+</context>
+<context>
     <name>ClockTimeLine</name>
     <message>
         <source>Clock</source>
         <translation>Horloge</translation>
+    </message>
+</context>
+<context>
+    <name>CollapsibleWidgetWithTitle</name>
+    <message>
+        <source>no content</source>
+        <translation>aucun contenu</translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation>Afficher</translation>
+    </message>
+    <message>
+        <source>Hide</source>
+        <translation>Masquer</translation>
     </message>
 </context>
 <context>
@@ -146,6 +168,17 @@
     <message>
         <source>Edit condition to view errors.</source>
         <translation>Éditez la condition pour visualiser les erreurs.</translation>
+    </message>
+</context>
+<context>
+    <name>DisplayArea</name>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
+    </message>
+    <message>
+        <source>Timeline</source>
+        <translation>Chronogramme</translation>
     </message>
 </context>
 <context>
@@ -200,6 +233,10 @@
     <message>
         <source>State</source>
         <translation>État</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
     </message>
 </context>
 <context>
@@ -303,7 +340,7 @@
     </message>
 </context>
 <context>
-    <name>FsmTools</name>
+    <name>FsmToolsPanel</name>
     <message>
         <source>Mouse</source>
         <translation>Souris</translation>
@@ -468,7 +505,7 @@
     </message>
 </context>
 <context>
-    <name>ImageExportOptions</name>
+    <name>ImageExportDialog</name>
     <message>
         <source>Choose image options:</source>
         <translation>Sélectionnez les options de l&apos;image :</translation>
@@ -488,6 +525,22 @@
     <message>
         <source>Cancel</source>
         <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Export machine to Pdf</source>
+        <translation>Exporter la machine en Pdf</translation>
+    </message>
+    <message>
+        <source>Export machine to Svg</source>
+        <translation>Exporter la machine en Svg</translation>
+    </message>
+    <message>
+        <source>Export machine to Png</source>
+        <translation>Exporter la machine en Png</translation>
+    </message>
+    <message>
+        <source>Export machine to Jpeg</source>
+        <translation>Exporter la machine en Jpeg</translation>
     </message>
 </context>
 <context>
@@ -530,35 +583,184 @@
         <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
     </message>
     <message>
-        <source>Press and hold wheel for free move,</source>
-        <translation>Appuyez et maintenez la molette pour un déplacement libre,</translation>
+        <source>Component name:</source>
+        <translation>Nom du composant :</translation>
     </message>
     <message>
-        <source>Scroll wheel to move vertically,</source>
-        <translation>Faites tourner la molette pour vous déplacer verticallement,</translation>
+        <source>Component visualization</source>
+        <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <source>Scroll wheel while holding &lt;i&gt;shift&lt;/i&gt; to move horizontally.</source>
-        <translation>Faites tourner la molette en maintenant &lt;i&gt;shift&lt;/&gt; pour vous déplacer horizontalement.</translation>
+        <source>Hint:</source>
+        <translation>Astuce :</translation>
     </message>
     <message>
-        <source>Machine visualization</source>
-        <translation type="vanished">Visualisation de la machine</translation>
+        <source>Drawing a transition</source>
+        <translation>Dessiner une transition</translation>
     </message>
     <message>
-        <source>Use &lt;i&gt;ctrl+mouse wheel&lt;/i&gt; to zoom in/out.</source>
-        <translation>Utilisez &lt;i&gt;ctrl+molette souris&lt;/i&gt; pour zoomer.</translation>
+        <source>Use</source>
+        <translation>Utilisez</translation>
     </message>
     <message>
-        <source>Use &lt;i&gt;right-click&lt;/i&gt; to unselect current tool or display context menu if no tool selected.</source>
-        <translation>Utilisez le &lt;i&gt;clic-droit&lt;/i&gt; pour déselectionner l&apos;outil courant ou pour afficher un menu contextuel si aucun outil n&apos;est sélectionné.</translation>
+        <source>left-click</source>
+        <translation>le clic gauche</translation>
     </message>
-</context>
-<context>
-    <name>MachineComponentVisualizer</name>
     <message>
-        <source>Machine visualization</source>
-        <translation>Visualisation de la machine</translation>
+        <source>on a state</source>
+        <translation>sur un état</translation>
+    </message>
+    <message>
+        <source>to make it</source>
+        <translation>pour en faire</translation>
+    </message>
+    <message>
+        <source>the target</source>
+        <translation>la cible</translation>
+    </message>
+    <message>
+        <source>of this transition</source>
+        <translation>de cette transition</translation>
+    </message>
+    <message>
+        <source>right-click</source>
+        <translation>le clic droit</translation>
+    </message>
+    <message>
+        <source>to cancel</source>
+        <translation>pour annuler</translation>
+    </message>
+    <message>
+        <source>Release</source>
+        <translation>Relâchez</translation>
+    </message>
+    <message>
+        <source>anywhere else</source>
+        <translation>n&apos;importe où ailleurs</translation>
+    </message>
+    <message>
+        <source>Editing a transition</source>
+        <translation>Éditer une transition</translation>
+    </message>
+    <message>
+        <source>the source</source>
+        <translation>la source</translation>
+    </message>
+    <message>
+        <source>No machine</source>
+        <translation>Aucune machine</translation>
+    </message>
+    <message>
+        <source>Press and hold</source>
+        <translation>Appuyez et maintenez</translation>
+    </message>
+    <message>
+        <source>wheel</source>
+        <translation>la molette</translation>
+    </message>
+    <message>
+        <source>for free move</source>
+        <translation>pour un déplacement libre</translation>
+    </message>
+    <message>
+        <source>Scroll</source>
+        <translation>Faites tourner</translation>
+    </message>
+    <message>
+        <source>to move vertically</source>
+        <translation>pour un déplacement vertical</translation>
+    </message>
+    <message>
+        <source>while holding</source>
+        <translation>tout en maintenant</translation>
+    </message>
+    <message>
+        <source>shift</source>
+        <translation>shift</translation>
+    </message>
+    <message>
+        <source>to move horizontally</source>
+        <translation>pour un déplacement horizontal</translation>
+    </message>
+    <message>
+        <source>ctrl</source>
+        <translation>ctrl</translation>
+    </message>
+    <message>
+        <source>mouse wheel</source>
+        <translation>molette de la souris</translation>
+    </message>
+    <message>
+        <source>to zoom in/out</source>
+        <translation>pour un zoom avant/arrière</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>ou</translation>
+    </message>
+    <message>
+        <source>a transition</source>
+        <translation>une transition</translation>
+    </message>
+    <message>
+        <source>to select it</source>
+        <translation>pour le/la sélectionner</translation>
+    </message>
+    <message>
+        <source>to display context menu</source>
+        <translation>pour afficher un menu contextuel</translation>
+    </message>
+    <message>
+        <source>Adding an initial state</source>
+        <translation>Ajouter un état initial</translation>
+    </message>
+    <message>
+        <source>to add</source>
+        <translation>pour ajouter</translation>
+    </message>
+    <message>
+        <source>a state</source>
+        <translation>un état</translation>
+    </message>
+    <message>
+        <source>at mouse position</source>
+        <translation>à la position du curseur</translation>
+    </message>
+    <message>
+        <source>This state will be set as the initial state of this machine</source>
+        <translation>Cet état sera défini comme l&apos;état initial de cette machine</translation>
+    </message>
+    <message>
+        <source>to unselect current tool</source>
+        <translation>pour désélectionner l&apos;outil actuel</translation>
+    </message>
+    <message>
+        <source>Adding a state</source>
+        <translation>Ajouter un état</translation>
+    </message>
+    <message>
+        <source>and maintain button</source>
+        <translation>et maintenez le bouton</translation>
+    </message>
+    <message>
+        <source>to begin</source>
+        <translation>pour commencer</translation>
+    </message>
+    <message>
+        <source>drawing a transition</source>
+        <translation>à dessiner une transition</translation>
+    </message>
+    <message>
+        <source>from this state</source>
+        <translation>depuis cet état</translation>
+    </message>
+    <message>
+        <source>transition insertion</source>
+        <translation>l&apos;insertion de la transition</translation>
+    </message>
+    <message>
+        <source>transition editing</source>
+        <translation>l&apos;édition de la transition</translation>
     </message>
 </context>
 <context>
@@ -631,12 +833,12 @@
         <translation>Double-cliquez sur une valeur pour la modifier.</translation>
     </message>
     <message>
-        <source>Machine visualization</source>
-        <translation type="vanished">Visualisation de la machine</translation>
-    </message>
-    <message>
         <source>Switch between signals types using tabs below.</source>
         <translation>Naviguez entre les types de signaux à l&apos;aide des onglets ci-dessous.</translation>
+    </message>
+    <message>
+        <source>Component visualization</source>
+        <translation>Visualisation du composant</translation>
     </message>
 </context>
 <context>
@@ -760,10 +962,6 @@
         <translation>Avancer d&apos;un pas</translation>
     </message>
     <message>
-        <source>View timeline</source>
-        <translation>Voir le chronogramme</translation>
-    </message>
-    <message>
         <source>Do one step every</source>
         <translation>Avancer d&apos;un pas toutes les</translation>
     </message>
@@ -774,10 +972,6 @@
     <message>
         <source>Launch</source>
         <translation>Démarrer</translation>
-    </message>
-    <message>
-        <source>View machine</source>
-        <translation>Voir la machine</translation>
     </message>
     <message>
         <source>Suspend</source>
@@ -832,14 +1026,6 @@
     <message>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Effacer</translation>
-    </message>
-    <message>
-        <source>Clear machine</source>
-        <translation>Effacer la machine</translation>
     </message>
     <message>
         <source>User confirmation needed</source>
@@ -906,28 +1092,20 @@
         <translation>Exporter la machine vers un fichier image</translation>
     </message>
     <message>
-        <source>Export machine to Pdf</source>
-        <translation>Exporter la machine en Pdf</translation>
-    </message>
-    <message>
-        <source>Export machine to Svg</source>
-        <translation>Exporter la machine en Svg</translation>
-    </message>
-    <message>
-        <source>Machine</source>
-        <translation>Machine</translation>
-    </message>
-    <message>
         <source>Created with</source>
         <translation>Créé avec</translation>
     </message>
     <message>
-        <source>Export machine to Png</source>
-        <translation>Exporter la machine en Png</translation>
+        <source>New FSM</source>
+        <translation>Nouvelle FSM</translation>
     </message>
     <message>
-        <source>Export machine to Jpeg</source>
-        <translation>Exporter la machine en Jpeg</translation>
+        <source>Create new FSM</source>
+        <translation>Créer une nouvelle FSM</translation>
+    </message>
+    <message>
+        <source>Quit StateS?</source>
+        <translation>Quitter StateS ?</translation>
     </message>
 </context>
 <context>
@@ -972,10 +1150,10 @@
     </message>
 </context>
 <context>
-    <name>VhdlExportOptions</name>
+    <name>VhdlExportDialog</name>
     <message>
         <source>Choose export options:</source>
-        <translation>Choisissez vos options pour l&apos;export :</translation>
+        <translation>Choisissez les options pour l&apos;export :</translation>
     </message>
     <message>
         <source>Positive</source>
@@ -1008,6 +1186,10 @@
     <message>
         <source>Cancel</source>
         <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Export machine to VHDL</source>
+        <translation>Exporter la machine en VHDL</translation>
     </message>
 </context>
 </TS>

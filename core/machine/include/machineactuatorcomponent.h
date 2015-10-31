@@ -71,8 +71,6 @@ public:
 
     uint getAllowedActionTypes() const;
 
-public slots:
-    void removeAction(shared_ptr<Signal> signal);
 
 signals:
     void actionListChangedEvent();
@@ -87,6 +85,7 @@ protected:
     QMap<QString, LogicValue>   actionValue;
 
 private slots:
+    void removeAction(shared_ptr<Signal> signal);
     void signalResizedEventHandler();
     void cleanActionList();
 

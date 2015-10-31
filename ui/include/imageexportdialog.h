@@ -19,33 +19,41 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef IMAGEEXPORTDIALOG_H
+#define IMAGEEXPORTDIALOG_H
 
 // Parent
-#include <QGraphicsScene>
+#include <QDialog>
 
-// C++ classes
-#include <memory>
-using namespace std;
+// Qt classes
+class QComboBox;
 
 // StateS classes
-class MachineComponent;
+#include "machineimageexporter.h"
+class CheckBoxHtml;
 
 
-class GenericScene : public QGraphicsScene
+class ImageExportDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit GenericScene(QObject* parent = nullptr);
+    explicit ImageExportDialog(const QString& baseFileName, const QString& searchPath = QString::null, QWidget* parent = nullptr);
 
-    virtual void setDisplaySize(const QSize& newSize) = 0;
+    bool includeComponent();
+    MachineImageExporter::imageFormat getImageFormat();
+    QString getFilePath();
 
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+protected:
+    void accept() override;
+
+private:
+    QComboBox*    imageFormatSelectionBox  = nullptr;
+    CheckBoxHtml* includeComponentCheckBox = nullptr;
+
+    QString baseFileName;
+    QString searchPath;
+    QString filePath = QString::null;
 };
 
-#endif // GENERICSCENE_H
+#endif // IMAGEEXPORTDIALOG_H

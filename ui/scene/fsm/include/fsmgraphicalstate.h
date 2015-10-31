@@ -70,9 +70,6 @@ public:
     // Needed cause an event can be manually transmitted to various items
     void keyPressEvent(QKeyEvent* event) override;
 
-public slots:
-    void rebuildRepresentation();
-
 signals:
     void stateMovingEvent();
     void editStateCalledEvent(shared_ptr<FsmState> state);
@@ -83,6 +80,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private slots:
+    void rebuildRepresentation();
     void treatMenu(QAction* action);
 
 private:

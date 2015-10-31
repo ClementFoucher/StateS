@@ -210,6 +210,8 @@ void Machine::clear()
     this->constantsRanks.clear();
 
     this->rebuildComponentVisualization();
+
+    this->setUnsavedState(true);
 }
 
 bool Machine::isEmpty() const
@@ -230,7 +232,7 @@ void Machine::setMode(Machine::mode newMode)
     emit changedModeEvent(newMode);
 }
 
-Machine::mode Machine::getCurrentMode()
+Machine::mode Machine::getCurrentMode() const
 {
     return this->currentMode;
 }
@@ -270,6 +272,7 @@ bool Machine::setName(const QString& newName)
 
         emit nameChangedEvent(this->name);
 
+        this->setUnsavedState(true);
         return true;
     }
     else
@@ -540,6 +543,9 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
         break;
     }
 
+    if (signal != nullptr)
+        this->setUnsavedState(true);
+
     return signal;
 }
 
@@ -606,6 +612,9 @@ bool Machine::deleteSignal(const QString& name)
     else
         result = false;
 
+    if (result == true)
+        this->setUnsavedState(true);
+
     return result;
 }
 
@@ -667,6 +676,7 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
         {
             emit constantListChangedEvent();
         }
+
         return true;
     }
     else if ( allSignals.contains(correctedNewName) ) // Do not allow rename to existing name
@@ -703,6 +713,7 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
         else // Should not happen as we checked all lists
             return false;
 
+        this->setUnsavedState(true);
         return true;
     }
 }
@@ -755,6 +766,7 @@ bool Machine::resizeSignal(const QString &name, uint newSize)
             else // Should not happen as we checked all lists
                 return false;
 
+            this->setUnsavedState(true);
             return true;
         }
         else
@@ -791,6 +803,7 @@ bool Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
             else // Should not happen as we checked all lists
                 return false;
 
+            this->setUnsavedState(true);
             return true;
         }
         else
@@ -835,10 +848,24 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
         else // Should not happen as we checked all lists
             return false;
 
+        this->setUnsavedState(true);
         return true;
 
     }
+}
 
+bool Machine::isUnsaved() const
+{
+    return this->unsaved;
+}
+
+void Machine::setUnsavedState(bool unsaved)
+{
+    if (this->unsaved != unsaved)
+    {
+        this->unsaved = unsaved;
+        emit machineUnsavedStateChanged(unsaved);
+    }
 }
 
 bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)

@@ -319,23 +319,26 @@ void GraphicEquation::replaceEquation(shared_ptr<Signal> newEquation)
 // Graphic equation is rebuild after logice equation update.
 void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand)
 {
-    shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
-
-    if (complexEquation != nullptr) // This IS true, because we are called by an operand of ours. Anyway...
+    if (! this->equation.expired())
     {
-        for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
-        {
-            if (complexEquation->getOperand(i) == oldOperand)
-            {
-                complexEquation->setOperand(i, newOperand);
-                break;
-            }
-        }
+        shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
 
-        this->buildEquation();
+        if (complexEquation != nullptr) // This IS true, because we are called by an operand of ours. Anyway...
+        {
+            for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
+            {
+                if (complexEquation->getOperand(i) == oldOperand)
+                {
+                    complexEquation->setOperand(i, newOperand);
+                    break;
+                }
+            }
+
+            this->buildEquation();
+        }
+        else
+            qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
     }
-    else
-        qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
 }
 
 // Returns the equation currently represented by the graphic object.
@@ -487,8 +490,10 @@ void GraphicEquation::dropEvent(QDropEvent* event)
         // Obtain new equation
         this->droppedEquation = mimeData->getEquation()->getLogicEquation();
 
+        shared_ptr<Signal> signalEquation = this->equation.lock();
+
         // Automatically replace empty operands
-        if (this->equation.lock() == nullptr)
+        if (signalEquation == nullptr)
         {
             replaceEquation(droppedEquation);
         }
@@ -497,7 +502,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             // Ask what to do
             ContextMenu* menu = new ContextMenu();
             menu->addTitle(tr("What should I do?"));
-            menu->addSubTitle(tr("Existing equation:") +  " <i>"  + equation.lock()->getText() + "</i>");
+            menu->addSubTitle(tr("Existing equation:") +  " <i>"  + signalEquation->getText() + "</i>");
             menu->addSubTitle(tr("Dropped equation:") + " <i> " + droppedEquation->getText() + "</i>");
 
             QVariant data;
@@ -522,7 +527,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
                 // Build tooltip
                 shared_ptr<Equation> newEquation = droppedComplexEquation->clone();
-                newEquation->setOperand(0, this->equation.lock());
+                newEquation->setOperand(0, signalEquation);
 
                 a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
                 newEquation.reset();
@@ -549,11 +554,13 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 {
     shared_ptr<Equation> newEquation;
     shared_ptr<Equation> complexEquation;
-    shared_ptr<Signal> signalEquation;
     bool valid;
 
     QVariant data = action->data();
     int dataValue = data.toInt();
+
+    shared_ptr<Signal> signalEquation  = this->equation.lock();
+
     switch (dataValue)
     {
     case CommonAction::Cancel:
@@ -571,7 +578,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
         complexEquation = dynamic_pointer_cast<Equation>(this->droppedEquation);
         newEquation = complexEquation->clone();
-        newEquation->setOperand(0, this->equation.lock());
+        newEquation->setOperand(0, signalEquation);
 
         // Nothing should be done after that line because it
         // will cause parent to rebuild, deleting this
@@ -582,8 +589,6 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
     case ContextAction::DeleteEquation:
 
         valid = false;
-
-        signalEquation = this->equation.lock();
 
         if (signalEquation != nullptr)
         {
@@ -604,39 +609,46 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
     case ContextAction::IncrementOperandCount:
 
-        complexEquation = dynamic_pointer_cast<Equation>(this->equation.lock());
+        if (signalEquation != nullptr)
+        {
+            complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
 
-        complexEquation->increaseOperandCount();
+            complexEquation->increaseOperandCount();
 
-        this->buildEquation();
+            this->buildEquation();
+        }
 
         break;
 
     case ContextAction::DecrementOperandCount:
 
-        valid = false;
-
-        complexEquation = dynamic_pointer_cast<Equation>(this->equation.lock());
-        signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1);
-
         if (signalEquation != nullptr)
         {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete last oprand?") + "<br />" + tr("Content is:") + " " + signalEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
 
-            if (reply == QMessageBox::StandardButton::Ok)
+            valid = false;
+
+            complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
+            shared_ptr<Signal> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1);
+
+            if (signalEquation != nullptr)
+            {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete last oprand?") + "<br />" + tr("Content is:") + " " + signalEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
+
+                if (reply == QMessageBox::StandardButton::Ok)
+                    valid = true;
+            }
+            else
+            {
                 valid = true;
-        }
-        else
-        {
-            valid = true;
-        }
+            }
 
-        if (valid)
-        {
-            complexEquation->decreaseOperandCount();
+            if (valid)
+            {
+                complexEquation->decreaseOperandCount();
 
-            this->buildEquation();
+                this->buildEquation();
+            }
         }
 
         break;

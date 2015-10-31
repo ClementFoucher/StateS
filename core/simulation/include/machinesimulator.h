@@ -19,36 +19,32 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGEEXPORTOPTIONS_H
-#define IMAGEEXPORTOPTIONS_H
+#ifndef MACHINESIMULATOR_H
+#define MACHINESIMULATOR_H
 
 // Parent
-#include <QDialog>
+#include <QObject>
 
-// Qt classes
-class QComboBox;
+// C++ classes
+#include <memory>
+using namespace std;
 
-// StateS classes
-class CheckBoxHtml;
+// SateS classes
+class Clock;
 
 
-class ImageExportOptions : public QDialog
+class MachineSimulator : public QObject
 {
     Q_OBJECT
 
 public:
-    enum class imageFormat{pdf, svg, png, jpg};
+    explicit MachineSimulator();
 
-public:
-    explicit ImageExportOptions(QWidget* parent = nullptr);
+    virtual void enableOutputDelay(bool enable) = 0;
+    virtual shared_ptr<Clock> getClock() const = 0;
 
-    bool includeComponent();
-    imageFormat getImageFormat();
-
-private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* imageFormatSelectionBox = nullptr;
-    CheckBoxHtml* includeComponentCheckBox = nullptr;
+signals:
+    void outputDelayChangedEvent(bool enable);
 };
 
-#endif // IMAGEEXPORTOPTIONS_H
+#endif // MACHINESIMULATOR_H

@@ -47,6 +47,7 @@ void MachineActuatorComponent::signalResizedEventHandler()
         // we must change action type.
 
         shared_ptr<Signal> sig = s.lock();
+        // No need to check for nullness: we just cleaned action list
 
         QString signame = sig->getName();
 
@@ -142,7 +143,7 @@ QList<shared_ptr<Signal> > MachineActuatorComponent::getActions()
 
     foreach(weak_ptr<Signal> sig, this->actions)
     {
-        list.append(sig.lock());
+        list.append(sig.lock()); // No need to check for nullness: we just cleaned action list
     }
 
     return list;
@@ -171,7 +172,7 @@ void MachineActuatorComponent::clearActions()
     foreach(weak_ptr<Signal> sig, actionsToDelete)
     {
         // Must be done to disconnect Qt signals
-        removeAction(sig.lock());
+        removeAction(sig.lock()); // No need to check for nullness: we just cleaned action list
     }
 
     // In case there were lost fragments (see comment in cleanActionList())

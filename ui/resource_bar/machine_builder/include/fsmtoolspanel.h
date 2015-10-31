@@ -44,9 +44,10 @@ class FsmToolsPanel : public MachineToolsPanel
 public:
     explicit FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
-private slots:
+protected slots:
     bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
 
+private slots:
     void buttonAddStatePushed(bool activated);
     void buttonAddInitialStatePushed(bool activated);
     void buttonAddTransitionPushed(bool activated);

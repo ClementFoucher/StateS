@@ -156,7 +156,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
             hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
             hint += "<br />";
             hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition") + " " + tr("insertion") + ".";
+            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition insertion") + ".";
             hint += "<br />";
 
             break;
@@ -167,7 +167,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
             hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
             hint += "<br />";
             hint += "<br />";
-            hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("anywhere else") + " " + tr("to cancel") + " " + tr("transition") + " " + tr("insertion") + ".";
+            hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("anywhere else") + " " + tr("to cancel") + " " + tr("transition insertion") + ".";
             hint += "<br />";
 
             break;
@@ -178,7 +178,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
             hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the source") + " " + tr("of this transition") + ".";
             hint += "<br />";
             hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition") + " " + tr("editing") + ".";
+            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
             hint += "<br />";
 
             break;
@@ -189,7 +189,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
             hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
             hint += "<br />";
             hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition") + " " + tr("editing") + ".";
+            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
             hint += "<br />";
 
             break;
@@ -246,6 +246,7 @@ void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
     switch(newTool)
     {
     case MachineBuilder::tool::none:
+    case MachineBuilder::tool::quittingTool:
         title +=  tr("Navigation");
 
         hint += "<br />";

@@ -48,6 +48,7 @@ class Fsm : public Machine, public enable_shared_from_this<Fsm>
 
 public:
     explicit Fsm();
+    //explicit Fsm(const QString& fromPath); // can't be done because need shared_from_this
 
     // States related
     shared_ptr<FsmState> addState(QString name = QString());
@@ -74,6 +75,9 @@ public:
     void clear() override;
     bool isEmpty() const override;
 
+    void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const override;
+    shared_ptr<MachineSimulator> getSimulator() const;
+
 private:
     QString getUniqueStateName(QString nameProposal);
     shared_ptr<FsmState> getStateByName(const QString& name) const;
@@ -89,7 +93,9 @@ private:
     void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation) const;
     void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component) const;
 
+    void stateEditedEventHandler();
 
+private:
     QList<shared_ptr<FsmState>> states;
     weak_ptr<FsmState> initialState;
     weak_ptr<FsmSimulator> simulator;

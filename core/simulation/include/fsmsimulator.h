@@ -23,7 +23,7 @@
 #define FSMSIMULATOR_H
 
 // Parent
-#include <QObject>
+#include "machinesimulator.h"
 
 // C++ classes
 #include <memory>
@@ -41,14 +41,15 @@ class FsmState;
 class FsmTransition;
 
 
-class FsmSimulator : public QObject
+class FsmSimulator : public MachineSimulator
 {
     Q_OBJECT
 
 public:
     explicit FsmSimulator(shared_ptr<Fsm> machine);
 
-    shared_ptr<Clock> getClock() const;
+    void enableOutputDelay(bool enable) override;
+    shared_ptr<Clock> getClock() const override;
 
     void reset();
     void doStep();

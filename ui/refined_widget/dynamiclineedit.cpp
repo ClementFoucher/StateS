@@ -50,7 +50,7 @@ void DynamicLineEdit::userValidatedEventHandler()
 void DynamicLineEdit::markAsErroneous()
 {
     this->erroneous = true;
-    this->setStyleSheet( QString( "background-color: red"));
+    this->setStyleSheet( QString( "background-color: red") );
 
     // When erroneous, force focus to continue edit
     this->setFocus();
@@ -74,7 +74,7 @@ void DynamicLineEdit::focusInEvent(QFocusEvent* event)
     if (!erroneous)
         this->setStyleSheet( QString( "background-color: yellow"));
 
-    emit QLineEdit::focusInEvent(event);
+    QLineEdit::focusInEvent(event);
 }
 
 void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
@@ -84,5 +84,7 @@ void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
         emit userCancelEvent();
     }
     else
+    {
         QLineEdit::keyPressEvent(event);
+    }
 }

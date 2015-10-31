@@ -41,7 +41,7 @@ using namespace std;
 #include "equation.h"
 
 
-void FsmVhdlExport::exportFSM(shared_ptr<Fsm> machine, QString path, bool resetLogicPositive, bool prefixIOs)
+void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path, bool resetLogicPositive, bool prefixIOs)
 {
     QFile* file = new QFile(path);
     file->open(QIODevice::WriteOnly);
@@ -317,7 +317,7 @@ QString FsmVhdlExport::correctName(QString name)
     return newName;
 }
 
-QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<Fsm> machine, bool prefixIOs)
+QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<const Fsm> machine, bool prefixIOs)
 {
     QString text;
 

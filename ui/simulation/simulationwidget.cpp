@@ -41,16 +41,12 @@
 #include "input.h"
 #include "output.h"
 #include "simulatortab.h"
+#include "machinesimulator.h"
 
 
-SimulationWidget::SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machine> machine, shared_ptr<Clock> clock, QWidget* parent) :
+SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent) :
     QMainWindow(parent)
 {
-    // Relay option change event
-    connect(simulatorTab, &SimulatorTab::delayOutputOptionTriggeredEvent, this, &SimulationWidget::delayOutputOptionTriggered);
-
-    this->machine = machine;
-
     this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->setWindowTitle(tr("StateS timeline visualizer"));
 
@@ -78,6 +74,10 @@ SimulationWidget::SimulationWidget(SimulatorTab* simulatorTab, shared_ptr<Machin
 
     this->setCentralWidget(scrollArea);
 
+    shared_ptr<MachineSimulator> simulator = machine->getSimulator();
+    shared_ptr<Clock>            clock     = simulator->getClock();
+
+    connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &SimulationWidget::delayOutputOptionTriggered); // Relay option change event
 
     QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
     layout->setAlignment(Qt::AlignTop);

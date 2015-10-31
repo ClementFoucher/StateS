@@ -36,14 +36,17 @@
 #include "verifiertab.h"
 #include "fsm.h"
 #include "machinecomponentvisualizer.h"
+#include "machinecomponent.h"
+#include "fsmstate.h"
+#include "fsmtransition.h"
 
 
-ResourceBar::ResourceBar(shared_ptr<Machine> machine, QWidget* parent) :
+ResourceBar::ResourceBar(QWidget* parent) :
     QTabWidget(parent)
 {
     connect(this, &QTabWidget::currentChanged, this, &ResourceBar::tabChanged);
 
-    setMachine(machine);
+    this->setMachine(nullptr);
 }
 
 ResourceBar::~ResourceBar()
@@ -143,14 +146,17 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     }
 }
 
-void ResourceBar::selectedState(shared_ptr<FsmState> state, bool showTab, bool editName)
+shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene()
 {
-    if (state == nullptr)
-    {
-        qDebug() << "(Resources bar:) error, null pointer state given for edition!";
-        clearSelection();
-    }
-    else
+    return this->machineComponentScene->getComponentVisualizationScene();
+}
+
+void ResourceBar::setSelectedItem(shared_ptr<MachineComponent> item)
+{
+    shared_ptr<FsmState> state = dynamic_pointer_cast<FsmState>(item);
+    shared_ptr<FsmTransition> transition = dynamic_pointer_cast<FsmTransition>(item);
+
+    if (state != nullptr)
     {
         shared_ptr<Machine> machine = this->machine.lock();
 
@@ -172,27 +178,11 @@ void ResourceBar::selectedState(shared_ptr<FsmState> state, bool showTab, bool e
                     this->insertTab(2, editorTab, tr("State"));
                 }
 
-                if (showTab)
-                {
-                    this->setCurrentIndex(2);
-                    if (editName)
-                        ((StateEditorTab*)this->editorTab)->setEditName();
-                }
-                else
-                    this->setCurrentIndex(current_tab);
+                this->setCurrentIndex(current_tab);
             }
         }
     }
-}
-
-void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool showTab)
-{
-    if (transition == nullptr)
-    {
-        qDebug() << "(Resources bar:) error, null pointer transition given for edition!";
-        clearSelection();
-    }
-    else
+    else if (transition != nullptr)
     {
         shared_ptr<Machine> machine = this->machine.lock();
 
@@ -215,20 +205,39 @@ void ResourceBar::selectedTransition(shared_ptr<FsmTransition> transition, bool 
                     this->insertTab(2, editorTab, tr("Transition"));
                 }
 
-                if (showTab)
-                {
-                    this->setCurrentIndex(2);
-                }
-                else
-                    this->setCurrentIndex(current_tab);
+                this->setCurrentIndex(current_tab);
             }
         }
     }
+    else
+    {
+        this->clearSelection();
+    }
 }
 
-shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene()
+void ResourceBar::editSelectedItem()
 {
-    return this->machineComponentScene->getComponentVisualizationScene();
+    if (this->editorTab != nullptr)
+        this->setCurrentIndex(2);
+    else
+        this->clearSelection();
+}
+
+void ResourceBar::renameSelectedItem()
+{
+    if ( (this->editorTab != nullptr) && (this->currentIndex() == 2) )
+    {
+        StateEditorTab* stateEditorTab = dynamic_cast<StateEditorTab*>(this->editorTab);
+
+        if (stateEditorTab != nullptr)
+        {
+            stateEditorTab->setEditName();
+        }
+        else
+        {
+            this->clearSelection();
+        }
+    }
 }
 
 void ResourceBar::clearSelection()
@@ -256,13 +265,11 @@ void ResourceBar::beginSimulation()
     this->setTabEnabled(0, false);
     this->setTabEnabled(1, false);
 
-    connect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
-
     shared_ptr<Machine> machine = this->machine.lock();
     if (machine != nullptr)
         machine->setMode(Machine::mode::simulateMode);
 
-    emit simulationToggledEvent();
+  //  emit simulationToggledEvent();
 }
 
 void ResourceBar::terminateSimulation()
@@ -270,22 +277,22 @@ void ResourceBar::terminateSimulation()
     this->setTabEnabled(0, true);
     this->setTabEnabled(1, true);
 
-    disconnect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
+//    disconnect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
 
     shared_ptr<Machine> machine = this->machine.lock();
     if (machine != nullptr)
         machine->setMode(Machine::mode::editMode);
 
-    emit simulationToggledEvent();
+    //emit simulationToggledEvent();
 }
 
-SimulationWidget* ResourceBar::getTimeline() const
+/*SimulationWidget* ResourceBar::getTimeline() const
 {
     if (this->simulatorTab != nullptr)
         return this->simulatorTab->getTimeline();
     else
         return nullptr;
-}
+}*/
 
 void ResourceBar::tabChanged(int)
 {

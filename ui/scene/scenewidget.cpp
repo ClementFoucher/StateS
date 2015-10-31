@@ -22,6 +22,8 @@
 // Current class header
 #include "scenewidget.h"
 
+// Debug
+#include <QDebug>
 
 // Qt classes
 #include <QResizeEvent>
@@ -34,19 +36,12 @@
 #include "fsm.h"
 #include "fsmgraphicalstate.h"
 #include "fsmgraphicaltransition.h"
+#include "blankscene.h"
 
-
-SceneWidget::SceneWidget(shared_ptr<Machine> machine, ResourceBar* resources, QWidget* parent) :
-    SceneWidget(parent)
-{
-    this->setMachine(machine, resources);
-}
 
 SceneWidget::SceneWidget(QWidget* parent) :
     QGraphicsView(parent)
 {
-    this->sceneMode = sceneMode_e::noScene;
-
     this->buttonZoomIn  = new QPushButton("+", this);
     this->buttonZoomOut = new QPushButton("-", this);
 
@@ -56,55 +51,83 @@ SceneWidget::SceneWidget(QWidget* parent) :
     connect(buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
     connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 
-    this->updateDragMode();
+    this->buttonZoomIn ->setVisible(false);
+    this->buttonZoomOut->setVisible(false);
+
+    this->updateSceneMode(sceneMode_e::noScene);
 }
 
-void SceneWidget::setMachine(shared_ptr<Machine> newMachine, ResourceBar* resources)
+void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
 {
     // Clear
-    delete this->scene();
+    GenericScene* oldScene = dynamic_cast<GenericScene*>(this->scene());
 
-    // Disconnect
-    shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
-    if (oldMachineBuilder != nullptr)
+    if (oldScene != nullptr)
     {
-        disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
-        disconnect(oldMachineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+        this->setScene(nullptr);
+        delete oldScene;
+    }
+
+    if (this->sceneMode != sceneMode_e::noScene)
+    {
+        shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
+        if (oldMachineBuilder != nullptr)
+        {
+            disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
+            disconnect(oldMachineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+        }
+
+        this->updateSceneMode(sceneMode_e::noScene);
     }
 
     // Initialize
     if (newMachine != nullptr)
     {
-        shared_ptr<MachineBuilder> newMachineBuiler = newMachine->getMachineBuilder();
-        this->machineBuilder = newMachineBuiler;
-
-        connect(newMachineBuiler.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
-        connect(newMachineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+        GenericScene* newScene = nullptr;
 
         shared_ptr<Fsm> newFsm = dynamic_pointer_cast<Fsm>(newMachine);
 
         if (newFsm != nullptr)
         {
-            FsmScene* newScene = new FsmScene(newFsm, resources);
-            newScene->setDisplaySize(this->size());
-
-            this->setScene(newScene);
+            newScene = new FsmScene(newFsm);
+        }
+        else
+        {
+            qDebug() << "Error! Trying to display unknown type of Machine.";
         }
 
-        this->sceneMode = sceneMode_e::idle;
+        if (newScene != nullptr)
+        {
+            newScene->setDisplaySize(this->size());
+
+            connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
+            connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
+            connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
+
+            shared_ptr<MachineBuilder> newMachineBuiler = newMachine->getMachineBuilder();
+            connect(newMachineBuiler.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
+            connect(newMachineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+
+            this->setScene(newScene);
+            this->machineBuilder = newMachineBuiler;
+
+            this->updateSceneMode(sceneMode_e::idle);
+        }
     }
     else
     {
-        this->sceneMode = sceneMode_e::noScene;
+        BlankScene* newScene = new BlankScene();
+        this->setScene(newScene);
     }
-
-    this->updateDragMode();
 }
 
 void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
 {
+    sceneMode_e newMode = sceneMode_e::withTool;
+
     if      (newTool == MachineBuilder::tool::none)
     {
+        newMode = sceneMode_e::idle;
         this->unsetCursor();
     }
     else if (newTool == MachineBuilder::tool::state)
@@ -126,9 +149,13 @@ void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
         this->setCursor(cursor);
     }
     else
+    {
+        newMode = sceneMode_e::quittingTool;
         this->unsetCursor();
+    }
 
-    this->updateDragMode();
+    this->updateSceneMode(newMode);
+    //this->updateDragMode();
 }
 
 void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool)
@@ -142,7 +169,7 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
         QCursor cursor(pixmap, 0 , 0);
 
         this->setCursor(cursor);
-        this->updateDragMode();
+        this->updateSceneMode(sceneMode_e::withTool);
     }
     else
     {
@@ -151,6 +178,10 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
         {
             this->toolChangedEventHandler(machineBuilder->getTool());
         }
+        else
+        {
+            this->toolChangedEventHandler(MachineBuilder::tool::none);
+        }
     }
 }
 
@@ -158,10 +189,14 @@ void SceneWidget::resizeEvent(QResizeEvent* event)
 {
     // Inform scene view has been modified
 
-    if (scene() != nullptr)
-        ((GenericScene*)scene())->setDisplaySize(event->size());
+    GenericScene* currentScene = dynamic_cast<GenericScene*>(this->scene());
 
-    // Relocate overlay buttons
+    if (currentScene != nullptr)
+    {
+        currentScene->setDisplaySize(event->size());
+    }
+
+    // Relocate overlay buttons (which may no be displayed at this time)
 
     int rightAlign = 10;
     if (this->verticalScrollBar()->isVisible())
@@ -180,10 +215,10 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
     // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
-    if (me->button() == Qt::MiddleButton)
+    if ( (this->sceneMode != sceneMode_e::noScene) && (me->button() == Qt::MiddleButton) )
     {
-        this->sceneMode = sceneMode_e::movingScene;
-        this->setDragMode(QGraphicsView::ScrollHandDrag); // Just for mouse icon, not using its properties
+        this->updateSceneMode(sceneMode_e::movingScene);
+
         transmitEvent = false;
     }
 
@@ -223,8 +258,7 @@ void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 
     if (this->sceneMode == sceneMode_e::movingScene)
     {
-        this->sceneMode = sceneMode_e::idle;
-        this->updateDragMode();
+        this->updateSceneMode(this->savedSceneMode);
 
         transmitEvent = false;
     }
@@ -250,29 +284,32 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 {
     // In this function, do never transmit event: we always handle it
 
-    if ( (event->modifiers() & Qt::ControlModifier) != 0)
+    if (this->sceneMode != sceneMode_e::noScene)
     {
-        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-
-        double scaleFactor = 1.15;
-        if(event->delta() > 0)
+        if ( (event->modifiers() & Qt::ControlModifier) != 0)
         {
-            scale(scaleFactor, scaleFactor);
+            setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+            double scaleFactor = 1.15;
+            if(event->delta() > 0)
+            {
+                scale(scaleFactor, scaleFactor);
+            }
+            else
+            {
+                scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            }
+        }
+        else if ( (event->modifiers() & Qt::ShiftModifier) != 0)
+        {
+            QScrollBar *hBar = horizontalScrollBar();
+            hBar->setValue(hBar->value() - event->delta());
         }
         else
         {
-            scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            QScrollBar *vBar = verticalScrollBar();
+            vBar->setValue(vBar->value() - event->delta());
         }
-    }
-    else if ( (event->modifiers() & Qt::ShiftModifier) != 0)
-    {
-        QScrollBar *hBar = horizontalScrollBar();
-        hBar->setValue(hBar->value() - event->delta());
-    }
-    else
-    {
-        QScrollBar *vBar = verticalScrollBar();
-        vBar->setValue(vBar->value() - event->delta());
     }
 }
 
@@ -290,6 +327,30 @@ void SceneWidget::zoomOut()
     scale(1/1.15, 1/1.15);
 }
 
+void SceneWidget::updateSceneMode(sceneMode_e newMode)
+{
+    if (newMode != this->sceneMode)
+    {
+        if (newMode == sceneMode_e::movingScene)
+            this->savedSceneMode = this->sceneMode;
+
+        this->sceneMode = newMode;
+
+        if ( (this->sceneMode == sceneMode_e::noScene) || (this->sceneMode == sceneMode_e::movingScene) )
+        {
+            this->buttonZoomIn ->setVisible(false);
+            this->buttonZoomOut->setVisible(false);
+        }
+        else
+        {
+            this->buttonZoomIn ->setVisible(true);
+            this->buttonZoomOut->setVisible(true);
+        }
+
+        this->updateDragMode();
+    }
+}
+
 void SceneWidget::updateDragMode()
 {
     QGraphicsView::DragMode dragMode = QGraphicsView::NoDrag;
@@ -305,7 +366,10 @@ void SceneWidget::updateDragMode()
                 dragMode = QGraphicsView::RubberBandDrag;
             }
         }
-
+    }
+    else if (this->sceneMode == sceneMode_e::movingScene)
+    {
+        dragMode = QGraphicsView::ScrollHandDrag; // Just for mouse icon, not using its properties
     }
 
     this->setDragMode(dragMode);

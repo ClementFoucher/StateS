@@ -49,7 +49,14 @@ int main(int argc, char* argv[])
     langageSelectionWindow.reset();
 
     // Build StateS main object and begin execution
-    unique_ptr<StateS> states(new StateS());
+    QString initialFilePath = QString::null;
+
+    if (argc == 2)
+    {
+        initialFilePath = argv[1];
+    }
+
+    unique_ptr<StateS> states(new StateS(initialFilePath));
     states->run();
 
     // Event loop

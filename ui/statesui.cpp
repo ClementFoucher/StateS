@@ -24,34 +24,22 @@
 
 // Qt classes
 #include <QFileDialog>
-#include <QPrinter>
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QToolBar>
 #include <QApplication>
 #include <QSplitter>
 #include <QAction>
-#include <QStackedWidget>
 #include <QKeyEvent>
-#include <QGraphicsItem>
-#include <QSvgGenerator>
-#include <QPixmap>
+#include <QGraphicsScene>
 
 // StateS classes
 #include "states.h"
-#include "fsm.h"
-#include "scenewidget.h"
 #include "resourcebar.h"
-#include "genericscene.h"
-#include "fsmvhdlexport.h"
-#include "vhdlexportoptions.h"
-#include "simulationwidget.h"
-#include "imageexportoptions.h"
+#include "vhdlexportdialog.h"
+#include "imageexportdialog.h"
+#include "displayarea.h"
 
-
-//
-// Constructors
-//
 
 StatesUi::StatesUi() :
     QMainWindow(nullptr)
@@ -67,6 +55,7 @@ StatesUi::StatesUi() :
                       )
                );
 
+    // Generate tool bar
     QToolBar* mainToolBar = new QToolBar(this);
     mainToolBar->setMovable(true);
     mainToolBar->setAllowedAreas(Qt::LeftToolBarArea | Qt::TopToolBarArea | Qt::BottomToolBarArea);
@@ -77,7 +66,7 @@ StatesUi::StatesUi() :
     this->actionSave->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save_as"))));
     this->actionSave->setText(tr("Save"));
     this->actionSave->setToolTip(tr("Save machine in a new file"));
-    connect(this->actionSave, &QAction::triggered, this, &StatesUi::saveMachineRequestEventHandler);
+    connect(this->actionSave, &QAction::triggered, this, &StatesUi::beginSaveAsProcedure);
     mainToolBar->addAction(this->actionSave);
 
     this->actionSaveCurrent = new QAction(this);
@@ -85,32 +74,32 @@ StatesUi::StatesUi() :
     this->actionSaveCurrent->setText(tr("Save as"));
     this->actionSaveCurrent->setToolTip(tr("Update saved file with current content"));
     this->actionSaveCurrent->setEnabled(false);
-    connect(this->actionSaveCurrent, &QAction::triggered, this, &StatesUi::saveMachineOnCurrentFileEventHandler);
+    connect(this->actionSaveCurrent, &QAction::triggered, this, &StatesUi::beginSaveProcedure);
     mainToolBar->addAction(this->actionSaveCurrent);
 
     this->actionLoad = new QAction(this);
     this->actionLoad->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/load"))));
     this->actionLoad->setText(tr("Load"));
     this->actionLoad->setToolTip(tr("Load machine from file"));
-    connect(this->actionLoad, &QAction::triggered, this, &StatesUi::loadMachineRequestEventHandler);
+    connect(this->actionLoad, &QAction::triggered, this, &StatesUi::beginLoadProcedure);
     mainToolBar->addAction(this->actionLoad);
 
     mainToolBar->addSeparator();
 
-    /*this->actionNewFsm = new QAction(this);
-    this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
+    this->actionNewFsm = new QAction(this);
+    //this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
+    this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionNewFsm->setText(tr("New FSM"));
     this->actionNewFsm->setToolTip(tr("Create new FSM"));
-    connect(this->actionNewFsm, &QAction::triggered, this, &StatesUi::newMachineRequestEvent);
-    mainToolBar->addAction(this->actionNewFsm);*/
+    connect(this->actionNewFsm, &QAction::triggered, this, &StatesUi::beginNewMachineProcedure);
+    mainToolBar->addAction(this->actionNewFsm);
 
-    this->actionClear = new QAction(this);
+   /* this->actionClear = new QAction(this);
     this->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionClear->setText(tr("Clear"));
     this->actionClear->setToolTip(tr("Clear machine"));
-    connect(this->actionClear, &QAction::triggered, this, &StatesUi::newMachineRequestEventHandler);
-    //connect(this->actionClear, &QAction::triggered, this, &StatesUi::clearMachineRequestEvent);
-    mainToolBar->addAction(this->actionClear);
+    connect(this->actionClear, &QAction::triggered, this, &StatesUi::beginClearMachineProcedure);
+    mainToolBar->addAction(this->actionClear);*/
 
     mainToolBar->addSeparator();
 
@@ -118,142 +107,133 @@ StatesUi::StatesUi() :
     this->actionExportImage->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_image"))));
     this->actionExportImage->setText(tr("Export to image file"));
     this->actionExportImage->setToolTip(tr("Export machine to an image file"));
-    connect(this->actionExportImage, &QAction::triggered, this, &StatesUi::exportImageRequestEventHandler);
+    connect(this->actionExportImage, &QAction::triggered, this, &StatesUi::beginExportImageProcedure);
     mainToolBar->addAction(this->actionExportImage);
 
     this->actionExportVhdl = new QAction(this);
     this->actionExportVhdl->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
     this->actionExportVhdl->setText(tr("Export to VHDL"));
     this->actionExportVhdl->setToolTip(tr("Export machine to VHDL"));
-    connect(this->actionExportVhdl, &QAction::triggered, this, &StatesUi::exportVhdlRequestEventHandler);
+    connect(this->actionExportVhdl, &QAction::triggered, this, &StatesUi::beginExportVhdlProcedure);
     mainToolBar->addAction(this->actionExportVhdl);
 
     // Add scene and resource bar
-    QSplitter* splitter = new QSplitter();
-    splitter->setOrientation(Qt::Horizontal);
-    splitter->setChildrenCollapsible(false);
-    this->setCentralWidget(splitter);
+    this->splitter = new QSplitter();
+    this->splitter->setOrientation(Qt::Horizontal);
+    this->splitter->setChildrenCollapsible(false);
+    this->setCentralWidget(this->splitter);
 
-    this->mainDisplayArea = new QStackedWidget(splitter);
-    this->machineDisplayArea = new SceneWidget();
-    this->mainDisplayArea->addWidget(this->machineDisplayArea);
-    this->resourcesBar = new ResourceBar(nullptr, splitter);
+    this->displayArea  = new DisplayArea(this->splitter);
+    this->resourcesBar = new ResourceBar(this->splitter);
+
+    connect(this->displayArea, &DisplayArea::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
+    connect(this->displayArea, &DisplayArea::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
+    connect(this->displayArea, &DisplayArea::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
 
     QList<int> length;
     // Begin with 2/3 - 1/3
-    length.append( ( 66 * splitter->sizeHint().width() ) / 100 );
-    length.append( ( 33 * splitter->sizeHint().width() ) / 100 );
-    splitter->setSizes(length);
-
-    connect(this->resourcesBar, &ResourceBar::simulationToggledEvent,  this, &StatesUi::simulationToggledEventHandler);
-    connect(this->resourcesBar, &ResourceBar::triggerViewRequestEvent, this, &StatesUi::triggerViewEventHandler);
+    length.append( ( 66 * this->splitter->sizeHint().width() ) / 100 );
+    length.append( ( 33 * this->splitter->sizeHint().width() ) / 100 );
+    this->splitter->setSizes(length);
 }
 
-void StatesUi::setMachine(shared_ptr<Machine> machine, const QString& path)
+void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
 {
-    shared_ptr<Machine> oldMachine = this->machine.lock();
-
-    this->resourcesBar->setMachine(machine);
-    this->machineDisplayArea->setMachine(machine, resourcesBar);
-
-    if (machine != nullptr)
+    if (! this->machine.expired())
     {
+        disconnect(this->machine.lock().get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
+    }
+
+    if (newMachine != nullptr)
+    {
+        this->actionSave       ->setEnabled(true);
+       // this->actionClear      ->setEnabled(true);
         this->actionExportImage->setEnabled(true);
-        this->actionExportVhdl->setEnabled(true);
-        this->actionSave->setEnabled(true);
-        this->actionClear->setEnabled(true);
+        this->actionExportVhdl ->setEnabled(true);
+
+        if (path.length() != 0)
+            //this->actionSaveCurrent->setEnabled(newMachine->isUnsaved());
+            this->actionSaveCurrent->setEnabled(true);
+        else
+            this->actionSaveCurrent->setEnabled(false);
+
+        connect(newMachine.get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
     }
     else
     {
+        this->actionSave       ->setEnabled(false);
+        //this->actionClear      ->setEnabled(false);
         this->actionExportImage->setEnabled(false);
-        this->actionExportVhdl->setEnabled(false);
-        this->actionSave->setEnabled(false);
-        this->actionClear->setEnabled(true);
+        this->actionExportVhdl ->setEnabled(false);
+        this->actionSaveCurrent->setEnabled(false);
     }
 
-    this->machine = machine;
+    this->machine = newMachine;
+
+    this->resourcesBar->setMachine(newMachine);
+    this->displayArea ->setMachine(newMachine);
+
     this->setCurrentFilePath(path);
 }
 
 void StatesUi::setCurrentFilePath(const QString& path)
 {
-    this->currentFilePath = path;
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        this->currentFilePath = path;
+
+        if (path.length() != 0)
+            //this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
+            this->actionSaveCurrent->setEnabled(true);
+        else
+            this->actionSaveCurrent->setEnabled(false);
+    }
     this->updateTitle();
 }
 
-void StatesUi::newMachineRequestEventHandler()
+void StatesUi::beginNewMachineProcedure()
 {
-    bool doNew = false;
+    bool doNew = this->displayUnsavedConfirmation(tr("Clear current machine?"));
 
-    if (this->machine.lock() != nullptr)
+    if (doNew)
+        emit newFsmRequestEvent();
+}
+
+void StatesUi::beginClearMachineProcedure()
+{
+    bool doClear = this->displayUnsavedConfirmation(tr("Delete current machine?"));
+
+    if (doClear)
+        emit clearMachineRequestEvent();
+}
+
+void StatesUi::closeEvent(QCloseEvent* event)
+{
+    bool doClose = this->displayUnsavedConfirmation(tr("Quit StateS?"));
+
+    if(doClose)
     {
-        if (this->machine.lock()->isEmpty())
-        {
-            doNew = true;
-        }
-        else
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Clear current machine?") + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
+        // When main window closing, we should terminate application.
+        // This is not done automatically if another window is open.
 
-            if (reply == QMessageBox::StandardButton::Ok)
-            {
-                doNew = true;
-            }
-        }
+        // Setting machine to nullptr clears child widgets,
+        // closing such windows.
+        emit clearMachineRequestEvent();
+
+        QWidget::closeEvent(event);
     }
     else
     {
-        doNew = true;
+        event->ignore();
     }
-
-    if (doNew)
-    {
-        emit newFsmRequestEvent();
-    }
-}
-
-void StatesUi::clearMachineRequestEventHandler()
-{
-    bool doClear = false;
-
-    if (this->machine.lock() != nullptr)
-    {
-        if (this->machine.lock()->isEmpty())
-        {
-            doClear = true;
-        }
-        else
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete current machine?") + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
-
-            if (reply == QMessageBox::StandardButton::Ok)
-            {
-                doClear = true;
-            }
-        }
-
-        if (doClear)
-        {
-            emit clearMachineRequestEvent();
-        }
-    }
-}
-
-void StatesUi::closeEvent(QCloseEvent*)
-{
-    // When main window closing, we should terminate application
-    // This is not done automatically if another window is open
-
-    // Setting machine to nullptr should remove child widgets
-    // and close such windows (not checked)
-    setMachine(nullptr);
-
 }
 
 void StatesUi::keyPressEvent(QKeyEvent* event)
 {
+    bool transmitEvent = true;
+
     if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
         if (this->currentFilePath != QString::null)
@@ -265,266 +245,146 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
         else
         {
             // No current file, trigger 'save as' procedure
-            this->saveMachineRequestEventHandler();
+            this->beginSaveAsProcedure();
         }
+
+        transmitEvent = false;
     }
-    else
-    {
-        //event->ignore();
-    }
+
+    if(transmitEvent)
+        QWidget::keyPressEvent(event);
 }
 
-void StatesUi::exportImageRequestEventHandler()
+void StatesUi::keyReleaseEvent(QKeyEvent* event)
 {
-    unique_ptr<ImageExportOptions> exportOptions(new ImageExportOptions());
-    exportOptions->setModal(true);
+    bool transmitEvent = true;
 
-    exportOptions->exec();
-
-    if (exportOptions->result() == QDialog::Accepted)
+    if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
-        ImageExportOptions::imageFormat selectedFormat = exportOptions->getImageFormat();
+        // As we didn't tranmitted the press event, do the same with the release
+        transmitEvent = false;
+    }
 
-        QString fileName;
-        unique_ptr<QPainter> painter = nullptr;
-        unique_ptr<QPrinter> printer = nullptr;
-        unique_ptr<QSvgGenerator> generator = nullptr;
-        unique_ptr<QPixmap> pixmap = nullptr;
+    if(transmitEvent)
+        QWidget::keyPressEvent(event);
+}
 
-        if (selectedFormat == ImageExportOptions::imageFormat::pdf)
+void StatesUi::beginExportImageProcedure()
+{
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), this->getCurrentDirPath()));
+        exportOptions->setModal(true);
+
+        exportOptions->exec();
+
+        if (exportOptions->result() == QDialog::Accepted)
         {
-            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Pdf"), QString(), "*.pdf");
+            QString filePath = exportOptions->getFilePath();
 
-            if (!fileName.isEmpty())
-            {
-                if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
-                    fileName += ".pdf";
+            // TODO: Should not act directly on scene
+            this->displayArea->getScene()->clearSelection();
 
-                printer = unique_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
-                printer->setOutputFormat(QPrinter::PdfFormat);
-                printer->setOutputFileName(fileName);
-                printer->setPageSize(QPrinter::A4);
-                printer->setPageOrientation(QPageLayout::Landscape);
-
-                painter = unique_ptr<QPainter>(new QPainter());
-
-                painter->begin(printer.get());
-
-
-            }
-        }
-        else if (selectedFormat == ImageExportOptions::imageFormat::svg)
-        {
-            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Svg"), QString(), "*.svg");
-
-            if (!fileName.isEmpty())
-            {
-                if (!fileName.endsWith(".svg", Qt::CaseInsensitive))
-                    fileName += ".svg";
-
-                generator = unique_ptr<QSvgGenerator>(new QSvgGenerator());
-
-                generator->setFileName(fileName);
-                QRectF size = this->machineDisplayArea->scene()->sceneRect();
-                generator->setSize(size.size().toSize());
-                generator->setTitle(tr("Machine"));
-                generator->setDescription(tr("Created with") + " StateS v." + StateS::getVersion());
-
-                painter = unique_ptr<QPainter>(new QPainter());
-
-                painter->begin(generator.get());
-
-            }
-        }
-        else if (selectedFormat == ImageExportOptions::imageFormat::png)
-        {
-            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Png"), QString(), "*.png");
-
-            if (!fileName.isEmpty())
-            {
-                if (!fileName.endsWith(".png", Qt::CaseInsensitive))
-                    fileName += ".png";
-
-                QRectF size = this->machineDisplayArea->scene()->sceneRect();
-                pixmap = unique_ptr<QPixmap>(new QPixmap(size.width(), size.height()));
-                pixmap->fill();
-
-                painter = unique_ptr<QPainter>(new QPainter());
-
-                painter->begin(pixmap.get());
-
-                painter->setRenderHint(QPainter::Antialiasing);
-            }
-        }
-        else if (selectedFormat == ImageExportOptions::imageFormat::jpg)
-        {
-            fileName = QFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), QString(), "*.jpg");
-
-            if (!fileName.isEmpty())
-            {
-                if (!fileName.endsWith(".jpg", Qt::CaseInsensitive))
-                    fileName += ".jpg";
-
-                QRectF size = this->machineDisplayArea->scene()->sceneRect();
-                pixmap = unique_ptr<QPixmap>(new QPixmap(size.width(), size.height()));
-                pixmap->fill();
-
-                painter = unique_ptr<QPainter>(new QPainter());
-
-                painter->begin(pixmap.get());
-
-                painter->setRenderHint(QPainter::Antialiasing);
-            }
-        }
-
-
-
-        if (painter != nullptr)
-        {
-            QGraphicsScene* scene = this->machineDisplayArea->scene();
-            scene->clearSelection();
-            scene->render(painter.get());
+            QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
 
             if (exportOptions->includeComponent() == true)
             {
-                QRectF totalSceneSize = scene->sceneRect();
-
-                scene = resourcesBar->getComponentVisualizationScene().get();
-                QRectF componentSize;
-
-                if (selectedFormat == ImageExportOptions::imageFormat::pdf)
-                {
-                    componentSize.setWidth(3000);
-                    componentSize.setHeight(2000);
-                    componentSize.translate(50,50);
-                }
-                else
-                {
-                    // Make component a size of 1/5th the machine
-                    componentSize.setWidth(totalSceneSize.width()/5);
-                    componentSize.setHeight(totalSceneSize.height()/5);
-                    componentSize.translate(50,50);
-                }
-
-                scene->render(painter.get(), componentSize);
+                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), resourcesBar->getComponentVisualizationScene().get());
             }
-
-            painter->end();
-        }
-
-        if (pixmap != nullptr)
-        {
-            pixmap->save(fileName);
-        }
-    }
-}
-
-void StatesUi::exportVhdlRequestEventHandler()
-{
-    unique_ptr<VhdlExportOptions> exportOptions(new VhdlExportOptions());
-    exportOptions->setModal(true);
-
-    exportOptions->exec();
-
-    if (exportOptions->result() == QDialog::Accepted)
-    {
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), QString(), "*.vhdl");
-
-        if (!fileName.isEmpty())
-        {
-            if (!fileName.endsWith(".vhdl", Qt::CaseInsensitive))
-                fileName += ".vhdl";
-
-            FsmVhdlExport::exportFSM(dynamic_pointer_cast<Fsm>(machine.lock()), fileName, exportOptions->isResetPositive(), exportOptions->prefixIOs());
-        }
-    }
-}
-
-void StatesUi::saveMachineRequestEventHandler()
-{
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save machine"), QString(), "*.SfsmS");
-
-    if (!fileName.isEmpty())
-    {
-        if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
-            fileName += ".SfsmS";
-
-        emit this->saveMachineRequestEvent(fileName);
-    }
-}
-
-void StatesUi::loadMachineRequestEventHandler()
-{
-    bool doLoad = false;
-
-    if (this->machine.lock() != nullptr)
-    {
-        if (this->machine.lock()->isEmpty())
-            doLoad = true;
-        else
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Overwrite current machine?") + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
-
-            if (reply == QMessageBox::StandardButton::Ok)
+            else
             {
-                doLoad = true;
+                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene());
             }
+
         }
     }
+}
+
+void StatesUi::beginExportVhdlProcedure()
+{
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->getCurrentDirPath()));
+        exportOptions->setModal(true);
+
+        exportOptions->exec();
+
+        if (exportOptions->result() == QDialog::Accepted)
+        {
+            QString filePath = exportOptions->getFilePath();
+
+            l_machine->exportAsVhdl(filePath, exportOptions->isResetPositive(), exportOptions->prefixIOs());
+        }
+    }
+}
+
+void StatesUi::itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item)
+{
+    this->resourcesBar->setSelectedItem(item);
+}
+
+void StatesUi::editSelectedItem()
+{
+    this->resourcesBar->editSelectedItem();
+}
+
+void StatesUi::renameSelectedItem()
+{
+    this->resourcesBar->renameSelectedItem();
+}
+
+void StatesUi::machineUnsavedStateChangedEventHandler(bool)
+{
+  /*  if (isUnsaved)
+        this->actionSaveCurrent->setEnabled(true);
     else
-        doLoad = true;
+        this->actionSaveCurrent->setEnabled(false);*/
+
+    this->updateTitle();
+}
+
+void StatesUi::beginSaveAsProcedure()
+{
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save machine"), l_machine->getName() + ".SfsmS", "*.SfsmS");
+
+        if (! fileName.isEmpty())
+        {
+            if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
+                fileName += ".SfsmS";
+
+            emit this->saveMachineRequestEvent(fileName);
+        }
+    }
+}
+
+void StatesUi::beginLoadProcedure()
+{
+    bool doLoad = this->displayUnsavedConfirmation(tr("Overwrite current machine?"));
 
     if (doLoad)
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Load machine"), QString(), "*.SfsmS");
 
-        if (fileName.count() != 0)
+        if (! fileName.isEmpty())
         {
             emit loadMachineRequestEvent(fileName);
         }
     }
 }
 
-void StatesUi::simulationToggledEventHandler()
-{
-    this->timeline = this->resourcesBar->getTimeline();
-    if (this->timeline != nullptr)
-    {
-        this->mainDisplayArea->addWidget(this->timeline);
-        connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &StatesUi::detachTimelineEventHandler);
-    }
-}
-
-void StatesUi::triggerViewEventHandler()
-{
-    if (this->mainDisplayArea->count() > 1)
-    {
-        if (this->mainDisplayArea->currentIndex() == 0)
-            this->mainDisplayArea->setCurrentIndex(1);
-        else
-            this->mainDisplayArea->setCurrentIndex(0);
-    }
-}
-
-void StatesUi::detachTimelineEventHandler(bool detach)
-{
-    if (detach)
-    {
-        this->timeline->setParent(nullptr);
-        this->timeline->show();
-    }
-    else
-    {
-        this->mainDisplayArea->addWidget(this->timeline);
-    }
-}
-
-void StatesUi::saveMachineOnCurrentFileEventHandler()
+void StatesUi::beginSaveProcedure()
 {
     bool doSave = false;
 
-    if (this->machine.lock() != nullptr)
+    if (! this->machine.expired())
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->currentFilePath + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
@@ -534,30 +394,56 @@ void StatesUi::saveMachineOnCurrentFileEventHandler()
             doSave = true;
         }
     }
-    else
-        doSave = true;
 
     if (doSave)
-    {
         emit saveMachineInCurrentFileRequestEvent();
-    }
 }
 
 void StatesUi::updateTitle()
 {
-    if (this->machine.lock() == nullptr)
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine == nullptr)
     {
         this->setWindowTitle("StateS");
     }
     else if (this->currentFilePath != QString::null)
     {
-        this->actionSaveCurrent->setEnabled(true);
-        this->setWindowTitle("StateS — " + this->currentFilePath);
+        QString title = "StateS — " + this->currentFilePath;
+        if (l_machine->isUnsaved())
+            title += "*";
+
+        this->setWindowTitle(title);
     }
     else
     {
-        this->actionSaveCurrent->setEnabled(false);
         this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
     }
 }
 
+bool StatesUi::displayUnsavedConfirmation(const QString& cause)
+{
+    bool userConfirmed = false;
+
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if ( (l_machine != nullptr) && (l_machine->isUnsaved()) )
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("User confirmation needed"), cause + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
+
+        if (reply == QMessageBox::StandardButton::Ok)
+        {
+            userConfirmed = true;
+        }
+    }
+    else // No machine or saved machine: do not ask, implicit confirmation.
+        userConfirmed = true;
+
+    return userConfirmed;
+}
+
+QString StatesUi::getCurrentDirPath()
+{
+    return this->currentFilePath;
+}

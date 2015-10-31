@@ -50,9 +50,8 @@ QVector<shared_ptr<Signal> > TruthTable::getSignals() const
 
     foreach(weak_ptr<Signal> sig, this->signalTable)
     {
-        shared_ptr<Signal> sigL = sig.lock();
-
-        list.append(sigL);
+        if (! sig.expired())
+            list.append(sig.lock());
     }
 
     return list;

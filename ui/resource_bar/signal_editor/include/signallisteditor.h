@@ -53,21 +53,11 @@ private:
 public:
     explicit SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent = nullptr);
 
-public slots:
-    void updateList();
-
-signals:
-    shared_ptr<Signal> addSignalEvent(Machine::signal_type, const QString& name);
-    bool removeSignalEvent(const QString& name);
-    bool renameSignalEvent(const QString& oldName, const QString& newName);
-    bool resizeSignalEvent(const QString& name, uint newSize);
-    bool changeSignalInitialValueEvent(const QString& name, LogicValue newValue);
-    bool changeSignalRank(const QString& name, uint newRank);
-
 protected:
     void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
+    void updateList();
     void removeSelectedSignals();
     void updateButtonsEnableState();
     void beginAddSignal();
@@ -87,6 +77,7 @@ private:
 
     void handleListResizedEvent();
 
+private:
     // Static
     weak_ptr<Machine> machine;
     Machine::signal_type editorType;

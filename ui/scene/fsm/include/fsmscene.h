@@ -41,9 +41,17 @@ class FsmGraphicalState;
 class Fsm;
 class FsmState;
 class FsmTransition;
-class ResourceBar;
 
 
+/**
+ * @brief The FsmScene class is a FSM graphical representation.
+ * It is deeply linked to the Fsm object, which must be provided
+ * at creation, and can't be replaced.
+ * The FsmScene class maintains a shared pointer to the Fsm, so
+ * it can't loose the object.
+ * This is one of the rare case where an object is not owned in a
+ * single object, the others using weak pointers.
+ */
 class FsmScene : public GenericScene
 {
     Q_OBJECT
@@ -61,7 +69,7 @@ private:
     };
 
 public:
-    explicit FsmScene(shared_ptr<Fsm> machine, ResourceBar* resourceBar);
+    explicit FsmScene(shared_ptr<Fsm> machine);
     ~FsmScene();
 
     void setDisplaySize(const QSize& newSize) override;
@@ -69,12 +77,12 @@ public:
     void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent*) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent*) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) override;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent*) override;
-    void keyPressEvent(QKeyEvent*) override;
+    void mousePressEvent      (QGraphicsSceneMouseEvent*)       override;
+    void mouseMoveEvent       (QGraphicsSceneMouseEvent*)       override;
+    void mouseReleaseEvent    (QGraphicsSceneMouseEvent*)       override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)       override;
+    void contextMenuEvent     (QGraphicsSceneContextMenuEvent*) override;
+    void keyPressEvent        (QKeyEvent*)                      override;
 
 private slots:
     void simulationModeChanged(Machine::mode newMode);
@@ -96,14 +104,10 @@ private:
     FsmGraphicalState* addState(shared_ptr<FsmState> logicState, QPointF location);
     void addTransition(FsmGraphicalTransition* newTransition);
 
+private:
     shared_ptr<Fsm> machine;
-    ResourceBar* resources;
 
     sceneMode_e sceneMode;
-    //bool isDrawingTransition = false;
-    //bool isEditingTransitionSource = false;
-    //bool isEditingTransitionTarget = false;
-    //bool isSimulating = false;
     FsmGraphicalTransition* currentTransition = nullptr;
 
     QPointF mousePos;

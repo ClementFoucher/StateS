@@ -41,14 +41,14 @@ QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOpt
     return this->latestEditor;
 }
 
-/*void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-    // Update current editor text when requested
+    // Update current editor text when requested: this function prevents losing focus on selection
     QString content = index.model()->data(index, Qt::EditRole).toString();
 
     DynamicLineEdit* lineEdit = static_cast<DynamicLineEdit*>(editor);
     lineEdit->setText(content);
-}*/
+}
 
 void DynamicTableItemDelegate::setValidator(shared_ptr<QValidator> validator)
 {

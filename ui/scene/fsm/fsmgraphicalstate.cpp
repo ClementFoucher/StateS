@@ -156,40 +156,42 @@ QVariant FsmGraphicalState::itemChange(GraphicsItemChange change, const QVariant
 
 void FsmGraphicalState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    ContextMenu* menu = new ContextMenu();
     shared_ptr<FsmState> currentState = logicalState.lock();
 
-    menu->addTitle(tr("State") + " <i>" + currentState->getName() + "</i>");
-
-
-    Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
-
-    if (currentMode == Machine::mode::editMode )
+    if (currentState != nullptr)
     {
-        if (!currentState->isInitial())
-            menu->addAction(tr("Set initial"));
-        menu->addAction(tr("Edit"));
-        menu->addAction(tr("Draw transition from this state"));
-        menu->addAction(tr("Rename"));
-        menu->addAction(tr("Delete"));
-    }
-    else if (currentMode == Machine::mode::simulateMode )
-    {
-        if (!this->logicalState.lock()->getIsActive())
+        ContextMenu* menu = new ContextMenu();
+        menu->addTitle(tr("State") + " <i>" + currentState->getName() + "</i>");
+
+        Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
+
+        if (currentMode == Machine::mode::editMode )
         {
-            menu->addAction(tr("Set active"));
+            if (!currentState->isInitial())
+                menu->addAction(tr("Set initial"));
+            menu->addAction(tr("Edit"));
+            menu->addAction(tr("Draw transition from this state"));
+            menu->addAction(tr("Rename"));
+            menu->addAction(tr("Delete"));
         }
-    }
+        else if (currentMode == Machine::mode::simulateMode )
+        {
+            if ( (! this->logicalState.expired()) && (!this->logicalState.lock()->getIsActive()) )
+            {
+                menu->addAction(tr("Set active"));
+            }
+        }
 
-    if (menu->actions().count() > 1) // > 1 because title is always here
-    {
-        menu->popup(event->screenPos());
+        if (menu->actions().count() > 1) // > 1 because title is always here
+        {
+            menu->popup(event->screenPos());
 
-        connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
-    }
-    else
-    {
-        delete menu;
+            connect(menu, &QMenu::triggered, this, &FsmGraphicalState::treatMenu);
+        }
+        else
+        {
+            delete menu;
+        }
     }
 }
 
@@ -256,15 +258,16 @@ void FsmGraphicalState::treatMenu(QAction* action)
 {
     if (action->text() == tr("Edit"))
     {
-        emit editStateCalledEvent(logicalState.lock());
+        emit editStateCalledEvent(this->logicalState.lock());
     }
     else if (action->text() == tr("Set initial"))
     {
-        logicalState.lock()->setInitial();
+        if (!this->logicalState.expired())
+            this->logicalState.lock()->setInitial();
     }
     else if (action->text() == tr("Rename"))
     {
-        emit renameStateCalledEvent(logicalState.lock());
+        emit renameStateCalledEvent(this->logicalState.lock());
     }
     else if (action->text() == tr("Delete"))
     {
@@ -272,12 +275,16 @@ void FsmGraphicalState::treatMenu(QAction* action)
     }
     else if (action->text() == tr("Draw transition from this state"))
     {
-        ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
-        this->logicalState.lock()->getOwningFsm()->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::drawTransitionFromScene);
+        if (! this->logicalState.expired())
+        {
+            ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
+            this->logicalState.lock()->getOwningFsm()->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::drawTransitionFromScene);
+        }
     }
     else if (action->text() == tr("Set active"))
     {
-        this->logicalState.lock()->getOwningFsm()->forceStateActivation(this->logicalState.lock());
+        if (! this->logicalState.expired())
+            this->logicalState.lock()->getOwningFsm()->forceStateActivation(this->logicalState.lock());
     }
 }
 
@@ -320,78 +327,81 @@ void FsmGraphicalState::rebuildRepresentation()
 
     shared_ptr<FsmState> state = this->logicalState.lock();
 
-    if (state->getIsActive())
-        this->setBrush(activeBrush);
-    else
-        this->setBrush(inactiveBrush);
-
-    stateName = new QGraphicsTextItem(state->getName(), this);
-
-    stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
-
-    if (state->isInitial())
+    if (state != nullptr)
     {
-        QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
-        insideCircle->setPen(pen);
-    }
+        if (state->getIsActive())
+            this->setBrush(activeBrush);
+        else
+            this->setBrush(inactiveBrush);
 
-    qDeleteAll(actionsBox->childItems());
-    actionsBox->childItems().clear();
+        stateName = new QGraphicsTextItem(state->getName(), this);
 
-    QList<shared_ptr<Signal>> actions = state->getActions();
-    if (actions.count() != 0)
-    {
-        qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
-        qreal maxTextWidth = 0;
+        stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
 
-        for (int i = 0 ; i < actions.count() ; i++)
+        if (state->isInitial())
         {
-            QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
-
-            QString currentActionText;
-
-            Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
-
-            if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
-                currentActionText = actions[i]->getText(true);
-            else
-                currentActionText = actions[i]->getText(false);
-
-            if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
-                currentActionText += " = 1";
-            else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
-            {
-                if (actions[i]->getSize() == 1)
-                    currentActionText += " = 0";
-                else
-                    currentActionText += " = " + LogicValue::getValue0(actions[i]->getSize()).toString() + "<sub>b</sub>";
-            }
-            else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
-                currentActionText += " = " + state->getActionValue(actions[i]).toString() + "<sub>b</sub>";
-
-            actionText->setHtml(currentActionText);
-
-
-            if (maxTextWidth < actionText->boundingRect().width())
-                maxTextWidth = actionText->boundingRect().width();
-            actionText->setPos(radius+20, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
-            actionText->setZValue(1);
+            QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
+            insideCircle->setPen(pen);
         }
 
-        QPainterPath actionBorderPath;
-        actionBorderPath.lineTo(20,                0);
-        actionBorderPath.lineTo(20,                ((qreal)actions.count()/2)*textHeight);
-        actionBorderPath.lineTo(20 + maxTextWidth, ((qreal)actions.count()/2)*textHeight);
-        actionBorderPath.lineTo(20 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
-        actionBorderPath.lineTo(20,                -((qreal)actions.count()/2)*textHeight);
-        actionBorderPath.lineTo(20,                0);
+        qDeleteAll(actionsBox->childItems());
+        actionsBox->childItems().clear();
 
-        QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
-        stateActionsOutline->setPen(pen);
-        stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
-        stateActionsOutline->setZValue(0);
-        stateActionsOutline->setPos(radius, 0);
+        QList<shared_ptr<Signal>> actions = state->getActions();
+        if (actions.count() != 0)
+        {
+            qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
+            qreal maxTextWidth = 0;
 
-        actionsBox->setPos(mapToScene(0,0));// Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
+            for (int i = 0 ; i < actions.count() ; i++)
+            {
+                QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
+
+                QString currentActionText;
+
+                Machine::mode currentMode = getLogicalState()->getOwningFsm()->getCurrentMode();
+
+                if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
+                    currentActionText = actions[i]->getText(true);
+                else
+                    currentActionText = actions[i]->getText(false);
+
+                if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
+                    currentActionText += " = 1";
+                else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
+                {
+                    if (actions[i]->getSize() == 1)
+                        currentActionText += " = 0";
+                    else
+                        currentActionText += " = " + LogicValue::getValue0(actions[i]->getSize()).toString() + "<sub>b</sub>";
+                }
+                else if (state->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
+                    currentActionText += " = " + state->getActionValue(actions[i]).toString() + "<sub>b</sub>";
+
+                actionText->setHtml(currentActionText);
+
+
+                if (maxTextWidth < actionText->boundingRect().width())
+                    maxTextWidth = actionText->boundingRect().width();
+                actionText->setPos(radius+20, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
+                actionText->setZValue(1);
+            }
+
+            QPainterPath actionBorderPath;
+            actionBorderPath.lineTo(20,                0);
+            actionBorderPath.lineTo(20,                ((qreal)actions.count()/2)*textHeight);
+            actionBorderPath.lineTo(20 + maxTextWidth, ((qreal)actions.count()/2)*textHeight);
+            actionBorderPath.lineTo(20 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
+            actionBorderPath.lineTo(20,                -((qreal)actions.count()/2)*textHeight);
+            actionBorderPath.lineTo(20,                0);
+
+            QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
+            stateActionsOutline->setPen(pen);
+            stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
+            stateActionsOutline->setZValue(0);
+            stateActionsOutline->setPos(radius, 0);
+
+            actionsBox->setPos(mapToScene(0,0));// Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
+        }
     }
 }

@@ -69,16 +69,11 @@ SimulatorTab::~SimulatorTab()
     this->triggerSimulationMode(false);
 }
 
-SimulationWidget* SimulatorTab::getTimeline() const
-{
-    return this->timeLine;
-}
-
 void SimulatorTab::triggerSimulationMode(bool enabled)
 {
     shared_ptr<Fsm> machine = this->machine.lock();
 
-    if (enabled)
+    if ( (enabled) && (machine != nullptr) )
     {
         if (this->simulationTools == nullptr)
         {
@@ -100,13 +95,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 QGroupBox* optionsGroup = new QGroupBox(tr("Options"));
                 QVBoxLayout* optionsLayout = new QVBoxLayout(optionsGroup);
 
-                this->buttonTriggerView  = new QPushButton(tr("View timeline"));
-                this->buttonTriggerView->setCheckable(true);
-                optionsLayout->addWidget(this->buttonTriggerView);
-                connect(this->buttonTriggerView,     &QPushButton::clicked, this, &SimulatorTab::buttonTriggerViewClicked);
-
                 this->checkBoxDelay = new CheckBoxHtml(tr("Add delay from clock rising edge to outputs events on timeline"));
-                connect(this->checkBoxDelay, &CheckBoxHtml::toggled, this, &SimulatorTab::delayOutputOptionTriggeredEvent);
+                connect(this->checkBoxDelay, &CheckBoxHtml::toggled, this, &SimulatorTab::delayOptionToggleEventHandler);
                 optionsLayout->addWidget(this->checkBoxDelay);
 
                 this->simulationTools->layout()->addWidget(optionsGroup);
@@ -160,9 +150,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 this->simulationTools->layout()->addWidget(inputsGroup);
 
-                this->timeLine = new SimulationWidget(this, machine, this->simulator->getClock());
-                this->timeLine->show();
-
                 emit beginSimulationEvent();
             }
             else
@@ -188,10 +175,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             delete this->simulationTools;
             this->simulationTools = nullptr;
 
-            delete this->timeLine;
-            this->timeLine = nullptr;
-
-            this->machine.lock()->setSimulator(nullptr);
+            if (! this->machine.expired())
+                this->machine.lock()->setSimulator(nullptr);
             this->simulator.reset();
 
             foreach(shared_ptr<FsmState> state, machine->getStates())
@@ -204,17 +189,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             emit endSimulationEvent();
         }
     }
-}
-
-void SimulatorTab::buttonTriggerViewClicked()
-{
-    if (this->buttonTriggerView->isChecked())
-        this->buttonTriggerView->setText(tr("View machine"));
-    else
-        this->buttonTriggerView->setText(tr("View timeline"));
-
-
-    emit triggerViewRequestEvent();
 }
 
 void SimulatorTab::buttonLauchAutoStepClicked()
@@ -235,4 +209,9 @@ void SimulatorTab::buttonLauchAutoStepClicked()
         this->simulator->suspend();
         this->buttonTriggerAutoStep->setText(tr("Launch"));
     }
+}
+
+void SimulatorTab::delayOptionToggleEventHandler(bool enabled)
+{
+    simulator->enableOutputDelay(enabled);
 }

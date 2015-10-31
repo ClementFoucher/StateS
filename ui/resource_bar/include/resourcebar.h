@@ -46,6 +46,7 @@ class AboutTab;
 class VerifierTab;
 class SimulationWidget;
 class MachineComponentVisualizer;
+class MachineComponent;
 
 
 class ResourceBar : public QTabWidget
@@ -53,28 +54,21 @@ class ResourceBar : public QTabWidget
     Q_OBJECT
 
 public:
-    explicit ResourceBar(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+    explicit ResourceBar(QWidget* parent = nullptr);
     ~ResourceBar();
-
-    SimulationWidget* getTimeline() const;
 
     void setMachine(shared_ptr<Machine> newMachine);
 
-    void selectedState(shared_ptr<FsmState> state, bool showTab = false, bool editName = false);
-    void selectedTransition(shared_ptr<FsmTransition> transition, bool showTab = false);
+    void setSelectedItem(shared_ptr<MachineComponent> item);
+    void editSelectedItem();
+    void renameSelectedItem();
 
     shared_ptr<QGraphicsScene> getComponentVisualizationScene();
 
-public slots:
+private slots:
     void clearSelection();
     void beginSimulation();
     void terminateSimulation();
-
-signals:
-    void simulationToggledEvent();
-    void triggerViewRequestEvent();
-
-private slots:
     void tabChanged(int);
 
 private:

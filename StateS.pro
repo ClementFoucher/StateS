@@ -70,7 +70,6 @@ SOURCES += \
     ui/resource_bar/simulator_tab/inputsselector.cpp \
     ui/resource_bar/simulator_tab/inputsignalselector.cpp \
     core/machine/fsm/fsmvhdlexport.cpp \
-    ui/vhdlexportoptions.cpp \
     core/basic_type/truthtable.cpp \
     ui/truthtabledisplay.cpp \
     ui/resource_bar/component_editor/conditioneditor.cpp \
@@ -78,7 +77,6 @@ SOURCES += \
     ui/resource_bar/verifiertab.cpp \
     core/simulation/fsmsimulator.cpp \
     ui/simulation/simulationwidget.cpp \
-    ui/imageexportoptions.cpp \
     ui/resource_bar/machinecomponentvisualizer.cpp \
     ui/refined_widget/tablewidgetwithresizeevent.cpp \
     ui/refined_widget/checkboxhtml.cpp \
@@ -86,7 +84,13 @@ SOURCES += \
     core/machine/machinebuilder.cpp \
     ui/resource_bar/machine_builder/fsmtoolspanel.cpp \
     ui/resource_bar/machine_builder/machinetoolspanel.cpp \
-    ui/refined_widget/collapsiblewidgetwithtitle.cpp
+    ui/refined_widget/collapsiblewidgetwithtitle.cpp \
+    ui/displayarea.cpp \
+    core/simulation/machinesimulator.cpp \
+    ui/scene/blankscene.cpp \
+    ui/scene/machineimageexporter.cpp \
+    ui/imageexportdialog.cpp \
+    ui/vhdlexportdialog.cpp
 
 
 HEADERS  += \
@@ -141,7 +145,6 @@ HEADERS  += \
     ui/resource_bar/simulator_tab/include/inputbitselector.h \
     ui/resource_bar/simulator_tab/include/inputsselector.h \
     core/machine/fsm/include/fsmvhdlexport.h \
-    ui/include/vhdlexportoptions.h \
     core/basic_type/include/truthtable.h \
     ui/include/truthtabledisplay.h \
     ui/resource_bar/component_editor/include/conditioneditor.h \
@@ -149,7 +152,6 @@ HEADERS  += \
     ui/resource_bar/include/verifiertab.h \
     core/simulation/include/fsmsimulator.h \
     ui/simulation/include/simulationwidget.h \
-    ui/include/imageexportoptions.h \
     ui/resource_bar/include/machinecomponentvisualizer.h \
     ui/refined_widget/include/tablewidgetwithresizeevent.h \
     ui/refined_widget/include/checkboxhtml.h \
@@ -157,7 +159,13 @@ HEADERS  += \
     core/machine/include/machinebuilder.h \
     ui/resource_bar/machine_builder/include/fsmtoolspanel.h \
     ui/resource_bar/machine_builder/include/machinetoolspanel.h \
-    ui/refined_widget/include/collapsiblewidgetwithtitle.h
+    ui/refined_widget/include/collapsiblewidgetwithtitle.h \
+    ui/include/displayarea.h \
+    core/simulation/include/machinesimulator.h \
+    ui/scene/include/blankscene.h \
+    ui/scene/include/machineimageexporter.h \
+    ui/include/imageexportdialog.h \
+    ui/include/vhdlexportdialog.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

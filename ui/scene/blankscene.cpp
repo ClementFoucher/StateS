@@ -19,33 +19,24 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+// Current class header
+#include "blankscene.h"
 
-// Parent
-#include <QGraphicsScene>
-
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class MachineComponent;
-
-
-class GenericScene : public QGraphicsScene
+#include <QFont>
+#include <QGraphicsItem>
+BlankScene::BlankScene(QObject* parent) :
+    GenericScene(parent)
 {
-    Q_OBJECT
+    this->defaultFont.setBold(true);
+    this->defaultFont.setPointSize(50);
 
-public:
-    explicit GenericScene(QObject* parent = nullptr);
+    this->text = this->addText(tr("No machine loaded"), this->defaultFont);
 
-    virtual void setDisplaySize(const QSize& newSize) = 0;
+    this->text->setDefaultTextColor(QColor("light gray"));
+}
 
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
-};
+void BlankScene::setDisplaySize(const QSize&)
+{
+    // TODO: adapt text size if window is small
+}
 
-#endif // GENERICSCENE_H

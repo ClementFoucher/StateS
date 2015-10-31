@@ -72,7 +72,7 @@ bool ContextMenu::event(QEvent* e)
 {
     if (this->activeAction() != nullptr)
     {
-        if (this->activeAction()->toolTip().count() != 0)
+        if (this->activeAction()->toolTip().isEmpty())
         {
             const QHelpEvent* helpEvent = dynamic_cast <QHelpEvent*>(e);
 

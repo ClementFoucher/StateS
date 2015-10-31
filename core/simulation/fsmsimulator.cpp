@@ -39,7 +39,7 @@
 
 
 FsmSimulator::FsmSimulator(shared_ptr<Fsm> machine) :
-    QObject()
+    MachineSimulator()
 {
     this->clock = shared_ptr<Clock>(new Clock());
     connect(this->clock.get(), &Clock::clockEvent, this, &FsmSimulator::clockEventHandler);
@@ -48,6 +48,11 @@ FsmSimulator::FsmSimulator(shared_ptr<Fsm> machine) :
     this->machine = machine;
 
     this->reset();
+}
+
+void FsmSimulator::enableOutputDelay(bool enable)
+{
+    emit outputDelayChangedEvent(enable);
 }
 
 shared_ptr<Clock> FsmSimulator::getClock() const
@@ -79,24 +84,27 @@ void FsmSimulator::resetEventHandler()
 {
     shared_ptr<Fsm> machine = this->machine.lock();
 
-    // First reset signals.
-    // Must be done before states as initial state can activate some.
-    foreach(shared_ptr<Signal> sig, machine->getVariablesSignals())
+    if (machine != nullptr)
     {
-        sig->reinitialize();
-    }
-
-    if (machine->getInitialState() != nullptr)
-    {
-        foreach(shared_ptr<FsmState> state, machine->getStates())
+        // First reset signals.
+        // Must be done before states as initial state can activate some.
+        foreach(shared_ptr<Signal> sig, machine->getVariablesSignals())
         {
-            state->setActive(false);
+            sig->reinitialize();
         }
 
-        shared_ptr<FsmState> initialState = machine->getInitialState();
-        initialState->setActive(true);
+        if (machine->getInitialState() != nullptr)
+        {
+            foreach(shared_ptr<FsmState> state, machine->getStates())
+            {
+                state->setActive(false);
+            }
 
-        this->currentState = initialState;
+            shared_ptr<FsmState> initialState = machine->getInitialState();
+            initialState->setActive(true);
+
+            this->currentState = initialState;
+        }
     }
 }
 
@@ -124,14 +132,17 @@ void FsmSimulator::clockEventHandler()
         this->latestTransitionCrossed.reset();
     }
 
-    foreach(weak_ptr<Signal> sig, currentState->getActions())
+    if (currentState != nullptr)
     {
-        shared_ptr<Signal> signal = sig.lock();
-
-        if (signal != nullptr)
+        foreach(weak_ptr<Signal> sig, currentState->getActions())
         {
-            if (currentState->getActionType(signal) == MachineActuatorComponent::action_types::pulse)
-                signal->resetValue();
+            shared_ptr<Signal> signal = sig.lock();
+
+            if (signal != nullptr)
+            {
+                if (currentState->getActionType(signal) == MachineActuatorComponent::action_types::pulse)
+                    signal->resetValue();
+            }
         }
     }
 
@@ -207,7 +218,9 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 
 void FsmSimulator::forceStateActivation(shared_ptr<FsmState> stateToActivate)
 {
-    this->currentState.lock()->setActive(false);
+    if (! this->currentState.expired())
+        this->currentState.lock()->setActive(false);
+
     this->currentState = stateToActivate;
     stateToActivate->setActive(true);
 }
@@ -218,10 +231,15 @@ void FsmSimulator::activateTransition(shared_ptr<FsmTransition> transition)
     transition->activateActions();
     this->latestTransitionCrossed = transition;
 
-    this->currentState.lock()->setActive(false);
+    if (! this->currentState.expired())
+        this->currentState.lock()->setActive(false);
 
-    this->currentState = transition->getTarget();
-    this->currentState.lock()->setActive(true);
+    shared_ptr<FsmState> newState = transition->getTarget();
+    if (newState != nullptr)
+    {
+        newState->setActive(true);
+        this->currentState = newState;
+    }
 
     this->potentialTransitions.clear();
 }

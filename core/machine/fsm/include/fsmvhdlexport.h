@@ -38,11 +38,11 @@ class Signal;
 class FsmVhdlExport
 {
 public:
-    static void exportFSM(shared_ptr<Fsm> machine, QString path, bool resetLogicPositive, bool prefixIOs);
+    static void exportFSM(shared_ptr<const Fsm> machine, const QString& path, bool resetLogicPositive, bool prefixIOs);
 
 private:
     static QString correctName(QString name);
-    static QString equationText(shared_ptr<Signal> equation, shared_ptr<Fsm> machine, bool prefixIOs);
+    static QString equationText(shared_ptr<Signal> equation, shared_ptr<const Fsm> machine, bool prefixIOs);
 };
 
 #endif // FSMVHDLEXPORT_H
