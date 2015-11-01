@@ -20,30 +20,21 @@
  */
 
 // Current class header
-#include "transitioneditortab.h"
+#include "svgimagegenerator.h"
 
 // Qt classes
-#include <QVBoxLayout>
-#include <QLabel>
-
-// StateS classes
-#include "actioneditor.h"
-#include "conditioneditor.h"
-#include "fsmtransition.h"
+#include <QSvgRenderer>
+#include <QPixmap>
+#include <QPainter>
 
 
-TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent) :
-    ComponentEditorTab(parent)
+QPixmap SvgImageGenerator::getPixmapFromSvg(const QString& path)
 {
-    new QVBoxLayout(this);
+    QSvgRenderer svgRenderer(path);
+    QPixmap pixmap(svgRenderer.defaultSize());
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    svgRenderer.render(&painter);
 
-    QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(title);
-
-    ConditionEditor* conditionEditor = new ConditionEditor(transition);
-    this->layout()->addWidget(conditionEditor);
-
-    ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"));
-    this->layout()->addWidget(actionEditor);
+    return pixmap;
 }

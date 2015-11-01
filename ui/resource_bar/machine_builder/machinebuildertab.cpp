@@ -134,9 +134,10 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
 {
     if (tempTool == MachineBuilder::singleUseTool::none)
     {
-        shared_ptr<Machine> machine = this->machine.lock();
-        if (machine!= nullptr)
-            this->updateHint(machine->getMachineBuilder()->getTool());
+        shared_ptr<Machine> l_machine = this->machine.lock();
+
+        if (l_machine!= nullptr)
+            this->updateHint(l_machine->getMachineBuilder()->getTool());
         else
             this->updateHint(MachineBuilder::tool::none);
     }
@@ -207,13 +208,13 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
 
 void MachineBuilderTab::nameTextChangedEventHandler(const QString& name)
 {
-    shared_ptr<Machine> machine = this->machine.lock();
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (machine != nullptr)
+    if (l_machine != nullptr)
     {
-        if (name != machine->getName())
+        if (name != l_machine->getName())
         {
-            bool accepted = machine->setName(name);
+            bool accepted = l_machine->setName(name);
 
             if (!accepted)
                 this->stateName->markAsErroneous();
@@ -223,11 +224,11 @@ void MachineBuilderTab::nameTextChangedEventHandler(const QString& name)
 
 void MachineBuilderTab::updateContent()
 {
-    shared_ptr<Machine> machine = this->machine.lock();
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (machine != nullptr)
+    if (l_machine != nullptr)
     {
-        this->stateName->setText(machine->getName());
+        this->stateName->setText(l_machine->getName());
     }
     else
     {

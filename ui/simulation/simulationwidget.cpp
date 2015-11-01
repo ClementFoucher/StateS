@@ -34,7 +34,6 @@
 #include <QScrollArea>
 
 // StateS classes
-#include "states.h"
 #include "machine.h"
 #include "signaltimeline.h"
 #include "clocktimeline.h"
@@ -42,18 +41,19 @@
 #include "output.h"
 #include "simulatortab.h"
 #include "machinesimulator.h"
+#include "svgimagegenerator.h"
 
 
 SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent) :
     QMainWindow(parent)
 {
-    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->setWindowTitle(tr("StateS timeline visualizer"));
 
     this->toolBar = this->addToolBar(tr("Tools"));
     this->toolBar->setIconSize(QSize(64, 64));
 
-    QIcon exportPdfIcon(StateS::getPixmapFromSvg(QString(":/icons/export_PDF")));
+    QIcon exportPdfIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
     QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
     connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
 

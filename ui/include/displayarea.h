@@ -31,13 +31,13 @@ using namespace std;
 
 // Qt classes
 class QTabWidget;
-class QGraphicsScene;
 
 // StateS classes
 #include "machine.h"
 class SceneWidget;
 class SimulationWidget;
 class MachineComponent;
+class GenericScene;
 
 
 /**
@@ -53,7 +53,7 @@ public:
     explicit DisplayArea(QWidget* parent = nullptr);
 
     void setMachine(shared_ptr<Machine> newMachine);
-    QGraphicsScene* getScene();
+    GenericScene* getScene() const;
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -65,19 +65,21 @@ private slots:
     void setTimelineDetachedState(bool detach);
 
 private:
-    void buildTabs();
-    void clearTabs();
+    void displayTabs();
+    void displayScene();
+    void resetDisplay();
+    void showCurrentDisplay();
 
 private:
     // Content
-    SceneWidget*      machineDisplayArea = nullptr;
+    SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
     SimulationWidget* timeline           = nullptr;
 
     // Used if containing both widgets at the same time
-    QWidget*          currentDisplayArea = nullptr;
+    QTabWidget*       tabbedDisplayArea  = nullptr;
 
     // Used to remember which widget is currently displayed
-    QTabWidget*       tabbedDisplayArea  = nullptr;
+    QWidget*          currentDisplayArea = nullptr;
 
     weak_ptr<Machine> machine;
 };

@@ -23,10 +23,6 @@
 #include "states.h"
 
 // Qt classes
-#include <QPixmap>
-#include <QPainter>
-#include <QSvgRenderer>
-#include <QFile>
 #include <QFileInfo>
 #include <QDir>
 
@@ -34,16 +30,6 @@
 #include "statesui.h"
 #include "fsm.h"
 
-QPixmap StateS::getPixmapFromSvg(const QString& path)
-{
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
-
-    return pixmap;
-}
 
 QString StateS::getVersion()
 {
@@ -68,23 +54,20 @@ StateS::StateS(const QString& initialFilePath)
     }
     else
     {
-        this->machine = shared_ptr<Fsm>(new Fsm());
+        this->generateNewFsm();
     }
-
-    this->statesUi->setMachine(this->machine);
 }
 
 StateS::~StateS()
 {
     // Clear references to machine in UI before deletion
-    if (this->statesUi != nullptr)
-        statesUi->setMachine(nullptr);
+    this->statesUi->setMachine(nullptr);
 }
 
 void StateS::run()
 {
     // Display interface
-    statesUi->show();
+    this->statesUi->show();
 }
 
 /*

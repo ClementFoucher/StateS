@@ -32,30 +32,30 @@ using namespace std;
 // Qt classes
 class QGraphicsScene;
 
-// For enums
-#include "machine.h"
-
 // StateS classes
+class Machine;
 class MachineBuilderTab;
 class SignalEditorTab;
 class ComponentEditorTab;
-class FsmState;
-class FsmTransition;
 class SimulatorTab;
-class AboutTab;
 class VerifierTab;
-class SimulationWidget;
+class AboutTab;
 class MachineComponentVisualizer;
 class MachineComponent;
 
 
+/**
+ * @brief The ResourceBar class displays tabs
+ * to edit and act upon the current machine.
+ * On machine change, tabs are deleted and
+ * new ones are created.
+ */
 class ResourceBar : public QTabWidget
 {
     Q_OBJECT
 
 public:
     explicit ResourceBar(QWidget* parent = nullptr);
-    ~ResourceBar();
 
     void setMachine(shared_ptr<Machine> newMachine);
 
@@ -63,7 +63,7 @@ public:
     void editSelectedItem();
     void renameSelectedItem();
 
-    shared_ptr<QGraphicsScene> getComponentVisualizationScene();
+    shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 private slots:
     void clearSelection();
@@ -75,7 +75,6 @@ private:
     weak_ptr<Machine> machine;
     shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-    // QWdigets with parent
     MachineBuilderTab  * machineBuildTab = nullptr;
     SignalEditorTab    * signalsTab      = nullptr;
     ComponentEditorTab * editorTab       = nullptr;

@@ -32,8 +32,11 @@ using namespace std;
 #include <QSvgGenerator>
 #include <QGraphicsScene>
 
+// StateS classes
+#include "genericscene.h"
 
-void MachineImageExporter::exportMachineAsImage(const QString& path, const QString& title, const QString& creator, MachineImageExporter::imageFormat format, QGraphicsScene* scene, QGraphicsScene* component)
+
+void MachineImageExporter::exportMachineAsImage(const QString& path, const QString& title, const QString& creator, MachineImageExporter::imageFormat format, GenericScene* scene, QGraphicsScene* component)
 {
     // There objects handle rendenring on file
     unique_ptr<QPrinter>      printer   = nullptr;

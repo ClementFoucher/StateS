@@ -20,8 +20,9 @@ These features will be implemented... some day.
 
 - Ability to save/load timeline, and load stimuli vector,
 - Textual equations edition,
+- Truth-table based equation edition,
 - Grafcet-type machines.
 
 ** Very long-term **
 
-- Support a coupling interface to send outputs/receive inputs from another software (or more generally, another environment -- hardware?),
+- Support a coupling interface to send outputs/receive inputs from another software (or more generally, another environment -- hardware?).

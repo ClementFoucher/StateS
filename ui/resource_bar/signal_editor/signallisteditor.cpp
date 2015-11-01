@@ -35,7 +35,7 @@
 #include "tablewidgetwithresizeevent.h"
 
 
-SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget *parent) :
+SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent) :
     QWidget(parent)
 {
     this->machine = machine;
@@ -103,7 +103,7 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
     signalsList->horizontalHeaderItem(1)->setText(tr("Size"));
 
     signalsList->setSelectionBehavior(QAbstractItemView::SelectRows);
-    listDelegate = new DynamicTableItemDelegate(/*&currentTableItem, */signalsList);
+    listDelegate = new DynamicTableItemDelegate(signalsList);
     signalsList->setItemDelegate(listDelegate);
 
     // Don't allow to adjust height
@@ -217,8 +217,9 @@ void SignalListEditor::updateList()
                 signalsList->selectRow(signalsList->rowCount()-1);
                 signalUnderEdition = QString::null;
             }
-
         }
+
+        this->signalsList->setFocus();
 
         signalUnderEdition = QString::null;
         this->updateButtonsEnableState();
@@ -242,8 +243,25 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
         if (signalsList->selectionModel()->selectedRows().count() == 1)
         {
             removeSelectedSignals();
-            transmitEvent = false;
         }
+        transmitEvent = false;
+    }
+
+    if (transmitEvent)
+        QWidget::keyPressEvent(event);
+}
+
+void SignalListEditor::keyReleaseEvent(QKeyEvent *event)
+{
+    bool transmitEvent = true;
+
+    if (event->key() == Qt::Key::Key_Escape)
+    {
+        transmitEvent = false;
+    }
+    else if (event->key() == Qt::Key::Key_Delete)
+    {
+        transmitEvent = false;
     }
 
     if (transmitEvent)

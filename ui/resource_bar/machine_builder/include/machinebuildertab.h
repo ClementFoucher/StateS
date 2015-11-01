@@ -47,7 +47,7 @@ public:
     explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 protected:
-    void showEvent(QShowEvent* e) override;
+    void showEvent      (QShowEvent* e)  override;
     void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
@@ -57,14 +57,16 @@ private slots:
     void updateContent();
 
 private:
-    CollapsibleWidgetWithTitle*          hintDisplay    = nullptr;
-    CollapsibleWidgetWithTitle*          machineDisplay = nullptr;
+    void updateHint(MachineBuilder::tool newTool);
+
+private:
+    CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+    CollapsibleWidgetWithTitle* machineDisplay = nullptr;
+
     weak_ptr<MachineComponentVisualizer> machineComponentView;
     weak_ptr<Machine>                    machine;
 
     DynamicLineEdit* stateName = nullptr;
-
-    void updateHint(MachineBuilder::tool newTool);
 };
 
 #endif // MACHINEBUILDERTAB_H

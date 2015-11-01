@@ -60,25 +60,22 @@ SceneWidget::SceneWidget(QWidget* parent) :
 void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
 {
     // Clear
-    GenericScene* oldScene = dynamic_cast<GenericScene*>(this->scene());
-
+    GenericScene* oldScene = this->getScene();
     if (oldScene != nullptr)
     {
         this->setScene(nullptr);
         delete oldScene;
     }
 
-    if (this->sceneMode != sceneMode_e::noScene)
+    shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
+    if (oldMachineBuilder != nullptr)
     {
-        shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
-        if (oldMachineBuilder != nullptr)
-        {
-            disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &SceneWidget::toolChangedEventHandler);
-            disconnect(oldMachineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
-        }
-
-        this->updateSceneMode(sceneMode_e::noScene);
+        disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
+        disconnect(oldMachineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+        this->machineBuilder.reset();
     }
+
+    this->updateSceneMode(sceneMode_e::noScene);
 
     // Initialize
     if (newMachine != nullptr)
@@ -114,11 +111,18 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
             this->updateSceneMode(sceneMode_e::idle);
         }
     }
-    else
+
+    // If nothing where loaded, fall back in blank mode
+    if (this->sceneMode == sceneMode_e::noScene)
     {
         BlankScene* newScene = new BlankScene();
         this->setScene(newScene);
     }
+}
+
+GenericScene* SceneWidget::getScene() const
+{
+    return dynamic_cast<GenericScene*>(this->scene());
 }
 
 void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
@@ -155,7 +159,6 @@ void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
     }
 
     this->updateSceneMode(newMode);
-    //this->updateDragMode();
 }
 
 void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool)
@@ -173,10 +176,10 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
     }
     else
     {
-        shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-        if (machineBuilder != nullptr)
+        shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
+        if (l_machineBuilder != nullptr)
         {
-            this->toolChangedEventHandler(machineBuilder->getTool());
+            this->toolChangedEventHandler(l_machineBuilder->getTool());
         }
         else
         {
@@ -187,32 +190,26 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
 
 void SceneWidget::resizeEvent(QResizeEvent* event)
 {
-    // Inform scene view has been modified
-
-    GenericScene* currentScene = dynamic_cast<GenericScene*>(this->scene());
-
+    // Inform scene that view has been modified
+    GenericScene* currentScene = this->getScene();
     if (currentScene != nullptr)
-    {
         currentScene->setDisplaySize(event->size());
-    }
 
-    // Relocate overlay buttons (which may no be displayed at this time)
+    // Relocate overlay buttons (may not be displayed at this time)
 
     int rightAlign = 10;
     if (this->verticalScrollBar()->isVisible())
         rightAlign += this->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 
-    buttonZoomIn->move(this->width() - buttonZoomIn->width() - rightAlign, 10);
-    buttonZoomOut->move(this->width() - buttonZoomOut->width() - rightAlign, buttonZoomIn->height() + 20);
+    this->buttonZoomIn ->move(this->width() - this->buttonZoomIn->width() - rightAlign, 10);
+    this->buttonZoomOut->move(this->width() - this->buttonZoomOut->width() - rightAlign, this->buttonZoomIn->height() + 20);
 
     // Transmit event
-
     QGraphicsView::resizeEvent(event);
 }
 
 void SceneWidget::mousePressEvent(QMouseEvent* me)
 {
-    // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
     if ( (this->sceneMode != sceneMode_e::noScene) && (me->button() == Qt::MiddleButton) )
@@ -224,14 +221,12 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
 
     if (transmitEvent)
         QGraphicsView::mousePressEvent(me);
-
 }
 
 void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 {
     static QPoint lastMouseEventPos(0, 0);
 
-    // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
     if (this->sceneMode == sceneMode_e::movingScene)
@@ -253,7 +248,6 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 
 void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 {
-    // In this function, do not transmit event in case we handle it
     bool transmitEvent = true;
 
     if (this->sceneMode == sceneMode_e::movingScene)
@@ -282,7 +276,7 @@ void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
 
 void SceneWidget::wheelEvent(QWheelEvent* event)
 {
-    // In this function, do never transmit event: we always handle it
+    // In this function, never transmit event: we always handle it
 
     if (this->sceneMode != sceneMode_e::noScene)
     {
@@ -357,11 +351,11 @@ void SceneWidget::updateDragMode()
 
     if (this->sceneMode == sceneMode_e::idle)
     {
-        shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
+        shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
 
-        if (machineBuilder != nullptr)
+        if (l_machineBuilder != nullptr)
         {
-            if (machineBuilder->getTool() == MachineBuilder::tool::none)
+            if (l_machineBuilder->getTool() == MachineBuilder::tool::none)
             {
                 dragMode = QGraphicsView::RubberBandDrag;
             }

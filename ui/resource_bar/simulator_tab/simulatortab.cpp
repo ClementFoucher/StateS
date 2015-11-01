@@ -25,7 +25,6 @@
 // Qt classes
 #include <QLabel>
 #include <QPushButton>
-#include <QSignalMapper>
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QGroupBox>
@@ -36,19 +35,16 @@
 // StateS classes
 #include "fsmstate.h"
 #include "fsm.h"
-#include "fsmtransition.h"
-#include "signal.h"
-#include "simulationwidget.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
 #include "fsmsimulator.h"
 #include "checkboxhtml.h"
 
 
-SimulatorTab::SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent) :
+SimulatorTab::SimulatorTab(shared_ptr<Machine> machine, QWidget* parent) :
     QWidget(parent)
 {
-    this->machine = machine;
+    this->machine = dynamic_pointer_cast<Fsm>(machine);
 
     this->setLayout(new QVBoxLayout());
     this->layout()->setAlignment(Qt::AlignTop);
@@ -71,20 +67,20 @@ SimulatorTab::~SimulatorTab()
 
 void SimulatorTab::triggerSimulationMode(bool enabled)
 {
-    shared_ptr<Fsm> machine = this->machine.lock();
+    shared_ptr<Fsm> l_machine = this->machine.lock();
 
-    if ( (enabled) && (machine != nullptr) )
+    if ( (enabled) && (l_machine != nullptr) )
     {
         if (this->simulationTools == nullptr)
         {
-            if (machine->getInitialState() != nullptr)
+            if (l_machine->getInitialState() != nullptr)
             {
                 // First thing to do would be to check machine correctness
 
                 this->buttonTriggerSimulation->setText(tr("End simulation"));
 
-                this->simulator = shared_ptr<FsmSimulator>(new FsmSimulator(machine));
-                machine->setSimulator(this->simulator);
+                this->simulator = shared_ptr<FsmSimulator>(new FsmSimulator(l_machine));
+                l_machine->setSimulator(this->simulator);
 
                 this->simulationTools = new QWidget();
                 this->simulationTools->setLayout(new QVBoxLayout());
@@ -122,7 +118,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 connect(buttonReset,                 &QPushButton::clicked, this->simulator.get(), &FsmSimulator::reset);
                 connect(buttonNextStep,              &QPushButton::clicked, this->simulator.get(), &FsmSimulator::doStep);
-                connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this, &SimulatorTab::buttonLauchAutoStepClicked);
+                connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,                  &SimulatorTab::buttonLauchAutoStepClicked);
 
                 timeManagerLayout->addWidget(buttonReset);
                 timeManagerLayout->addWidget(buttonNextStep);
@@ -135,16 +131,14 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 QGroupBox* inputsGroup = new QGroupBox(tr("Inputs"));
                 QVBoxLayout* inputsLayout = new QVBoxLayout(inputsGroup);
 
-                shared_ptr<Fsm> machine = this->machine.lock();
-
-                if ( (machine != nullptr) && (machine->getInputs().count() != 0) )
+                if (l_machine->getInputs().count() != 0)
                 {
                     QLabel* inputListHint = new QLabel(tr("Click on bits from the list below to switch value:"));
                     inputListHint->setAlignment(Qt::AlignCenter);
                     inputListHint->setWordWrap(true);
                     inputsLayout->addWidget(inputListHint);
 
-                    inputList = new InputsSelector(machine->getInputs());
+                    inputList = new InputsSelector(l_machine->getInputs());
                     inputsLayout->addWidget(inputList);
                 }
 
@@ -157,7 +151,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 this->buttonTriggerSimulation->setChecked(false);
 
                 ContextMenu* menu = ContextMenu::createErrorMenu(tr("No initial state!"));
-                menu->popup(buttonTriggerSimulation->mapToGlobal(QPoint(buttonTriggerSimulation->width(), -menu->sizeHint().height())));
+                menu->popup(this->buttonTriggerSimulation->mapToGlobal(QPoint(this->buttonTriggerSimulation->width(), -menu->sizeHint().height())));
             }
         }
         else
@@ -175,11 +169,12 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             delete this->simulationTools;
             this->simulationTools = nullptr;
 
-            if (! this->machine.expired())
-                this->machine.lock()->setSimulator(nullptr);
+            shared_ptr<Fsm> l_machine = this->machine.lock();
+            if (l_machine != nullptr)
+                l_machine->setSimulator(nullptr);
             this->simulator.reset();
 
-            foreach(shared_ptr<FsmState> state, machine->getStates())
+            foreach(shared_ptr<FsmState> state, l_machine->getStates())
             {
                 state->setActive(false);
             }
@@ -205,7 +200,6 @@ void SimulatorTab::buttonLauchAutoStepClicked()
     }
     else
     {
-        //this->clock->stop();
         this->simulator->suspend();
         this->buttonTriggerAutoStep->setText(tr("Launch"));
     }
@@ -213,5 +207,5 @@ void SimulatorTab::buttonLauchAutoStepClicked()
 
 void SimulatorTab::delayOptionToggleEventHandler(bool enabled)
 {
-    simulator->enableOutputDelay(enabled);
+    this->simulator->enableOutputDelay(enabled);
 }

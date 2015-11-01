@@ -23,9 +23,9 @@
 #include "actionlisteditor.h"
 
 // StateS classes
+#include "svgimagegenerator.h"
 #include "machineactuatorcomponent.h"
 #include "signal.h"
-#include "states.h"
 
 
 ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent) :
@@ -39,20 +39,20 @@ ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator
     if (signal->getSize() == 1)
     {
         if ((allowedActionTypes  & MachineActuatorComponent::pulse) != 0 )
-            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
+            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
         if ((allowedActionTypes  & MachineActuatorComponent::activeOnState) != 0 )
-            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
+            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
         if ((allowedActionTypes  & MachineActuatorComponent::set) != 0 )
-            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
+            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
         if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
-            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
+            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
     }
     else
     {
         if ((allowedActionTypes  & MachineActuatorComponent::assign) != 0 )
             this->addItem(tr("Assign"));
         if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
-            this->addItem(QIcon(StateS::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
+            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
     }
 
     updateIndex();

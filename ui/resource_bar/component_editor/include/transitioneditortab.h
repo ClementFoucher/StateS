@@ -31,8 +31,6 @@ using namespace std;
 
 // StateS classes
 class FsmTransition;
-class ActionEditor;
-class ConditionEditor;
 
 
 class TransitionEditorTab : public ComponentEditorTab
@@ -41,13 +39,6 @@ class TransitionEditorTab : public ComponentEditorTab
 
 public:
     explicit TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
-
-    void changeEditedTransition(shared_ptr<FsmTransition> transition);
-
-private:
-    // QWidgets with parent
-    ActionEditor*    actionEditor    = nullptr;
-    ConditionEditor* conditionEditor = nullptr;
 };
 
 #endif // TRANSITIONEDITORTAB_H

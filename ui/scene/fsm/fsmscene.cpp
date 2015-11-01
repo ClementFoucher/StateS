@@ -590,7 +590,6 @@ void FsmScene::stateCallsRenameEventHandler(shared_ptr<FsmState> state)
 {
     clearSelection();
     state->getGraphicalRepresentation()->setSelected(true);
-    emit editSelectedItemEvent();
     emit renameSelectedItemEvent();
 }
 
@@ -636,7 +635,7 @@ FsmGraphicalState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF l
     addItem(actionsBox);
     actionsBox->setZValue(3);
 
-    connect(newState, &FsmGraphicalState::editStateCalledEvent, this, &FsmScene::stateCallsEditEventHandler);
+    connect(newState, &FsmGraphicalState::editStateCalledEvent,   this, &FsmScene::stateCallsEditEventHandler);
     connect(newState, &FsmGraphicalState::renameStateCalledEvent, this, &FsmScene::stateCallsRenameEventHandler);
 
     return newState;

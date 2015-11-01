@@ -29,14 +29,14 @@
 #include <QLabel>
 
 // StateS classes
-#include "fsmverifier.h"
 #include "truthtabledisplay.h"
+#include "fsm.h"
 
 
-VerifierTab::VerifierTab(shared_ptr<Fsm> machine, QWidget* parent) :
+VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
     QWidget(parent)
 {
-    this->machine = machine;
+    this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(dynamic_pointer_cast<Fsm>(machine)));
 
     new QVBoxLayout(this);
     this->layout()->setAlignment(Qt::AlignTop);
@@ -50,28 +50,11 @@ VerifierTab::VerifierTab(shared_ptr<Fsm> machine, QWidget* parent) :
     this->layout()->addWidget(buttonVerify);
 }
 
-VerifierTab::~VerifierTab()
-{
-    delete this->truthTable;
-}
-
-void VerifierTab::changeMachine(shared_ptr<Fsm> machine)
-{
-    this->clearDisplay();
-
-    this->verifier.reset();
-
-    this->machine = machine;
-}
-
 void VerifierTab::checkNow()
 {
-    if (this->verifier == nullptr)
-        this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(machine.lock()));
+    this->clearDisplay();
 
     QList<QString> errors = this->verifier->verifyFsm();
-
-    this->clearDisplay();
 
     if (errors.count() == 0)
     {
@@ -111,15 +94,13 @@ void VerifierTab::checkNow()
 void VerifierTab::clearDisplay()
 {
     delete this->listTitle;
-    this->listTitle = nullptr;
-
     delete this->list;
-    this->list = nullptr;
-
     delete this->truthTable;
-    this->truthTable = nullptr;
-
     delete this->buttonClear;
+
+    this->listTitle   = nullptr;
+    this->list        = nullptr;
+    this->truthTable  = nullptr;
     this->buttonClear = nullptr;
 }
 

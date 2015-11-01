@@ -30,14 +30,14 @@
 
 // StateS classes
 #include "reactivebutton.h"
-#include "states.h"
+#include "svgimagegenerator.h"
 
 
 LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent) :
     QDialog(parent)
 {
     this->application = application;
-    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
 
     this->translator = shared_ptr<QTranslator>(new QTranslator());
     this->translator->load(":/translations/français/français");

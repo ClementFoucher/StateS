@@ -19,37 +19,18 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALSEDITORTAB_H
-#define SIGNALSEDITORTAB_H
+#ifndef SVGIMAGEGENERATOR_H
+#define SVGIMAGEGENERATOR_H
 
-// Parent
-#include <QWidget>
-
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class Machine;
-class MachineComponentVisualizer;
-class CollapsibleWidgetWithTitle;
+// Qt classes
+class QPixmap;
+class QString;
 
 
-class SignalEditorTab : public QWidget
+class SvgImageGenerator
 {
-    Q_OBJECT
-
 public:
-    explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
-
-protected:
-    void showEvent(QShowEvent* e) override;
-
-private:
-    weak_ptr<MachineComponentVisualizer> machineComponentView;
-
-    CollapsibleWidgetWithTitle* machineDisplay;
+    static QPixmap getPixmapFromSvg(const QString& path);
 };
 
-#endif // SIGNALSEDITORTAB_H
-
+#endif // SVGIMAGEGENERATOR_H

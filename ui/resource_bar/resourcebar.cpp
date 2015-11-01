@@ -22,11 +22,7 @@
 // Current class header
 #include "resourcebar.h"
 
-// Debug
-#include <QDebug>
-
 // StateS classes
-#include "machinebuilder.h"
 #include "machinebuildertab.h"
 #include "signaleditortab.h"
 #include "stateeditortab.h"
@@ -36,7 +32,6 @@
 #include "verifiertab.h"
 #include "fsm.h"
 #include "machinecomponentvisualizer.h"
-#include "machinecomponent.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
 
@@ -49,55 +44,27 @@ ResourceBar::ResourceBar(QWidget* parent) :
     this->setMachine(nullptr);
 }
 
-ResourceBar::~ResourceBar()
-{
-    // Do I have to do this?
-    // Widgets are not deleted on tab removal...
-    // Is this the same on widget deletion?
-    // Does QTabWidget take parenthood of tab widgets?
-    delete machineBuildTab;
-    delete signalsTab;
-    delete editorTab;
-    delete simulatorTab;
-    delete verifierTab;
-}
-
 void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 {
-    shared_ptr<Machine> oldMachine = this->machine.lock();
-    if (oldMachine != nullptr)
-    {
-        oldMachine.reset();
-    }
-
     this->machineComponentScene.reset();
-
     this->machine = newMachine;
 
-    // Clear (does not delete widgets, but needed for tab change issues)
-    this->clear();
-
-    delete machineBuildTab;
-    machineBuildTab = nullptr;
-
-    delete signalsTab;
-    signalsTab = nullptr;
-
-    delete editorTab;
-    editorTab = nullptr;
-
-    delete verifierTab;
-    verifierTab = nullptr;
-
-
-    if (simulatorTab != nullptr)
+    if (this->simulatorTab != nullptr)
     {
         disconnect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
         disconnect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
-
-        delete simulatorTab;
-        simulatorTab = nullptr;
     }
+
+    while(this->count() != 0)
+    {
+        delete this->widget(0);
+    }
+
+    this->machineBuildTab = nullptr;
+    this->signalsTab      = nullptr;
+    this->editorTab       = nullptr;
+    this->verifierTab     = nullptr;
+    this->simulatorTab    = nullptr;
 
     // Build
     if (newMachine != nullptr)
@@ -105,20 +72,20 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
         this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
 
         this->machineBuildTab = new MachineBuilderTab(newMachine, this->machineComponentScene);
-        this->signalsTab      = new SignalEditorTab(newMachine, this->machineComponentScene);
-        this->simulatorTab    = new SimulatorTab(dynamic_pointer_cast<Fsm>(newMachine));
-        this->verifierTab     = new VerifierTab(dynamic_pointer_cast<Fsm>(newMachine));
+        this->signalsTab      = new SignalEditorTab  (newMachine, this->machineComponentScene);
+        this->simulatorTab    = new SimulatorTab     (newMachine);
+        this->verifierTab     = new VerifierTab      (newMachine);
 
         connect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
         connect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
 
-        this->insertTab(0, machineBuildTab, tr("Builder"));
-        this->insertTab(1, signalsTab,      tr("Signals"));
-        this->insertTab(2, new QWidget(),   tr("Editor"));
-        this->insertTab(3, simulatorTab,    tr("Simulator"));
-        this->insertTab(4, verifierTab,     tr("Verifier"));
-//        this->insertTab(4, new QWidget(),   tr("Options"));
-        this->insertTab(5, new AboutTab(),  tr("About"));
+        this->insertTab(0, this->machineBuildTab, tr("Builder"));
+        this->insertTab(1, this->signalsTab,      tr("Signals"));
+        this->insertTab(2, new QWidget(),         tr("Editor"));
+        this->insertTab(3, this->simulatorTab,    tr("Simulator"));
+        this->insertTab(4, this->verifierTab,     tr("Verifier"));
+//        this->insertTab(4, new QWidget(),         tr("Options"));
+        this->insertTab(5, new AboutTab(),        tr("About"));
 
         this->setTabEnabled(2, false);
 
@@ -146,67 +113,45 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
     }
 }
 
-shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene()
+shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene() const
 {
     return this->machineComponentScene->getComponentVisualizationScene();
 }
 
 void ResourceBar::setSelectedItem(shared_ptr<MachineComponent> item)
 {
-    shared_ptr<FsmState> state = dynamic_pointer_cast<FsmState>(item);
-    shared_ptr<FsmTransition> transition = dynamic_pointer_cast<FsmTransition>(item);
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (state != nullptr)
+    if ( (l_machine != nullptr) && (l_machine->getCurrentMode() == Machine::mode::editMode) )
     {
-        shared_ptr<Machine> machine = this->machine.lock();
+        shared_ptr<FsmState>      state      = dynamic_pointer_cast<FsmState>     (item);
+        shared_ptr<FsmTransition> transition = dynamic_pointer_cast<FsmTransition>(item);
 
-        if (machine != nullptr)
+        if (state != nullptr)
         {
-            if (machine->getCurrentMode() == Machine::mode::editMode)
-            {
-                StateEditorTab* editor = dynamic_cast<StateEditorTab*>(editorTab);
+            uint current_tab = this->currentIndex();
 
-                uint current_tab = this->currentIndex();
+            delete this->widget(2);
 
-                if (editor != nullptr)
-                    editor->changeEditedState(state);
-                else
-                {
-                    this->removeTab(2);
-                    delete editorTab;
-                    this->editorTab = new StateEditorTab(state);
-                    this->insertTab(2, editorTab, tr("State"));
-                }
+            this->editorTab = new StateEditorTab(state);
+            this->insertTab(2, this->editorTab, tr("State"));
 
-                this->setCurrentIndex(current_tab);
-            }
+            this->setCurrentIndex(current_tab);
         }
-    }
-    else if (transition != nullptr)
-    {
-        shared_ptr<Machine> machine = this->machine.lock();
-
-        if (machine != nullptr)
+        else if (transition != nullptr)
         {
-            if (machine->getCurrentMode() == Machine::mode::editMode)
-            {
-                TransitionEditorTab* editor = dynamic_cast<TransitionEditorTab*>(editorTab);
+            uint current_tab = this->currentIndex();
 
-                uint current_tab = this->currentIndex();
+            delete this->widget(2);
 
-                if (editor != nullptr)
-                    editor->changeEditedTransition(transition);
-                else
-                {
-                    this->removeTab(2);
-                    delete editorTab;
+            this->editorTab = new TransitionEditorTab(transition);
+            this->insertTab(2, this->editorTab, tr("Transition"));
 
-                    this->editorTab = new TransitionEditorTab(transition);
-                    this->insertTab(2, editorTab, tr("Transition"));
-                }
-
-                this->setCurrentIndex(current_tab);
-            }
+            this->setCurrentIndex(current_tab);
+        }
+        else
+        {
+            this->clearSelection();
         }
     }
     else
@@ -219,24 +164,16 @@ void ResourceBar::editSelectedItem()
 {
     if (this->editorTab != nullptr)
         this->setCurrentIndex(2);
-    else
-        this->clearSelection();
 }
 
 void ResourceBar::renameSelectedItem()
 {
-    if ( (this->editorTab != nullptr) && (this->currentIndex() == 2) )
-    {
-        StateEditorTab* stateEditorTab = dynamic_cast<StateEditorTab*>(this->editorTab);
+    StateEditorTab* stateEditorTab = dynamic_cast<StateEditorTab*>(this->editorTab);
 
-        if (stateEditorTab != nullptr)
-        {
-            stateEditorTab->setEditName();
-        }
-        else
-        {
-            this->clearSelection();
-        }
+    if (stateEditorTab != nullptr)
+    {
+        this->setCurrentIndex(2);
+        stateEditorTab->setEditName();
     }
 }
 
@@ -244,9 +181,7 @@ void ResourceBar::clearSelection()
 {
     uint currentTab = this->currentIndex();
 
-    this->removeTab(2);
-
-    delete this->editorTab;
+    delete this->widget(2);
     this->editorTab = nullptr;
 
     this->insertTab(2, new QWidget(), tr("Editor"));
@@ -260,45 +195,37 @@ void ResourceBar::clearSelection()
 
 void ResourceBar::beginSimulation()
 {
-    clearSelection();
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    this->setTabEnabled(0, false);
-    this->setTabEnabled(1, false);
+    if (l_machine != nullptr)
+    {
+        this->clearSelection();
 
-    shared_ptr<Machine> machine = this->machine.lock();
-    if (machine != nullptr)
-        machine->setMode(Machine::mode::simulateMode);
+        this->setTabEnabled(0, false);
+        this->setTabEnabled(1, false);
 
-  //  emit simulationToggledEvent();
+        l_machine->setMode(Machine::mode::simulateMode);
+    }
 }
 
 void ResourceBar::terminateSimulation()
 {
-    this->setTabEnabled(0, true);
-    this->setTabEnabled(1, true);
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-//    disconnect(this->simulatorTab, &SimulatorTab::triggerViewRequestEvent, this, &ResourceBar::triggerViewRequestEvent);
+    if (l_machine != nullptr)
+    {
+        this->setTabEnabled(0, true);
+        this->setTabEnabled(1, true);
 
-    shared_ptr<Machine> machine = this->machine.lock();
-    if (machine != nullptr)
-        machine->setMode(Machine::mode::editMode);
-
-    //emit simulationToggledEvent();
+        l_machine->setMode(Machine::mode::editMode);
+    }
 }
-
-/*SimulationWidget* ResourceBar::getTimeline() const
-{
-    if (this->simulatorTab != nullptr)
-        return this->simulatorTab->getTimeline();
-    else
-        return nullptr;
-}*/
 
 void ResourceBar::tabChanged(int)
 {
     // Clear selected tool on tab change
-    shared_ptr<Machine> machine = this->machine.lock();
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (machine != nullptr)
-        machine->getMachineBuilder()->setTool(MachineBuilder::tool::none);
+    if (l_machine != nullptr)
+        l_machine->getMachineBuilder()->setTool(MachineBuilder::tool::none);
 }

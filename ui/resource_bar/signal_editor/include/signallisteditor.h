@@ -54,7 +54,8 @@ public:
     explicit SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent = nullptr);
 
 protected:
-    void keyPressEvent(QKeyEvent* event) override;
+    void keyPressEvent  (QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 private slots:
     void updateList();

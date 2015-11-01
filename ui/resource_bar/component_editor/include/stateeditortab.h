@@ -32,7 +32,6 @@ using namespace std;
 // StateS classes
 class FsmState;
 class DynamicLineEdit;
-class ActionEditor;
 
 
 class StateEditorTab : public ComponentEditorTab
@@ -42,7 +41,6 @@ class StateEditorTab : public ComponentEditorTab
 public:
     explicit StateEditorTab(shared_ptr<FsmState> state, QWidget* parent = nullptr);
 
-    void changeEditedState(shared_ptr<FsmState> state);
     void setEditName();
 
 protected:
@@ -55,9 +53,7 @@ private slots:
 private:
     weak_ptr<FsmState> state;
 
-    // QWidgets with parent
     DynamicLineEdit* textStateName = nullptr;
-    ActionEditor* actionEditor = nullptr;
 };
 
 #endif // STATEEDITORTAB_H

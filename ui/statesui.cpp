@@ -31,7 +31,6 @@
 #include <QSplitter>
 #include <QAction>
 #include <QKeyEvent>
-#include <QGraphicsScene>
 
 // StateS classes
 #include "states.h"
@@ -39,12 +38,14 @@
 #include "vhdlexportdialog.h"
 #include "imageexportdialog.h"
 #include "displayarea.h"
+#include "svgimagegenerator.h"
+#include "genericscene.h"
 
 
 StatesUi::StatesUi() :
     QMainWindow(nullptr)
 {
-    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->updateTitle();
     this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
     this->resize(QApplication::desktop()->availableGeometry().size() - QSize(200, 200));
@@ -63,14 +64,14 @@ StatesUi::StatesUi() :
     this->addToolBar(Qt::LeftToolBarArea, mainToolBar);
 
     this->actionSave = new QAction(this);
-    this->actionSave->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save_as"))));
+    this->actionSave->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save_as"))));
     this->actionSave->setText(tr("Save"));
     this->actionSave->setToolTip(tr("Save machine in a new file"));
     connect(this->actionSave, &QAction::triggered, this, &StatesUi::beginSaveAsProcedure);
     mainToolBar->addAction(this->actionSave);
 
     this->actionSaveCurrent = new QAction(this);
-    this->actionSaveCurrent->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/save"))));
+    this->actionSaveCurrent->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save"))));
     this->actionSaveCurrent->setText(tr("Save as"));
     this->actionSaveCurrent->setToolTip(tr("Update saved file with current content"));
     this->actionSaveCurrent->setEnabled(false);
@@ -78,7 +79,7 @@ StatesUi::StatesUi() :
     mainToolBar->addAction(this->actionSaveCurrent);
 
     this->actionLoad = new QAction(this);
-    this->actionLoad->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/load"))));
+    this->actionLoad->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/load"))));
     this->actionLoad->setText(tr("Load"));
     this->actionLoad->setToolTip(tr("Load machine from file"));
     connect(this->actionLoad, &QAction::triggered, this, &StatesUi::beginLoadProcedure);
@@ -88,14 +89,14 @@ StatesUi::StatesUi() :
 
     this->actionNewFsm = new QAction(this);
     //this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
-    this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
+    this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionNewFsm->setText(tr("New FSM"));
     this->actionNewFsm->setToolTip(tr("Create new FSM"));
     connect(this->actionNewFsm, &QAction::triggered, this, &StatesUi::beginNewMachineProcedure);
     mainToolBar->addAction(this->actionNewFsm);
 
    /* this->actionClear = new QAction(this);
-    this->actionClear->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/clear"))));
+    this->actionClear->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionClear->setText(tr("Clear"));
     this->actionClear->setToolTip(tr("Clear machine"));
     connect(this->actionClear, &QAction::triggered, this, &StatesUi::beginClearMachineProcedure);
@@ -104,27 +105,27 @@ StatesUi::StatesUi() :
     mainToolBar->addSeparator();
 
     this->actionExportImage = new QAction(this);
-    this->actionExportImage->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_image"))));
+    this->actionExportImage->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_image"))));
     this->actionExportImage->setText(tr("Export to image file"));
     this->actionExportImage->setToolTip(tr("Export machine to an image file"));
     connect(this->actionExportImage, &QAction::triggered, this, &StatesUi::beginExportImageProcedure);
     mainToolBar->addAction(this->actionExportImage);
 
     this->actionExportVhdl = new QAction(this);
-    this->actionExportVhdl->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
+    this->actionExportVhdl->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
     this->actionExportVhdl->setText(tr("Export to VHDL"));
     this->actionExportVhdl->setToolTip(tr("Export machine to VHDL"));
     connect(this->actionExportVhdl, &QAction::triggered, this, &StatesUi::beginExportVhdlProcedure);
     mainToolBar->addAction(this->actionExportVhdl);
 
     // Add scene and resource bar
-    this->splitter = new QSplitter();
-    this->splitter->setOrientation(Qt::Horizontal);
-    this->splitter->setChildrenCollapsible(false);
-    this->setCentralWidget(this->splitter);
+    QSplitter* splitter = new QSplitter();
+    splitter->setOrientation(Qt::Horizontal);
+    splitter->setChildrenCollapsible(false);
+    this->setCentralWidget(splitter);
 
-    this->displayArea  = new DisplayArea(this->splitter);
-    this->resourcesBar = new ResourceBar(this->splitter);
+    this->displayArea  = new DisplayArea(splitter);
+    this->resourceBar = new ResourceBar(splitter);
 
     connect(this->displayArea, &DisplayArea::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
     connect(this->displayArea, &DisplayArea::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
@@ -132,9 +133,9 @@ StatesUi::StatesUi() :
 
     QList<int> length;
     // Begin with 2/3 - 1/3
-    length.append( ( 66 * this->splitter->sizeHint().width() ) / 100 );
-    length.append( ( 33 * this->splitter->sizeHint().width() ) / 100 );
-    this->splitter->setSizes(length);
+    length.append( ( 66 * splitter->sizeHint().width() ) / 100 );
+    length.append( ( 33 * splitter->sizeHint().width() ) / 100 );
+    splitter->setSizes(length);
 }
 
 void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
@@ -170,7 +171,7 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
 
     this->machine = newMachine;
 
-    this->resourcesBar->setMachine(newMachine);
+    this->resourceBar->setMachine(newMachine);
     this->displayArea ->setMachine(newMachine);
 
     this->setCurrentFilePath(path);
@@ -178,18 +179,19 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
 
 void StatesUi::setCurrentFilePath(const QString& path)
 {
-    shared_ptr<Machine> l_machine = this->machine.lock();
+//    shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (l_machine != nullptr)
+//    if (l_machine != nullptr)
     {
         this->currentFilePath = path;
 
         if (path.length() != 0)
-            //this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
+//            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
             this->actionSaveCurrent->setEnabled(true);
         else
             this->actionSaveCurrent->setEnabled(false);
     }
+
     this->updateTitle();
 }
 
@@ -236,7 +238,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 
     if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
-        if (this->currentFilePath != QString::null)
+        if (! this->currentFilePath.isEmpty())
         {
             emit this->saveMachineInCurrentFileRequestEvent();
             // Should make button blink for one second.
@@ -291,7 +293,7 @@ void StatesUi::beginExportImageProcedure()
 
             if (exportOptions->includeComponent() == true)
             {
-                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), resourcesBar->getComponentVisualizationScene().get());
+                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), resourceBar->getComponentVisualizationScene().get());
             }
             else
             {
@@ -324,17 +326,17 @@ void StatesUi::beginExportVhdlProcedure()
 
 void StatesUi::itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item)
 {
-    this->resourcesBar->setSelectedItem(item);
+    this->resourceBar->setSelectedItem(item);
 }
 
 void StatesUi::editSelectedItem()
 {
-    this->resourcesBar->editSelectedItem();
+    this->resourceBar->editSelectedItem();
 }
 
 void StatesUi::renameSelectedItem()
 {
-    this->resourcesBar->renameSelectedItem();
+    this->resourceBar->renameSelectedItem();
 }
 
 void StatesUi::machineUnsavedStateChangedEventHandler(bool)
@@ -443,7 +445,7 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
     return userConfirmed;
 }
 
-QString StatesUi::getCurrentDirPath()
+QString StatesUi::getCurrentDirPath() const
 {
     return this->currentFilePath;
 }

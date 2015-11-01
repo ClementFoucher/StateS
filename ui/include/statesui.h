@@ -29,9 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-class QSplitter;
-
 // StateS classes
 class Machine;
 class ResourceBar;
@@ -83,15 +80,17 @@ private slots:
     void beginClearMachineProcedure();
     void beginExportImageProcedure();
     void beginExportVhdlProcedure();
+
     void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
     void editSelectedItem();
     void renameSelectedItem();
+
     void machineUnsavedStateChangedEventHandler(bool);
 
 private:
     void updateTitle();
     bool displayUnsavedConfirmation(const QString& cause);
-    QString getCurrentDirPath();
+    QString getCurrentDirPath() const;
 
 private:
     // Action bar
@@ -104,12 +103,10 @@ private:
     QAction* actionExportVhdl  = nullptr;
 
     // Display area and resource bar
-    QSplitter* splitter = nullptr;
-
     DisplayArea* displayArea  = nullptr;
-    ResourceBar* resourcesBar = nullptr;
+    ResourceBar* resourceBar = nullptr;
 
-    // Owned machine
+    // Current machine
     weak_ptr<Machine> machine;
     QString currentFilePath = QString::null;
 };

@@ -36,10 +36,11 @@ class QListWidgetItem;
 class QPushButton;
 
 // StateS classes
+#include "fsmverifier.h"
 class Fsm;
-class FsmVerifier;
 class TruthTable;
 class TruthTableDisplay;
+class Machine;
 
 
 class VerifierTab : public QWidget
@@ -47,10 +48,7 @@ class VerifierTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit VerifierTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
-    ~VerifierTab();
-
-    void changeMachine(shared_ptr<Fsm> machine);
+    explicit VerifierTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
 private slots:
     void checkNow();
@@ -59,8 +57,6 @@ private slots:
     void proofRequested(QListWidgetItem* item);
 
 private:
-    weak_ptr<Fsm> machine;
-
     unique_ptr<FsmVerifier> verifier;
 
     // QWidgets with parent

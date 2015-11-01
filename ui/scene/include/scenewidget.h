@@ -37,8 +37,8 @@ class QPushButton;
 
 // StateS classes
 class Machine;
-class ResourceBar;
 class MachineComponent;
+class GenericScene;
 
 
 /**
@@ -57,6 +57,7 @@ public:
     explicit SceneWidget(QWidget* parent = nullptr);
 
     void setMachine(shared_ptr<Machine> newMachine);
+    GenericScene* getScene() const;
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -64,12 +65,12 @@ signals:
     void renameSelectedItemEvent();
 
 protected:
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
-    void mouseReleaseEvent(QMouseEvent*) override;
-    void mouseDoubleClickEvent(QMouseEvent*) override;
-    void resizeEvent(QResizeEvent*) override;
-    void wheelEvent(QWheelEvent*) override;
+    void mousePressEvent      (QMouseEvent*)  override;
+    void mouseMoveEvent       (QMouseEvent*)  override;
+    void mouseReleaseEvent    (QMouseEvent*)  override;
+    void mouseDoubleClickEvent(QMouseEvent*)  override;
+    void resizeEvent          (QResizeEvent*) override;
+    void wheelEvent           (QWheelEvent*)  override;
 
 private slots:
     void toolChangedEventHandler(MachineBuilder::tool newTool);

@@ -24,9 +24,7 @@
 
 // Qt classes
 #include <QLabel>
-#include <QToolBox>
 #include <QVBoxLayout>
-#include <QGraphicsView>
 #include <QTabWidget>
 
 // StateS classes
@@ -38,7 +36,6 @@
 SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
-    this->machine = machine;
     this->machineComponentView = machineComponentView;
 
     this->setLayout(new QVBoxLayout());
@@ -72,10 +69,10 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
     QTabWidget* signalsTabs = new QTabWidget();
     this->layout()->addWidget(signalsTabs);
 
-    signalsTabs->insertTab(0, new SignalListEditor(machine, Machine::signal_type::Input), tr("Inputs"));
-    signalsTabs->insertTab(1, new SignalListEditor(machine, Machine::signal_type::Output), tr("Outputs"));
+    signalsTabs->insertTab(0, new SignalListEditor(machine, Machine::signal_type::Input),         tr("Inputs"));
+    signalsTabs->insertTab(1, new SignalListEditor(machine, Machine::signal_type::Output),        tr("Outputs"));
     signalsTabs->insertTab(2, new SignalListEditor(machine, Machine::signal_type::LocalVariable), tr("Variables"));
-    signalsTabs->insertTab(3, new SignalListEditor(machine, Machine::signal_type::Constant), tr("Constants"));
+    signalsTabs->insertTab(3, new SignalListEditor(machine, Machine::signal_type::Constant),      tr("Constants"));
 
     signalsTabs->setCurrentIndex(0);
 
@@ -88,11 +85,11 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
 void SignalEditorTab::showEvent(QShowEvent* e)
 {
     // Ensure we get the view back
-    shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
+    shared_ptr<MachineComponentVisualizer> l_machineComponentView = this->machineComponentView.lock();
 
-    if (machineComponentView != nullptr)
+    if (l_machineComponentView != nullptr)
     {
-        this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
+        this->machineDisplay->setContent(tr("Component visualization"), l_machineComponentView.get());
     }
 
     QWidget::showEvent(e);

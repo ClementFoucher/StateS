@@ -25,6 +25,7 @@
 // Qt classes
 class QGraphicsScene;
 class QString;
+class GenericScene;
 
 
 class MachineImageExporter
@@ -33,7 +34,7 @@ public:
     enum class imageFormat{pdf, svg, png, jpg};
 
 public:
-    static void exportMachineAsImage(const QString& path, const QString &title, const QString &creator, imageFormat format, QGraphicsScene* scene, QGraphicsScene* component = nullptr);
+    static void exportMachineAsImage(const QString& path, const QString &title, const QString &creator, imageFormat format, GenericScene* scene, QGraphicsScene* component = nullptr);
 };
 
 #endif // MACHINEIMAGEEXPORTER_H

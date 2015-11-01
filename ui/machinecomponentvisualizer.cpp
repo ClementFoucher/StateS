@@ -50,7 +50,7 @@ MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machi
     connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
-shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene()
+shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const
 {
     return this->scene;
 }

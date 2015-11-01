@@ -45,7 +45,7 @@ class MachineComponentVisualizer : public QGraphicsView
 public:
     explicit MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
-    shared_ptr<QGraphicsScene> getComponentVisualizationScene();
+    shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 protected:
     void mousePressEvent(QMouseEvent* me) override;

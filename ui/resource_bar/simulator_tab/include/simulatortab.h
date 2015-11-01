@@ -31,7 +31,6 @@ using namespace std;
 
 // Qt classes
 class QPushButton;
-//class QSignalMapper;
 class QLineEdit;
 
 // StateS classes
@@ -40,6 +39,7 @@ class InputsSelector;
 class FsmSimulator;
 class Fsm;
 class CheckBoxHtml;
+class Machine;
 
 
 class SimulatorTab : public QWidget
@@ -47,7 +47,7 @@ class SimulatorTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit SimulatorTab(shared_ptr<Fsm> machine, QWidget* parent = nullptr);
+    explicit SimulatorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
 signals:

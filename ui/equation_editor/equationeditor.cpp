@@ -34,7 +34,7 @@
 #include "equation.h"
 #include "graphicequation.h"
 #include "input.h"
-#include "states.h"
+#include "svgimagegenerator.h"
 
 
 EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent) :
@@ -42,7 +42,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 {
     this->machine = machine;
 
-    this->setWindowIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->setWindowTitle(tr("StateS equation editor"));
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);

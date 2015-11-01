@@ -27,61 +27,49 @@
 
 // StateS classes
 #include "scenewidget.h"
-#include "machinesimulator.h"
 #include "simulationwidget.h"
+//#include "genericscene.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
     QWidget(parent)
 {
-    this->setLayout(new QVBoxLayout());
+    new QVBoxLayout(this);
     this->machineDisplayArea = new SceneWidget();
-    this->currentDisplayArea = this->machineDisplayArea;
 
     connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);
     connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &DisplayArea::editSelectedItemEvent);
     connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &DisplayArea::renameSelectedItemEvent);
 
-    this->layout()->addWidget(this->currentDisplayArea);
+    this->currentDisplayArea = this->machineDisplayArea;
+    this->showCurrentDisplay();
 }
 
 void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 {
     // Clear
-
     shared_ptr<Machine> oldMachine = this->machine.lock();
 
     if (oldMachine != nullptr)
         disconnect(oldMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
 
-    delete this->timeline;
-    delete this->tabbedDisplayArea;
-
-    this->timeline           = nullptr;
-    this->currentDisplayArea = nullptr;
-    this->tabbedDisplayArea  = nullptr;
-
     // Set
-
     this->machineDisplayArea->setMachine(newMachine);
     this->machine = newMachine;
 
     if (newMachine != nullptr)
         connect(newMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+
+    this->resetDisplay();
 }
 
-QGraphicsScene* DisplayArea::getScene()
+GenericScene* DisplayArea::getScene() const
 {
-    if (this->machineDisplayArea != nullptr)
-        return this->machineDisplayArea->scene();
-    else
-        return nullptr;
+    return this->machineDisplayArea->getScene();
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)
 {
-    this->layout()->removeWidget(this->currentDisplayArea);
-
     shared_ptr<Machine> l_machine = this->machine.lock();
 
     if ( (l_machine != nullptr) && (newMode == Machine::mode::simulateMode) )
@@ -89,14 +77,11 @@ void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)
         this->timeline = new SimulationWidget(l_machine);
         connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &DisplayArea::setTimelineDetachedState);
 
-        this->buildTabs();
+        this->displayTabs();
     }
     else
     {
-        this->clearTabs();
-
-        delete this->timeline;
-        this->timeline = nullptr;
+        this->resetDisplay();
     }
 }
 
@@ -106,17 +91,17 @@ void DisplayArea::setTimelineDetachedState(bool detach)
     {
         if (detach)
         {
-            this->clearTabs();
+            this->displayScene();
             this->timeline->show();
         }
         else
         {
-            this->buildTabs();
+            this->displayTabs();
         }
     }
 }
 
-void DisplayArea::buildTabs()
+void DisplayArea::displayTabs()
 {
     if (this->timeline != nullptr)
     {
@@ -126,23 +111,42 @@ void DisplayArea::buildTabs()
         this->tabbedDisplayArea->addTab(this->timeline,           tr("Timeline"));
 
         this->currentDisplayArea = this->tabbedDisplayArea;
-        this->layout()->addWidget(this->currentDisplayArea);
-        this->currentDisplayArea->show();
+        this->showCurrentDisplay();
     }
 }
 
-void DisplayArea::clearTabs()
+void DisplayArea::displayScene()
 {
-    if (this->tabbedDisplayArea != nullptr)
+    this->machineDisplayArea->setParent(this);
+    if (this->timeline != nullptr)
     {
-        this->machineDisplayArea->setParent(this);
         this->timeline->setParent(nullptr);
-
-        delete this->tabbedDisplayArea;
-        this->tabbedDisplayArea = nullptr;
-
-        this->currentDisplayArea = this->machineDisplayArea;
-        this->layout()->addWidget(this->currentDisplayArea);
-        this->currentDisplayArea->show();
+        this->timeline->show();
     }
+
+    delete this->tabbedDisplayArea;
+    this->tabbedDisplayArea = nullptr;
+
+    this->currentDisplayArea = this->machineDisplayArea;
+    this->showCurrentDisplay();
+}
+
+void DisplayArea::resetDisplay()
+{
+    this->machineDisplayArea->setParent(this);
+
+    delete this->timeline;
+    delete this->tabbedDisplayArea;
+
+    this->timeline           = nullptr;
+    this->tabbedDisplayArea  = nullptr;
+
+    this->currentDisplayArea = this->machineDisplayArea;
+    this->showCurrentDisplay();
+}
+
+void DisplayArea::showCurrentDisplay()
+{
+    this->layout()->addWidget(this->currentDisplayArea);
+    this->currentDisplayArea->show();
 }

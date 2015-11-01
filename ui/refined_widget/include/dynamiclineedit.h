@@ -48,8 +48,9 @@ signals:
     void userCancelEvent();
 
 protected:
-    void focusInEvent(QFocusEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
+    void focusInEvent   (QFocusEvent* event) override;
+    void keyPressEvent  (QKeyEvent*   event) override;
+    void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
     void userValidatedEventHandler();

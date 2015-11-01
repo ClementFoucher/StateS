@@ -36,6 +36,7 @@ class QPixmap;
 class StatesUi;
 class Machine;
 
+
 /**
  * @brief The StateS class is the root object of this application:
  * it owns the UI and the current machine under edition.
@@ -48,8 +49,7 @@ class StateS : public QObject
 {
     Q_OBJECT
 
-public: // Static
-    static QPixmap getPixmapFromSvg(const QString& path);
+public:
     static QString getVersion();
 
 public:

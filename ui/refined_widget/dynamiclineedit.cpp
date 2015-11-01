@@ -88,3 +88,11 @@ void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
         QLineEdit::keyPressEvent(event);
     }
 }
+
+void DynamicLineEdit::keyReleaseEvent(QKeyEvent* event)
+{
+    if (event->key() != Qt::Key::Key_Escape)
+    {
+        QLineEdit::keyReleaseEvent(event);
+    }
+}
