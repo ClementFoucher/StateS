@@ -35,10 +35,8 @@ class QGridLayout;
 class QPushButton;
 class QTableWidgetItem;
 
-// To access enums
-#include "machine.h"
-
 // StateS classes
+#include "machine.h"
 class DynamicTableItemDelegate;
 class TableWidgetWithResizeEvent;
 
@@ -58,25 +56,34 @@ protected:
     void keyReleaseEvent(QKeyEvent* event) override;
 
 private slots:
+    // General
     void updateList();
-    void removeSelectedSignals();
     void updateButtonsEnableState();
+    void handleListResizedEvent();
+
+    // Handle signal add
     void beginAddSignal();
-    void beginEditSignal(QTableWidgetItem* characteristicToEdit);
-    void validateCurrentEdit();
-    void cancelCurrentEdit();
-    void raiseSignal();
-    void lowerSignal();
-
-private:
-    void switchMode(mode newMode);
-
+    void addingSignalSwitchField(QTableWidgetItem* newItem);
     void endAddSignal();
+
+    // Handle signal edit
+    void beginEditSignal(QTableWidgetItem* characteristicToEdit);
     void endRenameSignal();
     void endResizeSignal();
     void endChangeSignalInitialValue();
 
-    void handleListResizedEvent();
+    // Add/edit common
+    void validateCurrentEdit();
+    void cancelCurrentEdit();
+
+    // Other
+    void raiseSignal();
+    void lowerSignal();
+    void removeSelectedSignals();
+
+private:
+    void switchMode(mode newMode);
+    void editCurrentCell(bool erroneous = false);
 
 private:
     // Static
@@ -90,8 +97,8 @@ private:
     // Widgets
     QGridLayout* buttonLayout = nullptr;
 
-    TableWidgetWithResizeEvent* signalsList = nullptr;
-    DynamicTableItemDelegate* listDelegate = nullptr;
+    TableWidgetWithResizeEvent* signalsList  = nullptr;
+    DynamicTableItemDelegate*   listDelegate = nullptr;
 
     QPushButton* buttonAdd    = nullptr;
     QPushButton* buttonRemove = nullptr;
@@ -102,7 +109,12 @@ private:
 
     // Cell under edition
     QTableWidgetItem* currentTableItem = nullptr;
-    QString signalUnderEdition = QString::null;
+    QString signalSelectionToRestore = QString::null;
+
+    // Signal begin created
+    QTableWidgetItem* currentSignalName  = nullptr;
+    QTableWidgetItem* currentSignalSize  = nullptr;
+    QTableWidgetItem* currentSignalValue = nullptr;
 
     // Used to know which signal is associated to each cell in table
     QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;

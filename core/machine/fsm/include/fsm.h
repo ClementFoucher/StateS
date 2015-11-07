@@ -30,10 +30,8 @@
 using namespace std;
 
 // Qt classes
-#include <QList>
 class QDomElement;
 class QXmlStreamWriter;
-class QString;
 
 // StateS classes
 class FsmState;
@@ -42,7 +40,7 @@ class MachineActuatorComponent;
 class FsmSimulator;
 
 
-class Fsm : public Machine, public enable_shared_from_this<Fsm>
+class Fsm : public Machine
 {
     Q_OBJECT
 
@@ -68,7 +66,7 @@ public:
     void saveMachine(const QString& path) override;
 
     // Simulation
-    void setSimulator(shared_ptr<FsmSimulator> simulator);
+    void setSimulator(shared_ptr<MachineSimulator> simulator) override;
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
     // Other
@@ -76,7 +74,6 @@ public:
     bool isEmpty() const override;
 
     void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const override;
-    shared_ptr<MachineSimulator> getSimulator() const;
 
 private:
     QString getUniqueStateName(QString nameProposal);

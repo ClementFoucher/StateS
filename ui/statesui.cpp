@@ -73,7 +73,7 @@ StatesUi::StatesUi() :
     this->actionSaveCurrent = new QAction(this);
     this->actionSaveCurrent->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save"))));
     this->actionSaveCurrent->setText(tr("Save as"));
-    this->actionSaveCurrent->setToolTip(tr("Update saved file with current content"));
+    this->actionSaveCurrent->setToolTip(tr("Update saved file with current content") + " (" + tr("use ctrl+S shortcut to avoid confirm dialog") + ")");
     this->actionSaveCurrent->setEnabled(false);
     connect(this->actionSaveCurrent, &QAction::triggered, this, &StatesUi::beginSaveProcedure);
     mainToolBar->addAction(this->actionSaveCurrent);
@@ -153,8 +153,7 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
         this->actionExportVhdl ->setEnabled(true);
 
         if (path.length() != 0)
-            //this->actionSaveCurrent->setEnabled(newMachine->isUnsaved());
-            this->actionSaveCurrent->setEnabled(true);
+            this->actionSaveCurrent->setEnabled(newMachine->isUnsaved());
         else
             this->actionSaveCurrent->setEnabled(false);
 
@@ -179,15 +178,14 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
 
 void StatesUi::setCurrentFilePath(const QString& path)
 {
-//    shared_ptr<Machine> l_machine = this->machine.lock();
+    shared_ptr<Machine> l_machine = this->machine.lock();
 
-//    if (l_machine != nullptr)
+    if (l_machine != nullptr)
     {
         this->currentFilePath = path;
 
         if (path.length() != 0)
-//            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
-            this->actionSaveCurrent->setEnabled(true);
+            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
         else
             this->actionSaveCurrent->setEnabled(false);
     }
@@ -339,12 +337,12 @@ void StatesUi::renameSelectedItem()
     this->resourceBar->renameSelectedItem();
 }
 
-void StatesUi::machineUnsavedStateChangedEventHandler(bool)
+void StatesUi::machineUnsavedStateChangedEventHandler(bool isUnsaved)
 {
-  /*  if (isUnsaved)
+    if (isUnsaved)
         this->actionSaveCurrent->setEnabled(true);
     else
-        this->actionSaveCurrent->setEnabled(false);*/
+        this->actionSaveCurrent->setEnabled(false);
 
     this->updateTitle();
 }
@@ -409,17 +407,24 @@ void StatesUi::updateTitle()
     {
         this->setWindowTitle("StateS");
     }
-    else if (this->currentFilePath != QString::null)
+    else
     {
-        QString title = "StateS — " + this->currentFilePath;
+        QString title;
+
+        if (this->currentFilePath != QString::null)
+        {
+            title = "StateS — " + this->currentFilePath;
+
+        }
+        else
+        {
+            title = "StateS — (" + tr("Unsaved machine") + ")";
+        }
+
         if (l_machine->isUnsaved())
             title += "*";
 
         this->setWindowTitle(title);
-    }
-    else
-    {
-        this->setWindowTitle("StateS — (" + tr("Unsaved machine") + ")");
     }
 }
 

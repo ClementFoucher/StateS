@@ -31,8 +31,8 @@
 #include <QDebug>
 
 // StateS classes
-#include "fsmgraphicalstate.h"
-#include "fsmgraphicaltransition.h"
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
@@ -50,7 +50,6 @@ FsmScene::FsmScene(shared_ptr<Fsm> machine) :
     connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
     connect(machine.get(), &Fsm::changedModeEvent, this, &FsmScene::simulationModeChanged);
 
-
     foreach(shared_ptr<FsmState> state, machine->getStates())
     {
         addState(state, state->position);
@@ -58,8 +57,7 @@ FsmScene::FsmScene(shared_ptr<Fsm> machine) :
 
     foreach(shared_ptr<FsmTransition> transition, machine->getTransitions())
     {
-        FsmGraphicalTransition* graphicalTransition = new FsmGraphicalTransition(transition);
-        addTransition(graphicalTransition);
+        addTransition(new FsmGraphicTransition(transition));
     }
 }
 
@@ -68,12 +66,12 @@ FsmScene::~FsmScene()
     // We have to delete transitions first, so handle
     // item deletion manually
 
-    QList<FsmGraphicalTransition*> transitions;
-    QList<FsmGraphicalState*> states;
+    QList<FsmGraphicTransition*> transitions;
+    QList<FsmGraphicState*> states;
 
     foreach(QGraphicsItem* item, items())
     {
-        FsmGraphicalTransition* currentTransition = dynamic_cast<FsmGraphicalTransition*>(item);
+        FsmGraphicTransition* currentTransition = dynamic_cast<FsmGraphicTransition*>(item);
 
         if (currentTransition != nullptr)
             transitions.append(currentTransition);
@@ -81,7 +79,7 @@ FsmScene::~FsmScene()
 
     foreach(QGraphicsItem* item, items())
     {
-        FsmGraphicalState* currentState = dynamic_cast<FsmGraphicalState*>(item);
+        FsmGraphicState* currentState = dynamic_cast<FsmGraphicState*>(item);
 
         if (currentState!= nullptr)
             states.append(currentState);
@@ -91,18 +89,18 @@ FsmScene::~FsmScene()
     qDeleteAll(states);
 }
 
-void FsmScene::beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos)
+void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos)
 {
     this->sceneMode = sceneMode_e::drawingTransition;
 
 
     if (!currentMousePos.isNull())
-        currentTransition = new FsmGraphicalTransition(source, currentMousePos);
+        currentTransition = new FsmGraphicTransition(source, currentMousePos);
     else
     {
         // Compute mouse pos wrt. scene
         QPointF sceneMousePos = views()[0]->mapToScene(this->views()[0]->mapFromGlobal(QCursor::pos()));
-        currentTransition = new FsmGraphicalTransition(source, sceneMousePos);
+        currentTransition = new FsmGraphicTransition(source, sceneMousePos);
     }
 
     addTransition(currentTransition);
@@ -123,10 +121,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 
                 if (currentTool == MachineBuilder::tool::state)
                 {
-                    // Create logical state
+                    // Create logic state
                     shared_ptr<FsmState> logicState = machine->addState();
 
-                    // Create graphical state
+                    // Create graphic state
                     addState(logicState, me->scenePos());
 
                     // Transmitting event so that new state is selected
@@ -134,10 +132,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                 }
                 else if (currentTool == MachineBuilder::tool::initial_state)
                 {
-                    // Create logical state
+                    // Create logic state
                     shared_ptr<FsmState> logicState = machine->addState();
 
-                    // Create graphical state
+                    // Create graphic state
                     addState(logicState, me->scenePos());
 
                     // Set state initial
@@ -148,7 +146,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                 }
                 else if (currentTool == MachineBuilder::tool::transition)
                 {
-                    FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+                    FsmGraphicState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
                     if ( stateUnderMouse != nullptr)
                     {
@@ -169,7 +167,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
             }
             else if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
             {
-                FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+                FsmGraphicState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
                 // TODO: Does left click on nothing should cancel insertion?
                 if (stateUnderMouse != nullptr)
@@ -246,14 +244,14 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
 {
     bool transmitEvent = true;
-    static FsmGraphicalState* previousStatePointed = nullptr;
+    static FsmGraphicState* previousStatePointed = nullptr;
 
     if ( (this->sceneMode == sceneMode_e::drawingTransition) ||
          (this->sceneMode == sceneMode_e::editingTransitionSource) ||
          (this->sceneMode == sceneMode_e::editingTransitionTarget)
        )
     {
-        FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+        FsmGraphicState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
         if (stateUnderMouse != nullptr)
         {
@@ -300,20 +298,20 @@ void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
 
     if (this->sceneMode == sceneMode_e::drawingTransition)
     {
-        FsmGraphicalState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
+        FsmGraphicState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
         if (stateUnderMouse != nullptr)
         {
             currentTransition->setTargetState(stateUnderMouse);
             currentTransition->endDynamicMode(true);
 
-            shared_ptr<FsmState> source = currentTransition->getSource()->getLogicalState();
-            shared_ptr<FsmState> target = currentTransition->getTarget()->getLogicalState();
+            shared_ptr<FsmState> source = currentTransition->getSource()->getLogicState();
+            shared_ptr<FsmState> target = currentTransition->getTarget()->getLogicState();
 
             shared_ptr<FsmTransition> logicTransition(new FsmTransition(machine, source, target, nullptr, currentTransition));
             source->addOutgoingTransition(logicTransition);
             target->addIncomingTransition(logicTransition);
-            currentTransition->setLogicalTransition(logicTransition);
+            currentTransition->setLogicTransition(logicTransition);
         }
         else
             delete currentTransition;
@@ -398,7 +396,7 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
             // Transmit event to each state in the list
             foreach (QGraphicsItem* item, this->selectedItems())
             {
-                FsmGraphicalState* state = dynamic_cast<FsmGraphicalState*>(item);
+                FsmGraphicState* state = dynamic_cast<FsmGraphicState*>(item);
 
                 if (state != nullptr)
                 {
@@ -428,7 +426,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
         GenericScene::contextMenuEvent(event);
 }
 
-void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* transition)
+void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition)
 {
     this->sceneMode = sceneMode_e::editingTransitionSource;
     this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::editTransitionSource);
@@ -440,7 +438,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* 
     currentTransition->setDynamicSourceMode(QPointF());
 }
 
-void FsmScene::transitionCallsDynamicTargetEventHandler(FsmGraphicalTransition* transition)
+void FsmScene::transitionCallsDynamicTargetEventHandler(FsmGraphicTransition* transition)
 {
     this->sceneMode = sceneMode_e::editingTransitionTarget;
     this->machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::editTransitionTarget);
@@ -463,17 +461,17 @@ void FsmScene::handleSelection()
     // Updates resource panel selected item
     if (this->selectedItems().count() == 1)
     {
-        FsmGraphicalState* currentState = dynamic_cast< FsmGraphicalState* >(this->selectedItems()[0]);
+        FsmGraphicState* currentState = dynamic_cast< FsmGraphicState* >(this->selectedItems()[0]);
         if (currentState != nullptr)
         {
-            emit itemSelectedEvent(currentState->getLogicalState());
+            emit itemSelectedEvent(currentState->getLogicState());
         }
         else
         {
-            FsmGraphicalTransition* currentTransition = dynamic_cast< FsmGraphicalTransition* >(this->selectedItems()[0]);
+            FsmGraphicTransition* currentTransition = dynamic_cast< FsmGraphicTransition* >(this->selectedItems()[0]);
             if (currentTransition!= nullptr)
             {
-                emit itemSelectedEvent(currentTransition->getLogicalTransition());
+                emit itemSelectedEvent(currentTransition->getLogicTransition());
             }
         }
     }
@@ -483,7 +481,7 @@ void FsmScene::handleSelection()
     }
 }
 
-FsmGraphicalState* FsmScene::getStateAt(const QPointF& location) const
+FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
 {
     QList<QGraphicsItem *>  itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder); //this->((SceneWidget*)parent())->transform());
     // Warning: if using transform on view, the upper line should be adapted!
@@ -492,7 +490,7 @@ FsmGraphicalState* FsmScene::getStateAt(const QPointF& location) const
     foreach( QGraphicsItem* item, itemsAtThisPoint)
     {
         // Select the topmost visible state
-        FsmGraphicalState* currentItem = dynamic_cast<FsmGraphicalState*> (item);
+        FsmGraphicState* currentItem = dynamic_cast<FsmGraphicState*> (item);
 
         if ( currentItem != nullptr)
             return currentItem;
@@ -582,14 +580,14 @@ void FsmScene::updateSceneRect()
 void FsmScene::stateCallsEditEventHandler(shared_ptr<FsmState> state)
 {
     clearSelection();
-    state->getGraphicalRepresentation()->setSelected(true);
+    state->getGraphicRepresentation()->setSelected(true);
     emit editSelectedItemEvent();
 }
 
 void FsmScene::stateCallsRenameEventHandler(shared_ptr<FsmState> state)
 {
     clearSelection();
-    state->getGraphicalRepresentation()->setSelected(true);
+    state->getGraphicRepresentation()->setSelected(true);
     emit renameSelectedItemEvent();
 }
 
@@ -619,14 +617,14 @@ void FsmScene::menuHiding()
 void FsmScene::transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition)
 {
     clearSelection();
-    transition->getGraphicalRepresentation()->setSelected(true);
+    transition->getGraphicRepresentation()->setSelected(true);
     emit editSelectedItemEvent();
 }
 
-FsmGraphicalState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF location)
+FsmGraphicState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF location)
 {
-    // Create graphical state
-    FsmGraphicalState *newState = new FsmGraphicalState(logicState);
+    // Create graphic state
+    FsmGraphicState* newState = new FsmGraphicState(logicState);
     addItem(newState);
     newState->setPos(location);
     newState->setZValue(1);
@@ -635,17 +633,19 @@ FsmGraphicalState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF l
     addItem(actionsBox);
     actionsBox->setZValue(3);
 
-    connect(newState, &FsmGraphicalState::editStateCalledEvent,   this, &FsmScene::stateCallsEditEventHandler);
-    connect(newState, &FsmGraphicalState::renameStateCalledEvent, this, &FsmScene::stateCallsRenameEventHandler);
+    connect(newState, &FsmGraphicState::editStateCalledEvent,   this, &FsmScene::stateCallsEditEventHandler);
+    connect(newState, &FsmGraphicState::renameStateCalledEvent, this, &FsmScene::stateCallsRenameEventHandler);
+
+    newState->enableMoveEvent();
 
     return newState;
 }
 
-void FsmScene::addTransition(FsmGraphicalTransition* newTransition)
+void FsmScene::addTransition(FsmGraphicTransition* newTransition)
 {
-    connect(newTransition, &FsmGraphicalTransition::dynamicSourceCalledEvent, this, &FsmScene::transitionCallsDynamicSourceEventHandler);
-    connect(newTransition, &FsmGraphicalTransition::dynamicTargetCalledEvent, this, &FsmScene::transitionCallsDynamicTargetEventHandler);
-    connect(newTransition, &FsmGraphicalTransition::editCalledEvent, this, &FsmScene::transitionCallsEditEventHandler);
+    connect(newTransition, &FsmGraphicTransition::dynamicSourceCalledEvent, this, &FsmScene::transitionCallsDynamicSourceEventHandler);
+    connect(newTransition, &FsmGraphicTransition::dynamicTargetCalledEvent, this, &FsmScene::transitionCallsDynamicTargetEventHandler);
+    connect(newTransition, &FsmGraphicTransition::editCalledEvent, this, &FsmScene::transitionCallsEditEventHandler);
 
     addItem(newTransition);
     newTransition->setZValue(2);

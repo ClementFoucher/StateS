@@ -1,16 +1,15 @@
 
 ******************************
-* StateS v. 0.3.8 Known Bugs *
+* StateS v. 0.3.9 Known Bugs *
 ******************************
 
 // The following behaviors are known:
 
-- Moving machine part graphically does not trigger unsaved state => No warning messages for unsaved machine,
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-- Begin/end simulation: machine's colors update is not complete,
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
 - Escape key have to be pushed twice to cancel signal creation/edition,
-- Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored.
+- Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
+- When adding a signal, tab key causes inconsistent behavior.
 
 // VHDL export issues:
 

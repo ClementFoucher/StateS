@@ -61,7 +61,7 @@ GraphicEquation::GraphicEquation(shared_ptr<Signal> equation, bool isTemplate, Q
     buildEquation();
 }
 
-// Builds graphical representation of equation
+// Builds graphic representation of equation
 // based on current logic equation pointer
 void GraphicEquation::buildEquation()
 {

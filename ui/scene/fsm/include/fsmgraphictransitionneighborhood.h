@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICALTRANSITIONNEIGHBORHOOD_H
-#define FSMGRAPHICALTRANSITIONNEIGHBORHOOD_H
+#ifndef FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
+#define FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
 
 // Parent
 #include <QObject>
@@ -31,38 +31,38 @@ class QGraphicsPathItem;
 class QGraphicsLineItem;
 
 // StateS classes
-class FsmGraphicalTransition;
-class FsmGraphicalState;
+class FsmGraphicTransition;
+class FsmGraphicState;
 
 
-class FsmGraphicalTransitionNeighborhood : public QObject
+class FsmGraphicTransitionNeighborhood : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit FsmGraphicalTransitionNeighborhood(FsmGraphicalState* source, FsmGraphicalState* target);
+    explicit FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target);
 
-    void insertAndNotify(FsmGraphicalTransition* value);
-    void removeAndNotify(FsmGraphicalTransition* value);
+    void insertAndNotify(FsmGraphicTransition* value);
+    void removeAndNotify(FsmGraphicTransition* value);
 
-    FsmGraphicalState* getSource() const;
+    FsmGraphicState* getSource() const;
     int count() const;
-    QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicalTransition* me, QPointF& curveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine) const;
+    QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine) const;
 
-    int whatIsMyRank(FsmGraphicalTransition* me) const;
+    int whatIsMyRank(FsmGraphicTransition* me) const;
 
 signals:
     void contentChangedEvent();
 
 private:
-    int computeTransitionPosition(FsmGraphicalTransition* me) const;
+    int computeTransitionPosition(FsmGraphicTransition* me) const;
 
-    QMap<int, FsmGraphicalTransition*> map;
-    FsmGraphicalState* source = nullptr;
-    FsmGraphicalState* target = nullptr;
+    QMap<int, FsmGraphicTransition*> map;
+    FsmGraphicState* source = nullptr;
+    FsmGraphicState* target = nullptr;
 
 
 };
 
-#endif // FSMGRAPHICALTRANSITIONNEIGHBORHOOD_H
+#endif // FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
 

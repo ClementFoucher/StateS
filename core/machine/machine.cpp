@@ -466,7 +466,7 @@ void Machine::rebuildComponentVisualization()
         emit componentVisualizationUpdatedEvent();
 }
 
-shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
+shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, LogicValue value)
 {
     uint rank;
 
@@ -488,10 +488,10 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name)
         return nullptr;
     }
 
-    return this->addSignalAtRank(type, name, rank);
+    return this->addSignalAtRank(type, name, rank, value);
 }
 
-shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank)
+shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank, LogicValue value)
 {
     // First check if name doesn't already exist
     foreach (shared_ptr<Signal> signal, getAllSignals())
@@ -513,6 +513,12 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
         signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name)));
         this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
 
+        if (! value.isNull())
+        {
+            signal->resize(value.getSize());
+            signal->setInitialValue(value);
+        }
+
         this->rebuildComponentVisualization();
 
         emit inputListChangedEvent();
@@ -531,12 +537,24 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
         signal = shared_ptr<Signal>(new Signal(name));
         this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
 
+        if (! value.isNull())
+        {
+            signal->resize(value.getSize());
+            signal->setInitialValue(value);
+        }
+
         emit localVariableListChangedEvent();
 
         break;
     case signal_type::Constant:
         signal = shared_ptr<Signal>(new Signal(name, false, true));
         this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
+
+        if (! value.isNull())
+        {
+            signal->resize(value.getSize());
+            signal->setInitialValue(value);
+        }
 
         emit constantListChangedEvent();
 
@@ -852,6 +870,25 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
         return true;
 
     }
+}
+
+void Machine::setSimulator(shared_ptr<MachineSimulator> simulator)
+{
+    this->simulator = simulator;
+
+    if (! this->simulator.expired())
+    {
+        this->setMode(Machine::mode::simulateMode);
+    }
+    else
+    {
+        this->setMode(Machine::mode::editMode);
+    }
+}
+
+shared_ptr<MachineSimulator> Machine::getSimulator() const
+{
+    return this->simulator.lock();
 }
 
 bool Machine::isUnsaved() const

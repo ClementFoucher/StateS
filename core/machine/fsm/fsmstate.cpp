@@ -27,7 +27,7 @@
 
 // StateS classes
 #include "fsm.h"
-#include "fsmgraphicalstate.h"
+#include "fsmgraphicstate.h"
 #include "fsmtransition.h"
 #include "signal.h"
 
@@ -66,25 +66,28 @@ FsmState::~FsmState()
     }
 
     // Delete graphics representation
-    delete graphicalRepresentation;
+    delete graphicRepresentation;
 }
 
-FsmGraphicalState* FsmState::getGraphicalRepresentation() const
+FsmGraphicState* FsmState::getGraphicRepresentation() const
 {
-    return graphicalRepresentation;
+    return graphicRepresentation;
 }
 
-void FsmState::setGraphicalRepresentation(FsmGraphicalState* representation)
+void FsmState::setGraphicRepresentation(FsmGraphicState* representation)
 {
-    if (this->graphicalRepresentation == nullptr)
-        this->graphicalRepresentation = representation;
+    if (this->graphicRepresentation == nullptr)
+    {
+        this->graphicRepresentation = representation;
+        connect(this->graphicRepresentation, &FsmGraphicState::stateMovingEvent, this, &FsmState::stateGraphicRepresentationMoved);
+    }
     else
         qDebug() << "(Fsm state:) ERROR! Setting graphic representation while already have one. Ignored command.";
 }
 
-void FsmState::clearGraphicalRepresentation()
+void FsmState::clearGraphicRepresentation()
 {
-    graphicalRepresentation = nullptr;
+    graphicRepresentation = nullptr;
 }
 
 void FsmState::cleanIncomingTransitionsList()

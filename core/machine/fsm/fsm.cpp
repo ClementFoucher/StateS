@@ -23,10 +23,8 @@
 #include "fsm.h"
 
 // Qt classes
-#include <QFile>
 #include <QDomElement>
 #include <QXmlStreamWriter>
-#include <QFileInfo>
 #include <QDir>
 
 // Debug
@@ -38,7 +36,7 @@
 #include "fsmtransition.h"
 #include "input.h"
 #include "output.h"
-#include "fsmgraphicalstate.h"
+#include "fsmgraphicstate.h"
 #include "fsmsimulator.h"
 #include "fsmvhdlexport.h"
 
@@ -82,8 +80,10 @@ const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 
 shared_ptr<FsmState> Fsm::addState(QString name)
 {
-    shared_ptr<FsmState> state(new FsmState(shared_from_this(), getUniqueStateName(name)));
+    shared_ptr<Fsm> thisAsPointer = dynamic_pointer_cast<Fsm>(this->shared_from_this());
+    shared_ptr<FsmState> state(new FsmState(thisAsPointer, getUniqueStateName(name)));
     connect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::stateEditedEventHandler);
+    connect(state.get(), &FsmState::stateGraphicRepresentationMoved,          this, &Fsm::stateEditedEventHandler);
     states.append(state);
 
     this->setUnsavedState(true);
@@ -94,6 +94,7 @@ shared_ptr<FsmState> Fsm::addState(QString name)
 void Fsm::removeState(shared_ptr<FsmState> state)
 {
     disconnect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::stateEditedEventHandler);
+    disconnect(state.get(), &FsmState::stateGraphicRepresentationMoved,          this, &Fsm::stateEditedEventHandler);
     states.removeAll(state);
     this->setUnsavedState(true);
 }
@@ -141,12 +142,8 @@ bool Fsm::isEmpty() const
 
 void Fsm::exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const
 {
-    FsmVhdlExport::exportFSM(this->shared_from_this(), path, resetLogicPositive, prefixIOs);
-}
-
-shared_ptr<MachineSimulator> Fsm::getSimulator() const
-{
-    return this->simulator.lock();
+    shared_ptr<const Fsm> thisAsPointer = dynamic_pointer_cast<const Fsm>(this->shared_from_this());
+    FsmVhdlExport::exportFSM(thisAsPointer, path, resetLogicPositive, prefixIOs);
 }
 
 void Fsm::clear()
@@ -157,14 +154,29 @@ void Fsm::clear()
     Machine::clear();
 }
 
-void Fsm::setSimulator(shared_ptr<FsmSimulator> simulator)
+void Fsm::setSimulator(shared_ptr<MachineSimulator> simulator)
 {
-    this->simulator = simulator;
+    // Clear simulator
+    if (simulator == nullptr)
+    {
+        Machine::setSimulator(nullptr);
+    }
+    else
+    {
+        // Check if simulator is of right type
+        shared_ptr<FsmSimulator> fsmSimulator = dynamic_pointer_cast<FsmSimulator>(simulator);
+
+        if (fsmSimulator != nullptr)
+        {
+            Machine::setSimulator(fsmSimulator);
+        }
+    }
 }
 
 void Fsm::forceStateActivation(shared_ptr<FsmState> stateToActivate)
 {
-    shared_ptr<FsmSimulator> simulator = this->simulator.lock();
+    shared_ptr<FsmSimulator> simulator = dynamic_pointer_cast<FsmSimulator>(this->getSimulator());
+
     if (simulator != nullptr)
     {
         simulator->forceStateActivation(stateToActivate);
@@ -313,8 +325,8 @@ void Fsm::saveMachine(const QString& path)
                 stream.writeAttribute("IsInitial", "true");
 
             // Position
-            stream.writeAttribute("X", QString::number(state->getGraphicalRepresentation()->scenePos().x()));
-            stream.writeAttribute("Y", QString::number(state->getGraphicalRepresentation()->scenePos().y()));
+            stream.writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
+            stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
 
             // Actions
             writeActions(stream, state);
@@ -535,7 +547,8 @@ void Fsm::parseTransitions(QDomElement element)
             shared_ptr<FsmState> source = getStateByName(sourceName);
             shared_ptr<FsmState> target = getStateByName(targetName);
 
-            shared_ptr<FsmTransition> transition(new FsmTransition(shared_from_this(), source, target, nullptr));
+            shared_ptr<Fsm> thisAsPointer = dynamic_pointer_cast<Fsm>(this->shared_from_this());
+            shared_ptr<FsmTransition> transition(new FsmTransition(thisAsPointer, source, target, nullptr));
             source->addOutgoingTransition(transition);
             target->addIncomingTransition(transition);
 

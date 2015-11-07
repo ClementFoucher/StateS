@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+-(unreleased)- V 0.3.9 - Corrected machine color update on begin/end simulation; Moving a graphic element now sets unsaved mode; Can now set signal size and initial value at creation;
 - 2015-11-01 - V 0.3.8 - Added explicit sorting for signals within each interface; Added hints on how to draw machine; Added machine naming; Image export now correctly place elements; Many small GUI improvements.
 - 2015-06-07 - V 0.3.7 - Ressources bar labels are now set auto-wrap to avoid excessive minimal width of the bar; Corrected keyboard handeling on scene items.
 - 2015-06-06 - V 0.3.6 - Restricted allowed characters in signals names; Signal creation/edition and state renaming now allows for cancel using button or escape key; Reorganized signal editor tab.

@@ -30,7 +30,6 @@
 using namespace std;
 
 // Qt classes
-#include <QList>
 #include <QHash>
 class QGraphicsItem;
 
@@ -45,7 +44,7 @@ class Output;
 class MachineSimulator;
 
 
-class Machine : public QObject
+class Machine : public QObject, public enable_shared_from_this<Machine>
 {
     Q_OBJECT
 
@@ -79,7 +78,7 @@ public:
 
     bool setName(const QString& newName);
 
-    shared_ptr<Signal> addSignal(signal_type type, const QString& name);
+    shared_ptr<Signal> addSignal(signal_type type, const QString& name, LogicValue value = LogicValue::getNullValue());
     bool deleteSignal(const QString& name);
     bool renameSignal(const QString& oldName, const QString& newName);
     bool resizeSignal(const QString& name, uint newSize);
@@ -91,7 +90,7 @@ public:
     virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
     virtual void saveMachine(const QString& path) = 0;
 
-    virtual shared_ptr<MachineSimulator> getSimulator() const = 0;
+    virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
 
     virtual void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const = 0;
 
@@ -100,8 +99,8 @@ public:
     virtual void clear();
     virtual bool isEmpty() const;
 
-    void setMode(mode newMode);
     mode getCurrentMode() const;
+    shared_ptr<MachineSimulator> getSimulator() const;
 
     shared_ptr<MachineBuilder> getMachineBuilder() const;
 
@@ -115,14 +114,19 @@ public:
 
 signals:
     void nameChangedEvent(const QString& newName);
-    void changedModeEvent(mode newMode);
     void inputListChangedEvent();
     void outputListChangedEvent();
     void localVariableListChangedEvent();
     void constantListChangedEvent();
-    void machineLoadedEvent();
     void componentVisualizationUpdatedEvent();
+
+    void machineLoadedEvent();
+
+    void changedModeEvent(mode newMode);
     void machineUnsavedStateChanged(bool isUnsaved);
+
+protected:
+    void setMode(mode newMode);
 
 protected:
     // Store all signals as shared_ptr<Signal> for helper functions,
@@ -142,7 +146,7 @@ protected:
     QString name;
 
 private:
-    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank);
+    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, LogicValue value);
     QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const;
     void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
     bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
@@ -162,6 +166,7 @@ private:
     mode currentMode = mode::editMode;
 
     bool unsaved = false;
+    weak_ptr<MachineSimulator> simulator;
 };
 
 #endif // MACHINE_H

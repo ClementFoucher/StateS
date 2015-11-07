@@ -36,7 +36,7 @@ using namespace std;
 // StateS classes
 class Fsm;
 class FsmTransition;
-class FsmGraphicalState;
+class FsmGraphicState;
 
 
 class FsmState : public FsmComponent
@@ -66,15 +66,16 @@ public:
     QString getName() const;
     void setName(const QString& value);
 
-    FsmGraphicalState* getGraphicalRepresentation() const;
-    void setGraphicalRepresentation(FsmGraphicalState* representation);
-    void clearGraphicalRepresentation();
+    FsmGraphicState* getGraphicRepresentation() const;
+    void setGraphicRepresentation(FsmGraphicState* representation);
+    void clearGraphicRepresentation();
 
     QPointF position; // Public because we don't care, just used by loader
 
 signals:
     void stateRenamedEvent();
     void stateLogicStateChangedEvent();
+    void stateGraphicRepresentationMoved(); // Separate this event to not trigger everything on state move
 
 private:
     void cleanIncomingTransitionsList();
@@ -82,7 +83,7 @@ private:
     QList<weak_ptr<FsmTransition>> inputTransitions;
     QList<shared_ptr<FsmTransition>> outputTransitions;
 
-    FsmGraphicalState* graphicalRepresentation = nullptr;
+    FsmGraphicState* graphicRepresentation = nullptr;
     QString name;
 
     bool isActive = false;

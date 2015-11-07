@@ -29,10 +29,10 @@
 #include "equation.h"
 #include "fsm.h"
 #include "fsmstate.h"
-#include "fsmgraphicaltransition.h"
+#include "fsmgraphictransition.h"
 
 
-FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicalTransition* graphicalRepresentation) :
+FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicTransition* graphicRepresentation) :
     FsmComponent(parent)
 {
     this->source = source;
@@ -42,7 +42,7 @@ FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source
 
     this->setCondition(condition);
 
-    this->setGraphicalRepresentation(graphicalRepresentation);
+    this->setGraphicRepresentation(graphicRepresentation);
 
     // Propagates local events to the more general "configuration changed" event
     connect(this, &FsmTransition::conditionChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
@@ -50,7 +50,7 @@ FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source
 
 FsmTransition::~FsmTransition()
 {
-    delete this->graphicalRepresentation;
+    delete this->graphicRepresentation;
 }
 
 shared_ptr<FsmState> FsmTransition::getSource() const
@@ -63,22 +63,22 @@ void FsmTransition::setSource(shared_ptr<FsmState> newSource)
     this->source = newSource;
 }
 
-FsmGraphicalTransition* FsmTransition::getGraphicalRepresentation() const
+FsmGraphicTransition* FsmTransition::getGraphicRepresentation() const
 {
-    return this->graphicalRepresentation;
+    return this->graphicRepresentation;
 }
 
-void FsmTransition::setGraphicalRepresentation(FsmGraphicalTransition* representation)
+void FsmTransition::setGraphicRepresentation(FsmGraphicTransition* representation)
 {
-    if (this->graphicalRepresentation == nullptr)
-        this->graphicalRepresentation = representation;
+    if (this->graphicRepresentation == nullptr)
+        this->graphicRepresentation = representation;
     else
         qDebug() << "(Fsm transition:) ERROR! Setting graphic representation while already have one. Ignored command.";
 }
 
-void FsmTransition::clearGraphicalRepresentation()
+void FsmTransition::clearGraphicRepresentation()
 {
-    this->graphicalRepresentation = nullptr;
+    this->graphicRepresentation = nullptr;
 }
 
 shared_ptr<FsmState> FsmTransition::getTarget() const

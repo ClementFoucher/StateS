@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICALSTATE_H
-#define FSMGRAPHICALSTATE_H
+#ifndef FSMGRAPHICSTATE_H
+#define FSMGRAPHICSTATE_H
 
 // Parents
 #include <QObject>
@@ -34,10 +34,11 @@ using namespace std;
 class QAction;
 
 // StateS classes
+#include "machine.h"
 class FsmState;
 
 
-class FsmGraphicalState : public QObject, public QGraphicsEllipseItem
+class FsmGraphicState : public QObject, public QGraphicsEllipseItem
 {
     Q_OBJECT
 
@@ -51,16 +52,12 @@ private:
     static QBrush activeBrush;
     static QPen pen;
 
-    // Private constructor
-private:
-    explicit FsmGraphicalState();
-
     // Public
 public:
-    explicit FsmGraphicalState(shared_ptr<FsmState> logicState);
-    ~FsmGraphicalState();
+    explicit FsmGraphicState(shared_ptr<FsmState> logicState);
+    ~FsmGraphicState();
 
-    shared_ptr<FsmState> getLogicalState() const;
+    shared_ptr<FsmState> getLogicState() const;
 
     static qreal getRadius();
 
@@ -69,6 +66,7 @@ public:
     // Raised visibility (should be protected) to allow direct calls:
     // Needed cause an event can be manually transmitted to various items
     void keyPressEvent(QKeyEvent* event) override;
+    void enableMoveEvent();
 
 signals:
     void stateMovingEvent();
@@ -82,15 +80,18 @@ protected:
 private slots:
     void rebuildRepresentation();
     void treatMenu(QAction* action);
+    void machineModeChangedEventHandler(Machine::mode);
 
 private:
     void askDelete();
 
-    weak_ptr<FsmState> logicalState;
+    weak_ptr<FsmState> logicState;
 
-    QGraphicsTextItem*  stateName    = nullptr;
-    QGraphicsItemGroup* actionsBox   = nullptr;
+    QGraphicsTextItem*  stateName  = nullptr;
+    QGraphicsItemGroup* actionsBox = nullptr;
+
+    bool moveEventEnabled = false;
 
 };
 
-#endif // FSMGRAPHICALSTATE_H
+#endif // FSMGRAPHICSTATE_H

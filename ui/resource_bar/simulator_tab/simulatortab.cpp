@@ -143,8 +143,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                 }
 
                 this->simulationTools->layout()->addWidget(inputsGroup);
-
-                emit beginSimulationEvent();
             }
             else
             {
@@ -180,8 +178,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
             }
 
             this->buttonTriggerSimulation->setText(tr("Start simulation"));
-
-            emit endSimulationEvent();
         }
     }
 }

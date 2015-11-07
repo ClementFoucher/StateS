@@ -23,8 +23,6 @@
 #include "fsmsimulator.h"
 
 // Qt classes
-#include <QObject>
-#include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QSignalMapper>

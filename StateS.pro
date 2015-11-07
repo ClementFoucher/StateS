@@ -82,16 +82,16 @@ SOURCES += \
     ui/scene/genericscene.cpp \
     ui/scene/blankscene.cpp \
     ui/scene/machineimageexporter.cpp \
-    ui/scene/fsm/fsmgraphicalstate.cpp \
-    ui/scene/fsm/fsmgraphicaltransition.cpp \
-    ui/scene/fsm/fsmgraphicaltransitionneighborhood.cpp \
     ui/scene/fsm/fsmscene.cpp \
     ui/simulation/graphictimeline.cpp \
     ui/simulation/graphicclocktimeline.cpp \
     ui/simulation/clocktimeline.cpp \
     ui/simulation/signaltimeline.cpp \
     ui/simulation/simulationwidget.cpp \
-    ui/static/svgimagegenerator.cpp
+    ui/static/svgimagegenerator.cpp \
+    ui/scene/fsm/fsmgraphicstate.cpp \
+    ui/scene/fsm/fsmgraphictransition.cpp \
+    ui/scene/fsm/fsmgraphictransitionneighborhood.cpp
 
 
 
@@ -160,16 +160,16 @@ HEADERS  += \
     ui/scene/include/genericscene.h \
     ui/scene/include/blankscene.h \
     ui/scene/include/machineimageexporter.h \
-    ui/scene/fsm/include/fsmgraphicalstate.h \
-    ui/scene/fsm/include/fsmgraphicaltransition.h \
-    ui/scene/fsm/include/fsmgraphicaltransitionneighborhood.h \
     ui/scene/fsm/include/fsmscene.h \
     ui/simulation/include/graphictimeline.h \
     ui/simulation/include/graphicclocktimeline.h \
     ui/simulation/include/clocktimeline.h \
     ui/simulation/include/signaltimeline.h \
     ui/simulation/include/simulationwidget.h \
-    ui/static/include/svgimagegenerator.h
+    ui/static/include/svgimagegenerator.h \
+    ui/scene/fsm/include/fsmgraphicstate.h \
+    ui/scene/fsm/include/fsmgraphictransition.h \
+    ui/scene/fsm/include/fsmgraphictransitionneighborhood.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

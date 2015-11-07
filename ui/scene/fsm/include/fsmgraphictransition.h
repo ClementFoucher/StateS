@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICALTRANSITION_H
-#define FSMGRAPHICALTRANSITION_H
+#ifndef FSMGRAPHICTRANSITION_H
+#define FSMGRAPHICTRANSITION_H
 
 // Parents
 #include <QObject>
@@ -34,19 +34,20 @@ using namespace std;
 class QAction;
 
 // StateS classes
-class FsmGraphicalState;
+#include "machine.h"
+class FsmGraphicState;
 class FsmTransition;
-class FsmGraphicalTransitionNeighborhood;
+class FsmGraphicTransitionNeighborhood;
 
-// FsmGraphicalTransition has a dynamic behavior.
+// FsmGraphicTransition has a dynamic behavior.
 // When setting dynamic mode, all changes will be stored in a temporary way
 // that overseedes the current parameters, but not overrite them. They only
 // takes precedence when existing.
 // In the end, keepChanges indicates wheter we should keep
-// the changes made, and all appropriate actions will be taken wrt. logical FSM,
+// the changes made, and all appropriate actions will be taken wrt. logic FSM,
 // or discard changes and delete dynamic parameters.
 
-class FsmGraphicalTransition : public QObject, public QGraphicsItemGroup
+class FsmGraphicTransition : public QObject, public QGraphicsItemGroup
 {
     Q_OBJECT
 
@@ -59,23 +60,23 @@ public:
 
 private:
     // Private constructor for handling common initialization elements
-    explicit FsmGraphicalTransition();
+    explicit FsmGraphicTransition();
 
 public:
     // This is static build of transition, we already have a logic element to represent
-    explicit FsmGraphicalTransition(shared_ptr<FsmTransition> logicTransition);
+    explicit FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition);
     // This constructor toggles dynamic mode on target. This is used when drawing a transition graphically
-    explicit FsmGraphicalTransition(FsmGraphicalState* source, const QPointF& dynamicMousePosition);
-    ~FsmGraphicalTransition();
+    explicit FsmGraphicTransition(FsmGraphicState* source, const QPointF& dynamicMousePosition);
+    ~FsmGraphicTransition();
 
-    void setLogicalTransition(shared_ptr<FsmTransition> transition);
-    shared_ptr<FsmTransition> getLogicalTransition() const;
+    void setLogicTransition(shared_ptr<FsmTransition> transition);
+    shared_ptr<FsmTransition> getLogicTransition() const;
 
-    bool setSourceState(FsmGraphicalState* newSource);
-    bool setTargetState(FsmGraphicalState* newTarget);
+    bool setSourceState(FsmGraphicState* newSource);
+    bool setTargetState(FsmGraphicState* newTarget);
 
-    FsmGraphicalState* getSource() const;
-    FsmGraphicalState* getTarget() const;
+    FsmGraphicState* getSource() const;
+    FsmGraphicState* getTarget() const;
 
     void setMousePosition(const QPointF& mousePos);
     void setTargetMousePosition(const QPointF& newTarget);
@@ -86,15 +87,15 @@ public:
 
     void treatSelectionBox();
 
-    FsmGraphicalTransitionNeighborhood* helloIMYourNewNeighbor();
+    FsmGraphicTransitionNeighborhood* helloIMYourNewNeighbor();
 
     QGraphicsTextItem  * getConditionText() const;
     QGraphicsItemGroup * getActionsBox()    const;
 
 signals:
     void editCalledEvent(shared_ptr<FsmTransition>);
-    void dynamicSourceCalledEvent(FsmGraphicalTransition*);
-    void dynamicTargetCalledEvent(FsmGraphicalTransition*);
+    void dynamicSourceCalledEvent(FsmGraphicTransition*);
+    void dynamicTargetCalledEvent(FsmGraphicTransition*);
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
@@ -105,28 +106,29 @@ private slots:
     void updateDisplay();
     void updateText();
     void treatMenu(QAction* action);
+    void machineModeChangedEventHandler(Machine::mode);
 
 private:
     void finishInitialize();
     void rebuildArrowEnd();
 
     void checkNeighboors();
-    void setNeighbors(FsmGraphicalTransitionNeighborhood* neighborhood);
+    void setNeighbors(FsmGraphicTransitionNeighborhood* neighborhood);
     void quitNeighboorhood();  // Ohhh... So sad
 
     //
-    weak_ptr<FsmTransition> logicalTransition;
+    weak_ptr<FsmTransition> logicTransition;
 
-    // A FSM graphical transition must always have at least a source (may not have target when first drawing)
-    FsmGraphicalState* source = nullptr;
-    FsmGraphicalState* target = nullptr;
+    // A FSM graphic transition must always have at least a source (may not have target when first drawing)
+    FsmGraphicState* source = nullptr;
+    FsmGraphicState* target = nullptr;
 
     // Dynamic mode
     mode currentMode;
     // This will be used if one of the linked state is missing in dynamic mode
     QPointF mousePosition;
     // Dynamic mode holds a temporary state when mouse hovers a state to preview what would be the result if selected
-    FsmGraphicalState* dynamicState = nullptr;
+    FsmGraphicState* dynamicState = nullptr;
 
     // Base elements of the arrow
     QGraphicsItem*      arrowBody     = nullptr;
@@ -137,8 +139,8 @@ private:
     QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
     qreal sceneAngle = 0;
 
-    // This list will be shared by all graphical transitions that have same {source, parent} couple (either direction)
-    FsmGraphicalTransitionNeighborhood* neighbors = nullptr;
+    // This list will be shared by all graphic transitions that have same {source, parent} couple (either direction)
+    FsmGraphicTransitionNeighborhood* neighbors = nullptr;
 
     QPen* currentPen  = nullptr;
 
@@ -156,5 +158,5 @@ private:
     static QPen activePen;
 };
 
-#endif // FSMGRAPHICALTRANSITION_H
+#endif // FSMGRAPHICTRANSITION_H
 

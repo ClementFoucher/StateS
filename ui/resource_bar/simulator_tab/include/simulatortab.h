@@ -50,10 +50,6 @@ public:
     explicit SimulatorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
     ~SimulatorTab();
 
-signals:
-    void beginSimulationEvent();
-    void endSimulationEvent();
-
 private slots:
     void triggerSimulationMode(bool enabled);
     void buttonLauchAutoStepClicked();

@@ -32,7 +32,7 @@ Signal::Signal(const QString& name, const LogicValue& initialValue, const LogicV
     // Link specific events signals to general events
     connect(this, &Signal::signalRenamedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
     connect(this, &Signal::signalResizedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
-    connect(this, &Signal::SignalinitialValueChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+    connect(this, &Signal::SignalInitialValueChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
 
     // This event also impacts dynamic values
     connect(this, &Signal::signalResizedEvent, this, &Signal::signalDynamicStateChangedEvent);
@@ -60,18 +60,18 @@ Signal::~Signal()
 
 QString Signal::getName() const
 {
-    return name;
+    return this->name;
 }
 
 void Signal::setName(const QString& value)
 {
-    name = value;
+    this->name = value;
     emit signalRenamedEvent();
 }
 
 uint Signal::getSize() const
 {
-    return currentValue.getSize();
+    return this->currentValue.getSize();
 }
 
 bool Signal::resize(uint newSize)
@@ -139,7 +139,7 @@ bool Signal::setInitialValue(const LogicValue &newInitialValue)
         if (this->isConstant)
             this->currentValue = this->initialValue;
 
-        emit SignalinitialValueChangedEvent();
+        emit SignalInitialValueChangedEvent();
 
         return true;
     }
@@ -194,5 +194,5 @@ bool Signal::isFalse() const
 }
 bool Signal::getIsConstant() const
 {
-    return isConstant;
+    return this->isConstant;
 }

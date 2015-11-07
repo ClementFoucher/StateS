@@ -42,7 +42,7 @@ class GenericScene;
 
 /**
  * @brief The DisplayArea class handles the central display.
- * Usually, this is just the machine graphical representation,
+ * Usually, this is just the machine graphic representation,
  * but in simulation mode, the timeline is also handled here.
  */
 class DisplayArea : public QWidget

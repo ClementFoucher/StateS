@@ -42,7 +42,7 @@ class MachineComponent;
  * This window has tree areas:
  * - an action bar (on the left at startup, but can be moved at top or bottom),
  * - a central widget wichi is a slider made of:
- * -- The display area, holding notably the machine graphical representation,
+ * -- The display area, holding notably the machine graphic representation,
  * -- The resources bar, holding tools to edit and use the machine.
  *
  * This object can receive orders to use switch to a different machine
@@ -85,7 +85,7 @@ private slots:
     void editSelectedItem();
     void renameSelectedItem();
 
-    void machineUnsavedStateChangedEventHandler(bool);
+    void machineUnsavedStateChangedEventHandler(bool isUnsaved);
 
 private:
     void updateTitle();

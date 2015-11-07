@@ -107,7 +107,7 @@ void GraphicTimeLine::reset(bool initialValue)
     this->points.append(initialValue);
 
     timeLinePoly.clear();
-    // Starting point of graphical vector: not a real point
+    // Starting point of graphic vector: not a real point
     timeLinePoly.append(QPoint(0, initialValue?1:0));
     // Actual initial point
     timeLinePoly.append(QPoint(1, initialValue?1:0));

@@ -35,7 +35,6 @@ using namespace std;
 class QSignalMapper;
 
 // StateS classes
-class Clock;
 class Fsm;
 class FsmState;
 class FsmTransition;

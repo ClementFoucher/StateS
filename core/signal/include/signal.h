@@ -88,7 +88,7 @@ signals:
     // Specific events detail
     void signalRenamedEvent();
     void signalResizedEvent();
-    void SignalinitialValueChangedEvent();
+    void SignalInitialValueChangedEvent();
 
     // Deletion event
     void signalDeletedEvent();

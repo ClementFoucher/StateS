@@ -36,15 +36,15 @@ class QAction;
 #include "machine.h"
 
 // StateS classes
-class FsmGraphicalTransition;
-class FsmGraphicalState;
+class FsmGraphicTransition;
+class FsmGraphicState;
 class Fsm;
 class FsmState;
 class FsmTransition;
 
 
 /**
- * @brief The FsmScene class is a FSM graphical representation.
+ * @brief The FsmScene class is a FSM graphic representation.
  * It is deeply linked to the Fsm object, which must be provided
  * at creation, and can't be replaced.
  * The FsmScene class maintains a shared pointer to the Fsm, so
@@ -74,7 +74,7 @@ public:
 
     void setDisplaySize(const QSize& newSize) override;
 
-    void beginDrawTransition(FsmGraphicalState* source, const QPointF& currentMousePos);
+    void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos);
 
 protected:
     void mousePressEvent      (QGraphicsSceneMouseEvent*)       override;
@@ -95,20 +95,20 @@ private slots:
 
     void updateSceneRect();
 
-    void transitionCallsDynamicSourceEventHandler(FsmGraphicalTransition* transition);
-    void transitionCallsDynamicTargetEventHandler(FsmGraphicalTransition* transition);
+    void transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition);
+    void transitionCallsDynamicTargetEventHandler(FsmGraphicTransition* transition);
     void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
 
 private:
-    FsmGraphicalState* getStateAt(const QPointF& location) const;
-    FsmGraphicalState* addState(shared_ptr<FsmState> logicState, QPointF location);
-    void addTransition(FsmGraphicalTransition* newTransition);
+    FsmGraphicState* getStateAt(const QPointF& location) const;
+    FsmGraphicState* addState(shared_ptr<FsmState> logicState, QPointF location);
+    void addTransition(FsmGraphicTransition* newTransition);
 
 private:
     shared_ptr<Fsm> machine;
 
     sceneMode_e sceneMode;
-    FsmGraphicalTransition* currentTransition = nullptr;
+    FsmGraphicTransition* currentTransition = nullptr;
 
     QPointF mousePos;
 

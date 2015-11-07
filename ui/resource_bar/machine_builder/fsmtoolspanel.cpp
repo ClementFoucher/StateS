@@ -30,8 +30,8 @@
 #include <QDebug>
 
 // StateS classes
-#include "fsmgraphicalstate.h"
-#include "fsmgraphicaltransition.h"
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 
 
 FsmToolsPanel::FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
@@ -43,9 +43,9 @@ FsmToolsPanel::FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget*
     this->buttonAddTransition   = new QPushButton(tr("Add transition"));
 
 //    this->buttonNoTool->setIcon(QIcon(*QCursor(Qt::CursorShape::ArrowCursor).bitmap()));
-    this->buttonAddInitialState->setIcon(QIcon(FsmGraphicalState::getPixmap(128, true)));
-    this->buttonAddState->       setIcon(QIcon(FsmGraphicalState::getPixmap(128)));
-    this->buttonAddTransition->  setIcon(QIcon(FsmGraphicalTransition::getPixmap(128)));
+    this->buttonAddInitialState->setIcon(QIcon(FsmGraphicState::getPixmap(128, true)));
+    this->buttonAddState->       setIcon(QIcon(FsmGraphicState::getPixmap(128)));
+    this->buttonAddTransition->  setIcon(QIcon(FsmGraphicTransition::getPixmap(128)));
 
     this->buttonNoTool->         setCheckable(true);
     this->buttonAddInitialState->setCheckable(true);

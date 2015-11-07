@@ -34,8 +34,8 @@
 // StateS classes
 #include "fsmscene.h"
 #include "fsm.h"
-#include "fsmgraphicalstate.h"
-#include "fsmgraphicaltransition.h"
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 #include "blankscene.h"
 
 
@@ -136,18 +136,18 @@ void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
     }
     else if (newTool == MachineBuilder::tool::state)
     {
-        QPixmap pixmap = FsmGraphicalState::getPixmap(32, false, true);
+        QPixmap pixmap = FsmGraphicState::getPixmap(32, false, true);
         this->setCursor(QCursor(pixmap, 0, 0));
     }
     else if (newTool == MachineBuilder::tool::initial_state)
     {
-        QPixmap pixmap = FsmGraphicalState::getPixmap(32, true, true);
+        QPixmap pixmap = FsmGraphicState::getPixmap(32, true, true);
 
         this->setCursor(QCursor(pixmap, 0, 0));
     }
     else if (newTool == MachineBuilder::tool::transition)
     {
-        QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
+        QPixmap pixmap = FsmGraphicTransition::getPixmap(32);
         QCursor cursor(pixmap, 0 , 0);
 
         this->setCursor(cursor);
@@ -168,7 +168,7 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
          (newTool == MachineBuilder::singleUseTool::editTransitionTarget)
          )
     {
-        QPixmap pixmap = FsmGraphicalTransition::getPixmap(32);
+        QPixmap pixmap = FsmGraphicTransition::getPixmap(32);
         QCursor cursor(pixmap, 0 , 0);
 
         this->setCursor(cursor);

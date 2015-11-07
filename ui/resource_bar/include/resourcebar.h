@@ -33,7 +33,7 @@ using namespace std;
 class QGraphicsScene;
 
 // StateS classes
-class Machine;
+#include "machine.h"
 class MachineBuilderTab;
 class SignalEditorTab;
 class ComponentEditorTab;
@@ -67,9 +67,12 @@ public:
 
 private slots:
     void clearSelection();
+    void machineModeChangedEventHandler(Machine::mode newMode);
+    void tabChanged(int);
+
+private:
     void beginSimulation();
     void terminateSimulation();
-    void tabChanged(int);
 
 private:
     weak_ptr<Machine> machine;

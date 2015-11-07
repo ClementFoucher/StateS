@@ -20,32 +20,32 @@
  */
 
 // Current class header
-#include "fsmgraphicaltransitionneighborhood.h"
+#include "fsmgraphictransitionneighborhood.h"
 
 // StateS classes
-#include "fsmgraphicalstate.h"
-#include "fsmgraphicaltransition.h"
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 
 
-FsmGraphicalTransitionNeighborhood::FsmGraphicalTransitionNeighborhood(FsmGraphicalState* source, FsmGraphicalState* target)
+FsmGraphicTransitionNeighborhood::FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target)
 {
     this->source = source;
     this->target = target;
 }
 
-FsmGraphicalState* FsmGraphicalTransitionNeighborhood::getSource() const
+FsmGraphicState* FsmGraphicTransitionNeighborhood::getSource() const
 {
     return source;
 }
 
-void FsmGraphicalTransitionNeighborhood::insertAndNotify(FsmGraphicalTransition* value)
+void FsmGraphicTransitionNeighborhood::insertAndNotify(FsmGraphicTransition* value)
 {
     map.insert(map.count(), value);
 
     emit contentChangedEvent();
 }
 
-void FsmGraphicalTransitionNeighborhood::removeAndNotify(FsmGraphicalTransition* value)
+void FsmGraphicTransitionNeighborhood::removeAndNotify(FsmGraphicTransition* value)
 {
     int removedValueKey = map.key(value);
     map.remove(removedValueKey);
@@ -60,18 +60,18 @@ void FsmGraphicalTransitionNeighborhood::removeAndNotify(FsmGraphicalTransition*
     emit contentChangedEvent();
 }
 
-int FsmGraphicalTransitionNeighborhood::count() const
+int FsmGraphicTransitionNeighborhood::count() const
 {
     return map.count();
 }
 
 
-int FsmGraphicalTransitionNeighborhood::whatIsMyRank(FsmGraphicalTransition* me) const
+int FsmGraphicTransitionNeighborhood::whatIsMyRank(FsmGraphicTransition* me) const
 {
     return map.key(me);
 }
 
-int FsmGraphicalTransitionNeighborhood::computeTransitionPosition(FsmGraphicalTransition* me) const
+int FsmGraphicTransitionNeighborhood::computeTransitionPosition(FsmGraphicTransition* me) const
 {
     // Keys are:            0,  1, 2,  3, 4,  5, etc.
     // Associate ranks are: 1, -1, 2, -2, 3, -3, etc.
@@ -87,7 +87,7 @@ int FsmGraphicalTransitionNeighborhood::computeTransitionPosition(FsmGraphicalTr
 }
 
 
-QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicalTransition* me, QPointF& deltaCurveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2, QGraphicsLineItem** conditionLine) const
+QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& deltaCurveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2, QGraphicsLineItem** conditionLine) const
 {
     //
     // Create a first system as:
@@ -116,10 +116,10 @@ QGraphicsPathItem* FsmGraphicalTransitionNeighborhood::buildMyBody(QPen* pen, Fs
     // Use initial C point to calculate new coordinates system
     // Deltas indicates curve start/end positions wrt. local system (start/ends on states perimeter)
     QLineF deltaSystemOriginVector(QPointF(0,0), sceneSystemCPoint);
-    deltaSystemOriginVector.setLength(FsmGraphicalState::getRadius());
+    deltaSystemOriginVector.setLength(FsmGraphicState::getRadius());
 
     QLineF deltaTargetVector(QPointF(0,0), sceneSystemCPoint - sceneSystemXVector.p2());
-    deltaTargetVector.setLength(FsmGraphicalState::getRadius());
+    deltaTargetVector.setLength(FsmGraphicState::getRadius());
 
     // Yes, many coordinates systems.
     QLineF deltaSystemXVector(deltaSystemOriginVector.p2(), sceneSystemXVector.p2() + deltaTargetVector.p2());

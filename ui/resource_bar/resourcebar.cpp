@@ -30,7 +30,6 @@
 #include "simulatortab.h"
 #include "abouttab.h"
 #include "verifiertab.h"
-#include "fsm.h"
 #include "machinecomponentvisualizer.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
@@ -46,14 +45,15 @@ ResourceBar::ResourceBar(QWidget* parent) :
 
 void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 {
+    shared_ptr<Machine> oldMachine = this->machine.lock();
+
+    if (oldMachine != nullptr)
+    {
+            disconnect(newMachine.get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
+    }
+
     this->machineComponentScene.reset();
     this->machine = newMachine;
-
-    if (this->simulatorTab != nullptr)
-    {
-        disconnect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
-        disconnect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
-    }
 
     while(this->count() != 0)
     {
@@ -76,8 +76,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
         this->simulatorTab    = new SimulatorTab     (newMachine);
         this->verifierTab     = new VerifierTab      (newMachine);
 
-        connect(this->simulatorTab, &SimulatorTab::beginSimulationEvent, this, &ResourceBar::beginSimulation);
-        connect(this->simulatorTab, &SimulatorTab::endSimulationEvent,   this, &ResourceBar::terminateSimulation);
+        connect(newMachine.get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
 
         this->insertTab(0, this->machineBuildTab, tr("Builder"));
         this->insertTab(1, this->signalsTab,      tr("Signals"));
@@ -91,7 +90,8 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 
         this->setCurrentIndex(0);
 
-        newMachine->setMode(Machine::mode::editMode);
+        if (newMachine->getCurrentMode() == Machine::mode::simulateMode)
+            this->beginSimulation();
     }
     else
     {
@@ -193,6 +193,14 @@ void ResourceBar::clearSelection()
         this->setCurrentIndex(0);
 }
 
+void ResourceBar::machineModeChangedEventHandler(Machine::mode newMode)
+{
+    if (newMode == Machine::mode::simulateMode)
+        this->beginSimulation();
+    else
+        this->terminateSimulation();
+}
+
 void ResourceBar::beginSimulation()
 {
     shared_ptr<Machine> l_machine = this->machine.lock();
@@ -203,8 +211,6 @@ void ResourceBar::beginSimulation()
 
         this->setTabEnabled(0, false);
         this->setTabEnabled(1, false);
-
-        l_machine->setMode(Machine::mode::simulateMode);
     }
 }
 
@@ -216,8 +222,6 @@ void ResourceBar::terminateSimulation()
     {
         this->setTabEnabled(0, true);
         this->setTabEnabled(1, true);
-
-        l_machine->setMode(Machine::mode::editMode);
     }
 }
 

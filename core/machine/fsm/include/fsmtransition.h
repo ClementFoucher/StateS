@@ -32,7 +32,7 @@ using namespace std;
 // StateS classes
 class Fsm;
 class FsmState;
-class FsmGraphicalTransition;
+class FsmGraphicTransition;
 class Signal;
 class Equation;
 
@@ -42,7 +42,7 @@ class FsmTransition : public FsmComponent
     Q_OBJECT
 
 public:
-    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicalTransition* graphicalRepresentation = nullptr);
+    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicTransition* graphicRepresentation = nullptr);
     ~FsmTransition();
 
     shared_ptr<FsmState> getTarget() const;
@@ -51,9 +51,9 @@ public:
     shared_ptr<FsmState> getSource() const;
     void setSource(shared_ptr<FsmState> value);
 
-    FsmGraphicalTransition* getGraphicalRepresentation() const;
-    void setGraphicalRepresentation(FsmGraphicalTransition* representation);
-    void clearGraphicalRepresentation();
+    FsmGraphicTransition* getGraphicRepresentation() const;
+    void setGraphicRepresentation(FsmGraphicTransition* representation);
+    void clearGraphicRepresentation();
 
     void setCrossed() const;
 
@@ -66,7 +66,7 @@ signals:
     void conditionChangedEvent();
 
 private:
-    FsmGraphicalTransition* graphicalRepresentation = nullptr;
+    FsmGraphicTransition* graphicRepresentation = nullptr;
 
     weak_ptr<FsmState> source;
     weak_ptr<FsmState> target;
