@@ -53,55 +53,99 @@ void MachineActuatorComponent::signalResizedEventHandler()
 
         if (sig->getSize() != 1)
         {
-            if (actionType[signame] == action_types::activeOnState)
+            switch(actionType[signame])
             {
+            case action_types::activeOnState:
                 // This signal changed size (was size 1)
                 actionType[signame] = action_types::assign;
                 actionValue[signame] = LogicValue::getValue1(sig->getSize());
 
                 listChanged = true;
-            }
-            else if (actionType[signame] == action_types::pulse)
-            {
+
+                break;
+            case action_types::pulse:
                 // This signal changed size (was size 1)
                 actionType[signame] = action_types::assign;
                 actionValue[signame] = LogicValue::getValue1(sig->getSize());
 
                 listChanged = true;
-            }
-            else if (actionType[signame] == action_types::set)
-            {
+
+                break;
+            case action_types::set:
                 // This signal changed size (was size 1)
                 actionType[signame] = action_types::assign;
                 actionValue[signame] = LogicValue::getValue1(sig->getSize());
 
                 listChanged = true;
-            }
-            else if (actionType[signame] == action_types::assign)
-            {
-                if (actionValue[signame].getSize() != sig->getSize())
+
+                break;
+            case action_types::assign:
+                if (actionParam1[signame] == -1)
                 {
-                    // This signal changed size
-                    actionValue[signame].resize(sig->getSize());
+                    if (actionValue[signame].getSize() != sig->getSize())
+                    {
+                        // This signal changed size
+                        actionValue[signame].resize(sig->getSize());
 
-                    listChanged = true;
+                        listChanged = true;
+                    }
                 }
+                else
+                {
+                    if (actionParam1[signame] >= (int)sig->getSize())
+                    {
+                        actionParam1[signame] = sig->getSize()-1;
+                        listChanged = true;
+                    }
+
+                    if (actionParam2[signame] >= actionParam1[signame])
+                    {
+                        // If 0, this will end up with -1, which is single bit extract
+                        actionParam2[signame] = actionParam1[signame]-1;
+                        listChanged = true;
+                    }
+
+                    if (actionParam2[signame] != -1)
+                    {
+                        actionValue[signame].resize(actionParam1[signame] - actionParam2[signame] + 1);
+                        listChanged = true;
+                    }
+                    else if (actionValue[signame].getSize() != 1)
+                    {
+                        actionValue[signame].resize(1);
+                        listChanged = true;
+                    }
+                }
+
+                break;
+            case action_types::reset:
+                // Nothing to do
+                break;
             }
         }
         else // Signal size is 1
         {
-            if (actionType[signame] == action_types::assign)
+            switch(actionType[signame])
             {
+            case  action_types::assign:
                 // This signal changed size (was size > 1)
                 actionType[signame] = action_types::set;
                 actionValue.remove(signame);
+                actionParam1.remove(signame);
+                actionParam2.remove(signame);
 
                 listChanged = true;
+            case  action_types::activeOnState:
+            case  action_types::pulse:
+            case  action_types::set:
+            case  action_types::reset:
+                // Nothing to do
+                break;
             }
         }
     }
 
-    if (listChanged) // Must be true, but anyway...
+    if (listChanged)
     {
         emit actionListChangedEvent();
     }
@@ -128,8 +172,8 @@ void MachineActuatorComponent::cleanActionList()
         emit actionListChangedEvent();
     }
 
-    // At this pont, should clean action type and value too,
-    // but we would have to iterate over both lists to check wich
+    // At this pont, should clean action type, value and param too,
+    // but we would have to iterate over all lists to check which
     // one remains...
     // As this function is called frequently, we will limit
     // operations here. Lost fragments will not survive save/load anyway.
@@ -178,6 +222,8 @@ void MachineActuatorComponent::clearActions()
     // In case there were lost fragments (see comment in cleanActionList())
     actionType.clear();
     actionValue.clear();
+    actionParam1.clear();
+    actionParam2.clear();
 
     if (listChanged)
     {
@@ -244,8 +290,10 @@ void MachineActuatorComponent::removeAction(shared_ptr<Signal> signal)
             }
         }
 
-        actionType. remove(signal->getName());
-        actionValue.remove(signal->getName());
+        actionType  .remove(signal->getName());
+        actionValue .remove(signal->getName());
+        actionParam1.remove(signal->getName());
+        actionParam2.remove(signal->getName());
 
         this->cleanActionList();
 
@@ -262,7 +310,6 @@ uint MachineActuatorComponent::getAllowedActionTypes() const
 {
     return this->allowedActionTypes;
 }
-
 
 bool MachineActuatorComponent::removeActionByName(const QString& signalName)
 {
@@ -284,28 +331,50 @@ void MachineActuatorComponent::activateActions()
     {
         QString signame = sig->getName();
 
-        if (actionType[signame] == action_types::activeOnState)
+        switch (actionType[signame])
         {
+        case action_types::activeOnState:
             sig->set();
-        }
-        else if (actionType[signame] == action_types::pulse)
-        {
+            break;
+        case action_types::pulse:
             sig->set();
-        }
-        else if (actionType[signame] == action_types::set)
-        {
+            break;
+        case action_types::set:
             if (sig->getSize() == 1)
                 sig->set();
             else
                 sig->setCurrentValue(actionValue[signame]);
-        }
-        else if (actionType[signame] == action_types::reset)
-        {
+            break;
+        case action_types::reset:
             sig->resetValue();
-        }
-        else if (actionType[signame] == action_types::assign)
+            break;
+        case action_types::assign:
         {
-            sig->setCurrentValue(actionValue[signame]);
+            int param1 = actionParam1[signame];
+            int param2 = actionParam2[signame];
+
+            if (param1 != -1)
+            {
+                LogicValue newValue(sig->getCurrentValue());
+                if (param2 != -1)
+                {
+                    for (int i = param2 ; i <= param1 ; i++)
+                    {
+                        newValue[i] = actionValue[signame][i-param2];
+                    }
+                }
+                else
+                {
+                    newValue[param1] = actionValue[signame][0];
+                }
+
+                sig->setCurrentValue(newValue);
+            }
+            else
+            {
+                sig->setCurrentValue(actionValue[signame]);
+            }
+        }
         }
     }
 }
@@ -318,32 +387,103 @@ void MachineActuatorComponent::setActionType(shared_ptr<Signal> signal, action_t
 
     actionType[signame] = type;
 
-    if ( (type == action_types::activeOnState) ||
-         (type == action_types::pulse) ||
-         (type == action_types::reset) ||
-         (type == action_types::set)
-         )
+    switch (actionType[signame])
     {
+    case action_types::activeOnState:
+    case action_types::pulse:
+    case action_types::reset:
+    case action_types::set:
         if (actionValue.contains(signame))
+        {
             actionValue.remove(signame);
-    }
-    else
-    {
+            actionParam1.remove(signame);
+            actionParam2.remove(signame);
+        }
+        break;
+    case action_types::assign:
         if (!actionValue.contains(signame))
-            actionValue[signame] = LogicValue::getValue0(signal->getSize());
+        {
+            actionValue[signame]  = LogicValue::getValue0(signal->getSize());
+            actionParam1[signame] = -1;
+            actionParam2[signame] = -1;
+        }
+        break;
     }
 
     emit actionListChangedEvent();
 }
 
-bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicValue value)
+bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1, int param2)
 {
-    if (signal->getSize() == value.getSize())
+    bool actionValueChanged = false;
+
+    if (actionType[signal->getName()] != action_types::assign)
     {
-        actionValue[signal->getName()] = value;
+        if (signal->getSize() == value.getSize())
+        {
+            actionValue[signal->getName()] = value;
+            actionValueChanged = true;
+        }
+    }
+    else
+    {
+        actionParam1[signal->getName()] = param1;
+        actionParam2[signal->getName()] = param2;
 
+        if ( (param2 == -1) && (param1 != -1) )
+        {
+            // Single bit affect
+
+            if (value.getSize() == 1)
+            {
+                actionValue[signal->getName()] = value;
+                actionValueChanged = true;
+            }
+            else
+            {
+                actionValue[signal->getName()] = LogicValue(1);
+                actionValueChanged = true;
+            }
+        }
+        else if (param1 != -1)
+        {
+            // Range affect
+
+            LogicValue correctedValue = value;
+
+            if ((int)value.getSize() < (param1-param2+1))
+            {
+                correctedValue.resize(param1-param2+1);
+            }
+
+            if ( (int)value.getSize() == (param1-param2+1) )
+            {
+                actionValue[signal->getName()] = value;
+                actionValueChanged = true;
+            }
+        }
+        else
+        {
+            // Whole signal affect
+
+            LogicValue correctedValue = value;
+
+            if (value.getSize() < signal->getSize())
+            {
+                correctedValue.resize(signal->getSize());
+            }
+
+            if (signal->getSize() == correctedValue.getSize())
+            {
+                actionValue[signal->getName()] = correctedValue;
+                actionValueChanged = true;
+            }
+        }
+    }
+
+    if (actionValueChanged)
+    {
         emit actionListChangedEvent();
-
         return true;
     }
     else
@@ -365,3 +505,21 @@ LogicValue MachineActuatorComponent::getActionValue(shared_ptr<Signal> variable)
     else
         return LogicValue::getNullValue();
 }
+
+int MachineActuatorComponent::getActionParam1(shared_ptr<Signal> variable)
+{
+    if (actionParam1.contains(variable->getName()))
+        return actionParam1[variable->getName()];
+    else
+        return -1;
+}
+
+int MachineActuatorComponent::getActionParam2(shared_ptr<Signal> variable)
+{
+    if (actionParam2.contains(variable->getName()))
+        return actionParam2[variable->getName()];
+    else
+        return -1;
+}
+
+

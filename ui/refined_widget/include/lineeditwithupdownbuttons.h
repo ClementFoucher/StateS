@@ -19,24 +19,45 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IO_H
-#define IO_H
+#ifndef LINEEDITWITHUPDOWNBUTTONS_H
+#define LINEEDITWITHUPDOWNBUTTONS_H
 
 // Parent
-#include "signal.h"
+#include <QWidget>
+
+// Qt classes
+class QIntValidator;
+
+// StateS classes
+class DynamicLineEdit;
 
 
-class IO : public Signal
+class LineEditWithUpDownButtons : public QWidget
 {
     Q_OBJECT
 
 public:
-    enum class direction{input, output, inout};
+    explicit LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent = nullptr);
 
-public:
-    explicit IO(const QString& name);
+    void updateContent(int min, int max, const QString& text);
+    void edit();
 
-    virtual direction getDirection() const = 0;
+signals:
+    void valueChanged(int newValue);
+
+protected:
+    void wheelEvent(QWheelEvent* event) override;
+
+private slots:
+    void up();
+    void down();
+
+    void textUpdatedByUsedEventHandler(const QString& newText);
+
+private:
+    DynamicLineEdit* lineEdit  = nullptr;
+    QIntValidator*   validator = nullptr;
+
 };
 
-#endif // IO_H
+#endif // LINEEDITWITHUPDOWNBUTTONS_H

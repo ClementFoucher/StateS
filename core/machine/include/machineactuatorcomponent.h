@@ -32,13 +32,9 @@ using namespace std;
 // Qt classes
 #include <QMap>
 #include <QList>
-class QString;
-
-// StateS basic types
-#include "logicvalue.h"
 
 // StateS classes
-class Machine;
+#include "logicvalue.h"
 class Signal;
 
 
@@ -64,10 +60,12 @@ public:
     void activateActions();
 
     void setActionType(shared_ptr<Signal> signal, action_types type);
-    bool setActionValue(shared_ptr<Signal> signal, LogicValue value);
+    bool setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1 = -1, int param2 = -1);
 
     action_types getActionType(shared_ptr<Signal> variable);
     LogicValue getActionValue(shared_ptr<Signal> variable);
+    int getActionParam1(shared_ptr<Signal> variable);
+    int getActionParam2(shared_ptr<Signal> variable);
 
     uint getAllowedActionTypes() const;
 
@@ -83,6 +81,8 @@ protected:
     // Reference signals by name as we can assert they are unique
     QMap<QString, action_types> actionType;
     QMap<QString, LogicValue>   actionValue;
+    QMap<QString, int>          actionParam1;
+    QMap<QString, int>          actionParam2;
 
 private slots:
     void removeAction(shared_ptr<Signal> signal);

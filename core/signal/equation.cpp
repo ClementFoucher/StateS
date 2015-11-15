@@ -27,25 +27,21 @@
 
 
 // Main constructor
-Equation::Equation(nature function, uint operandCount) :
+Equation::Equation(nature function, uint operandCount, int param1, int param2) :
     Signal("<sub>(equation)</sub>"),
     signalOperands(operandCount),
     equationOperands(operandCount)
 {
     this->function = function;
 
-    // Local signals to more general ones
-    connect(this, &Equation::equationOperandChangedEvent,      this, &Signal::signalStaticConfigurationChangedEvent);
-    connect(this, &Equation::equationOperandCountChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
-    connect(this, &Equation::equationFunctionChangedEvent,     this, &Signal::signalStaticConfigurationChangedEvent);
-    // Dynamic value is impacted by those changes
-    connect(this, &Equation::equationOperandChangedEvent,      this, &Equation::computeCurrentValue);
-    connect(this, &Equation::equationOperandCountChangedEvent, this, &Equation::computeCurrentValue);
-    connect(this, &Equation::equationFunctionChangedEvent,     this, &Equation::computeCurrentValue);
-
-    if ( (this->function == nature::notOp) | (this->function == nature::identity) )
+    switch(this->function)
     {
+    case nature::notOp:
+    case nature::identity:
+    case nature::extractOp:
         this->allowedOperandCount = 1;
+        this->param1 = param1;
+        this->param2 = param2;
         if (operandCount != 1)
         {
             signalOperands.resize(1);
@@ -53,9 +49,9 @@ Equation::Equation(nature function, uint operandCount) :
 
             qDebug() << "(Equation) Error ! Trying to create a NOT equation with size != 1 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 1.";
         }
-    }
-    else if ( (this->function == nature::equalOp) || (this->function == nature::diffOp))
-    {
+        break;
+    case nature::equalOp:
+    case nature::diffOp:
         this->allowedOperandCount = 2;
 
         if (operandCount != 2)
@@ -68,9 +64,14 @@ Equation::Equation(nature function, uint operandCount) :
             else
                 qDebug() << "(Equation) Error ! Trying to create a DIFFERENT equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
         }
-    }
-    else
-    {
+        break;
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+    case nature::concatOp:
         if (operandCount < 2)
         {
             this->allowedOperandCount = 2;
@@ -85,8 +86,8 @@ Equation::Equation(nature function, uint operandCount) :
     }
 }
 
-Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList) :
-    Equation(function, operandList.count())
+Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1, int param2) :
+    Equation(function, operandList.count(), param1, param2)
 {
     for (int i = 0 ; i < operandList.count() ; i++)
     {
@@ -100,7 +101,8 @@ Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandLi
 
 shared_ptr<Equation> Equation::clone() const
 {
-    return shared_ptr<Equation>(new Equation(this->function, this->getOperands()));
+    shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands(), this->param1, this->param2));
+    return eq;
 }
 
 /**
@@ -125,44 +127,80 @@ Equation::nature Equation::getFunction() const
     return function;
 }
 
-void Equation::setFunction(const nature& newFunction)
+void Equation::setFunction(const nature& newFunction, int param1, int param2)
 {
-    if ( (newFunction == nature::notOp) | (newFunction == nature::identity) )
+    switch(this->function)
     {
+    case nature::notOp:
+    case nature::identity:
+    case nature::extractOp:
         // Delete operands beyond one
         while (allowedOperandCount > 1)
         {
             // Muted: do not causes recomputation
-            decreaseOperandCount(true);
+            decreaseOperandCountInternal();
         }
-    }
-    else
-    {
+        break;
+    case nature::equalOp:
+    case nature::diffOp:
+        // Exactly two operands needed
+
+        // Delete operands beyond two
+        while (allowedOperandCount > 2)
+        {
+            // Muted: do not causes recomputation
+            decreaseOperandCountInternal();
+        }
+
+        // Add operand if not enough
+        if (allowedOperandCount == 1)
+        {
+            // Muted: do not causes recomputation
+            increaseOperandCountInternal();
+        }
+
+        break;
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+    case nature::concatOp:
         // At least two operands for all other equation types
         if (allowedOperandCount == 1)
         {
             // Muted: do not causes recomputation
-            increaseOperandCount(true);
-        }
-        else if ( (newFunction == nature::equalOp) || (newFunction == nature::diffOp) )
-        {
-            // Exactly two operands needed
-            if (allowedOperandCount > 2)
-            {
-                // Delete operands beyond two
-                while (allowedOperandCount > 2)
-                {
-                    // Muted: do not causes recomputation
-                    decreaseOperandCount(true);
-                }
-            }
+            increaseOperandCountInternal();
         }
     }
 
     this->function = newFunction;
 
-    // Causes recomputation
-    emit equationFunctionChangedEvent();
+    if (this->function == nature::extractOp)
+    {
+        this->param1 = param1;
+        this->param2 = param2;
+    }
+    else
+    {
+        this->param1 = -1;
+        this->param2 = -1;
+    }
+
+    emit signalStaticConfigurationChangedEvent();
+
+    this->computeCurrentValue();
+}
+
+void Equation::setParameters(int param1, int param2)
+{
+    this->param1 = param1;
+    this->param2 = param2;
+
+    emit signalStaticConfigurationChangedEvent();
+
+    this->computeCurrentValue();
 }
 
 shared_ptr<Signal> Equation::getOperand(uint i) const
@@ -230,8 +268,9 @@ bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet)
 
         if (!quiet)
         {
-            // Causes recomputation
-            emit equationOperandChangedEvent();
+            emit signalStaticConfigurationChangedEvent();
+
+            this->computeCurrentValue();
         }
 
         return true;
@@ -250,7 +289,7 @@ void Equation::clearOperand(uint i, bool quiet)
         disconnect(oldOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
         disconnect(oldOperand.get(), &Signal::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 
-        if (! (signalOperands[i].expired()) )
+        if (oldOperand != nullptr)
         {
             disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Equation::computeCurrentValue);
             disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
@@ -261,22 +300,31 @@ void Equation::clearOperand(uint i, bool quiet)
 
         if (!quiet)
         {
-            // Causes recomputation
-            emit equationOperandChangedEvent();
+            emit signalStaticConfigurationChangedEvent();
+
+            this->computeCurrentValue();
         }
     }
 }
 
 
-QString Equation::getText(bool colored) const
+QString Equation::getText(bool activeColored) const
 {
+    QString errorTextBegin;
+    QString errorTextEnd;
+
+    if (this->getSize() == 0)
+    {
+        errorTextBegin = "<font color=\"red\">";
+        errorTextEnd   = "</font>";
+    }
     QString text;
 
+
+    text += errorTextBegin;
+
     // Inversion oeprator
-    if ( (function == nature::notOp)  ||
-         (function == nature::nandOp) ||
-         (function == nature::norOp)  ||
-         (function == nature::xnorOp) )
+    if (this->isInverted())
         text += '/';
 
     if (this->allowedOperandCount > 1)
@@ -287,14 +335,14 @@ QString Equation::getText(bool colored) const
         shared_ptr<Signal> operand = getOperand(i);
         if (operand != nullptr)
         {
-            text += operand->getText(colored);
+            text += operand->getText(activeColored);
         }
         else
         {
-            if (colored)
-                text += "<font color=\"red\">...</font>";
-            else
-                text += "...";
+            //if (activeColored)
+          //      text += "<font color=\"red\">…</font>";
+            //else
+                text += "…";
         }
 
         // Add operator, except for last operand
@@ -320,15 +368,38 @@ QString Equation::getText(bool colored) const
             case Equation::nature::diffOp:
                 text += " ≠ ";
                 break;
+            case Equation::nature::concatOp:
+                text += " : ";
+                break;
             case Equation::nature::notOp:
             case Equation::nature::identity:
+            case Equation::nature::extractOp:
                 break;
             }
         }
     }
 
+    if (this->function == nature::extractOp)
+    {
+        text += "[";
+
+        if (this->param1 != -1)
+            text += QString::number(this->param1);
+        else
+            text += "…";
+
+        if (this->param2 != -1)
+        {
+            text += ".." + QString::number(this->param2);
+        }
+
+        text += "]";
+    }
+
     if (this->allowedOperandCount > 1)
         text += " )";
+
+    text += errorTextEnd;
 
     return text;
 }
@@ -345,28 +416,38 @@ Equation::computationFailureCause Equation::getComputationFailureCause() const
 
 bool Equation::isInverted() const
 {
+    bool result = false;
+
     switch (function)
     {
     case nature::notOp:
     case nature::nandOp:
     case nature::norOp:
     case nature::xnorOp:
-        return true;
+        result = true;
         break;
     case nature::identity:
     case nature::andOp:
     case nature::orOp:
     case nature::xorOp:
-        return false;
-        break;
     case nature::equalOp:
     case nature::diffOp:
-        return false;
+    case nature::extractOp:
+    case nature::concatOp:
         break;
-    default:
-        qDebug() << "(Logic equation:) Error! Unkown operator type!";
-        return false;
     }
+
+    return result;
+}
+
+int Equation::getParam1() const
+{
+    return this->param1;
+}
+
+int Equation::getParam2() const
+{
+    return this->param2;
 }
 
 /**
@@ -425,97 +506,165 @@ void Equation::computeCurrentValue()
     if (doCompute)
     {
         QVector<shared_ptr<Signal>> operands = this->getOperands();
+        this->failureCause = computationFailureCause::nofail;
 
-        if (function == nature::notOp)
+        switch (function)
         {
+        case nature::notOp:
             this->currentValue = ! ( operands[0]->getCurrentValue() );
-        }
-        else if (function == nature::identity)
-        {
+            break;
+        case nature::identity:
             this->currentValue = operands[0]->getCurrentValue();
-        }
-        else if ( (function == nature::equalOp) || (function == nature::diffOp) )
+            break;
+        case nature::equalOp:
+        case nature::diffOp:
         {
-            LogicValue result(1);
-
+            LogicValue oneBitResult(1);
             if (function == nature::equalOp)
             {
-                result[0] = ((operands[0]->getCurrentValue() == operands[1]->getCurrentValue()));
+                oneBitResult[0] = ((operands[0]->getCurrentValue() == operands[1]->getCurrentValue()));
             }
             else if (function == nature::diffOp)
             {
-                result[0] = ((operands[0]->getCurrentValue() != operands[1]->getCurrentValue()));
+                oneBitResult[0] = ((operands[0]->getCurrentValue() != operands[1]->getCurrentValue()));
             }
 
-            this->currentValue = result;
+            this->currentValue = oneBitResult;
         }
-        else
-        {
-            LogicValue partialResult(operandsSize);
-
-            switch (function)
+            break;
+        case nature::extractOp:
+            if (this->param1 != -1)
             {
-            case nature::andOp:
-            case nature::nandOp:
-
-                partialResult = LogicValue(operandsSize, true);
-
-                foreach(shared_ptr<Signal> operand, operands)
+                if (this->param2 != -1)
                 {
-                    partialResult &= operand->getCurrentValue();
+                    if (this->param1 >= this->param2)
+                    {
+                        int range = this->param1 - this->param2 + 1;
+                        LogicValue subVector(range);
+                        LogicValue originalValue = operands[0]->getCurrentValue();
+
+                        for (int i = 0 ; i < range ; i++)
+                        {
+                            subVector[i] = originalValue[this->param2 + i];
+                        }
+
+                        this->currentValue = subVector;
+
+                    }
+                    else
+                    {
+                        this->currentValue = LogicValue::getNullValue();
+                        this->failureCause = computationFailureCause::incorrectParameter;
+                    }
                 }
-
-                break;
-
-            case nature::orOp:
-            case nature::norOp:
-
-                foreach(shared_ptr<Signal> operand, operands)
+                else
                 {
-                    partialResult |= operand->getCurrentValue();
+                    if ((uint)param1 < operands[0]->getSize())
+                    {
+                        LogicValue result(1);
+                        result[0] = operands[0]->getCurrentValue()[param1];
+                        this->currentValue = result;
+                    }
+                    else
+                    {
+                        param1 = -1;
+                        this->currentValue = LogicValue::getNullValue();
+                        this->failureCause = computationFailureCause::incorrectParameter;
+                    }
                 }
+            }
+            else
+            {
+                this->currentValue = LogicValue::getNullValue();
+                this->failureCause = computationFailureCause::missingParameter;
+            }
+            break;
+        case nature::concatOp:
+        {
+            int sizeCount = 0;
+            foreach (shared_ptr<Signal> currentOperand, this->getOperands())
+            {
+                sizeCount += currentOperand->getSize();
+            }
 
-                break;
+            LogicValue concatVector(sizeCount);
 
-            case nature::xorOp:
-            case nature::xnorOp:
-
-                foreach(shared_ptr<Signal> operand, operands)
+            int currentBit = sizeCount - 1;
+            foreach (shared_ptr<Signal> currentOperand, this->getOperands())
+            {
+                for (int i = currentOperand->getSize()-1 ; i >= 0 ; i--)
                 {
-                    partialResult ^= operand->getCurrentValue();
+                    concatVector[currentBit] = currentOperand->getCurrentValue()[i];
+                    currentBit--;
                 }
+            }
 
-                break;
-            case nature::equalOp:
-            case nature::diffOp:
-            case nature::notOp:
-            case nature::identity:
-                // Not handled here
-                break;
+            this->currentValue = concatVector;
+        }
+            break;
+        case nature::andOp:
+        case nature::nandOp:
+        {
+            LogicValue partialResult(operandsSize, true);
+            foreach(shared_ptr<Signal> operand, operands)
+            {
+                partialResult &= operand->getCurrentValue();
             }
 
             if (this->isInverted())
                 partialResult = !partialResult;
 
             this->currentValue = partialResult;
+        }
+            break;
+
+        case nature::orOp:
+        case nature::norOp:
+        {
+            LogicValue partialResult(operandsSize);
+            foreach(shared_ptr<Signal> operand, operands)
+            {
+                partialResult |= operand->getCurrentValue();
+            }
+
+            if (this->isInverted())
+                partialResult = !partialResult;
+
+            this->currentValue = partialResult;
+        }
+            break;
+
+        case nature::xorOp:
+        case nature::xnorOp:
+        {
+            LogicValue partialResult(operandsSize);
+            foreach(shared_ptr<Signal> operand, operands)
+            {
+                partialResult ^= operand->getCurrentValue();
+            }
+
+            if (this->isInverted())
+                partialResult = !partialResult;
+
+            this->currentValue = partialResult;
+        }
+            break;
 
         }
-
-        this->failureCause = computationFailureCause::nofail;
     }
     else
     {
         this->currentValue = LogicValue::getNullValue();
     }
 
-    if (previousValue != this->currentValue)
-        emit signalDynamicStateChangedEvent();
+    emit signalDynamicStateChangedEvent();
 
     if (previousValue.getSize() != this->currentValue.getSize())
         emit signalResizedEvent();
+
 }
 
-bool Equation::signalHasSize(shared_ptr<Signal> sig) const
+bool Equation::signalHasSize(shared_ptr<Signal> sig)
 {
     if (sig == nullptr)
         return false;
@@ -525,63 +674,92 @@ bool Equation::signalHasSize(shared_ptr<Signal> sig) const
         return true;
 }
 
+void Equation::decreaseOperandCountInternal()
+{
+    clearOperand(allowedOperandCount-1);
+    this->allowedOperandCount--;
+
+    this->signalOperands.resize(this->allowedOperandCount);
+    this->equationOperands.resize(this->allowedOperandCount);
+}
+
+void Equation::increaseOperandCountInternal()
+{
+    this->allowedOperandCount++;
+
+    this->signalOperands.resize(this->allowedOperandCount);
+    this->equationOperands.resize(this->allowedOperandCount);
+}
+
 uint Equation::getOperandCount() const
 {
     return allowedOperandCount;
 }
 
-bool Equation::increaseOperandCount(bool quiet)
+bool Equation::increaseOperandCount()
 {
-    if ( ( quiet ) ||
-         ( (function != nature::notOp)    &&
-           (function != nature::identity) &&
-           (function != nature::equalOp)  &&
-           (function != nature::diffOp)
-         )
-       )
+    bool result = false;
+
+    switch (function)
     {
-        this->allowedOperandCount++;
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+    case nature::concatOp:
+        this->increaseOperandCountInternal();
 
-        this->signalOperands.resize(this->allowedOperandCount);
-        this->equationOperands.resize(this->allowedOperandCount);
+        emit signalStaticConfigurationChangedEvent();
 
-        if (!quiet)
-            // Causes recomputation
-            emit equationOperandCountChangedEvent();
+        this->computeCurrentValue();
 
-        return true;
+        result = true;
+        break;
+    case nature::notOp:
+    case nature::identity:
+    case nature::equalOp:
+    case nature::diffOp:
+    case nature::extractOp:
+        break;
     }
-    else
-        return false;
+
+    return result;
 }
 
-bool Equation::decreaseOperandCount(bool quiet)
+bool Equation::decreaseOperandCount()
 {
-    if ( ( quiet ) ||
-         ( (function != nature::notOp)    &&
-           (function != nature::identity) &&
-           (function != nature::equalOp)  &&
-           (function != nature::diffOp)
-         )
-       )
+    bool result = false;
+
+    switch (function)
     {
-        if ( (quiet) || (this->allowedOperandCount > 2) )
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+    case nature::concatOp:
+        if (  (this->allowedOperandCount > 2) )
         {
-            clearOperand(allowedOperandCount-1);
-            this->allowedOperandCount--;
+            this->decreaseOperandCountInternal();
 
-            this->signalOperands.resize(this->allowedOperandCount);
-            this->equationOperands.resize(this->allowedOperandCount);
+            emit signalStaticConfigurationChangedEvent();
 
-            if (!quiet)
-                // Causes recomputation
-                emit equationOperandCountChangedEvent();
+            this->computeCurrentValue();
 
-            return true;
+            result = true;
         }
-        else
-            return false;
+
+        break;
+    case nature::notOp:
+    case nature::identity:
+    case nature::equalOp:
+    case nature::diffOp:
+    case nature::extractOp:
+        break;
     }
-    else
-        return false;
+
+    return result;
 }

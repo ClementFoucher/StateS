@@ -33,16 +33,15 @@ using namespace std;
 #include <QHash>
 #include <QList>
 #include <QVector>
-class QString;
 
 // StateS classes
-#include "truthtable.h"
+class TruthTable;
 class Fsm;
+
 
 // For now, use pointers to TruthTables for storage reasons
 // (QHash vs shared_ptr).
 // Should be reviewd a some point.
-
 class FsmVerifier : public QObject
 {
     Q_OBJECT

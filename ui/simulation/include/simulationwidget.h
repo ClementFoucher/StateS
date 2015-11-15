@@ -52,9 +52,10 @@ signals:
     void outputDelayChangedEvent(uint newDelay);
 
 protected:
+    void closeEvent     (QCloseEvent*) override;
     void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
-    void paintEvent(QPaintEvent*) override;
+    void mouseMoveEvent (QMouseEvent*) override;
+    void paintEvent     (QPaintEvent*) override;
 
 private slots:
     void exportToPDF();

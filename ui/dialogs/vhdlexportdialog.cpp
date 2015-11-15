@@ -38,6 +38,11 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 
     QVBoxLayout* layout = new QVBoxLayout(this);
 
+
+    QLabel* warning = new QLabel("<font color=red>" + tr("Warning! Experimental feature. Please consult known_bugs.txt.") + "</font>");
+    warning->setAlignment(Qt::AlignCenter);
+    layout->addWidget(warning);
+
     QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);

@@ -390,6 +390,26 @@ void FsmGraphicState::rebuildRepresentation()
                 else
                     currentActionText = actions[i]->getText(false);
 
+                if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
+                {
+                    int param1 = l_logicState->getActionParam1(actions[i]);
+                    int param2 = l_logicState->getActionParam2(actions[i]);
+
+                    if (param1 != -1)
+                    {
+                        currentActionText += "[";
+                        currentActionText += QString::number(param1);
+
+                        if (param2 != -1)
+                        {
+                            currentActionText += "..";
+                            currentActionText += QString::number(param2);
+                        }
+
+                        currentActionText += "]";
+                    }
+                }
+
                 if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
                     currentActionText += " = 1";
                 else if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)

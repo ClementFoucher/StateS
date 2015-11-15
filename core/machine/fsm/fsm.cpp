@@ -623,7 +623,24 @@ void Fsm::parseActions(QDomElement element, shared_ptr<MachineActuatorComponent>
         else if (actionType == "Assign")
         {
             component->setActionType(signal, MachineActuatorComponent::action_types::assign);
-            component->setActionValue(signal, LogicValue::fromString(currentElement.attribute("Action_Value")));
+
+            QString sparam1 = currentElement.attribute("Param1");
+            QString sparam2 = currentElement.attribute("Param2");
+
+            int param1;
+            int param2;
+
+            if (! sparam1.isEmpty())
+                param1 = sparam1.toInt();
+            else
+                param1 = -1;
+
+            if (! sparam2.isEmpty())
+                param2 = sparam2.toInt();
+            else
+                param2 = -1;
+
+            component->setActionValue(signal, LogicValue::fromString(currentElement.attribute("Action_Value")), param1, param2);
         }
         else
         {
@@ -654,6 +671,8 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
         else if (currentElement.tagName() == "LogicEquation")
         {
             Equation::nature equationType;
+            int param1 = -1;
+            int param2 = -1;
 
             if (currentElement.attribute("Nature") == "not")
                 equationType = Equation::nature::notOp;
@@ -673,6 +692,15 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
                 equationType = Equation::nature::equalOp;
             else if (currentElement.attribute("Nature") == "differs")
                 equationType = Equation::nature::diffOp;
+            else if (currentElement.attribute("Nature") == "concatenate")
+                equationType = Equation::nature::concatOp;
+            else if (currentElement.attribute("Nature") == "extract")
+            {
+                equationType = Equation::nature::extractOp;
+
+                param1 = currentElement.attribute("Param1").toInt();
+                param2 = currentElement.attribute("Param2").toInt();
+            }
             else
             {
                 qDebug() << "(Fsm:) Unexpected equation nature encountered while parsing logic equation: " << currentElement.attribute("Nature");
@@ -706,8 +734,9 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
                 operands.append(operandsMap[i]);
             }
 
-            equation = shared_ptr<Signal>(new Equation(equationType, operands));
+            shared_ptr<Equation> newEquation = shared_ptr<Equation>(new Equation(equationType, operands, param1, param2));
 
+            equation = newEquation;
         }
         else
         {
@@ -754,6 +783,15 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equati
             break;
         case Equation::nature::diffOp:
             stream.writeAttribute("Nature", "differs");
+            break;
+        case Equation::nature::extractOp:
+            stream.writeAttribute("Nature", "extract");
+            stream.writeAttribute("Param1", QString::number(complexEquation->getParam1()));
+            stream.writeAttribute("Param2", QString::number(complexEquation->getParam2()));
+            break;
+        case Equation::nature::concatOp:
+            stream.writeAttribute("Nature", "concatenate");
+            break;
         case Equation::nature::identity:
             qDebug() << "(Fsm) Error! Trying to write identity to save file, while this should be an internal type. Ignored.";
             break;
@@ -809,6 +847,8 @@ void Fsm::writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorCompo
             case MachineActuatorComponent::action_types::assign:
                 stream.writeAttribute("Action_Type", "Assign");
                 stream.writeAttribute("Action_Value", component->getActionValue(action).toString());
+                stream.writeAttribute("Param1", QString::number(component->getActionParam1(action)));
+                stream.writeAttribute("Param2", QString::number(component->getActionParam2(action)));
                 break;
             }
 

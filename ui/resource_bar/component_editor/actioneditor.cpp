@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QTableWidget>
 #include <QKeyEvent>
+#include <QHeaderView>
 
 // StateS classes
 #include "machineactuatorcomponent.h"
@@ -35,6 +36,7 @@
 #include "contextmenu.h"
 #include "machine.h"
 #include "signal.h"
+#include "rangeeditordialog.h"
 
 
 ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title, QWidget* parent) :
@@ -102,6 +104,84 @@ void ActionEditor::keyPressEvent(QKeyEvent* e)
     QWidget::keyPressEvent(e);
 }
 
+void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
+{
+    QPoint correctedPos = actionList->mapFromParent(event->pos());
+    correctedPos.setX(correctedPos.x() - actionList->verticalHeader()->width());
+    correctedPos.setY(correctedPos.y() - actionList->horizontalHeader()->height());
+    QTableWidgetItem* cellUnderMouse = actionList->itemAt(correctedPos);
+
+    if (cellUnderMouse != nullptr)
+    {
+        shared_ptr<Signal> currentSignal = tableItemsMapping[cellUnderMouse].lock();
+        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+
+        if ( (currentSignal != nullptr) && (l_actuator != nullptr) )
+        {
+            this->currentSignal = currentSignal;
+
+            ContextMenu* menu = new ContextMenu();
+            menu->addTitle(tr("Action on signal") + " " + currentSignal->getName());
+
+            QVariant data;
+            data.convert(QVariant::Int);
+            QAction* actionToAdd = nullptr;
+
+            if (l_actuator->getActionType(currentSignal) == MachineActuatorComponent::action_types::assign)
+            {
+
+                actionToAdd = menu->addAction(tr("Affect whole signal"));
+                actionToAdd->setCheckable(true);
+                if (l_actuator->getActionParam1(currentSignal) == -1)
+                    actionToAdd->setChecked(true);
+                data.setValue((int)ContextAction::AffectSwitchWhole);
+                actionToAdd->setData(data);
+
+                actionToAdd = menu->addAction(tr("Affect signal single bit"));
+                actionToAdd->setCheckable(true);
+                if ( (l_actuator->getActionParam1(currentSignal) != -1) && (l_actuator->getActionParam2(currentSignal) == -1) )
+                        actionToAdd->setChecked(true);
+                data.setValue((int)ContextAction::AffectSwitchSingle);
+                actionToAdd->setData(data);
+
+                actionToAdd = menu->addAction(tr("Affect signal range"));
+                actionToAdd->setCheckable(true);
+                if ( (l_actuator->getActionParam1(currentSignal) != -1) && (l_actuator->getActionParam2(currentSignal) != -1) )
+                        actionToAdd->setChecked(true);
+                data.setValue((int)ContextAction::AffectSwitchRange);
+                actionToAdd->setData(data);
+
+                menu->addSeparator();
+
+                if ( (l_actuator->getActionParam1(currentSignal) != -1) || (l_actuator->getActionParam2(currentSignal) != -1) )
+                {
+                    if (l_actuator->getActionParam2(currentSignal) == -1)
+                        actionToAdd = menu->addAction(tr("Edit affected bit"));
+                    else
+                        actionToAdd = menu->addAction(tr("Edit range"));
+
+                    data.setValue((int)ContextAction::AffectEditRange);
+                    actionToAdd->setData(data);
+
+                    menu->addSeparator();
+                }
+            }
+
+            actionToAdd = menu->addAction(tr("Delete action"));
+            data.setValue((int)ContextAction::DeleteAction);
+            actionToAdd->setData(data);
+
+            actionToAdd = menu->addAction(tr("Cancel"));
+            data.setValue((int)ContextAction::Cancel);
+            actionToAdd->setData(data);
+
+            menu->popup(this->mapToGlobal(event->pos()));
+
+            connect(menu, &QMenu::triggered, this, &ActionEditor::treatMenuEventHandler);
+        }
+    }
+}
+
 void ActionEditor::updateContent()
 {
     disconnect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
@@ -110,48 +190,72 @@ void ActionEditor::updateContent()
     actionList->setRowCount(0);
     tableItemsMapping.clear();
 
-    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
 
-    if (actuator != nullptr)
+    if (l_actuator != nullptr)
     {
-        foreach(shared_ptr<Signal> sig, actuator->getActions())
+        foreach(shared_ptr<Signal> sig, l_actuator->getActions())
         {
             actionList->insertRow(actionList->rowCount());
 
-            actionList->setCellWidget(actionList->rowCount()-1, 0, new ActionListEditor(actuator, sig));
+            actionList->setCellWidget(actionList->rowCount()-1, 0, new ActionListEditor(l_actuator, sig));
 
-            QTableWidgetItem* currentTableWidget = new QTableWidgetItem(sig->getName());
+            QString nameText = sig->getName();
+
+            if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::assign)
+            {
+                int param1 = l_actuator->getActionParam1(sig);
+                int param2 = l_actuator->getActionParam2(sig);
+                if (param1 != -1)
+                {
+                    nameText += "[" + QString::number(param1);
+
+                    if (param2 != -1)
+                    {
+                        nameText += ".." + QString::number(param2);
+                    }
+
+                    nameText += "]";
+                }
+            }
+
+            QTableWidgetItem* currentTableWidget = new QTableWidgetItem(nameText);
             currentTableWidget->setFlags(currentTableWidget->flags() ^ Qt::ItemIsEditable);
             actionList->setItem(actionList->rowCount()-1, 1, currentTableWidget);
+            tableItemsMapping[currentTableWidget] = sig;
 
-            LogicValue actionValue = actuator->getActionValue(sig);
+            LogicValue actionValue = l_actuator->getActionValue(sig);
 
 
-            if (actuator->getActionType(sig) == MachineActuatorComponent::action_types::activeOnState)
+            if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::activeOnState)
             {
                 currentTableWidget = new QTableWidgetItem("1");
                 currentTableWidget->setFlags(0);
                 actionList->setItem(actionList->rowCount()-1, 2, currentTableWidget);
+                tableItemsMapping[currentTableWidget] = sig;
             }
-            else if (actuator->getActionType(sig) == MachineActuatorComponent::action_types::pulse)
+            else if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::pulse)
             {
                 currentTableWidget = new QTableWidgetItem("1");
                 currentTableWidget->setFlags(0);
                 actionList->setItem(actionList->rowCount()-1, 2, currentTableWidget);
+                tableItemsMapping[currentTableWidget] = sig;
             }
-            else if (actuator->getActionType(sig) == MachineActuatorComponent::action_types::set)
+            else if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::set)
             {
                 currentTableWidget = new QTableWidgetItem("1");
                 currentTableWidget->setFlags(0);
                 actionList->setItem(actionList->rowCount()-1, 2, currentTableWidget);
+                tableItemsMapping[currentTableWidget] = sig;
             }
-            else if (actuator->getActionType(sig) == MachineActuatorComponent::action_types::reset)
+            else if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::reset)
             {
                 currentTableWidget = new QTableWidgetItem(LogicValue::getValue0(sig->getSize()).toString());
                 currentTableWidget->setFlags(0);
                 actionList->setItem(actionList->rowCount()-1, 2, currentTableWidget);
+                tableItemsMapping[currentTableWidget] = sig;
             }
-            else if (actuator->getActionType(sig) == MachineActuatorComponent::action_types::assign)
+            else if (l_actuator->getActionType(sig) == MachineActuatorComponent::action_types::assign)
             {
                 currentTableWidget = new QTableWidgetItem(actionValue.toString());
                 currentTableWidget->setFlags(currentTableWidget->flags() | Qt::ItemIsEditable);
@@ -167,10 +271,8 @@ void ActionEditor::updateContent()
 
 void ActionEditor::updateButtonsState()
 {
-    QList<QTableWidgetItem*> selection = actionList->selectedItems();
-
     // TODO: handle multiple items when undo is implemented
-    if (selection.count() == 1)
+    if (this->getSelectedSignals().count() == 1)
     {
         this->buttonRemoveAction->setEnabled(true);
     }
@@ -232,12 +334,12 @@ void ActionEditor::removeAction()
 
     if (actuator != nullptr)
     {
-        QList<QTableWidgetItem*> selection = actionList->selectedItems();
+        QList<QString> list = this->getSelectedSignals();
 
         // TODO: handle multiple items when undo is implemented
-        if (selection.count() == 1)
+        if (list.count() == 1)
         {
-            actuator->removeActionByName(selection[0]->text());
+            actuator->removeActionByName(list[0]);
         }
     }
     else
@@ -262,13 +364,17 @@ void ActionEditor::treatMenuAdd(QAction* action)
 
 void ActionEditor::itemValueChangedEventHandler(QTableWidgetItem* item)
 {
-    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    shared_ptr<Signal> l_signal = tableItemsMapping[item].lock();
 
-    if (actuator != nullptr)
+    if ( (l_actuator != nullptr) && (l_signal != nullptr) )
     {
         if (item->column() == 2)
         {
-            actuator->setActionValue(tableItemsMapping[item].lock(), LogicValue::fromString(item->text()));
+            int param1 = l_actuator->getActionParam1(l_signal);
+            int param2 = l_actuator->getActionParam2(l_signal);
+
+            l_actuator->setActionValue(l_signal, LogicValue::fromString(item->text()), param1, param2);
         }
     }
     else
@@ -276,4 +382,106 @@ void ActionEditor::itemValueChangedEventHandler(QTableWidgetItem* item)
         this->updateContent();
     }
 
+}
+
+void ActionEditor::treatMenuEventHandler(QAction* action)
+{
+    QVariant data = action->data();
+    int dataValue = data.toInt();
+
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    shared_ptr<Signal> l_currentSignal = this->currentSignal.lock();
+
+    int param1 = l_actuator->getActionParam1(l_currentSignal);
+    int param2 = l_actuator->getActionParam2(l_currentSignal);
+
+    if ( (l_actuator != nullptr) && (l_currentSignal != nullptr) )
+    {
+        switch (dataValue)
+        {
+        case ContextAction::Cancel:
+            break;
+        case ContextAction::DeleteAction:
+            l_actuator->removeActionByName(l_currentSignal->getName());
+            break;
+        case ContextAction::AffectSwitchWhole:
+            if ( (param1 != -1) || (param2 != -1) )
+            {
+                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                newInitialValue.resize(l_currentSignal->getSize());
+                l_actuator->setActionValue(l_currentSignal, newInitialValue, -1, -1);
+            }
+            break;
+        case ContextAction::AffectSwitchSingle:
+            if (param1 == -1)
+            {
+                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                newInitialValue.resize(1);
+                l_actuator->setActionValue(l_currentSignal, newInitialValue, 0, -1);
+            }
+            else if  (param2 != -1)
+            {
+                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                newInitialValue.resize(1);
+                l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, -1);
+            }
+            break;
+        case ContextAction::AffectSwitchRange:
+            if (param1 == -1)
+            {
+                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                newInitialValue.resize(2);
+                l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
+            }
+            else if  (param2 == -1)
+            {
+                if (param1 != 0)
+                {
+                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                    newInitialValue.resize(param1 + 1);
+                    l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, 0);
+                }
+                else
+                {
+                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                    newInitialValue.resize(2);
+                    l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
+                }
+            }
+            break;
+        case ContextAction::AffectEditRange:
+            unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(l_actuator, l_currentSignal));
+            rangeEditor->exec();
+
+            if (rangeEditor->result() == QDialog::Accepted)
+            {
+                LogicValue newAffectValue = l_actuator->getActionValue(l_currentSignal);
+                int newParam1 = rangeEditor->getParam1();
+                int newParam2 = rangeEditor->getParam2();
+
+                if (newParam2 != -1)
+                    newAffectValue.resize(newParam1 - newParam2 + 1);
+                else
+                    newAffectValue.resize(1);
+                l_actuator->setActionValue(l_currentSignal, newAffectValue, newParam1, newParam2);
+            }
+            break;
+        }
+    }
+
+    this->currentSignal.reset();
+}
+
+QList<QString> ActionEditor::getSelectedSignals()
+{
+    QList<QString> selectionString;
+
+    foreach (QModelIndex index, this->actionList->selectionModel()->selectedRows(1))
+    {
+        QTableWidgetItem* currentItem = this->actionList->item(index.row(), 1);
+        if (currentItem != nullptr)
+            selectionString.append(currentItem->text());
+    }
+
+    return selectionString;
 }

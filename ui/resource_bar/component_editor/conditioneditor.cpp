@@ -49,7 +49,7 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
     conditionTitle->setAlignment(Qt::AlignCenter);
     this->layout->addWidget(conditionTitle, 0, 0, 1, 2);
 
-    this->conditionText = new QLabel("...");
+    this->conditionText = new QLabel("…");
     this->layout->addWidget(this->conditionText, 1, 0, 1, 2);
 
     this->buttonSetCondition = new QPushButton(tr("Set condition"));

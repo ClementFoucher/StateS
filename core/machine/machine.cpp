@@ -528,6 +528,11 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
         signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name)));
         this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
 
+        if (! value.isNull())
+        {
+            signal->resize(value.getSize());
+        }
+
         this->rebuildComponentVisualization();
 
         emit outputListChangedEvent();

@@ -30,10 +30,8 @@
 using namespace std;
 
 // StateS classes
-class Fsm;
 class FsmState;
 class FsmGraphicTransition;
-class Signal;
 class Equation;
 
 

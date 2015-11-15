@@ -33,6 +33,7 @@
 #include "signal.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
+#include "contextmenu.h"
 
 
 SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent) :
@@ -280,7 +281,7 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
     else if (event->key() == Qt::Key::Key_Delete)
     {
         // TODO: hanlde multiple deletion when undo is implemented
-        if (this->signalsList->selectionModel()->selectedRows().count() == 1)
+        if (this->getSelectedSignals().count() == 1)
         {
             removeSelectedSignals();
         }
@@ -306,6 +307,78 @@ void SignalListEditor::keyReleaseEvent(QKeyEvent *event)
 
     if (transmitEvent)
         QWidget::keyPressEvent(event);
+}
+
+void SignalListEditor::contextMenuEvent(QContextMenuEvent *event)
+{
+    QPoint correctedPos = signalsList->mapFromParent(event->pos());
+    correctedPos.setX(correctedPos.x() - signalsList->verticalHeader()->width());
+    correctedPos.setY(correctedPos.y() - signalsList->horizontalHeader()->height());
+    QTableWidgetItem* cellUnderMouse = signalsList->itemAt(correctedPos);
+
+    if (cellUnderMouse != nullptr)
+    {
+        QList<QString> list = this->getSelectedSignals();
+        if (list.count() == 1)
+        {
+            shared_ptr<Signal> currentSignal = associatedSignals[cellUnderMouse].lock();
+
+            if (currentSignal != nullptr)
+            {
+                this->currentSignal = currentSignal;
+
+                ContextMenu* menu = new ContextMenu();
+                menu->addTitle(tr("Action on signal") + " " + currentSignal->getName());
+
+                QVariant data;
+                data.convert(QVariant::Int);
+                QAction* actionToAdd = nullptr;
+
+                actionToAdd = menu->addAction(tr("Up"));
+                data.setValue((int)ContextAction::Up);
+                actionToAdd->setData(data);
+
+                actionToAdd = menu->addAction(tr("Down"));
+                data.setValue((int)ContextAction::Down);
+                actionToAdd->setData(data);
+
+                menu->addSeparator();
+
+                actionToAdd = menu->addAction(tr("Delete signal"));
+                data.setValue((int)ContextAction::DeleteSignal);
+                actionToAdd->setData(data);
+
+                actionToAdd = menu->addAction(tr("Cancel"));
+                data.setValue((int)ContextAction::Cancel);
+                actionToAdd->setData(data);
+
+                menu->popup(this->mapToGlobal(event->pos()));
+
+                connect(menu, &QMenu::triggered, this, &SignalListEditor::treatMenuEventHandler);
+            }
+        }
+        else if (list.count() != 0)
+        {
+            ContextMenu* menu = new ContextMenu();
+            menu->addTitle(tr("Action on all selected signals"));
+
+            QVariant data;
+            data.convert(QVariant::Int);
+            QAction* actionToAdd = nullptr;
+
+            actionToAdd = menu->addAction(tr("Delete signals"));
+            data.setValue((int)ContextAction::DeleteSignal);
+            actionToAdd->setData(data);
+
+            actionToAdd = menu->addAction(tr("Cancel"));
+            data.setValue((int)ContextAction::Cancel);
+            actionToAdd->setData(data);
+
+            menu->popup(this->mapToGlobal(event->pos()));
+
+            connect(menu, &QMenu::triggered, this, &SignalListEditor::treatMenuEventHandler);
+        }
+    }
 }
 
 
@@ -391,6 +464,11 @@ void SignalListEditor::endAddSignal()
 
             if (initialValue.getSize() < size)
                 initialValue.resize(size);
+        }
+        else
+        {
+            // To force correct size (actual value is ignored)
+            initialValue = LogicValue(this->currentSignalSize->text().toInt());
         }
 
         // If success, list is reloaded through events,
@@ -619,6 +697,27 @@ void SignalListEditor::removeSelectedSignals()
     }
 }
 
+void SignalListEditor::treatMenuEventHandler(QAction* action)
+{
+    QVariant data = action->data();
+    int dataValue = data.toInt();
+
+    switch (dataValue)
+    {
+    case ContextAction::Cancel:
+        break;
+    case ContextAction::DeleteSignal:
+        this->removeSelectedSignals();
+        break;
+    case ContextAction::Up:
+        this->raiseSignal();
+        break;
+    case ContextAction::Down:
+        this->lowerSignal();
+        break;
+    }
+}
+
 void SignalListEditor::switchMode(mode newMode)
 {
     if (newMode != this->currentMode)
@@ -758,4 +857,18 @@ void SignalListEditor::editCurrentCell(bool erroneous)
     }
 
     editor->setFocus();
+}
+
+QList<QString> SignalListEditor::getSelectedSignals()
+{
+    QList<QString> selectionString;
+
+    foreach (QModelIndex index, this->signalsList->selectionModel()->selectedRows())
+    {
+        QTableWidgetItem* currentItem = this->signalsList->item(index.row(), 1);
+        if (currentItem != nullptr)
+            selectionString.append(currentItem->text());
+    }
+
+    return selectionString;
 }

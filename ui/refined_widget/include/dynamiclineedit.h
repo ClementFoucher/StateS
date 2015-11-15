@@ -46,6 +46,8 @@ public:
 signals:
     void newTextAvailableEvent(const QString& text);
     void userCancelEvent();
+    void upKeyPressed();
+    void downKeyPressed();
 
 protected:
     void focusInEvent   (QFocusEvent* event) override;

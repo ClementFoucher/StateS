@@ -51,6 +51,10 @@ public:
 
     shared_ptr<Signal> getResultEquation() const;
 
+protected:
+    void keyPressEvent        (QKeyEvent* event)   override;
+    void mousePressEvent      (QMouseEvent* event) override;
+
 private:
     weak_ptr<Machine> machine;
 

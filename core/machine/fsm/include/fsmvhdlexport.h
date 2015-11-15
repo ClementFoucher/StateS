@@ -31,7 +31,6 @@ class QString;
 
 // StateS classes
 class Fsm;
-class Equation;
 class Signal;
 
 

@@ -28,7 +28,6 @@ using namespace std;
 
 // Qt classes
 #include <QVector>
-class QString;
 
 // StateS classes
 class Signal;

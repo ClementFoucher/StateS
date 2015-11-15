@@ -29,9 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-class QPixmap;
-
 // StateS classes
 class StatesUi;
 class Machine;

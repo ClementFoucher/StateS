@@ -43,6 +43,10 @@
         <source>before submitting a ticket)</source>
         <translation>avant de soumettre un ticket)</translation>
     </message>
+    <message>
+        <source>Contact:</source>
+        <translation>Contact :</translation>
+    </message>
 </context>
 <context>
     <name>ActionEditor</name>
@@ -69,6 +73,38 @@
     <message>
         <source>Value</source>
         <translation>Valeur</translation>
+    </message>
+    <message>
+        <source>Action on signal</source>
+        <translation>Action sur le signal</translation>
+    </message>
+    <message>
+        <source>Affect whole signal</source>
+        <translation>Affecter la totalité du signal</translation>
+    </message>
+    <message>
+        <source>Affect signal single bit</source>
+        <translation>Affecter un seul bit</translation>
+    </message>
+    <message>
+        <source>Affect signal range</source>
+        <translation>Affecter un sous-vecteur</translation>
+    </message>
+    <message>
+        <source>Edit affected bit</source>
+        <translation>Éditer le bit affecté</translation>
+    </message>
+    <message>
+        <source>Edit range</source>
+        <translation>Éditer le sous-vecteur</translation>
+    </message>
+    <message>
+        <source>Delete action</source>
+        <translation>Supprimer l&apos;action</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -189,7 +225,7 @@
     </message>
     <message>
         <source>Drag and drop equation components from here...</source>
-        <translation>Glissez puis déposez les composants d&apos;équation ci-dessous...</translation>
+        <translation type="vanished">Glissez puis déposez les composants d&apos;équation ci-dessous...</translation>
     </message>
     <message>
         <source>Inputs</source>
@@ -205,7 +241,7 @@
     </message>
     <message>
         <source>... to here.</source>
-        <translation>... vers cette zone.</translation>
+        <translation type="vanished">... vers cette zone.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -227,6 +263,14 @@
         <source>StateS equation editor</source>
         <translation>Editeur d&apos;équation de StateS</translation>
     </message>
+    <message>
+        <source>Drag and drop equation components from here</source>
+        <translation>Glissez puis déposez les composants d&apos;équation ci-dessous</translation>
+    </message>
+    <message>
+        <source>to here.</source>
+        <translation>à cet endroit.</translation>
+    </message>
 </context>
 <context>
     <name>Fsm</name>
@@ -240,7 +284,7 @@
     </message>
 </context>
 <context>
-    <name>FsmGraphicalState</name>
+    <name>FsmGraphicState</name>
     <message>
         <source>State</source>
         <translation>État</translation>
@@ -254,12 +298,20 @@
         <translation>Éditer</translation>
     </message>
     <message>
+        <source>Draw transition from this state</source>
+        <translation>Créer une transition ayant pour origine cet état</translation>
+    </message>
+    <message>
         <source>Rename</source>
         <translation>Renommer</translation>
     </message>
     <message>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+    <message>
+        <source>Set active</source>
+        <translation>Activer</translation>
     </message>
     <message>
         <source>Delete current state?</source>
@@ -270,14 +322,6 @@
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <source>User confirmation needed</source>
-        <translation>Confirmation de l&apos;utilisateur requise</translation>
-    </message>
-    <message>
-        <source>Draw transition from this state</source>
-        <translation>Créer une transition ayant pour origine cet état</translation>
-    </message>
-    <message>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
@@ -286,12 +330,12 @@
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <source>Set active</source>
-        <translation>Activer</translation>
+        <source>User confirmation needed</source>
+        <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
 </context>
 <context>
-    <name>FsmGraphicalTransition</name>
+    <name>FsmGraphicTransition</name>
     <message>
         <source>Transition</source>
         <translation>Transition</translation>
@@ -311,6 +355,80 @@
     <message>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
+    <name>FsmGraphicalState</name>
+    <message>
+        <source>State</source>
+        <translation type="vanished">État</translation>
+    </message>
+    <message>
+        <source>Set initial</source>
+        <translation type="vanished">Définir comme initial</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="vanished">Éditer</translation>
+    </message>
+    <message>
+        <source>Rename</source>
+        <translation type="vanished">Renommer</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="vanished">Supprimer</translation>
+    </message>
+    <message>
+        <source>Delete current state?</source>
+        <translation type="vanished">Supprimer l&apos;état courant ?</translation>
+    </message>
+    <message>
+        <source>The connected transition will be deleted</source>
+        <translation type="vanished">La transition connectée sera supprimée</translation>
+    </message>
+    <message>
+        <source>User confirmation needed</source>
+        <translation type="vanished">Confirmation de l&apos;utilisateur requise</translation>
+    </message>
+    <message>
+        <source>Draw transition from this state</source>
+        <translation type="vanished">Créer une transition ayant pour origine cet état</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="vanished">Toutes les</translation>
+    </message>
+    <message>
+        <source>connected transitions will be deleted</source>
+        <translation type="vanished">transitions connectées seront supprimées</translation>
+    </message>
+    <message>
+        <source>Set active</source>
+        <translation type="vanished">Activer</translation>
+    </message>
+</context>
+<context>
+    <name>FsmGraphicalTransition</name>
+    <message>
+        <source>Transition</source>
+        <translation type="vanished">Transition</translation>
+    </message>
+    <message>
+        <source>Change source</source>
+        <translation type="vanished">Changer de source</translation>
+    </message>
+    <message>
+        <source>Change target</source>
+        <translation type="vanished">Changer de cible</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="vanished">Éditer</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="vanished">Supprimer</translation>
     </message>
 </context>
 <context>
@@ -493,7 +611,7 @@
     </message>
     <message>
         <source>The sizes of operands does not match between each other</source>
-        <translation>Les opérandes sont de taille différente</translation>
+        <translation type="vanished">Les opérandes sont de taille différente</translation>
     </message>
     <message>
         <source>Set existing equation as operand of dropped equation</source>
@@ -502,6 +620,34 @@
     <message>
         <source>Delete equation?</source>
         <translation>Supprimer l&apos;équation ?</translation>
+    </message>
+    <message>
+        <source>The sizes of operands do not match between each other</source>
+        <translation>Les opérandes sont de tailles différentes</translation>
+    </message>
+    <message>
+        <source>A parameter of the equation is missing value</source>
+        <translation>Un paramètre de l&apos;équation est manquant</translation>
+    </message>
+    <message>
+        <source>A parameter of the equation has an invalid value</source>
+        <translation>Un paramètre de l&apos;équation à une valeur incorrecte</translation>
+    </message>
+    <message>
+        <source>Edit index</source>
+        <translation>Éditer l&apos;index</translation>
+    </message>
+    <message>
+        <source>Edit range</source>
+        <translation>Éditer le sous-vecteur</translation>
+    </message>
+    <message>
+        <source>Extract single bit</source>
+        <translation>Extraire un seul bit</translation>
+    </message>
+    <message>
+        <source>Extract range</source>
+        <translation>Extraire un sous-vecteur</translation>
     </message>
 </context>
 <context>
@@ -764,6 +910,25 @@
     </message>
 </context>
 <context>
+    <name>RangeEditorDialog</name>
+    <message>
+        <source>Choose extracted bit</source>
+        <translation>Choisissez le bit à extraire</translation>
+    </message>
+    <message>
+        <source>Choose range</source>
+        <translation>Choisissez le sous-vecteur</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+</context>
+<context>
     <name>ResourceBar</name>
     <message>
         <source>Builder</source>
@@ -886,6 +1051,30 @@
     <message>
         <source>Cancel</source>
         <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Action on signal</source>
+        <translation>Action sur le signal</translation>
+    </message>
+    <message>
+        <source>Up</source>
+        <translation>Monter</translation>
+    </message>
+    <message>
+        <source>Down</source>
+        <translation>Descendre</translation>
+    </message>
+    <message>
+        <source>Delete signal</source>
+        <translation>Supprimer le signal</translation>
+    </message>
+    <message>
+        <source>Action on all selected signals</source>
+        <translation>Action sur la totalité des signaux sélectionnés</translation>
+    </message>
+    <message>
+        <source>Delete signals</source>
+        <translation>Supprimer les signaux</translation>
     </message>
 </context>
 <context>
@@ -1107,6 +1296,10 @@
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
+    <message>
+        <source>use ctrl+S shortcut to avoid confirm dialog</source>
+        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+    </message>
 </context>
 <context>
     <name>TransitionEditorTab</name>
@@ -1190,6 +1383,10 @@
     <message>
         <source>Export machine to VHDL</source>
         <translation>Exporter la machine en VHDL</translation>
+    </message>
+    <message>
+        <source>Warning! Experimental feature. Please consult known_bugs.txt.</source>
+        <translation>Attention ! Fonctionnalité expériementale. Veuillez consulter known_bugs.txt.</translation>
     </message>
 </context>
 </TS>

@@ -29,9 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QString>
-
 // StateS basic types
 #include "logicvalue.h"
 
@@ -60,7 +57,7 @@ public:
     bool setInitialValue(const LogicValue& newInitialValue);
     void reinitialize();
 
-    virtual QString getText(bool colored = false) const;
+    virtual QString getText(bool activeColored = false) const;
 
     bool setCurrentValue(const LogicValue& value);
     virtual LogicValue getCurrentValue() const;

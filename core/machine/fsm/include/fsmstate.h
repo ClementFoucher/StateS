@@ -34,7 +34,6 @@ using namespace std;
 #include <QPointF>
 
 // StateS classes
-class Fsm;
 class FsmTransition;
 class FsmGraphicState;
 

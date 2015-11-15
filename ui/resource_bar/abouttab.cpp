@@ -49,6 +49,11 @@ AboutTab::AboutTab(QWidget* parent) :
     copyrightLabel->setWordWrap(true);
     layout->addWidget(copyrightLabel);
 
+    QLabel* emailLabel = new QLabel(tr("Contact:") + " <a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>" );
+    emailLabel->setAlignment(Qt::AlignCenter);
+    emailLabel->setWordWrap(true);
+    layout->addWidget(emailLabel);
+
     QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br />GNU General Public Licence " + tr("version") + " 2");
     licenseLabel->setAlignment(Qt::AlignCenter);
     licenseLabel->setWordWrap(true);

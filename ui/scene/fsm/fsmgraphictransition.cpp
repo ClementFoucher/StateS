@@ -389,10 +389,19 @@ void FsmGraphicTransition::updateText()
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText(true) + "</div>");
             if (conditionLine != nullptr)
             {
-                if (l_logicTransition->getCondition()->isTrue())
-                    conditionLine->setPen(activePen);
+                shared_ptr<Signal> condition = l_logicTransition->getCondition();
+                if (condition != nullptr)
+                {
+                    if (condition->isTrue())
+                        conditionLine->setPen(activePen);
+                    else
+                        conditionLine->setPen(inactivePen);
+                }
                 else
-                    conditionLine->setPen(inactivePen);
+                {
+                    // Missing condition is implicitly 1
+                    conditionLine->setPen(activePen);
+                }
             }
         }
         else
@@ -438,6 +447,27 @@ void FsmGraphicTransition::updateText()
                 currentActionText += " = 1";
             else if (l_logicTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
                 currentActionText += " = 0";
+            else if (l_logicTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
+            {
+                int param1 = l_logicTransition->getActionParam1(actions[i]);
+                int param2 = l_logicTransition->getActionParam2(actions[i]);
+
+                if (param1 != -1)
+                {
+                    currentActionText += "[";
+                    currentActionText += QString::number(param1);
+
+                    if (param2 != -1)
+                    {
+                        currentActionText += "..";
+                        currentActionText += QString::number(param2);
+                    }
+
+                    currentActionText += "]";
+                }
+
+                currentActionText += " = " + l_logicTransition->getActionValue(actions[i]).toString();
+            }
 
             actionText->setHtml(currentActionText);
 

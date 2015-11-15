@@ -91,7 +91,10 @@ SOURCES += \
     ui/static/svgimagegenerator.cpp \
     ui/scene/fsm/fsmgraphicstate.cpp \
     ui/scene/fsm/fsmgraphictransition.cpp \
-    ui/scene/fsm/fsmgraphictransitionneighborhood.cpp
+    ui/scene/fsm/fsmgraphictransitionneighborhood.cpp \
+    ui/refined_widget/lineeditwithupdownbuttons.cpp \
+    ui/rangeextractorwidget.cpp \
+    ui/resource_bar/component_editor/rangeeditordialog.cpp
 
 
 
@@ -169,7 +172,10 @@ HEADERS  += \
     ui/static/include/svgimagegenerator.h \
     ui/scene/fsm/include/fsmgraphicstate.h \
     ui/scene/fsm/include/fsmgraphictransition.h \
-    ui/scene/fsm/include/fsmgraphictransitionneighborhood.h
+    ui/scene/fsm/include/fsmgraphictransitionneighborhood.h \
+    ui/refined_widget/include/lineeditwithupdownbuttons.h \
+    ui/include/rangeextractorwidget.h \
+    ui/resource_bar/component_editor/include/rangeeditordialog.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

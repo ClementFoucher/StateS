@@ -31,7 +31,6 @@ using namespace std;
 
 // Qt classes
 #include <QMap>
-class QString;
 class QPushButton;
 class QTableWidget;
 class QTableWidgetItem;
@@ -45,6 +44,9 @@ class ActionEditor : public QWidget
 {
     Q_OBJECT
 
+private:
+    enum ContextAction { Cancel = 0, DeleteAction = 1, AffectSwitchWhole = 2, AffectSwitchSingle = 3, AffectSwitchRange = 4, AffectEditRange = 5};
+
 public:
     explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
 
@@ -52,6 +54,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent* e) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
 private slots:
     void updateContent();
@@ -61,6 +64,11 @@ private slots:
     void removeAction();
     void treatMenuAdd(QAction*);
     void itemValueChangedEventHandler(QTableWidgetItem* item);
+
+    void treatMenuEventHandler(QAction* action);
+
+private:
+    QList<QString> getSelectedSignals();
 
 private:
     weak_ptr<MachineActuatorComponent> actuator;
@@ -72,6 +80,8 @@ private:
 
     QPushButton* buttonAddAction = nullptr;
     QPushButton* buttonRemoveAction = nullptr;
+
+    weak_ptr<Signal> currentSignal;
 };
 
 #endif // ACTIONEDITOR_H

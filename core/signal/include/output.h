@@ -25,9 +25,6 @@
 // Parent
 #include "io.h"
 
-// Qt classes
-class QString;
-
 
 class Output : public IO
 {

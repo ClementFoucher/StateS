@@ -85,7 +85,7 @@ private slots:
     void editSelectedItem();
     void renameSelectedItem();
 
-    void machineUnsavedStateChangedEventHandler(bool isUnsaved);
+    void machineUnsavedStateChangedEventHandler(bool);
 
 private:
     void updateTitle();

@@ -19,24 +19,37 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IO_H
-#define IO_H
+#ifndef RANGEEDITORDIALOG_H
+#define RANGEEDITORDIALOG_H
 
-// Parent
-#include "signal.h"
+// Base class
+#include <QDialog>
+
+// C++ classes
+#include "memory"
+using namespace std;
+
+// StateS classes
+class MachineActuatorComponent;
+class Signal;
+class Equation;
 
 
-class IO : public Signal
+class RangeEditorDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    enum class direction{input, output, inout};
+    RangeEditorDialog(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent = nullptr);
 
-public:
-    explicit IO(const QString& name);
+    int getParam1();
+    int getParam2();
 
-    virtual direction getDirection() const = 0;
+private:
+    weak_ptr<MachineActuatorComponent> actuator;
+    weak_ptr<Signal> signal;
+
+    shared_ptr<Equation> equation;
 };
 
-#endif // IO_H
+#endif // RANGEEDITORDIALOG_H

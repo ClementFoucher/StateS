@@ -25,9 +25,6 @@
 // Parent
 #include <QVector>
 
-// Qt classes
-class QString;
-
 
 class LogicValue : private QVector<bool>
 {
@@ -76,7 +73,7 @@ public:
     QString toString() const;
 
 private:
-    bool foo; // Used for erroneous refencences to a member
+    bool foo; // Used for erroneous references to a member
 };
 
 #endif // LOGICVALUE_H

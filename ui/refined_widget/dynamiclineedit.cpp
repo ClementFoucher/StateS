@@ -79,11 +79,23 @@ void DynamicLineEdit::focusInEvent(QFocusEvent* event)
 
 void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
 {
+    bool transmitEvent = true;
+
     if (event->key() == Qt::Key::Key_Escape)
     {
         emit userCancelEvent();
+        transmitEvent = false;
     }
-    else
+    else if (event->key() == Qt::Key::Key_Up)
+    {
+        emit upKeyPressed();
+    }
+    else if (event->key() == Qt::Key::Key_Down)
+    {
+        emit downKeyPressed();
+    }
+
+    if (transmitEvent)
     {
         QLineEdit::keyPressEvent(event);
     }

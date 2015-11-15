@@ -29,12 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QVector>
-
-// StateS classes
-class Operator;
-
 
 /**
  * @brief
@@ -63,8 +57,12 @@ class Operator;
 class Equation : public Signal
 {
     Q_OBJECT
+private:
+    static bool signalHasSize(shared_ptr<Signal> sig);
 
 public:
+    // This enum is always treated using a switch in order to obtain a warning
+    // when adding a new member in all places it is used.
     enum class nature{notOp,  // Not equations always have exactly one operand
                       andOp,
                       orOp,
@@ -74,6 +72,8 @@ public:
                       xnorOp,
                       equalOp, // Equal equations always have exactly two operand and are size one
                       diffOp,  // Diff  equations always have exactly two operand and are size one
+                      extractOp, // Extract equations always have exacly one operand
+                      concatOp,
                       identity // For internal use only, exactly one operand
                      };
 
@@ -81,26 +81,32 @@ public:
                                        nofail,
                                        nullOperand,
                                        incompleteOperand,
-                                       sizeMismatch
+                                       sizeMismatch,
+                                       missingParameter,
+                                       incorrectParameter,
+                                       notImplemented
                                       };
 
 public:
-    explicit Equation(nature function, uint allowedOperandCount);
-    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
+    explicit Equation(nature function, uint allowedOperandCount, int param1 = -1, int param2 = -1);
+    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1 = -1, int param2 = -1);
 
     shared_ptr<Equation> clone() const;
 
     uint getSize() const override;
     bool resize(uint) override;
 
-    QString getText(bool colored = false) const override;
+    QString getText(bool activeColored = false) const override;
 
     LogicValue getCurrentValue() const override;
     computationFailureCause getComputationFailureCause() const;
 
     nature getFunction() const;
-    void setFunction(const nature& newFunction);
+    void setFunction(const nature& newFunction, int param1 = -1, int param2 = -1);
+    void setParameters(int param1, int param2 = -1);
     bool isInverted() const;
+    int getParam1() const;
+    int getParam2() const;
 
     shared_ptr<Signal> getOperand(uint i) const;
     bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false);
@@ -109,34 +115,35 @@ public:
     QVector<shared_ptr<Signal>> getOperands() const;
 
     uint getOperandCount() const;
-    bool increaseOperandCount(bool quiet = false);
-    bool decreaseOperandCount(bool quiet = false);
-
-signals:
-    void equationOperandChangedEvent();
-    void equationOperandCountChangedEvent();
-    void equationFunctionChangedEvent();
+    bool increaseOperandCount();
+    bool decreaseOperandCount();
 
 private slots:
     void computeCurrentValue();
 
 private:
-    bool signalHasSize(shared_ptr<Signal> sig) const;
+    void increaseOperandCountInternal();
+    void decreaseOperandCountInternal();
 
+private:
     // Current value is stored instead of dynamically computed
     // to avoid emit change events if value acually didn't changed
     LogicValue currentValue = LogicValue::getNullValue();
     computationFailureCause failureCause = computationFailureCause::uncomputed;
 
     nature function;
-    // Different storage for different ownership
-    QVector<weak_ptr<Signal>> signalOperands;
+    // Different storage for different ownership (weak/shared)
+    QVector<weak_ptr<Signal>>     signalOperands;
     QVector<shared_ptr<Equation>> equationOperands;
 
     // This size hold the maximum operands count
     // It can be increased or decreased (min 2 operands)
     // except for constant size operators (ident, not, eq, diff)
     uint allowedOperandCount = 0;
+
+    // Parameters
+    int param1 = -1;
+    int param2 = -1;
 };
 
 #endif // EQUATION_H

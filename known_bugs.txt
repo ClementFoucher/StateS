@@ -7,15 +7,19 @@
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Biggest transition selection box hides smaller transitions when multiple transitions between states,
-- Escape key have to be pushed twice to cancel signal creation/edition,
+- Escape key has to be pushed twice to cancel signal creation/edition,
 - Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
-- When adding a signal, tab key causes inconsistent behavior.
+- When adding a signal, tab key causes inconsistent behavior,
+- Active on state action not available for vector signals,
+- Ctrl+s shortcurt may not be handled when focus is on a list,
+- A signal can only be added once in an action list => unable to assign multiple ranges simultaneously.
 
 // VHDL export issues:
 
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
-- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax.
+- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax,
+- Concatenate and extract operation not handled.
 
 // Not bugs, but still:
 

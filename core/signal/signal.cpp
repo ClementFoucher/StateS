@@ -88,9 +88,9 @@ bool Signal::resize(uint newSize)
         return false;
 }
 
-QString Signal::getText(bool colored) const
+QString Signal::getText(bool activeColored) const
 {
-    if (!colored)
+    if (!activeColored)
     {
         return this->name;
     }

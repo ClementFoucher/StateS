@@ -26,7 +26,7 @@ But please check known_bugs.txt file first.
 Any suggestion on StateS can be done on the forum at address https://sourceforge.net/p/states/discussion/
 Please only suggest improvments for implemented features while I haven't implemented all the base features yet.
 
-And remember StateS in at early statges of development!
+And remember StateS in at early stage of development!
 It is not intended to be complete, or even useful for now!
 
 

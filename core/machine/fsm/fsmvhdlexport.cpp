@@ -283,6 +283,7 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
                     stream << "\"" << LogicValue::getValue0(sig->getSize()).toString() << "\"";
                 break;
             case MachineActuatorComponent::action_types::assign:
+                // TODO: address range
                 if (sig->getSize() == 1)
                     stream << "'" << state->getActionValue(sig).toString() <<"'";
                 else
@@ -364,7 +365,14 @@ QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<cons
                 case Equation::nature::diffOp:
                     text += " /= ";
                     break;
-                default:
+                case Equation::nature::concatOp:
+                    // TODO
+                    break;
+                case Equation::nature::extractOp:
+                    // TODO
+                    break;
+                case Equation::nature::notOp:
+                case Equation::nature::identity:
                     break;
                 }
             }

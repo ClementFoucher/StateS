@@ -337,12 +337,17 @@ void StatesUi::renameSelectedItem()
     this->resourceBar->renameSelectedItem();
 }
 
-void StatesUi::machineUnsavedStateChangedEventHandler(bool isUnsaved)
+void StatesUi::machineUnsavedStateChangedEventHandler(bool)
 {
-    if (isUnsaved)
-        this->actionSaveCurrent->setEnabled(true);
-    else
-        this->actionSaveCurrent->setEnabled(false);
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        if (this->currentFilePath.length() != 0)
+            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
+        else
+            this->actionSaveCurrent->setEnabled(false);
+    }
 
     this->updateTitle();
 }

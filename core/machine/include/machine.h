@@ -33,10 +33,8 @@ using namespace std;
 #include <QHash>
 class QGraphicsItem;
 
-// StateS basic types
-#include "logicvalue.h"
-
 // StateS classes
+#include "logicvalue.h"
 class MachineBuilder;
 class Signal;
 class Input;
