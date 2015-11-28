@@ -50,8 +50,6 @@ private:
 public:
     explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
 
-    void changeActuator(shared_ptr<MachineActuatorComponent> actuator);
-
 protected:
     void keyPressEvent(QKeyEvent* e) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
@@ -68,7 +66,7 @@ private slots:
     void treatMenuEventHandler(QAction* action);
 
 private:
-    QList<QString> getSelectedSignals();
+    QList<shared_ptr<Signal> > getSelectedSignals();
 
 private:
     weak_ptr<MachineActuatorComponent> actuator;

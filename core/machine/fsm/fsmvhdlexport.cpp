@@ -372,6 +372,7 @@ QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<cons
                     // TODO
                     break;
                 case Equation::nature::notOp:
+                case Equation::nature::constant:
                 case Equation::nature::identity:
                     break;
                 }

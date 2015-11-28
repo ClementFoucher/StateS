@@ -36,6 +36,8 @@ Equation::Equation(nature function, uint operandCount, int param1, int param2) :
 
     switch(this->function)
     {
+    case nature::constant:
+        // Constant will be a faked 1 operand, but actually 0
     case nature::notOp:
     case nature::identity:
     case nature::extractOp:
@@ -47,7 +49,7 @@ Equation::Equation(nature function, uint operandCount, int param1, int param2) :
             signalOperands.resize(1);
             equationOperands.resize(1);
 
-            qDebug() << "(Equation) Error ! Trying to create a NOT equation with size != 1 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 1.";
+            qDebug() << "(Equation) Error ! Trying to create a fixed size 1 equation with size != 1 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 1.";
         }
         break;
     case nature::equalOp:
@@ -59,10 +61,7 @@ Equation::Equation(nature function, uint operandCount, int param1, int param2) :
             signalOperands.resize(2);
             equationOperands.resize(2);
 
-            if (function == nature::equalOp)
-                qDebug() << "(Equation) Error ! Trying to create a EQUAL equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
-            else
-                qDebug() << "(Equation) Error ! Trying to create a DIFFERENT equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
+            qDebug() << "(Equation) Error ! Trying to create a fixed size 2 equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
         }
         break;
     case nature::andOp:
@@ -97,11 +96,17 @@ Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandLi
 
     // Causes recomputation
     this->computeCurrentValue();
+
+    this->notYetConstructed = false;
 }
 
 shared_ptr<Equation> Equation::clone() const
 {
     shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands(), this->param1, this->param2));
+
+    if (this->function == nature::constant)
+        eq->setCurrentValue(this->currentValue);
+
     return eq;
 }
 
@@ -173,6 +178,10 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
             // Muted: do not causes recomputation
             increaseOperandCountInternal();
         }
+        break;
+    case nature::constant:
+        // Ignored
+        break;
     }
 
     this->function = newFunction;
@@ -323,81 +332,86 @@ QString Equation::getText(bool activeColored) const
 
     text += errorTextBegin;
 
-    // Inversion oeprator
-    if (this->isInverted())
-        text += '/';
-
-    if (this->allowedOperandCount > 1)
-        text += "( ";
-
-    for (uint i = 0 ; i < this->allowedOperandCount ; i++)
+    if (this->function == nature::constant)
     {
-        shared_ptr<Signal> operand = getOperand(i);
-        if (operand != nullptr)
-        {
-            text += operand->getText(activeColored);
-        }
-        else
-        {
-            //if (activeColored)
-          //      text += "<font color=\"red\">…</font>";
-            //else
-                text += "…";
-        }
+        text += this->currentValue.toString();
+    }
+    else
+    {
+        // Inversion oeprator
+        if (this->isInverted())
+            text += '/';
 
-        // Add operator, except for last operand
-        if (i < this->allowedOperandCount - 1)
+        if (this->allowedOperandCount > 1)
+            text += "( ";
+
+        for (uint i = 0 ; i < this->allowedOperandCount ; i++)
         {
-            switch(function)
+            shared_ptr<Signal> operand = getOperand(i);
+            if (operand != nullptr)
             {
-            case Equation::nature::andOp:
-            case Equation::nature::nandOp:
-                text += " • ";
-                break;
-            case Equation::nature::orOp:
-            case Equation::nature::norOp:
-                text += " + ";
-                break;
-            case Equation::nature::xorOp:
-            case Equation::nature::xnorOp:
-                text += " ⊕ ";
-                break;
-            case Equation::nature::equalOp:
-                text += " = ";
-                break;
-            case Equation::nature::diffOp:
-                text += " ≠ ";
-                break;
-            case Equation::nature::concatOp:
-                text += " : ";
-                break;
-            case Equation::nature::notOp:
-            case Equation::nature::identity:
-            case Equation::nature::extractOp:
-                break;
+                text += operand->getText(activeColored);
+            }
+            else
+            {
+                text += "…";
+            }
+
+            // Add operator, except for last operand
+            if (i < this->allowedOperandCount - 1)
+            {
+                switch(function)
+                {
+                case nature::andOp:
+                case nature::nandOp:
+                    text += " • ";
+                    break;
+                case nature::orOp:
+                case nature::norOp:
+                    text += " + ";
+                    break;
+                case nature::xorOp:
+                case nature::xnorOp:
+                    text += " ⊕ ";
+                    break;
+                case nature::equalOp:
+                    text += " = ";
+                    break;
+                case nature::diffOp:
+                    text += " ≠ ";
+                    break;
+                case nature::concatOp:
+                    text += " : ";
+                    break;
+                case nature::notOp:
+                case nature::identity:
+                case nature::extractOp:
+                case nature::constant:
+                    break;
+                }
             }
         }
-    }
 
-    if (this->function == nature::extractOp)
-    {
-        text += "[";
-
-        if (this->param1 != -1)
-            text += QString::number(this->param1);
-        else
-            text += "…";
-
-        if (this->param2 != -1)
+        if (this->function == nature::extractOp)
         {
-            text += ".." + QString::number(this->param2);
+            text += "[";
+
+            if (this->param1 != -1)
+                text += QString::number(this->param1);
+            else
+                text += "…";
+
+            if (this->param2 != -1)
+            {
+                text += ".." + QString::number(this->param2);
+            }
+
+            text += "]";
         }
 
-        text += "]";
+        if (this->allowedOperandCount > 1)
+            text += " )";
     }
-
-    if (this->allowedOperandCount > 1)
-        text += " )";
 
     text += errorTextEnd;
 
@@ -407,6 +421,19 @@ QString Equation::getText(bool activeColored) const
 LogicValue Equation::getCurrentValue() const
 {
     return this->currentValue;
+}
+
+bool Equation::setCurrentValue(const LogicValue& value)
+{
+    if (this->function == nature::constant)
+    {
+        this->currentValue = value;
+
+        emit Signal::signalStaticConfigurationChangedEvent();
+        return true;
+    }
+    else
+        return false;
 }
 
 Equation::computationFailureCause Equation::getComputationFailureCause() const
@@ -434,6 +461,7 @@ bool Equation::isInverted() const
     case nature::diffOp:
     case nature::extractOp:
     case nature::concatOp:
+    case nature::constant:
         break;
     }
 
@@ -473,6 +501,9 @@ QVector<shared_ptr<Signal>> Equation::getOperands() const
 
 void Equation::computeCurrentValue()
 {
+    if (this->function == nature::constant)
+        return;
+
     bool doCompute = true;
 
     uint operandsSize = 0;
@@ -493,9 +524,12 @@ void Equation::computeCurrentValue()
         }
         else if ( (operandsSize != 0) && (currentOperand->getSize() != operandsSize) )
         {
-            this->failureCause = computationFailureCause::sizeMismatch;
-            doCompute = false;
-            break;
+            if (this->function != nature::concatOp)
+            {
+                this->failureCause = computationFailureCause::sizeMismatch;
+                doCompute = false;
+                break;
+            }
         }
         else if (operandsSize == 0)
             operandsSize = currentOperand->getSize();
@@ -508,7 +542,7 @@ void Equation::computeCurrentValue()
         QVector<shared_ptr<Signal>> operands = this->getOperands();
         this->failureCause = computationFailureCause::nofail;
 
-        switch (function)
+        switch (this->function)
         {
         case nature::notOp:
             this->currentValue = ! ( operands[0]->getCurrentValue() );
@@ -649,7 +683,9 @@ void Equation::computeCurrentValue()
             this->currentValue = partialResult;
         }
             break;
-
+        case nature::constant:
+            // Nothing to do
+            break;
         }
     }
     else
@@ -659,8 +695,10 @@ void Equation::computeCurrentValue()
 
     emit signalDynamicStateChangedEvent();
 
-    if (previousValue.getSize() != this->currentValue.getSize())
-        emit signalResizedEvent();
+    if ( (!this->notYetConstructed) && (previousValue.getSize() != this->currentValue.getSize()) )
+    {
+        emit signalResizedEvent(this->shared_from_this());
+    }
 
 }
 
@@ -693,7 +731,9 @@ void Equation::increaseOperandCountInternal()
 
 uint Equation::getOperandCount() const
 {
-    return allowedOperandCount;
+    if (this->function != nature::constant)
+        return allowedOperandCount;
+    else return 0;
 }
 
 bool Equation::increaseOperandCount()
@@ -722,6 +762,7 @@ bool Equation::increaseOperandCount()
     case nature::equalOp:
     case nature::diffOp:
     case nature::extractOp:
+    case nature::constant:
         break;
     }
 
@@ -758,6 +799,7 @@ bool Equation::decreaseOperandCount()
     case nature::equalOp:
     case nature::diffOp:
     case nature::extractOp:
+    case nature::constant:
         break;
     }
 

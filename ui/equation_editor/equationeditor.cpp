@@ -98,7 +98,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 
     }
 
-    if (machine->getConstants().count() != 0)
+    //if (machine->getConstants().count() != 0)
     {
         QVBoxLayout* constantListLayout = new QVBoxLayout();
         constantListLayout->setAlignment(Qt::AlignTop);
@@ -108,11 +108,12 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
         constantsTitle->setAlignment(Qt::AlignCenter);
         constantListLayout->addWidget(constantsTitle);
 
+        constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant, 1)), true));
+
         foreach (shared_ptr<Signal> constant, machine->getConstants())
         {
             constantListLayout->addWidget(new GraphicEquation(constant, true));
         }
-
     }
 
     // Display operators

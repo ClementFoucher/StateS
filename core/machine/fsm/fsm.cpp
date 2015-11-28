@@ -623,30 +623,31 @@ void Fsm::parseActions(QDomElement element, shared_ptr<MachineActuatorComponent>
         else if (actionType == "Assign")
         {
             component->setActionType(signal, MachineActuatorComponent::action_types::assign);
-
-            QString sparam1 = currentElement.attribute("Param1");
-            QString sparam2 = currentElement.attribute("Param2");
-
-            int param1;
-            int param2;
-
-            if (! sparam1.isEmpty())
-                param1 = sparam1.toInt();
-            else
-                param1 = -1;
-
-            if (! sparam2.isEmpty())
-                param2 = sparam2.toInt();
-            else
-                param2 = -1;
-
-            component->setActionValue(signal, LogicValue::fromString(currentElement.attribute("Action_Value")), param1, param2);
         }
         else
         {
             qDebug() << "(Fsm:) Unexpected action type encountered while parsing action list: " << currentElement.attribute("Action_Type");
             break;
         }
+
+
+        QString sparam1 = currentElement.attribute("Param1");
+        QString sparam2 = currentElement.attribute("Param2");
+
+        int param1;
+        int param2;
+
+        if (! sparam1.isEmpty())
+            param1 = sparam1.toInt();
+        else
+            param1 = -1;
+
+        if (! sparam2.isEmpty())
+            param2 = sparam2.toInt();
+        else
+            param2 = -1;
+
+        component->setActionValue(signal, LogicValue::fromString(currentElement.attribute("Action_Value")), param1, param2);
     }
 }
 
@@ -673,6 +674,7 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
             Equation::nature equationType;
             int param1 = -1;
             int param2 = -1;
+            LogicValue constantValue;
 
             if (currentElement.attribute("Nature") == "not")
                 equationType = Equation::nature::notOp;
@@ -700,6 +702,12 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
 
                 param1 = currentElement.attribute("Param1").toInt();
                 param2 = currentElement.attribute("Param2").toInt();
+            }
+            else if (currentElement.attribute("Nature") == "constant")
+            {
+                equationType = Equation::nature::constant;
+
+                constantValue = LogicValue::fromString(currentElement.attribute("Value"));
             }
             else
             {
@@ -735,6 +743,9 @@ shared_ptr<Signal> Fsm::parseEquation(QDomElement element) const
             }
 
             shared_ptr<Equation> newEquation = shared_ptr<Equation>(new Equation(equationType, operands, param1, param2));
+
+            if (equationType == Equation::nature::constant)
+                newEquation->setCurrentValue(constantValue);
 
             equation = newEquation;
         }
@@ -792,6 +803,10 @@ void Fsm::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equati
         case Equation::nature::concatOp:
             stream.writeAttribute("Nature", "concatenate");
             break;
+        case Equation::nature::constant:
+            stream.writeAttribute("Nature", "constant");
+            stream.writeAttribute("Value", complexEquation->getCurrentValue().toString());
+            break;
         case Equation::nature::identity:
             qDebug() << "(Fsm) Error! Trying to write identity to save file, while this should be an internal type. Ignored.";
             break;
@@ -846,11 +861,15 @@ void Fsm::writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorCompo
                 break;
             case MachineActuatorComponent::action_types::assign:
                 stream.writeAttribute("Action_Type", "Assign");
-                stream.writeAttribute("Action_Value", component->getActionValue(action).toString());
-                stream.writeAttribute("Param1", QString::number(component->getActionParam1(action)));
-                stream.writeAttribute("Param2", QString::number(component->getActionParam2(action)));
                 break;
             }
+
+            if (!component->getActionValue(action).isNull())
+                stream.writeAttribute("Action_Value", component->getActionValue(action).toString());
+            if (component->getActionParam1(action) != -1)
+                stream.writeAttribute("Param1", QString::number(component->getActionParam1(action)));
+            if (component->getActionParam2(action) != -1)
+                stream.writeAttribute("Param2", QString::number(component->getActionParam2(action)));
 
             stream.writeEndElement(); // Action
         }

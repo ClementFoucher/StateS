@@ -34,8 +34,9 @@ using namespace std;
 #include <QMap>
 
 // StateS classes
+#include "logicvalue.h"
 class Signal;
-class RangeExtractorWidget;
+class EditableEquation;
 
 
 class GraphicEquation : public QFrame
@@ -45,7 +46,7 @@ class GraphicEquation : public QFrame
 private:
     enum CommonAction { Cancel = 0 };
     enum DropAction { ReplaceExisting = 1, ExistingAsOperand = 2};
-    enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8};
+    enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
 
 public:
     explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
@@ -82,6 +83,7 @@ private slots:
     void treatMenuEventHandler(QAction* action);
     void treatExtractIndex1Changed(int newIndex);
     void treatExtractIndex2Changed(int newIndex);
+    void treatConstantValueChanged(LogicValue newValue);
     void updateBorder();
 
 private:
@@ -109,7 +111,7 @@ private:
     bool completeRendering = false;
     bool mouseIn = false;
 
-    RangeExtractorWidget* rangeWidget = nullptr;
+    EditableEquation* editorWidget = nullptr;
 
     bool inMouseEvent = false;
     bool lockSignal;

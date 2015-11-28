@@ -33,7 +33,7 @@
 
 
 RangeExtractorWidget::RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent) :
-    QWidget(parent)
+    EditableEquation(parent)
 {
     this->equation = equation;
 

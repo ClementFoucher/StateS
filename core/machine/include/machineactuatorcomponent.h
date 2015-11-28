@@ -37,7 +37,15 @@ using namespace std;
 #include "logicvalue.h"
 class Signal;
 
-
+/**
+ * @brief The MachineActuatorComponent class manages actions on signals.
+ *
+ * If signal is size 1 or extract 1 bit (param2 = -1) => value is always implicit
+ * Else (vector signal with whole range or sub-range) => values is implicit for
+ *   set and reset, explicit for others
+ *
+ * With implicit values, actionValue does not exist.
+ */
 class MachineActuatorComponent : public MachineComponent
 {
     Q_OBJECT
@@ -50,7 +58,6 @@ public:
     explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
 
     QList<shared_ptr<Signal>> getActions();
-    void setActions(const QList<shared_ptr<Signal>>& newActions);
     void clearActions();
 
     void addActionByName(const QString& signalName);
@@ -58,6 +65,7 @@ public:
     bool removeActionByName(const QString& signalName);
 
     void activateActions();
+    void deactivateActions();
 
     void setActionType(shared_ptr<Signal> signal, action_types type);
     bool setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1 = -1, int param2 = -1);
@@ -86,7 +94,7 @@ protected:
 
 private slots:
     void removeAction(shared_ptr<Signal> signal);
-    void signalResizedEventHandler();
+    void signalResizedEventHandler(shared_ptr<Signal> emitter);
     void cleanActionList();
 
 private:

@@ -87,14 +87,13 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
+    this->setActuator(logicState);
     this->setPen(pen);
 
     this->setFlag(QGraphicsItem::ItemIsMovable);
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setFlag(ItemSendsScenePositionChanges);
-
-    this->actionsBox = new QGraphicsItemGroup();
 
     logicState->setGraphicRepresentation(this);
     connect(logicState.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicState::rebuildRepresentation);
@@ -110,8 +109,6 @@ FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
 
 FsmGraphicState::~FsmGraphicState()
 {
-    delete actionsBox;
-
     shared_ptr<FsmState> l_logicState = this->logicState.lock();
 
     if (l_logicState != nullptr)
@@ -156,7 +153,11 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 
     // Reposition action box
     if (scene() != nullptr)
-        actionsBox->setPos(mapToScene(0,0));
+    {
+        QGraphicsItemGroup* actionBox = this->getActionsBox();
+        if (actionBox != nullptr)
+            actionBox->setPos(mapToScene(radius + 20, 0));
+    }
 
     return QGraphicsEllipseItem::itemChange(change, value);
 }
@@ -338,11 +339,6 @@ void FsmGraphicState::askDelete()
         owningFsm->removeState(l_logicState);
 }
 
-QGraphicsItemGroup* FsmGraphicState::getActionsBox() const
-{
-    return actionsBox;
-}
-
 void FsmGraphicState::rebuildRepresentation()
 {
     // Clear all child items
@@ -368,14 +364,17 @@ void FsmGraphicState::rebuildRepresentation()
             insideCircle->setPen(pen);
         }
 
-        qDeleteAll(actionsBox->childItems());
-        actionsBox->childItems().clear();
+        this->buildActionsBox(pen, true);
+        QGraphicsItemGroup* actionsBox = this->getActionsBox();
+        if (actionsBox != nullptr)
+        {
+            actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
+        }
 
-        QList<shared_ptr<Signal>> actions = l_logicState->getActions();
+        /**QList<shared_ptr<Signal>> actions = l_logicState->getActions();
         if (actions.count() != 0)
         {
             qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
-            qreal maxTextWidth = 0;
 
             for (int i = 0 ; i < actions.count() ; i++)
             {
@@ -411,7 +410,12 @@ void FsmGraphicState::rebuildRepresentation()
                 }
 
                 if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
-                    currentActionText += " = 1";
+                {
+                    if (actions[i]->getSize() == 1)
+                        currentActionText += " = 1";
+                    else
+                        currentActionText += " = " + LogicValue::getValue1(actions[i]->getSize()).toString() + "<sub>b</sub>";
+                }
                 else if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
                 {
                     if (actions[i]->getSize() == 1)
@@ -438,14 +442,6 @@ void FsmGraphicState::rebuildRepresentation()
             actionBorderPath.lineTo(20 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
             actionBorderPath.lineTo(20,                -((qreal)actions.count()/2)*textHeight);
             actionBorderPath.lineTo(20,                0);
-
-            QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
-            stateActionsOutline->setPen(pen);
-            stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
-            stateActionsOutline->setZValue(0);
-            stateActionsOutline->setPos(radius, 0);
-
-            actionsBox->setPos(mapToScene(0,0));// Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
-        }
+Z        }*/
     }
 }

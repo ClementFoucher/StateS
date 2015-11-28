@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FSM>
+<FSM Name="Demo">
     <Signals>
         <Input Name="bootOK" Size="1" Initial_value="0"/>
         <Input Name="check" Size="1" Initial_value="0"/>
@@ -14,32 +14,30 @@
         <Output Name="power" Size="1"/>
     </Signals>
     <States>
-        <State Name="Init" X="29" Y="-266">
+        <State Name="Init" X="223.2" Y="-178.6">
             <Actions>
                 <Action Signal_Type="Output" Name="power" Action_Type="Pulse"/>
             </Actions>
         </State>
-        <State Name="On" X="304" Y="-14">
+        <State Name="On" X="498.2" Y="73.4">
             <Actions>
                 <Action Signal_Type="Output" Name="power" Action_Type="Pulse"/>
             </Actions>
         </State>
-        <State Name="Error" X="-76" Y="262">
+        <State Name="Error" X="118.2" Y="349.4">
             <Actions>
                 <Action Signal_Type="Output" Name="alarm" Action_Type="Pulse"/>
             </Actions>
         </State>
-        <State Name="Off" IsInitial="true" X="-371" Y="-32">
-            <Actions/>
-        </State>
-        <State Name="Blink_led_0" X="287" Y="360">
+        <State Name="Off" IsInitial="true" X="-176.8" Y="55.4"/>
+        <State Name="Blink_led_0" X="493.103" Y="448.722">
             <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="Assign" Action_Value="01"/>
+                <Action Signal_Type="Output" Name="leds" Action_Type="ActiveOnState" Param1="0"/>
             </Actions>
         </State>
-        <State Name="Blink_led_1" X="806" Y="327">
+        <State Name="Blink_led_1" X="1079.55" Y="424.98">
             <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="Assign" Action_Value="10"/>
+                <Action Signal_Type="Output" Name="leds" Action_Type="ActiveOnState" Param1="1"/>
             </Actions>
         </State>
     </States>
@@ -48,21 +46,11 @@
             <Condition>
                 <LogicVariable Name="bootOK"/>
             </Condition>
-            <Actions/>
-        </Transition>
-        <Transition Source="Off" Target="Off">
-            <Condition>
-                <LogicVariable Name="check"/>
-            </Condition>
-            <Actions>
-                <Action Signal_Type="Output" Name="checkOK" Action_Type="Pulse"/>
-            </Actions>
         </Transition>
         <Transition Source="On" Target="Error">
             <Condition>
                 <LogicVariable Name="error"/>
             </Condition>
-            <Actions/>
         </Transition>
         <Transition Source="On" Target="Off">
             <Condition>
@@ -79,13 +67,11 @@
                     </Operand>
                 </LogicEquation>
             </Condition>
-            <Actions/>
         </Transition>
-        <Transition Source="Off" Target="Error">
+        <Transition Source="On" Target="Blink_led_0">
             <Condition>
-                <LogicVariable Name="error"/>
+                <LogicVariable Name="suspend"/>
             </Condition>
-            <Actions/>
         </Transition>
         <Transition Source="Error" Target="Off">
             <Condition>
@@ -95,7 +81,19 @@
                     </Operand>
                 </LogicEquation>
             </Condition>
-            <Actions/>
+        </Transition>
+        <Transition Source="Off" Target="Off">
+            <Condition>
+                <LogicVariable Name="check"/>
+            </Condition>
+            <Actions>
+                <Action Signal_Type="Output" Name="checkOK" Action_Type="Pulse"/>
+            </Actions>
+        </Transition>
+        <Transition Source="Off" Target="Error">
+            <Condition>
+                <LogicVariable Name="error"/>
+            </Condition>
         </Transition>
         <Transition Source="Off" Target="Init">
             <Condition>
@@ -116,23 +114,10 @@
                 <Action Signal_Type="Output" Name="boot" Action_Type="Pulse"/>
             </Actions>
         </Transition>
-        <Transition Source="On" Target="Blink_led_0">
-            <Condition>
-                <LogicVariable Name="suspend"/>
-            </Condition>
-            <Actions/>
-        </Transition>
         <Transition Source="Blink_led_0" Target="Blink_led_1">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
-            <Actions/>
-        </Transition>
-        <Transition Source="Blink_led_1" Target="Blink_led_0">
-            <Condition>
-                <LogicVariable Name="suspend"/>
-            </Condition>
-            <Actions/>
         </Transition>
         <Transition Source="Blink_led_0" Target="On">
             <Condition>
@@ -142,9 +127,11 @@
                     </Operand>
                 </LogicEquation>
             </Condition>
-            <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="Reset"/>
-            </Actions>
+        </Transition>
+        <Transition Source="Blink_led_1" Target="Blink_led_0">
+            <Condition>
+                <LogicVariable Name="suspend"/>
+            </Condition>
         </Transition>
         <Transition Source="Blink_led_1" Target="On">
             <Condition>
@@ -154,9 +141,6 @@
                     </Operand>
                 </LogicEquation>
             </Condition>
-            <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="Reset"/>
-            </Actions>
         </Transition>
     </Transitions>
 </FSM>

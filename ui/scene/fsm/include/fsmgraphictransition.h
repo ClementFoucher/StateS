@@ -23,7 +23,7 @@
 #define FSMGRAPHICTRANSITION_H
 
 // Parents
-#include <QObject>
+#include "graphicactuator.h"
 #include <QGraphicsItemGroup>
 
 // C++ classes
@@ -47,7 +47,7 @@ class FsmGraphicTransitionNeighborhood;
 // the changes made, and all appropriate actions will be taken wrt. logic FSM,
 // or discard changes and delete dynamic parameters.
 
-class FsmGraphicTransition : public QObject, public QGraphicsItemGroup
+class FsmGraphicTransition : public GraphicActuator, public QGraphicsItemGroup
 {
     Q_OBJECT
 
@@ -89,8 +89,7 @@ public:
 
     FsmGraphicTransitionNeighborhood* helloIMYourNewNeighbor();
 
-    QGraphicsTextItem  * getConditionText() const;
-    QGraphicsItemGroup * getActionsBox()    const;
+    QGraphicsTextItem* getConditionText() const;
 
 signals:
     void editCalledEvent(shared_ptr<FsmTransition>);
@@ -134,7 +133,7 @@ private:
     QGraphicsItem*      arrowBody     = nullptr;
     QGraphicsItem*      arrowEnd      = nullptr;
     QGraphicsTextItem*  conditionText = nullptr;
-    QGraphicsItemGroup* actionsBox    = nullptr;
+    //QGraphicsItemGroup* actionsBox    = nullptr;
     QGraphicsLineItem*  conditionLine = nullptr;
     QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
     qreal sceneAngle = 0;

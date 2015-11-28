@@ -70,7 +70,6 @@ FsmGraphicTransition::FsmGraphicTransition()
     currentPen = &standardPen;
 
     conditionText = new QGraphicsTextItem();
-    actionsBox    = new QGraphicsItemGroup();
 
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -90,6 +89,7 @@ FsmGraphicTransition::FsmGraphicTransition(FsmGraphicState* source, const QPoint
 FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition) :
     FsmGraphicTransition()
 {
+    this->setActuator(logicTransition);
     logicTransition->setGraphicRepresentation(this);
     connect(logicTransition.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
     connect(logicTransition.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicTransition::updateText);
@@ -120,7 +120,6 @@ FsmGraphicTransition::~FsmGraphicTransition()
     quitNeighboorhood();
 
     delete conditionText;
-    delete actionsBox;
 
     shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
 
@@ -143,8 +142,10 @@ void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transiti
     // This function can be called only once, we never reaffect a graphic transition
     if (this->logicTransition.expired())
     {
+        this->setActuator(transition);
+
         connect(transition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
-        connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                    this, &FsmGraphicTransition::updateText);
+        connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                   this, &FsmGraphicTransition::updateText);
 
         this->logicTransition = transition;
 
@@ -420,76 +421,7 @@ void FsmGraphicTransition::updateText()
     //
     // Actions
 
-    if (l_logicTransition != nullptr)
-    {
-        qDeleteAll(actionsBox->childItems());
-        actionsBox->childItems().clear();
-
-        QList<shared_ptr<Signal>> actions = l_logicTransition->getActions();
-
-        qreal maxTextWidth = 0;
-
-        Machine::mode currentMode = l_logicTransition->getOwningFsm()->getCurrentMode();
-
-        for (int i = 0 ; i < actions.count() ; i++)
-        {
-            QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getName(), actionsBox);
-
-            QString currentActionText;
-
-            if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
-                currentActionText = actions[i]->getText(true);
-            else
-                currentActionText = actions[i]->getText(false);
-
-
-            if (l_logicTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
-                currentActionText += " = 1";
-            else if (l_logicTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
-                currentActionText += " = 0";
-            else if (l_logicTransition->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
-            {
-                int param1 = l_logicTransition->getActionParam1(actions[i]);
-                int param2 = l_logicTransition->getActionParam2(actions[i]);
-
-                if (param1 != -1)
-                {
-                    currentActionText += "[";
-                    currentActionText += QString::number(param1);
-
-                    if (param2 != -1)
-                    {
-                        currentActionText += "..";
-                        currentActionText += QString::number(param2);
-                    }
-
-                    currentActionText += "]";
-                }
-
-                currentActionText += " = " + l_logicTransition->getActionValue(actions[i]).toString();
-            }
-
-            actionText->setHtml(currentActionText);
-
-            if (maxTextWidth < actionText->boundingRect().width())
-                maxTextWidth = actionText->boundingRect().width();
-            actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
-            actionText->setZValue(1);
-        }
-
-        qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
-
-        QPainterPath actionBorderPath;
-        actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
-        actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
-        actionBorderPath.lineTo(maxTextWidth, 0);
-        actionBorderPath.lineTo(0,            0);
-
-        QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
-        stateActionsOutline->setPen(*currentPen);
-        stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
-        stateActionsOutline->setZValue(0);
-    }
+    this->buildActionsBox(*currentPen, false);
 }
 
 void FsmGraphicTransition::updateDisplay()
@@ -726,8 +658,8 @@ void FsmGraphicTransition::updateDisplay()
         // Place arrow end on correct side
 
         if (((currentMode == mode::standardMode)      && (neighbors->getSource() == this->source)) ||
-                ((currentMode == mode::dynamicTargetMode) && (neighbors->getSource() == this->source)) ||
-                ((currentMode == mode::dynamicSourceMode) && (neighbors->getSource() == this->dynamicState)))
+            ((currentMode == mode::dynamicTargetMode) && (neighbors->getSource() == this->source)) ||
+            ((currentMode == mode::dynamicSourceMode) && (neighbors->getSource() == this->dynamicState)))
         {
             arrowEnd->setPos(curveTarget);
             arrowEnd->setRotation(135-endAngle1);
@@ -745,7 +677,10 @@ void FsmGraphicTransition::updateDisplay()
     }
 
     conditionText->setPos(mapToScene(curveMiddle) + QPointF(0, 5));
-    actionsBox->setPos(mapToScene(curveMiddle + conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+
+    QGraphicsItemGroup* actionBox = this->getActionsBox();
+    if (actionBox != nullptr)
+        actionBox->setPos(mapToScene(curveMiddle + conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
 
     treatSelectionBox();
 }
@@ -945,12 +880,6 @@ QGraphicsTextItem* FsmGraphicTransition::getConditionText() const
 {
     return conditionText;
 }
-
-QGraphicsItemGroup* FsmGraphicTransition::getActionsBox() const
-{
-    return actionsBox;
-}
-
 
 void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {

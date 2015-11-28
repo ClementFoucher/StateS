@@ -226,6 +226,11 @@ void FsmSimulator::forceStateActivation(shared_ptr<FsmState> stateToActivate)
 
 void FsmSimulator::activateTransition(shared_ptr<FsmTransition> transition)
 {
+    shared_ptr<FsmTransition> l_latestTransition = this->latestTransitionCrossed.lock();
+
+    if (l_latestTransition != nullptr)
+        l_latestTransition->deactivateActions();
+
     transition->activateActions();
     this->latestTransitionCrossed = transition;
 

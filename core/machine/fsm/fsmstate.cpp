@@ -37,7 +37,7 @@ FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name) :
 {
     this->name = name;
 
-    this->setAllowedActionTypes(activeOnState | pulse | set | reset | assign);
+    this->setAllowedActionTypes(activeOnState | set | reset | assign);
 
     // Propagates local events to the more general events
     connect(this, &FsmState::stateRenamedEvent,           this, &MachineComponent::componentStaticConfigurationChangedEvent);
@@ -182,19 +182,7 @@ void FsmState::setActive(bool value)
     if (value == true)
         this->activateActions();
     else
-    {
-        // Disable active on state actions on state leave
-        foreach(weak_ptr<Signal> sig, this->actions)
-        {
-            shared_ptr<Signal> signal = sig.lock();
-
-            if (signal != nullptr)
-            {
-                if (actionType[signal->getName()] == MachineActuatorComponent::action_types::activeOnState)
-                    signal->resetValue();
-            }
-        }
-    }
+        this->deactivateActions();
 
     emit stateLogicStateChangedEvent();
 }

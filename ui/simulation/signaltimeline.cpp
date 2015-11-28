@@ -34,7 +34,7 @@
 #include "output.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget *simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
     QWidget(parent)
 {
     // If this parameter is not null, this is only for this connection

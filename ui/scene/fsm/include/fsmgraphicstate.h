@@ -23,7 +23,7 @@
 #define FSMGRAPHICSTATE_H
 
 // Parents
-#include <QObject>
+#include "graphicactuator.h"
 #include <QGraphicsEllipseItem>
 
 // C++ classes
@@ -38,7 +38,7 @@ class QAction;
 class FsmState;
 
 
-class FsmGraphicState : public QObject, public QGraphicsEllipseItem
+class FsmGraphicState : public GraphicActuator, public QGraphicsEllipseItem
 {
     Q_OBJECT
 
@@ -60,8 +60,6 @@ public:
     shared_ptr<FsmState> getLogicState() const;
 
     static qreal getRadius();
-
-    QGraphicsItemGroup* getActionsBox() const;
 
     // Raised visibility (should be protected) to allow direct calls:
     // Needed cause an event can be manually transmitted to various items
@@ -88,7 +86,6 @@ private:
     weak_ptr<FsmState> logicState;
 
     QGraphicsTextItem*  stateName  = nullptr;
-    QGraphicsItemGroup* actionsBox = nullptr;
 
     bool moveEventEnabled = false;
 

@@ -23,7 +23,7 @@
 #define RANGEEXTRACTORWIDGET_H
 
 // Parent
-#include <QWidget>
+#include "editableequation.h"
 
 // C++ classes
 #include <memory>
@@ -37,15 +37,15 @@ class LineEditWithUpDownButtons;
 class Equation;
 
 
-class RangeExtractorWidget : public QWidget
+class RangeExtractorWidget : public EditableEquation
 {
     Q_OBJECT
 public:
     explicit RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent = nullptr);
 
-    bool validEdit();
-    bool cancelEdit();
-    void setEdited(bool edited);
+    bool validEdit() override;
+    bool cancelEdit() override;
+    void setEdited(bool edited) override;
 
 signals:
     void value1Changed(int newValue);

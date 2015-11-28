@@ -1,7 +1,7 @@
 
-******************************
-* StateS v. 0.3.9 Known Bugs *
-******************************
+*******************************
+* StateS v. 0.3.10 Known Bugs *
+*******************************
 
 // The following behaviors are known:
 
@@ -10,9 +10,9 @@
 - Escape key has to be pushed twice to cancel signal creation/edition,
 - Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
 - When adding a signal, tab key causes inconsistent behavior,
-- Active on state action not available for vector signals,
 - Ctrl+s shortcurt may not be handled when focus is on a list,
-- A signal can only be added once in an action list => unable to assign multiple ranges simultaneously.
+- A signal can only be added once in an action list => unable to assign multiple ranges simultaneously,
+- Active on state signals on initial state: timeline do not show this action if we change state at first clock cycle.
 
 // VHDL export issues:
 

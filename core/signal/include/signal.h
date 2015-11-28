@@ -59,7 +59,7 @@ public:
 
     virtual QString getText(bool activeColored = false) const;
 
-    bool setCurrentValue(const LogicValue& value);
+    virtual bool setCurrentValue(const LogicValue& value);
     virtual LogicValue getCurrentValue() const;
 
     bool resetValue();
@@ -84,7 +84,7 @@ signals:
 
     // Specific events detail
     void signalRenamedEvent();
-    void signalResizedEvent();
+    void signalResizedEvent(shared_ptr<Signal> emitter);
     void SignalInitialValueChangedEvent();
 
     // Deletion event

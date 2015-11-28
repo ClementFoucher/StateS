@@ -14,8 +14,7 @@ These features will be implemented... some day.
 ** Core **
 
 - Integer type signals support, allowing basic operations like increment,
-- Signal to signal affectation, instead of just constant to values,
-- Allow adressing sub-ranges in multi-bit signals and concatenate signals.
+- Signal to signal affectation, instead of just constant to values.
 
 ** Long-term **
 

@@ -74,6 +74,7 @@ public:
                       diffOp,  // Diff  equations always have exactly two operand and are size one
                       extractOp, // Extract equations always have exacly one operand
                       concatOp,
+                      constant, // To allow dynamically creating constants (which are not machine signals)
                       identity // For internal use only, exactly one operand
                      };
 
@@ -99,6 +100,7 @@ public:
     QString getText(bool activeColored = false) const override;
 
     LogicValue getCurrentValue() const override;
+    bool setCurrentValue(const LogicValue& value) override;
     computationFailureCause getComputationFailureCause() const;
 
     nature getFunction() const;
@@ -144,6 +146,9 @@ private:
     // Parameters
     int param1 = -1;
     int param2 = -1;
+
+    //
+    bool notYetConstructed = true;
 };
 
 #endif // EQUATION_H

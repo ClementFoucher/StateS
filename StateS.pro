@@ -94,7 +94,10 @@ SOURCES += \
     ui/scene/fsm/fsmgraphictransitionneighborhood.cpp \
     ui/refined_widget/lineeditwithupdownbuttons.cpp \
     ui/rangeextractorwidget.cpp \
-    ui/resource_bar/component_editor/rangeeditordialog.cpp
+    ui/resource_bar/component_editor/rangeeditordialog.cpp \
+    ui/scene/graphicactuator.cpp \
+    ui/equation_editor/constantvaluesetter.cpp \
+    ui/editableequation.cpp
 
 
 
@@ -175,7 +178,10 @@ HEADERS  += \
     ui/scene/fsm/include/fsmgraphictransitionneighborhood.h \
     ui/refined_widget/include/lineeditwithupdownbuttons.h \
     ui/include/rangeextractorwidget.h \
-    ui/resource_bar/component_editor/include/rangeeditordialog.h
+    ui/resource_bar/component_editor/include/rangeeditordialog.h \
+    ui/scene/include/graphicactuator.h \
+    ui/equation_editor/include/constantvaluesetter.h \
+    ui/include/editableequation.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

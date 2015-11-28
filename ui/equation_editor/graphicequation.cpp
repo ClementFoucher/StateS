@@ -39,6 +39,8 @@
 #include "inverterbar.h"
 #include "equationeditor.h"
 #include "rangeextractorwidget.h"
+#include "constantvaluesetter.h"
+#include "logicvalue.h"
 
 
 // A graphic equation can either represent
@@ -132,17 +134,19 @@ void GraphicEquation::buildTemplateEquation()
             text += "xnor";
             break;
         case Equation::nature::equalOp:
-            text += "equality";
+            text += tr("Equality");
             break;
         case Equation::nature::diffOp:
-            text += "difference";
+            text += tr("Difference");
             break;
         case Equation::nature::concatOp:
-            text += "concatenate";
+            text += tr("Concatenate");
             break;
         case Equation::nature::extractOp:
             text += "[…]";
             break;
+        case Equation::nature::constant:
+            text += tr("Custom value");
         case Equation::nature::identity:
             // Nothing
             break;
@@ -164,6 +168,7 @@ void GraphicEquation::buildTemplateEquation()
         case Equation::nature::concatOp:
         case Equation::nature::extractOp:
         case Equation::nature::identity:
+        case Equation::nature::constant:
             break;
         }
 
@@ -229,6 +234,7 @@ void GraphicEquation::buildCompleteEquation()
                 case Equation::nature::notOp:
                 case Equation::nature::identity:
                 case Equation::nature::extractOp:
+                case Equation::nature::constant:
                     // No intermediate sign
                     break;
                 }
@@ -240,13 +246,40 @@ void GraphicEquation::buildCompleteEquation()
                     equationLayout->addWidget(operatorLabel);
                 }
             }
-
         }
 
         if (equationAsEquation->getFunction() == Equation::nature::concatOp)
         {
             equationLayout->addWidget(new QLabel("}"));
         }
+
+        if (equationAsEquation->getFunction() == Equation::nature::extractOp)
+        {
+            RangeExtractorWidget* rangeExtractor = new RangeExtractorWidget(equationAsEquation);
+
+            if (! this->isTemplate)
+            {
+                connect(rangeExtractor, &RangeExtractorWidget::value1Changed, this, &GraphicEquation::treatExtractIndex1Changed);
+                connect(rangeExtractor, &RangeExtractorWidget::value2Changed, this, &GraphicEquation::treatExtractIndex2Changed);
+            }
+
+            equationLayout->addWidget(rangeExtractor);
+
+            this->editorWidget = rangeExtractor;
+        }
+        else if (equationAsEquation->getFunction() == Equation::nature::constant)
+        {
+            ConstantValueSetter* constantSetter = new ConstantValueSetter(equationAsEquation->getCurrentValue());
+            equationLayout->addWidget(constantSetter);
+
+            if (!this->isTemplate)
+            {
+                connect(constantSetter, &ConstantValueSetter::valueChanged, this, &GraphicEquation::treatConstantValueChanged);
+            }
+
+            this->editorWidget = constantSetter;
+        }
+
 
         if (!equationAsEquation->isInverted())
             this->setLayout(equationLayout);
@@ -260,19 +293,6 @@ void GraphicEquation::buildCompleteEquation()
             verticalLayout->addLayout(equationLayout);
 
             this->setLayout(verticalLayout);
-        }
-
-        if (equationAsEquation->getFunction() == Equation::nature::extractOp)
-        {
-            this->rangeWidget = new RangeExtractorWidget(equationAsEquation);
-
-            if (! this->isTemplate)
-            {
-                connect(this->rangeWidget, &RangeExtractorWidget::value1Changed, this, &GraphicEquation::treatExtractIndex1Changed);
-                connect(this->rangeWidget, &RangeExtractorWidget::value2Changed, this, &GraphicEquation::treatExtractIndex2Changed);
-            }
-
-            equationLayout->addWidget(this->rangeWidget);
         }
 
         this->setToolTip(tr("This equation") + " " + tr("is size") + " " + QString::number(equationAsEquation->getSize()));
@@ -298,7 +318,7 @@ void GraphicEquation::buildSignalEquation()
         signalText->setAlignment(Qt::AlignCenter);
         equationLayout->addWidget(signalText);
 
-        if (isTemplate)
+        if ( (isTemplate) && (equationAsSignal->getSize() > 1) )
         {
             // Add a sub-widget to allow directly dragging sub-range from signal
             shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
@@ -419,26 +439,23 @@ void GraphicEquation::replaceEquation(shared_ptr<Signal> newEquation)
 // Graphic equation is rebuild after logice equation update.
 void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand)
 {
-    if (! this->equation.expired())
+    shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (this->equation.lock());
+
+    if (l_equation != nullptr) // This IS true, because we are called by an operand of ours. Anyway...
     {
-        shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
-
-        if (complexEquation != nullptr) // This IS true, because we are called by an operand of ours. Anyway...
+        for (uint i = 0 ; i < l_equation->getOperandCount() ; i++)
         {
-            for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
+            if (l_equation->getOperand(i) == oldOperand)
             {
-                if (complexEquation->getOperand(i) == oldOperand)
-                {
-                    complexEquation->setOperand(i, newOperand);
-                    break;
-                }
+                l_equation->setOperand(i, newOperand);
+                break;
             }
-
-            this->buildEquation();
         }
-        else
-            qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
+
+        this->buildEquation();
     }
+    else
+        qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
 }
 
 // Returns the equation currently represented by the graphic object.
@@ -470,9 +487,9 @@ bool GraphicEquation::validEdit()
 
     if (l_equation != nullptr)
     {
-        if (l_equation->getFunction() == Equation::nature::extractOp)
+        if (this->editorWidget != nullptr)
         {
-            return this->rangeWidget->validEdit();
+            return this->editorWidget->validEdit();
         }
         else
         {
@@ -501,7 +518,7 @@ bool GraphicEquation::cancelEdit()
     {
         if (l_equation->getFunction() == Equation::nature::extractOp)
         {
-            return this->rangeWidget->cancelEdit();
+            return this->editorWidget->cancelEdit();
         }
         else
         {
@@ -556,18 +573,18 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 
             drag->setMimeData(mimeData);
 
-            shared_ptr<Signal> l_equation = this->equation.lock();
-            shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation> (l_equation);
+            shared_ptr<Signal> l_signal = this->equation.lock();
+            shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (l_signal);
 
             // Drag image may not match template display: create a correct equation
-            if ( (equationAsEquation != nullptr) && (equationAsEquation->getFunction() == Equation::nature::extractOp) )
+            if ( (l_equation != nullptr) && (l_equation->getFunction() == Equation::nature::extractOp) )
             {
-                GraphicEquation displayGraphicEquation(equationAsEquation->clone(), true);
+                GraphicEquation displayGraphicEquation(l_equation->clone(), true);
                 displayGraphicEquation.forceCompleteRendering();
 
                 drag->setPixmap(displayGraphicEquation.grab());
             }
-            else if ( (equationAsEquation == nullptr) && (l_equation != nullptr) ) // This is a simple signal => do not use template
+            else if ( (l_equation == nullptr) && (l_signal != nullptr) ) // This is a simple signal => do not use template
             {
                 GraphicEquation displayGraphicEquation(this->equation.lock());
 
@@ -579,10 +596,24 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
             this->inMouseEvent = true;
             drag->exec();
         }
-        else
-            QFrame::mousePressEvent(event);
     }
     else
+    {
+        if (event->button() == Qt::LeftButton)
+        {
+            shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (this->equation.lock());
+
+            if ( (l_equation != nullptr) && (l_equation->getFunction() == Equation::nature::constant) )
+            {
+                if (editorWidget != nullptr)
+                    editorWidget->setEdited(true);
+
+                this->inMouseEvent = true;
+            }
+        }
+    }
+
+    if (!this->inMouseEvent)
         QFrame::mousePressEvent(event);
 }
 
@@ -647,7 +678,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 
                 QVariant data;
                 data.convert(QVariant::Int);
-                QAction* actionToAdd = nullptr;
+                QAction* addedAction = nullptr;
 
                 if (complexEquation != nullptr)
                 {
@@ -661,44 +692,51 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
                     case Equation::nature::norOp:
                     case Equation::nature::xnorOp:
                     case Equation::nature::concatOp:
-                        actionToAdd = menu->addAction(tr("Add one operand to that operator"));
+                        addedAction = menu->addAction(tr("Add one operand to that operator"));
                         data.setValue((int)ContextAction::IncrementOperandCount);
-                        actionToAdd->setData(data);
+                        addedAction->setData(data);
 
                         if (complexEquation->getOperandCount() > 2)
                         {
-                            actionToAdd = menu->addAction(tr("Remove one operand from that operator"));
+                            addedAction = menu->addAction(tr("Remove one operand from that operator"));
                             data.setValue((int)ContextAction::DecrementOperandCount);
-                            actionToAdd->setData(data);
+                            addedAction->setData(data);
                         }
                         break;
                     case Equation::nature::extractOp:
 
                         if (complexEquation->getParam2() == -1)
-                            actionToAdd = menu->addAction(tr("Edit index"));
+                            addedAction = menu->addAction(tr("Edit index"));
                         else
-                            actionToAdd = menu->addAction(tr("Edit range"));
+                            addedAction = menu->addAction(tr("Edit range"));
                         //actionToAdd->setCheckable(true);
                         data.setValue((int)ContextAction::EditRange);
-                        actionToAdd->setData(data);
+                        addedAction->setData(data);
 
                         menu->addSeparator();
 
-                        actionToAdd = menu->addAction(tr("Extract single bit"));
-                        actionToAdd->setCheckable(true);
+                        addedAction = menu->addAction(tr("Extract single bit"));
+                        addedAction->setCheckable(true);
                         if (complexEquation->getParam2() == -1)
-                            actionToAdd->setChecked(true);
+                            addedAction->setChecked(true);
                         data.setValue((int)ContextAction::ExtractSwitchSingle);
-                        actionToAdd->setData(data);
+                        addedAction->setData(data);
 
-                        actionToAdd = menu->addAction(tr("Extract range"));
-                        actionToAdd->setCheckable(true);
+                        addedAction = menu->addAction(tr("Extract range"));
+                        addedAction->setCheckable(true);
                         if (complexEquation->getParam2() != -1)
-                            actionToAdd->setChecked(true);
+                            addedAction->setChecked(true);
                         data.setValue((int)ContextAction::ExtractSwitchRange);
-                        actionToAdd->setData(data);
+                        addedAction->setData(data);
 
 
+
+                        break;
+                    case Equation::nature::constant:
+
+                        addedAction = menu->addAction(tr("Edit constant value"));
+                        data.setValue((int)ContextAction::EditValue);
+                        addedAction->setData(data);
 
                         break;
                     case Equation::nature::notOp:
@@ -712,13 +750,13 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 
                 menu->addSeparator();
 
-                actionToAdd = menu->addAction(tr("Delete"));
+                addedAction = menu->addAction(tr("Delete"));
                 data.setValue((int)ContextAction::DeleteEquation);
-                actionToAdd->setData(data);
+                addedAction->setData(data);
 
-                actionToAdd = menu->addAction(tr("Cancel"));
+                addedAction = menu->addAction(tr("Cancel"));
                 data.setValue((int)CommonAction::Cancel);
-                actionToAdd->setData(data);
+                addedAction->setData(data);
 
                 menu->popup(this->mapToGlobal(event->pos()));
 
@@ -913,9 +951,9 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
         break;
 
     case ContextAction::EditRange:
-        if (rangeWidget != nullptr)
+        if (editorWidget != nullptr)
         {
-            rangeWidget->setEdited(true);
+            editorWidget->setEdited(true);
         }
         break;
     case ContextAction::ExtractSwitchSingle:
@@ -932,7 +970,13 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
             complexEquation->setParameters(complexEquation->getParam1(), 0);
         }
         break;
+    case ContextAction::EditValue:
+        if (editorWidget != nullptr)
+        {
+            editorWidget->setEdited(true);
+        }
 
+        break;
     }
 }
 
@@ -953,6 +997,16 @@ void GraphicEquation::treatExtractIndex2Changed(int newIndex)
     if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::extractOp) )
     {
         complexEquation->setParameters(complexEquation->getParam1(), newIndex);
+    }
+}
+
+void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
+{
+    shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
+
+    if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::constant) )
+    {
+        complexEquation->setCurrentValue(newValue);
     }
 }
 

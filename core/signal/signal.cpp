@@ -81,7 +81,7 @@ bool Signal::resize(uint newSize)
         this->currentValue.resize(newSize);
         this->initialValue.resize(newSize);
 
-        emit signalResizedEvent();
+        emit signalResizedEvent(this->shared_from_this());
         return true;
     }
     else
@@ -162,7 +162,7 @@ bool Signal::resetValue()
 
 bool Signal::set()
 {
-    return setCurrentValue(LogicValue::getValue1(1));
+    return setCurrentValue(LogicValue::getValue1(this->getSize()));
 }
 
 bool Signal::isAllZeros() const

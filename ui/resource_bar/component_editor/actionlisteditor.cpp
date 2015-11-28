@@ -36,23 +36,27 @@ ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator
 
     uint allowedActionTypes = actuator->getAllowedActionTypes();
 
-    if (signal->getSize() == 1)
+    if ((allowedActionTypes  & MachineActuatorComponent::pulse) != 0 )
+        this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
+    if ((allowedActionTypes  & MachineActuatorComponent::activeOnState) != 0 )
+        this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
+    if ((allowedActionTypes  & MachineActuatorComponent::set) != 0 )
+        this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
+    if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
+        this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
+
+    if (signal->getSize() > 1)
     {
-        if ((allowedActionTypes  & MachineActuatorComponent::pulse) != 0 )
-            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
-        if ((allowedActionTypes  & MachineActuatorComponent::activeOnState) != 0 )
-            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
-        if ((allowedActionTypes  & MachineActuatorComponent::set) != 0 )
-            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
-        if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
-            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
-    }
-    else
-    {
-        if ((allowedActionTypes  & MachineActuatorComponent::assign) != 0 )
-            this->addItem(tr("Assign"));
-        if ((allowedActionTypes  & MachineActuatorComponent::reset) != 0 )
-            this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
+        int param1 = actuator->getActionParam1(signal);
+        int param2 = actuator->getActionParam2(signal);
+
+        if ( !( (param1 != -1) && (param2 == -1) ) )
+        {
+            {
+                if ((allowedActionTypes  & MachineActuatorComponent::assign) != 0 )
+                    this->addItem(tr("Assign"));
+            }
+        }
     }
 
     updateIndex();

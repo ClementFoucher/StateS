@@ -34,121 +34,90 @@ MachineActuatorComponent::MachineActuatorComponent(shared_ptr<Machine> owningMac
     connect(this, &MachineActuatorComponent::actionListChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
 }
 
-void MachineActuatorComponent::signalResizedEventHandler()
+void MachineActuatorComponent::signalResizedEventHandler(shared_ptr<Signal> emitter)
 {
     this->cleanActionList();
 
-    bool listChanged = false;
-    foreach(weak_ptr<Signal> s, this->actions)
+    QString signame = emitter->getName();
+
+    if (emitter->getSize() == 1) // We used to be a vector signal (size changed and is now 1 => used to be > 1)
     {
-        // Assign values must be resized
+        // Remove parameters
+        actionParam1.remove(signame);
+        actionParam2.remove(signame);
 
-        // If signal was size one and is now more or conversly,
-        // we must change action type.
+        // Switch to implicit value whatever we were
+        actionValue.remove(signame);
 
-        shared_ptr<Signal> sig = s.lock();
-        // No need to check for nullness: we just cleaned action list
-
-        QString signame = sig->getName();
-
-        if (sig->getSize() != 1)
+        if (actionType[signame] == action_types::assign) // Assign is illegal for single bit signals
+            actionType[signame] = action_types::set;
+    }
+    else // We are now a vector signal
+    {
+        if (!actionParam1.contains(signame)) // We used to be a single bit signal
         {
-            switch(actionType[signame])
+            // Switch to whole range extract
+            actionParam1[signame] = -1;
+            actionParam2[signame] = -1;
+
+            switch (actionType[signame])
             {
-            case action_types::activeOnState:
-                // This signal changed size (was size 1)
-                actionType[signame] = action_types::assign;
-                actionValue[signame] = LogicValue::getValue1(sig->getSize());
-
-                listChanged = true;
-
-                break;
-            case action_types::pulse:
-                // This signal changed size (was size 1)
-                actionType[signame] = action_types::assign;
-                actionValue[signame] = LogicValue::getValue1(sig->getSize());
-
-                listChanged = true;
-
-                break;
             case action_types::set:
-                // This signal changed size (was size 1)
-                actionType[signame] = action_types::assign;
-                actionValue[signame] = LogicValue::getValue1(sig->getSize());
-
-                listChanged = true;
-
+            case action_types::reset:
+                // Value remains implicit
                 break;
+            case action_types::activeOnState:
             case action_types::assign:
-                if (actionParam1[signame] == -1)
-                {
-                    if (actionValue[signame].getSize() != sig->getSize())
-                    {
-                        // This signal changed size
-                        actionValue[signame].resize(sig->getSize());
+            case action_types::pulse:
+                // Switch to explicit value
+                actionValue[signame] = LogicValue::getValue1(emitter->getSize());
+                break;
+            }
+        }
+        else // We were vector, we're still vector
+        {
+            // We have to check if parameters are still correct
 
-                        listChanged = true;
-                    }
-                }
-                else
+            int signalSize = emitter->getSize();
+
+            if ( (actionParam1[signame] == -1) && (actionParam2[signame] == -1) ) // Whole range extract
+            {
+                // Just resize value if not impicit
+                if (actionValue.contains(signame))
+                    actionValue[signame].resize(signalSize);
+            }
+            else if ( (actionParam1[signame] != -1) && (actionParam2[signame] == -1) ) // Single bit extract
+            {
+                // We have to check if parameter is still in range
+                if (actionParam1[signame] >= signalSize)
+                    actionParam1[signame] = signalSize-1;
+
+                // Nothing to do with value, always implicit
+            }
+            else // Range extract
+            {
+                // Check if parameters are still in range
+                if (actionParam1[signame] >= signalSize)
                 {
-                    if (actionParam1[signame] >= (int)sig->getSize())
-                    {
-                        actionParam1[signame] = sig->getSize()-1;
-                        listChanged = true;
-                    }
+                    actionParam1[signame] = signalSize-1;
 
                     if (actionParam2[signame] >= actionParam1[signame])
                     {
-                        // If 0, this will end up with -1, which is single bit extract
                         actionParam2[signame] = actionParam1[signame]-1;
-                        listChanged = true;
                     }
 
-                    if (actionParam2[signame] != -1)
+                    if (actionValue.contains(signame))
                     {
-                        actionValue[signame].resize(actionParam1[signame] - actionParam2[signame] + 1);
-                        listChanged = true;
-                    }
-                    else if (actionValue[signame].getSize() != 1)
-                    {
-                        actionValue[signame].resize(1);
-                        listChanged = true;
+                        // Resize action value
+                        signalSize = actionParam1[signame] - actionParam2[signame] + 1;
+                        actionValue[signame].resize(signalSize);
                     }
                 }
-
-                break;
-            case action_types::reset:
-                // Nothing to do
-                break;
-            }
-        }
-        else // Signal size is 1
-        {
-            switch(actionType[signame])
-            {
-            case  action_types::assign:
-                // This signal changed size (was size > 1)
-                actionType[signame] = action_types::set;
-                actionValue.remove(signame);
-                actionParam1.remove(signame);
-                actionParam2.remove(signame);
-
-                listChanged = true;
-            case  action_types::activeOnState:
-            case  action_types::pulse:
-            case  action_types::set:
-            case  action_types::reset:
-                // Nothing to do
-                break;
             }
         }
     }
 
-    if (listChanged)
-    {
-        emit actionListChangedEvent();
-    }
+    emit actionListChangedEvent();
 }
 
 void MachineActuatorComponent::cleanActionList()
@@ -172,7 +141,7 @@ void MachineActuatorComponent::cleanActionList()
         emit actionListChangedEvent();
     }
 
-    // At this pont, should clean action type, value and param too,
+    // At this point, should clean action type, value and param too,
     // but we would have to iterate over all lists to check which
     // one remains...
     // As this function is called frequently, we will limit
@@ -193,40 +162,27 @@ QList<shared_ptr<Signal> > MachineActuatorComponent::getActions()
     return list;
 }
 
-void MachineActuatorComponent::setActions(const QList<shared_ptr<Signal> > &newActions)
-{
-    foreach(shared_ptr<Signal> sig, newActions)
-    {
-        // cleanActionList() is already done by addAction()
-        addAction(sig);
-    }
-}
-
 
 void MachineActuatorComponent::clearActions()
 {
     this->cleanActionList();
 
-    bool listChanged = false;
     if (this->actions.count() != 0)
-        listChanged = true;
-
-    QList<weak_ptr<Signal>> actionsToDelete = this->actions;
-
-    foreach(weak_ptr<Signal> sig, actionsToDelete)
     {
-        // Must be done to disconnect Qt signals
-        removeAction(sig.lock()); // No need to check for nullness: we just cleaned action list
-    }
+        QList<weak_ptr<Signal>> actionsToDelete = this->actions;
 
-    // In case there were lost fragments (see comment in cleanActionList())
-    actionType.clear();
-    actionValue.clear();
-    actionParam1.clear();
-    actionParam2.clear();
+        foreach(weak_ptr<Signal> sig, actionsToDelete)
+        {
+            // Must be done to disconnect Qt signals
+            removeAction(sig.lock()); // No need to check for nullness: we just cleaned action list
+        }
 
-    if (listChanged)
-    {
+        // In case there were lost fragments (see comment in cleanActionList())
+        actionType.clear();
+        actionValue.clear();
+        actionParam1.clear();
+        actionParam2.clear();
+
         emit actionListChangedEvent();
     }
 }
@@ -236,15 +192,18 @@ void MachineActuatorComponent::addAction(shared_ptr<Signal> signal)
     this->cleanActionList();
 
     this->actions.append(signal);
-    if (signal->getSize() == 1)
-    {
-        if ((this->allowedActionTypes & activeOnState) != 0)
-            actionType[signal->getName()] = action_types::activeOnState;
-        else
-            actionType[signal->getName()] = action_types::pulse;
-    }
+
+    if ((this->allowedActionTypes & activeOnState) != 0)
+        actionType[signal->getName()] = action_types::activeOnState;
     else
-        actionType[signal->getName()] = action_types::reset;
+        actionType[signal->getName()] = action_types::pulse;
+
+    if (signal->getSize() > 1)
+    {
+        actionValue[signal->getName()] = LogicValue::getValue1(signal->getSize());
+        actionParam1[signal->getName()] = -1;
+        actionParam2[signal->getName()] = -1;
+    }
 
     // Handle these events
     connect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
@@ -331,50 +290,179 @@ void MachineActuatorComponent::activateActions()
     {
         QString signame = sig->getName();
 
-        switch (actionType[signame])
+        if (sig->getSize() == 1) // Single bit signal
         {
-        case action_types::activeOnState:
-            sig->set();
-            break;
-        case action_types::pulse:
-            sig->set();
-            break;
-        case action_types::set:
-            if (sig->getSize() == 1)
+            switch (actionType[signame])
+            {
+            case action_types::set:
+            case action_types::pulse:
+            case action_types::activeOnState:
                 sig->set();
-            else
-                sig->setCurrentValue(actionValue[signame]);
-            break;
-        case action_types::reset:
-            sig->resetValue();
-            break;
-        case action_types::assign:
+                break;
+            case action_types::reset:
+                sig->resetValue();
+                break;
+            case action_types::assign:
+                // Illegal, not handled
+                break;
+            }
+        }
+        else if ( (actionParam1[signame] != -1)  && (actionParam2[signame] == -1) ) // Single bit extract
         {
+            LogicValue value = sig->getCurrentValue();
+
+            switch (actionType[signame])
+            {
+            case action_types::set:
+            case action_types::pulse:
+            case action_types::activeOnState:
+                value[actionParam1[signame]] = 1;
+                break;
+            case action_types::reset:
+                value[actionParam1[signame]] = 0;
+                break;
+            case action_types::assign:
+                // Illegal, not handled
+                break;
+            }
+
+            sig->setCurrentValue(value);
+        }
+        else if ( (actionParam1[signame] == -1)  && (actionParam2[signame] == -1) ) // Whole vector affect
+        {
+            switch (actionType[signame])
+            {
+            case action_types::set:
+                sig->set();
+                break;
+            case action_types::reset:
+                sig->resetValue();
+                break;
+            case action_types::pulse:
+            case action_types::activeOnState:
+            case action_types::assign:
+                sig->setCurrentValue(actionValue[signame]);
+                break;
+            }
+        }
+        else // Sub-range affect
+        {
+            LogicValue value = sig->getCurrentValue();
             int param1 = actionParam1[signame];
             int param2 = actionParam2[signame];
 
-            if (param1 != -1)
+            switch (actionType[signame])
             {
-                LogicValue newValue(sig->getCurrentValue());
-                if (param2 != -1)
+            case action_types::set:
+                for (int i = param2 ; i <= param1 ; i++)
                 {
-                    for (int i = param2 ; i <= param1 ; i++)
-                    {
-                        newValue[i] = actionValue[signame][i-param2];
-                    }
+                    value[i] = 1;
                 }
-                else
+                break;
+            case action_types::reset:
+                for (int i = param2 ; i <= param1 ; i++)
                 {
-                    newValue[param1] = actionValue[signame][0];
+                    value[i] = 0;
                 }
-
-                sig->setCurrentValue(newValue);
+                break;
+            case action_types::pulse:
+            case action_types::activeOnState:
+            case action_types::assign:
+                for (int i = param2 ; i <= param1 ; i++)
+                {
+                    value[i] = actionValue[signame][i-param2];
+                }
+                break;
             }
-            else
+
+            sig->setCurrentValue(value);
+        }
+    }
+}
+
+void MachineActuatorComponent::deactivateActions()
+{
+    foreach (shared_ptr<Signal> sig, this->getActions())
+    {
+        QString signame = sig->getName();
+
+        if (sig->getSize() == 1) // Single bit signal
+        {
+            switch (actionType[signame])
             {
-                sig->setCurrentValue(actionValue[signame]);
+            case action_types::pulse:
+            case action_types::activeOnState:
+                sig->resetValue();
+                break;
+            case action_types::reset:
+            case action_types::set:
+                // Nothing to do, action is maintained
+                break;
+            case action_types::assign:
+                // Illegal, not handled
+                break;
             }
         }
+        else if ( (actionParam1[signame] != -1)  && (actionParam2[signame] == -1) ) // Single bit extract
+        {
+            LogicValue value = sig->getCurrentValue();
+
+            switch (actionType[signame])
+            {
+            case action_types::pulse:
+            case action_types::activeOnState:
+                value[actionParam1[signame]] = 0;
+                break;
+            case action_types::set:
+            case action_types::reset:
+                // Nothing to do, action is maintained
+                break;
+            case action_types::assign:
+                // Illegal, not handled
+                break;
+            }
+
+            sig->setCurrentValue(value);
+        }
+        else if ( (actionParam1[signame] == -1)  && (actionParam2[signame] == -1) ) // Whole vector affect
+        {
+            switch (actionType[signame])
+            {
+            case action_types::pulse:
+            case action_types::activeOnState:
+                sig->resetValue();
+                break;
+            case action_types::set:
+            case action_types::reset:
+            case action_types::assign:
+                // Nothing to do, action is maintained
+                break;
+            }
+        }
+        else // Sub-range affect
+        {
+            LogicValue value = sig->getCurrentValue();
+
+            int param1 = actionParam1[signame];
+            int param2 = actionParam2[signame];
+
+            switch (actionType[signame])
+            {
+            case action_types::pulse:
+            case action_types::activeOnState:
+                for (int i = param2 ; i <= param1 ; i++)
+                {
+                    value[i] = 0;
+                }
+                break;
+            case action_types::set:
+            case action_types::reset:
+            case action_types::assign:
+                // Nothing to do, action is maintained
+                break;
+            }
+
+            sig->setCurrentValue(value);
         }
     }
 }
@@ -385,80 +473,87 @@ void MachineActuatorComponent::setActionType(shared_ptr<Signal> signal, action_t
 
     QString signame = signal->getName();
 
+    if ( (signal->getSize() > 1) &&
+         ( !( (actionParam1[signame] != -1) && (actionParam2[signame] == -1) ) )
+       )
+    {
+        // We have to deal with affect value (single bit signals always have an implicit value)
+        switch (type)
+        {
+        case action_types::reset:
+        case action_types::set:
+            // Switch to implicit
+            actionValue.remove(signame);
+            break;
+        case action_types::activeOnState:
+        case action_types::pulse:
+        case action_types::assign:
+
+            if ( (actionType[signame] == action_types::reset) ||
+                 (actionType[signame] == action_types::set) )
+            {
+                if ((actionParam1[signame] == -1) && (actionParam2[signame] == -1)) // Whole range affect
+                {
+                    // Switch to explicit
+                    actionValue[signame]  = LogicValue::getValue1(signal->getSize());
+                }
+                else if ((actionParam1[signame] != -1) && (actionParam2[signame] != -1)) // Sub-range affect
+                {
+                    // Switch to explicit
+                    int affectSize = actionParam1[signame] - actionParam2[signame] + 1;
+                    actionValue[signame]  = LogicValue::getValue1(affectSize);
+                }
+                // Else, single bit affect remains implicit
+            }
+            break;
+        }
+    }
+
     actionType[signame] = type;
 
-    switch (actionType[signame])
-    {
-    case action_types::activeOnState:
-    case action_types::pulse:
-    case action_types::reset:
-    case action_types::set:
-        if (actionValue.contains(signame))
-        {
-            actionValue.remove(signame);
-            actionParam1.remove(signame);
-            actionParam2.remove(signame);
-        }
-        break;
-    case action_types::assign:
-        if (!actionValue.contains(signame))
-        {
-            actionValue[signame]  = LogicValue::getValue0(signal->getSize());
-            actionParam1[signame] = -1;
-            actionParam2[signame] = -1;
-        }
-        break;
-    }
 
     emit actionListChangedEvent();
 }
 
 bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1, int param2)
 {
-    bool actionValueChanged = false;
-
-    if (actionType[signal->getName()] != action_types::assign)
+    if (signal->getSize() == 1)
     {
-        if (signal->getSize() == value.getSize())
-        {
-            actionValue[signal->getName()] = value;
-            actionValueChanged = true;
-        }
+        // Size 1 signals always have implicit values
+        return false;
     }
     else
     {
-        actionParam1[signal->getName()] = param1;
-        actionParam2[signal->getName()] = param2;
+        QString signame = signal->getName();
+        bool actionValueChanged = false;
 
-        if ( (param2 == -1) && (param1 != -1) )
+        actionParam1[signame] = param1;
+        actionParam2[signame] = param2;
+
+        if ( (param1 != -1) && (param2 == -1))
         {
-            // Single bit affect
+            // Single bit affect => implicit: value is ignored
+            actionValue.remove(signame);
 
-            if (value.getSize() == 1)
-            {
-                actionValue[signal->getName()] = value;
-                actionValueChanged = true;
-            }
-            else
-            {
-                actionValue[signal->getName()] = LogicValue(1);
-                actionValueChanged = true;
-            }
+            if (actionType[signame] == action_types::assign) // Assign is illegal for single bit signals
+                actionType[signame] = action_types::set;
+
+            actionValueChanged = true;
         }
         else if (param1 != -1)
         {
             // Range affect
 
-            LogicValue correctedValue = value;
+            LogicValue correctedValue = value; // Allow for shorter values (fill left with zeros)
 
             if ((int)value.getSize() < (param1-param2+1))
             {
                 correctedValue.resize(param1-param2+1);
             }
 
-            if ( (int)value.getSize() == (param1-param2+1) )
+            if ( (int)correctedValue.getSize() == (param1-param2+1) )
             {
-                actionValue[signal->getName()] = value;
+                actionValue[signal->getName()] = correctedValue;
                 actionValueChanged = true;
             }
         }
@@ -468,7 +563,7 @@ bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicVa
 
             LogicValue correctedValue = value;
 
-            if (value.getSize() < signal->getSize())
+            if (value.getSize() < signal->getSize())  // Allow for shorter values (fill left with zeros)
             {
                 correctedValue.resize(signal->getSize());
             }
@@ -479,15 +574,15 @@ bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicVa
                 actionValueChanged = true;
             }
         }
-    }
 
-    if (actionValueChanged)
-    {
-        emit actionListChangedEvent();
-        return true;
+        if (actionValueChanged)
+        {
+            emit actionListChangedEvent();
+            return true;
+        }
+        else
+            return false;
     }
-    else
-        return false;
 }
 
 
