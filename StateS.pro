@@ -16,6 +16,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = StateS
 TEMPLATE = app
 
+VERSION = 0.3.A
+QMAKE_TARGET_COPYRIGHT = copyright 2014-2015 Clément Foucher
 
 SOURCES += \
     core/main.cpp \
@@ -211,16 +213,19 @@ INCLUDEPATH += \
     ui/static/include
 
 OTHER_FILES += \
-    known_bugs.txt \
-    README \
-    README.txt \
+    text/known_bugs.txt \
+    text/Readme/README.txt \
+    text/Readme/Linux/README \
+    text/Readme/Linux/32/README \
+    text/Readme/Windows/README.txt \
     LICENSE \
     LICENSE.txt \
-    release_notes.txt \
+    text/release_notes.txt \
     core/basic_type/README.txt \
     art/AUTHORS \
     art/AUTHORS.txt \
-    TODO
+    text/TODO \
+    text/upcoming_features.txt
 
 RESOURCES += \
     art.qrc \
@@ -228,7 +233,3 @@ RESOURCES += \
 
 TRANSLATIONS += \
     translations/français.ts
-
-DISTFILES += \
-    upcoming_features.txt
-

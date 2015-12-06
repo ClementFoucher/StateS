@@ -106,6 +106,22 @@
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
+    <message>
+        <source>Hint:</source>
+        <translation>Astuce :</translation>
+    </message>
+    <message>
+        <source>Right-click</source>
+        <translation>Faites un clic-droit</translation>
+    </message>
+    <message>
+        <source>on a vector signal</source>
+        <translation>sur un signal de type vecteur</translation>
+    </message>
+    <message>
+        <source> to display range options.</source>
+        <translation>pour afficher les options de sous-vecteur.</translation>
+    </message>
 </context>
 <context>
     <name>ActionListEditor</name>
@@ -224,10 +240,6 @@
         <translation>Éditeur d&apos;équations</translation>
     </message>
     <message>
-        <source>Drag and drop equation components from here...</source>
-        <translation type="vanished">Glissez puis déposez les composants d&apos;équation ci-dessous...</translation>
-    </message>
-    <message>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
@@ -238,10 +250,6 @@
     <message>
         <source>Logic functions</source>
         <translation>Fonctions logiques</translation>
-    </message>
-    <message>
-        <source>... to here.</source>
-        <translation type="vanished">... vers cette zone.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -355,80 +363,6 @@
     <message>
         <source>Delete</source>
         <translation>Supprimer</translation>
-    </message>
-</context>
-<context>
-    <name>FsmGraphicalState</name>
-    <message>
-        <source>State</source>
-        <translation type="vanished">État</translation>
-    </message>
-    <message>
-        <source>Set initial</source>
-        <translation type="vanished">Définir comme initial</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="vanished">Éditer</translation>
-    </message>
-    <message>
-        <source>Rename</source>
-        <translation type="vanished">Renommer</translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation type="vanished">Supprimer</translation>
-    </message>
-    <message>
-        <source>Delete current state?</source>
-        <translation type="vanished">Supprimer l&apos;état courant ?</translation>
-    </message>
-    <message>
-        <source>The connected transition will be deleted</source>
-        <translation type="vanished">La transition connectée sera supprimée</translation>
-    </message>
-    <message>
-        <source>User confirmation needed</source>
-        <translation type="vanished">Confirmation de l&apos;utilisateur requise</translation>
-    </message>
-    <message>
-        <source>Draw transition from this state</source>
-        <translation type="vanished">Créer une transition ayant pour origine cet état</translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="vanished">Toutes les</translation>
-    </message>
-    <message>
-        <source>connected transitions will be deleted</source>
-        <translation type="vanished">transitions connectées seront supprimées</translation>
-    </message>
-    <message>
-        <source>Set active</source>
-        <translation type="vanished">Activer</translation>
-    </message>
-</context>
-<context>
-    <name>FsmGraphicalTransition</name>
-    <message>
-        <source>Transition</source>
-        <translation type="vanished">Transition</translation>
-    </message>
-    <message>
-        <source>Change source</source>
-        <translation type="vanished">Changer de source</translation>
-    </message>
-    <message>
-        <source>Change target</source>
-        <translation type="vanished">Changer de cible</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="vanished">Éditer</translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation type="vanished">Supprimer</translation>
     </message>
 </context>
 <context>
@@ -610,10 +544,6 @@
         <translation>Une opérande n&apos;est pas correcte</translation>
     </message>
     <message>
-        <source>The sizes of operands does not match between each other</source>
-        <translation type="vanished">Les opérandes sont de taille différente</translation>
-    </message>
-    <message>
         <source>Set existing equation as operand of dropped equation</source>
         <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de l&apos;équation déposée</translation>
     </message>
@@ -648,6 +578,26 @@
     <message>
         <source>Extract range</source>
         <translation>Extraire un sous-vecteur</translation>
+    </message>
+    <message>
+        <source>Equality</source>
+        <translation>Égalité</translation>
+    </message>
+    <message>
+        <source>Difference</source>
+        <translation>Différence</translation>
+    </message>
+    <message>
+        <source>Concatenate</source>
+        <translation>Concaténation</translation>
+    </message>
+    <message>
+        <source>Custom value</source>
+        <translation>Valeur modifiable</translation>
+    </message>
+    <message>
+        <source>Edit constant value</source>
+        <translation>Éditer la valeur de la constante</translation>
     </message>
 </context>
 <context>

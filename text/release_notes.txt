@@ -2,7 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
--(unreleased)- V 0.3.A - Allowed actions kinds is now better handled; enhancments to range and bit adressing in siganls.
+- 2015-12-06 - V 0.3.A - Allowed actions kinds is now better handled + better rendering; Enhancments to range and bit adressing in signals; Allow constant definition in equation;
 - 2015-11-15 - V 0.3.9 - Corrected machine color update on begin/end simulation; Moving a graphic element now sets unsaved mode; Can now set signal size and initial value at creation; Added a range adressing tool to act on specific bits from a vector; Added concanetation operator.
 - 2015-11-01 - V 0.3.8 - Added explicit sorting for signals within each interface; Added hints on how to draw machine; Added machine naming; Image export now correctly place elements; Many small GUI improvements.
 - 2015-06-07 - V 0.3.7 - Ressources bar labels are now set auto-wrap to avoid excessive minimal width of the bar; Corrected keyboard handeling on scene items.

@@ -633,21 +633,39 @@ void Fsm::parseActions(QDomElement element, shared_ptr<MachineActuatorComponent>
 
         QString sparam1 = currentElement.attribute("Param1");
         QString sparam2 = currentElement.attribute("Param2");
+        QString sactval = currentElement.attribute("Action_Value");
 
         int param1;
         int param2;
+        LogicValue actionValue;
+        bool setActionValue = false;
 
         if (! sparam1.isEmpty())
+        {
+            setActionValue = true;
             param1 = sparam1.toInt();
+        }
         else
             param1 = -1;
 
         if (! sparam2.isEmpty())
+        {
+            setActionValue = true;
             param2 = sparam2.toInt();
+        }
         else
             param2 = -1;
 
-        component->setActionValue(signal, LogicValue::fromString(currentElement.attribute("Action_Value")), param1, param2);
+        if(! sactval.isEmpty())
+        {
+            setActionValue = true;
+            actionValue = LogicValue::fromString(sactval);
+        }
+        else
+            actionValue = LogicValue::getNullValue();
+
+        if (setActionValue)
+            component->setActionValue(signal, actionValue, param1, param2);
     }
 }
 

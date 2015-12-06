@@ -37,6 +37,7 @@
 #include "machine.h"
 #include "signal.h"
 #include "rangeeditordialog.h"
+#include "collapsiblewidgetwithtitle.h"
 
 
 ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title, QWidget* parent) :
@@ -75,6 +76,22 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     layout->addWidget(buttonRemoveAction, 2, 1, 1, 1);
 
     connect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
+
+    this->hintDisplay = new CollapsibleWidgetWithTitle();
+    QString hintTitle = tr("Hint:") + " ";
+
+    QString hint;
+    hint += "<br />";
+    hint += tr("Right-click") + " " + tr("on a vector signal") + " " + tr(" to display range options.");
+    hint += "<br />";
+
+    QLabel* hintText = new QLabel(hint);
+    hintText->setAlignment(Qt::AlignCenter);
+    hintText->setWordWrap(true);
+
+    this->hintDisplay->setContent(hintTitle, hintText, true);
+
+    layout->addWidget(this->hintDisplay, 3, 0, 1, 2);
 
     this->updateContent();
 }

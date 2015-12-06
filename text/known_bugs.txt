@@ -1,7 +1,7 @@
 
-*******************************
-* StateS v. 0.3.10 Known Bugs *
-*******************************
+******************************
+* StateS v. 0.3.A Known Bugs *
+******************************
 
 // The following behaviors are known:
 
@@ -19,7 +19,7 @@
 - Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
 - Actions on transitions are ignored when FSM is exported to VHDL,
 - Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax,
-- Concatenate and extract operation not handled.
+- Concatenate and extract operations not handled.
 
 // Not bugs, but still:
 

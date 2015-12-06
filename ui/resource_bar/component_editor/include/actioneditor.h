@@ -38,6 +38,7 @@ class QTableWidgetItem;
 // StateS Classes
 class MachineActuatorComponent;
 class Signal;
+class CollapsibleWidgetWithTitle;
 
 
 class ActionEditor : public QWidget
@@ -70,6 +71,8 @@ private:
 
 private:
     weak_ptr<MachineActuatorComponent> actuator;
+
+    CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 
     QMap<QTableWidgetItem*, weak_ptr<Signal>> tableItemsMapping;
 
