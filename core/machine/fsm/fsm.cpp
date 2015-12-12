@@ -140,10 +140,11 @@ bool Fsm::isEmpty() const
         return false;
 }
 
-void Fsm::exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const
+void Fsm::exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs)
 {
-    shared_ptr<const Fsm> thisAsPointer = dynamic_pointer_cast<const Fsm>(this->shared_from_this());
-    FsmVhdlExport::exportFSM(thisAsPointer, path, resetLogicPositive, prefixIOs);
+    shared_ptr<Fsm> thisAsPointer = dynamic_pointer_cast<Fsm>(this->shared_from_this());
+    unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport(thisAsPointer, resetLogicPositive, prefixIOs));
+    exporter->writeToFile(path);
 }
 
 void Fsm::clear()

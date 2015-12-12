@@ -90,7 +90,7 @@ public:
 
     virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
 
-    virtual void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const = 0;
+    virtual void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) = 0;
 
     // Other
 

@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.A
+VERSION = 0.3.11
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2015 Clément Foucher
 
 SOURCES += \

@@ -39,7 +39,7 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
     QVBoxLayout* layout = new QVBoxLayout(this);
 
 
-    QLabel* warning = new QLabel("<font color=red>" + tr("Warning! Experimental feature. Please consult known_bugs.txt.") + "</font>");
+    QLabel* warning = new QLabel("<font color=red>" + tr("Warning! Experimental feature.") + "<br />" + tr("Output generation has strong restrictions:") + "<br />" + tr("Please consult known_bugs.txt.") + "</font>");
     warning->setAlignment(Qt::AlignCenter);
     layout->addWidget(warning);
 

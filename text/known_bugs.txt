@@ -1,7 +1,8 @@
 
 ******************************
-* StateS v. 0.3.A Known Bugs *
+* StateS v. 0.3.B Known Bugs *
 ******************************
+
 
 // The following behaviors are known:
 
@@ -14,12 +15,20 @@
 - A signal can only be added once in an action list => unable to assign multiple ranges simultaneously,
 - Active on state signals on initial state: timeline do not show this action if we change state at first clock cycle.
 
+
 // VHDL export issues:
 
-- Active on state state and pulse signals are not correctly handled in VHDL export: signal value is maintained,
-- Actions on transitions are ignored when FSM is exported to VHDL,
-- Multiple "_" can be generated in a row in a VHDL signal name, which is not a correct syntax,
-- Concatenate and extract operations not handled.
+- Output generation is very partially implemented!
+-> Sub-range adressed signals are ignored,
+-> Signals mixing maintained values (set, reset, affect) and transitory values (active on state, pulse) are ignored,
+-> Signals mixing Moore and Mealy behaviors are ignored,
+-> Mealy signals maintaining value (set, reset, affect) are ignored.
+
+=> Thus, currently handled outputs are:
+-> Moore-only, transitory values only, fully affected outputs,
+-> Moore-only, maintained values only, fully affected outputs,
+-> Mealy-only, transitory values only, fully affected outputs.
+
 
 // Not bugs, but still:
 

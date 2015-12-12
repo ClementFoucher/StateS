@@ -41,37 +41,244 @@ using namespace std;
 #include "equation.h"
 
 
-void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path, bool resetLogicPositive, bool prefixIOs)
+FsmVhdlExport::FsmVhdlExport(shared_ptr<Fsm> machine, bool resetLogicPositive, bool prefixSignals)
 {
-    QFile* file = new QFile(path);
-    file->open(QIODevice::WriteOnly);
+    this->machine = machine;
+    this->resetLogicPositive = resetLogicPositive;
+    this->prefixSignals = prefixSignals;
+}
 
-    QTextStream stream(file);
+bool FsmVhdlExport::writeToFile(const QString& path)
+{
+    shared_ptr<Fsm> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        this->generateVhdlCharacteristics(l_machine);
+
+        QFile* file = new QFile(path);
+        file->open(QIODevice::WriteOnly);
+
+        QTextStream stream(file);
+
+        this->writeHeader(stream);
+        this->writeEntity(stream, l_machine);
+        this->writeArchitecture(stream, l_machine);
+
+        file->close();
+        delete file;
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
+{
+    // Machine
+    this->machineVhdlName = this->cleanNameForVhdl(l_machine->getName());
+
+    // States
+    QString stateName;
+    foreach(shared_ptr<FsmState> state, l_machine->getStates())
+    {
+        QString stateRadical = "S_";
+
+        stateRadical += cleanNameForVhdl(state->getName());
+
+        // Check for ducplicates
+        int occurence = 2;
+        QString stateName = stateRadical;
+        while (this->stateVhdlName.values().contains(stateName))
+        {
+            stateName = stateRadical + QString::number(occurence);
+            occurence++;
+        }
+
+        this->stateVhdlName[state] = stateName;
+    }
+
+    // Signals
+    QString signalName;
+
+    foreach (shared_ptr<Input> input, l_machine->getInputs())
+    {
+        signalName = this->generateSignalVhdlName("I_", input->getName());
+        this->signalVhdlName[input] = signalName;
+    }
+    foreach (shared_ptr<Output> output, l_machine->getOutputs())
+    {
+        signalName = this->generateSignalVhdlName("O_", output->getName());
+        this->determineWrittableSignalCharacteristics(l_machine, output);
+        this->signalVhdlName[output] = signalName;
+    }
+    foreach (shared_ptr<Signal> variable, l_machine->getLocalVariables())
+    {
+        signalName = this->generateSignalVhdlName("SIG_", variable->getName());
+        this->determineWrittableSignalCharacteristics(l_machine, variable);
+        this->signalVhdlName[variable] = signalName;
+    }
+    foreach (shared_ptr<Signal> constant, l_machine->getConstants())
+    {
+        signalName = this->generateSignalVhdlName("CONST_", constant->getName());
+        this->signalVhdlName[constant] = signalName;
+    }
+}
+
+void FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal)
+{
+    bool signalIsMealy = false;
+    bool signalIsMoore = false;
+
+    bool signalKeepsValue = false;
+    bool signalHasTempValue = false;
+
+//    bool signalIsRangeAdressed = false;
+
+    bool doNotGenerate = false;
+
+    foreach(shared_ptr<FsmState> state, l_machine->getStates())
+    {
+        if (state->getActions().contains(signal))
+        {
+            signalIsMoore = true;
+
+            MachineActuatorComponent::action_types actionType = state->getActionType(signal);
+
+            switch (actionType)
+            {
+            case MachineActuatorComponent::action_types::assign:
+            case MachineActuatorComponent::action_types::set:
+            case MachineActuatorComponent::action_types::reset:
+                signalKeepsValue = true;
+                break;
+            case MachineActuatorComponent::action_types::activeOnState:
+            case MachineActuatorComponent::action_types::pulse:
+                signalHasTempValue = true;
+                break;
+            }
+
+            if (state->getActionParam1(signal) != -1)
+            {
+                doNotGenerate = true; // TODO
+                //signalIsRangeAdressed = true;
+            }
+        }
+    }
 
 
-    // Header
+    foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
+    {
+        if (transition->getActions().contains(signal))
+        {
+            signalIsMealy = true;
+
+            MachineActuatorComponent::action_types actionType = transition->getActionType(signal);
+
+            switch (actionType)
+            {
+            case MachineActuatorComponent::action_types::assign:
+            case MachineActuatorComponent::action_types::set:
+            case MachineActuatorComponent::action_types::reset:
+                signalKeepsValue = true;
+                break;
+            case MachineActuatorComponent::action_types::activeOnState:
+            case MachineActuatorComponent::action_types::pulse:
+                signalHasTempValue = true;
+                break;
+            }
+
+            if (transition->getActionParam1(signal) != -1)
+            {
+                doNotGenerate = true; // TODO
+                //signalIsRangeAdressed = true;
+            }
+        }
+    }
+
+    if (signalIsMealy && signalIsMoore)
+        doNotGenerate = true;
+    else if (signalHasTempValue && signalKeepsValue)
+        doNotGenerate = true;
+
+    if (!doNotGenerate)
+    {
+        if (signalIsMoore)
+            this->mooreSignals.append(signal);
+        else if (signalIsMealy)
+            this->mealySignals.append(signal);
+
+        if (signalHasTempValue)
+            this->tempValueSignals.append(signal);
+        else if (signalKeepsValue)
+            this->keepValueSignals.append(signal);
+
+//        if (signalIsRangeAdressed)
+//            this->rangeAdressedSignals.append(signal);
+    }
+}
+
+QString FsmVhdlExport::generateSignalVhdlName(const QString& prefix, const QString& name) const
+{
+    QString signalRadical;
+
+    if (this->prefixSignals)
+        signalRadical += prefix;
+
+    signalRadical += cleanNameForVhdl(name);
+
+    // Check for ducplicates
+    int occurence = 2;
+    QString signalName = signalRadical;
+    while (this->signalVhdlName.values().contains(signalName))
+    {
+        signalName = signalRadical + QString::number(occurence);
+        occurence++;
+    }
+
+    return signalName;
+}
+
+QString FsmVhdlExport::cleanNameForVhdl(const QString& name) const
+{
+    // TODO
+    QString newName = name;
+
+    newName.replace(" ", "_");
+    newName.replace("#", "_");
+
+    while (newName.contains("__"))
+    {
+        newName.replace("__", "_");
+    }
+
+    return newName;
+}
+
+void FsmVhdlExport::writeHeader(QTextStream& stream) const
+{
     stream << "-- FSM generated with StateS v" << StateS::getVersion() << " on " << QDate::currentDate().toString() << " at " << QTime::currentTime().toString() << "\n";
     stream << "-- https://sourceforge.net/projects/states/\n\n";
 
     stream << "library IEEE;\n";
     stream << "use IEEE.std_logic_1164.all;\n\n\n";
+}
 
-
-    // Entity
-    stream << "entity StateS_FSM is\n";
+void FsmVhdlExport::writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) const
+{
+    stream << "entity " << this->machineVhdlName << " is\n";
 
     stream << "  port(clock : in std_logic;\n       reset : in std_logic;\n       ";
 
 
-
-    QList<shared_ptr<Input>> inputs = machine->getInputs();
+    QList<shared_ptr<Input>> inputs = l_machine->getInputs();
 
     foreach (shared_ptr<Input> input, inputs)
     {
-        if (prefixIOs == true)
-            stream << "I_";
-
-        stream << correctName(input->getName()) << " : in std_logic";
+        stream << this->signalVhdlName[input] << " : in std_logic";
 
         if (input->getSize() > 1)
         {
@@ -83,14 +290,11 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
         stream << ";\n       ";
     }
 
-    QList<shared_ptr<Output>> outputs = machine->getOutputs();
+    QList<shared_ptr<Output>> outputs = l_machine->getOutputs();
 
     foreach (shared_ptr<Output> output, outputs)
     {
-        if (prefixIOs == true)
-            stream << "O_";
-
-        stream << correctName(output->getName()) << " : out std_logic";
+        stream << this->signalVhdlName[output] << " : out std_logic";
 
         if (output->getSize() > 1)
         {
@@ -107,19 +311,19 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
 
 
     stream << "end entity;\n\n\n";
+}
 
-
-    // Architecture
-    stream << "architecture FSM_body of StateS_Fsm is\n\n";
+void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_machine) const
+{
+    stream << "architecture FSM_body of " << this->machineVhdlName << " is\n\n";
 
     stream << "  type state_type is (";
 
-    QList<shared_ptr<FsmState>> states = machine->getStates();
-    foreach(shared_ptr<FsmState> state, states)
+    foreach(QString stateName, this->stateVhdlName)
     {
-        stream << "S_" << correctName(state->getName());
+        stream << stateName;
 
-        if (!(state == states.last()))
+        if (!(stateName == this->stateVhdlName.last()))
             stream << ", ";
     }
 
@@ -128,10 +332,14 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
     stream << "  signal current_state : state_type;\n";
     stream << "  signal next_state    : state_type;\n\n";
 
-    QList<shared_ptr<Signal>> localVars = machine->getLocalVariables();
+    QList<shared_ptr<Input>> inputs = l_machine->getInputs();
+    QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
+    QList<shared_ptr<Signal>> constants = l_machine->getConstants();
+    QList<shared_ptr<FsmState>> states = l_machine->getStates();
+
     foreach(shared_ptr<Signal> localVar, localVars)
     {
-        stream << "  signal SIG_" << correctName(localVar->getName()) << " : std_logic";
+        stream << "  signal " + this->signalVhdlName[localVar] << " : std_logic";
 
         if (localVar->getSize() > 1)
         {
@@ -149,9 +357,9 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
 
     stream << "\n";
 
-    foreach(shared_ptr<Signal> constant, machine->getConstants())
+    foreach(shared_ptr<Signal> constant, constants)
     {
-        stream << "  constant CST_" << correctName(constant->getName()) << " : std_logic";
+        stream << "  constant " + this->signalVhdlName[constant] << " : std_logic";
 
         if (constant->getSize() > 1)
         {
@@ -172,36 +380,7 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
     // Next step computation : asynchronous process
     stream << "  compute_next_step : process(current_state,\n";
 
-    foreach (shared_ptr<Input> input, inputs)
-    {
-        stream << "                              ";
-        if (prefixIOs == true)
-            stream << "I_";
-        stream << correctName(input->getName());
-
-        if ( (input == inputs.last()) && (localVars.count() == 0) )
-        {
-            stream << ")\n";
-        }
-        else
-        {
-            stream << ",\n";
-        }
-    }
-
-    foreach (shared_ptr<Signal> localVar, localVars)
-    {
-        stream << "                              SIG_" << correctName(localVar->getName());
-
-        if (localVar == localVars.last())
-        {
-            stream << ")\n";
-        }
-        else
-        {
-            stream << ",\n";
-        }
-    }
+    this->writeAsynchronousProcessSensitivityList(stream, l_machine);
 
     stream << "  begin\n";
 
@@ -209,17 +388,29 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
 
     foreach(shared_ptr<FsmState> state, states)
     {
-        stream << "    when S_" << correctName(state->getName()) << " =>\n";
+        stream << "    when ";
+        stream << this->stateVhdlName[state];
+        stream << " =>\n";
 
         QList<shared_ptr<FsmTransition>> transitions = state->getOutgoingTransitions();
         foreach (shared_ptr<FsmTransition> transition, transitions)
         {
             stream << "      ";
+
             if (transition != transitions.first())
                 stream << "els";
 
-            stream << "if (" << equationText(transition->getCondition(), machine, prefixIOs) << " = '1') then\n";
-            stream << "        next_state <= S_" << correctName(transition->getTarget()->getName()) << ";\n";
+            stream << "if ";
+
+            shared_ptr<Signal> condition = transition->getCondition();
+            stream << generateEquationText(condition, l_machine);
+
+            // Add compare for single signal equations
+            if ((condition != nullptr) && (dynamic_pointer_cast<Equation>(condition) == nullptr))
+                stream << " = '1'";
+
+            stream << " then\n";
+            stream << "        next_state <= " << this->stateVhdlName[transition->getTarget()] << ";\n";
         }
 
         stream << "      end if;\n";
@@ -235,90 +426,198 @@ void FsmVhdlExport::exportFSM(shared_ptr<const Fsm> machine, const QString& path
     stream << "  update_state : process(clock, reset)\n";
     stream << "  begin\n";
     stream << "    if reset='" << (resetLogicPositive?"1":"0") << "' then\n";
-    stream << "      current_state <= S_" + correctName(machine->getInitialState()->getName()) << ";\n";
+    stream << "      current_state <= " << this->stateVhdlName[l_machine->getInitialState()] << ";\n";
     stream << "    elsif rising_edge(clock) then\n";
     stream << "      current_state <= next_state;\n";
     stream << "    end if;\n";
     stream << "  end process;\n\n";
 
 
-    // Output computation : asynchronous process
+    // Output computation : asynchronous processes
 
-    stream << "  compute_outputs : process(current_state)\n";
+    if (!this->mooreSignals.isEmpty())
+       this->writeMooreOutputs(stream, l_machine);
+
+    if (!this->mealySignals.isEmpty())
+        this->writeMealyOutputs(stream, l_machine);
+
+    // The end
+    stream << "\nend architecture;\n";
+}
+
+void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const
+{
+    stream << "  compute_moore : process(current_state)\n";
     stream << "  begin\n";
+
+    foreach(shared_ptr<Signal> signal, this->mooreSignals)
+    {
+        if (this->tempValueSignals.contains(signal))
+        {
+            // Write default value for temp signals
+            stream << "    " << this->signalVhdlName[signal] << " <= \"" << LogicValue::getValue0(signal->getSize()).toString() << "\";\n";
+        }
+    }
+    stream << "    -- Signals handled in this process but not listed above this line implicitly maintain their value.\n";
 
     stream << "    case current_state is\n";
 
-    foreach(shared_ptr<FsmState> state, states)
+    foreach(shared_ptr<FsmState> state, l_machine->getStates())
     {
-        stream << "    when S_" << correctName(state->getName()) << " =>\n";
+        stream << "    when ";
+        stream << this->stateVhdlName[state];
+        stream << " =>\n";
 
+        int writtenActions = 0;
         foreach(shared_ptr<Signal> sig, state->getActions())
         {
-            MachineActuatorComponent::action_types type = state->getActionType(sig);
-
-            stream << "      ";
-            if ( (prefixIOs) && (dynamic_pointer_cast<Output>(sig) != nullptr))
-                stream << "O_";
-            else if (machine->getLocalVariables().contains(sig))
-                stream << "SIG_";
-
-            stream << correctName(sig->getName()) << " <= ";
-
-            switch(type)
+            if (this->mooreSignals.contains(sig))
             {
-            case MachineActuatorComponent::action_types::activeOnState:
-                stream << "'1'";
-                break;
-            case MachineActuatorComponent::action_types::pulse:
-                stream << "'1'";
-                break;
-            case MachineActuatorComponent::action_types::set:
-                stream << "'1'";
-                break;
-            case MachineActuatorComponent::action_types::reset:
-                if (sig->getSize() == 1)
-                    stream << "'0'";
-                else
-                    stream << "\"" << LogicValue::getValue0(sig->getSize()).toString() << "\"";
-                break;
-            case MachineActuatorComponent::action_types::assign:
-                // TODO: address range
-                if (sig->getSize() == 1)
-                    stream << "'" << state->getActionValue(sig).toString() <<"'";
-                else
-                    stream << "\"" << state->getActionValue(sig).toString() << "\"";
-                break;
+                writtenActions++;
+
+                MachineActuatorComponent::action_types type = state->getActionType(sig);
+                this->writeSignalAffectationValue(stream, state, sig, type);
 
             }
+        }
 
-            stream << ";\n";
+        if (writtenActions == 0)
+        {
+            stream << "      null;\n";
         }
     }
 
     stream << "    end case;\n";
 
     stream << "  end process;\n\n";
-
-
-    // The end
-    stream << "end architecture;\n";
-
-    file->close();
-    delete file;
 }
 
-QString FsmVhdlExport::correctName(QString name)
+void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const
 {
-    QString newName = name;
+    stream << "  -- Compute Mealy outputs\n";
 
-    newName.replace(" ", "_");
-    newName.replace("#", "_");
+    foreach(shared_ptr<Signal> signal, this->mealySignals)
+    {
+        if (this->tempValueSignals.contains(signal))
+        {
+            QList<shared_ptr<FsmTransition>> transitions;
 
-    return newName;
+            foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
+            {
+                if (transition->getActions().contains(signal))
+                {
+                    transitions.append(transition);
+                }
+            }
+
+            if (!transitions.isEmpty())
+            {
+                stream << "  affect_" << this->signalVhdlName[signal] << ":";
+                stream << this->signalVhdlName[signal] << " <= ";
+
+                foreach(shared_ptr<FsmTransition> transition, transitions)
+                {
+                    if (signal->getSize() > 1)
+                        stream << "\"" << transition->getActionValue(signal).toString() << "\"";
+                    else
+                        stream << "'1'";
+
+                    stream << " when (current_state = " << this->stateVhdlName[transition->getSource()] << ")";
+                    stream << " and " << this->generateEquationText(transition->getCondition(), l_machine);
+                    stream << " else\n    ";
+                }
+
+                stream << LogicValue::getValue0(signal->getSize()).toString() << ";\n";
+            }
+        }
+    }
 }
 
-QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<const Fsm> machine, bool prefixIOs)
+void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const
+{
+    QList<shared_ptr<Input>> inputs = l_machine->getInputs();
+    QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
+
+    foreach (shared_ptr<Input> input, inputs)
+    {
+        stream << "                              ";
+
+        stream << this->signalVhdlName[input];
+
+        if ( (input == inputs.last()) && (localVars.count() == 0) )
+        {
+            stream << ")\n";
+        }
+        else
+        {
+            stream << ",\n";
+        }
+    }
+
+    foreach (shared_ptr<Signal> localVar, l_machine->getLocalVariables())
+    {
+        stream << "                              ";
+        stream << this->signalVhdlName[localVar];
+
+        if (localVar == localVars.last())
+        {
+            stream << ")\n";
+        }
+        else
+        {
+            stream << ",\n";
+        }
+    }
+}
+
+void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<FsmState> state, shared_ptr<Signal> signal, MachineActuatorComponent::action_types type) const
+{
+    stream << "      ";
+    stream << this->signalVhdlName[signal];
+    stream << " <= ";
+
+    if (signal->getSize() == 1)
+    {
+        switch(type)
+        {
+        case MachineActuatorComponent::action_types::activeOnState:
+        case MachineActuatorComponent::action_types::pulse:
+        case MachineActuatorComponent::action_types::set:
+            stream << "'1'";
+            break;
+        case MachineActuatorComponent::action_types::reset:
+            stream << "'0'";
+            break;
+        case MachineActuatorComponent::action_types::assign:
+            // Impossible case
+            break;
+        }
+    }
+    else
+    {
+        switch(type)
+        {
+        case MachineActuatorComponent::action_types::activeOnState:
+        case MachineActuatorComponent::action_types::pulse:
+            stream << "\"" <<  state->getActionValue(signal).toString() << "\"";
+            break;
+        case MachineActuatorComponent::action_types::set:
+            stream << "\"" << LogicValue::getValue1(signal->getSize()).toString() << "\"";
+            break;
+        case MachineActuatorComponent::action_types::reset:
+            stream << "\"" << LogicValue::getValue0(signal->getSize()).toString() << "\"";
+            break;
+        case MachineActuatorComponent::action_types::assign:
+            stream << "\"" << state->getActionValue(signal).toString() << "\"";
+            break;
+
+        }
+    }
+
+    stream << ";\n";
+}
+
+QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const
 {
     QString text;
 
@@ -326,71 +625,93 @@ QString FsmVhdlExport::equationText(shared_ptr<Signal> equation, shared_ptr<cons
 
     if (complexEquation != nullptr)
     {
-        if (complexEquation->getFunction() == Equation::nature::notOp)
-            text += "(not ";
+        Equation::nature function = complexEquation->getFunction();
+
+        // Prefix
+        if (function == Equation::nature::constant)
+        {
+            text += "\"" + complexEquation->getCurrentValue().toString() + "\"";
+        }
+        else if (function == Equation::nature::extractOp)
+        {
+            int param1 = complexEquation->getParam1();
+            int param2 = complexEquation->getParam2();
+
+            text += generateEquationText(complexEquation->getOperand(0), l_machine);
+
+            text += "(";
+            text += QString::number(param1);
+
+            if (param2 != -1)
+            {
+                text += " downto ";
+                text += QString::number(param2);
+            }
+
+            text += ")";
+        }
+        else if (function == Equation::nature::notOp)
+        {
+            text += "not ";
+            text += generateEquationText(complexEquation->getOperand(0), l_machine);
+        }
         else
+        {
             text += "(";
 
-        QVector<shared_ptr<Signal>> operands = complexEquation->getOperands();
+            QVector<shared_ptr<Signal>> operands = complexEquation->getOperands();
 
-        for (int i = 0 ; i < operands.count() ; i++)
-        {
-            text += equationText(operands.at(i), machine, prefixIOs);
-
-            if (i < operands.count() - 1)
+            for (int i = 0 ; i < operands.count() ; i++)
             {
-                switch(complexEquation->getFunction())
+                text += generateEquationText(operands.at(i), l_machine);
+
+                if (i < operands.count() - 1)
                 {
-                case Equation::nature::andOp:
-                    text += " and ";
-                    break;
-                case Equation::nature::orOp:
-                    text += " or ";
-                    break;
-                case Equation::nature::xorOp:
-                    text += " xor ";
-                    break;
-                case Equation::nature::nandOp:
-                    text += " nand ";
-                    break;
-                case Equation::nature::norOp:
-                    text += " nor ";
-                    break;
-                case Equation::nature::xnorOp:
-                    text += " xnor ";
-                    break;
-                case Equation::nature::equalOp:
-                    text += " = ";
-                    break;
-                case Equation::nature::diffOp:
-                    text += " /= ";
-                    break;
-                case Equation::nature::concatOp:
-                    // TODO
-                    break;
-                case Equation::nature::extractOp:
-                    // TODO
-                    break;
-                case Equation::nature::notOp:
-                case Equation::nature::constant:
-                case Equation::nature::identity:
-                    break;
+                    switch(function)
+                    {
+                    case Equation::nature::andOp:
+                        text += " and ";
+                        break;
+                    case Equation::nature::orOp:
+                        text += " or ";
+                        break;
+                    case Equation::nature::xorOp:
+                        text += " xor ";
+                        break;
+                    case Equation::nature::nandOp:
+                        text += " nand ";
+                        break;
+                    case Equation::nature::norOp:
+                        text += " nor ";
+                        break;
+                    case Equation::nature::xnorOp:
+                        text += " xnor ";
+                        break;
+                    case Equation::nature::equalOp:
+                        text += " = ";
+                        break;
+                    case Equation::nature::diffOp:
+                        text += " /= ";
+                        break;
+                    case Equation::nature::concatOp:
+                        text += "&";
+                        break;
+                    case Equation::nature::extractOp:
+                    case Equation::nature::notOp:
+                    case Equation::nature::constant:
+                    case Equation::nature::identity:
+                        break;
+                    }
                 }
             }
+
+            text += ")";
         }
 
-        text += ")";
     }
     else if (equation != nullptr)
     {
-        if ( (prefixIOs) && (dynamic_pointer_cast<Input>(equation) != nullptr))
-            text += "I_";
-        else if (machine->getLocalVariables().contains(equation))
-            text += "SIG_";
-        else if (machine->getConstants().contains(equation))
-            text += "CST_";
-
-        text += correctName(equation->getName());
+        text += this->signalVhdlName[equation];
     }
     else
     {

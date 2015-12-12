@@ -1335,8 +1335,16 @@
         <translation>Exporter la machine en VHDL</translation>
     </message>
     <message>
-        <source>Warning! Experimental feature. Please consult known_bugs.txt.</source>
-        <translation>Attention ! Fonctionnalité expériementale. Veuillez consulter known_bugs.txt.</translation>
+        <source>Warning! Experimental feature.</source>
+        <translation>Attention ! Fonctionnalité expériementale.</translation>
+    </message>
+    <message>
+        <source>Output generation has strong restrictions:</source>
+        <translation>La génération des sorties ne gère pas toutes les possibilités:</translation>
+    </message>
+    <message>
+        <source>Please consult known_bugs.txt.</source>
+        <translation>Veuillez consulter known_bugs.txt.</translation>
     </message>
 </context>
 </TS>

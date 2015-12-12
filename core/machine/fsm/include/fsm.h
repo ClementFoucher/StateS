@@ -73,7 +73,7 @@ public:
     void clear() override;
     bool isEmpty() const override;
 
-    void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) const override;
+    void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) override;
 
 private:
     QString getUniqueStateName(QString nameProposal);
