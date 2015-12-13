@@ -83,7 +83,6 @@ private:
     ComponentEditorTab * editorTab       = nullptr;
     SimulatorTab       * simulatorTab    = nullptr;
     VerifierTab        * verifierTab     = nullptr;
-    AboutTab           * aboutTab        = nullptr;
 };
 
 #endif // RESOURCEBAR_H

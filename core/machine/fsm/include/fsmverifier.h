@@ -30,9 +30,7 @@
 using namespace std;
 
 // Qt classes
-#include <QHash>
 #include <QList>
-#include <QVector>
 
 // StateS classes
 class TruthTable;
@@ -47,12 +45,23 @@ class FsmVerifier : public QObject
     Q_OBJECT
 
 public:
+    enum severity { blocking, structure, tool, hint };
+
+    class Issue
+    {
+    public:
+        QString text = QString::null;
+        severity type = severity::hint;
+        TruthTable* proof = nullptr;
+        QList<int> proofsHighlight;
+    };
+
+public:
     explicit FsmVerifier(shared_ptr<Fsm> machine);
     ~FsmVerifier();
 
-    QList<QString> verifyFsm();
-    QVector<TruthTable*> getProofs();
-    QHash<TruthTable*, QList<int>> getProofsHighlight();
+    const QList<shared_ptr<Issue>>& getIssues();
+    const QList<shared_ptr<Issue>>& verifyFsm(bool checkVhdl);
 
 private:
     void clearProofs();
@@ -60,8 +69,7 @@ private:
     weak_ptr<Fsm> machine;
     QList<TruthTable> internalProofs;
 
-    QVector<TruthTable*> proofs;
-    QHash<TruthTable*, QList<int>> proofsHighlight;
+    QList<shared_ptr<Issue>> issues;
 };
 
 #endif // FSMVERIFIER_H

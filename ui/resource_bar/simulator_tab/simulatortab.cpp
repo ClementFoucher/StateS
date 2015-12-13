@@ -138,8 +138,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
                     inputListHint->setWordWrap(true);
                     inputsLayout->addWidget(inputListHint);
 
-                    inputList = new InputsSelector(l_machine->getInputs());
-                    inputsLayout->addWidget(inputList);
+                    this->inputList = new InputsSelector(l_machine->getInputs());
+                    inputsLayout->addWidget(this->inputList);
                 }
 
                 this->simulationTools->layout()->addWidget(inputsGroup);

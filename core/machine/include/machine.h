@@ -85,12 +85,7 @@ public:
 
     // Handled in sub classes
 
-    virtual void loadFromFile(const QString& filePath, bool eraseFirst = false) = 0;
-    virtual void saveMachine(const QString& path) = 0;
-
     virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
-
-    virtual void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) = 0;
 
     // Other
 
@@ -117,8 +112,6 @@ signals:
     void localVariableListChangedEvent();
     void constantListChangedEvent();
     void componentVisualizationUpdatedEvent();
-
-    void machineLoadedEvent();
 
     void changedModeEvent(mode newMode);
     void machineUnsavedStateChanged(bool isUnsaved);

@@ -100,7 +100,8 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
 
         if (complexOperand != nullptr)
         {
-            list += extractSignals(complexOperand);
+            if (complexOperand->getFunction() != Equation::nature::constant)
+                list += extractSignals(complexOperand);
         }
         else
         {

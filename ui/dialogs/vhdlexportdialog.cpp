@@ -30,7 +30,7 @@
 #include <QFileDialog>
 
 
-VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, QWidget *parent) :
+VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent) :
     QDialog(parent)
 {
     this->baseFileName = baseFileName;
@@ -38,10 +38,16 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 
     QVBoxLayout* layout = new QVBoxLayout(this);
 
-
-    QLabel* warning = new QLabel("<font color=red>" + tr("Warning! Experimental feature.") + "<br />" + tr("Output generation has strong restrictions:") + "<br />" + tr("Please consult known_bugs.txt.") + "</font>");
-    warning->setAlignment(Qt::AlignCenter);
-    layout->addWidget(warning);
+    if (isIncompatible)
+    {
+        QLabel* warning = new QLabel("<font color=red>"
+                                     + tr("Warning! Experimental feature.") + "<br />"
+                                     + tr("Output generation has strong restrictions:") + "<br />"
+                                     + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
+                                     + tr("Please run machine verifier to identify affected signals.") + "</font>");
+        warning->setAlignment(Qt::AlignCenter);
+        layout->addWidget(warning);
+    }
 
     QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
     title->setAlignment(Qt::AlignCenter);

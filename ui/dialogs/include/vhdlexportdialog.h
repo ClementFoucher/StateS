@@ -34,7 +34,7 @@ class VhdlExportDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath = QString::null, QWidget* parent = nullptr);
+    explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent = nullptr);
 
     bool isResetPositive();
     bool prefixIOs();

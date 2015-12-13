@@ -59,8 +59,6 @@ private:
     weak_ptr<Fsm> machine;
     shared_ptr<FsmSimulator> simulator;
 
-    SimulationWidget* timeLine = nullptr;
-
     // QWidgets with parent
     QPushButton  * buttonTriggerSimulation = nullptr;
     QPushButton  * buttonTriggerAutoStep   = nullptr;

@@ -28,6 +28,7 @@
 #include "fsmtransition.h"
 #include "truthtable.h"
 #include "equation.h"
+#include "fsmvhdlexport.h"
 
 
 FsmVerifier::FsmVerifier(shared_ptr<Fsm> machine) :
@@ -41,36 +42,39 @@ FsmVerifier::~FsmVerifier()
     this->clearProofs();
 }
 
-QList<QString> FsmVerifier::verifyFsm()
+const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkVhdl)
 {
-    QList<QString> errors;
-
     this->clearProofs();
 
-    shared_ptr<Fsm> machine = this->machine.lock();
+    shared_ptr<Fsm> l_machine = this->machine.lock();
 
-    if (machine == nullptr)
+    if (l_machine == nullptr)
     {
-        errors.append(tr("No FSM."));
-        proofs.append(nullptr);
-
+        shared_ptr<Issue> issue(new Issue());
+        issue->text = tr("No FSM.");
+        issue->type = severity::blocking;
+        this->issues.append(issue);
     }
-    else if (machine->getStates().isEmpty())
+    else if (l_machine->getStates().isEmpty())
     {
-        errors.append(tr("Empty FSM."));
-        proofs.append(nullptr);
+        shared_ptr<Issue> issue(new Issue());
+        issue->text = tr("Empty FSM.");
+        issue->type = severity::blocking;
+        this->issues.append(issue);
     }
     else
     {
         // Check initial state
-        if (machine->getInitialState() == nullptr)
+        if (l_machine->getInitialState() == nullptr)
         {
-            errors.append(tr("No initial state."));
-            proofs.append(nullptr);
+            shared_ptr<Issue> issue(new Issue());
+            issue->text = tr("No initial state.");
+            issue->type = severity::blocking;
+            this->issues.append(issue);
         }
 
         // Check transitions
-        foreach(shared_ptr<FsmState> state, machine->getStates())
+        foreach(shared_ptr<FsmState> state, l_machine->getStates())
         {
             QList<shared_ptr<Equation>> equations;
 
@@ -101,8 +105,10 @@ QList<QString> FsmVerifier::verifyFsm()
                         errorOnTransition = true;
                         equations.clear();
 
-                        errors.append(tr("Error on transition condition from state") + " " + state->getName() + ". " + tr("Please correct this equation:") + " " + condition->getText());
-                        proofs.append(nullptr);
+                        shared_ptr<Issue> issue(new Issue());
+                        issue->text = tr("Error on transition condition from state") + " " + state->getName() + ". " + tr("Please correct this equation:") + " " + condition->getText();
+                        issue->type = severity::structure;
+                        this->issues.append(issue);
 
                         break;
                     }
@@ -116,13 +122,17 @@ QList<QString> FsmVerifier::verifyFsm()
 
                 if (constantToOneConditions > 1)
                 {
-                    errors.append(tr("Multiple transitions from state") + " " + state->getName() + " " + tr("have a condition value always true."));
-                    proofs.append(nullptr);
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("Multiple transitions from state") + " " + state->getName() + " " + tr("have a condition value always true.");
+                    issue->type = severity::structure;
+                    this->issues.append(issue);
                 }
                 else if ( (constantToOneConditions == 1) && (state->getOutgoingTransitions().count() > 1) )
                 {
-                    errors.append(tr("One transition from state") + " " + state->getName() + " " + tr("has a condition value always true.") + " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state."));
-                    proofs.append(nullptr);
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("One transition from state") + " " + state->getName() + " " + tr("has a condition value always true.") + " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.");
+                    issue->type = severity::structure;
+                    this->issues.append(issue);
                 }
                 else if (state->getOutgoingTransitions().count() > 1)
                 {
@@ -132,6 +142,7 @@ QList<QString> FsmVerifier::verifyFsm()
 
                     bool detected = false;
                     uint rowcount = 0;
+                    shared_ptr<Issue> currentIssue = nullptr;
                     foreach(QVector<LogicValue> row, result)
                     {
                         uint trueCount = 0;
@@ -144,16 +155,18 @@ QList<QString> FsmVerifier::verifyFsm()
 
                         if (trueCount > 1)
                         {
-                            TruthTable* currentProof = &internalProofs.last();
                             if (!detected)
                             {
-                                errors.append(tr("Transitions from state") + " " + state->getName() + " " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time."));
-                                proofs.append(currentProof);
+                                currentIssue = shared_ptr<Issue>(new Issue());
+                                currentIssue->text = tr("Transitions from state") + " " + state->getName() + " " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time.");
+                                currentIssue->proof = &internalProofs.last();
+                                currentIssue->type = severity::structure;
+                                this->issues.append(currentIssue);
+
                                 detected = true;
-                                this->proofsHighlight.insert(currentProof, QList<int>());
                             }
 
-                            this->proofsHighlight[currentProof].append(rowcount);
+                            currentIssue->proofsHighlight.append(rowcount);
                         }
 
                         rowcount++;
@@ -162,27 +175,76 @@ QList<QString> FsmVerifier::verifyFsm()
                 }
             }
         }
+
+        // Check VHDL export support
+        if (checkVhdl)
+        {
+            unique_ptr<FsmVhdlExport> vhdlExporter(new FsmVhdlExport(l_machine));
+
+            shared_ptr<FsmVhdlExport::ExportCompatibility> compat = vhdlExporter->checkCompatibility();
+            vhdlExporter.reset();
+
+            if (!compat->isCompatible())
+            {
+                foreach(shared_ptr<Signal> sig, compat->bothMooreAndMealy)
+                {
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("Signal") + " " + sig->getName() + " "
+                            + tr("has both Moore and Mealy behaviors.") + " "
+                            + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
+                            + tr("This signal will be ignored on VHDL export.");
+                    issue->type = severity::tool;
+                    this->issues.append(issue);
+                }
+                foreach(shared_ptr<Signal> sig, compat->bothTempAndKeepValue)
+                {
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("Signal") + " " + sig->getName() + " "
+                            + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
+                            + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
+                            + tr("This signal will be ignored on VHDL export.");
+                    issue->type = severity::tool;
+                    this->issues.append(issue);
+                }
+                foreach(shared_ptr<Signal> sig, compat->rangeAdressed)
+                {
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("Signal") + " " + sig->getName() + " "
+                            + tr("has range-adressed output generation.") + " "
+                            + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
+                            + tr("This signal will be ignored on VHDL export.");
+                    issue->type = severity::tool;
+                    this->issues.append(issue);
+                }
+                foreach(shared_ptr<Signal> sig, compat->mealyWithKeep)
+                {
+                    shared_ptr<Issue> issue(new Issue());
+                    issue->text = tr("Signal") + " " + sig->getName() + " "
+                            + tr("has Mealy outputs affectation (remembered value).") + " "
+                            + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
+                            + tr("This signal will be ignored on VHDL export.");
+                    issue->type = severity::tool;
+                    this->issues.append(issue);
+                }
+            }
+        }
+
     }
 
-    return errors;
+    return this->issues;
 }
 
-QVector<TruthTable*> FsmVerifier::getProofs()
-{
-    return this->proofs;
-}
 
-QHash<TruthTable*, QList<int>> FsmVerifier::getProofsHighlight()
+const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
 {
-    return this->proofsHighlight;
+    return this->issues;
 }
 
 void FsmVerifier::clearProofs()
 {
     this->internalProofs.clear();
 
-    this->proofs.clear();
-    this->proofsHighlight.clear();
+    this->issues.clear();
 }
 
 

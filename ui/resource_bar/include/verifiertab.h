@@ -41,6 +41,7 @@ class Fsm;
 class TruthTable;
 class TruthTableDisplay;
 class Machine;
+class CollapsibleWidgetWithTitle;
 
 
 class VerifierTab : public QWidget
@@ -53,17 +54,20 @@ public:
 private slots:
     void checkNow();
     void clearDisplay();
+    void setCheckVhdl(bool doCheck);
 
     void proofRequested(QListWidgetItem* item);
 
 private:
     unique_ptr<FsmVerifier> verifier;
 
-    // QWidgets with parent
-    QLabel            * listTitle   = nullptr;
-    QListWidget       * list        = nullptr;
-    QPushButton       * buttonClear = nullptr;
-    TruthTableDisplay * truthTable  = nullptr;
+    bool checkVhdl = false;
+
+    QLabel                     * listTitle   = nullptr;
+    QListWidget                * list        = nullptr;
+    QPushButton                * buttonClear = nullptr;
+    TruthTableDisplay          * truthTable  = nullptr;
+    CollapsibleWidgetWithTitle * hintBox     = nullptr;
 };
 
 #endif // VERIFIERTAB_H

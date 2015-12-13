@@ -29,14 +29,9 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-class QDomElement;
-class QXmlStreamWriter;
-
 // StateS classes
 class FsmState;
 class FsmTransition;
-class MachineActuatorComponent;
 class FsmSimulator;
 
 
@@ -46,12 +41,12 @@ class Fsm : public Machine
 
 public:
     explicit Fsm();
-    //explicit Fsm(const QString& fromPath); // can't be done because need shared_from_this
 
-    // States related
+    // States
     shared_ptr<FsmState> addState(QString name = QString());
     const QList<shared_ptr<FsmState>>& getStates() const;
     void removeState(shared_ptr<FsmState> state);
+    shared_ptr<FsmState> getStateByName(const QString& name) const;
 
     bool renameState(shared_ptr<FsmState> state, QString newName);
 
@@ -61,10 +56,6 @@ public:
     // Transitions
     QList<shared_ptr<FsmTransition>> getTransitions() const;
 
-    // Save/load
-    void loadFromFile(const QString& filePath, bool eraseFirst = false) override;
-    void saveMachine(const QString& path) override;
-
     // Simulation
     void setSimulator(shared_ptr<MachineSimulator> simulator) override;
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
@@ -73,24 +64,11 @@ public:
     void clear() override;
     bool isEmpty() const override;
 
-    void exportAsVhdl(const QString& path, bool resetLogicPositive, bool prefixIOs) override;
+private slots:
+    void stateEditedEventHandler();
 
 private:
     QString getUniqueStateName(QString nameProposal);
-    shared_ptr<FsmState> getStateByName(const QString& name) const;
-
-    // XML Parser
-    void parseXML(const QString& path);
-    void parseSignals(QDomElement element);
-    void parseStates(QDomElement element);
-    void parseTransitions(QDomElement element);
-    shared_ptr<Signal> parseEquation(QDomElement element) const;
-    void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component) const;
-    // WML Writer
-    void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation) const;
-    void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component) const;
-
-    void stateEditedEventHandler();
 
 private:
     QList<shared_ptr<FsmState>> states;

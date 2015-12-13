@@ -24,7 +24,7 @@
 -> Signals mixing Moore and Mealy behaviors are ignored,
 -> Mealy signals maintaining value (set, reset, affect) are ignored.
 
-=> Thus, currently handled outputs are:
+=> Thus currently, the only handled outputs are:
 -> Moore-only, transitory values only, fully affected outputs,
 -> Moore-only, maintained values only, fully affected outputs,
 -> Mealy-only, transitory values only, fully affected outputs.

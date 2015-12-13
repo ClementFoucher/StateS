@@ -140,7 +140,7 @@ void SimulationWidget::closeEvent(QCloseEvent* event)
 void SimulationWidget::mousePressEvent(QMouseEvent* event)
 {
     // TODO: handle only left button
-    separatorPosition = event->x();
+    this->separatorPosition = event->x();
     repaint();
 
     QWidget::mousePressEvent(event);
@@ -149,7 +149,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent* event)
 void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
 {
     // This event is only called if we have clicked first
-    separatorPosition = event->x();
+    this->separatorPosition = event->x();
     repaint();
 
     QWidget::mouseMoveEvent(event);
@@ -160,7 +160,7 @@ void SimulationWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
 
-    painter.drawLine(separatorPosition, 0, separatorPosition, this->height());
+    painter.drawLine(this->separatorPosition, 0, this->separatorPosition, this->height());
 
 }
 

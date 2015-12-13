@@ -27,10 +27,12 @@
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QLabel>
+#include <QCheckBox>
 
 // StateS classes
 #include "truthtabledisplay.h"
 #include "fsm.h"
+#include "collapsiblewidgetwithtitle.h"
 
 
 VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
@@ -38,25 +40,29 @@ VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
 {
     this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(dynamic_pointer_cast<Fsm>(machine)));
 
-    new QVBoxLayout(this);
-    this->layout()->setAlignment(Qt::AlignTop);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setAlignment(Qt::AlignTop);
 
     QLabel* title = new QLabel("<b>" + tr("Verifier tool") + "</b>");
     title->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(title);
+    layout->addWidget(title);
+
+    QCheckBox* checkVhdlExport = new QCheckBox(tr("Check for VHDL export restrictions"));
+    connect(checkVhdlExport, &QCheckBox::clicked, this, &VerifierTab::setCheckVhdl);
+    layout->addWidget(checkVhdlExport);
 
     QPushButton* buttonVerify = new QPushButton(tr("Check machine"));
     connect(buttonVerify, &QPushButton::clicked, this, &VerifierTab::checkNow);
-    this->layout()->addWidget(buttonVerify);
+    layout->addWidget(buttonVerify);
 }
 
 void VerifierTab::checkNow()
 {
     this->clearDisplay();
 
-    QList<QString> errors = this->verifier->verifyFsm();
+    const QList<shared_ptr<FsmVerifier::Issue>>& issues = this->verifier->verifyFsm(this->checkVhdl);
 
-    if (errors.count() == 0)
+    if (issues.count() == 0)
     {
         this->listTitle = new QLabel(tr("No errors!"));
         this->listTitle->setAlignment(Qt::AlignCenter);
@@ -67,7 +73,7 @@ void VerifierTab::checkNow()
     {
         this->listTitle = new QLabel();
         this->listTitle->setWordWrap(true);
-        this->listTitle->setText(tr("Double-click on red items to detail error:"));
+        this->listTitle->setText(tr("The following issues were found:"));
         this->layout()->addWidget(this->listTitle);
 
 
@@ -75,15 +81,66 @@ void VerifierTab::checkNow()
         connect(this->list, &QListWidget::itemDoubleClicked, this, &VerifierTab::proofRequested);
         this->layout()->addWidget(this->list);
 
-        QVector<TruthTable*> proofs = this->verifier->getProofs();
-
-        for (int i = 0 ; i < errors.count() ; i++)
+        bool hasProofs = false;
+        bool hasRed = false;
+        bool hasBlue = false;
+        bool hasGreen = false;
+        for (int i = 0 ; i < issues.count() ; i++)
         {
-            this->list->addItem(errors[i]);
+            this->list->addItem(issues[i]->text);
 
-            if (proofs[i] != nullptr)
-                this->list->item(this->list->count()-1)->setTextColor(Qt::red);
+            QBrush brush;
+
+            switch (issues[i]->type)
+            {
+            case FsmVerifier::severity::blocking:
+                brush.setColor(Qt::red);
+                hasRed = true;
+                break;
+            case FsmVerifier::severity::structure:
+                brush.setColor(Qt::blue);
+                hasBlue = true;
+                break;
+            case FsmVerifier::severity::tool:
+                brush.setColor(Qt::darkGreen);
+                hasGreen = true;
+                break;
+            case FsmVerifier::severity::hint:
+                break;
+            }
+
+            this->list->item(this->list->count()-1)->setForeground(brush);
+
+            if(issues[i]->proof != nullptr)
+            {
+                brush.setColor(Qt::yellow);
+                brush.setStyle(Qt::Dense4Pattern);
+                //this->list->item(this->list->count()-1)->setBackgroundColor(Qt::yellow);
+                this->list->item(this->list->count()-1)->setBackground(brush);
+                hasProofs = true;
+            }
+
         }
+
+        QString hint;
+
+        if (hasRed)
+            hint += tr("Issues in red are blocking for the machine to work.") + "<br />";
+        if (hasBlue)
+            hint += tr("Issues in blue won't block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.") + "<br />";
+        if (hasGreen)
+            hint += tr("Issues in green are not machine errors but have restriction in StateS.") + "<br />";
+        if (hasProofs)
+            hint += tr("Yellow highlighted issues can be double-clicked for more details on the error.");
+
+        this->hintBox = new CollapsibleWidgetWithTitle();
+        this->layout()->addWidget(this->hintBox);
+
+        QLabel* hintText = new QLabel(hint);
+        hintText->setAlignment(Qt::AlignCenter);
+        hintText->setWordWrap(true);
+
+        this->hintBox->setContent(tr("Hint"), hintText, true);
     }
 
     this->buttonClear = new QPushButton(tr("Clear verification"));
@@ -97,27 +154,34 @@ void VerifierTab::clearDisplay()
     delete this->list;
     delete this->truthTable;
     delete this->buttonClear;
+    delete this->hintBox;
 
     this->listTitle   = nullptr;
     this->list        = nullptr;
     this->truthTable  = nullptr;
     this->buttonClear = nullptr;
+    this->hintBox     = nullptr;
+}
+
+void VerifierTab::setCheckVhdl(bool doCheck)
+{
+    this->checkVhdl = doCheck;
 }
 
 void VerifierTab::proofRequested(QListWidgetItem* item)
 {
-    QVector<TruthTable*> proofs = this->verifier->getProofs();
+    const QList<shared_ptr<FsmVerifier::Issue>>&  issues = this->verifier->getIssues();
 
-    if (proofs[this->list->row(item)] != nullptr)
+    if (issues[this->list->row(item)]->proof != nullptr)
     {
         delete this->truthTable;
 
-        TruthTable* currentTruthTable = proofs[this->list->row(item)];
+        TruthTable* currentTruthTable = issues[this->list->row(item)]->proof;
 
         this->truthTable = new TruthTableDisplay(currentTruthTable);
         this->layout()->addWidget(this->truthTable);
 
-        QList<int> highlights = this->verifier->getProofsHighlight()[currentTruthTable];
+        QList<int> highlights = issues[this->list->row(item)]->proofsHighlight;
 
         foreach(int i, highlights)
         {
@@ -126,6 +190,12 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
                 this->truthTable->item(i, j)->setTextColor(Qt::red);
             }
         }
+
+        QLabel* hintText = new QLabel(tr("Lines shown in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated."));
+        hintText->setAlignment(Qt::AlignCenter);
+        hintText->setWordWrap(true);
+
+        this->hintBox->setContent(tr("Details on error"), hintText, true);
     }
 }
 

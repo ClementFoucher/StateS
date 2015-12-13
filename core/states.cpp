@@ -29,6 +29,7 @@
 // StateS classes
 #include "statesui.h"
 #include "fsm.h"
+#include "fsmsavefilemanager.h"
 
 
 QString StateS::getVersion()
@@ -107,13 +108,7 @@ void StateS::loadMachine(const QString& path)
 
         this->currentFilePath = path;
 
-        // TODO: in one step
-        // shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm(this->currentFilePath));
-        shared_ptr<Fsm> fsm = shared_ptr<Fsm>(new Fsm());
-        if (this->currentFilePath != QString::null)
-            fsm->loadFromFile(this->currentFilePath);
-
-        this->machine = fsm;
+        this->machine = FsmSaveFileManager::loadFromFile(this->currentFilePath);
 
         this->statesUi->setMachine(this->machine, this->currentFilePath);
     }
@@ -159,6 +154,6 @@ void StateS::saveCurrentMachineInCurrentFile()
 
     if (fileOk)
     {
-        this->machine->saveMachine(this->currentFilePath);
+        FsmSaveFileManager::writeToFile(dynamic_pointer_cast<Fsm>(this->machine), this->currentFilePath);
     }
 }

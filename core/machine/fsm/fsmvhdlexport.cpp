@@ -41,9 +41,13 @@ using namespace std;
 #include "equation.h"
 
 
-FsmVhdlExport::FsmVhdlExport(shared_ptr<Fsm> machine, bool resetLogicPositive, bool prefixSignals)
+FsmVhdlExport::FsmVhdlExport(shared_ptr<Fsm> machine)
 {
     this->machine = machine;
+}
+
+void FsmVhdlExport::setOptions(bool resetLogicPositive, bool prefixSignals)
+{
     this->resetLogicPositive = resetLogicPositive;
     this->prefixSignals = prefixSignals;
 }
@@ -54,12 +58,12 @@ bool FsmVhdlExport::writeToFile(const QString& path)
 
     if (l_machine != nullptr)
     {
-        this->generateVhdlCharacteristics(l_machine);
-
         QFile* file = new QFile(path);
         file->open(QIODevice::WriteOnly);
 
         QTextStream stream(file);
+
+        this->generateVhdlCharacteristics(l_machine);
 
         this->writeHeader(stream);
         this->writeEntity(stream, l_machine);
@@ -76,13 +80,60 @@ bool FsmVhdlExport::writeToFile(const QString& path)
     }
 }
 
+shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility()
+{
+    shared_ptr<Fsm> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        shared_ptr<ExportCompatibility> compatibility(new ExportCompatibility());
+        WrittableSignalCharacteristics charac;
+
+        foreach (shared_ptr<Output> output, l_machine->getOutputs())
+        {
+            charac = this->determineWrittableSignalCharacteristics(l_machine, output, false);
+
+            if (charac.isKeepValue && charac.isTempValue)
+                compatibility->bothTempAndKeepValue.append(output);
+
+            if (charac.isMoore && charac.isMealy)
+                compatibility->bothMooreAndMealy.append(output);
+
+            if (charac.isRangeAdressed)
+                compatibility->rangeAdressed.append(output);
+
+            if (charac.isMealy && charac.isKeepValue)
+                compatibility->mealyWithKeep.append(output);
+        }
+        foreach (shared_ptr<Signal> variable, l_machine->getLocalVariables())
+        {
+            charac = this->determineWrittableSignalCharacteristics(l_machine, variable, false);
+
+            if (charac.isKeepValue && charac.isTempValue)
+                compatibility->bothTempAndKeepValue.append(variable);
+
+            if (charac.isMoore && charac.isMealy)
+                compatibility->bothMooreAndMealy.append(variable);
+
+            if (charac.isRangeAdressed)
+                compatibility->rangeAdressed.append(variable);
+
+            if (charac.isMealy && charac.isKeepValue)
+                compatibility->mealyWithKeep.append(variable);
+        }
+
+        return compatibility;
+    }
+    else
+        return nullptr;
+}
+
 void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 {
     // Machine
     this->machineVhdlName = this->cleanNameForVhdl(l_machine->getName());
 
     // States
-    QString stateName;
     foreach(shared_ptr<FsmState> state, l_machine->getStates())
     {
         QString stateRadical = "S_";
@@ -112,13 +163,13 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
     foreach (shared_ptr<Output> output, l_machine->getOutputs())
     {
         signalName = this->generateSignalVhdlName("O_", output->getName());
-        this->determineWrittableSignalCharacteristics(l_machine, output);
+        this->determineWrittableSignalCharacteristics(l_machine, output, true);
         this->signalVhdlName[output] = signalName;
     }
     foreach (shared_ptr<Signal> variable, l_machine->getLocalVariables())
     {
         signalName = this->generateSignalVhdlName("SIG_", variable->getName());
-        this->determineWrittableSignalCharacteristics(l_machine, variable);
+        this->determineWrittableSignalCharacteristics(l_machine, variable, true);
         this->signalVhdlName[variable] = signalName;
     }
     foreach (shared_ptr<Signal> constant, l_machine->getConstants())
@@ -128,23 +179,17 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
     }
 }
 
-void FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal)
+FsmVhdlExport::WrittableSignalCharacteristics FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults)
 {
-    bool signalIsMealy = false;
-    bool signalIsMoore = false;
+    WrittableSignalCharacteristics characteristics;
 
-    bool signalKeepsValue = false;
-    bool signalHasTempValue = false;
-
-//    bool signalIsRangeAdressed = false;
-
-    bool doNotGenerate = false;
+    bool doNotGenerate = !storeResults;
 
     foreach(shared_ptr<FsmState> state, l_machine->getStates())
     {
         if (state->getActions().contains(signal))
         {
-            signalIsMoore = true;
+            characteristics.isMoore = true;
 
             MachineActuatorComponent::action_types actionType = state->getActionType(signal);
 
@@ -153,18 +198,17 @@ void FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_ma
             case MachineActuatorComponent::action_types::assign:
             case MachineActuatorComponent::action_types::set:
             case MachineActuatorComponent::action_types::reset:
-                signalKeepsValue = true;
+                characteristics.isKeepValue = true;
                 break;
             case MachineActuatorComponent::action_types::activeOnState:
             case MachineActuatorComponent::action_types::pulse:
-                signalHasTempValue = true;
+                characteristics.isTempValue = true;
                 break;
             }
 
             if (state->getActionParam1(signal) != -1)
             {
-                doNotGenerate = true; // TODO
-                //signalIsRangeAdressed = true;
+                characteristics.isRangeAdressed = true;
             }
         }
     }
@@ -174,7 +218,7 @@ void FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_ma
     {
         if (transition->getActions().contains(signal))
         {
-            signalIsMealy = true;
+            characteristics.isMealy = true;
 
             MachineActuatorComponent::action_types actionType = transition->getActionType(signal);
 
@@ -183,42 +227,45 @@ void FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_ma
             case MachineActuatorComponent::action_types::assign:
             case MachineActuatorComponent::action_types::set:
             case MachineActuatorComponent::action_types::reset:
-                signalKeepsValue = true;
+                characteristics.isKeepValue = true;
                 break;
             case MachineActuatorComponent::action_types::activeOnState:
             case MachineActuatorComponent::action_types::pulse:
-                signalHasTempValue = true;
+                characteristics.isTempValue = true;
                 break;
             }
 
             if (transition->getActionParam1(signal) != -1)
             {
-                doNotGenerate = true; // TODO
-                //signalIsRangeAdressed = true;
+                characteristics.isRangeAdressed = true;
             }
         }
     }
 
-    if (signalIsMealy && signalIsMoore)
+    if (characteristics.isMealy && characteristics.isMoore)
         doNotGenerate = true;
-    else if (signalHasTempValue && signalKeepsValue)
+    else if (characteristics.isTempValue && characteristics.isKeepValue)
+        doNotGenerate = true;
+    else if (characteristics.isRangeAdressed)
         doNotGenerate = true;
 
     if (!doNotGenerate)
     {
-        if (signalIsMoore)
+        if (characteristics.isMoore)
             this->mooreSignals.append(signal);
-        else if (signalIsMealy)
+        else if (characteristics.isMealy)
             this->mealySignals.append(signal);
 
-        if (signalHasTempValue)
+        if (characteristics.isTempValue)
             this->tempValueSignals.append(signal);
-        else if (signalKeepsValue)
+        else if (characteristics.isKeepValue)
             this->keepValueSignals.append(signal);
 
 //        if (signalIsRangeAdressed)
 //            this->rangeAdressedSignals.append(signal);
     }
+
+    return characteristics;
 }
 
 QString FsmVhdlExport::generateSignalVhdlName(const QString& prefix, const QString& name) const

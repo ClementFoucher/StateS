@@ -99,7 +99,8 @@ SOURCES += \
     ui/resource_bar/component_editor/rangeeditordialog.cpp \
     ui/scene/graphicactuator.cpp \
     ui/equation_editor/constantvaluesetter.cpp \
-    ui/editableequation.cpp
+    ui/editableequation.cpp \
+    core/machine/fsm/fsmsavefilemanager.cpp
 
 
 
@@ -183,7 +184,8 @@ HEADERS  += \
     ui/resource_bar/component_editor/include/rangeeditordialog.h \
     ui/scene/include/graphicactuator.h \
     ui/equation_editor/include/constantvaluesetter.h \
-    ui/include/editableequation.h
+    ui/include/editableequation.h \
+    core/machine/fsm/include/fsmsavefilemanager.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \
@@ -224,7 +226,7 @@ OTHER_FILES += \
     core/basic_type/README.txt \
     art/AUTHORS \
     art/AUTHORS.txt \
-    text/TODO \
+    TODO \
     text/upcoming_features.txt
 
 RESOURCES += \

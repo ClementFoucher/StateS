@@ -41,13 +41,52 @@ class FsmState;
 class FsmVhdlExport
 {
 public:
-    FsmVhdlExport(shared_ptr<Fsm> machine, bool resetLogicPositive, bool prefixSignals);
+    class ExportCompatibility
+    {
+    public:
+        QList<shared_ptr<Signal>> bothMooreAndMealy;
+        QList<shared_ptr<Signal>> bothTempAndKeepValue;
+        QList<shared_ptr<Signal>> rangeAdressed;
+        QList<shared_ptr<Signal>> mealyWithKeep;
+
+        bool isCompatible()
+        {
+            if (bothMooreAndMealy.isEmpty()    &&
+                bothTempAndKeepValue.isEmpty() &&
+                rangeAdressed.isEmpty()        &&
+                mealyWithKeep.isEmpty()
+               )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    };
+
+private:
+    struct WrittableSignalCharacteristics
+    {
+        bool isMoore = false;
+        bool isMealy = false;
+        bool isTempValue = false;
+        bool isKeepValue = false;
+        bool isRangeAdressed = false;
+    };
+
+public:
+    FsmVhdlExport(shared_ptr<Fsm> machine);
+    void setOptions(bool resetLogicPositive, bool prefixSignals);
 
     bool writeToFile(const QString& path);
+    shared_ptr<ExportCompatibility> checkCompatibility();
+
 
 private:
     void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-    void determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal);
+    WrittableSignalCharacteristics determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
     QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
     QString cleanNameForVhdl(const QString& name) const;
 

@@ -48,8 +48,8 @@ SceneWidget::SceneWidget(QWidget* parent) :
     this->buttonZoomIn ->resize(QSize(20, 20));
     this->buttonZoomOut->resize(QSize(20, 20));
 
-    connect(buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
-    connect(buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
+    connect(this->buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
+    connect(this->buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 
     this->buttonZoomIn ->setVisible(false);
     this->buttonZoomOut->setVisible(false);

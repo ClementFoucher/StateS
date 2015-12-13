@@ -286,10 +286,6 @@
         <source>State</source>
         <translation>État</translation>
     </message>
-    <message>
-        <source>Machine</source>
-        <translation>Machine</translation>
-    </message>
 </context>
 <context>
     <name>FsmGraphicState</name>
@@ -363,6 +359,13 @@
     <message>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
+    <name>FsmSaveFileManager</name>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
     </message>
 </context>
 <context>
@@ -463,6 +466,34 @@
     <message>
         <source>Two transitions or more can be active at the same time.</source>
         <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation>Le signal</translation>
+    </message>
+    <message>
+        <source>StateS VHDL exporter is currently unable to handle these signals.</source>
+        <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces signaux.</translation>
+    </message>
+    <message>
+        <source>This signal will be ignored on VHDL export.</source>
+        <translation>Ce signal sera ignoré lors de l&apos;export VHDL.</translation>
+    </message>
+    <message>
+        <source>has both affectations (remembered value) and temporary (pulse or active on state).</source>
+        <translation>est affecté à la fois avec et sans mémorisation.</translation>
+    </message>
+    <message>
+        <source>has range-adressed output generation.</source>
+        <translation>génère des sorties sur des bits indépendants.</translation>
+    </message>
+    <message>
+        <source>has Mealy outputs affectation (remembered value).</source>
+        <translation>est une sortie de Mealy avec mémorisation.</translation>
+    </message>
+    <message>
+        <source>has both Moore and Mealy behaviors.</source>
+        <translation>a un comportement à la fois de Moore et de Mealy.</translation>
     </message>
 </context>
 <context>
@@ -1284,12 +1315,44 @@
         <translation>Aucune erreur !</translation>
     </message>
     <message>
-        <source>Double-click on red items to detail error:</source>
-        <translation>Double-cliquez sur une erreur affichée en rouge pour obtenir le détail de l&apos;erreur :</translation>
-    </message>
-    <message>
         <source>Clear verification</source>
         <translation>Effacer la vérification</translation>
+    </message>
+    <message>
+        <source>Check for VHDL export restrictions</source>
+        <translation>Vérifier les restrictions d&apos;export VHDL</translation>
+    </message>
+    <message>
+        <source>The following issues were found:</source>
+        <translation>Les problèmes suivants ont été trouvés :</translation>
+    </message>
+    <message>
+        <source>Issues in red are blocking for the machine to work.</source>
+        <translation>Les problèmes en rouge sont bloquants pour le fonctionnement de la machine.</translation>
+    </message>
+    <message>
+        <source>Issues in green are not machine errors but have restriction in StateS.</source>
+        <translation>Les problèmes en vert ne sont pas des erreurs de la machine mais ont des restrictions dans StateS.</translation>
+    </message>
+    <message>
+        <source>Yellow highlighted issues can be double-clicked for more details on the error.</source>
+        <translation>Vous pouvez double-cliquer sur les erreurs surlignées en jaune pour obtenir plus de détails sur l&apos;erreur.</translation>
+    </message>
+    <message>
+        <source>Hint</source>
+        <translation>Astuce</translation>
+    </message>
+    <message>
+        <source>Lines shown in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
+        <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
+    </message>
+    <message>
+        <source>Details on error</source>
+        <translation>Détails sur l&apos;erreur</translation>
+    </message>
+    <message>
+        <source>Issues in blue won&apos;t block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.</source>
+        <translation>Les problèmes en bleu ne bloqueront pas le fonctionnement de la machine, mais sont des erreurs structurelles qui mènent à un comportement non défini, et doivent donc être corrigées.</translation>
     </message>
 </context>
 <context>
@@ -1343,8 +1406,12 @@
         <translation>La génération des sorties ne gère pas toutes les possibilités:</translation>
     </message>
     <message>
-        <source>Please consult known_bugs.txt.</source>
-        <translation>Veuillez consulter known_bugs.txt.</translation>
+        <source>some of the current machine&apos;s outputs won&apos;t be correctly handled.</source>
+        <translation>certaines sorties de la machine actuelle ne seront pas correctement générés.</translation>
+    </message>
+    <message>
+        <source>Please run machine verifier to identify affected signals.</source>
+        <translation>Veuillez utiliser le vérificateur pour identifier les signaux affectés.</translation>
     </message>
 </context>
 </TS>

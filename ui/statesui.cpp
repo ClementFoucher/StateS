@@ -40,6 +40,8 @@
 #include "displayarea.h"
 #include "svgimagegenerator.h"
 #include "genericscene.h"
+#include "fsm.h"
+#include "fsmvhdlexport.h"
 
 
 StatesUi::StatesUi() :
@@ -291,7 +293,7 @@ void StatesUi::beginExportImageProcedure()
 
             if (exportOptions->includeComponent() == true)
             {
-                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), resourceBar->getComponentVisualizationScene().get());
+                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), this->resourceBar->getComponentVisualizationScene().get());
             }
             else
             {
@@ -308,16 +310,20 @@ void StatesUi::beginExportVhdlProcedure()
 
     if (l_machine != nullptr)
     {
-        unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->getCurrentDirPath()));
+        unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport(dynamic_pointer_cast<Fsm>(l_machine)));
+        shared_ptr<FsmVhdlExport::ExportCompatibility> compat = exporter->checkCompatibility();
+
+        unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->getCurrentDirPath(), !compat->isCompatible()));
         exportOptions->setModal(true);
+
+
 
         exportOptions->exec();
 
         if (exportOptions->result() == QDialog::Accepted)
         {
-            QString filePath = exportOptions->getFilePath();
-
-            l_machine->exportAsVhdl(filePath, exportOptions->isResetPositive(), exportOptions->prefixIOs());
+            exporter->setOptions(exportOptions->isResetPositive(), exportOptions->prefixIOs());
+            exporter->writeToFile(exportOptions->getFilePath());
         }
     }
 }
