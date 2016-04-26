@@ -41,9 +41,9 @@ public:
     explicit TruthTable(shared_ptr<Equation> equation);
     explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
-    QVector<shared_ptr<Signal>>  getSignals() const;
+    QVector<shared_ptr<Signal>>  getInputs() const;
     QVector<QVector<LogicValue>> getInputTable() const;
-    QVector<QString>             getEquationTable() const;
+    QVector<QString>             getOutputsEquations() const;
     QVector<QVector<LogicValue>> getOutputTable() const;
     QVector<LogicValue>          getSingleOutputTable() const;
 

@@ -23,7 +23,7 @@
 #define SCENEWIDGET_H
 
 // Parent
-#include <QGraphicsView>
+#include "statesgraphicsview.h"
 
 // C++ classes
 #include <memory>
@@ -46,7 +46,7 @@ class GenericScene;
  * linked to a machine. Replacing the machine makes the
  * SceneWidget replace its graphic scene.
  */
-class SceneWidget : public QGraphicsView
+class SceneWidget : public StatesGraphicsView
 {
     Q_OBJECT
 

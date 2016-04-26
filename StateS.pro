@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.11
+VERSION = 0.3.12
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2015 Clément Foucher
 
 SOURCES += \
@@ -100,7 +100,8 @@ SOURCES += \
     ui/scene/graphicactuator.cpp \
     ui/equation_editor/constantvaluesetter.cpp \
     ui/editableequation.cpp \
-    core/machine/fsm/fsmsavefilemanager.cpp
+    core/machine/fsm/fsmsavefilemanager.cpp \
+    ui/refined_widget/statesgraphicsview.cpp
 
 
 
@@ -185,7 +186,8 @@ HEADERS  += \
     ui/scene/include/graphicactuator.h \
     ui/equation_editor/include/constantvaluesetter.h \
     ui/include/editableequation.h \
-    core/machine/fsm/include/fsmsavefilemanager.h
+    core/machine/fsm/include/fsmsavefilemanager.h \
+    ui/refined_widget/include/statesgraphicsview.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

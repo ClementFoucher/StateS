@@ -35,7 +35,7 @@ TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* pare
 {
     QStringList labelsList;
 
-    QVector<shared_ptr<Signal>> sigs = truthTable->getSignals();
+    QVector<shared_ptr<Signal>> sigs = truthTable->getInputs();
     QVector<QVector<LogicValue>> inputTable = truthTable->getInputTable();
     QVector<LogicValue> outputTable;
     QVector<QVector<LogicValue>> outputTableMulti;
@@ -59,7 +59,7 @@ TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* pare
     }
     else
     {
-        QVector<QString> equationTable = truthTable->getEquationTable();
+        QVector<QString> equationTable = truthTable->getOutputsEquations();
 
         foreach(QString equationText, equationTable)
         {

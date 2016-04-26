@@ -40,7 +40,7 @@
 
 
 SceneWidget::SceneWidget(QWidget* parent) :
-    QGraphicsView(parent)
+    StatesGraphicsView(parent)
 {
     this->buttonZoomIn  = new QPushButton("+", this);
     this->buttonZoomOut = new QPushButton("-", this);

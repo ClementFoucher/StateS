@@ -44,7 +44,12 @@ TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
     buildTable(equations.toVector());
 }
 
-QVector<shared_ptr<Signal> > TruthTable::getSignals() const
+/**
+ * @brief TruthTable::getInputs
+ * @return Obtain the list of signals representing the
+ * inputs of the truth table.
+ */
+QVector<shared_ptr<Signal> > TruthTable::getInputs() const
 {
     QVector<shared_ptr<Signal>> list;
 
@@ -57,22 +62,40 @@ QVector<shared_ptr<Signal> > TruthTable::getSignals() const
     return list;
 }
 
+/**
+ * @brief TruthTable::getOutputsEquations
+ * @return The list of equations composing the outputs.
+ */
+QVector<QString> TruthTable::getOutputsEquations() const
+{
+    return this->equationTable;
+}
+
+/**
+ * @brief TruthTable::getInputTable
+ * @return The list of inputs: a vector of rows, each row
+ * being a vector with each value corresponding to a input signal.
+ */
 QVector<QVector<LogicValue> > TruthTable::getInputTable() const
 {
     return this->inputTable;
 }
 
-QVector<QString> TruthTable::getEquationTable() const
-{
-    return this->equationTable;
-}
-
+/**
+ * @brief TruthTable::getOutputTable
+ * @return A list of all outputs for each line of the
+ * input table. It's a vector of rows, each line being
+ * a vector itself containing a column for each output.
+ */
 QVector<QVector<LogicValue> > TruthTable::getOutputTable() const
 {
     return this->outputTable;
 }
 
-// If there is only one output, get a simplified (vertical) vector
+/**
+ * @brief TruthTable::getSingleOutputTable
+ * @return If there is only one output, get a simplified (vertical) vector.
+ */
 QVector<LogicValue> TruthTable::getSingleOutputTable() const
 {
     QVector<LogicValue> output;
@@ -85,11 +108,22 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
     return output;
 }
 
+/**
+ * @brief TruthTable::getOutputCount
+ * @return The number of outputs.
+ */
 uint TruthTable::getOutputCount() const
 {
     return this->outputTable.count();
 }
 
+/**
+ * @brief TruthTable::extractSignals
+ * @param equation
+ * @return A list of all signals involved in equation, except
+ * constants. Note that a signal can have multiple instances
+ * in output list if it is present at multiple times in the equation.
+ */
 QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equation) const
 {
     QList<shared_ptr<Signal>> list;
@@ -113,8 +147,13 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
     return list;
 }
 
+/**
+ * @brief TruthTable::buildTable builds the table.
+ * @param equations
+ */
 void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 {
+    // Obtain all signals involved in all equations
     QList<shared_ptr<Signal>> signalList;
 
     foreach(shared_ptr<Equation> equation, equations)
@@ -123,6 +162,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         this->equationTable.append(equation->getText());
     }
 
+    // Clean list so each signal only appears once
     QVector<shared_ptr<Signal>> signalVector;
 
     foreach(shared_ptr<Signal> signal, signalList)
@@ -134,15 +174,14 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         }
     }
 
-    //signalTable = (signalSet.toList()).toVector();
-
+    // Count inputs bit by bit
     uint inputCount = 0;
     foreach(shared_ptr<Signal> sig, signalVector)
     {
         inputCount += sig->getSize();
     }
 
-    // Compute initial row
+    // Prepare first row
     QVector<LogicValue> currentRow;
     foreach(shared_ptr<Signal> sig, signalVector)
     {
@@ -151,7 +190,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 
     for (uint i = 0 ; i < pow(2, inputCount) ; i++)
     {
-        // Get current row
+        // Add current row
         this->inputTable.append(currentRow);
 
         // Compute outputs for this row
@@ -176,15 +215,3 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

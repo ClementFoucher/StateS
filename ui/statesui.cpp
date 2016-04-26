@@ -31,6 +31,7 @@
 #include <QSplitter>
 #include <QAction>
 #include <QKeyEvent>
+#include <QMimeData>
 
 // StateS classes
 #include "states.h"
@@ -49,8 +50,9 @@ StatesUi::StatesUi() :
 {
     this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
     this->updateTitle();
-    this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
+    //this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
     this->resize(QApplication::desktop()->availableGeometry().size() - QSize(200, 200));
+    this->setAcceptDrops(true);
 
     // Center window
     this->move(QPoint((QApplication::desktop()->availableGeometry().width()-this->width())/2,
@@ -464,4 +466,30 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
 QString StatesUi::getCurrentDirPath() const
 {
     return this->currentFilePath;
+}
+
+void StatesUi::dragEnterEvent(QDragEnterEvent* event)
+{
+    const QMimeData* mimeData = event->mimeData();
+
+    if (mimeData->hasUrls())
+    {
+        if (mimeData->urls().count() == 1)
+        {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void StatesUi::dropEvent(QDropEvent* event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    QString fileName = mimeData->urls()[0].path();
+
+    bool userConfirmed = this->displayUnsavedConfirmation(tr("Load file") + " " + fileName + tr("?") );
+
+    if (userConfirmed == true)
+    {
+        emit loadMachineRequestEvent(fileName);
+    }
 }

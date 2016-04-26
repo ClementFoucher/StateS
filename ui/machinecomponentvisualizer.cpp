@@ -35,7 +35,7 @@
 
 
 MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent) :
-    QGraphicsView(parent)
+    StatesGraphicsView(parent)
 {
     this->machine = machine;
 
@@ -43,7 +43,6 @@ MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machi
 
     this->setDragMode(QGraphicsView::ScrollHandDrag);
     this->setScene(this->scene.get());
-
 
     this->updateMachineVisualization();
 

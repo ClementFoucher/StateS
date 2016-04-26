@@ -79,6 +79,7 @@ void VerifierTab::checkNow()
 
         this->list = new QListWidget();
         connect(this->list, &QListWidget::itemDoubleClicked, this, &VerifierTab::proofRequested);
+        this->list->setWordWrap(true);
         this->layout()->addWidget(this->list);
 
         bool hasProofs = false;
@@ -115,7 +116,6 @@ void VerifierTab::checkNow()
             {
                 brush.setColor(Qt::yellow);
                 brush.setStyle(Qt::Dense4Pattern);
-                //this->list->item(this->list->count()-1)->setBackgroundColor(Qt::yellow);
                 this->list->item(this->list->count()-1)->setBackground(brush);
                 hasProofs = true;
             }

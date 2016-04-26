@@ -23,7 +23,7 @@
 #define MACHINECOMPONENTVISUALIZER_H
 
 // Parent
-#include <QGraphicsView>
+#include "statesgraphicsview.h"
 
 // C++ classes
 #include <memory>
@@ -38,7 +38,7 @@ class QMouseEvent;
 class Machine;
 
 
-class MachineComponentVisualizer : public QGraphicsView
+class MachineComponentVisualizer : public StatesGraphicsView
 {
     Q_OBJECT
 

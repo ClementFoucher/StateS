@@ -60,6 +60,9 @@ public:
     void setMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
     void setCurrentFilePath(const QString& path);
 
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
+
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
