@@ -37,11 +37,16 @@ class Equation;
 
 class TruthTable
 {
+public: // Static
+    enum TruthTableErrorEnum{
+        reference_expired = 0
+    };
+
 public:
     explicit TruthTable(shared_ptr<Equation> equation);
     explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
-    QVector<shared_ptr<Signal>>  getInputs() const;
+    QVector<shared_ptr<Signal>>  getInputs() const; // Throws StatesException
     QVector<QVector<LogicValue>> getInputTable() const;
     QVector<QString>             getOutputsEquations() const;
     QVector<QVector<LogicValue>> getOutputTable() const;

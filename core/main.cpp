@@ -26,17 +26,36 @@ using namespace std;
 // Qt classes
 #include <QApplication>
 
+#include <QDebug>
+
 // StateS classes
 #include "langselectiondialog.h"
 #include "states.h"
+#include "statesexception.h"
+
+#define DEBUG_TO_FILE 0
+
+
+#if DEBUG_TO_FILE == 1
+
+#include <QFile>
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#define DEBUG_LOG_FILE (SHGetSpecialFolderPath(CSIDL_DESKTOP) + "\StateS.log")
+#else
+#define DEBUG_LOG_FILE "~/StateS.log"
+#endif
+
+#endif
 
 
 int main(int argc, char* argv[])
 {
+
     // Create application
     shared_ptr<QApplication> app(new QApplication(argc, argv));
 
-    // Show language seletion dialog and obtain translator from it
+    // Show language selection dialog and obtain translator from it
     unique_ptr<LangSelectionDialog> langageSelectionWindow(new LangSelectionDialog(app));
     langageSelectionWindow->setWindowFlags(Qt::Dialog | langageSelectionWindow->windowFlags());
     langageSelectionWindow->setWindowTitle("StateS");
@@ -51,16 +70,67 @@ int main(int argc, char* argv[])
     // Build StateS main object and begin execution
     QString initialFilePath = QString::null;
 
-    if (argc == 2)
+    if (argc >= 2)
     {
         initialFilePath = argv[1];
     }
 
-    unique_ptr<StateS> states(new StateS(initialFilePath));
-    states->run();
+    int res;
+    unique_ptr<StateS> states;
+    try
+    {
+        states = unique_ptr<StateS>(new StateS(initialFilePath));
+        states->run();
 
-    // Event loop
-    int res = app->exec();
+        // Event loop
+        res = app->exec();
+    }
+    catch (const StatesException& e)
+    {
+        // TODO: check log + actualiser error text
+        qDebug() << "Error! " << e.what();
+        qDebug() << "Sorry for the inconvenience. Terminating StateS";
+#if DEBUG_TO_FILE == 1
+        QFile debug_file(DEBUG_LOG_FILE);
+        QDebug debug_log(&debug_file);
+        debug_log << e.what();
+        debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
+        debug_file.close();
+#endif
+        res = -1;
+    }
+    catch (const exception& e)
+    {
+        // TODO: write in log file
+        qDebug() << "Error! Unknown exception occured in a standard library.";
+        qDebug() << "I wish I knew where.";
+        qDebug() << "Exception says: \"" << e.what() << "\".";
+        qDebug() << "Sorry for the inconvenience. Terminating StateS";
+#if DEBUG_TO_FILE == 1
+        QFile debug_file(DEBUG_LOG_FILE);
+        QDebug debug_log(&debug_file);
+        debug_log << "Unhandled exception occured in a standard library.";
+        debug_log << "Exception says: \"" << e.what() << "\".";
+        debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
+        debug_file.close();
+#endif
+        res = -1;
+    }
+    catch (...)
+    {
+        // TODO: write in log file
+        qDebug() << "Error! Unknown exception occured somewhere.";
+        qDebug() << "I wish I knew what and where.";
+        qDebug() << "Sorry for the inconvenience. Terminating StateS";
+#if DEBUG_TO_FILE == 1
+        QFile debug_file(DEBUG_LOG_FILE);
+        QDebug debug_log(&debug_file);
+        debug_log << "Unknown exception occured.";
+        debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
+        debug_file.close();
+#endif
+        res = -1;
+    }
 
     // Clear everyting
     states.reset();

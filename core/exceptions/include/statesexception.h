@@ -19,39 +19,32 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHECKBOXHTML_H
-#define CHECKBOXHTML_H
+#ifndef STATESEXCEPTION_H
+#define STATESEXCEPTION_H
 
-// Parent
-#include <QWidget>
+// C++ classes
+using namespace std;
+#include <exception>
 
 // Qt classes
-class QCheckBox;
-
-// StateS classes
-class LabelWithClickEvent;
+#include <QString>
 
 
-class CheckBoxHtml : public QWidget
+class StatesException : exception
 {
-    Q_OBJECT
-
-public:
-    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
-
-    void setText(QString newText);
-    void setChecked(bool check);
-    bool isChecked();
-
-signals:
-    void toggled(bool checked = false);
-
-protected:
-    bool event(QEvent* e) override;
 
 private:
-    LabelWithClickEvent* label;
-    QCheckBox*           checkBox;
+    QString sourceClass;
+    uint    errorEnumValue;
+    string  errorText;
+
+public:
+    explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
+
+    QString getSourceClass() const;
+    uint    getEnumValue() const;
+
+    virtual const char* what() const noexcept override;
 };
 
-#endif // CHECKBOXHTML_H
+#endif // STATESEXCEPTION_H

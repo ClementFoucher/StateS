@@ -28,3 +28,9 @@ IO::IO(const QString& name) :
 {
 
 }
+
+IO::IO(const QString& name, uint size) : // Throws StatesException
+    Signal(name, size) // Throws StatesException: propagated
+{
+
+}

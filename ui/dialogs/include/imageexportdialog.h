@@ -27,6 +27,7 @@
 
 // Qt classes
 class QComboBox;
+class QLabel;
 
 // StateS classes
 #include "machineimageexporter.h"
@@ -38,18 +39,36 @@ class ImageExportDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ImageExportDialog(const QString& baseFileName, const QString& searchPath = QString::null, QWidget* parent = nullptr);
+    explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath = QString::null, QWidget* parent = nullptr);
 
-    bool includeComponent();
     MachineImageExporter::imageFormat getImageFormat();
     QString getFilePath();
 
 protected:
-    void accept() override;
+    virtual void accept() override;
+    virtual void resizeEvent(QResizeEvent*) override;
+
+private slots:
+    void includeComponentCheckBoxChanged(bool b);
+    void includeConstantsCheckBoxChanged(bool b);
+    void includeVariablesCheckBoxChanged(bool b);
+    void infoToTheRightCheckBoxChanged(bool b);
+    void addBorderCheckBoxChanged(bool b);
+
+private:
+    void updatePreview();
 
 private:
     QComboBox*    imageFormatSelectionBox  = nullptr;
     CheckBoxHtml* includeComponentCheckBox = nullptr;
+    CheckBoxHtml* includeConstantsCheckBox = nullptr;
+    CheckBoxHtml* includeVariablesCheckBox = nullptr;
+    CheckBoxHtml* infoToTheRightCheckBox   = nullptr;
+    CheckBoxHtml* addBorderCheckBox        = nullptr;
+    QLabel*       previewWidget            = nullptr;
+
+    shared_ptr<MachineImageExporter> previewManager;
+    shared_ptr<QPixmap> previewPixmap;
 
     QString baseFileName;
     QString searchPath;

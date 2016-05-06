@@ -108,7 +108,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
         constantsTitle->setAlignment(Qt::AlignCenter);
         constantListLayout->addWidget(constantsTitle);
 
-        constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant, 1)), true));
+        constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant)), true));
 
         foreach (shared_ptr<Signal> constant, machine->getConstants())
         {
@@ -125,11 +125,11 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
     operatorsTitle->setAlignment(Qt::AlignCenter);
     operatorListLayout->addWidget(operatorsTitle, 0, 0, 1, 2);
 
-    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::notOp,    1)),  true),  1, 0, 1, 2);
-    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::concatOp, 2)),  true),  2, 0, 1, 2);
+    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::notOp     )), true), 1, 0, 1, 2);
+    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::concatOp  )), true), 2, 0, 1, 2);
 
-    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::equalOp, 2)), true), 3, 0, 1, 1);
-    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::diffOp,  2)), true), 3, 1, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::equalOp   )), true), 3, 0, 1, 1);
+    operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::diffOp    )), true), 3, 1, 1, 1);
 
     operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::andOp,   2)), true), 4, 0, 1, 1);
     operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::orOp,    2)), true), 5, 0, 1, 1);

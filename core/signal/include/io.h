@@ -35,6 +35,7 @@ public:
 
 public:
     explicit IO(const QString& name);
+    explicit IO(const QString& name, uint size); // Throws StatesException
 
     virtual direction getDirection() const = 0;
 };

@@ -175,7 +175,7 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
     this->machine = newMachine;
 
     this->resourceBar->setMachine(newMachine);
-    this->displayArea ->setMachine(newMachine);
+    this->displayArea->setMachine(newMachine);
 
     this->setCurrentFilePath(path);
 }
@@ -279,7 +279,12 @@ void StatesUi::beginExportImageProcedure()
 
     if (l_machine != nullptr)
     {
-        unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), this->getCurrentDirPath()));
+        // TODO: Should not act directly on scene
+        this->displayArea->getScene()->clearSelection();
+
+        shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, this->displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
+
+        unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, this->getCurrentDirPath()));
         exportOptions->setModal(true);
 
         exportOptions->exec();
@@ -288,20 +293,8 @@ void StatesUi::beginExportImageProcedure()
         {
             QString filePath = exportOptions->getFilePath();
 
-            // TODO: Should not act directly on scene
-            this->displayArea->getScene()->clearSelection();
-
             QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
-
-            if (exportOptions->includeComponent() == true)
-            {
-                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene(), this->resourceBar->getComponentVisualizationScene().get());
-            }
-            else
-            {
-                MachineImageExporter::exportMachineAsImage(filePath, l_machine->getName(), comment, exportOptions->getImageFormat(), this->displayArea->getScene());
-            }
-
+            exporter->doExport(filePath, exportOptions->getImageFormat(), comment);
         }
     }
 }

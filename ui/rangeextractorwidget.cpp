@@ -134,7 +134,7 @@ void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
                 {
                     int newValue = this->param1Text->text().toInt() + 1;
 
-                    if (newValue < (int)l_equation->getOperand(0)->getSize())
+                    if (newValue < (int)l_equation->getOperand(0)->getSize()) // Throws StatesException - Extract op aways has operand 0 - ignored
                         emit value1Changed(newValue);
                 }
                 else
@@ -199,7 +199,7 @@ void RangeExtractorWidget::update()
                 if (l_equation->getParam1() != -1)
                     text = QString::number(l_equation->getParam1());
 
-                int signalSize = l_equation->getOperand(0)->getSize();
+                int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
                 if (l_equation->getParam2() != -1)
                 {
@@ -266,7 +266,7 @@ void RangeExtractorWidget::reset()
             if (l_equation->getParam1() != -1)
                 text = QString::number(l_equation->getParam1());
 
-            int signalSize = l_equation->getOperand(0)->getSize();
+            int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
             if (l_equation->getParam2() != -1)
             {

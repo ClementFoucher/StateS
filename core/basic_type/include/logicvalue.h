@@ -29,21 +29,25 @@
 class LogicValue : private QVector<bool>
 {
 public: // Static
+
+    enum LogicValueErrorEnum{
+        unsupported_char = 0,
+        resized_to_0     = 1,
+        outside_range    = 2
+    };
+
     static LogicValue getValue0(uint size);
     static LogicValue getValue1(uint size);
     static LogicValue getNullValue();
-    static LogicValue fromString(const QString& textValue);
+    static LogicValue fromString(const QString& textValue); // Throws StatesException
 
 public:
     explicit LogicValue();
     LogicValue(const LogicValue& stateToCopy);
     explicit LogicValue(uint bitCount, bool initialValue = false);
 
-    void resize(uint newSize);
+    void resize(uint newSize); // Throws StatesException
     uint getSize() const;
-
-    bool isAllZeros() const;
-    bool isAllOnes() const;
 
     LogicValue getValue0() const;
     LogicValue getValue1() const;
@@ -67,13 +71,10 @@ public:
     LogicValue operator^=(const LogicValue& otherValue);
     bool increment();
 
-    bool& operator[](uint memberNumber);
-    bool operator[](uint memberNumber) const;
+    bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
+    bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
 
     QString toString() const;
-
-private:
-    bool foo; // Used for erroneous references to a member
 };
 
 #endif // LOGICVALUE_H

@@ -34,6 +34,8 @@
 #include "fsmstate.h"
 #include "signal.h"
 #include "fsmtransition.h"
+#include "statesexception.h"
+#include "truthtable.h"
 
 
 FsmSimulator::FsmSimulator(shared_ptr<Fsm> machine) :
@@ -151,13 +153,26 @@ void FsmSimulator::clockEventHandler()
     {
         if (transition->getCondition() != nullptr)
         {
-            if (transition->getCondition()->isTrue())
+            try
             {
-                potentialTransitions.insert(potentialTransitions.count(), transition);
+                if (transition->getCondition()->isTrue())
+                {
+                    potentialTransitions.insert(potentialTransitions.count(), transition);
+                }
+            }
+            catch (const StatesException& e)
+            {
+                if ( (e.getSourceClass() == "TruthTable") && (e.getEnumValue() == TruthTable::TruthTableErrorEnum::reference_expired) )
+                {
+                    // Transition condition is incorrect, considered false: nothing to do
+                }
+                else
+                    throw;
             }
         }
         else
         {
+            // Empty transition are implicitly set to true
             potentialTransitions.insert(potentialTransitions.count(), transition);
         }
     }

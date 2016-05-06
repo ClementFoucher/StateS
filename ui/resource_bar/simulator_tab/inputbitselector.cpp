@@ -73,7 +73,7 @@ void InputBitSelector::mousePressEvent(QMouseEvent*)
 
         signalValue[this->bitNumber] = !signalValue[this->bitNumber];
 
-        signalToCommand->setCurrentValue(signalValue);
+        signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
     }
 }
 

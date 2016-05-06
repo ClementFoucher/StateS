@@ -28,12 +28,15 @@
 #include <QKeyEvent>
 #include <QHeaderView>
 
+#include <QDebug>
+
 // StateS classes
 #include "dynamiclineedit.h"
 #include "signal.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
 #include "contextmenu.h"
+#include "statesexception.h"
 
 
 SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent) :
@@ -419,12 +422,24 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
 
         if (this->currentTableItem == this->currentSignalSize)
         {
-            LogicValue currentInitialValue = LogicValue::fromString(this->currentSignalValue->text());
+            try
+            {
+                LogicValue currentInitialValue = LogicValue::fromString(this->currentSignalValue->text()); // Throws StatesException
 
-            uint newSize = (uint)this->currentSignalSize->text().toInt();
-            currentInitialValue.resize(newSize);
+                uint newSize = (uint)this->currentSignalSize->text().toInt();
+                currentInitialValue.resize(newSize); // Throws StatesException
 
-            this->currentSignalValue->setText(currentInitialValue.toString());
+                this->currentSignalValue->setText(currentInitialValue.toString());
+            }
+            catch (const StatesException& e)
+            {
+                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                {
+                    qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
+                }
+                else
+                    throw;
+            }
         }
 
         this->currentTableItem = newItem;
@@ -459,11 +474,23 @@ void SignalListEditor::endAddSignal()
 
         if (this->currentSignalValue != nullptr)
         {
-            initialValue = LogicValue::fromString(this->currentSignalValue->text());
-            uint size = (uint)this->currentSignalSize->text().toInt();
+            try
+            {
+                initialValue = LogicValue::fromString(this->currentSignalValue->text()); // Throws StatesException
+                uint size = (uint)this->currentSignalSize->text().toInt();
 
-            if (initialValue.getSize() < size)
-                initialValue.resize(size);
+                if (initialValue.getSize() < size)
+                    initialValue.resize(size); // Throws StatesException
+            }
+            catch (const StatesException& e)
+            {
+                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                {
+                    qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
+                }
+                else
+                    throw;
+            }
         }
         else
         {
@@ -545,28 +572,36 @@ void SignalListEditor::endResizeSignal()
 
     if (l_machine != nullptr)
     {
-        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-
-        uint finalSize = (uint)editor->text().toInt();
-
-        shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
-
-        if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
+        try
         {
-            this->signalSelectionToRestore = currentSignal->getName();
+            DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
-            bool success = l_machine->resizeSignal(currentSignal->getName(), finalSize);
+            uint finalSize = (uint)editor->text().toInt();
 
-            if (!success)
+            shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
+
+            if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
             {
+                this->signalSelectionToRestore = currentSignal->getName();
+
+                l_machine->resizeSignal(currentSignal->getName(), finalSize); // Throws StatesException
+            }
+            else
+            {
+                // Reset list
+                updateList();
+            }
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
+            {
+                qDebug() << "(SignalListEditor:) Info: Wrong input for signal size, change ignored.";
                 this->signalSelectionToRestore = QString::null;
                 this->editCurrentCell(true);
             }
-        }
-        else
-        {
-            // Reset list
-            updateList();
+            else
+                throw;
         }
     }
 }
@@ -577,30 +612,38 @@ void SignalListEditor::endChangeSignalInitialValue()
 
     if (l_machine != nullptr)
     {
-        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-
-        LogicValue newInitialValue = LogicValue::fromString(editor->text());
-
-        shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
-
-        if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
+        try
         {
-            if (newInitialValue.getSize() < currentSignal->getSize())
-                newInitialValue.resize(currentSignal->getSize());
+            DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
-            this->signalSelectionToRestore = currentSignal->getName();
+            LogicValue newInitialValue = LogicValue::fromString(editor->text()); // Throws StatesException
 
-            bool success = l_machine->changeSignalInitialValue(currentSignal->getName(), newInitialValue);
+            shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
 
-            if (!success)
+            if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
             {
+                if (newInitialValue.getSize() < currentSignal->getSize())
+                    newInitialValue.resize(currentSignal->getSize()); // Throws StatesException
+
+                this->signalSelectionToRestore = currentSignal->getName();
+
+                l_machine->changeSignalInitialValue(currentSignal->getName(), newInitialValue); // Throws StatesException
+            }
+            else
+            {
+                updateList();
+            }
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::size_mismatch) )
+            {
+                qDebug() << "(SignalListEditor:) Info: Wrong input for signal initial value, change ignored.";
                 this->signalSelectionToRestore = QString::null;
                 this->editCurrentCell(true);
             }
-        }
-        else
-        {
-            updateList();
+            else
+                throw;
         }
     }
 }

@@ -40,6 +40,7 @@
 #include "signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
+#include "statesexception.h"
 
 
 qreal FsmGraphicTransition::arrowEndSize = 10;
@@ -393,10 +394,23 @@ void FsmGraphicTransition::updateText()
                 shared_ptr<Signal> condition = l_logicTransition->getCondition();
                 if (condition != nullptr)
                 {
-                    if (condition->isTrue())
-                        conditionLine->setPen(activePen);
-                    else
-                        conditionLine->setPen(inactivePen);
+                    try
+                    {
+                        if (condition->isTrue())
+                            conditionLine->setPen(activePen);
+                        else
+                            conditionLine->setPen(inactivePen);
+                    }
+                    catch (const StatesException& e)
+                    {
+                        if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::signal_is_not_bool) )
+                        {
+                            // Condition is incorrect, considered false
+                            conditionLine->setPen(inactivePen);
+                        }
+                        else
+                            throw;
+                    }
                 }
                 else
                 {

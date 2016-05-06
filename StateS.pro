@@ -17,7 +17,7 @@ TARGET = StateS
 TEMPLATE = app
 
 VERSION = 0.3.12
-QMAKE_TARGET_COPYRIGHT = copyright 2014-2015 Clément Foucher
+QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
 
 SOURCES += \
     core/main.cpp \
@@ -43,6 +43,8 @@ SOURCES += \
     core/simulation/clock.cpp \
     core/simulation/fsmsimulator.cpp \
     core/simulation/machinesimulator.cpp \
+    core/exceptions/statesexception.cpp \
+    core/signal/constant.cpp \
     ui/statesui.cpp \
     ui/machinecomponentvisualizer.cpp \
     ui/displayarea.cpp \
@@ -128,6 +130,9 @@ HEADERS  += \
     core/simulation/include/clock.h \
     core/simulation/include/fsmsimulator.h \
     core/simulation/include/machinesimulator.h \
+    core/machine/fsm/include/fsmsavefilemanager.h \
+    core/exceptions/include/statesexception.h \
+    core/signal/include/constant.h \
 #
     ui/include/statesui.h \
     ui/include/truthtabledisplay.h \
@@ -186,7 +191,6 @@ HEADERS  += \
     ui/scene/include/graphicactuator.h \
     ui/equation_editor/include/constantvaluesetter.h \
     ui/include/editableequation.h \
-    core/machine/fsm/include/fsmsavefilemanager.h \
     ui/refined_widget/include/statesgraphicsview.h
 
 unix:QMAKE_CXXFLAGS += \
@@ -201,6 +205,7 @@ INCLUDEPATH += \
     core/machine/fsm/include \
     core/signal/include \
     core/simulation/include \
+    core/exceptions/include \
 # UI
     ui/include \
     ui/dialogs/include \

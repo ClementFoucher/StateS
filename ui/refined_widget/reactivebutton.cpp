@@ -43,3 +43,13 @@ void ReactiveButton::leaveEvent(QEvent*)
 {
     emit mouseLeaveEvent();
 }
+
+void ReactiveButton::focusInEvent(QFocusEvent*)
+{
+    emit keyboardFocusInEvent();
+}
+
+void ReactiveButton::focusOutEvent(QFocusEvent*)
+{
+    emit keyboardFocusOutEvent();
+}

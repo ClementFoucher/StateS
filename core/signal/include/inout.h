@@ -32,6 +32,7 @@ class InOut : public IO
 
 public:
     explicit InOut(const QString& name);
+    explicit InOut(const QString& name, uint size); // Throws StatesException
 
     IO::direction getDirection() const override;
 };

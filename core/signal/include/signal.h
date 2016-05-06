@@ -37,50 +37,48 @@ class Signal : public QObject, public enable_shared_from_this<Signal>
 {
     Q_OBJECT
 
-public:
-    explicit Signal(const QString& name, const LogicValue& initialValue, const LogicValue& currentValue, bool isConstant);
-    explicit Signal(const QString& name, const LogicValue& initialValue, bool isConstant = false);
-    explicit Signal(const QString& name, uint bitCount);
+public: // Static
 
-    // Convenience for size 1 signals
-    explicit Signal(const QString& name, bool initialValue = false, bool isConstant = false);
+    enum SignalErrorEnum{
+        building_zero_sized = 0,
+        resized_to_0        = 1,
+        size_mismatch       = 2,
+        signal_is_not_bool  = 3
+    };
+
+public:
+    explicit Signal(const QString& name, uint size); // Throws StatesException
+    explicit Signal(const QString& name);
 
     ~Signal();
 
     QString getName() const;
-    void setName(const QString& value);
+    void setName(const QString& value); // TODO: check signal name here and throw StatesException
 
     virtual uint getSize() const;
-    virtual bool resize(uint newSize);
+    virtual void resize(uint newSize); // Throws StatesException
 
     LogicValue getInitialValue() const;
-    bool setInitialValue(const LogicValue& newInitialValue);
+    virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
     void reinitialize();
 
     virtual QString getText(bool activeColored = false) const;
 
-    virtual bool setCurrentValue(const LogicValue& value);
-    virtual LogicValue getCurrentValue() const;
+    virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
+    LogicValue getCurrentValue() const;
 
-    bool resetValue();
-
-    // Convenience function for one bit signals
-    bool set();
-
-    bool isAllZeros() const;
-    bool isAllOnes() const;
+    void resetValue();
+    void set();
 
     // Concepts of true and false are only applicable to size 1 signals
-    // A signal with size > 1 will be neither true nor false
-    bool isTrue() const;
-    bool isFalse() const;
-
-    bool getIsConstant() const;
+    // A signal with size > 1 will neither be true nor false
+    bool isTrue()  const; // Throws StatesException
+    bool isFalse() const; // Throws StatesException
 
 signals:
     // General events
     void signalStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
-    void signalDynamicStateChangedEvent(); // Triggered when object "discardable" values are modified
+    void signalDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
 
     // Specific events detail
     void signalRenamedEvent();
@@ -93,10 +91,9 @@ signals:
 private:
     // Static
     QString name;
-
-    bool isConstant = false;
     LogicValue initialValue;
 
+protected:
     // Dynamic
     LogicValue currentValue;
 };

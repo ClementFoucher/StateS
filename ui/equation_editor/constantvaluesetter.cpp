@@ -26,8 +26,11 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
+#include <QDebug>
+
 // StateS classes
 #include "dynamiclineedit.h"
+#include "statesexception.h"
 
 
 ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
@@ -41,11 +44,24 @@ bool ConstantValueSetter::validEdit()
 {
     if (this->valueEditor != nullptr)
     {
-        this->currentValue = LogicValue::fromString(this->valueEditor->text());
-        emit valueChanged(this->currentValue);
-        this->setEdited(false);
+        try
+        {
+            this->currentValue = LogicValue::fromString(this->valueEditor->text()); // Throws StatesException
+            emit valueChanged(this->currentValue);
+            this->setEdited(false);
 
-        return true;
+            return true;
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+            {
+                qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
+                return false;
+            }
+            else
+                throw;
+        }
     }
     else
         return false;
@@ -94,6 +110,18 @@ void ConstantValueSetter::setEdited(bool edited)
 
 void ConstantValueSetter::newValueAvailable(const QString& newValue)
 {
-    emit valueChanged(LogicValue::fromString(newValue));
-
+    try
+    {
+        LogicValue value = LogicValue::fromString(newValue); // Throws StatesException
+        emit valueChanged(value);
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+        {
+            qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
+        }
+        else
+            throw;
+    }
 }

@@ -44,7 +44,7 @@ AboutTab::AboutTab(QWidget* parent) :
     versionLabel->setWordWrap(true);
     layout->addWidget(versionLabel);
 
-    QLabel* copyrightLabel = new QLabel("© 2014-2015 Clément Foucher");
+    QLabel* copyrightLabel = new QLabel("© 2014-2016 Clément Foucher");
     copyrightLabel->setAlignment(Qt::AlignCenter);
     copyrightLabel->setWordWrap(true);
     layout->addWidget(copyrightLabel);

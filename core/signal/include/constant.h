@@ -18,40 +18,28 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef CHECKBOXHTML_H
-#define CHECKBOXHTML_H
+#ifndef CONSTANT_H
+#define CONSTANT_H
 
 // Parent
-#include <QWidget>
-
-// Qt classes
-class QCheckBox;
-
-// StateS classes
-class LabelWithClickEvent;
+#include "signal.h"
 
 
-class CheckBoxHtml : public QWidget
+class Constant : public Signal
 {
     Q_OBJECT
 
+public: // Static
+    enum ConstantErrorEnum{
+        change_current_requested = 0
+    };
+
 public:
-    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
+    explicit Constant(const QString& name);
+    explicit Constant(const QString& name, uint size); // Throws StatesException
 
-    void setText(QString newText);
-    void setChecked(bool check);
-    bool isChecked();
-
-signals:
-    void toggled(bool checked = false);
-
-protected:
-    bool event(QEvent* e) override;
-
-private:
-    LabelWithClickEvent* label;
-    QCheckBox*           checkBox;
+    virtual void setInitialValue(const LogicValue& newInitialValue) override; // Throws StatesException
+    virtual void setCurrentValue(const LogicValue& value) override; // Throws StatesException
 };
 
-#endif // CHECKBOXHTML_H
+#endif // CONSTANT_H

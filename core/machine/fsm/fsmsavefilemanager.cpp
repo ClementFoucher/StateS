@@ -40,120 +40,134 @@
 #include "equation.h"
 #include "input.h"
 #include "output.h"
+#include "constant.h"
+#include "statesexception.h"
 
 
-bool FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, const QString& filePath)
+void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, const QString& filePath) // Throws StatesException
 {
-    bool fileOk = false;
-
-    QFileInfo file(filePath);
-    if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
-        fileOk = true;
-    else if ( (! file.exists()) && (file.absoluteDir().exists()) )
-        fileOk = true;
-
-    if (fileOk)
+    QFileInfo fileInfo(filePath);
+    if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
     {
-        QFile* file = new QFile(filePath);
-        file->open(QIODevice::WriteOnly);
-
-        QXmlStreamWriter stream(file);
-
-        stream.setAutoFormatting(true);
-        stream.writeStartDocument();
-        stream.writeStartElement("FSM");
-        stream.writeAttribute("Name", machine->getName());
-
-
-        stream.writeStartElement("Signals");
-        foreach (shared_ptr<Signal> var, machine->getAllSignals())
-        {
-            // Type
-            if (dynamic_pointer_cast<Input>(var) != nullptr)
-                stream.writeStartElement("Input");
-            else if (dynamic_pointer_cast<Output>(var) != nullptr)
-                stream.writeStartElement("Output");
-            else if (var->getIsConstant())
-                stream.writeStartElement("Constant");
-            else
-                stream.writeStartElement("Variable");
-
-            // Name
-            stream.writeAttribute("Name", var->getName());
-
-            // Size
-            stream.writeAttribute("Size", QString::number(var->getSize()));
-
-            // Initial value (except for outputs)
-            if (dynamic_pointer_cast<Output>(var) == nullptr)
-                stream.writeAttribute("Initial_value", var->getInitialValue().toString());
-
-            stream.writeEndElement();
-        }
-        stream.writeEndElement(); // Signals
-
-
-        stream.writeStartElement("States");
-        foreach (shared_ptr<FsmState> state, machine->getStates())
-        {
-            stream.writeStartElement("State");
-
-            // Name
-            stream.writeAttribute("Name", state->getName());
-
-            // Initial
-            if (state->isInitial())
-                stream.writeAttribute("IsInitial", "true");
-
-            // Position
-            stream.writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
-            stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
-
-            // Actions
-            FsmSaveFileManager::writeActions(stream, state);
-
-            stream.writeEndElement(); // State
-        }
-        stream.writeEndElement(); // Transitions
-
-        stream.writeStartElement("Transitions");
-        foreach (shared_ptr<FsmTransition> transition, machine->getTransitions())
-        {
-            stream.writeStartElement("Transition");
-
-            stream.writeAttribute("Source", transition->getSource()->getName());
-            stream.writeAttribute("Target", transition->getTarget()->getName());
-
-            // Deal with equations
-            if (transition->getCondition() != nullptr)
-            {
-                stream.writeStartElement("Condition");
-                FsmSaveFileManager::writeLogicEquation(stream, transition->getCondition());
-                stream.writeEndElement(); // Condition
-            }
-
-            // Actions
-            FsmSaveFileManager::writeActions(stream, transition);
-
-            stream.writeEndElement(); // Transition
-        }
-        stream.writeEndElement(); // Transitions
-
-        stream.writeEndElement(); // FSM
-        stream.writeEndDocument();
-
-        file->flush();
-        file->close();
-        delete file;
-
-        machine->setUnsavedState(false);
-
-        return true;
+        throw StatesException("FsmSaveFileManager", unable_to_replace, "Unable to replace existing file");
     }
-    else
+    else if ( !fileInfo.absoluteDir().exists() )
     {
-        return false;
+        throw StatesException("FsmSaveFileManager", unkown_directory, "Directory doesn't exist");
     }
+
+    unique_ptr<QFile> file = unique_ptr<QFile>(new QFile(filePath));
+    bool fileOpened = file->open(QIODevice::WriteOnly);
+    if (fileOpened == false)
+    {
+        throw StatesException("FsmSaveFileManager", unable_to_open, "Unable to open file");
+    }
+
+    QXmlStreamWriter stream(file.get());
+
+    stream.setAutoFormatting(true);
+    stream.writeStartDocument();
+    stream.writeStartElement("FSM");
+    stream.writeAttribute("Name", machine->getName());
+
+    FsmSaveFileManager::writeSignals(stream, machine);
+    FsmSaveFileManager::writeStates(stream, machine);
+    FsmSaveFileManager::writeTransitions(stream, machine);
+
+    stream.writeEndElement(); // End FSM element
+    stream.writeEndDocument();
+
+    file->close();
+
+    machine->setUnsavedState(false);
+}
+
+void FsmSaveFileManager::writeSignals(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
+{
+    stream.writeStartElement("Signals");
+
+    foreach (shared_ptr<Signal> var, machine->getAllSignals())
+    {
+        // Type
+        if (dynamic_pointer_cast<Input>(var) != nullptr)
+            stream.writeStartElement("Input");
+        else if (dynamic_pointer_cast<Output>(var) != nullptr)
+            stream.writeStartElement("Output");
+        else if (dynamic_pointer_cast<Constant>(var) != nullptr)
+            stream.writeStartElement("Constant");
+        else
+            stream.writeStartElement("Variable");
+
+        // Name
+        stream.writeAttribute("Name", var->getName());
+
+        // Size
+        stream.writeAttribute("Size", QString::number(var->getSize()));
+
+        // Initial value (except for outputs)
+        if (dynamic_pointer_cast<Output>(var) == nullptr)
+            stream.writeAttribute("Initial_value", var->getInitialValue().toString());
+
+        stream.writeEndElement();
+    }
+
+    stream.writeEndElement();
+}
+
+void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
+{
+    stream.writeStartElement("States");
+
+    foreach (shared_ptr<FsmState> state, machine->getStates())
+    {
+        stream.writeStartElement("State");
+
+        // Name
+        stream.writeAttribute("Name", state->getName());
+
+        // Initial
+        if (state->isInitial())
+            stream.writeAttribute("IsInitial", "true");
+
+        // Position
+        stream.writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
+        stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
+
+        // Actions
+        FsmSaveFileManager::writeActions(stream, state);
+
+        stream.writeEndElement();
+    }
+
+    stream.writeEndElement();
+}
+
+void FsmSaveFileManager::writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
+{
+    stream.writeStartElement("Transitions");
+
+    foreach (shared_ptr<FsmTransition> transition, machine->getTransitions())
+    {
+        stream.writeStartElement("Transition");
+
+        stream.writeAttribute("Source", transition->getSource()->getName());
+        stream.writeAttribute("Target", transition->getTarget()->getName());
+
+        // Deal with equations
+        if (transition->getCondition() != nullptr)
+        {
+            stream.writeStartElement("Condition");
+            FsmSaveFileManager::writeLogicEquation(stream, transition->getCondition());
+            stream.writeEndElement(); // Condition
+        }
+
+        // Actions
+        FsmSaveFileManager::writeActions(stream, transition);
+
+        stream.writeEndElement();
+    }
+
+    stream.writeEndElement();
 }
 
 void FsmSaveFileManager::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation)
@@ -211,10 +225,14 @@ void FsmSaveFileManager::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr
 
         for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
         {
-            stream.writeStartElement("Operand");
-            stream.writeAttribute("Number", QString::number(i));
-            writeLogicEquation(stream, complexEquation->getOperand(i));
-            stream.writeEndElement(); // Operand
+            shared_ptr<Signal> operand = complexEquation->getOperand(i); // Throws StatesException - Constrained by operand count - ignored
+            if (operand != nullptr)
+            {
+                stream.writeStartElement("Operand");
+                stream.writeAttribute("Number", QString::number(i));
+                writeLogicEquation(stream, operand);
+                stream.writeEndElement(); // Operand
+            }
         }
     }
     else
@@ -276,135 +294,166 @@ void FsmSaveFileManager::writeActions(QXmlStreamWriter& stream, shared_ptr<Machi
 
 
 
-shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath)
+shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Throws StatesException
 {
-    QFileInfo file(filePath);
+    QFileInfo fileInfo(filePath);
 
-    if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
+    if (!fileInfo.exists())
     {
-        QFile* file = new QFile(filePath);
-        file->open(QIODevice::ReadOnly);
-
-        QDomDocument* document = new QDomDocument();
-        if (!document->setContent(file))
-        {
-            qDebug() << "(Fsm:) Unable to open document as a correct XML file";
-            return nullptr;
-        }
-
-        QDomElement rootNode = document->documentElement();
-
-        if (rootNode.tagName() != "FSM")
-        {
-            qDebug() << "(Fsm:) Unexpected token found while parsing XML file: expected \"FSM\", got " << rootNode.tagName();
-            return nullptr;
-        }
-
-        shared_ptr<Fsm> machine(new Fsm());
-
-        QString machineName = rootNode.attribute("Name");
-        if (machineName == QString::null)
-        {
-            machineName = file->fileName();
-            machineName = machineName.section("/", -1, -1);             // Extract file name from path
-            machineName.remove("." + machineName.section(".", -1, -1)); // Remove extension
-        }
-        if (machineName == QString::null) // In case we still have no name (file with no file name?)
-        {
-            machineName = tr("Machine");
-        }
-        machine->setName(machineName);
-
-        QDomNodeList fsmNodes = rootNode.childNodes();
-
-        // First parse signals
-        for (int i = 0 ; i < fsmNodes.count() ; i++)
-        {
-            QDomElement currentElement = fsmNodes.at(i).toElement();
-
-            if (currentElement.tagName() == "Signals")
-            {
-                parseSignals(currentElement, machine);
-                break;
-            }
-        }
-
-        // Then parse states
-        for (int i = 0 ; i < fsmNodes.count() ; i++)
-        {
-            QDomElement currentElement = fsmNodes.at(i).toElement();
-
-            if (currentElement.tagName() == "States")
-            {
-                parseStates(currentElement, machine);
-                break;
-            }
-        }
-
-        // Finally parse transitions
-        for (int i = 0 ; i < fsmNodes.count() ; i++)
-        {
-            QDomElement currentElement = fsmNodes.at(i).toElement();
-
-            if (currentElement.tagName() == "Transitions")
-            {
-                parseTransitions(currentElement, machine);
-                break;
-            }
-        }
-
-        machine->setUnsavedState(false);
-
-        return machine;
+       throw StatesException("FsmSaveFileManager", inexistant_file, "Can't find file");
+    }
+    else if (!fileInfo.isReadable())
+    {
+        throw StatesException("FsmSaveFileManager", permission_denied, "Can't read file");
     }
 
-    return nullptr;
-}
+    unique_ptr<QFile> file = unique_ptr<QFile>(new QFile(filePath));
+    bool fileOpened = file->open(QIODevice::ReadOnly);
+    if (fileOpened == false)
+    {
+        throw StatesException("FsmSaveFileManager", unable_to_open, "Unable to open file");
+    }
 
+    QDomDocument* document = new QDomDocument();
+    if (!document->setContent(file.get()))
+    {
+        throw StatesException("FsmSaveFileManager", wrong_xml, "Unable to open document as a correct XML file");
+    }
+
+    QDomElement rootNode = document->documentElement();
+    if (rootNode.tagName() != "FSM")
+    {
+        throw StatesException("FsmSaveFileManager", wrong_xml, "Unexpected token found while parsing XML file: expected \"FSM\", got " + rootNode.tagName());
+    }
+
+    shared_ptr<Fsm> machine(new Fsm());
+
+    QString machineName = rootNode.attribute("Name");
+    if (machineName == QString::null)
+    {
+        machineName = file->fileName();
+        machineName = machineName.section("/", -1, -1);             // Extract file name from path
+        machineName.remove("." + machineName.section(".", -1, -1)); // Remove extension
+    }
+    if (machineName == QString::null) // In case we still have no name (file with no file name?)
+    {
+        machineName = tr("Machine");
+    }
+    machine->setName(machineName);
+
+    QDomNodeList fsmNodes = rootNode.childNodes();
+
+    // First parse signals
+    for (int i = 0 ; i < fsmNodes.count() ; i++)
+    {
+        QDomElement currentElement = fsmNodes.at(i).toElement();
+
+        if (currentElement.tagName() == "Signals")
+        {
+            parseSignals(currentElement, machine);
+            break;
+        }
+    }
+
+    // Then parse states
+    for (int i = 0 ; i < fsmNodes.count() ; i++)
+    {
+        QDomElement currentElement = fsmNodes.at(i).toElement();
+
+        if (currentElement.tagName() == "States")
+        {
+            parseStates(currentElement, machine);
+            break;
+        }
+    }
+
+    // Finally parse transitions
+    for (int i = 0 ; i < fsmNodes.count() ; i++)
+    {
+        QDomElement currentElement = fsmNodes.at(i).toElement();
+
+        if (currentElement.tagName() == "Transitions")
+        {
+            parseTransitions(currentElement, machine);
+            break;
+        }
+    }
+
+    file->close();
+
+    machine->setUnsavedState(false);
+
+    return machine;
+}
 
 
 void FsmSaveFileManager::parseSignals(QDomElement element, shared_ptr<Fsm> machine)
 {
     QDomNodeList signalNodes = element.childNodes();
+    QString currentElementName;
 
     for (int i = 0 ; i < signalNodes.count() ; i++)
     {
         QDomElement currentElement = signalNodes.at(i).toElement();
+        currentElementName = currentElement.attribute("Name");
 
+        shared_ptr<Signal> signal;
         if (currentElement.tagName() == "Input")
         {
-            machine->addSignal(Fsm::signal_type::Input, currentElement.attribute("Name"));
+            signal = machine->addSignal(Fsm::signal_type::Input, currentElementName);
         }
         else if (currentElement.tagName() == "Output")
         {
-            machine->addSignal(Fsm::signal_type::Output, currentElement.attribute("Name"));
+            signal = machine->addSignal(Fsm::signal_type::Output, currentElementName);
         }
         else if (currentElement.tagName() == "Variable")
         {
-            machine->addSignal(Fsm::signal_type::LocalVariable, currentElement.attribute("Name"));
+            signal = machine->addSignal(Fsm::signal_type::LocalVariable, currentElementName);
         }
         else if (currentElement.tagName() == "Constant")
         {
-            machine->addSignal(Fsm::signal_type::Constant, currentElement.attribute("Name"));
+            signal = machine->addSignal(Fsm::signal_type::Constant, currentElementName);
         }
         else
         {
-            qDebug() << "(Fsm:) Unexpected token encountered while parsing signal list: " << currentElement.tagName();
-            break;
+            qDebug() << "(FsmSaveFileManager:) Unexpected signal type encountered while parsing signal list: " << currentElement.tagName() << ". Signal name was: " << currentElementName;
+            qDebug() << "Token ignored";
+            continue;
         }
 
         // Set size
         uint size = (uint)currentElement.attribute("Size").toInt();
         if (size != 1)
         {
-            machine->resizeSignal(currentElement.attribute("Name"), size);
+            try
+            {
+                machine->resizeSignal(currentElementName, size); // Throws StatesException
+            }
+            catch (const StatesException& e)
+            {
+                // TODO: check which class is the actual source of the exception + adpat error text
+                qDebug() << "(FsmSaveFileManager:) Error in size of signal " << currentElementName << ".";
+                qDebug() << "The exception was raised by " << e.getSourceClass() << " and the concern is: \"" << e.what() << "\".";
+                qDebug() << "Signal size ignored and defaulted to " << QString::number(signal->getSize()) << ".";
+            }
         }
 
         // Set initial value
         if (currentElement.tagName() != "Output")
         {
-            LogicValue initialValue = LogicValue::fromString(currentElement.attribute("Initial_value"));
-            machine->changeSignalInitialValue(currentElement.attribute("Name"), initialValue);
+            try
+            {
+                LogicValue initialValue = LogicValue::fromString(currentElement.attribute("Initial_value")); // Throws StatesException
+
+                machine->changeSignalInitialValue(currentElementName, initialValue); // Throws StatesException
+            }
+            catch (const StatesException& e)
+            {
+                // TODO: check which class is the actual source of the exception + adpat error text
+                qDebug() << "(FsmSaveFileManager:) Error in initial value of signal " << currentElementName << ".";
+                qDebug() << "The exception was raised by " << e.getSourceClass() << " and the concern is: \"" << e.what() << "\".";
+                qDebug() << "Initial value ignored and defaulted to " << signal->getInitialValue().toString() << ".";
+            }
         }
     }
 }
@@ -440,15 +489,17 @@ void FsmSaveFileManager::parseStates(QDomElement element, shared_ptr<Fsm> machin
                 }
                 else
                 {
-                    qDebug() << "(Fsm:) Unexpected type encountered while parsing state list: " << currentElement.tagName();
-                    break;
+                    qDebug() << "(Fsm:) Unexpected token encountered while parsing state list: " << currentElement.tagName();
+                    qDebug() << "Token ignored";
+                    continue;
                 }
             }
         }
         else
         {
             qDebug() << "(Fsm:) Unexpected token encountered while parsing state list: expected \"State\", got: " << currentElement.tagName();
-            break;
+            qDebug() << "Token ignored";
+            continue;
         }
     }
 }
@@ -489,15 +540,17 @@ void FsmSaveFileManager::parseTransitions(QDomElement element, shared_ptr<Fsm> m
                 }
                 else
                 {
-                    qDebug() << "(Fsm:) Unexpected type encountered while parsing transition list: " << currentElement.tagName();
-                    break;
+                    qDebug() << "(Fsm:) Unexpected token encountered while parsing transition list: " << currentElement.tagName();
+                    qDebug() << "Token ignored";
+                    continue;
                 }
             }
         }
         else
         {
             qDebug() << "(Fsm:) Unexpected token encountered while parsing state list: expected \"Transition\", got: " << currentElement.tagName();
-            break;
+            qDebug() << "Token ignored";
+            continue;
         }
     }
 }
@@ -582,7 +635,30 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
         if(! sactval.isEmpty())
         {
             setActionValue = true;
-            actionValue = LogicValue::fromString(sactval);
+            try
+            {
+                actionValue = LogicValue::fromString(sactval); // Throws StatesException
+            }
+            catch (const StatesException& e)
+            {
+                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                {
+                    uint avsize;
+                    if ( (param1 != -1) && (param2 == -1) )
+                        avsize = 1;
+                    else if ( (param1 != -1) && (param2 != -1) )
+                        avsize = param1 - param2 + 1;
+                    else
+                        avsize = 1; // TODO: determine actual size
+
+                    actionValue = LogicValue::getValue0(avsize);
+
+                    qDebug() << "(FsmSaveFileManager:) Error in action value.";
+                    qDebug() << "Value ignored and set to " << actionValue.toString();
+                }
+                else
+                    throw;
+            }
         }
         else
             actionValue = LogicValue::getNullValue();
@@ -607,7 +683,10 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
             foreach (shared_ptr<Signal> var, machine->getReadableSignals())
             {
                 if (var->getName() == currentElement.attribute("Name"))
+                {
                     equation = var;
+                    break;
+                }
             }
         }
         else if (currentElement.tagName() == "LogicEquation")
@@ -648,12 +727,36 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
             {
                 equationType = Equation::nature::constant;
 
-                constantValue = LogicValue::fromString(currentElement.attribute("Value"));
+                try
+                {
+                    constantValue = LogicValue::fromString(currentElement.attribute("Value")); // Throws StatesException
+                }
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                    {
+                        uint constantsize;
+                        if ( (param1 != -1) && (param2 == -1) )
+                            constantsize = 1;
+                        else if ( (param1 != -1) && (param2 != -1) )
+                            constantsize = param1 - param2 + 1;
+                        else
+                            constantsize = 1; // TODO: determine actual size
+
+                        constantValue = LogicValue::getValue0(constantsize);
+
+                        qDebug() << "(FsmSaveFileManager:) Warning: Error in constant value.";
+                        qDebug() << "Value ignored and set to " << constantValue.toString();
+                    }
+                    else
+                        throw;
+                }
             }
             else
             {
-                qDebug() << "(Fsm:) Unexpected equation nature encountered while parsing logic equation: " << currentElement.attribute("Nature");
-                return nullptr;
+                qDebug() << "(FsmSaveFileManager:) Warning: Unexpected equation nature encountered while parsing logic equation: " << currentElement.attribute("Nature");
+                qDebug() << "Token ignored. Will retry with other tokens if existing.";
+                continue;
             }
 
             QDomNodeList childNodes = currentElement.childNodes();
@@ -670,8 +773,9 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
                 }
                 else
                 {
-                    qDebug() << "(Fsm:) Unexpected operand nature encountered while parsing logic equation: " << currentElement.tagName();
-                    break;
+                    qDebug() << "(FsmSaveFileManager:) Unexpected token encountered while parsing logic equation: expected \"Operand\", got " << currentElement.tagName();
+                    qDebug() << "Token ignored. Will retry with other tokens if existing.";
+                    continue;
                 }
             }
 
@@ -680,20 +784,26 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
 
             for (int i = 0 ; i < operandsMap.count() ; i++)
             {
+                // If operandMap has empty ranges, accessing them will create a nullptr.
+                // Then, on next check, count() has been raised by one, allowing to
+                // effectively go till the last element, putting empty operands where
+                // there is no value. Got lucky on this behavior.
                 operands.append(operandsMap[i]);
             }
 
             shared_ptr<Equation> newEquation = shared_ptr<Equation>(new Equation(equationType, operands, param1, param2));
 
             if (equationType == Equation::nature::constant)
-                newEquation->setCurrentValue(constantValue);
+                newEquation->setCurrentValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
 
             equation = newEquation;
         }
         else
         {
-            qDebug() << "(Fsm:) Unexpected action type encountered while parsing equation: " << currentElement.tagName();
-            break;
+            qDebug() << "(FsmSaveFileManager:) Unexpected token encountered while parsing equation:";
+            qDebug() << "Expected signal (LogicVariable) or equation (LogicEquation), got: " << currentElement.tagName();
+            qDebug() << "Token ignored. Will retry with other tokens if existing.";
+            continue;
         }
     }
 

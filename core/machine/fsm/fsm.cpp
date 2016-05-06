@@ -42,7 +42,7 @@ const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 
 shared_ptr<FsmState> Fsm::addState(QString name)
 {
-    shared_ptr<Fsm> thisAsPointer = dynamic_pointer_cast<Fsm>(this->shared_from_this());
+    shared_ptr<Fsm> thisAsPointer = dynamic_pointer_cast<Fsm>(this->shared_from_this()); // Clear to use shared_from_this: this function can't be called in constructor
     shared_ptr<FsmState> state(new FsmState(thisAsPointer, getUniqueStateName(name)));
     connect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::stateEditedEventHandler);
     connect(state.get(), &FsmState::stateGraphicRepresentationMoved,          this, &Fsm::stateEditedEventHandler);

@@ -30,6 +30,8 @@
 #include <QKeyEvent>
 #include <QHeaderView>
 
+#include <QDebug>
+
 // StateS classes
 #include "machineactuatorcomponent.h"
 #include "actionlisteditor.h"
@@ -38,6 +40,7 @@
 #include "signal.h"
 #include "rangeeditordialog.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "statesexception.h"
 
 
 ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title, QWidget* parent) :
@@ -414,7 +417,20 @@ void ActionEditor::itemValueChangedEventHandler(QTableWidgetItem* item)
             int param1 = l_actuator->getActionParam1(l_signal);
             int param2 = l_actuator->getActionParam2(l_signal);
 
-            l_actuator->setActionValue(l_signal, LogicValue::fromString(item->text()), param1, param2);
+            try
+            {
+                LogicValue value = LogicValue::fromString(item->text()); // Throws StatesException
+                l_actuator->setActionValue(l_signal, value, param1, param2);
+            }
+            catch (const StatesException& e)
+            {
+                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                {
+                    qDebug() << "(ActionEditor:) Info: Wrong input for action value, change ignored.";
+                }
+                else
+                    throw;
+            }
         }
     }
     else
@@ -432,81 +448,93 @@ void ActionEditor::treatMenuEventHandler(QAction* action)
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
     shared_ptr<Signal> l_currentSignal = this->currentSignal.lock();
 
-    int param1 = l_actuator->getActionParam1(l_currentSignal);
-    int param2 = l_actuator->getActionParam2(l_currentSignal);
-
-    if ( (l_actuator != nullptr) && (l_currentSignal != nullptr) )
+    try
     {
-        switch (dataValue)
+        int param1 = l_actuator->getActionParam1(l_currentSignal);
+        int param2 = l_actuator->getActionParam2(l_currentSignal);
+
+        if ( (l_actuator != nullptr) && (l_currentSignal != nullptr) )
         {
-        case ContextAction::Cancel:
-            break;
-        case ContextAction::DeleteAction:
-            l_actuator->removeActionByName(l_currentSignal->getName());
-            break;
-        case ContextAction::AffectSwitchWhole:
-            if ( (param1 != -1) || (param2 != -1) )
+            switch (dataValue)
             {
-                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                newInitialValue.resize(l_currentSignal->getSize());
-                l_actuator->setActionValue(l_currentSignal, newInitialValue, -1, -1);
-            }
-            break;
-        case ContextAction::AffectSwitchSingle:
-            if (param1 == -1)
-            {
-                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                newInitialValue.resize(1);
-                l_actuator->setActionValue(l_currentSignal, newInitialValue, 0, -1);
-            }
-            else if  (param2 != -1)
-            {
-                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                newInitialValue.resize(1);
-                l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, -1);
-            }
-            break;
-        case ContextAction::AffectSwitchRange:
-            if (param1 == -1)
-            {
-                LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                newInitialValue.resize(2);
-                l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
-            }
-            else if  (param2 == -1)
-            {
-                if (param1 != 0)
+            case ContextAction::Cancel:
+                break;
+            case ContextAction::DeleteAction:
+                l_actuator->removeActionByName(l_currentSignal->getName());
+                break;
+            case ContextAction::AffectSwitchWhole:
+                if ( (param1 != -1) || (param2 != -1) )
                 {
                     LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(param1 + 1);
-                    l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, 0);
+                    newInitialValue.resize(l_currentSignal->getSize()); // Throws StatesException
+                    l_actuator->setActionValue(l_currentSignal, newInitialValue, -1, -1);
                 }
-                else
+                break;
+            case ContextAction::AffectSwitchSingle:
+                if (param1 == -1)
                 {
                     LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(2);
+                    newInitialValue.resize(1); // Throws StatesException: ignored, value is not 0
+                    l_actuator->setActionValue(l_currentSignal, newInitialValue, 0, -1);
+                }
+                else if  (param2 != -1)
+                {
+                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                    newInitialValue.resize(1); // Throws StatesException: ignored, value is not 0
+                    l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, -1);
+                }
+                break;
+            case ContextAction::AffectSwitchRange:
+                if (param1 == -1)
+                {
+                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                    newInitialValue.resize(2); // Throws StatesException: ignored, value is not 0
                     l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
                 }
-            }
-            break;
-        case ContextAction::AffectEditRange:
-            unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(l_actuator, l_currentSignal));
-            rangeEditor->exec();
+                else if  (param2 == -1)
+                {
+                    if (param1 != 0)
+                    {
+                        LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                        newInitialValue.resize(param1 + 1); // Throws StatesException
+                        l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, 0);
+                    }
+                    else
+                    {
+                        LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
+                        newInitialValue.resize(2); // Throws StatesException: ignored, value is not 0
+                        l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
+                    }
+                }
+                break;
+            case ContextAction::AffectEditRange:
+                unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(l_actuator, l_currentSignal));
+                rangeEditor->exec();
 
-            if (rangeEditor->result() == QDialog::Accepted)
-            {
-                LogicValue newAffectValue = l_actuator->getActionValue(l_currentSignal);
-                int newParam1 = rangeEditor->getParam1();
-                int newParam2 = rangeEditor->getParam2();
+                if (rangeEditor->result() == QDialog::Accepted)
+                {
+                    LogicValue newAffectValue = l_actuator->getActionValue(l_currentSignal);
+                    int newParam1 = rangeEditor->getParam1();
+                    int newParam2 = rangeEditor->getParam2();
 
-                if (newParam2 != -1)
-                    newAffectValue.resize(newParam1 - newParam2 + 1);
-                else
-                    newAffectValue.resize(1);
-                l_actuator->setActionValue(l_currentSignal, newAffectValue, newParam1, newParam2);
+                    if (newParam2 != -1)
+                        newAffectValue.resize(newParam1 - newParam2 + 1); // Throws StatesException
+                    else
+                        newAffectValue.resize(1); // Throws StatesException: ignored, value is not 0
+                    l_actuator->setActionValue(l_currentSignal, newAffectValue, newParam1, newParam2);
+                }
+                break;
             }
-            break;
         }
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
+        {
+            qDebug() << "(ActionEditor:) Warning: Errored trying to resize a signal. A param value is probably broken.";
+        }
+        else
+            throw;
     }
 
     this->currentSignal.reset();

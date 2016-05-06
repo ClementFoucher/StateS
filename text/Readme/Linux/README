@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.3.B *
+* StateS v. 0.3.C *
 *******************
 
 This software is intended to be a simple and effective discrete event machines drawer.
@@ -14,7 +14,7 @@ What the software can do for now:
 - Export it to VHDL (very experimental),
 - Export to PDF.
 
-Qt 5.5 is required to execute this application.
+Qt 5.6 is required to execute this application.
 
 You can test interacting with a machine by loading file "Demo.SfsmS".
 

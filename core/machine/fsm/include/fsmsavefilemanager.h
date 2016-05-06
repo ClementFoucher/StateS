@@ -43,11 +43,26 @@ class FsmSaveFileManager : public QObject
 {
     Q_OBJECT
 
+public: // Static
+
+    enum FsmSaveFileManagerErrorEnum
+    {
+        unable_to_replace = 0,
+        permission_denied = 1,
+        unkown_directory  = 2,
+        unable_to_open    = 3,
+        inexistant_file   = 4,
+        wrong_xml         = 5
+    };
+
 public:
-    static bool writeToFile(shared_ptr<Fsm> machine, const QString& filePath);
-    static shared_ptr<Fsm> loadFromFile(const QString& filePath);
+    static void writeToFile(shared_ptr<Fsm> machine, const QString& filePath); // Throws StatesException
+    static shared_ptr<Fsm> loadFromFile(const QString& filePath); // Throws StatesException
 
 private:
+    static void writeSignals(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
+    static void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
+    static void writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
     static void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation);
     static void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component);
 

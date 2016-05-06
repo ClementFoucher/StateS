@@ -24,44 +24,56 @@
 
 // Debug
 #include <QDebug>
+#include <QMetaMethod>
 
+// StateS classes
+#include "statesexception.h"
 
 // Main constructor
-Equation::Equation(nature function, uint operandCount, int param1, int param2) :
-    Signal("<sub>(equation)</sub>"),
-    signalOperands(operandCount),
-    equationOperands(operandCount)
+/**
+ * @brief Equation::Equation
+ * @param function
+ * @param operandCount Number of operands. Omitting this value results in a default-sized equation with 2 operands for variable operand functions.
+ * @param param1
+ * @param param2
+ */
+Equation::Equation(nature function, int operandCount, int param1, int param2) :
+    Signal("<sub>(equation)</sub>")
 {
     this->function = function;
+    this->currentValue = LogicValue::getNullValue();
 
+    // Operand count affectation
     switch(this->function)
     {
     case nature::constant:
-        // Constant will be a faked 1 operand, but actually 0
+        this->allowedOperandCount = 0;
+
+        if ( (operandCount != 0) && (operandCount >= 0) )
+        {
+            qDebug() << "(Equation:) Warning: Trying to create constant equation with size != 0 (requested size is " << QString::number(operandCount) << ").";
+            qDebug() << "Requested size value ignored and set to 0.";
+        }
+        break;
+    case nature::extractOp:
     case nature::notOp:
     case nature::identity:
-    case nature::extractOp:
         this->allowedOperandCount = 1;
-        this->param1 = param1;
-        this->param2 = param2;
-        if (operandCount != 1)
-        {
-            signalOperands.resize(1);
-            equationOperands.resize(1);
 
-            qDebug() << "(Equation) Error ! Trying to create a fixed size 1 equation with size != 1 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 1.";
+        if ( (operandCount != 1) && (operandCount >= 0) )
+        {
+            qDebug() << "(Equation:) Warning: Trying to create a fixed size 1 equation with size != 1 (requested size is " << QString::number(operandCount) << ").";
+            qDebug() << "Requested size value ignored and set to 1.";
         }
         break;
     case nature::equalOp:
     case nature::diffOp:
         this->allowedOperandCount = 2;
 
-        if (operandCount != 2)
+        if ( (operandCount != 2) && (operandCount >= 0) )
         {
-            signalOperands.resize(2);
-            equationOperands.resize(2);
-
-            qDebug() << "(Equation) Error ! Trying to create a fixed size 2 equation with size != 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
+            qDebug() << "(Equation) Warning: Trying to create a fixed size 2 equation with size != 2 (requested size is " << QString::number(operandCount) << ").";
+            qDebug() << "Requested size value ignored and set to 2.";
         }
         break;
     case nature::andOp:
@@ -71,18 +83,55 @@ Equation::Equation(nature function, uint operandCount, int param1, int param2) :
     case nature::norOp:
     case nature::xnorOp:
     case nature::concatOp:
-        if (operandCount < 2)
+        if (operandCount >= 2)
+        {
+            this->allowedOperandCount = operandCount;
+        }
+        else if (operandCount < 0)
+        {
+            this->allowedOperandCount = 2;
+        }
+        else
         {
             this->allowedOperandCount = 2;
 
-            signalOperands.resize(2);
-            equationOperands.resize(2);
-
-            qDebug() << "(Equation) Error ! Trying to create an equation with size < 2 (requested size is " << QString::number(operandCount) << "). Requested size value ignored and set to 2.";
+            qDebug() << "(Equation) Warning: Trying to create an equation with size < 2 (requested size is " << QString::number(operandCount) << ").";
+            qDebug() << "Requested size value ignored and set to 2.";
         }
-        else
-            this->allowedOperandCount = operandCount;
     }
+
+    // Parameters affectation
+    switch(this->function)
+    {
+    case nature::extractOp:
+        this->param1 = param1;
+        this->param2 = param2;
+        break;
+    case nature::constant:
+    case nature::notOp:
+    case nature::identity:
+    case nature::equalOp:
+    case nature::diffOp:
+    case nature::andOp:
+    case nature::orOp:
+    case nature::xorOp:
+    case nature::nandOp:
+    case nature::norOp:
+    case nature::xnorOp:
+    case nature::concatOp:
+        this->param1 = -1;
+        this->param2 = -1;
+
+        if ( (param1 != -1) || (param2 != -1) )
+        {
+            qDebug() << "(Equation:) Warning: provided values for parameters while equation is not extract op.";
+            qDebug() << "Parameters value ignored.";
+        }
+        break;
+    }
+
+    this->signalOperands   = QVector<weak_ptr<Signal>>    (this->allowedOperandCount);
+    this->equationOperands = QVector<shared_ptr<Equation>>(this->allowedOperandCount);
 }
 
 Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1, int param2) :
@@ -96,8 +145,6 @@ Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandLi
 
     // Causes recomputation
     this->computeCurrentValue();
-
-    this->notYetConstructed = false;
 }
 
 shared_ptr<Equation> Equation::clone() const
@@ -105,7 +152,7 @@ shared_ptr<Equation> Equation::clone() const
     shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands(), this->param1, this->param2));
 
     if (this->function == nature::constant)
-        eq->setCurrentValue(this->currentValue);
+        eq->setCurrentValue(this->currentValue); // Throws StatesException - Constant equations can have their value set - ignored
 
     return eq;
 }
@@ -120,11 +167,11 @@ uint Equation::getSize() const
     return currentValue.getSize();
 }
 
-bool Equation::resize(uint)
+void Equation::resize(uint) // Throws StatesException
 {
     // Equation size is dynamic (or is 1 for eq and diff).
     // Can't be resized.
-    return false;
+    throw StatesException("Equation", resized_requested, "Trying to resize an equation");
 }
 
 Equation::nature Equation::getFunction() const
@@ -134,16 +181,16 @@ Equation::nature Equation::getFunction() const
 
 void Equation::setFunction(const nature& newFunction, int param1, int param2)
 {
-    switch(this->function)
+    switch(newFunction)
     {
     case nature::notOp:
     case nature::identity:
     case nature::extractOp:
         // Delete operands beyond one
-        while (allowedOperandCount > 1)
+        while (this->allowedOperandCount > 1)
         {
             // Muted: do not causes recomputation
-            decreaseOperandCountInternal();
+            decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
         }
         break;
     case nature::equalOp:
@@ -151,16 +198,14 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
         // Exactly two operands needed
 
         // Delete operands beyond two
-        while (allowedOperandCount > 2)
+        while (this->allowedOperandCount > 2)
         {
-            // Muted: do not causes recomputation
-            decreaseOperandCountInternal();
+            decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
         }
 
         // Add operand if not enough
         if (allowedOperandCount == 1)
         {
-            // Muted: do not causes recomputation
             increaseOperandCountInternal();
         }
 
@@ -175,12 +220,15 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
         // At least two operands for all other equation types
         if (allowedOperandCount == 1)
         {
-            // Muted: do not causes recomputation
             increaseOperandCountInternal();
         }
         break;
     case nature::constant:
-        // Ignored
+        // Delete operands
+        while (allowedOperandCount > 0)
+        {
+            decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
+        }
         break;
     }
 
@@ -204,20 +252,24 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
 
 void Equation::setParameters(int param1, int param2)
 {
-    this->param1 = param1;
-    this->param2 = param2;
+    if (this->function == nature::extractOp)
+    {
+        this->param1 = param1;
+        this->param2 = param2;
 
-    emit signalStaticConfigurationChangedEvent();
+        emit signalStaticConfigurationChangedEvent();
 
-    this->computeCurrentValue();
+        this->computeCurrentValue();
+    }
+
 }
 
-shared_ptr<Signal> Equation::getOperand(uint i) const
+shared_ptr<Signal> Equation::getOperand(uint i) const // Throws StatesException
 {
     if (i < this->allowedOperandCount)
         return this->getOperands()[i];
     else
-        return nullptr;
+        throw StatesException("Equation", out_of_range_access, "Out of range operand access");
 }
 
 /**
@@ -228,24 +280,24 @@ shared_ptr<Signal> Equation::getOperand(uint i) const
  * All given operands that are equation will be cloned.
  * @return
  */
-bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet)
+bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet) // Throws StatesException
 {
     // Do not allow placing an operand outside defined range
     if (i >= this->allowedOperandCount)
     {
-        return false;
+        throw StatesException("Equation", out_of_range_access, "Out of range operand access");
     }
 
     // Only proceed to set if new operand is not the same as the current one.
     // If it is, just return success
-    if (this->getOperand(i) == newOperand)
+    if (this->getOperand(i) == newOperand) // Throws StatesException - Operand count checked - ignored
     {
         return true;
     }
     else
     {
         // Muted: do not causes recomputation
-        clearOperand(i, true);
+        clearOperand(i, true); // Throws StatesException - Operand count checked - ignored
 
         if (newOperand != nullptr)
         {
@@ -286,9 +338,15 @@ bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet)
     }
 }
 
-void Equation::clearOperand(uint i, bool quiet)
+void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 {
-    shared_ptr<Signal> oldOperand = this->getOperand(i);
+    // Chek index
+    if (i >= this->allowedOperandCount)
+    {
+        throw StatesException("Equation", out_of_range_access, "Out of range operand access");
+    }
+
+    shared_ptr<Signal> oldOperand = this->getOperand(i); // Throws StatesException - Operand count checked - ignored
 
     if (oldOperand != nullptr)
     {
@@ -347,7 +405,7 @@ QString Equation::getText(bool activeColored) const
 
         for (uint i = 0 ; i < this->allowedOperandCount ; i++)
         {
-            shared_ptr<Signal> operand = getOperand(i);
+            shared_ptr<Signal> operand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
             if (operand != nullptr)
             {
                 text += operand->getText(activeColored);
@@ -418,22 +476,16 @@ QString Equation::getText(bool activeColored) const
     return text;
 }
 
-LogicValue Equation::getCurrentValue() const
-{
-    return this->currentValue;
-}
-
-bool Equation::setCurrentValue(const LogicValue& value)
+void Equation::setCurrentValue(const LogicValue& value) // Throws StatesException
 {
     if (this->function == nature::constant)
     {
         this->currentValue = value;
 
         emit Signal::signalStaticConfigurationChangedEvent();
-        return true;
     }
     else
-        return false;
+        throw StatesException("Equation", set_value_requested, "Trying to affect a value to a dynamically determined equation");
 }
 
 Equation::computationFailureCause Equation::getComputationFailureCause() const
@@ -501,6 +553,9 @@ QVector<shared_ptr<Signal>> Equation::getOperands() const
 
 void Equation::computeCurrentValue()
 {
+    // Current value is stored instead of dynamically computed
+    // to avoid emit change events if value actually didn't changed
+
     if (this->function == nature::constant)
         return;
 
@@ -695,11 +750,18 @@ void Equation::computeCurrentValue()
 
     emit signalDynamicStateChangedEvent();
 
-    if ( (!this->notYetConstructed) && (previousValue.getSize() != this->currentValue.getSize()) )
+    if (previousValue.getSize() != this->currentValue.getSize())
     {
-        emit signalResizedEvent(this->shared_from_this());
+        try
+        {
+            emit signalResizedEvent(this->shared_from_this());
+        }
+        catch (const std::bad_weak_ptr&)
+        {
+            // It's ok to fail here: it means shared_from_this is illegal to call.
+            // This happens when this function is called from the constructor
+        }
     }
-
 }
 
 bool Equation::signalHasSize(shared_ptr<Signal> sig)
@@ -712,15 +774,36 @@ bool Equation::signalHasSize(shared_ptr<Signal> sig)
         return true;
 }
 
-void Equation::decreaseOperandCountInternal()
+/**
+ * @brief Equation::decreaseOperandCountInternal Decreases the operand count without
+ * checking on the function required operands. It still makes sure the operand count
+ * doesn't go below 0.
+ * This operation can place the object in a state where function does not have it
+ * required count of operand, so the caller has to make sure he replaces the object
+ * in a correct state before any call to value computing is made.
+ */
+void Equation::decreaseOperandCountInternal() // Throws StatesException
 {
-    clearOperand(allowedOperandCount-1);
+    // Do not allow placing an operand outside defined range
+    if (this->allowedOperandCount == 0)
+    {
+        throw StatesException("Equation", reduced_operand_while_0, "Trying to reduce operand count while count is 0");
+    }
+
+    clearOperand(this->allowedOperandCount-1); // Throws StatesException - Operand count checked - ignored
     this->allowedOperandCount--;
 
     this->signalOperands.resize(this->allowedOperandCount);
     this->equationOperands.resize(this->allowedOperandCount);
 }
 
+/**
+ * @brief Equation::increaseOperandCountInternal Increases the operand count without
+ * checking on the function required operands.
+ * This operation can place the object in a state where function does not have it
+ * required count of operand, so the caller has to make sure he replaces the object
+ * in a correct state before any call to value computing is made.
+ */
 void Equation::increaseOperandCountInternal()
 {
     this->allowedOperandCount++;
@@ -731,15 +814,11 @@ void Equation::increaseOperandCountInternal()
 
 uint Equation::getOperandCount() const
 {
-    if (this->function != nature::constant)
-        return allowedOperandCount;
-    else return 0;
+    return this->allowedOperandCount;
 }
 
-bool Equation::increaseOperandCount()
+void Equation::increaseOperandCount() // Throws StatesException
 {
-    bool result = false;
-
     switch (function)
     {
     case nature::andOp:
@@ -754,8 +833,6 @@ bool Equation::increaseOperandCount()
         emit signalStaticConfigurationChangedEvent();
 
         this->computeCurrentValue();
-
-        result = true;
         break;
     case nature::notOp:
     case nature::identity:
@@ -763,16 +840,13 @@ bool Equation::increaseOperandCount()
     case nature::diffOp:
     case nature::extractOp:
     case nature::constant:
+        throw StatesException("Equation", change_operand_illegal, "Trying to change the operand count on a fixed operand count function");
         break;
     }
-
-    return result;
 }
 
-bool Equation::decreaseOperandCount()
+void Equation::decreaseOperandCount() // Throws StatesException
 {
-    bool result = false;
-
     switch (function)
     {
     case nature::andOp:
@@ -784,13 +858,11 @@ bool Equation::decreaseOperandCount()
     case nature::concatOp:
         if (  (this->allowedOperandCount > 2) )
         {
-            this->decreaseOperandCountInternal();
+            this->decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
 
             emit signalStaticConfigurationChangedEvent();
 
             this->computeCurrentValue();
-
-            result = true;
         }
 
         break;
@@ -800,8 +872,7 @@ bool Equation::decreaseOperandCount()
     case nature::diffOp:
     case nature::extractOp:
     case nature::constant:
+        throw StatesException("Equation", change_operand_illegal, "Trying to change the operand count on a fixed operand count function");
         break;
     }
-
-    return result;
 }

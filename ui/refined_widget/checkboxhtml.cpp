@@ -103,6 +103,11 @@ void CheckBoxHtml::setText(QString newText)
     this->label->setText(newText);
 }
 
+void CheckBoxHtml::setChecked(bool check)
+{
+    this->checkBox->setChecked(check);
+}
+
 bool CheckBoxHtml::isChecked()
 {
     return this->checkBox->isChecked();

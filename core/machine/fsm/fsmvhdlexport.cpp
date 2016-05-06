@@ -684,7 +684,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
             int param1 = complexEquation->getParam1();
             int param2 = complexEquation->getParam2();
 
-            text += generateEquationText(complexEquation->getOperand(0), l_machine);
+            text += generateEquationText(complexEquation->getOperand(0), l_machine); // Throws StatesException - Extract op always has operand 0, even if nullptr - ignored
 
             text += "(";
             text += QString::number(param1);
@@ -700,7 +700,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
         else if (function == Equation::nature::notOp)
         {
             text += "not ";
-            text += generateEquationText(complexEquation->getOperand(0), l_machine);
+            text += generateEquationText(complexEquation->getOperand(0), l_machine); // Throws StatesException - Not op always has operand 0, even if nullptr - ignored
         }
         else
         {

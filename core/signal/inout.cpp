@@ -28,6 +28,12 @@ InOut::InOut(const QString& name) :
 {
 }
 
+InOut::InOut(const QString& name, uint size) : // Throws StatesException
+    IO(name, size) // Throws StatesException: propagated
+{
+
+}
+
 IO::direction InOut::getDirection() const
 {
     return IO::direction::inout;

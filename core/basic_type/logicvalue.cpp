@@ -25,6 +25,9 @@
 // Qt classes
 #include <QString>
 
+// StateS classes
+#include "statesexception.h"
+
 
 LogicValue LogicValue::getValue0(uint size)
 {
@@ -41,7 +44,7 @@ LogicValue LogicValue::getNullValue()
     return LogicValue();
 }
 
-LogicValue LogicValue::fromString(const QString &textValue)
+LogicValue LogicValue::fromString(const QString &textValue) // Throws StatesException
 {
     LogicValue realValue;
 
@@ -51,6 +54,8 @@ LogicValue LogicValue::fromString(const QString &textValue)
             realValue.prepend(false);
         else if (c == '1')
             realValue.prepend(true);
+        else
+            throw StatesException("LogicValue", unsupported_char, "Unsupported character in string");
     }
 
     return realValue;
@@ -74,34 +79,21 @@ LogicValue::LogicValue(uint bitCount, bool initialValue) :
 {
 }
 
-void LogicValue::resize(uint newSize)
+void LogicValue::resize(uint newSize) // Throws StatesException
 {
-    ((QVector<bool>*)this)->resize(newSize);
+    if (newSize != 0)
+    {
+        ((QVector<bool>*)this)->resize(newSize);
+    }
+    else
+    {
+        throw StatesException("LogicValue", resized_to_0, "Trying to resize to 0-sized vector");
+    }
 }
 
 uint LogicValue::getSize() const
 {
     return this->size();
-}
-
-bool LogicValue::isAllZeros() const
-{
-    foreach (bool b, *((QVector<bool>*)this)) {
-        if (b)
-            return false;
-    }
-
-    return true;
-}
-
-bool LogicValue::isAllOnes() const
-{
-    foreach (bool b, *((QVector<bool>*)this)) {
-        if (!b)
-            return false;
-    }
-
-    return true;
 }
 
 LogicValue LogicValue::getValue0() const
@@ -208,11 +200,23 @@ LogicValue LogicValue::operator^(const LogicValue& otherValue) const
 
 LogicValue LogicValue::operator=(const LogicValue& otherValue)
 {
-    this->resize(otherValue.getSize());
-
-    for(uint i = 0 ; i < this->getSize() ; i++)
+    try
     {
-        (*this)[i] = otherValue[i];
+        this->resize(otherValue.getSize()); // Throws StatesException
+        for(uint i = 0 ; i < this->getSize() ; i++)
+        {
+            (*this)[i] = otherValue[i];
+        }
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueErrorEnum::resized_to_0) )
+        {
+            // We are tying to affect null value to this: can't resize to 0 publicly
+            ((QVector<bool>*)this)->resize(0);
+        }
+        else
+            throw;
     }
 
     return *this;
@@ -271,20 +275,20 @@ bool LogicValue::increment()
         return false;
 }
 
-bool& LogicValue::operator[](uint memberNumber)
+bool& LogicValue::operator[](uint memberNumber) // Throws StatesException
 {
     if (memberNumber < this->getSize())
         return (*((QVector<bool>*)this))[memberNumber];
     else
-        return this->foo;
+        throw StatesException("LogicValue", outside_range, "Outside range access");
 }
 
-bool LogicValue::operator[](uint memberNumber) const
+bool LogicValue::operator[](uint memberNumber) const // Throws StatesException
 {
     if (memberNumber < this->getSize())
         return (*((QVector<bool>*)this))[memberNumber];
     else
-        return false;
+        throw StatesException("LogicValue", outside_range, "Outside range access");
 }
 
 QString LogicValue::toString() const

@@ -49,13 +49,15 @@ LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, Q
     this->layout()->addWidget(this->title);
 
     ReactiveButton* buttonEnglish = new ReactiveButton("English");
-    connect(buttonEnglish, &QAbstractButton::clicked, this, &LangSelectionDialog::accept);
+    connect(buttonEnglish, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setEnglish);
+    connect(buttonEnglish, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setEnglish);
+    connect(buttonEnglish, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
     this->layout()->addWidget(buttonEnglish);
 
     ReactiveButton* buttonFrench = new ReactiveButton("Français");
-    connect(buttonFrench, &ReactiveButton::mouseEnterEvent, this, &LangSelectionDialog::setFrench);
-    connect(buttonFrench, &ReactiveButton::mouseLeaveEvent, this, &LangSelectionDialog::setEnglish);
-    connect(buttonFrench, &QAbstractButton::clicked,        this, &LangSelectionDialog::accept);
+    connect(buttonFrench, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setFrench);
+    connect(buttonFrench, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setFrench);
+    connect(buttonFrench, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
     this->layout()->addWidget(buttonFrench);
 
     retranslateUi();

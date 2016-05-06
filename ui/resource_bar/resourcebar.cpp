@@ -45,11 +45,9 @@ ResourceBar::ResourceBar(QWidget* parent) :
 
 void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 {
-    shared_ptr<Machine> oldMachine = this->machine.lock();
-
-    if (oldMachine != nullptr)
+    if (!this->machine.expired())
     {
-            disconnect(newMachine.get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
+        disconnect(this->machine.lock().get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
     }
 
     this->machineComponentScene.reset();

@@ -96,7 +96,7 @@ shared_ptr<Signal> FsmTransition::getCondition() const
     if (this->condition->getFunction() != Equation::nature::identity)
         return this->condition;
     else
-        return this->condition->getOperand(0);
+        return this->condition->getOperand(0); // Throws StatesException - Identity op always has operand 0, even if nullptr - ignored
 }
 
 void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
@@ -110,8 +110,9 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
     shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(signalNewCondition);
     if (equationNewCondition == nullptr)
     {
-        equationNewCondition = shared_ptr<Equation>(new Equation(Equation::nature::identity, 1));
-        equationNewCondition->setOperand(0, signalNewCondition);
+        QVector<shared_ptr<Signal>> operand;
+        operand.append(signalNewCondition);
+        equationNewCondition = shared_ptr<Equation>(new Equation(Equation::nature::identity, operand));
     }
 
     this->condition = equationNewCondition;

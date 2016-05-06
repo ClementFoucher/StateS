@@ -30,12 +30,15 @@
 #include "signal.h"
 
 
-TruthTableDisplay::TruthTableDisplay(const TruthTable *truthTable, QWidget* parent) :
+TruthTableDisplay::TruthTableDisplay(const TruthTable* truthTable, QWidget* parent) : // Throws StatesException
     QTableWidget(parent)
 {
     QStringList labelsList;
+    QVector<shared_ptr<Signal>> sigs;
 
-    QVector<shared_ptr<Signal>> sigs = truthTable->getInputs();
+    sigs = truthTable->getInputs(); // Throws StatesException: propagated
+
+
     QVector<QVector<LogicValue>> inputTable = truthTable->getInputTable();
     QVector<LogicValue> outputTable;
     QVector<QVector<LogicValue>> outputTableMulti;

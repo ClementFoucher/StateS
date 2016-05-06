@@ -33,29 +33,60 @@
 #include <checkboxhtml.h>
 
 
-ImageExportDialog::ImageExportDialog(const QString& baseFileName, const QString& searchPath, QWidget *parent) :
+ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent) :
     QDialog(parent)
 {
     this->baseFileName = baseFileName;
     this->searchPath   = searchPath;
 
+    this->previewManager = imageExporter;
+
+    this->previewPixmap = this->previewManager->renderPreview(QSizeF(200, 200));
+    this->previewWidget = new QLabel();
+    this->previewWidget->setMinimumSize(200, 200);
+    this->previewWidget->setPixmap(*this->previewPixmap.get());
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
-    QLabel* title = new QLabel("<b>" + tr("Choose image options:") + "</b>");
+    QLabel* title = new QLabel("<b>" + tr("Customize image") + "</b>");
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
     QFormLayout* formLayout = new QFormLayout();
     this->imageFormatSelectionBox = new QComboBox();
-    this->imageFormatSelectionBox->addItem("Pdf");
     this->imageFormatSelectionBox->addItem("Svg");
+    this->imageFormatSelectionBox->addItem("Pdf");
     this->imageFormatSelectionBox->addItem("Png");
     this->imageFormatSelectionBox->addItem("Jpeg");
     formLayout->addRow(tr("Image format:"), this->imageFormatSelectionBox);
     layout->addLayout(formLayout);
 
     this->includeComponentCheckBox = new CheckBoxHtml(tr("Include component external view:"));
+    connect(this->includeComponentCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeComponentCheckBoxChanged);
+    this->includeComponentCheckBox->setChecked(true);
     layout->addWidget(this->includeComponentCheckBox);
+
+    this->includeConstantsCheckBox = new CheckBoxHtml(tr("Include constants:"));
+    connect(this->includeConstantsCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeConstantsCheckBoxChanged);
+    layout->addWidget(this->includeConstantsCheckBox);
+
+    this->includeVariablesCheckBox = new CheckBoxHtml(tr("Include variables:"));
+    connect(this->includeVariablesCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeVariablesCheckBoxChanged);
+    layout->addWidget(this->includeVariablesCheckBox);
+
+    this->infoToTheRightCheckBox = new CheckBoxHtml(tr("Place information to the right:"));
+    connect(this->infoToTheRightCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::infoToTheRightCheckBoxChanged);
+    layout->addWidget(this->infoToTheRightCheckBox);
+
+    this->addBorderCheckBox = new CheckBoxHtml(tr("Add border:"));
+    connect(this->addBorderCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::addBorderCheckBoxChanged);
+    layout->addWidget(this->addBorderCheckBox);
+
+    QLabel* previewTitle = new QLabel("<b>" + tr("Preview") + "</b>");
+    previewTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(previewTitle);
+
+    layout->addWidget(this->previewWidget);
 
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     layout->addLayout(buttonsLayout);
@@ -67,11 +98,6 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, const QString&
     QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
     connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
     buttonsLayout->addWidget(buttonCancel);
-}
-
-bool ImageExportDialog::includeComponent()
-{
-    return this->includeComponentCheckBox->isChecked();
 }
 
 MachineImageExporter::imageFormat ImageExportDialog::getImageFormat()
@@ -138,5 +164,46 @@ void ImageExportDialog::accept()
 
     if (! this->filePath.isEmpty())
         QDialog::accept();
+}
+
+void ImageExportDialog::resizeEvent(QResizeEvent*)
+{
+    this->updatePreview();
+}
+
+void ImageExportDialog::includeComponentCheckBoxChanged(bool b)
+{
+    this->previewManager->setDisplayComponent(b);
+    this->updatePreview();
+}
+
+void ImageExportDialog::includeConstantsCheckBoxChanged(bool b)
+{
+    this->previewManager->setDisplayConstants(b);
+    this->updatePreview();
+}
+
+void ImageExportDialog::includeVariablesCheckBoxChanged(bool b)
+{
+    this->previewManager->setDisplayVariables(b);
+    this->updatePreview();
+}
+
+void ImageExportDialog::infoToTheRightCheckBoxChanged(bool b)
+{
+    this->previewManager->setInfoPos(b ? MachineImageExporter::infoPos::right : MachineImageExporter::infoPos::left);
+    this->updatePreview();
+}
+
+void ImageExportDialog::addBorderCheckBoxChanged(bool b)
+{
+    this->previewManager->setDisplayBorder(b);
+    this->updatePreview();
+}
+
+void ImageExportDialog::updatePreview()
+{
+    this->previewPixmap = this->previewManager->renderPreview(QSizeF(this->previewWidget->width(), this->previewWidget->height()));
+    this->previewWidget->setPixmap(*this->previewPixmap.get());
 }
 

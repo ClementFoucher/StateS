@@ -26,10 +26,13 @@
 #include <QFileInfo>
 #include <QDir>
 
+#include <QDebug>
+
 // StateS classes
 #include "statesui.h"
 #include "fsm.h"
 #include "fsmsavefilemanager.h"
+#include "statesexception.h"
 
 
 QString StateS::getVersion()
@@ -108,9 +111,22 @@ void StateS::loadMachine(const QString& path)
 
         this->currentFilePath = path;
 
-        this->machine = FsmSaveFileManager::loadFromFile(this->currentFilePath);
-
-        this->statesUi->setMachine(this->machine, this->currentFilePath);
+        try
+        {
+            this->machine = FsmSaveFileManager::loadFromFile(this->currentFilePath); // Throws StatesException
+            this->statesUi->setMachine(this->machine, this->currentFilePath);
+        }
+        catch (const StatesException& e)
+        {
+            if (e.getSourceClass() == "FsmSaveFileManager")
+            {
+                // TODO: display error in popup
+                qDebug() << "(StateS:) Unable to load. Error message is:";
+                qDebug() << "  " << e.what();
+            }
+            else
+                throw;
+        }
     }
 }
 
@@ -154,6 +170,20 @@ void StateS::saveCurrentMachineInCurrentFile()
 
     if (fileOk)
     {
-        FsmSaveFileManager::writeToFile(dynamic_pointer_cast<Fsm>(this->machine), this->currentFilePath);
+        try
+        {
+            FsmSaveFileManager::writeToFile(dynamic_pointer_cast<Fsm>(this->machine), this->currentFilePath); // Throws StatesException
+        }
+        catch (const StatesException& e)
+        {
+            if (e.getSourceClass() == "FsmSaveFileManager")
+            {
+                // TODO: display error in popup
+                qDebug() << "(StateS:) Unable to save. Error message is:";
+                qDebug() << "  " << e.what();
+            }
+            else
+                throw;
+        }
     }
 }

@@ -46,6 +46,12 @@ class Machine : public QObject, public enable_shared_from_this<Machine>
 {
     Q_OBJECT
 
+public: // Static
+    enum MachineErrorEnum{
+        unknown_signal   = 0,
+        impossible_error = 1
+    };
+
 public:
     enum class signal_type{Input, Output, LocalVariable, Constant};
     enum class mode{editMode, simulateMode};
@@ -57,8 +63,8 @@ public:
 
     QString getName() const;
 
-    QList<shared_ptr<Input>>  getInputs()         const;
-    QList<shared_ptr<Output>> getOutputs()        const;
+    QList<shared_ptr<Input>>  getInputs()         const; // TODO: throw exception
+    QList<shared_ptr<Output>> getOutputs()        const; // TODO: throw exception
     QList<shared_ptr<Signal>> getLocalVariables() const;
     QList<shared_ptr<Signal>> getConstants()      const;
 
@@ -76,11 +82,11 @@ public:
 
     bool setName(const QString& newName);
 
-    shared_ptr<Signal> addSignal(signal_type type, const QString& name, LogicValue value = LogicValue::getNullValue());
+    shared_ptr<Signal> addSignal(signal_type type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
     bool deleteSignal(const QString& name);
     bool renameSignal(const QString& oldName, const QString& newName);
-    bool resizeSignal(const QString& name, uint newSize);
-    bool changeSignalInitialValue(const QString& name, LogicValue newValue);
+    void resizeSignal(const QString& name, uint newSize); // Throws StatesException
+    void changeSignalInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
     bool changeSignalRank(const QString& name, uint newRank);
 
     // Handled in sub classes
@@ -121,7 +127,7 @@ protected:
 
 protected:
     // Store all signals as shared_ptr<Signal> for helper functions,
-    // but input/output lists are actually shared_ptr<Input/Output>
+    // but can actually be shared_ptr<Input/Output/Constant>
 
     // Mutex required for list edition?
     QHash<QString, shared_ptr<Signal>> inputs;
@@ -137,8 +143,8 @@ protected:
     QString name;
 
 private:
-    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, LogicValue value);
-    QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const;
+    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value);
+    QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
     void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
     bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
     bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);

@@ -22,12 +22,18 @@
 // Current class header
 #include "signal.h"
 
-Signal::Signal(const QString& name, const LogicValue& initialValue, const LogicValue& currentValue, bool isConstant) :
-    initialValue(initialValue),
-    currentValue(currentValue)
+// StateS classes
+#include "statesexception.h"
+
+
+Signal::Signal(const QString &name, uint size) // Throws StatesException
 {
+    if (size == 0)
+        throw StatesException("Signal", building_zero_sized, "Signal size set to 0");
+
     this->name = name;
-    this->isConstant = isConstant;
+    this->initialValue = LogicValue::getValue0(size);
+    this->currentValue = this->initialValue;
 
     // Link specific events signals to general events
     connect(this, &Signal::signalRenamedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
@@ -38,19 +44,10 @@ Signal::Signal(const QString& name, const LogicValue& initialValue, const LogicV
     connect(this, &Signal::signalResizedEvent, this, &Signal::signalDynamicStateChangedEvent);
 }
 
-Signal::Signal(const QString &name, const LogicValue& initialValue, bool isConstant) :
-    Signal(name, initialValue, initialValue, isConstant)
+Signal::Signal(const QString& name) :
+    Signal(name, 1) // Size to 1 => no exception to catch - ignored
 {
-}
 
-Signal::Signal(const QString &name, uint bitCount) :
-    Signal(name, LogicValue(bitCount), LogicValue(bitCount), false)
-{
-}
-
-Signal::Signal(const QString &name, bool initialValue, bool isConstant) :
-    Signal(name, LogicValue(1, initialValue), LogicValue(1, initialValue), isConstant)
-{
 }
 
 Signal::~Signal()
@@ -74,18 +71,15 @@ uint Signal::getSize() const
     return this->currentValue.getSize();
 }
 
-bool Signal::resize(uint newSize)
+void Signal::resize(uint newSize) // Throws StatesException
 {
-    if (newSize != 0)
-    {
-        this->currentValue.resize(newSize);
-        this->initialValue.resize(newSize);
+    if (newSize == 0)
+        throw StatesException("Signal", resized_to_0, "Trying to resize signal with size 0");
 
-        emit signalResizedEvent(this->shared_from_this());
-        return true;
-    }
-    else
-        return false;
+    this->currentValue.resize(newSize); // Throws StatesException - propagated
+    this->initialValue.resize(newSize); // Throws StatesException - propagated
+
+    emit signalResizedEvent(this->shared_from_this()); // Clear to use shared_from_this: this function can't be called in constructor
 }
 
 QString Signal::getText(bool activeColored) const
@@ -96,27 +90,29 @@ QString Signal::getText(bool activeColored) const
     }
     else
     {
-        if (this->isTrue())
-            return "<font color=\"green\">" + this->name + "</font>";
-        else if (this->isFalse())
-            return "<font color=\"red\">"   + this->name + "</font>";
+        if (this->getSize() == 1)
+        {
+            if (this->isTrue()) // Throws StatesException - Size checked - ignored
+                return "<font color=\"green\">" + this->name + "</font>";
+            else // (this->isFalse())
+                return "<font color=\"red\">"   + this->name + "</font>";
+        }
         else
             return "<font color=\"blue\">"  + this->name + "</font>";
     }
 }
 
-bool Signal::setCurrentValue(const LogicValue &value)
+void Signal::setCurrentValue(const LogicValue& value) // Throws StatesException
 {
-    if ( (!this->isConstant) && (value.getSize() == this->getSize()) )
+    if (value.getSize() == this->getSize())
     {
         this->currentValue = value;
-        emit signalDynamicStateChangedEvent();
 
-        return true;
+        emit signalDynamicStateChangedEvent();
     }
     else
     {
-        return false;
+        throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size");
     }
 }
 
@@ -130,22 +126,17 @@ LogicValue Signal::getInitialValue() const
     return this->initialValue;
 }
 
-bool Signal::setInitialValue(const LogicValue &newInitialValue)
+void Signal::setInitialValue(const LogicValue &newInitialValue) // Throws StatesException
 {
     if (this->getSize() == newInitialValue.getSize())
     {
         this->initialValue = newInitialValue;
 
-        if (this->isConstant)
-            this->currentValue = this->initialValue;
-
         emit SignalInitialValueChangedEvent();
-
-        return true;
     }
     else
     {
-        return false;
+        throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size");
     }
 }
 
@@ -155,44 +146,44 @@ void Signal::reinitialize()
     emit signalDynamicStateChangedEvent();
 }
 
-bool Signal::resetValue()
+void Signal::resetValue()
 {
-    return setCurrentValue(LogicValue::getValue0(this->getSize()));
+    setCurrentValue(LogicValue::getValue0(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
 }
 
-bool Signal::set()
+void Signal::set()
 {
-    return setCurrentValue(LogicValue::getValue1(this->getSize()));
-}
-
-bool Signal::isAllZeros() const
-{
-    return this->getCurrentValue().isAllZeros(); // Use get current value to allow polymorphism
-}
-
-bool Signal::isAllOnes() const
-{
-    return this->getCurrentValue().isAllOnes(); // Use get current value to allow polymorphism
+    setCurrentValue(LogicValue::getValue1(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
 }
 
 // True or false concept here only apply to one bit signals
-// A larger signal will be be neither true nor false
-bool Signal::isTrue() const
+// A larger signal will neither be true nor false
+bool Signal::isTrue() const // Throws StatesException
 {
-    if (this->getSize() == 1 && this->isAllOnes())
-        return true;
+    if (this->getSize() == 1)
+    {
+        if (this->currentValue[0] == 1)
+            return true;
+        else
+            return false;
+    }
     else
-        return false;
+    {
+        throw StatesException("Signal", signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
+    }
 }
 
-bool Signal::isFalse() const
+bool Signal::isFalse() const // Throws StatesException
 {
-    if (this->getSize() == 1 && this->isAllZeros())
-        return true;
+    if (this->getSize() == 1)
+    {
+        if (this->currentValue[0] == 0)
+            return true;
+        else
+            return false;
+    }
     else
-        return false;
-}
-bool Signal::getIsConstant() const
-{
-    return this->isConstant;
+    {
+        throw StatesException("Signal", signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
+    }
 }

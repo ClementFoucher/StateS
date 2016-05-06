@@ -29,6 +29,8 @@
 #include "input.h"
 #include "output.h"
 #include "machinebuilder.h"
+#include "constant.h"
+#include "statesexception.h"
 
 
 Machine::Machine()
@@ -466,7 +468,7 @@ void Machine::rebuildComponentVisualization()
         emit componentVisualizationUpdatedEvent();
 }
 
-shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, LogicValue value)
+shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, const LogicValue& value)
 {
     uint rank;
 
@@ -491,7 +493,7 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, Log
     return this->addSignalAtRank(type, name, rank, value);
 }
 
-shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank, LogicValue value)
+shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value)
 {
     // First check if name doesn't already exist
     foreach (shared_ptr<Signal> signal, getAllSignals())
@@ -505,18 +507,28 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
     if (!this->cleanSignalName(cleanName))
         return nullptr;
 
+    // Determine size
+    uint size;
+    if (! value.isNull())
+    {
+        size = value.getSize();
+    }
+    else
+    {
+        size = 1;
+    }
+
     // Determine list to reference signal in
     shared_ptr<Signal> signal;
     switch(type)
     {
     case signal_type::Input:
-        signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name)));
+        signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
         this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
 
         if (! value.isNull())
         {
-            signal->resize(value.getSize());
-            signal->setInitialValue(value);
+            signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
         }
 
         this->rebuildComponentVisualization();
@@ -525,13 +537,8 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 
         break;
     case signal_type::Output:
-        signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name)));
+        signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
         this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
-
-        if (! value.isNull())
-        {
-            signal->resize(value.getSize());
-        }
 
         this->rebuildComponentVisualization();
 
@@ -539,26 +546,24 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 
         break;
     case signal_type::LocalVariable:
-        signal = shared_ptr<Signal>(new Signal(name));
+        signal = shared_ptr<Signal>(new Signal(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
         this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
 
         if (! value.isNull())
         {
-            signal->resize(value.getSize());
-            signal->setInitialValue(value);
+            signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
         }
 
         emit localVariableListChangedEvent();
 
         break;
     case signal_type::Constant:
-        signal = shared_ptr<Signal>(new Signal(name, false, true));
+        signal = dynamic_pointer_cast<Signal>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
         this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
 
         if (! value.isNull())
         {
-            signal->resize(value.getSize());
-            signal->setInitialValue(value);
+            signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
         }
 
         emit constantListChangedEvent();
@@ -758,79 +763,71 @@ bool Machine::renameSignalInList(const QString& oldName, const QString& newName,
     return true;
 }
 
-bool Machine::resizeSignal(const QString &name, uint newSize)
+void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesException
 {
     QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
     if ( !allSignals.contains(name) ) // First check if signal exists
-        return false;
+        throw StatesException("Machine", unknown_signal, "Trying to change initial value of unknown signal");
     else
     {
-        if (allSignals[name]->resize(newSize) == true)
-        {
-            if (inputs.contains(name))
-            {
-                this->rebuildComponentVisualization();
-                emit inputListChangedEvent();
-            }
-            else if (outputs.contains(name))
-            {
-                this->rebuildComponentVisualization();
-                emit outputListChangedEvent();
-            }
-            else if (localVariables.contains(name))
-            {
-                emit localVariableListChangedEvent();
-            }
-            else if (constants.contains(name))
-            {
-                emit constantListChangedEvent();
-            }
-            else // Should not happen as we checked all lists
-                return false;
+        allSignals[name]->resize(newSize); // Throws StatesException - propagated
 
-            this->setUnsavedState(true);
-            return true;
+        if (inputs.contains(name))
+        {
+            this->rebuildComponentVisualization();
+            emit inputListChangedEvent();
         }
-        else
-            return false;
+        else if (outputs.contains(name))
+        {
+            this->rebuildComponentVisualization();
+            emit outputListChangedEvent();
+        }
+        else if (localVariables.contains(name))
+        {
+            emit localVariableListChangedEvent();
+        }
+        else if (constants.contains(name))
+        {
+            emit constantListChangedEvent();
+        }
+        else // Should not happen as we checked all lists
+            throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
+
+        this->setUnsavedState(true);
     }
 }
 
-bool Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
+void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
 {
     QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
     if ( !allSignals.contains(name) ) // First check if signal exists
-        return false;
+        throw StatesException("Machine", unknown_signal, "Trying to change initial value of unknown signal");
     else
     {
-        if (allSignals[name]->setInitialValue(newValue) == true)
-        {
-            if (inputs.contains(name))
-            {
-                emit inputListChangedEvent();
-            }
-            else if (outputs.contains(name))
-            {
-                emit outputListChangedEvent();
-            }
-            else if (localVariables.contains(name))
-            {
-                emit localVariableListChangedEvent();
-            }
-            else if (constants.contains(name))
-            {
-                emit constantListChangedEvent();
-            }
-            else // Should not happen as we checked all lists
-                return false;
+        allSignals[name]->setInitialValue(newValue);// Throws StatesException - propagated
 
-            this->setUnsavedState(true);
-            return true;
+        if (inputs.contains(name))
+        {
+            emit inputListChangedEvent();
         }
-        else
-            return false;
+        else if (outputs.contains(name))
+        {
+            emit outputListChangedEvent();
+        }
+        else if (localVariables.contains(name))
+        {
+            emit localVariableListChangedEvent();
+        }
+        else if (constants.contains(name))
+        {
+            emit constantListChangedEvent();
+        }
+        else // Should not happen as we checked all lists
+            throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
+
+        this->setUnsavedState(true);
     }
 }
 

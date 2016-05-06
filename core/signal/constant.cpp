@@ -19,39 +19,33 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHECKBOXHTML_H
-#define CHECKBOXHTML_H
-
-// Parent
-#include <QWidget>
-
-// Qt classes
-class QCheckBox;
+// Current class header
+#include "constant.h"
 
 // StateS classes
-class LabelWithClickEvent;
+#include "statesexception.h"
 
 
-class CheckBoxHtml : public QWidget
+Constant::Constant(const QString& name) :
+    Signal(name)
 {
-    Q_OBJECT
 
-public:
-    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
+}
 
-    void setText(QString newText);
-    void setChecked(bool check);
-    bool isChecked();
+Constant::Constant(const QString& name, uint size) : // Throws StatesException
+    Signal(name, size) // Throws StatesException: propagated
+{
 
-signals:
-    void toggled(bool checked = false);
+}
 
-protected:
-    bool event(QEvent* e) override;
+void Constant::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
+{
+    Signal::setInitialValue(newInitialValue); // Throws StatesException: propagated
 
-private:
-    LabelWithClickEvent* label;
-    QCheckBox*           checkBox;
-};
+    Signal::setCurrentValue(newInitialValue);
+}
 
-#endif // CHECKBOXHTML_H
+void Constant::setCurrentValue(const LogicValue&) // Throws StatesException
+{
+    throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+}

@@ -635,7 +635,7 @@
     <name>ImageExportDialog</name>
     <message>
         <source>Choose image options:</source>
-        <translation>Sélectionnez les options de l&apos;image :</translation>
+        <translation type="vanished">Sélectionnez les options de l&apos;image :</translation>
     </message>
     <message>
         <source>Image format:</source>
@@ -668,6 +668,30 @@
     <message>
         <source>Export machine to Jpeg</source>
         <translation>Exporter la machine en Jpeg</translation>
+    </message>
+    <message>
+        <source>Customize image</source>
+        <translation>Personnaliser l&apos;image</translation>
+    </message>
+    <message>
+        <source>Include constants:</source>
+        <translation>include les constantes :</translation>
+    </message>
+    <message>
+        <source>Include variables:</source>
+        <translation>Inclure les variables :</translation>
+    </message>
+    <message>
+        <source>Place information to the right:</source>
+        <translation>Placer les informations à droite :</translation>
+    </message>
+    <message>
+        <source>Add border:</source>
+        <translation>Ajouter une bordure :</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>Prévisualisation</translation>
     </message>
 </context>
 <context>
@@ -888,6 +912,17 @@
     <message>
         <source>transition editing</source>
         <translation>l&apos;édition de la transition</translation>
+    </message>
+</context>
+<context>
+    <name>MachineImageExporter</name>
+    <message>
+        <source>Constants:</source>
+        <translation>Constantes :</translation>
+    </message>
+    <message>
+        <source>Variables:</source>
+        <translation>Variables :</translation>
     </message>
 </context>
 <context>
@@ -1280,6 +1315,14 @@
     <message>
         <source>use ctrl+S shortcut to avoid confirm dialog</source>
         <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+    </message>
+    <message>
+        <source>Load file</source>
+        <translation>Charger un fichier</translation>
+    </message>
+    <message>
+        <source>?</source>
+        <translation>?</translation>
     </message>
 </context>
 <context>

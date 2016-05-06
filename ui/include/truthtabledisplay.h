@@ -26,6 +26,7 @@
 #include <QTableWidget>
 
 // StateS classes
+#include "statesexception.h"
 class TruthTable;
 
 
@@ -34,7 +35,7 @@ class TruthTableDisplay : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit TruthTableDisplay(const TruthTable* truthTable, QWidget* parent = nullptr);
+    explicit TruthTableDisplay(const TruthTable* truthTable, QWidget* parent = nullptr); // Throws StatesException
 };
 
 #endif // TRUTHTABLEDISPLAY_H

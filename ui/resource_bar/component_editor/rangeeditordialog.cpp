@@ -54,7 +54,7 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<MachineActuatorComponent> actuat
     layout->addWidget(title);
 
     this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1, param1, param2));
-    this->equation->setOperand(0, signal);
+    this->equation->setOperand(0, signal); // Throws StatesException - Extract op aways has operand 0 - ignored
 
     GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true);
     layout->addWidget(graphicEquation);

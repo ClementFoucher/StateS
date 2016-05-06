@@ -28,6 +28,12 @@ Input::Input(const QString& name) :
 {
 }
 
+Input::Input(const QString& name, uint size) : // Throws StatesException
+    IO(name, size) // Throws StatesException: propagated
+{
+
+}
+
 IO::direction Input::getDirection() const
 {
     return IO::direction::input;

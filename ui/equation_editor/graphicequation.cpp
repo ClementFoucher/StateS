@@ -60,7 +60,8 @@ GraphicEquation::GraphicEquation(shared_ptr<Signal> equation, bool isTemplate, b
         // We are top level
         this->rootEquation = equation;
 
-    connect(equation.get(), &Signal::signalStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
+    if (equation != nullptr)
+        connect(equation.get(), &Signal::signalStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
 
     this->buildEquation();
 }
@@ -73,9 +74,7 @@ void GraphicEquation::buildEquation()
     QObjectList toDelete = this->children();
     qDeleteAll(toDelete);
 
-    shared_ptr<Signal> l_equation = this->equation.lock();
-
-    if (l_equation != nullptr)
+    if (!this->equation.expired())
     {
         if ( (this->isTemplate) && (! this->completeRendering) )
         {
@@ -201,7 +200,7 @@ void GraphicEquation::buildCompleteEquation()
         for (uint i = 0 ; i < equationAsEquation->getOperandCount() ; i++)
         {
             // Add operand
-            equationLayout->addWidget(new GraphicEquation(equationAsEquation->getOperand(i), false, this->lockSignal, this));
+            equationLayout->addWidget(new GraphicEquation(equationAsEquation->getOperand(i), false, this->lockSignal, this)); // Throws StatesException - Constrained by operand count - ignored
 
             // Add operator, except for last operand
             if (i < equationAsEquation->getOperandCount() - 1)
@@ -321,8 +320,8 @@ void GraphicEquation::buildSignalEquation()
         if ( (isTemplate) && (equationAsSignal->getSize() > 1) )
         {
             // Add a sub-widget to allow directly dragging sub-range from signal
-            shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
-            extractor->setOperand(0, equationAsSignal);
+            shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(Equation::nature::extractOp));
+            extractor->setOperand(0, equationAsSignal); // Throws StatesException - Extract op aways has operand 0 - ignored
 
             GraphicEquation* extractorWidget = new GraphicEquation(extractor, true);
             equationLayout->addWidget(extractorWidget);
@@ -424,7 +423,7 @@ void GraphicEquation::replaceEquation(shared_ptr<Signal> newEquation)
         this->equation = newEquation;
         this->rootEquation = newEquation;
 
-        buildEquation();
+        this->buildEquation();
     }
     else
     {
@@ -445,9 +444,9 @@ void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<S
     {
         for (uint i = 0 ; i < l_equation->getOperandCount() ; i++)
         {
-            if (l_equation->getOperand(i) == oldOperand)
+            if (l_equation->getOperand(i) == oldOperand) // Throws StatesException - Constrained by operand count - ignored
             {
-                l_equation->setOperand(i, newOperand);
+                l_equation->setOperand(i, newOperand); // Throws StatesException - Constrained by operand count - ignored
                 break;
             }
         }
@@ -824,7 +823,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
                 // Build tooltip
                 shared_ptr<Equation> newEquation = droppedComplexEquation->clone();
-                newEquation->setOperand(0, signalEquation);
+                newEquation->setOperand(0, signalEquation); // Throws StatesException - Extract op aways has operand 0 - ignored
 
                 a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
                 newEquation.reset();
@@ -875,7 +874,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
         complexEquation = dynamic_pointer_cast<Equation>(this->droppedEquation);
         newEquation = complexEquation->clone();
-        newEquation->setOperand(0, signalEquation);
+        newEquation->setOperand(0, signalEquation); // Throws StatesException - Extract op aways has operand 0 - ignored
 
         // Nothing should be done after that line because it
         // will cause parent to rebuild, deleting this
@@ -910,7 +909,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
         {
             complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
 
-            complexEquation->increaseOperandCount();
+            complexEquation->increaseOperandCount(); // Throws StatesException - The menu only provides this option when applicable - ignored
 
             this->buildEquation();
         }
@@ -925,7 +924,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
             valid = false;
 
             complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
-            shared_ptr<Signal> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1);
+            shared_ptr<Signal> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1); // Throws StatesException - Constrained by operand count - ignored
 
             if (signalEquation != nullptr)
             {
@@ -942,7 +941,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
             if (valid)
             {
-                complexEquation->decreaseOperandCount();
+                complexEquation->decreaseOperandCount(); // Throws StatesException - The menu only provides this option when applicable - ignored
 
                 this->buildEquation();
             }
@@ -1006,7 +1005,7 @@ void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
 
     if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::constant) )
     {
-        complexEquation->setCurrentValue(newValue);
+        complexEquation->setCurrentValue(newValue); // Throws StatesException - Equation is constant and thus can take a value - ignored
     }
 }
 

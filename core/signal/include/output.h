@@ -32,6 +32,7 @@ class Output : public IO
 
 public:
     explicit Output(const QString& name);
+    explicit Output(const QString& name, uint size); // Throws StatesException
 
     IO::direction getDirection() const override;
 

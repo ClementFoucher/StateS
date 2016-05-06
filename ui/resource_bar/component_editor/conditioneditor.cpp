@@ -27,6 +27,8 @@
 #include <QPushButton>
 #include <QGridLayout>
 
+#include <QDebug>
+
 // StateS classes
 #include "fsmtransition.h"
 #include "truthtabledisplay.h"
@@ -103,8 +105,24 @@ void ConditionEditor::expandTruthTable()
                 if (equation != nullptr)
                 {
                     this->truthTable = new TruthTable(equation);
-                    this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
-                    this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
+
+                    try
+                    {
+                        this->truthTableDisplay = new TruthTableDisplay(this->truthTable); // Throws StatesException
+                        this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
+                    }
+                    catch (const StatesException& e)
+                    {
+                        if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::signal_is_not_bool) )
+                        {
+                            delete this->truthTable;
+                            this->truthTable = nullptr;
+                            qDebug() << "(ConditionEditor:) Unable to display table: reference to expired signal";
+                        }
+                        else
+                            throw;
+                    }
+
                 }
                 else
                 {

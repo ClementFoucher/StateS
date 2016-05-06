@@ -29,10 +29,13 @@
 #include <QLabel>
 #include <QCheckBox>
 
+#include <QDebug>
+
 // StateS classes
 #include "truthtabledisplay.h"
 #include "fsm.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "truthtable.h"
 
 
 VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
@@ -178,24 +181,36 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
 
         TruthTable* currentTruthTable = issues[this->list->row(item)]->proof;
 
-        this->truthTable = new TruthTableDisplay(currentTruthTable);
-        this->layout()->addWidget(this->truthTable);
-
-        QList<int> highlights = issues[this->list->row(item)]->proofsHighlight;
-
-        foreach(int i, highlights)
+        try
         {
-            for (int j = 0 ; j < this->truthTable->columnCount() ; j++)
+            this->truthTable = new TruthTableDisplay(currentTruthTable); // Throws StatesException
+            this->layout()->addWidget(this->truthTable);
+
+            QList<int> highlights = issues[this->list->row(item)]->proofsHighlight;
+
+            foreach(int i, highlights)
             {
-                this->truthTable->item(i, j)->setTextColor(Qt::red);
+                for (int j = 0 ; j < this->truthTable->columnCount() ; j++)
+                {
+                    this->truthTable->item(i, j)->setTextColor(Qt::red);
+                }
             }
+
+            QLabel* hintText = new QLabel(tr("Lines shown in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated."));
+            hintText->setAlignment(Qt::AlignCenter);
+            hintText->setWordWrap(true);
+
+            this->hintBox->setContent(tr("Details on error"), hintText, true);
         }
-
-        QLabel* hintText = new QLabel(tr("Lines shown in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated."));
-        hintText->setAlignment(Qt::AlignCenter);
-        hintText->setWordWrap(true);
-
-        this->hintBox->setContent(tr("Details on error"), hintText, true);
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "TruthTable") && (e.getEnumValue() == TruthTable::TruthTableErrorEnum::reference_expired) )
+            {
+                qDebug() << "(VerifierTab:) Unable to display table: reference to expired signal";
+            }
+            else
+                throw;
+        }
     }
 }
 

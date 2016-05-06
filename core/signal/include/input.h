@@ -32,6 +32,7 @@ class Input : public IO
 
 public:
     explicit Input(const QString& name);
+    explicit Input(const QString& name, uint size); // Throws StatesException
 
     IO::direction getDirection() const override;
 };

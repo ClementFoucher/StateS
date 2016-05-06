@@ -57,6 +57,17 @@ using namespace std;
 class Equation : public Signal
 {
     Q_OBJECT
+
+public: // Static
+
+    enum EquationErrorEnum{
+        resized_requested       = 0,
+        out_of_range_access     = 1,
+        set_value_requested     = 2,
+        reduced_operand_while_0 = 3,
+        change_operand_illegal  = 4
+    };
+
 private:
     static bool signalHasSize(shared_ptr<Signal> sig);
 
@@ -89,48 +100,44 @@ public:
                                       };
 
 public:
-    explicit Equation(nature function, uint allowedOperandCount, int param1 = -1, int param2 = -1);
+    explicit Equation(nature function, int allowedOperandCount = -1, int param1 = -1, int param2 = -1);
     explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1 = -1, int param2 = -1);
 
     shared_ptr<Equation> clone() const;
 
     uint getSize() const override;
-    bool resize(uint) override;
+    void resize(uint) override; // Throws StatesException
 
     QString getText(bool activeColored = false) const override;
 
-    LogicValue getCurrentValue() const override;
-    bool setCurrentValue(const LogicValue& value) override;
+    void setCurrentValue(const LogicValue& value) override; // Throws StatesException
     computationFailureCause getComputationFailureCause() const;
 
     nature getFunction() const;
     void setFunction(const nature& newFunction, int param1 = -1, int param2 = -1);
-    void setParameters(int param1, int param2 = -1);
+    void setParameters(int param1, int param2 = -1); // TODO: throw exception when function is not extract? Or simply qDebug...
     bool isInverted() const;
-    int getParam1() const;
-    int getParam2() const;
+    int getParam1() const; // TODO: throw exception when function is not extract?
+    int getParam2() const; // TODO: throw exception when function is not extract?
 
-    shared_ptr<Signal> getOperand(uint i) const;
-    bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false);
-    void clearOperand(uint i, bool quiet = false);
+    shared_ptr<Signal> getOperand(uint i) const; // Throws StatesException
+    bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false); // Throws StatesException
+    void clearOperand(uint i, bool quiet = false); // Throws StatesException
 
     QVector<shared_ptr<Signal>> getOperands() const;
 
     uint getOperandCount() const;
-    bool increaseOperandCount();
-    bool decreaseOperandCount();
+    void increaseOperandCount(); // Throws StatesException
+    void decreaseOperandCount(); // Throws StatesException
 
 private slots:
     void computeCurrentValue();
 
 private:
     void increaseOperandCountInternal();
-    void decreaseOperandCountInternal();
+    void decreaseOperandCountInternal(); // Throws StatesException
 
 private:
-    // Current value is stored instead of dynamically computed
-    // to avoid emit change events if value acually didn't changed
-    LogicValue currentValue = LogicValue::getNullValue();
     computationFailureCause failureCause = computationFailureCause::uncomputed;
 
     nature function;
@@ -140,15 +147,12 @@ private:
 
     // This size hold the maximum operands count
     // It can be increased or decreased (min 2 operands)
-    // except for constant size operators (ident, not, eq, diff)
+    // except for constant size operators (ident, not, eq, diff, constant)
     uint allowedOperandCount = 0;
 
     // Parameters
-    int param1 = -1;
-    int param2 = -1;
-
-    //
-    bool notYetConstructed = true;
+    int param1;
+    int param2;
 };
 
 #endif // EQUATION_H

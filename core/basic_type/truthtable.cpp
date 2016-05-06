@@ -29,6 +29,8 @@
 #include "signal.h"
 #include "equation.h"
 #include "logicvalue.h"
+#include "constant.h"
+#include "statesexception.h"
 
 
 TruthTable::TruthTable(shared_ptr<Equation> equation)
@@ -49,7 +51,7 @@ TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
  * @return Obtain the list of signals representing the
  * inputs of the truth table.
  */
-QVector<shared_ptr<Signal> > TruthTable::getInputs() const
+QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesException
 {
     QVector<shared_ptr<Signal>> list;
 
@@ -57,6 +59,8 @@ QVector<shared_ptr<Signal> > TruthTable::getInputs() const
     {
         if (! sig.expired())
             list.append(sig.lock());
+        else
+            throw StatesException("TruthTable", reference_expired, "Reference to expired signal");
     }
 
     return list;
@@ -139,7 +143,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
         }
         else
         {
-            if (!sig->getIsConstant())
+            if (dynamic_pointer_cast<Constant>(sig) != nullptr)
                 list.append(sig);
         }
     }
@@ -196,7 +200,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         // Compute outputs for this row
         for (int i = 0 ; i < signalVector.count() ; i++)
         {
-            signalVector[i]->setCurrentValue(currentRow[i]);
+            signalVector[i]->setCurrentValue(currentRow[i]); // Throws StatesException - value is built for signal size - ignored
         }
 
         QVector<LogicValue> currentResultLine;

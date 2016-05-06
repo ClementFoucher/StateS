@@ -22,9 +22,14 @@
 // Current class header
 #include "machineactuatorcomponent.h"
 
+// Qt classes
+#include <QDebug>
+
 // StateS classes
 #include "signal.h"
 #include "machine.h"
+#include "statesexception.h"
+
 
 
 MachineActuatorComponent::MachineActuatorComponent(shared_ptr<Machine> owningMachine) :
@@ -38,86 +43,98 @@ void MachineActuatorComponent::signalResizedEventHandler(shared_ptr<Signal> emit
 {
     this->cleanActionList();
 
-    QString signame = emitter->getName();
-
-    if (emitter->getSize() == 1) // We used to be a vector signal (size changed and is now 1 => used to be > 1)
+    try
     {
-        // Remove parameters
-        actionParam1.remove(signame);
-        actionParam2.remove(signame);
+        QString signame = emitter->getName();
 
-        // Switch to implicit value whatever we were
-        actionValue.remove(signame);
-
-        if (actionType[signame] == action_types::assign) // Assign is illegal for single bit signals
-            actionType[signame] = action_types::set;
-    }
-    else // We are now a vector signal
-    {
-        if (!actionParam1.contains(signame)) // We used to be a single bit signal
+        if (emitter->getSize() == 1) // We used to be a vector signal (size changed and is now 1 => used to be > 1)
         {
-            // Switch to whole range extract
-            actionParam1[signame] = -1;
-            actionParam2[signame] = -1;
+            // Remove parameters
+            actionParam1.remove(signame);
+            actionParam2.remove(signame);
 
-            switch (actionType[signame])
-            {
-            case action_types::set:
-            case action_types::reset:
-                // Value remains implicit
-                break;
-            case action_types::activeOnState:
-            case action_types::assign:
-            case action_types::pulse:
-                // Switch to explicit value
-                actionValue[signame] = LogicValue::getValue1(emitter->getSize());
-                break;
-            }
+            // Switch to implicit value whatever we were
+            actionValue.remove(signame);
+
+            if (actionType[signame] == action_types::assign) // Assign is illegal for single bit signals
+                actionType[signame] = action_types::set;
         }
-        else // We were vector, we're still vector
+        else // We are now a vector signal
         {
-            // We have to check if parameters are still correct
-
-            int signalSize = emitter->getSize();
-
-            if ( (actionParam1[signame] == -1) && (actionParam2[signame] == -1) ) // Whole range extract
+            if (!actionParam1.contains(signame)) // We used to be a single bit signal
             {
-                // Just resize value if not impicit
-                if (actionValue.contains(signame))
-                    actionValue[signame].resize(signalSize);
-            }
-            else if ( (actionParam1[signame] != -1) && (actionParam2[signame] == -1) ) // Single bit extract
-            {
-                // We have to check if parameter is still in range
-                if (actionParam1[signame] >= signalSize)
-                    actionParam1[signame] = signalSize-1;
+                // Switch to whole range extract
+                actionParam1[signame] = -1;
+                actionParam2[signame] = -1;
 
-                // Nothing to do with value, always implicit
-            }
-            else // Range extract
-            {
-                // Check if parameters are still in range
-                if (actionParam1[signame] >= signalSize)
+                switch (actionType[signame])
                 {
-                    actionParam1[signame] = signalSize-1;
+                case action_types::set:
+                case action_types::reset:
+                    // Value remains implicit
+                    break;
+                case action_types::activeOnState:
+                case action_types::assign:
+                case action_types::pulse:
+                    // Switch to explicit value
+                    actionValue[signame] = LogicValue::getValue1(emitter->getSize());
+                    break;
+                }
+            }
+            else // We were vector, we're still vector
+            {
+                // We have to check if parameters are still correct
 
-                    if (actionParam2[signame] >= actionParam1[signame])
-                    {
-                        actionParam2[signame] = actionParam1[signame]-1;
-                    }
+                int signalSize = emitter->getSize();
 
+                if ( (actionParam1[signame] == -1) && (actionParam2[signame] == -1) ) // Whole range extract
+                {
+                    // Just resize value if not impicit
                     if (actionValue.contains(signame))
+                        actionValue[signame].resize(signalSize); // Throws StatesException
+                }
+                else if ( (actionParam1[signame] != -1) && (actionParam2[signame] == -1) ) // Single bit extract
+                {
+                    // We have to check if parameter is still in range
+                    if (actionParam1[signame] >= signalSize)
+                        actionParam1[signame] = signalSize-1;
+
+                    // Nothing to do with value, always implicit
+                }
+                else // Range extract
+                {
+                    // Check if parameters are still in range
+                    if (actionParam1[signame] >= signalSize)
                     {
-                        // Resize action value
-                        signalSize = actionParam1[signame] - actionParam2[signame] + 1;
-                        actionValue[signame].resize(signalSize);
+                        actionParam1[signame] = signalSize-1;
+
+                        if (actionParam2[signame] >= actionParam1[signame])
+                        {
+                            actionParam2[signame] = actionParam1[signame]-1;
+                        }
+
+                        if (actionValue.contains(signame))
+                        {
+                            // Resize action value
+                            signalSize = actionParam1[signame] - actionParam2[signame] + 1;
+                            actionValue[signame].resize(signalSize); // Throws StatesException
+                        }
                     }
                 }
             }
         }
-    }
 
-    emit actionListChangedEvent();
+        emit actionListChangedEvent();
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+        {
+            qDebug() << "(MachineActuatorComponent:) Warning: Error trying to resize action values. Action is probably broken now.";
+        }
+        else
+            throw;
+    }
 }
 
 void MachineActuatorComponent::cleanActionList()
@@ -326,7 +343,7 @@ void MachineActuatorComponent::activateActions()
                 break;
             }
 
-            sig->setCurrentValue(value);
+            sig->setCurrentValue(value); // Throws StatesException - current value is obtained from signal itself: size does match - ignored
         }
         else if ( (actionParam1[signame] == -1)  && (actionParam2[signame] == -1) ) // Whole vector affect
         {
@@ -341,7 +358,19 @@ void MachineActuatorComponent::activateActions()
             case action_types::pulse:
             case action_types::activeOnState:
             case action_types::assign:
-                sig->setCurrentValue(actionValue[signame]);
+                try
+                {
+                    sig->setCurrentValue(actionValue[signame]); // Throws StatesException
+                }
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::size_mismatch) )
+                    {
+                        qDebug() << "(MachineActuatorComponent:) Error! Unable to set value of signal " << signame << ". Size does not match.";
+                    }
+                    else
+                        throw;
+                }
                 break;
             }
         }
@@ -375,7 +404,7 @@ void MachineActuatorComponent::activateActions()
                 break;
             }
 
-            sig->setCurrentValue(value);
+            sig->setCurrentValue(value); // Throws StatesException - current value is obtained from signal itself: size does match - ignore
         }
     }
 }
@@ -422,7 +451,7 @@ void MachineActuatorComponent::deactivateActions()
                 break;
             }
 
-            sig->setCurrentValue(value);
+            sig->setCurrentValue(value); // Throws StatesException - current value is obtained from signal itself: size does match - ignore
         }
         else if ( (actionParam1[signame] == -1)  && (actionParam2[signame] == -1) ) // Whole vector affect
         {
@@ -462,7 +491,7 @@ void MachineActuatorComponent::deactivateActions()
                 break;
             }
 
-            sig->setCurrentValue(value);
+            sig->setCurrentValue(value); // Throws StatesException - current value is obtained from signal itself: size does match - ignore
         }
     }
 }
@@ -548,7 +577,19 @@ bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicVa
 
             if ((int)value.getSize() < (param1-param2+1))
             {
-                correctedValue.resize(param1-param2+1);
+                try
+                {
+                    correctedValue.resize(param1-param2+1); // Throws StatesException
+                }
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
+                    {
+                        return false;
+                    }
+                    else
+                        throw;
+                }
             }
 
             if ( (int)correctedValue.getSize() == (param1-param2+1) )
@@ -565,7 +606,19 @@ bool MachineActuatorComponent::setActionValue(shared_ptr<Signal> signal, LogicVa
 
             if (value.getSize() < signal->getSize())  // Allow for shorter values (fill left with zeros)
             {
-                correctedValue.resize(signal->getSize());
+                try
+                {
+                    correctedValue.resize(signal->getSize()); // Throws StatesException
+                }
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
+                    {
+                        return false;
+                    }
+                    else
+                        throw;
+                }
             }
 
             if (signal->getSize() == correctedValue.getSize())

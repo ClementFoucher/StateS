@@ -31,144 +31,410 @@ using namespace std;
 #include <QPrinter>
 #include <QSvgGenerator>
 #include <QGraphicsScene>
+#include <QGraphicsTextItem>
 
 // StateS classes
 #include "genericscene.h"
+#include "machine.h"
+#include "constant.h"
 
 
-void MachineImageExporter::exportMachineAsImage(const QString& path, const QString& title, const QString& creator, MachineImageExporter::imageFormat format, GenericScene* scene, QGraphicsScene* component)
+MachineImageExporter::MachineImageExporter(shared_ptr<Machine> machine, GenericScene* scene, shared_ptr<QGraphicsScene> component)
 {
-    // There objects handle rendenring on file
-    unique_ptr<QPrinter>      printer   = nullptr;
-    unique_ptr<QSvgGenerator> generator = nullptr;
-    unique_ptr<QPixmap>       pixmap    = nullptr;
+    this->machine = machine;
+    this->scene = scene;
+    this->component = component;
 
-    // Object we paint on
-    unique_ptr<QPainter> painter = nullptr;
+    this->includeComponent = false;
+    this->includeConstant = false;
+    this->includeVariables = false;
+    this->addBorder = false;
+    this->mainSceneRatio = 3;
+}
 
-    // Printing areas
-    QRectF componentPrintingRect;
-    QRectF scenePrintingRect;
+void MachineImageExporter::setDisplayComponent(bool doDisplay)
+{
+    this->includeComponent = doDisplay;
+}
 
-    QRectF sceneRect = scene->sceneRect();
-    int splitter = 50;
+void MachineImageExporter::setDisplayConstants(bool doDisplay)
+{
+    this->includeConstant = doDisplay;
+}
 
-    int n = 3; // This factor indicates scene's width will be n times component's width.
+void MachineImageExporter::setDisplayVariables(bool doDisplay)
+{
+    this->includeVariables = doDisplay;
+}
 
-    if (format == imageFormat::pdf)
+void MachineImageExporter::setDisplayBorder(bool doDisplay)
+{
+    this->addBorder = doDisplay;
+}
+
+void MachineImageExporter::setMainSceneRatio(uint sceneRatio)
+{
+    this->mainSceneRatio = sceneRatio;
+}
+
+void MachineImageExporter::setInfoPos(MachineImageExporter::infoPos pos)
+{
+    this->infoPosition = pos;
+}
+
+shared_ptr<QPixmap> MachineImageExporter::renderPreview(const QSizeF& previewSize)
+{
+    shared_ptr<QPixmap> generatedPixmap;
+
+    this->totalPrintedRect = QRectF(QPointF(0,0), previewSize);
+
+    this->generatePrintingRects();
+
+    // Set margins
+    this->scenePrintingRect.translate(0, this->spacer);
+    this->componentPrintingRect.translate(0, this->spacer);
+    this->constantsPrintingRect.translate(0, this->spacer);
+    this->variablesPrintingRect.translate(0, this->spacer);
+
+    this->renderBitmap();
+
+    generatedPixmap = this->pixmap;
+    this->freeRenderingResources();
+
+    return generatedPixmap;
+}
+
+void MachineImageExporter::doExport(const QString& path, MachineImageExporter::imageFormat format, const QString& creator)
+{
+    shared_ptr<Machine> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
     {
-        // The n factor gives an area occupation of (1/(n+1)) for component and (n/(n+1)) for scene.
-        int N = n + 1; // This is the total number of areas in page
-
-        printer = unique_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
-        printer->setOutputFileName(path);
-
-        printer->setOutputFormat(QPrinter::PdfFormat);
-        printer->setPageSize(QPrinter::A4);
-        printer->setPageOrientation(QPageLayout::Landscape);
-
-        printer->setDocName(title);
-        printer->setCreator(creator);
-
-        painter = unique_ptr<QPainter>(new QPainter());
-        painter->begin(printer.get());
-
-        if (component != nullptr)
+        if (format == imageFormat::pdf)
         {
-            int allowedPageHeight = printer->pageRect().height();
-            int allowedPageWidth  = printer->pageRect().width() - splitter;
-
-            componentPrintingRect.setWidth(allowedPageWidth / N);
-            componentPrintingRect.setHeight(allowedPageHeight);
-
-            scenePrintingRect.setWidth( (n*allowedPageWidth) / N );
-            scenePrintingRect.setHeight(allowedPageHeight);
-
-            scenePrintingRect.moveTopLeft(QPointF(componentPrintingRect.width() + splitter, 0));
+            this->preparePdfPrinter(path, l_machine->getName(), creator);
+            this->totalPrintedRect = this->printer->pageRect(QPrinter::DevicePixel);
         }
         else
         {
-            // TODO: center on page
-            scenePrintingRect.setSize(printer->pageRect().size());
+            this->totalPrintedRect = this->scene->sceneRect(); // Use scene as the base size and ratio
+            this->totalPrintedRect.setTopLeft(QPointF(0,0));
         }
+
+        this->generatePrintingRects();
+
+        if (format == imageFormat::pdf)
+        {
+            this->renderPdf();
+        }
+        else
+        {
+            // Set margins
+          //  this->totalPrintedRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
+/*            this->totalPrintedRect.setTopLeft(QPointF(0,0));
+            this->scenePrintingRect.translate(this->spacer, this->spacer);
+            this->componentPrintingRect.translate(this->spacer, this->spacer);
+            this->constantsPrintingRect.translate(this->spacer, this->spacer);
+            this->variablesPrintingRect.translate(this->spacer, this->spacer);*/
+
+            if (format == imageFormat::svg)
+            {
+                this->renderSvg(path, l_machine->getName(), creator);
+            }
+            else
+            {
+                this->renderBitmap();
+                this->pixmap->save(path);
+            }
+        }
+
+        // Done, clear rendering ressources
+        this->freeRenderingResources();
+    }
+}
+
+
+void MachineImageExporter::generatePrintingRects()
+{
+    this->scenePrintingRect = this->totalPrintedRect;
+
+    if ( (this->includeComponent == true) || (this->includeConstant == true) || (this->includeVariables == true) )
+    {
+        const qreal totalHeight = this->totalPrintedRect.height();
+        const qreal totalWidth  = this->totalPrintedRect.width();
+        const qreal infoWidth   = this->totalPrintedRect.width() / this->mainSceneRatio - this->spacer/2;
+        const qreal sceneWidth  = (totalWidth*this->mainSceneRatio)/(this->mainSceneRatio+1) - this->spacer/2;
+
+        this->scenePrintingRect.setWidth(sceneWidth);
+
+        // Temporary size
+        this->componentPrintingRect = QRectF(0, 0, infoWidth, totalHeight);
+        this->constantsPrintingRect = QRectF(0, 0, infoWidth, totalHeight);
+        this->variablesPrintingRect = QRectF(0, 0, infoWidth, totalHeight);
+
+        // Horizontal alignment
+        if (this->infoPosition == infoPos::left)
+        {
+            this->scenePrintingRect.translate(infoWidth + this->spacer, 0);
+        }
+        else
+        {
+            this->componentPrintingRect.translate(sceneWidth + this->spacer, 0);
+            this->constantsPrintingRect.translate(sceneWidth + this->spacer, 0);
+            this->variablesPrintingRect.translate(sceneWidth + this->spacer, 0);
+        }
+
+        // Vertical alignment
+        if (this->includeComponent == true)
+        {
+            this->constantsPrintingRect.translate(0, totalHeight/2 + this->spacer);
+            this->variablesPrintingRect.translate(0, totalHeight/2 + this->spacer);
+
+            if (this->includeConstant == true)
+                this->variablesPrintingRect.translate(0, totalHeight/4);
+        }
+        else
+        {
+            if (this->includeConstant == true)
+                this->variablesPrintingRect.translate(0, totalHeight/2 + this->spacer);
+        }
+
+        // Size
+        if ( (this->includeComponent == true) && ( (this->includeConstant == true) || (this->includeVariables == true) ) ) // Component and at least a signal display
+        {
+            this->componentPrintingRect.setHeight(totalHeight / 2);
+
+            if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both signal displays
+            {
+                this->constantsPrintingRect.setHeight(totalHeight / 4 - this->spacer);
+                this->variablesPrintingRect.setHeight(totalHeight / 4 - this->spacer);
+            }
+            else // Only one signal display
+            {
+                this->constantsPrintingRect.setHeight(totalHeight / 2 - this->spacer);
+                this->variablesPrintingRect.setHeight(totalHeight / 2 - this->spacer);
+            }
+        }
+        else if (this->includeComponent == true) // Only signal displays
+        {
+            if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both signal displays
+            {
+                this->constantsPrintingRect.setHeight(totalHeight / 2);
+                this->variablesPrintingRect.setHeight(totalHeight / 2 - this->spacer);
+            }
+        }
+    }
+
+    this->painter = shared_ptr<QPainter>(new QPainter());
+}
+
+
+void MachineImageExporter::preparePdfPrinter(const QString& path, const QString& title, const QString& creator)
+{
+    this->printer = shared_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
+
+    this->printer->setOutputFormat(QPrinter::PdfFormat);
+    this->printer->setPageSize(QPrinter::A4);
+    this->printer->setPageOrientation(QPageLayout::Landscape);
+
+    this->printer->setOutputFileName(path);
+    this->printer->setCreator(creator);
+    this->printer->setDocName(title);
+}
+
+void MachineImageExporter::renderPdf()
+{
+    this->painter->begin(this->printer.get());
+    this->renderOnPainter();
+    this->painter->end();
+}
+
+void MachineImageExporter::renderSvg(const QString& path, const QString& title, const QString& creator)
+{
+    this->generator = shared_ptr<QSvgGenerator>(new QSvgGenerator());
+
+    QRectF genRect = this->totalPrintedRect;
+    genRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
+    this->generator->setSize(genRect.size().toSize());
+
+    this->generator->setFileName(path);
+    this->generator->setDescription(creator);
+    this->generator->setTitle(title);
+
+    this->painter->begin(this->generator.get());
+    this->renderOnPainter();
+    this->painter->end();
+}
+
+void MachineImageExporter::renderBitmap()
+{
+    QRectF genRect = this->totalPrintedRect;
+    genRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
+    this->pixmap = shared_ptr<QPixmap>(new QPixmap(genRect.size().toSize()));
+
+    this->pixmap->fill();
+
+    this->painter->begin(this->pixmap.get());
+    this->painter->setRenderHint(QPainter::Antialiasing);
+    this->renderOnPainter();
+    this->painter->end();
+}
+
+void MachineImageExporter::renderOnPainter()
+{
+    if (this->painter != nullptr)
+    {
+        if (this->addBorder == true)
+            this->border = shared_ptr<QGraphicsScene>(new QGraphicsScene(this->totalPrintedRect));
+
+        this->renderScene();
+        this->renderComponent();
+        this->renderConstants();
+        this->renderVariables();
+
+        this->renderBorder();
+    }
+}
+
+void MachineImageExporter::renderScene()
+{
+    if (this->addBorder == true)
+        this->prepareBorder(this->scenePrintingRect);
+
+    QRectF actualPrintingRect = this->getActualPrintedRect(this->scene->sceneRect(), this->scenePrintingRect);
+    this->scene->render(this->painter.get(), actualPrintingRect);
+}
+
+void MachineImageExporter::renderComponent()
+{
+    if (this->includeComponent == true)
+    {
+        if (this->addBorder == true)
+            this->prepareBorder(this->componentPrintingRect);
+
+        shared_ptr<QGraphicsScene> l_component = this->component.lock();
+        if (l_component != nullptr)
+        {
+            QRectF actualPrintingRect = this->getActualPrintedRect(l_component->sceneRect(), this->componentPrintingRect);
+            l_component->render(this->painter.get(), actualPrintingRect);
+        }
+    }
+}
+
+void MachineImageExporter::renderConstants()
+{
+    if (this->includeConstant == true)
+    {
+        if (this->addBorder == true)
+            this->prepareBorder(this->constantsPrintingRect);
+
+        shared_ptr<Machine> l_machine = this->machine.lock();
+        if (l_machine != nullptr)
+        {
+            shared_ptr<QGraphicsScene> constantScene(new QGraphicsScene());
+            QGraphicsTextItem* constantsTitle = new QGraphicsTextItem(tr("Constants:"));
+            constantScene->addItem(constantsTitle);
+
+            int pos = 0;
+            for(shared_ptr<Signal> constant : l_machine->getConstants())
+            {
+                QString constText = constant->getName();
+                if (constant->getSize() > 1)
+                    constText += "[" + QString::number(constant->getSize()-1) + "..0]";
+                constText += " = \"" + constant->getInitialValue().toString() + "\"";
+
+                QGraphicsTextItem* constantItem = new QGraphicsTextItem(constText);
+                constantItem->setPos(0, 60 + pos*20);
+                constantScene->addItem(constantItem);
+                pos++;
+            }
+
+            QRectF actualPrintingRect = this->getActualPrintedRect(constantScene->sceneRect(), this->constantsPrintingRect);
+            constantScene->render(this->painter.get(), actualPrintingRect);
+        }
+    }
+}
+
+void MachineImageExporter::renderVariables()
+{
+    if (this->includeVariables == true)
+    {
+        if (this->addBorder == true)
+            this->prepareBorder(this->variablesPrintingRect);
+
+        shared_ptr<Machine> l_machine = this->machine.lock();
+        if (l_machine != nullptr)
+        {
+            shared_ptr<QGraphicsScene> variableScene(new QGraphicsScene());
+            QGraphicsTextItem* text = new QGraphicsTextItem(tr("Variables:"));
+            variableScene->addItem(text);
+
+            int pos = 0;
+            for(shared_ptr<Signal> variable : l_machine->getLocalVariables())
+            {
+                QString varText = variable->getName();
+                if (variable->getSize() > 1)
+                    varText += "[" + QString::number(variable->getSize()-1) + "..0]";
+                varText += " ( = \"" + variable->getInitialValue().toString() + "\" @ t=0 )";
+
+                QGraphicsTextItem* variableItem = new QGraphicsTextItem(varText);
+                variableItem->setPos(0, 40 + pos*20);
+                variableScene->addItem(variableItem);
+
+                pos++;
+            }
+
+            QRectF actualPrintingRect = this->getActualPrintedRect(variableScene->sceneRect(), this->variablesPrintingRect);
+            variableScene->render(this->painter.get(), actualPrintingRect);
+        }
+    }
+}
+
+void MachineImageExporter::prepareBorder(const QRectF& availablePrintingRect)
+{
+    QRectF borderRect = availablePrintingRect;
+    borderRect.adjust(-this->spacer/2, -this->spacer/2, this->spacer/2, this->spacer/2);
+    this->border->addRect(borderRect);
+}
+
+void MachineImageExporter::renderBorder()
+{
+    if (this->addBorder == true)
+    {
+        QRectF globalRect = QRectF(0, 0, this->totalPrintedRect.width(), this->totalPrintedRect.height() );
+        this->border->render(this->painter.get(), globalRect);
+    }
+    this->border.reset();
+}
+
+QRectF MachineImageExporter::getActualPrintedRect(const QRectF& elementPrintingRect, const QRectF& availablePrintingRect)
+{
+    QSizeF actualPrintingSize = elementPrintingRect.size();
+    actualPrintingSize.scale(availablePrintingRect.size(), Qt::KeepAspectRatio);
+
+    QRectF actualPrintingRect(QPointF(0,0), actualPrintingSize);
+    actualPrintingRect.translate(availablePrintingRect.topLeft());
+
+    if (actualPrintingSize.height() < availablePrintingRect.height())
+    {
+        // Center vertically
+        qreal deltay = (availablePrintingRect.height() - actualPrintingSize.height()) / 2;
+        actualPrintingRect.translate(0, deltay);
     }
     else
     {
-        QSize totalPrintedSize;
-
-        if (component != nullptr)
-        {
-            // Make component a size of 1/nth the machine
-            componentPrintingRect.setWidth(sceneRect.width() / n);
-            componentPrintingRect.setHeight(sceneRect.height());
-            componentPrintingRect.moveTopLeft(QPointF(splitter, splitter));
-
-            scenePrintingRect = sceneRect;
-            scenePrintingRect.moveTopLeft(QPointF(componentPrintingRect.width() + splitter, splitter));
-
-            totalPrintedSize = QSize(componentPrintingRect.width() + 3 * splitter + scenePrintingRect.width(), scenePrintingRect.size().height() + 2 * splitter);
-        }
-        else
-        {
-            scenePrintingRect = sceneRect;
-            scenePrintingRect.moveTopLeft(QPointF(splitter, splitter));
-            totalPrintedSize = QSize(scenePrintingRect.width() + 3 * splitter, scenePrintingRect.height() + 2 * splitter);
-        }
-
-        if (format == imageFormat::svg)
-        {
-            generator = unique_ptr<QSvgGenerator>(new QSvgGenerator());
-            generator->setFileName(path);
-
-            generator->setSize(totalPrintedSize);
-
-            generator->setTitle(title);
-            generator->setDescription(creator);
-
-            painter = unique_ptr<QPainter>(new QPainter());
-            painter->begin(generator.get());
-
-        }
-        else if (format == imageFormat::png)
-        {
-            pixmap = unique_ptr<QPixmap>(new QPixmap(totalPrintedSize));
-
-            pixmap->fill();
-
-            painter = unique_ptr<QPainter>(new QPainter());
-            painter->begin(pixmap.get());
-            painter->setRenderHint(QPainter::Antialiasing);
-        }
-        else if (format == imageFormat::jpg)
-        {
-            pixmap = unique_ptr<QPixmap>(new QPixmap(totalPrintedSize));
-
-            pixmap->fill();
-
-            painter = unique_ptr<QPainter>(new QPainter());
-            painter->begin(pixmap.get());
-            painter->setRenderHint(QPainter::Antialiasing);
-        }
+        // Center horizontally
+        qreal deltax = (availablePrintingRect.width() - actualPrintingRect.width()) / 2;
+        actualPrintingRect.translate(deltax, 0);
     }
 
-    if (painter != nullptr)
-    {
-        // Paint scene
-        scene->render(painter.get(), scenePrintingRect);
+    return actualPrintingRect;
+}
 
-        if (component != nullptr)
-        {
-            // Paint component
-            component->render(painter.get(), componentPrintingRect);
-        }
-
-        // Done
-        painter->end();
-    }
-
-    // For pixmap exporters, need to save.
-    if (pixmap != nullptr)
-    {
-        pixmap->save(path);
-    }
+void MachineImageExporter::freeRenderingResources()
+{
+    this->painter.reset();
+    this->pixmap.reset();
+    this->generator.reset();
+    this->printer.reset();
 }

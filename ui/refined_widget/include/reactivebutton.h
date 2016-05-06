@@ -37,10 +37,14 @@ public:
 signals:
     void mouseEnterEvent();
     void mouseLeaveEvent();
+    void keyboardFocusInEvent();
+    void keyboardFocusOutEvent();
 
 protected:
     void enterEvent(QEvent*) override;
     void leaveEvent(QEvent*) override;
+    void focusInEvent (QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
 
 };
 
