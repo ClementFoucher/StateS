@@ -25,15 +25,15 @@ Qt is required to use this application.
 ** Windows **
 
 Get latest version of Qt from http://www.qt.io/download-open-source/
-At least Qt 5.4 is required, so if you have a previous version you need to download a more recent one.
+At least Qt 5.6 is required, so if you have a previous version you need to download a more recent one.
 
-Run Qt installer, and make sure to check the "msvc2013 64-bit" component under the "Qt 5.5" item.
-If you're running a 32 bits version of Windows, check "msvc2013 32-bit" instead.
+Run Qt installer, and make sure to check the "msvc2015 64-bit" component under the "Qt 5.6" item.
+If you're running a 32 bits version of Windows, check "msvc2015 32-bit" instead.
 
 Hit the keyboard keys "Windows" and "Pause" simulatenously, and go to "advanced system parameters" in the left column.
 Hit the "Environment variables..." button and edit the "Path" variable.
 If this variable does not contain any path containing "Qt", you must add Qt libraries path.
-It should be something like <Qt install dir>/5.5/msvc2013_64/bin. This path can vary depending on the installed Qt version, check the exact path before.
+It should be something like <Qt install dir>/5.6/msvc2015_64/bin. This path can vary depending on the installed Qt version, check the exact path before.
 If the variable editor looks like a long, semi-colon separated line, add a semi-colon followed by the path at the end of the line.
 If the editor looks like a list, just add a new value to that list.
 
