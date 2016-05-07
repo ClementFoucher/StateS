@@ -22,21 +22,16 @@
 // Current class header
 #include "machineimageexporter.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QPainter>
 #include <QPrinter>
 #include <QSvgGenerator>
-#include <QGraphicsScene>
 #include <QGraphicsTextItem>
 
 // StateS classes
 #include "genericscene.h"
 #include "machine.h"
-#include "constant.h"
+#include "signal.h"
 
 
 MachineImageExporter::MachineImageExporter(shared_ptr<Machine> machine, GenericScene* scene, shared_ptr<QGraphicsScene> component)
@@ -86,15 +81,18 @@ shared_ptr<QPixmap> MachineImageExporter::renderPreview(const QSizeF& previewSiz
 {
     shared_ptr<QPixmap> generatedPixmap;
 
-    this->totalPrintedRect = QRectF(QPointF(0,0), previewSize);
+    this->pageRect = QRectF(QPointF(0,0), previewSize);
+    this->renderAreaWithoutBordersRect = this->pageRect;
+    this->renderAreaWithoutBordersRect.adjust(0, 0, -2*this->spacer, -2* this->spacer);
 
     this->generatePrintingRects();
 
-    // Set margins
-    this->scenePrintingRect.translate(0, this->spacer);
-    this->componentPrintingRect.translate(0, this->spacer);
-    this->constantsPrintingRect.translate(0, this->spacer);
-    this->variablesPrintingRect.translate(0, this->spacer);
+    // Add margins
+    this->renderAreaWithoutBordersRect.translate(this->spacer, this->spacer);
+    this->scenePrintingRect    .translate(this->spacer, this->spacer);
+    this->componentPrintingRect.translate(this->spacer, this->spacer);
+    this->constantsPrintingRect.translate(this->spacer, this->spacer);
+    this->variablesPrintingRect.translate(this->spacer, this->spacer);
 
     this->renderBitmap();
 
@@ -113,12 +111,17 @@ void MachineImageExporter::doExport(const QString& path, MachineImageExporter::i
         if (format == imageFormat::pdf)
         {
             this->preparePdfPrinter(path, l_machine->getName(), creator);
-            this->totalPrintedRect = this->printer->pageRect(QPrinter::DevicePixel);
+            this->renderAreaWithoutBordersRect = this->printer->pageRect(QPrinter::DevicePixel);
+
+            this->pageRect = this->renderAreaWithoutBordersRect; // No adjust (margins already added by printer)
         }
         else
         {
-            this->totalPrintedRect = this->scene->sceneRect(); // Use scene as the base size and ratio
-            this->totalPrintedRect.setTopLeft(QPointF(0,0));
+            this->renderAreaWithoutBordersRect = this->scene->sceneRect(); // Use scene as the base size and ratio
+            this->renderAreaWithoutBordersRect.setTopLeft(QPointF(0,0));
+
+            this->pageRect = this->renderAreaWithoutBordersRect;
+            this->pageRect.adjust(0, 0, 2*this->spacer, 2*this->spacer);
         }
 
         this->generatePrintingRects();
@@ -129,13 +132,12 @@ void MachineImageExporter::doExport(const QString& path, MachineImageExporter::i
         }
         else
         {
-            // Set margins
-          //  this->totalPrintedRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
-/*            this->totalPrintedRect.setTopLeft(QPointF(0,0));
-            this->scenePrintingRect.translate(this->spacer, this->spacer);
+            // Add margins
+            this->renderAreaWithoutBordersRect.translate(this->spacer, this->spacer);
+            this->scenePrintingRect    .translate(this->spacer, this->spacer);
             this->componentPrintingRect.translate(this->spacer, this->spacer);
             this->constantsPrintingRect.translate(this->spacer, this->spacer);
-            this->variablesPrintingRect.translate(this->spacer, this->spacer);*/
+            this->variablesPrintingRect.translate(this->spacer, this->spacer);
 
             if (format == imageFormat::svg)
             {
@@ -153,17 +155,21 @@ void MachineImageExporter::doExport(const QString& path, MachineImageExporter::i
     }
 }
 
-
+/**
+ * @brief MachineImageExporter::generatePrintingRects Generates the position
+ * or each part to print depending on the "totalPrintedRect", which is the
+ * available drawing area (without borders)
+ */
 void MachineImageExporter::generatePrintingRects()
 {
-    this->scenePrintingRect = this->totalPrintedRect;
+    this->scenePrintingRect = this->renderAreaWithoutBordersRect;
 
     if ( (this->includeComponent == true) || (this->includeConstant == true) || (this->includeVariables == true) )
     {
-        const qreal totalHeight = this->totalPrintedRect.height();
-        const qreal totalWidth  = this->totalPrintedRect.width();
-        const qreal infoWidth   = this->totalPrintedRect.width() / this->mainSceneRatio - this->spacer/2;
-        const qreal sceneWidth  = (totalWidth*this->mainSceneRatio)/(this->mainSceneRatio+1) - this->spacer/2;
+        const qreal totalHeight = this->renderAreaWithoutBordersRect.height();
+        const qreal totalWidth  = this->renderAreaWithoutBordersRect.width();
+        const qreal infoWidth   = (  totalWidth                       / (this->mainSceneRatio+1) ) - this->spacer/2;
+        const qreal sceneWidth  = ( (totalWidth*this->mainSceneRatio) / (this->mainSceneRatio+1) ) - this->spacer/2;
 
         this->scenePrintingRect.setWidth(sceneWidth);
 
@@ -244,6 +250,8 @@ void MachineImageExporter::preparePdfPrinter(const QString& path, const QString&
 
 void MachineImageExporter::renderPdf()
 {
+    this->strictBorders = true;
+
     this->painter->begin(this->printer.get());
     this->renderOnPainter();
     this->painter->end();
@@ -253,13 +261,13 @@ void MachineImageExporter::renderSvg(const QString& path, const QString& title, 
 {
     this->generator = shared_ptr<QSvgGenerator>(new QSvgGenerator());
 
-    QRectF genRect = this->totalPrintedRect;
-    genRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
-    this->generator->setSize(genRect.size().toSize());
+    this->generator->setSize(this->pageRect.size().toSize());
 
     this->generator->setFileName(path);
     this->generator->setDescription(creator);
     this->generator->setTitle(title);
+
+    this->strictBorders = false;
 
     this->painter->begin(this->generator.get());
     this->renderOnPainter();
@@ -268,11 +276,11 @@ void MachineImageExporter::renderSvg(const QString& path, const QString& title, 
 
 void MachineImageExporter::renderBitmap()
 {
-    QRectF genRect = this->totalPrintedRect;
-    genRect.adjust(-this->spacer, -this->spacer, this->spacer, this->spacer);
-    this->pixmap = shared_ptr<QPixmap>(new QPixmap(genRect.size().toSize()));
+    this->pixmap = shared_ptr<QPixmap>(new QPixmap(this->pageRect.size().toSize()));
 
     this->pixmap->fill();
+
+    this->strictBorders = false;
 
     this->painter->begin(this->pixmap.get());
     this->painter->setRenderHint(QPainter::Antialiasing);
@@ -285,7 +293,7 @@ void MachineImageExporter::renderOnPainter()
     if (this->painter != nullptr)
     {
         if (this->addBorder == true)
-            this->border = shared_ptr<QGraphicsScene>(new QGraphicsScene(this->totalPrintedRect));
+            this->border = shared_ptr<QGraphicsScene>(new QGraphicsScene(this->pageRect));
 
         this->renderScene();
         this->renderComponent();
@@ -394,6 +402,21 @@ void MachineImageExporter::prepareBorder(const QRectF& availablePrintingRect)
 {
     QRectF borderRect = availablePrintingRect;
     borderRect.adjust(-this->spacer/2, -this->spacer/2, this->spacer/2, this->spacer/2);
+
+    if (this->strictBorders == true)
+    {
+        if (borderRect.left() < this->renderAreaWithoutBordersRect.left())
+            borderRect.setLeft(this->renderAreaWithoutBordersRect.left());
+
+        if (borderRect.top() < this->renderAreaWithoutBordersRect.top())
+            borderRect.setTop(this->renderAreaWithoutBordersRect.top());
+
+        if (borderRect.right() < this->renderAreaWithoutBordersRect.right())
+            borderRect.setRight(this->renderAreaWithoutBordersRect.right());
+
+        if (borderRect.bottom() < this->renderAreaWithoutBordersRect.bottom())
+            borderRect.setBottom(this->renderAreaWithoutBordersRect.bottom());
+    }
     this->border->addRect(borderRect);
 }
 
@@ -401,8 +424,7 @@ void MachineImageExporter::renderBorder()
 {
     if (this->addBorder == true)
     {
-        QRectF globalRect = QRectF(0, 0, this->totalPrintedRect.width(), this->totalPrintedRect.height() );
-        this->border->render(this->painter.get(), globalRect);
+        this->border->render(this->painter.get(), pageRect);
     }
     this->border.reset();
 }

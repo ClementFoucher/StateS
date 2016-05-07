@@ -1,6 +1,6 @@
 
 ******************************
-* StateS v. 0.3.B Known Bugs *
+* StateS v. 0.3.D Known Bugs *
 ******************************
 
 
@@ -14,7 +14,7 @@
 - Ctrl+s shortcurt may not be handled when focus is on a list,
 - A signal can only be added once in an action list => unable to assign multiple ranges simultaneously,
 - Active on state signals on initial state: timeline do not show this action if we change state at first clock cycle.
-- Export to PDF can be partially corrupted with borders enabled. Prefer SVG or disable borders for now.
+- Export to PDF has incorrect margins.
 
 // VHDL export issues:
 

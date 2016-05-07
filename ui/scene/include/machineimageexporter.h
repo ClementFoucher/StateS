@@ -30,16 +30,14 @@ using namespace std;
 #include <memory>
 
 // Qt classes
-#include <QString>
 #include <QRectF>
 class QGraphicsScene;
-class GenericScene;
 class QPainter;
 class QPrinter;
 class QSvgGenerator;
-class QPixmap;
 
 // StateS classes
+class GenericScene;
 class Machine;
 
 
@@ -52,7 +50,7 @@ public:
     enum class infoPos{left, right};
 
 private:
-    const int spacer = 50;
+    const qreal spacer = 50;
 
 public:
     explicit MachineImageExporter(shared_ptr<Machine> machine, GenericScene* scene, shared_ptr<QGraphicsScene> component);
@@ -101,6 +99,7 @@ private:
     bool includeVariables;
     bool addBorder;
     infoPos infoPosition = infoPos::left;
+    bool strictBorders;
 
     // There objects handle rendenring on file. All must be persistent until export is over
     shared_ptr<QPrinter>      printer   = nullptr;
@@ -111,7 +110,8 @@ private:
     shared_ptr<QPainter> painter = nullptr;
 
     // Printing areas
-    QRectF totalPrintedRect;
+    QRectF pageRect;
+    QRectF renderAreaWithoutBordersRect;
     QRectF scenePrintingRect;
     QRectF componentPrintingRect;
     QRectF constantsPrintingRect;

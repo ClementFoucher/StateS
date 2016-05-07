@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.3.C *
+* StateS v. 0.3.D *
 *******************
 
 This software is intended to be a simple and effective discrete event machines drawer.
@@ -47,7 +47,7 @@ You can now run the application (finally!).
 
 ** Linux **
 
-Install Qt from your distribution repositories using your package manager, or update to the latest version if already installed. At least Qt 5.5 is required.
+Install Qt from your distribution repositories using your package manager, or update to the latest version if already installed. At least Qt 5.6 is required.
 
 Make sure the StateS file is executable:
 From command line, cd to the folder containing the executable, and type "chmod +x ./<name of the file>".
