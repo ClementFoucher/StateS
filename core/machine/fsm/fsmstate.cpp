@@ -82,7 +82,7 @@ void FsmState::setGraphicRepresentation(FsmGraphicState* representation)
         connect(this->graphicRepresentation, &FsmGraphicState::stateMovingEvent, this, &FsmState::stateGraphicRepresentationMoved);
     }
     else
-        qDebug() << "(Fsm state:) ERROR! Setting graphic representation while already have one. Ignored command.";
+        qDebug() << "(FsmState:) Error! Setting graphic representation while already have one. Ignored command.";
 }
 
 void FsmState::clearGraphicRepresentation()

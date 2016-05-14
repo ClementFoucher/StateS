@@ -187,7 +187,7 @@ bool FsmToolsPanel::toolChangedEventHandler(MachineBuilder::tool newTool)
         break;
 
     default:
-        qDebug() << "(FSM Tools panel:) I can't use this tool!";
+        qDebug() << "(FsmToolsPanel:) I can't use this tool!";
     }
 
     return result;

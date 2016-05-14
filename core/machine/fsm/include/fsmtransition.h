@@ -50,7 +50,7 @@ public:
     void setSource(shared_ptr<FsmState> value);
 
     FsmGraphicTransition* getGraphicRepresentation() const;
-    void setGraphicRepresentation(FsmGraphicTransition* representation);
+    void setGraphicRepresentation(FsmGraphicTransition* representation); // TODO: throw exception
     void clearGraphicRepresentation();
 
     void setCrossed() const;

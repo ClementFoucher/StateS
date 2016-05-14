@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+-(unreleased)- V 0.3.E - Display errors encountered while loading file to user.
 - 2016-05-07 - V 0.3.D - Corrected image export display.
 - 2016-05-06 - V 0.3.C - Small UI enhancements; Allow drag-and-dropping files on UI to load; Added export options.
 - 2015-12-13 - V 0.3.B - VHDL export now correctly handles transition conditions; Began adressing output generation in VHDL export; More information from verifier tool.

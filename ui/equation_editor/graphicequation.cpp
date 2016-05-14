@@ -454,7 +454,7 @@ void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<S
         this->buildEquation();
     }
     else
-        qDebug() << "(Graphic equation) Error! Update equation called on something not an equation.";
+        qDebug() << "(GraphicEquation) Error! Update equation called on something not an equation.";
 }
 
 // Returns the equation currently represented by the graphic object.

@@ -63,6 +63,9 @@ public:
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
 
+    void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
+    void displayErrorMessage(const QString& errorTitle, const QString& errorList);
+
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();

@@ -162,7 +162,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                 }
                 else
                 {
-                    qDebug() << "(FSM display:) Unsupported tool!";
+                    qDebug() << "(FsmScene:) Unsupported tool!";
                 }
             }
             else if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )

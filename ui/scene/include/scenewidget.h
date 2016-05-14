@@ -56,7 +56,7 @@ private:
 public:
     explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine);
+    void setMachine(shared_ptr<Machine> newMachine); // TODO: throw exception
     GenericScene* getScene() const;
 
 signals:

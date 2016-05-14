@@ -90,7 +90,7 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
         }
         else
         {
-            qDebug() << "Error! Trying to display unknown type of Machine.";
+            qDebug() << "(SceneWidget:) Error! Trying to display unknown type of Machine.";
         }
 
         if (newScene != nullptr)

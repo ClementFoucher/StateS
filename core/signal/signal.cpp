@@ -76,8 +76,8 @@ void Signal::resize(uint newSize) // Throws StatesException
     if (newSize == 0)
         throw StatesException("Signal", resized_to_0, "Trying to resize signal with size 0");
 
-    this->currentValue.resize(newSize); // Throws StatesException - propagated
-    this->initialValue.resize(newSize); // Throws StatesException - propagated
+    this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
+    this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
 
     emit signalResizedEvent(this->shared_from_this()); // Clear to use shared_from_this: this function can't be called in constructor
 }

@@ -154,7 +154,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
         }
         else
         {
-            qDebug() << "(Simulator tab:) Error! Trying to begin simulation while already launched!";
+            qDebug() << "(SimulatorTab:) Warning: Trying to begin simulation while already launched.";
+            qDebug() << "Command ignored.";
         }
     }
     else

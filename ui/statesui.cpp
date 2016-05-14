@@ -43,6 +43,7 @@
 #include "genericscene.h"
 #include "fsm.h"
 #include "fsmvhdlexport.h"
+#include "errordisplaydialog.h"
 
 
 StatesUi::StatesUi() :
@@ -485,4 +486,18 @@ void StatesUi::dropEvent(QDropEvent* event)
     {
         emit loadMachineRequestEvent(fileName);
     }
+}
+
+void StatesUi::displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList)
+{
+    unique_ptr<ErrorDisplayDialog> errorDialog = unique_ptr<ErrorDisplayDialog>(new ErrorDisplayDialog(errorTitle, errorList, this));
+    errorDialog->setModal(true);
+    errorDialog->exec();
+}
+
+void StatesUi::displayErrorMessage(const QString& errorTitle, const QString& error)
+{
+    unique_ptr<ErrorDisplayDialog> errorDialog = unique_ptr<ErrorDisplayDialog>(new ErrorDisplayDialog(errorTitle, error, this));
+    errorDialog->setModal(true);
+    errorDialog->exec();
 }

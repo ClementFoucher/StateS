@@ -22,6 +22,9 @@
 // Current class header
 #include "fsmgraphictransition.h"
 
+// C++ classes
+#include <math.h>
+
 // Qt classes
 #include <QGraphicsSceneContextMenuEvent>
 #include <QKeyEvent>
@@ -153,7 +156,7 @@ void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transiti
         this->updateText();
     }
     else
-        qDebug() << "(FSM Graphic Transition:) ERROR! Trying to reaffect logic transition while already linked! Ignored call.";
+        qDebug() << "(FmGraphicTransition:) Error! Trying to reaffect logic transition while already linked! Ignored call.";
 }
 
 shared_ptr<FsmTransition> FsmGraphicTransition::getLogicTransition() const
@@ -367,7 +370,7 @@ void FsmGraphicTransition::treatSelectionBox()
             this->selectionBox->setPen(selectionPen);
         }
         else
-            qDebug() << "(Fsm graphic transition:) Error white treating selection box: unknown shape!";
+            qDebug() << "(FsmGraphicTransition:) Error! Unable to treat selection box: unknown shape!";
     }
 }
 

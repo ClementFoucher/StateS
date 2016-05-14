@@ -130,7 +130,7 @@ void MachineActuatorComponent::signalResizedEventHandler(shared_ptr<Signal> emit
     {
         if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
         {
-            qDebug() << "(MachineActuatorComponent:) Warning: Error trying to resize action values. Action is probably broken now.";
+            qDebug() << "(MachineActuatorComponent:) Error! Unable to resize action value. Action is probably broken now.";
         }
         else
             throw;

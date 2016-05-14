@@ -73,7 +73,7 @@ void FsmTransition::setGraphicRepresentation(FsmGraphicTransition* representatio
     if (this->graphicRepresentation == nullptr)
         this->graphicRepresentation = representation;
     else
-        qDebug() << "(Fsm transition:) ERROR! Setting graphic representation while already have one. Ignored command.";
+        qDebug() << "(FsmTransition:) Error! Setting graphic representation while already have one. Ignored command.";
 }
 
 void FsmTransition::clearGraphicRepresentation()

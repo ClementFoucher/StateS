@@ -531,7 +531,7 @@ void ActionEditor::treatMenuEventHandler(QAction* action)
     {
         if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
         {
-            qDebug() << "(ActionEditor:) Warning: Errored trying to resize a signal. A param value is probably broken.";
+            qDebug() << "(ActionEditor:) Warning: Error trying to resize a signal. A param value is probably broken.";
         }
         else
             throw;

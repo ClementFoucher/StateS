@@ -51,7 +51,7 @@ private:
 public:
     explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
 
-    void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand);
+    void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand); // TODO: throw exception
 
     shared_ptr<Signal> getLogicEquation() const;
 

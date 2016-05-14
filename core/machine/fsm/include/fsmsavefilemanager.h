@@ -58,6 +58,7 @@ public: // Static
 public:
     static void writeToFile(shared_ptr<Fsm> machine, const QString& filePath); // Throws StatesException
     static shared_ptr<Fsm> loadFromFile(const QString& filePath); // Throws StatesException
+    static QList<QString> getLastOperationWarnings();
 
 private:
     static void writeSignals(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
@@ -71,6 +72,9 @@ private:
     static void parseTransitions(QDomElement element, shared_ptr<Fsm> machine);
     static shared_ptr<Signal> parseEquation(QDomElement element, shared_ptr<Fsm> machine);
     static void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component, shared_ptr<Fsm> machine);
+
+private:
+    static QList<QString> warnings;
 };
 
 #endif // FSMSAVEFILEMANAGER_H

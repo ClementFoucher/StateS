@@ -22,9 +22,6 @@
 // Current class header
 #include "fsm.h"
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "fsmstate.h"
 #include "fsmsimulator.h"

@@ -103,7 +103,8 @@ SOURCES += \
     ui/equation_editor/constantvaluesetter.cpp \
     ui/editableequation.cpp \
     core/machine/fsm/fsmsavefilemanager.cpp \
-    ui/refined_widget/statesgraphicsview.cpp
+    ui/refined_widget/statesgraphicsview.cpp \
+    ui/dialogs/errordisplaydialog.cpp
 
 
 
@@ -191,7 +192,8 @@ HEADERS  += \
     ui/scene/include/graphicactuator.h \
     ui/equation_editor/include/constantvaluesetter.h \
     ui/include/editableequation.h \
-    ui/refined_widget/include/statesgraphicsview.h
+    ui/refined_widget/include/statesgraphicsview.h \
+    ui/dialogs/include/errordisplaydialog.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

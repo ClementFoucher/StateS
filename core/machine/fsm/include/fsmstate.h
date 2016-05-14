@@ -66,7 +66,7 @@ public:
     void setName(const QString& value);
 
     FsmGraphicState* getGraphicRepresentation() const;
-    void setGraphicRepresentation(FsmGraphicState* representation);
+    void setGraphicRepresentation(FsmGraphicState* representation); // TODO: throw exception
     void clearGraphicRepresentation();
 
     QPointF position; // Public because we don't care, just used by loader

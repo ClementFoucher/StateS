@@ -83,7 +83,7 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
         }
         else
         {
-            qDebug() << "(Drawing tool bar:) Error, unknown machine type";
+            qDebug() << "(MachineBuilderTab:) Error, unknown machine type";
         }
 
         // Machine visualization

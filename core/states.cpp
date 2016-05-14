@@ -26,8 +26,6 @@
 #include <QFileInfo>
 #include <QDir>
 
-#include <QDebug>
-
 // StateS classes
 #include "statesui.h"
 #include "fsm.h"
@@ -114,15 +112,18 @@ void StateS::loadMachine(const QString& path)
         try
         {
             this->machine = FsmSaveFileManager::loadFromFile(this->currentFilePath); // Throws StatesException
+            QList<QString> warnings = FsmSaveFileManager::getLastOperationWarnings();
+            if (!warnings.isEmpty())
+            {
+                this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
+            }
             this->statesUi->setMachine(this->machine, this->currentFilePath);
         }
         catch (const StatesException& e)
         {
             if (e.getSourceClass() == "FsmSaveFileManager")
             {
-                // TODO: display error in popup
-                qDebug() << "(StateS:) Unable to load. Error message is:";
-                qDebug() << "  " << e.what();
+                this->statesUi->displayErrorMessage(tr("Unable to load file."), QString(e.what()));
             }
             else
                 throw;
@@ -173,14 +174,17 @@ void StateS::saveCurrentMachineInCurrentFile()
         try
         {
             FsmSaveFileManager::writeToFile(dynamic_pointer_cast<Fsm>(this->machine), this->currentFilePath); // Throws StatesException
+            QList<QString> warnings = FsmSaveFileManager::getLastOperationWarnings();
+            if (!warnings.isEmpty())
+            {
+                this->statesUi->displayErrorMessage(tr("Issues occured writing the file. StateS still managed to save machine."), warnings);
+            }
         }
         catch (const StatesException& e)
         {
             if (e.getSourceClass() == "FsmSaveFileManager")
             {
-                // TODO: display error in popup
-                qDebug() << "(StateS:) Unable to save. Error message is:";
-                qDebug() << "  " << e.what();
+                this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
             }
             else
                 throw;
