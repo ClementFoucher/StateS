@@ -812,7 +812,9 @@ void GraphicEquation::dropEvent(QDropEvent* event)
             menu->addAction(a);
 
             shared_ptr<Equation> droppedComplexEquation = dynamic_pointer_cast<Equation> (droppedEquation);
-            if ( (droppedComplexEquation != nullptr) && (droppedComplexEquation->getFunction() != Equation::nature::extractOp) )
+            if ( (droppedComplexEquation != nullptr) &&
+                 (droppedComplexEquation->getFunction() != Equation::nature::extractOp) &&
+                 (droppedComplexEquation->getFunction() != Equation::nature::constant) )
             {
                 QString actionText = tr("Set existing equation as operand of dropped equation");
 
@@ -823,7 +825,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
                 // Build tooltip
                 shared_ptr<Equation> newEquation = droppedComplexEquation->clone();
-                newEquation->setOperand(0, signalEquation); // Throws StatesException - Extract op aways has operand 0 - ignored
+                newEquation->setOperand(0, signalEquation); // Throws StatesException - Remaining natures always have operand 0 - ignored
 
                 a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
                 newEquation.reset();

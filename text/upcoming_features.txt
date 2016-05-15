@@ -9,7 +9,7 @@ These features will be implemented... some day.
 
 - Full rebuild of simulation window, current behavior is too basic,
 - Support of hexadecimal notation for bit vector signals,
-- Allow custom placement of transitions and moving conditions/actions.
+- Allow complex path for transitions display.
 
 ** Core **
 

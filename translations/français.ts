@@ -221,6 +221,10 @@
         <source>Edit condition to view errors.</source>
         <translation>Éditez la condition pour visualiser les erreurs.</translation>
     </message>
+    <message>
+        <source>Condition position</source>
+        <translation>Position de la condition</translation>
+    </message>
 </context>
 <context>
     <name>DisplayArea</name>
@@ -278,6 +282,17 @@
     <message>
         <source>to here.</source>
         <translation>à cet endroit.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDisplayDialog</name>
+    <message>
+        <source>List of errors:</source>
+        <translation>Liste des erreurs :</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -366,6 +381,130 @@
     <message>
         <source>Machine</source>
         <translation>Machine</translation>
+    </message>
+    <message>
+        <source>No name was found for the machine.</source>
+        <translation>Aucun nom trouvé pour la machine.</translation>
+    </message>
+    <message>
+        <source>Name defaulted to:</source>
+        <translation>Nom par défaut utilisé :</translation>
+    </message>
+    <message>
+        <source>Unnamed signal encountered while parsing signal list.</source>
+        <translation>Signal non nommé trouvé lors du parcours de la liste des signaux.</translation>
+    </message>
+    <message>
+        <source>Token ignored.</source>
+        <translation>Clé ignorée.</translation>
+    </message>
+    <message>
+        <source>Unexpected signal type encountered while parsing signal list:</source>
+        <translation>Type de signal inconnu rouvé lors du parcours de la liste des signaux :</translation>
+    </message>
+    <message>
+        <source>Expected</source>
+        <translation>Attendait</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>ou</translation>
+    </message>
+    <message>
+        <source>got</source>
+        <translation>a trouvé</translation>
+    </message>
+    <message>
+        <source>Signal name was:</source>
+        <translation>Le nom du signal était :</translation>
+    </message>
+    <message>
+        <source>Unable to resize signal</source>
+        <translation>Impossible de redimensionner le signal</translation>
+    </message>
+    <message>
+        <source>Signal size ignored and defaulted to</source>
+        <translation>La taille du signal a été ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>Given initial value was</source>
+        <translation>La valeur initiale fournie était</translation>
+    </message>
+    <message>
+        <source>Initial value ignored and defaulted to</source>
+        <translation>La valeur initiale a été ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>The initial value size does not match signal size.</source>
+        <translation>La taille de la valeur initial ne correspond à celle du signal.</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing state list:</source>
+        <translation>Clé inconnue trouvée lors du parcours de la liste des états :</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing transition list:</source>
+        <translation>Clé inconnue trouvée lors du parcours de la liste des transitions :</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing action list:</source>
+        <translation>Clé inconnue trouvée lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Action ignored.</source>
+        <translation>Action ignorée.</translation>
+    </message>
+    <message>
+        <source>Reference to undeclared signal encountered while parsing action list:</source>
+        <translation>Référence à un signal non déclaré trouvée lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Signal name was</source>
+        <translation>Le nom du signal était</translation>
+    </message>
+    <message>
+        <source>Unexpected action type encountered while parsing action list:</source>
+        <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Action type was</source>
+        <translation>Le type d&apos;action était</translation>
+    </message>
+    <message>
+        <source>Error in action value for signal</source>
+        <translation>Erreur dans la valeur de l&apos;action pour le signal</translation>
+    </message>
+    <message>
+        <source>Value ignored and set to</source>
+        <translation>Valeur ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>Error in constant value while parsing equation:</source>
+        <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>Unexpected equation nature encountered while parsing logic equation:</source>
+        <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>Equation nature was:</source>
+        <translation>La nature de l&apos;équation était :</translation>
+    </message>
+    <message>
+        <source>Token ignored. Will retry with other tokens if existing.</source>
+        <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing logic equation:</source>
+        <translation>Clé inconne trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>signal</source>
+        <translation>signal</translation>
+    </message>
+    <message>
+        <source>equation</source>
+        <translation>équation</translation>
     </message>
 </context>
 <context>
@@ -639,11 +778,11 @@
     </message>
     <message>
         <source>Image format:</source>
-        <translation>Format de l&apos;image :</translation>
+        <translation type="vanished">Format de l&apos;image :</translation>
     </message>
     <message>
         <source>Include component external view:</source>
-        <translation>Inclure la vue externe du compoant :</translation>
+        <translation type="vanished">Inclure la vue externe du compoant :</translation>
     </message>
     <message>
         <source>OK</source>
@@ -675,23 +814,51 @@
     </message>
     <message>
         <source>Include constants:</source>
-        <translation>include les constantes :</translation>
+        <translation type="vanished">include les constantes :</translation>
     </message>
     <message>
         <source>Include variables:</source>
-        <translation>Inclure les variables :</translation>
+        <translation type="vanished">Inclure les variables :</translation>
     </message>
     <message>
         <source>Place information to the right:</source>
-        <translation>Placer les informations à droite :</translation>
+        <translation type="vanished">Placer les informations à droite :</translation>
     </message>
     <message>
         <source>Add border:</source>
-        <translation>Ajouter une bordure :</translation>
+        <translation type="vanished">Ajouter une bordure :</translation>
     </message>
     <message>
         <source>Preview</source>
         <translation>Prévisualisation</translation>
+    </message>
+    <message>
+        <source>Image format</source>
+        <translation>Format de l&apos;image</translation>
+    </message>
+    <message>
+        <source>Include component external view</source>
+        <translation>Inclure la vue externe du composant</translation>
+    </message>
+    <message>
+        <source>Include constants</source>
+        <translation>Inclure les constantes</translation>
+    </message>
+    <message>
+        <source>Include variables</source>
+        <translation>Inclure les variables</translation>
+    </message>
+    <message>
+        <source>Place information to the right</source>
+        <translation>Placer les informations à droite</translation>
+    </message>
+    <message>
+        <source>Add border</source>
+        <translation>Ajouter une bordure</translation>
+    </message>
+    <message>
+        <source>Ratio between machine view and aditional information</source>
+        <translation>Ratio entre la taille de la machine et celle des informations aditionnelles</translation>
     </message>
 </context>
 <context>
@@ -1212,6 +1379,25 @@
     <message>
         <source>Actions triggered at state activation:</source>
         <translation>Actions déclencées à l&apos;activation de l&apos;état :</translation>
+    </message>
+</context>
+<context>
+    <name>StateS</name>
+    <message>
+        <source>Issues occured reading the file. StateS still managed to load machine.</source>
+        <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
+    </message>
+    <message>
+        <source>Unable to load file.</source>
+        <translation>Impossible de charger le fichier.</translation>
+    </message>
+    <message>
+        <source>Issues occured writing the file. StateS still managed to save machine.</source>
+        <translation>Des problèmes ont été rencontrés lors de l&apos;écriture du fichier. StateS est tout de même parvenu à sauvegarder la machine.</translation>
+    </message>
+    <message>
+        <source>Unable to save file.</source>
+        <translation>Impossible de sauvegarder le fichier.</translation>
     </message>
 </context>
 <context>

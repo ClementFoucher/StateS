@@ -60,8 +60,11 @@ public:
 
     void clearCondition();
 
+    qreal sliderPos; // Public because we don't care, just used by loader
+
 signals:
     void conditionChangedEvent();
+    void graphicTransitionEditedEvent();
 
 private:
     FsmGraphicTransition* graphicRepresentation = nullptr;

@@ -37,6 +37,7 @@
 #include "machine.h"
 #include "equationeditor.h"
 #include "contextmenu.h"
+#include "fsmgraphictransition.h"
 
 
 ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent) :
@@ -61,6 +62,17 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
     QPushButton* buttonClearCondition = new QPushButton(tr("Clear condition"));
     connect(buttonClearCondition, &QAbstractButton::clicked, this, &ConditionEditor::clearCondition);
     this->layout->addWidget(buttonClearCondition, 2, 1, 1, 1);
+
+    QHBoxLayout* positionLayout = new QHBoxLayout();
+    QLabel* positionLabel = new QLabel(tr("Condition position"));
+    positionLayout->addWidget(positionLabel);
+    this->conditionTextPositionSlider = new QSlider(Qt::Horizontal);
+    this->conditionTextPositionSlider->setMinimum(0);
+    this->conditionTextPositionSlider->setMaximum(100);
+    this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
+    connect(this->conditionTextPositionSlider, &QSlider::valueChanged, this, &ConditionEditor::conditionTextPositionSliderChanged);
+    positionLayout->addWidget(this->conditionTextPositionSlider);
+    this->layout->addLayout(positionLayout, 3, 0, 1, 2);
 
     this->buttonExpandTruthTable = new QPushButton(tr("Display truth table"));
     connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
@@ -134,7 +146,6 @@ void ConditionEditor::expandTruthTable()
         this->buttonExpandTruthTable->setText(tr("Collapse truth table"));
 
         connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::collapseTruthTable);
-
     }
 }
 
@@ -175,6 +186,9 @@ void ConditionEditor::updateContent()
 
     if (transition != nullptr)
     {
+        if (transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100 != this->conditionTextPositionSlider->value())
+            this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
+
         if (transition->getCondition() != nullptr)
         {
             this->conditionText->setText(transition->getCondition()->getText());
@@ -225,20 +239,31 @@ void ConditionEditor::updateContent()
     }
 }
 
+void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
+{
+    shared_ptr<FsmTransition> l_transition = this->transition.lock();
+
+    if (l_transition != nullptr)
+    {
+        qreal realValue = ((qreal)newValue)/100;
+        l_transition->getGraphicRepresentation()->setConditionLineSliderPosition(realValue);
+    }
+}
+
 void ConditionEditor::editCondition()
 {
-    shared_ptr<FsmTransition> transition = this->transition.lock();
+    shared_ptr<FsmTransition> l_transition = this->transition.lock();
 
-    if (transition != nullptr)
+    if (l_transition != nullptr)
     {
-        shared_ptr<Machine> owningMachine = transition->getOwningMachine();
+        shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
 
         if ( (owningMachine != nullptr) && (owningMachine->getReadableSignals().count() != 0) )
         {
             EquationEditor* eqEdit;
 
-            if (!(transition->getCondition() == nullptr))
-                eqEdit = new EquationEditor(owningMachine, transition->getCondition());
+            if (!(l_transition->getCondition() == nullptr))
+                eqEdit = new EquationEditor(owningMachine, l_transition->getCondition());
             else
                 eqEdit = new EquationEditor(owningMachine, nullptr);
 
@@ -248,7 +273,7 @@ void ConditionEditor::editCondition()
             {
                 shared_ptr<Signal> tmp = eqEdit->getResultEquation();
 
-                transition->setCondition(tmp);
+                l_transition->setCondition(tmp);
             }
 
             delete eqEdit;
@@ -259,7 +284,6 @@ void ConditionEditor::editCondition()
             menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
         }
     }
-
 }
 
 void ConditionEditor::clearCondition()
@@ -270,11 +294,11 @@ void ConditionEditor::clearCondition()
 
 void ConditionEditor::treatMenuSetCondition(QAction* action)
 {
-    shared_ptr<FsmTransition> transition = this->transition.lock();
+    shared_ptr<FsmTransition> l_transition = this->transition.lock();
 
-    if (transition != nullptr)
+    if (l_transition != nullptr)
     {
-        shared_ptr<Machine> owningMachine = transition->getOwningMachine();
+        shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
 
         if (owningMachine != nullptr)
         {
@@ -282,7 +306,7 @@ void ConditionEditor::treatMenuSetCondition(QAction* action)
             {
                 if (currentVariable->getName() == action->text())
                 {
-                    transition->setCondition(currentVariable);
+                    l_transition->setCondition(currentVariable);
                     break;
                 }
             }

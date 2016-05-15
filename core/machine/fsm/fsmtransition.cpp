@@ -42,7 +42,8 @@ FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source
 
     this->setCondition(condition);
 
-    this->setGraphicRepresentation(graphicRepresentation);
+    if (graphicRepresentation != nullptr)
+        this->setGraphicRepresentation(graphicRepresentation);
 
     // Propagates local events to the more general "configuration changed" event
     connect(this, &FsmTransition::conditionChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
@@ -71,13 +72,20 @@ FsmGraphicTransition* FsmTransition::getGraphicRepresentation() const
 void FsmTransition::setGraphicRepresentation(FsmGraphicTransition* representation)
 {
     if (this->graphicRepresentation == nullptr)
+    {
         this->graphicRepresentation = representation;
+        connect(representation, &FsmGraphicTransition::graphicTransitionEdited, this, &FsmTransition::graphicTransitionEditedEvent);
+    }
     else
         qDebug() << "(FsmTransition:) Error! Setting graphic representation while already have one. Ignored command.";
 }
 
 void FsmTransition::clearGraphicRepresentation()
 {
+    if (this->graphicRepresentation != nullptr)
+    {
+        disconnect(this->graphicRepresentation, &FsmGraphicTransition::graphicTransitionEdited, this, &FsmTransition::graphicTransitionEditedEvent);
+    }
     this->graphicRepresentation = nullptr;
 }
 

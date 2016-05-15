@@ -47,7 +47,7 @@ public:
 
     FsmGraphicState* getSource() const;
     int count() const;
-    QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine) const;
+    QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const;
 
     int whatIsMyRank(FsmGraphicTransition* me) const;
 

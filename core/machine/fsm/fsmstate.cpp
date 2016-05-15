@@ -119,6 +119,7 @@ void FsmState::addOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
     this->outputTransitions.append(transition);
     connect(transition.get(), &FsmTransition::componentStaticConfigurationChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    connect(transition.get(), &FsmTransition::graphicTransitionEditedEvent, this, &FsmState::stateGraphicRepresentationMoved);
 
     emit componentStaticConfigurationChangedEvent();
 }
@@ -126,6 +127,7 @@ void FsmState::addOutgoingTransition(shared_ptr<FsmTransition> transition)
 void FsmState::removeOutgoingTransition(shared_ptr<FsmTransition> transition)
 {
     disconnect(transition.get(), &FsmTransition::componentStaticConfigurationChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    disconnect(transition.get(), &FsmTransition::graphicTransitionEditedEvent, this, &FsmState::stateGraphicRepresentationMoved);
     this->outputTransitions.removeAll(transition);
 
     emit componentStaticConfigurationChangedEvent();

@@ -33,6 +33,7 @@ using namespace std;
 class QLabel;
 class QPushButton;
 class QGridLayout;
+class QSlider;
 
 // StateS classes
 class Signal;
@@ -58,6 +59,8 @@ private slots:
 
     void updateContent();
 
+    void conditionTextPositionSliderChanged(int newValue);
+
 private:
     void expandTruthTable();
     void collapseTruthTable();
@@ -71,6 +74,8 @@ private:
 
     QLabel* conditionText        = nullptr;
     QLabel* conditionWarningText = nullptr;
+
+    QSlider* conditionTextPositionSlider = nullptr;
 
     QPushButton* buttonSetCondition   = nullptr;
 

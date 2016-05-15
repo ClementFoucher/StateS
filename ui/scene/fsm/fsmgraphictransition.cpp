@@ -71,9 +71,10 @@ QPixmap FsmGraphicTransition::getPixmap(uint size)
 
 FsmGraphicTransition::FsmGraphicTransition()
 {
-    currentPen = &standardPen;
+    this->currentPen = &standardPen;
+    this->conditionLineSliderPos = 0.5;
 
-    conditionText = new QGraphicsTextItem();
+    this->conditionText = new QGraphicsTextItem();
 
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -104,6 +105,7 @@ FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransi
     currentMode = mode::initMode;
     this->setSourceState(logicTransition->getSource()->getGraphicRepresentation());
     this->setTargetState(logicTransition->getTarget()->getGraphicRepresentation());
+    this->conditionLineSliderPos = logicTransition->sliderPos;
     currentMode = mode::standardMode;
 
     this->logicTransition = logicTransition;
@@ -333,44 +335,100 @@ void FsmGraphicTransition::rebuildArrowEnd()
     arrowEnd2->setLine(0, 0, 0, arrowEndSize);
 }
 
-void FsmGraphicTransition::treatSelectionBox()
+void FsmGraphicTransition::rebuildBoundingShape()
 {
-    delete selectionBox;
-    selectionBox = nullptr;
+    this->prepareGeometryChange();
+
+    QGraphicsLineItem* arrowBodyStraightLine = dynamic_cast<QGraphicsLineItem*>(arrowBody);
+    QGraphicsPathItem* arrowBodyPath = dynamic_cast<QGraphicsPathItem*>(arrowBody);
+
+    QPainterPath path;
+    QTransform t;
+
+    if (arrowBodyStraightLine != nullptr)
+    {
+        QLineF straightLine = arrowBodyStraightLine->line();
+
+        QRectF boundRect(0, -middleBarLength/2, straightLine.length(), middleBarLength);
+
+        path.addRect(boundRect);
+        path.angleAtPercent(arrowBodyStraightLine->rotation());
+
+        t.rotate(-straightLine.angle());
+    }
+    else if (this->neighbors == nullptr)
+    {
+        // Auto-transition
+        QPainterPath arcPath = ((QGraphicsPathItem*)arrowBody)->path();
+
+        qreal outterScale = (arcPath.boundingRect().width() + middleBarLength/2) / arcPath.boundingRect().width();
+        qreal innerScale  = (arcPath.boundingRect().width() - middleBarLength/2) / arcPath.boundingRect().width();
+
+        QTransform t1;
+        t1.scale(outterScale, outterScale);
+        QPainterPath outterPath = t1.map(arcPath);
+
+        QTransform t2;
+        t2.scale(innerScale, innerScale);
+        QPainterPath innerPath = t2.map(arcPath).toReversed();
+
+        path.moveTo(outterPath.pointAtPercent(0));
+        path.connectPath(outterPath);
+
+        path.lineTo(innerPath.pointAtPercent(0));
+        path.connectPath(innerPath);
+
+        path.moveTo(outterPath.pointAtPercent(0));
+        path.closeSubpath();
+    }
+    else
+    {
+        // Arc transiton
+
+        // Special case: the path can actually be a straight line
+        if ( (neighbors != nullptr) && (neighbors->count() % 2 == 1) && (neighbors->whatIsMyRank(this) == 0) )
+        {
+            QLineF straightLine = QLineF(QPointF(0, 0), arrowBodyPath->boundingRect().bottomRight());
+            QRectF boundRect(0, -middleBarLength/2, straightLine.length(), middleBarLength);
+
+            path.addRect(boundRect);
+        }
+        else
+        {
+            QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
+
+            path.moveTo(0, this->middleBarLength/2);
+            path.lineTo(0, -this->middleBarLength/2);
+
+            arrowPath.translate(0, -this->middleBarLength/2);
+            path.connectPath(arrowPath);
+
+            path.lineTo(arrowPath.boundingRect().width(), this->middleBarLength/2);
+
+            arrowPath.translate(0, this->middleBarLength);
+            arrowPath = arrowPath.toReversed();
+            path.connectPath(arrowPath);
+
+            path.closeSubpath();
+        }
+
+        t.rotate(-sceneAngle);
+    }
+
+    this->boundingShape = t.map(path);
+
+    this->update();
+}
+
+void FsmGraphicTransition::updateSelectionShapeDisplay()
+{
+    delete this->selectionShape;
+    this->selectionShape = nullptr;
 
     if (this->isSelected())
     {
-        QGraphicsLineItem* arrowBodyStraightLine = dynamic_cast<QGraphicsLineItem*>(arrowBody);
-        QGraphicsPathItem* arrowBodyPath = dynamic_cast<QGraphicsPathItem*>(arrowBody);
-
-        if (arrowBodyStraightLine != nullptr)
-        {
-            QLineF straightLine = arrowBodyStraightLine->line();
-
-            this->selectionBox = new QGraphicsRectItem(QRectF(0, -middleBarLength/2, straightLine.length(), middleBarLength), this);
-            this->selectionBox->setRotation(-straightLine.angle());
-            this->selectionBox->setPen(selectionPen);
-        }
-        else if (arrowBodyPath != nullptr)
-        {
-            // Special case: the path can be actually a straight line
-            if ( (neighbors != nullptr) && (neighbors->count() % 2 == 1) && (neighbors->whatIsMyRank(this) == 0) )
-            {
-                QLineF straightLine = QLineF(QPointF(0, 0), arrowBodyPath->boundingRect().bottomRight());
-
-                this->selectionBox = new QGraphicsRectItem(QRectF(0, -middleBarLength/2, straightLine.length(), middleBarLength), this);
-                this->selectionBox->setRotation(-sceneAngle);
-            }
-            else
-            {
-                this->selectionBox = new QGraphicsRectItem(arrowBody->boundingRect() , this);
-                this->selectionBox->setRotation(-sceneAngle);
-            }
-
-            this->selectionBox->setPen(selectionPen);
-        }
-        else
-            qDebug() << "(FsmGraphicTransition:) Error! Unable to treat selection box: unknown shape!";
+        this->selectionShape = new QGraphicsPathItem(this->boundingShape, this);
+        this->selectionShape->setPen(selectionPen);
     }
 }
 
@@ -444,13 +502,12 @@ void FsmGraphicTransition::updateText()
 void FsmGraphicTransition::updateDisplay()
 {
     //
-    // First deal with mates as a neighboorhood change calls this function
+    // First deal with mates as this function can be called by a neighborhood change
     if (neighbors != nullptr)
     {
         if (neighbors->count() == 1)
         {
-            delete neighbors;
-            neighbors = nullptr;
+            neighbors.reset();
         }
     }
 
@@ -505,7 +562,7 @@ void FsmGraphicTransition::updateDisplay()
 
     //
     // Redraw arrow body
-    QPointF curveMiddle;
+    QPointF conditionLinePos;
 
     if ( (neighbors == nullptr) && (currentSourceState != currentTargetState) )
     {
@@ -541,10 +598,12 @@ void FsmGraphicTransition::updateDisplay()
         // Display condition
         QLineF conditionLineF = straightLine.normalVector();
         conditionLineF.setLength(middleBarLength);
-        conditionLine = new QGraphicsLineItem(conditionLineF, line);
+        conditionLine = new QGraphicsLineItem(conditionLineF, this);
         conditionLine->setPen(*currentPen);
-        curveMiddle = QPointF(straightLine.p2()/2);
-        conditionLine->setPos(curveMiddle - conditionLineF.p2()/2);
+        // Determine position
+        //conditionLineSliderPos
+        conditionLinePos = QPointF(straightLine.p2()*this->conditionLineSliderPos);
+        conditionLine->setPos(conditionLinePos - conditionLineF.p2()/2);
 
         //
         // Update positions with actual ones used for construction
@@ -608,7 +667,6 @@ void FsmGraphicTransition::updateDisplay()
             QPainterPath arc;
             arc.moveTo(stateCenterToArcStartVector.p2());
 
-
             qreal arcStartAngle = -45;
             qreal arcTotalAngle = 360 - 2* (90 + arcStartAngle);
 
@@ -620,13 +678,14 @@ void FsmGraphicTransition::updateDisplay()
             arcItem->setPen(*currentPen);
             arrowBody = arcItem;
 
-            QLineF conditionLineF(0, 0, 0, 1);
+            QLineF conditionLineF(0, -middleBarLength/2, 0, 1);
             conditionLineF.setLength(middleBarLength);
             conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
             conditionLine->setPen(*currentPen);
 
-            arcMiddle = QPointF(0, stateCenterToArcCenterVector.p2().y()-arcHeight/2);
-            conditionLine->setPos(arcMiddle - conditionLineF.p2()/2);
+            this->autoTransitionConditionPosition = arc.pointAtPercent(conditionLineSliderPos);
+            conditionLine->setPos(this->autoTransitionConditionPosition);
+            conditionLine->setRotation(-arc.angleAtPercent(conditionLineSliderPos));
 
             arrowEnd->setPos(stateCenterToArcEndVector.p2());
             arrowEnd->setRotation(180);
@@ -634,8 +693,7 @@ void FsmGraphicTransition::updateDisplay()
             autoTransitionNeedsRedraw = false;
         }
 
-        curveMiddle = arcMiddle;
-
+        conditionLinePos = this->autoTransitionConditionPosition;
         this->setPos(currentSourcePoint);
     }
     else
@@ -667,7 +725,7 @@ void FsmGraphicTransition::updateDisplay()
         QPointF curveTarget;
         qreal endAngle1;
         qreal endAngle2;
-        arrowBody = neighbors->buildMyBody(currentPen, this, deltaCurveOrigin, curveMiddle, curveTarget, endAngle1, endAngle2, &conditionLine);
+        arrowBody = neighbors->buildMyBody(currentPen, this, deltaCurveOrigin, conditionLinePos, curveTarget, endAngle1, endAngle2, &conditionLine, this->conditionLineSliderPos);
         //arrowBody = path;
 
         sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();
@@ -693,13 +751,14 @@ void FsmGraphicTransition::updateDisplay()
 
     }
 
-    conditionText->setPos(mapToScene(curveMiddle) + QPointF(0, 5));
+    conditionText->setPos(mapToScene(conditionLinePos) + QPointF(0, 5));
 
     QGraphicsItemGroup* actionBox = this->getActionsBox();
     if (actionBox != nullptr)
-        actionBox->setPos(mapToScene(curveMiddle + conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+        actionBox->setPos(mapToScene(conditionLinePos + conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
 
-    treatSelectionBox();
+    this->rebuildBoundingShape();
+    this->updateSelectionShapeDisplay();
 }
 
 bool FsmGraphicTransition::setDynamicSourceMode(const QPointF& mousePosition)
@@ -854,11 +913,12 @@ void FsmGraphicTransition::checkNeighboors()
     }
 }
 
-FsmGraphicTransitionNeighborhood* FsmGraphicTransition::helloIMYourNewNeighbor()
+shared_ptr<FsmGraphicTransitionNeighborhood> FsmGraphicTransition::helloIMYourNewNeighbor()
 {
     if (neighbors == nullptr)
     {
-        setNeighbors(new FsmGraphicTransitionNeighborhood(this->source, this->target));
+        shared_ptr<FsmGraphicTransitionNeighborhood> newNeighborhood(new FsmGraphicTransitionNeighborhood(this->source, this->target));
+        this->setNeighbors(newNeighborhood);
         // Redraw useless (harmful?) as there is currenly only me in mates.
         // Redraw will be automatic on mate joining neighborhood
     }
@@ -866,16 +926,32 @@ FsmGraphicTransitionNeighborhood* FsmGraphicTransition::helloIMYourNewNeighbor()
     return neighbors;
 }
 
-void FsmGraphicTransition::setNeighbors(FsmGraphicTransitionNeighborhood *neighborhood)
+void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
+{
+    if ( (position >= 0) && (position <= 1) )
+    {
+        this->conditionLineSliderPos = position;
+        this->autoTransitionNeedsRedraw = true;
+        emit graphicTransitionEdited();
+        this->updateDisplay();
+    }
+}
+
+qreal FsmGraphicTransition::getConditionLineSliderPosition()
+{
+    return this->conditionLineSliderPos;
+}
+
+void FsmGraphicTransition::setNeighbors(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood)
 {
     // Should not happen if already having one.
     // Maybe we should test it?
     this->neighbors = neighborhood;
 
     neighborhood->insertAndNotify(this);
-    connect(this->neighbors, &FsmGraphicTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicTransition::updateDisplay);
+    connect(this->neighbors.get(), &FsmGraphicTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicTransition::updateDisplay);
 
-    treatSelectionBox();
+    this->updateSelectionShapeDisplay();
 }
 
 void FsmGraphicTransition::quitNeighboorhood()
@@ -887,15 +963,25 @@ void FsmGraphicTransition::quitNeighboorhood()
 
     if (neighbors != nullptr)
     {
-        disconnect(this->neighbors, &FsmGraphicTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicTransition::updateDisplay);
+        disconnect(this->neighbors.get(), &FsmGraphicTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicTransition::updateDisplay);
         neighbors->removeAndNotify(this);
-        neighbors = nullptr;
+        neighbors.reset();
     }
 }
 
 QGraphicsTextItem* FsmGraphicTransition::getConditionText() const
 {
-    return conditionText;
+    return this->conditionText;
+}
+
+QPainterPath FsmGraphicTransition::shape() const
+{
+    return this->boundingShape;
+}
+
+QRectF FsmGraphicTransition::boundingRect() const
+{
+    return this->boundingShape.boundingRect();
 }
 
 void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
@@ -957,7 +1043,7 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
     }
     else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
     {
-        this->treatSelectionBox();
+        this->updateSelectionShapeDisplay();
     }
 
     return QGraphicsItem::itemChange(change, value);

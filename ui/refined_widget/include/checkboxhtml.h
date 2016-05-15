@@ -32,6 +32,10 @@ class QCheckBox;
 class LabelWithClickEvent;
 
 
+/**
+ * @brief The CheckBoxHtml class is used to allow clicking
+ * on the text to update the associated check box.
+ */
 class CheckBoxHtml : public QWidget
 {
     Q_OBJECT

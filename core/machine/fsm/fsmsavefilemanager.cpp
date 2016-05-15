@@ -39,6 +39,7 @@
 #include "output.h"
 #include "constant.h"
 #include "statesexception.h"
+#include "fsmgraphictransition.h"
 
 
 QList<QString> FsmSaveFileManager::warnings = QList<QString>();
@@ -160,6 +161,9 @@ void FsmSaveFileManager::writeTransitions(QXmlStreamWriter& stream, shared_ptr<F
 
         stream.writeAttribute("Source", transition->getSource()->getName());
         stream.writeAttribute("Target", transition->getTarget()->getName());
+
+        int sliderPosition = transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100;
+        stream.writeAttribute("SliderPos", QString::number(sliderPosition));
 
         // Deal with equations
         if (transition->getCondition() != nullptr)
@@ -579,6 +583,18 @@ void FsmSaveFileManager::parseTransitions(QDomElement element, shared_ptr<Fsm> m
             source->addOutgoingTransition(transition);
             target->addIncomingTransition(transition);
 
+            QString sliderPosString = currentElement.attribute("SliderPos");
+            qreal sliderPos;
+            if (!sliderPosString.isEmpty())
+            {
+                sliderPos = sliderPosString.toFloat()/100;
+            }
+            else
+            {
+                sliderPos = 0.5;
+            }
+            transition->sliderPos = sliderPos;
+
             QDomNodeList childNodes = currentElement.childNodes();
 
             for (int i = 0 ; i < childNodes.count() ; i++)
@@ -766,6 +782,11 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
             int param1 = -1;
             int param2 = -1;
             LogicValue constantValue;
+
+            // TODO: use operand count to increase operand map
+            // if we obtain a correct value for attribute.
+            // This would preserve empty operands at vector end.
+            //int operandCount = currentElement.attribute("OperandCount").toInt();
 
             if (currentElement.attribute("Nature") == "not")
                 equationType = Equation::nature::notOp;

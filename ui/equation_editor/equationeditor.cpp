@@ -63,7 +63,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
     QWidget* resourcesWidget = new QWidget();
     QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
 
-    // Display signals
+    // Signals
     if (machine->getInputs().count() != 0)
     {
         QVBoxLayout* inputListLayout = new QVBoxLayout();
@@ -80,7 +80,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
         }
     }
 
-
+    // Variables
     if (machine->getLocalVariables().count() != 0)
     {
         QVBoxLayout* variableListLayout = new QVBoxLayout();
@@ -95,28 +95,25 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
         {
             variableListLayout->addWidget(new GraphicEquation(variable, true));
         }
-
     }
 
-    //if (machine->getConstants().count() != 0)
+    // Constants
+    QVBoxLayout* constantListLayout = new QVBoxLayout();
+    constantListLayout->setAlignment(Qt::AlignTop);
+    resourcesLayout->addLayout(constantListLayout);
+
+    QLabel* constantsTitle = new QLabel("<b>" + tr("Constants")+ "</b>");
+    constantsTitle->setAlignment(Qt::AlignCenter);
+    constantListLayout->addWidget(constantsTitle);
+
+    constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant)), true));
+
+    foreach (shared_ptr<Signal> constant, machine->getConstants())
     {
-        QVBoxLayout* constantListLayout = new QVBoxLayout();
-        constantListLayout->setAlignment(Qt::AlignTop);
-        resourcesLayout->addLayout(constantListLayout);
-
-        QLabel* constantsTitle = new QLabel("<b>" + tr("Constants")+ "</b>");
-        constantsTitle->setAlignment(Qt::AlignCenter);
-        constantListLayout->addWidget(constantsTitle);
-
-        constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant)), true));
-
-        foreach (shared_ptr<Signal> constant, machine->getConstants())
-        {
-            constantListLayout->addWidget(new GraphicEquation(constant, true));
-        }
+        constantListLayout->addWidget(new GraphicEquation(constant, true));
     }
 
-    // Display operators
+    // Operators
     QGridLayout* operatorListLayout = new QGridLayout();
     operatorListLayout->setAlignment(Qt::AlignTop);
     resourcesLayout->addLayout(operatorListLayout);

@@ -24,7 +24,7 @@
 
 // Qt classes
 #include <QCheckBox>
-#include <QHBoxLayout>
+#include <QFormLayout>
 #include <QCoreApplication>
 #include <QMouseEvent>
 
@@ -35,7 +35,7 @@
 CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool allowLink, QWidget* parent) :
     QWidget(parent)
 {
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    QFormLayout* layout = new QFormLayout(this);
 
     this->checkBox = new QCheckBox();
     connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
@@ -52,13 +52,11 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
 
     if (boxAlign == Qt::AlignmentFlag::AlignLeft)
     {
-        layout->addWidget(this->checkBox);
-        layout->addWidget(this->label);
+        layout->addRow(this->label, this->checkBox);
     }
     else
     {
-        layout->addWidget(this->label);
-        layout->addWidget(this->checkBox);
+        layout->addRow(this->label, this->checkBox);
     }
 }
 

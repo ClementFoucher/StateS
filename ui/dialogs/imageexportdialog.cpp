@@ -58,27 +58,27 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<Mac
     this->imageFormatSelectionBox->addItem("Pdf");
     this->imageFormatSelectionBox->addItem("Png");
     this->imageFormatSelectionBox->addItem("Jpeg");
-    formLayout->addRow(tr("Image format:"), this->imageFormatSelectionBox);
+    formLayout->addRow(tr("Image format"), this->imageFormatSelectionBox);
     layout->addLayout(formLayout);
 
-    this->includeComponentCheckBox = new CheckBoxHtml(tr("Include component external view:"));
+    this->includeComponentCheckBox = new CheckBoxHtml(tr("Include component external view"));
     connect(this->includeComponentCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeComponentCheckBoxChanged);
     this->includeComponentCheckBox->setChecked(true);
     layout->addWidget(this->includeComponentCheckBox);
 
-    this->includeConstantsCheckBox = new CheckBoxHtml(tr("Include constants:"));
+    this->includeConstantsCheckBox = new CheckBoxHtml(tr("Include constants"));
     connect(this->includeConstantsCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeConstantsCheckBoxChanged);
     layout->addWidget(this->includeConstantsCheckBox);
 
-    this->includeVariablesCheckBox = new CheckBoxHtml(tr("Include variables:"));
+    this->includeVariablesCheckBox = new CheckBoxHtml(tr("Include variables"));
     connect(this->includeVariablesCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::includeVariablesCheckBoxChanged);
     layout->addWidget(this->includeVariablesCheckBox);
 
-    this->infoToTheRightCheckBox = new CheckBoxHtml(tr("Place information to the right:"));
+    this->infoToTheRightCheckBox = new CheckBoxHtml(tr("Place information to the right"));
     connect(this->infoToTheRightCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::infoToTheRightCheckBoxChanged);
     layout->addWidget(this->infoToTheRightCheckBox);
 
-    this->addBorderCheckBox = new CheckBoxHtml(tr("Add border:"));
+    this->addBorderCheckBox = new CheckBoxHtml(tr("Add border"));
     connect(this->addBorderCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::addBorderCheckBoxChanged);
     layout->addWidget(this->addBorderCheckBox);
 

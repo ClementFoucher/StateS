@@ -85,16 +85,20 @@ public:
     bool setDynamicTargetMode(const QPointF& mousePosition);
     bool endDynamicMode(bool keepChanges);
 
-    void treatSelectionBox();
+    shared_ptr<FsmGraphicTransitionNeighborhood> helloIMYourNewNeighbor();
 
-    FsmGraphicTransitionNeighborhood* helloIMYourNewNeighbor();
+    void setConditionLineSliderPosition(qreal position); // Todo: throw exception
+    qreal getConditionLineSliderPosition();
 
     QGraphicsTextItem* getConditionText() const;
+    QPainterPath shape() const override;
+    QRectF boundingRect() const override;
 
 signals:
     void editCalledEvent(shared_ptr<FsmTransition>);
     void dynamicSourceCalledEvent(FsmGraphicTransition*);
     void dynamicTargetCalledEvent(FsmGraphicTransition*);
+    void graphicTransitionEdited();
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
@@ -110,9 +114,11 @@ private slots:
 private:
     void finishInitialize();
     void rebuildArrowEnd();
+    void rebuildBoundingShape();
+    void updateSelectionShapeDisplay();
 
     void checkNeighboors();
-    void setNeighbors(FsmGraphicTransitionNeighborhood* neighborhood);
+    void setNeighbors(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood);
     void quitNeighboorhood();  // Ohhh... So sad
 
     //
@@ -132,19 +138,24 @@ private:
     // Base elements of the arrow
     QGraphicsItem*      arrowBody     = nullptr;
     QGraphicsItem*      arrowEnd      = nullptr;
-    QGraphicsTextItem*  conditionText = nullptr;
-    //QGraphicsItemGroup* actionsBox    = nullptr;
     QGraphicsLineItem*  conditionLine = nullptr;
-    QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection bow as Qt has trouble displaying it with complex shapes
+    QGraphicsTextItem*  conditionText = nullptr;
+//    QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection box as Qt has trouble displaying it with complex shapes
+    QGraphicsPathItem* selectionShape  = nullptr;
     qreal sceneAngle = 0;
 
-    // This list will be shared by all graphic transitions that have same {source, parent} couple (either direction)
-    FsmGraphicTransitionNeighborhood* neighbors = nullptr;
+    // This list is shared by all graphic transitions that have same {source, parent} couple (either direction)
+    shared_ptr<FsmGraphicTransitionNeighborhood> neighbors;
 
-    QPen* currentPen  = nullptr;
+    QPen* currentPen = nullptr;
 
+    // To avoid redrawing when state moves: useless
     bool autoTransitionNeedsRedraw = true;
-    QPointF arcMiddle;
+    QPointF autoTransitionConditionPosition;
+
+    QPainterPath boundingShape;
+
+    qreal conditionLineSliderPos;
 
 private:
     // These static items will depend on configuation later

@@ -22,6 +22,9 @@
 // Current class header
 #include "fsmgraphictransitionneighborhood.h"
 
+// C++ classes
+#include <math.h>
+
 // StateS classes
 #include "fsmgraphicstate.h"
 #include "fsmgraphictransition.h"
@@ -87,7 +90,7 @@ int FsmGraphicTransitionNeighborhood::computeTransitionPosition(FsmGraphicTransi
 }
 
 
-QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& deltaCurveOrigin, QPointF& curveMiddle, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2, QGraphicsLineItem** conditionLine) const
+QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& deltaCurveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& edgeAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const
 {
     //
     // Create a first system as:
@@ -127,16 +130,13 @@ QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmG
     // Update C point position in delta coordinates system
     QPointF deltaSystemCPoint = sceneSystemCPoint - deltaSystemOriginVector.p2();
 
-
     QPainterPath path;
     path.quadTo(deltaSystemCPoint, deltaSystemXVector.p2());
 
     QGraphicsPathItem* curve = new QGraphicsPathItem(path, me);
     curve->setPen(*pen);
 
-    QLineF middleVector(QPointF(0,0),
-                        QPointF(deltaSystemXVector.p2().x()/2,
-                                deltaSystemCPoint.y()/2));
+    QLineF middleVector(QPointF(0,0), path.pointAtPercent(conditionLineSliderPos));
 
     QLineF edgeAngle1Line(deltaSystemCPoint, deltaSystemXVector.p2());
     QLineF edgeAngle2Line(deltaSystemCPoint, deltaSystemXVector.p1());
@@ -150,6 +150,7 @@ QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmG
     conditionPosition.setY(conditionPosition.y() - conditionLineF.length()/2);
     conditionLineDisplay->setPos(conditionPosition);
     conditionLineDisplay->setPen(*pen);
+    conditionLineDisplay->setRotation(-path.angleAtPercent(conditionLineSliderPos));
 
     // Drawing in a horizontal coordinates, then rotate.
     // This is probably too much, but it was easier to reprensent in my mind ;)
@@ -167,7 +168,7 @@ QGraphicsPathItem* FsmGraphicTransitionNeighborhood::buildMyBody(QPen* pen, FsmG
     // Delta curve origin is the position of curve starting point wrt. source state center
     deltaCurveOrigin = deltaSystemOriginVector.p2();
     // Curve middle is the curve middle point in the horizontal coordinates system which originates at curve origin
-    curveMiddle = middleVector.p2();
+    conditionLinePos = middleVector.p2();
     // Curve target is the curve last point in the horizontal coordinates system which originates at curve origin
     curveTarget = actualTarget.p2();
     // Curve angles wrt. states perimeters
