@@ -82,6 +82,17 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<Mac
     connect(this->addBorderCheckBox, &CheckBoxHtml::toggled, this, &ImageExportDialog::addBorderCheckBoxChanged);
     layout->addWidget(this->addBorderCheckBox);
 
+    QHBoxLayout* sliderLayout = new QHBoxLayout();
+    QLabel* sliderLabel = new QLabel(tr("Ratio between machine view and aditional information"));
+    sliderLayout->addWidget(sliderLabel);
+    this->ratioSlider = new QSlider(Qt::Horizontal);
+    this->ratioSlider->setMinimum(1);
+    this->ratioSlider->setMaximum(10);
+    this->ratioSlider->setValue(3);
+    connect(this->ratioSlider, &QSlider::valueChanged, this, &ImageExportDialog::ratioSliderValueChanged);
+    sliderLayout->addWidget(this->ratioSlider);
+    layout->addLayout(sliderLayout);
+
     QLabel* previewTitle = new QLabel("<b>" + tr("Preview") + "</b>");
     previewTitle->setAlignment(Qt::AlignCenter);
     layout->addWidget(previewTitle);
@@ -198,6 +209,12 @@ void ImageExportDialog::infoToTheRightCheckBoxChanged(bool b)
 void ImageExportDialog::addBorderCheckBoxChanged(bool b)
 {
     this->previewManager->setDisplayBorder(b);
+    this->updatePreview();
+}
+
+void ImageExportDialog::ratioSliderValueChanged(int i)
+{
+    this->previewManager->setMainSceneRatio(i);
     this->updatePreview();
 }
 

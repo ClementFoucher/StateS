@@ -28,6 +28,7 @@
 // Qt classes
 class QComboBox;
 class QLabel;
+class QSlider;
 
 // StateS classes
 #include "machineimageexporter.h"
@@ -54,6 +55,7 @@ private slots:
     void includeVariablesCheckBoxChanged(bool b);
     void infoToTheRightCheckBoxChanged(bool b);
     void addBorderCheckBoxChanged(bool b);
+    void ratioSliderValueChanged(int i);
 
 private:
     void updatePreview();
@@ -65,6 +67,7 @@ private:
     CheckBoxHtml* includeVariablesCheckBox = nullptr;
     CheckBoxHtml* infoToTheRightCheckBox   = nullptr;
     CheckBoxHtml* addBorderCheckBox        = nullptr;
+    QSlider*      ratioSlider              = nullptr;
     QLabel*       previewWidget            = nullptr;
 
     shared_ptr<MachineImageExporter> previewManager;
