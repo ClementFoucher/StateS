@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.3.E *
+* StateS v. 0.3.F *
 *******************
 
 This software is intended to be a simple and effective discrete event machines drawer.

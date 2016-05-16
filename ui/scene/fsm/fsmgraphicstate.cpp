@@ -87,7 +87,7 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
-    this->setActuator(logicState);
+    this->setLogicActuator(logicState);
     this->setPen(pen);
 
     this->setFlag(QGraphicsItem::ItemIsMovable);
@@ -105,6 +105,9 @@ FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
     connect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
 
     rebuildRepresentation();
+
+    // Moving state changes its configuration
+    connect(this, &FsmGraphicState::stateMovedEvent, this, &GraphicComponent::graphicComponentConfigurationChangedEvent);
 }
 
 FsmGraphicState::~FsmGraphicState()
@@ -135,7 +138,7 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
     if ((change == GraphicsItemChange::ItemPositionChange) || (change == GraphicsItemChange::ItemPositionHasChanged))
     {
         if (this->moveEventEnabled)
-            emit stateMovingEvent();
+            emit stateMovedEvent();
     }
     else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
     {
@@ -370,78 +373,5 @@ void FsmGraphicState::rebuildRepresentation()
         {
             actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
         }
-
-        /**QList<shared_ptr<Signal>> actions = l_logicState->getActions();
-        if (actions.count() != 0)
-        {
-            qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
-
-            for (int i = 0 ; i < actions.count() ; i++)
-            {
-                QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
-
-                QString currentActionText;
-
-                Machine::mode currentMode = l_logicState->getOwningFsm()->getCurrentMode();
-
-                if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
-                    currentActionText = actions[i]->getText(true);
-                else
-                    currentActionText = actions[i]->getText(false);
-
-                if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
-                {
-                    int param1 = l_logicState->getActionParam1(actions[i]);
-                    int param2 = l_logicState->getActionParam2(actions[i]);
-
-                    if (param1 != -1)
-                    {
-                        currentActionText += "[";
-                        currentActionText += QString::number(param1);
-
-                        if (param2 != -1)
-                        {
-                            currentActionText += "..";
-                            currentActionText += QString::number(param2);
-                        }
-
-                        currentActionText += "]";
-                    }
-                }
-
-                if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::set)
-                {
-                    if (actions[i]->getSize() == 1)
-                        currentActionText += " = 1";
-                    else
-                        currentActionText += " = " + LogicValue::getValue1(actions[i]->getSize()).toString() + "<sub>b</sub>";
-                }
-                else if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::reset)
-                {
-                    if (actions[i]->getSize() == 1)
-                        currentActionText += " = 0";
-                    else
-                        currentActionText += " = " + LogicValue::getValue0(actions[i]->getSize()).toString() + "<sub>b</sub>";
-                }
-                else if (l_logicState->getActionType(actions[i]) == MachineActuatorComponent::action_types::assign)
-                    currentActionText += " = " + l_logicState->getActionValue(actions[i]).toString() + "<sub>b</sub>";
-
-                actionText->setHtml(currentActionText);
-
-
-                if (maxTextWidth < actionText->boundingRect().width())
-                    maxTextWidth = actionText->boundingRect().width();
-                actionText->setPos(radius+20, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
-                actionText->setZValue(1);
-            }
-
-            QPainterPath actionBorderPath;
-            actionBorderPath.lineTo(20,                0);
-            actionBorderPath.lineTo(20,                ((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(20 + maxTextWidth, ((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(20 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(20,                -((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(20,                0);
-Z        }*/
     }
 }

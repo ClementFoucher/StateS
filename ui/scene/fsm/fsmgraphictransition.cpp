@@ -78,6 +78,9 @@ FsmGraphicTransition::FsmGraphicTransition()
 
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
+
+    // Changing slider position is a configuration change
+    connect(this, &FsmGraphicTransition::transitionSliderPositionChangedEvent, this, &GraphicComponent::graphicComponentConfigurationChangedEvent);
 }
 
 FsmGraphicTransition::FsmGraphicTransition(FsmGraphicState* source, const QPointF& dynamicMousePosition) :
@@ -94,7 +97,7 @@ FsmGraphicTransition::FsmGraphicTransition(FsmGraphicState* source, const QPoint
 FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition) :
     FsmGraphicTransition()
 {
-    this->setActuator(logicTransition);
+    this->setLogicActuator(logicTransition);
     logicTransition->setGraphicRepresentation(this);
     connect(logicTransition.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
     connect(logicTransition.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicTransition::updateText);
@@ -148,7 +151,7 @@ void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transiti
     // This function can be called only once, we never reaffect a graphic transition
     if (this->logicTransition.expired())
     {
-        this->setActuator(transition);
+        this->setLogicActuator(transition);
 
         connect(transition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
         connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                   this, &FsmGraphicTransition::updateText);
@@ -175,7 +178,7 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
         this->source = newSource;
 
         // Connect to new state
-        connect(this->source, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+        connect(this->source, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
         return true;
     }
@@ -190,7 +193,7 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
             // Disconnect existing signal
             // If we were a single-state transition, do not disconnect as we still have target connected!
             if (this->source != this->target)
-                disconnect(this->source, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+                disconnect(this->source, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newSource)
@@ -199,7 +202,7 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
             this->source = newSource;
 
             // Connect to new state
-            connect(this->source, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+            connect(this->source, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newSource)
@@ -241,7 +244,7 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
         this->target = newTarget;
 
         // Connect to new state
-        connect(this->target, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+        connect(this->target, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
         return true;
     }
@@ -258,7 +261,7 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
             {
                 // If we were a single-state transition, do not disconnect as we still have source connected!
                 if (this->source != this->target)
-                    disconnect(this->target, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+                    disconnect(this->target, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
             }
 
             // If dynamic target state exists, we are already in the right neighborhood
@@ -269,7 +272,7 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
             this->target = newTarget;
 
             // Connect to new state
-            connect(this->target, &FsmGraphicState::stateMovingEvent, this, &FsmGraphicTransition::updateDisplay);
+            connect(this->target, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
             if (dynamicState != newTarget)
@@ -932,7 +935,7 @@ void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
     {
         this->conditionLineSliderPos = position;
         this->autoTransitionNeedsRedraw = true;
-        emit graphicTransitionEdited();
+        emit transitionSliderPositionChangedEvent();
         this->updateDisplay();
     }
 }

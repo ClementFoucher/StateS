@@ -105,7 +105,7 @@ private:
     void addTransition(FsmGraphicTransition* newTransition);
 
 private:
-    shared_ptr<Fsm> machine;
+    weak_ptr<Fsm> machine;
 
     sceneMode_e sceneMode;
     FsmGraphicTransition* currentTransition = nullptr;

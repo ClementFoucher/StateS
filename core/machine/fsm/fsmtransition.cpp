@@ -74,7 +74,7 @@ void FsmTransition::setGraphicRepresentation(FsmGraphicTransition* representatio
     if (this->graphicRepresentation == nullptr)
     {
         this->graphicRepresentation = representation;
-        connect(representation, &FsmGraphicTransition::graphicTransitionEdited, this, &FsmTransition::graphicTransitionEditedEvent);
+        connect(representation, &GraphicComponent::graphicComponentConfigurationChangedEvent, this, &FsmTransition::componentStaticConfigurationChangedEvent);
     }
     else
         qDebug() << "(FsmTransition:) Error! Setting graphic representation while already have one. Ignored command.";
@@ -84,9 +84,9 @@ void FsmTransition::clearGraphicRepresentation()
 {
     if (this->graphicRepresentation != nullptr)
     {
-        disconnect(this->graphicRepresentation, &FsmGraphicTransition::graphicTransitionEdited, this, &FsmTransition::graphicTransitionEditedEvent);
+        disconnect(this->graphicRepresentation, &GraphicComponent::graphicComponentConfigurationChangedEvent, this, &FsmTransition::componentStaticConfigurationChangedEvent);
+        this->graphicRepresentation = nullptr;
     }
-    this->graphicRepresentation = nullptr;
 }
 
 shared_ptr<FsmState> FsmTransition::getTarget() const

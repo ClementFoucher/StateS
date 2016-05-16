@@ -67,7 +67,7 @@ public:
     void enableMoveEvent();
 
 signals:
-    void stateMovingEvent();
+    void stateMovedEvent();
     void editStateCalledEvent(shared_ptr<FsmState> state);
     void renameStateCalledEvent(shared_ptr<FsmState> state);
 

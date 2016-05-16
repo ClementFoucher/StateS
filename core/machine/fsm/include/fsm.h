@@ -35,7 +35,7 @@ class FsmTransition;
 class FsmSimulator;
 
 
-class Fsm : public Machine
+class Fsm : public Machine, public enable_shared_from_this<Fsm>
 {
     Q_OBJECT
 
@@ -65,7 +65,7 @@ public:
     bool isEmpty() const override;
 
 private slots:
-    void stateEditedEventHandler();
+    void savableValueEditedEventHandler();
 
 private:
     QString getUniqueStateName(QString nameProposal);

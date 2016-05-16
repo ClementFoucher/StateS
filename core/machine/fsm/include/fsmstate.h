@@ -74,7 +74,6 @@ public:
 signals:
     void stateRenamedEvent();
     void stateLogicStateChangedEvent();
-    void stateGraphicRepresentationMoved(); // Separate this event to not trigger everything on state move
 
 private:
     void cleanIncomingTransitionsList();

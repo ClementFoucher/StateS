@@ -23,7 +23,7 @@
 #define GRAPHICACTUATOR_H
 
 // Parent
-#include <QObject>
+#include "graphiccomponent.h"
 
 // C++ classes
 #include <memory>
@@ -33,23 +33,27 @@ using namespace std;
 class QGraphicsItemGroup;
 
 // StateS classes
-#include "machine.h"
 class MachineActuatorComponent;
 
 
-class GraphicActuator : public QObject
+class GraphicActuator : public GraphicComponent
 {
     Q_OBJECT
 
 public:
     explicit GraphicActuator(QObject* parent = nullptr);
+    explicit GraphicActuator(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
     ~GraphicActuator();
 
     QGraphicsItemGroup* getActionsBox() const;
 
 protected:
-    void setActuator(shared_ptr<MachineActuatorComponent> actuator);
-    void buildActionsBox(const QPen& pen, bool center);
+    void setLogicActuator(shared_ptr<MachineActuatorComponent> actuator); // Throws StatesException TODO: check uses
+    shared_ptr<MachineActuatorComponent> getLogicActuator(); // Throws StatesException TODO: check uses
+    void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
+
+private:
+    void initialize();
 
 private:
     QGraphicsItemGroup* actionsBox = nullptr;

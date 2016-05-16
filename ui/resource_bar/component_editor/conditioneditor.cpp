@@ -67,8 +67,8 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
     QLabel* positionLabel = new QLabel(tr("Condition position"));
     positionLayout->addWidget(positionLabel);
     this->conditionTextPositionSlider = new QSlider(Qt::Horizontal);
-    this->conditionTextPositionSlider->setMinimum(0);
-    this->conditionTextPositionSlider->setMaximum(100);
+    this->conditionTextPositionSlider->setMinimum(1);
+    this->conditionTextPositionSlider->setMaximum(99);
     this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
     connect(this->conditionTextPositionSlider, &QSlider::valueChanged, this, &ConditionEditor::conditionTextPositionSliderChanged);
     positionLayout->addWidget(this->conditionTextPositionSlider);

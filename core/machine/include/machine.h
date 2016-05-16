@@ -42,7 +42,7 @@ class Output;
 class MachineSimulator;
 
 
-class Machine : public QObject, public enable_shared_from_this<Machine>
+class Machine : public QObject
 {
     Q_OBJECT
 

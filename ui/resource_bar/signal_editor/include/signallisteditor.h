@@ -66,6 +66,7 @@ private slots:
     // Handle signal add
     void beginAddSignal();
     void addingSignalSwitchField(QTableWidgetItem* newItem);
+    void addingSignalCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
     void endAddSignal();
 
     // Handle signal edit

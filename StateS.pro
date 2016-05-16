@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.12
+VERSION = 0.3.15
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
 
 SOURCES += \
@@ -28,34 +28,41 @@ SOURCES += \
     core/machine/machinecomponent.cpp \
     core/machine/machineactuatorcomponent.cpp \
     core/machine/machinebuilder.cpp \
+    core/machine/machineimageexporter.cpp \
     core/machine/fsm/fsmcomponent.cpp \
     core/machine/fsm/fsmvhdlexport.cpp \
     core/machine/fsm/fsmverifier.cpp \
     core/machine/fsm/fsm.cpp \
     core/machine/fsm/fsmstate.cpp \
     core/machine/fsm/fsmtransition.cpp \
+    core/machine/fsm/fsmsavefilemanager.cpp \
     core/signal/inout.cpp \
     core/signal/input.cpp \
     core/signal/io.cpp \
     core/signal/signal.cpp \
     core/signal/equation.cpp \
     core/signal/output.cpp \
+    core/signal/constant.cpp \
     core/simulation/clock.cpp \
     core/simulation/fsmsimulator.cpp \
     core/simulation/machinesimulator.cpp \
     core/exceptions/statesexception.cpp \
-    core/signal/constant.cpp \
+#
     ui/statesui.cpp \
     ui/machinecomponentvisualizer.cpp \
     ui/displayarea.cpp \
     ui/truthtabledisplay.cpp \
+    ui/rangeextractorwidget.cpp \
+    ui/editableequation.cpp \
     ui/dialogs/imageexportdialog.cpp \
     ui/dialogs/langselectiondialog.cpp \
     ui/dialogs/vhdlexportdialog.cpp \
+    ui/dialogs/errordisplaydialog.cpp \
     ui/equation_editor/inverterbar.cpp \
     ui/equation_editor/equationeditor.cpp \
     ui/equation_editor/graphicequation.cpp \
     ui/equation_editor/equationmimedata.cpp \
+    ui/equation_editor/constantvaluesetter.cpp \
     ui/refined_widget/dynamiclineedit.cpp \
     ui/refined_widget/contextmenu.cpp \
     ui/refined_widget/dynamictableitemdelegate.cpp \
@@ -64,6 +71,8 @@ SOURCES += \
     ui/refined_widget/checkboxhtml.cpp \
     ui/refined_widget/labelwithclickevent.cpp \
     ui/refined_widget/collapsiblewidgetwithtitle.cpp \
+    ui/refined_widget/statesgraphicsview.cpp \
+    ui/refined_widget/lineeditwithupdownbuttons.cpp \
     ui/resource_bar/abouttab.cpp \
     ui/resource_bar/resourcebar.cpp \
     ui/resource_bar/verifiertab.cpp \
@@ -72,6 +81,7 @@ SOURCES += \
     ui/resource_bar/component_editor/actionlisteditor.cpp \
     ui/resource_bar/component_editor/actioneditor.cpp \
     ui/resource_bar/component_editor/componenteditortab.cpp \
+    ui/resource_bar/component_editor/rangeeditordialog.cpp \
     ui/resource_bar/component_editor/conditioneditor.cpp \
     ui/resource_bar/machine_builder/fsmtoolspanel.cpp \
     ui/resource_bar/machine_builder/machinetoolspanel.cpp \
@@ -85,26 +95,18 @@ SOURCES += \
     ui/scene/scenewidget.cpp \
     ui/scene/genericscene.cpp \
     ui/scene/blankscene.cpp \
-    ui/scene/machineimageexporter.cpp \
+    ui/scene/graphicactuator.cpp \
+    ui/scene/graphiccomponent.cpp \
     ui/scene/fsm/fsmscene.cpp \
+    ui/scene/fsm/fsmgraphicstate.cpp \
+    ui/scene/fsm/fsmgraphictransition.cpp \
+    ui/scene/fsm/fsmgraphictransitionneighborhood.cpp \
     ui/simulation/graphictimeline.cpp \
     ui/simulation/graphicclocktimeline.cpp \
     ui/simulation/clocktimeline.cpp \
     ui/simulation/signaltimeline.cpp \
     ui/simulation/simulationwidget.cpp \
-    ui/static/svgimagegenerator.cpp \
-    ui/scene/fsm/fsmgraphicstate.cpp \
-    ui/scene/fsm/fsmgraphictransition.cpp \
-    ui/scene/fsm/fsmgraphictransitionneighborhood.cpp \
-    ui/refined_widget/lineeditwithupdownbuttons.cpp \
-    ui/rangeextractorwidget.cpp \
-    ui/resource_bar/component_editor/rangeeditordialog.cpp \
-    ui/scene/graphicactuator.cpp \
-    ui/equation_editor/constantvaluesetter.cpp \
-    ui/editableequation.cpp \
-    core/machine/fsm/fsmsavefilemanager.cpp \
-    ui/refined_widget/statesgraphicsview.cpp \
-    ui/dialogs/errordisplaydialog.cpp
+    ui/static/svgimagegenerator.cpp
 
 
 
@@ -116,35 +118,41 @@ HEADERS  += \
     core/machine/include/machinecomponent.h \
     core/machine/include/machineactuatorcomponent.h \
     core/machine/include/machinebuilder.h \
+    core/machine/include/scenewidget.h \
+    core/machine/include/machineimageexporter.h \
     core/machine/fsm/include/fsmcomponent.h \
     core/machine/fsm/include/fsmvhdlexport.h \
     core/machine/fsm/include/fsmverifier.h \
     core/machine/fsm/include/fsm.h \
     core/machine/fsm/include/fsmstate.h \
     core/machine/fsm/include/fsmtransition.h \
+    core/machine/fsm/include/fsmsavefilemanager.h \
     core/signal/include/inout.h \
     core/signal/include/input.h \
     core/signal/include/io.h \
     core/signal/include/output.h \
     core/signal/include/signal.h \
+    core/signal/include/constant.h \
     core/signal/include/equation.h \
     core/simulation/include/clock.h \
     core/simulation/include/fsmsimulator.h \
     core/simulation/include/machinesimulator.h \
-    core/machine/fsm/include/fsmsavefilemanager.h \
     core/exceptions/include/statesexception.h \
-    core/signal/include/constant.h \
 #
     ui/include/statesui.h \
     ui/include/truthtabledisplay.h \
     ui/include/displayarea.h \
+    ui/include/editableequation.h \
+    ui/include/rangeextractorwidget.h \
     ui/include/machinecomponentvisualizer.h \
     ui/dialogs/include/vhdlexportdialog.h \
     ui/dialogs/include/langselectiondialog.h \
+    ui/dialogs/include/errordisplaydialog.h \
     ui/dialogs/include/imageexportdialog.h \
     ui/equation_editor/include/equationeditor.h \
     ui/equation_editor/include/graphicequation.h \
     ui/equation_editor/include/equationmimedata.h \
+    ui/equation_editor/include/constantvaluesetter.h \
     ui/equation_editor/include/inverterbar.h \
     ui/refined_widget/include/dynamiclineedit.h \
     ui/refined_widget/include/contextmenu.h \
@@ -153,7 +161,9 @@ HEADERS  += \
     ui/refined_widget/include/tablewidgetwithresizeevent.h \
     ui/refined_widget/include/checkboxhtml.h \
     ui/refined_widget/include/labelwithclickevent.h \
+    ui/refined_widget/include/statesgraphicsview.h \
     ui/refined_widget/include/collapsiblewidgetwithtitle.h \
+    ui/refined_widget/include/lineeditwithupdownbuttons.h \
     ui/resource_bar/include/abouttab.h \
     ui/resource_bar/include/resourcebar.h \
     ui/resource_bar/include/verifiertab.h \
@@ -161,6 +171,7 @@ HEADERS  += \
     ui/resource_bar/component_editor/include/transitioneditortab.h \
     ui/resource_bar/component_editor/include/actionlisteditor.h \
     ui/resource_bar/component_editor/include/componenteditortab.h \
+    ui/resource_bar/component_editor/include/rangeeditordialog.h \
     ui/resource_bar/component_editor/include/actioneditor.h \
     ui/resource_bar/component_editor/include/conditioneditor.h \
     ui/resource_bar/machine_builder/include/fsmtoolspanel.h \
@@ -172,28 +183,20 @@ HEADERS  += \
     ui/resource_bar/simulator_tab/include/inputsignalselector.h \
     ui/resource_bar/simulator_tab/include/inputbitselector.h \
     ui/resource_bar/simulator_tab/include/inputsselector.h \
-    ui/scene/include/scenewidget.h \
     ui/scene/include/genericscene.h \
+    ui/scene/include/graphicactuator.h \
     ui/scene/include/blankscene.h \
-    ui/scene/include/machineimageexporter.h \
+    ui/scene/include/graphiccomponent.h \
     ui/scene/fsm/include/fsmscene.h \
+    ui/scene/fsm/include/fsmgraphicstate.h \
+    ui/scene/fsm/include/fsmgraphictransition.h \
+    ui/scene/fsm/include/fsmgraphictransitionneighborhood.h \
     ui/simulation/include/graphictimeline.h \
     ui/simulation/include/graphicclocktimeline.h \
     ui/simulation/include/clocktimeline.h \
     ui/simulation/include/signaltimeline.h \
     ui/simulation/include/simulationwidget.h \
-    ui/static/include/svgimagegenerator.h \
-    ui/scene/fsm/include/fsmgraphicstate.h \
-    ui/scene/fsm/include/fsmgraphictransition.h \
-    ui/scene/fsm/include/fsmgraphictransitionneighborhood.h \
-    ui/refined_widget/include/lineeditwithupdownbuttons.h \
-    ui/include/rangeextractorwidget.h \
-    ui/resource_bar/component_editor/include/rangeeditordialog.h \
-    ui/scene/include/graphicactuator.h \
-    ui/equation_editor/include/constantvaluesetter.h \
-    ui/include/editableequation.h \
-    ui/refined_widget/include/statesgraphicsview.h \
-    ui/dialogs/include/errordisplaydialog.h
+    ui/static/include/svgimagegenerator.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \

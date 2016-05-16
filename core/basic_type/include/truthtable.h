@@ -58,10 +58,10 @@ private:
     QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
     void buildTable(QVector<shared_ptr<Equation>> equations);
 
-    QVector<weak_ptr<Signal>>    signalTable;
-    QVector<QVector<LogicValue>> inputTable;
-    QVector<QString>             equationTable;
-    QVector<QVector<LogicValue>> outputTable;
+    QVector<weak_ptr<Signal>>    inputSignalsTable;
+    QVector<QString>             outputEquationsTextsTable;
+    QVector<QVector<LogicValue>> inputValuesTable;
+    QVector<QVector<LogicValue>> outputValuesTable;
 };
 
 #endif // TRUTHTABLE_H

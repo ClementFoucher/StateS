@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+- 2016-05-16 - V 0.3.F - Restored truth table feature (0.3.C regression); Corrected bug with tab key on signal creation.
 - 2016-05-15 - V 0.3.E - Added a way to move condition position on a transition; Display errors encountered while loading file to user; Added control over ratio in image export; Better shape selection on scene.
 - 2016-05-07 - V 0.3.D - Corrected image export display.
 - 2016-05-06 - V 0.3.C - Small UI enhancements; Allow drag-and-dropping files on UI to load; Added export options.

@@ -64,7 +64,6 @@ public:
 
 signals:
     void conditionChangedEvent();
-    void graphicTransitionEditedEvent();
 
 private:
     FsmGraphicTransition* graphicRepresentation = nullptr;

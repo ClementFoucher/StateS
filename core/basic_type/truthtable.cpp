@@ -55,7 +55,7 @@ QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesExcep
 {
     QVector<shared_ptr<Signal>> list;
 
-    foreach(weak_ptr<Signal> sig, this->signalTable)
+    foreach(weak_ptr<Signal> sig, this->inputSignalsTable)
     {
         if (! sig.expired())
             list.append(sig.lock());
@@ -72,7 +72,7 @@ QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesExcep
  */
 QVector<QString> TruthTable::getOutputsEquations() const
 {
-    return this->equationTable;
+    return this->outputEquationsTextsTable;
 }
 
 /**
@@ -82,7 +82,7 @@ QVector<QString> TruthTable::getOutputsEquations() const
  */
 QVector<QVector<LogicValue> > TruthTable::getInputTable() const
 {
-    return this->inputTable;
+    return this->inputValuesTable;
 }
 
 /**
@@ -93,7 +93,7 @@ QVector<QVector<LogicValue> > TruthTable::getInputTable() const
  */
 QVector<QVector<LogicValue> > TruthTable::getOutputTable() const
 {
-    return this->outputTable;
+    return this->outputValuesTable;
 }
 
 /**
@@ -104,7 +104,7 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
 {
     QVector<LogicValue> output;
 
-    foreach(QVector<LogicValue> currentRow, this->outputTable)
+    foreach(QVector<LogicValue> currentRow, this->outputValuesTable)
     {
         output.append(currentRow[0]);
     }
@@ -118,7 +118,7 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
  */
 uint TruthTable::getOutputCount() const
 {
-    return this->outputTable.count();
+    return this->outputValuesTable.count();
 }
 
 /**
@@ -143,7 +143,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
         }
         else
         {
-            if (dynamic_pointer_cast<Constant>(sig) != nullptr)
+            if (dynamic_pointer_cast<Constant>(sig) == nullptr)
                 list.append(sig);
         }
     }
@@ -163,7 +163,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
     foreach(shared_ptr<Equation> equation, equations)
     {
         signalList += extractSignals(equation);
-        this->equationTable.append(equation->getText());
+        this->outputEquationsTextsTable.append(equation->getText());
     }
 
     // Clean list so each signal only appears once
@@ -174,7 +174,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         if (!signalVector.contains(signal))
         {
             signalVector.append(signal);
-            this->signalTable.append(signal);
+            this->inputSignalsTable.append(signal);
         }
     }
 
@@ -195,7 +195,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
     for (uint i = 0 ; i < pow(2, inputCount) ; i++)
     {
         // Add current row
-        this->inputTable.append(currentRow);
+        this->inputValuesTable.append(currentRow);
 
         // Compute outputs for this row
         for (int i = 0 ; i < signalVector.count() ; i++)
@@ -208,7 +208,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
         {
             currentResultLine.append(equation->getCurrentValue());
         }
-        this->outputTable.append(currentResultLine);
+        this->outputValuesTable.append(currentResultLine);
 
         // Prepare next row
         for (int i = currentRow.count() - 1 ; i >= 0 ; i--)

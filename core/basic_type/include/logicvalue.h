@@ -59,16 +59,16 @@ public:
     bool operator!=(const LogicValue& otherValue) const;
 
     LogicValue operator!() const;
-    // Logic operators result will be null state is used with different size other value
-    LogicValue operator&(const LogicValue& otherValue) const;
-    LogicValue operator|(const LogicValue& otherValue) const;
-    LogicValue operator^(const LogicValue& otherValue) const;
+    // Logic operators result will be null state is used with different size other value // TODO: Throws StatesException
+    LogicValue operator&(const LogicValue& otherValue) const; // TODO: Throws StatesException
+    LogicValue operator|(const LogicValue& otherValue) const; // TODO: Throws StatesException
+    LogicValue operator^(const LogicValue& otherValue) const; // TODO: Throws StatesException
 
     LogicValue operator=(const LogicValue& otherValue);
-    // If used with different size state, value will be unchanged, and call will return null state
-    LogicValue operator&=(const LogicValue& otherValue);
-    LogicValue operator|=(const LogicValue& otherValue);
-    LogicValue operator^=(const LogicValue& otherValue);
+    // If used with different size state, value will be unchanged, and call will return null state // TODO: Throws StatesException
+    LogicValue operator&=(const LogicValue& otherValue); // TODO: Throws StatesException
+    LogicValue operator|=(const LogicValue& otherValue); // TODO: Throws StatesException
+    LogicValue operator^=(const LogicValue& otherValue); // TODO: Throws StatesException
     bool increment();
 
     bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses

@@ -98,7 +98,7 @@ signals:
     void editCalledEvent(shared_ptr<FsmTransition>);
     void dynamicSourceCalledEvent(FsmGraphicTransition*);
     void dynamicTargetCalledEvent(FsmGraphicTransition*);
-    void graphicTransitionEdited();
+    void transitionSliderPositionChangedEvent();
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
@@ -136,11 +136,10 @@ private:
     FsmGraphicState* dynamicState = nullptr;
 
     // Base elements of the arrow
-    QGraphicsItem*      arrowBody     = nullptr;
-    QGraphicsItem*      arrowEnd      = nullptr;
-    QGraphicsLineItem*  conditionLine = nullptr;
-    QGraphicsTextItem*  conditionText = nullptr;
-//    QGraphicsRectItem*  selectionBox  = nullptr; // Manually deal with selection box as Qt has trouble displaying it with complex shapes
+    QGraphicsItem*     arrowBody       = nullptr;
+    QGraphicsItem*     arrowEnd        = nullptr;
+    QGraphicsLineItem* conditionLine   = nullptr;
+    QGraphicsTextItem* conditionText   = nullptr;
     QGraphicsPathItem* selectionShape  = nullptr;
     qreal sceneAngle = 0;
 
