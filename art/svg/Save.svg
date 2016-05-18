@@ -8,10 +8,34 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="256"
    height="256"
-   id="svg2">
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Save.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="983"
+     id="namedview38"
+     showgrid="false"
+     inkscape:zoom="2.6074563"
+     inkscape:cx="-11.294062"
+     inkscape:cy="129.85319"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1-3" />
   <defs
      id="defs4">
     <linearGradient
@@ -74,27 +98,6 @@
          style="stop-color:#ffffff;stop-opacity:0"
          offset="1" />
     </linearGradient>
-    <radialGradient
-       cx="11.25"
-       cy="19.03125"
-       r="8.0625"
-       fx="11.25"
-       fy="19.03125"
-       id="radialGradient5855"
-       xlink:href="#linearGradient5105"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1,0,0,0.282946,0,13.64644)" />
-    <linearGradient
-       id="linearGradient5105">
-      <stop
-         id="stop5107"
-         style="stop-color:#000000;stop-opacity:1"
-         offset="0" />
-      <stop
-         id="stop5109"
-         style="stop-color:#000000;stop-opacity:0"
-         offset="1" />
-    </linearGradient>
   </defs>
   <metadata
      id="metadata7">
@@ -104,7 +107,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -158,11 +161,6 @@
     <g
        transform="matrix(3.2692903,0,0,3.2692903,31.186724,812.80177)"
        id="layer1-3">
-      <path
-         d="m 19.3125,19.03125 a 8.0625,2.28125 0 1 1 -16.125,0 8.0625,2.28125 0 1 1 16.125,0 z"
-         transform="matrix(2.5121226,0,0,2.410961,-4.51537,-13.87225)"
-         id="path4346"
-         style="opacity:0.16292138;color:#000000;fill:url(#radialGradient5855);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible" />
       <path
          d="M 42.5,25.52548 30.46475,39.5 18.48982,25.52548 l 6.09179,0 c 2.0473,-5.48597 -2.1567,-8.9778 -7.03107,-8.9778 -3.46376,0 -8.16323,1.90496 -9.75068,6.6414 C 6.9742,25.6526 5.51992,24.5734 5.57612,22.43234 5.79365,14.17053 11.919,7.56333 21.06314,7.56333 c 9.14414,0 15.93686,7.09859 15.42377,17.96215 l 6.01309,0 z"
          id="path4972"

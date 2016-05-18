@@ -22,24 +22,25 @@
 // Current class header
 #include "displayarea.h"
 
-// Qt classes
-#include <QVBoxLayout>
-
 // StateS classes
 #include "scenewidget.h"
 #include "simulationwidget.h"
-//#include "genericscene.h"
+#include "toolbar.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
-    QWidget(parent)
+    QMainWindow(parent)
 {
-    new QVBoxLayout(this);
+    this->setWindowFlags(Qt::Widget);
     this->machineDisplayArea = new SceneWidget();
 
     connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);
     connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &DisplayArea::editSelectedItemEvent);
     connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &DisplayArea::renameSelectedItemEvent);
+
+    this->toolBar = new ToolBar(this);
+    this->toolBar->setMovable(true);
+    this->addToolBar(Qt::LeftToolBarArea, this->toolBar);
 
     this->currentDisplayArea = this->machineDisplayArea;
     this->showCurrentDisplay();
@@ -66,6 +67,11 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 GenericScene* DisplayArea::getScene() const
 {
     return this->machineDisplayArea->getScene();
+}
+
+ToolBar* DisplayArea::getToolbar() const
+{
+    return this->toolBar;
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)
@@ -147,6 +153,6 @@ void DisplayArea::resetDisplay()
 
 void DisplayArea::showCurrentDisplay()
 {
-    this->layout()->addWidget(this->currentDisplayArea);
+    this->setCentralWidget(this->currentDisplayArea);
     this->currentDisplayArea->show();
 }

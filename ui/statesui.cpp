@@ -44,6 +44,7 @@
 #include "fsm.h"
 #include "fsmvhdlexport.h"
 #include "errordisplaydialog.h"
+#include "toolbar.h"
 
 
 StatesUi::StatesUi() :
@@ -61,75 +62,13 @@ StatesUi::StatesUi() :
                       )
                );
 
-    // Generate tool bar
-    QToolBar* mainToolBar = new QToolBar(this);
-    mainToolBar->setMovable(true);
-    mainToolBar->setAllowedAreas(Qt::LeftToolBarArea | Qt::TopToolBarArea | Qt::BottomToolBarArea);
-    mainToolBar->setIconSize(QSize(64, 64));
-    this->addToolBar(Qt::LeftToolBarArea, mainToolBar);
-
-    this->actionSave = new QAction(this);
-    this->actionSave->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save_as"))));
-    this->actionSave->setText(tr("Save"));
-    this->actionSave->setToolTip(tr("Save machine in a new file"));
-    connect(this->actionSave, &QAction::triggered, this, &StatesUi::beginSaveAsProcedure);
-    mainToolBar->addAction(this->actionSave);
-
-    this->actionSaveCurrent = new QAction(this);
-    this->actionSaveCurrent->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save"))));
-    this->actionSaveCurrent->setText(tr("Save as"));
-    this->actionSaveCurrent->setToolTip(tr("Update saved file with current content") + " (" + tr("use ctrl+S shortcut to avoid confirm dialog") + ")");
-    this->actionSaveCurrent->setEnabled(false);
-    connect(this->actionSaveCurrent, &QAction::triggered, this, &StatesUi::beginSaveProcedure);
-    mainToolBar->addAction(this->actionSaveCurrent);
-
-    this->actionLoad = new QAction(this);
-    this->actionLoad->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/load"))));
-    this->actionLoad->setText(tr("Load"));
-    this->actionLoad->setToolTip(tr("Load machine from file"));
-    connect(this->actionLoad, &QAction::triggered, this, &StatesUi::beginLoadProcedure);
-    mainToolBar->addAction(this->actionLoad);
-
-    mainToolBar->addSeparator();
-
-    this->actionNewFsm = new QAction(this);
-    //this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
-    this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
-    this->actionNewFsm->setText(tr("New FSM"));
-    this->actionNewFsm->setToolTip(tr("Create new FSM"));
-    connect(this->actionNewFsm, &QAction::triggered, this, &StatesUi::beginNewMachineProcedure);
-    mainToolBar->addAction(this->actionNewFsm);
-
-   /* this->actionClear = new QAction(this);
-    this->actionClear->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
-    this->actionClear->setText(tr("Clear"));
-    this->actionClear->setToolTip(tr("Clear machine"));
-    connect(this->actionClear, &QAction::triggered, this, &StatesUi::beginClearMachineProcedure);
-    mainToolBar->addAction(this->actionClear);*/
-
-    mainToolBar->addSeparator();
-
-    this->actionExportImage = new QAction(this);
-    this->actionExportImage->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_image"))));
-    this->actionExportImage->setText(tr("Export to image file"));
-    this->actionExportImage->setToolTip(tr("Export machine to an image file"));
-    connect(this->actionExportImage, &QAction::triggered, this, &StatesUi::beginExportImageProcedure);
-    mainToolBar->addAction(this->actionExportImage);
-
-    this->actionExportVhdl = new QAction(this);
-    this->actionExportVhdl->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
-    this->actionExportVhdl->setText(tr("Export to VHDL"));
-    this->actionExportVhdl->setToolTip(tr("Export machine to VHDL"));
-    connect(this->actionExportVhdl, &QAction::triggered, this, &StatesUi::beginExportVhdlProcedure);
-    mainToolBar->addAction(this->actionExportVhdl);
-
     // Add scene and resource bar
     QSplitter* splitter = new QSplitter();
     splitter->setOrientation(Qt::Horizontal);
     splitter->setChildrenCollapsible(false);
     this->setCentralWidget(splitter);
 
-    this->displayArea  = new DisplayArea(splitter);
+    this->displayArea = new DisplayArea(splitter);
     this->resourceBar = new ResourceBar(splitter);
 
     connect(this->displayArea, &DisplayArea::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
@@ -141,6 +80,16 @@ StatesUi::StatesUi() :
     length.append( ( 66 * splitter->sizeHint().width() ) / 100 );
     length.append( ( 33 * splitter->sizeHint().width() ) / 100 );
     splitter->setSizes(length);
+
+    // Connect tool bar
+    ToolBar* toolBar = this->displayArea->getToolbar();
+
+    connect(toolBar, &ToolBar::saveAsRequestedEvent,      this, &StatesUi::beginSaveAsProcedure);
+    connect(toolBar, &ToolBar::saveRequestedEvent,        this, &StatesUi::beginSaveProcedure);
+    connect(toolBar, &ToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
+    connect(toolBar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
+    connect(toolBar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
+    connect(toolBar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
 }
 
 void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
@@ -150,27 +99,26 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
         disconnect(this->machine.lock().get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
     }
 
+    ToolBar* toolBar = this->displayArea->getToolbar();
     if (newMachine != nullptr)
     {
-        this->actionSave       ->setEnabled(true);
-       // this->actionClear      ->setEnabled(true);
-        this->actionExportImage->setEnabled(true);
-        this->actionExportVhdl ->setEnabled(true);
+        toolBar->setSaveAsActionEnabled(true);
+        //toolBar->setClearActionEnabled(true);
+        toolBar->setExportActionsEnabled(true);
 
         if (path.length() != 0)
-            this->actionSaveCurrent->setEnabled(newMachine->isUnsaved());
+            toolBar->setSaveActionEnabled(newMachine->isUnsaved());
         else
-            this->actionSaveCurrent->setEnabled(false);
+            toolBar->setSaveActionEnabled(false);
 
         connect(newMachine.get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
     }
     else
     {
-        this->actionSave       ->setEnabled(false);
-        //this->actionClear      ->setEnabled(false);
-        this->actionExportImage->setEnabled(false);
-        this->actionExportVhdl ->setEnabled(false);
-        this->actionSaveCurrent->setEnabled(false);
+        toolBar->setSaveActionEnabled(false);
+        //toolBar->setClearActionEnabled(false);
+        toolBar->setExportActionsEnabled(false);
+        toolBar->setSaveActionEnabled(false);
     }
 
     this->machine = newMachine;
@@ -189,10 +137,11 @@ void StatesUi::setCurrentFilePath(const QString& path)
     {
         this->currentFilePath = path;
 
+        ToolBar* toolBar = this->displayArea->getToolbar();
         if (path.length() != 0)
-            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
+            toolBar->setSaveActionEnabled(l_machine->isUnsaved());
         else
-            this->actionSaveCurrent->setEnabled(false);
+            toolBar->setSaveActionEnabled(false);
     }
 
     this->updateTitle();
@@ -345,10 +294,11 @@ void StatesUi::machineUnsavedStateChangedEventHandler(bool)
 
     if (l_machine != nullptr)
     {
+        ToolBar* toolBar = this->displayArea->getToolbar();
         if (this->currentFilePath.length() != 0)
-            this->actionSaveCurrent->setEnabled(l_machine->isUnsaved());
+            toolBar->setSaveActionEnabled(l_machine->isUnsaved());
         else
-            this->actionSaveCurrent->setEnabled(false);
+            toolBar->setSaveActionEnabled(false);
     }
 
     this->updateTitle();

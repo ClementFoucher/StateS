@@ -99,17 +99,8 @@ private:
     QString getCurrentDirPath() const;
 
 private:
-    // Action bar
-    QAction* actionSave        = nullptr;
-    QAction* actionSaveCurrent = nullptr;
-    QAction* actionLoad        = nullptr;
-    QAction* actionNewFsm      = nullptr;
-    //QAction* actionClear       = nullptr;
-    QAction* actionExportImage = nullptr;
-    QAction* actionExportVhdl  = nullptr;
-
     // Display area and resource bar
-    DisplayArea* displayArea  = nullptr;
+    DisplayArea* displayArea = nullptr;
     ResourceBar* resourceBar = nullptr;
 
     // Current machine

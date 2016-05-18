@@ -23,7 +23,7 @@
 #define DISPLAYAREA_H
 
 // Parent
-#include <QWidget>
+#include <QMainWindow>
 
 // C++ classes
 #include <memory>
@@ -36,6 +36,7 @@ class QTabWidget;
 #include "machine.h"
 class SceneWidget;
 class SimulationWidget;
+class ToolBar;
 class MachineComponent;
 class GenericScene;
 
@@ -45,7 +46,7 @@ class GenericScene;
  * Usually, this is just the machine graphic representation,
  * but in simulation mode, the timeline is also handled here.
  */
-class DisplayArea : public QWidget
+class DisplayArea : public QMainWindow
 {
     Q_OBJECT
 
@@ -54,6 +55,7 @@ public:
 
     void setMachine(shared_ptr<Machine> newMachine);
     GenericScene* getScene() const;
+    ToolBar* getToolbar() const;
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -74,6 +76,7 @@ private:
     // Content
     SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
     SimulationWidget* timeline           = nullptr;
+    ToolBar*          toolBar            = nullptr;
 
     // Used if containing both widgets at the same time
     QTabWidget*       tabbedDisplayArea  = nullptr;

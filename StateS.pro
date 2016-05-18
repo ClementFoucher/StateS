@@ -54,6 +54,7 @@ SOURCES += \
     ui/truthtabledisplay.cpp \
     ui/rangeextractorwidget.cpp \
     ui/editableequation.cpp \
+    ui/toolbar.cpp \
     ui/dialogs/imageexportdialog.cpp \
     ui/dialogs/langselectiondialog.cpp \
     ui/dialogs/vhdlexportdialog.cpp \
@@ -145,6 +146,7 @@ HEADERS  += \
     ui/include/editableequation.h \
     ui/include/rangeextractorwidget.h \
     ui/include/machinecomponentvisualizer.h \
+    ui/include/toolbar.h \
     ui/dialogs/include/vhdlexportdialog.h \
     ui/dialogs/include/langselectiondialog.h \
     ui/dialogs/include/errordisplaydialog.h \
