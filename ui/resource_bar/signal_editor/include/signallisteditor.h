@@ -88,6 +88,7 @@ private slots:
 private:
     void switchMode(mode newMode);
     void editCurrentCell(bool erroneous = false);
+    void fixSignalSize();
     QList<QString> getSelectedSignals();
 
 private:

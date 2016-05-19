@@ -442,24 +442,7 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
         // Resize value if needed
         if ( (this->currentTableItem == this->currentSignalSize) || (this->currentTableItem == this->currentSignalValue) )
         {
-            try
-            {
-                LogicValue currentInitialValue = LogicValue::fromString(this->currentSignalValue->text()); // Throws StatesException
-
-                uint newSize = (uint)this->currentSignalSize->text().toInt();
-                currentInitialValue.resize(newSize); // Throws StatesException
-
-                this->currentSignalValue->setText(currentInitialValue.toString());
-            }
-            catch (const StatesException& e)
-            {
-                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
-                {
-                    qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
-                }
-                else
-                    throw;
-            }
+            this->fixSignalSize();
         }
 
         Qt::ItemFlags currentFlags = this->currentTableItem->flags();
@@ -537,6 +520,8 @@ void SignalListEditor::endAddSignal()
         // If adding signal failed, continue editing signal name
         if (newSignal == nullptr)
         {
+            this->fixSignalSize();
+
             this->signalSelectionToRestore = QString::null;
             this->currentTableItem = this->currentSignalName;
             this->currentSignalName->setText(finalName);
@@ -917,6 +902,28 @@ void SignalListEditor::editCurrentCell(bool erroneous)
     }
 
     editor->setFocus();
+}
+
+void SignalListEditor::fixSignalSize()
+{
+    try
+    {
+        LogicValue currentInitialValue = LogicValue::fromString(this->currentSignalValue->text()); // Throws StatesException
+
+        uint newSize = (uint)this->currentSignalSize->text().toInt();
+        currentInitialValue.resize(newSize); // Throws StatesException
+
+        this->currentSignalValue->setText(currentInitialValue.toString());
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+        {
+            qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
+        }
+        else
+            throw;
+    }
 }
 
 QList<QString> SignalListEditor::getSelectedSignals()
