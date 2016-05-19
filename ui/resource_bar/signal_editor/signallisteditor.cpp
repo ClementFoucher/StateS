@@ -198,12 +198,15 @@ void SignalListEditor::updateList()
 
             // Signal name
             QTableWidgetItem* currentItem = new QTableWidgetItem(sig->getName());
+            Qt::ItemFlags currentFlags = currentItem->flags();
+            currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
             this->signalsList->setItem(this->signalsList->rowCount()-1, 0, currentItem);
             this->associatedSignals[currentItem] = sig;
 
             // Signal size
             currentItem = new QTableWidgetItem(QString::number(sig->getSize()));
-
+            currentFlags = currentItem->flags();
+            currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
             this->signalsList->setItem(this->signalsList->rowCount()-1, 1, currentItem);
             this->associatedSignals[currentItem] = sig;
 
@@ -211,6 +214,8 @@ void SignalListEditor::updateList()
             if (this->signalsList->columnCount() == 3)
             {
                 currentItem = new QTableWidgetItem(sig->getInitialValue().toString());
+                currentFlags = currentItem->flags();
+                currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
                 this->signalsList->setItem(this->signalsList->rowCount()-1, 2, currentItem);
                 this->associatedSignals[currentItem] = sig;
             }
@@ -407,11 +412,15 @@ void SignalListEditor::beginAddSignal()
         this->signalsList->setItem(this->signalsList->rowCount()-1, 0, this->currentSignalName);
 
         this->currentSignalSize = new QTableWidgetItem("1");
+        Qt::ItemFlags currentFlags = this->currentSignalSize->flags();
+        this->currentSignalSize->setFlags(currentFlags & ~Qt::ItemIsEditable);
         this->signalsList->setItem(this->signalsList->rowCount()-1, 1, this->currentSignalSize);
 
         if (this->signalsList->columnCount() == 3)
         {
             this->currentSignalValue = new QTableWidgetItem("0");
+            currentFlags = this->currentSignalValue->flags();
+            this->currentSignalValue->setFlags(currentFlags & ~Qt::ItemIsEditable);
             this->signalsList->setItem(this->signalsList->rowCount()-1, 2, this->currentSignalValue);
         }
 
@@ -430,7 +439,8 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
     {
         this->signalsList->closePersistentEditor(this->currentTableItem);
 
-        if (this->currentTableItem == this->currentSignalSize)
+        // Resize value if needed
+        if ( (this->currentTableItem == this->currentSignalSize) || (this->currentTableItem == this->currentSignalValue) )
         {
             try
             {
@@ -454,7 +464,6 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
 
         Qt::ItemFlags currentFlags = this->currentTableItem->flags();
         this->currentTableItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
-        newItem->setFlags(currentFlags | Qt::ItemIsEditable);
 
         this->currentTableItem = newItem;
 
@@ -465,7 +474,9 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
 void SignalListEditor::addingSignalCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem*)
 {
     if (current != nullptr)
+    {
         this->addingSignalSwitchField(current);
+    }
 }
 
 void SignalListEditor::endAddSignal()
@@ -826,62 +837,22 @@ void SignalListEditor::switchMode(mode newMode)
             this->buttonLayout->addWidget(this->buttonCancel, 0, 21, 1, 21);
             connect(this->buttonCancel, &QPushButton::clicked, this, &SignalListEditor::cancelCurrentEdit);
 
-            // Disable all other items in list
-            // (Should also disable other lists to avoid begin another
+            // Disable all items in list except edited item row
+            // (TODO: Should also disable other lists to avoid begin another
             // edit while current could be faulty)
-            if (newMode != mode::addingSignal)
+            for (int i = 0 ; i < this->signalsList->rowCount() ; i++)
             {
-                Qt::ItemFlags currentFlags = this->currentTableItem->flags();
-
-                for (int i = 0 ; i < this->signalsList->rowCount() ; i++)
+                if (i != this->currentTableItem->row())
                 {
-                    this->signalsList->item(i, 0)->setFlags(0);
-                    this->signalsList->item(i, 1)->setFlags(0);
-
-                    if (this->signalsList->columnCount() == 3)
+                    for (int j = 0 ; j < this->signalsList->columnCount() ; j++)
                     {
-                        this->signalsList->item(i, 2)->setFlags(0);
+                        Qt::ItemFlags currentFlags = this->signalsList->item(i, j)->flags();
+                        this->signalsList->item(i, j)->setFlags(currentFlags & ~Qt::ItemIsEnabled);
                     }
                 }
-
-                this->currentTableItem->setFlags(currentFlags | Qt::ItemIsEditable);
-
-                this->editCurrentCell();
             }
-            else
-            {
-                for (int i = 0 ; i < this->signalsList->rowCount() ; i++)
-                {
-                    if (i != this->currentSignalName->row())
-                    {
-                        this->signalsList->item(i, 0)->setFlags(0);
-                        this->signalsList->item(i, 1)->setFlags(0);
 
-                        if (this->signalsList->columnCount() == 3)
-                        {
-                            this->signalsList->item(i, 2)->setFlags(0);
-                        }
-                    }
-                    else
-                    {
-                        Qt::ItemFlags currentFlags;
-
-                        currentFlags = this->signalsList->item(i, 0)->flags();
-                        this->signalsList->item(i, 0)->setFlags(currentFlags | Qt::ItemIsEditable);
-
-                        currentFlags = this->signalsList->item(i, 1)->flags();
-                        this->signalsList->item(i, 1)->setFlags(currentFlags & ~Qt::ItemIsEditable);
-
-                        if (this->signalsList->columnCount() == 3)
-                        {
-                            currentFlags = this->signalsList->item(i, 2)->flags();
-                            this->signalsList->item(i, 2)->setFlags(currentFlags & ~Qt::ItemIsEditable);
-                        }
-                    }
-                }
-
-                this->editCurrentCell();
-            }
+            this->editCurrentCell();
         }
     }
 }
@@ -930,6 +901,9 @@ void SignalListEditor::editCurrentCell(bool erroneous)
     }
 
     // Begin edition
+    Qt::ItemFlags currentFlags = this->currentTableItem->flags();
+    this->currentTableItem->setFlags(currentFlags | Qt::ItemIsEditable);
+
     this->signalsList->openPersistentEditor(this->currentTableItem);
 
     DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
