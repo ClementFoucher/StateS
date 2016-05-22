@@ -41,7 +41,8 @@
 #include "rangeeditordialog.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "statesexception.h"
-
+#include "dynamictableitemdelegate.h"
+#include "dynamiclineedit.h"
 
 ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title, QWidget* parent) :
     QWidget(parent)
@@ -59,33 +60,36 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
         layout->addWidget(actionListTitle, 0, 0, 1, 2);
     }
 
-    actionList = new QTableWidget(0, 3);
-    actionList->setHorizontalHeaderItem(0, new QTableWidgetItem());
-    actionList->setHorizontalHeaderItem(1, new QTableWidgetItem());
-    actionList->setHorizontalHeaderItem(2, new QTableWidgetItem());
-    actionList->horizontalHeaderItem(0)->setText(tr("Type"));
-    actionList->horizontalHeaderItem(1)->setText(tr("Signal"));
-    actionList->horizontalHeaderItem(2)->setText(tr("Value"));
-    actionList->setSelectionBehavior(QAbstractItemView::SelectRows);
-    connect(actionList, &QTableWidget::itemSelectionChanged, this, &ActionEditor::updateButtonsState);
-    layout->addWidget(actionList, 1, 0, 1, 2);
+    this->actionList = new QTableWidget(0, 3);
+    this->actionList->setHorizontalHeaderItem(0, new QTableWidgetItem());
+    this->actionList->setHorizontalHeaderItem(1, new QTableWidgetItem());
+    this->actionList->setHorizontalHeaderItem(2, new QTableWidgetItem());
+    this->actionList->horizontalHeaderItem(0)->setText(tr("Type"));
+    this->actionList->horizontalHeaderItem(1)->setText(tr("Signal"));
+    this->actionList->horizontalHeaderItem(2)->setText(tr("Value"));
+    this->actionList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    connect(this->actionList, &QTableWidget::itemSelectionChanged, this, &ActionEditor::updateButtonsState);
+    connect(this->actionList, &QTableWidget::itemDoubleClicked,    this, &ActionEditor::editValue);
+    this->listDelegate = new DynamicTableItemDelegate(this->actionList);
+    this->actionList->setItemDelegate(this->listDelegate);
+    layout->addWidget(this->actionList, 1, 0, 1, 2);
 
-    buttonAddAction = new QPushButton(tr("Add action"));
-    connect(buttonAddAction, &QAbstractButton::clicked, this, &ActionEditor::addAction);
-    layout->addWidget(buttonAddAction, 2, 0, 1, 1);
+    this->buttonAddAction = new QPushButton(tr("Add action"));
+    connect(this->buttonAddAction, &QAbstractButton::clicked, this, &ActionEditor::addAction);
+    layout->addWidget(this->buttonAddAction, 2, 0, 1, 1);
 
-    buttonRemoveAction = new QPushButton(tr("Remove action"));
-    connect(buttonRemoveAction, &QAbstractButton::clicked, this, &ActionEditor::removeAction);
-    layout->addWidget(buttonRemoveAction, 2, 1, 1, 1);
-
-    connect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
+    this->buttonRemoveAction = new QPushButton(tr("Remove action"));
+    connect(this->buttonRemoveAction, &QAbstractButton::clicked, this, &ActionEditor::removeAction);
+    layout->addWidget(this->buttonRemoveAction, 2, 1, 1, 1);
 
     this->hintDisplay = new CollapsibleWidgetWithTitle();
-    QString hintTitle = tr("Hint:") + " ";
+    QString hintTitle = tr("Hint:") + " " + tr("Editing actions");
 
     QString hint;
     hint += "<br />";
-    hint += tr("Right-click") + " " + tr("on a vector signal") + " " + tr(" to display range options.");
+    hint += tr("Double-click") + " " + tr("on an affected value") + " " + tr("to edit it.");
+    hint += "<br />";
+    hint += tr("Right-click") + " " + tr("on a vector signal") + " " + tr("to display range options.");
     hint += "<br />";
 
     QLabel* hintText = new QLabel(hint);
@@ -101,28 +105,53 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 
 void ActionEditor::keyPressEvent(QKeyEvent* e)
 {
+    bool transmitEvent = true;
+
     if (e->key() == Qt::Key::Key_Delete)
     {
         if (actionList->selectedItems().count() >= 1)
         {
             removeAction();
-            return;
         }
+        transmitEvent = false;
+    }
+    else if (e->key() == Qt::Key::Key_Escape)
+    {
+        this->cancelEdit();
+        transmitEvent = false;
     }
 
-    QWidget::keyPressEvent(e);
+    if (transmitEvent == true)
+        QWidget::keyPressEvent(e);
+}
+
+void ActionEditor::keyReleaseEvent(QKeyEvent* e)
+{
+    bool transmitEvent = true;
+
+    if (e->key() == Qt::Key::Key_Delete)
+    {
+        transmitEvent = false;
+    }
+    else if (e->key() == Qt::Key::Key_Escape)
+    {
+        transmitEvent = false;
+    }
+
+    if (transmitEvent == true)
+        QWidget::keyReleaseEvent(e);
 }
 
 void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 {
-    QPoint correctedPos = actionList->mapFromParent(event->pos());
-    correctedPos.setX(correctedPos.x() - actionList->verticalHeader()->width());
-    correctedPos.setY(correctedPos.y() - actionList->horizontalHeader()->height());
-    QTableWidgetItem* cellUnderMouse = actionList->itemAt(correctedPos);
+    QPoint correctedPos = this->actionList->mapFromParent(event->pos());
+    correctedPos.setX(correctedPos.x() - this->actionList->verticalHeader()->width());
+    correctedPos.setY(correctedPos.y() - this->actionList->horizontalHeader()->height());
+    QTableWidgetItem* cellUnderMouse = this->actionList->itemAt(correctedPos);
 
     if (cellUnderMouse != nullptr)
     {
-        shared_ptr<Signal> currentSignal = tableItemsMapping[cellUnderMouse].lock();
+        shared_ptr<Signal> currentSignal = this->tableItemsMapping[cellUnderMouse].lock();
         shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
 
         if ( (currentSignal != nullptr) && (l_actuator != nullptr) )
@@ -130,7 +159,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
             this->currentSignal = currentSignal;
 
             ContextMenu* menu = new ContextMenu();
-            menu->addTitle(tr("Action on signal") + " " + currentSignal->getName());
+            menu->addTitle(tr("Action on signal") + " <i>" + currentSignal->getName() + "</i>");
 
             QVariant data;
             data.convert(QVariant::Int);
@@ -138,7 +167,6 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
             if (currentSignal->getSize() > 1)
             {
-
                 actionToAdd = menu->addAction(tr("Affect whole signal"));
                 actionToAdd->setCheckable(true);
                 if (l_actuator->getActionParam1(currentSignal) == -1)
@@ -193,11 +221,10 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
 void ActionEditor::updateContent()
 {
-    disconnect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
-
-    actionList->clearContents();
-    actionList->setRowCount(0);
-    tableItemsMapping.clear();
+    this->actionList->clearContents();
+    this->actionList->setRowCount(0);
+    this->tableItemsMapping.clear();
+    this->listDelegate->setValidator(nullptr);
 
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
 
@@ -205,10 +232,10 @@ void ActionEditor::updateContent()
     {
         foreach(shared_ptr<Signal> sig, l_actuator->getActions())
         {
-            actionList->insertRow(actionList->rowCount());
+            this->actionList->insertRow(this->actionList->rowCount());
 
             // Add action list cell
-            actionList->setCellWidget(actionList->rowCount()-1, 0, new ActionListEditor(l_actuator, sig));
+            this->actionList->setCellWidget(this->actionList->rowCount()-1, 0, new ActionListEditor(l_actuator, sig));
 
             // Build name
             QString nameText = sig->getName();
@@ -232,9 +259,10 @@ void ActionEditor::updateContent()
 
             // Add signal name cell
             QTableWidgetItem* currentTableWidget = new QTableWidgetItem(nameText);
-            currentTableWidget->setFlags(currentTableWidget->flags() ^ Qt::ItemIsEditable);
-            actionList->setItem(actionList->rowCount()-1, 1, currentTableWidget);
-            tableItemsMapping[currentTableWidget] = sig;
+            Qt::ItemFlags currentFlags = currentTableWidget->flags();
+            currentTableWidget->setFlags(currentFlags & ~Qt::ItemIsEditable);
+            this->actionList->setItem(this->actionList->rowCount()-1, 1, currentTableWidget);
+            this->tableItemsMapping[currentTableWidget] = sig;
 
             // Add action value cell
 
@@ -274,7 +302,9 @@ void ActionEditor::updateContent()
                 }
 
                 currentTableWidget = new QTableWidgetItem(actionValue.toString());
-                currentTableWidget->setFlags(0);
+
+                currentFlags = currentTableWidget->flags();
+                currentFlags = currentFlags & ~Qt::ItemIsEnabled;
             }
             else
             {
@@ -286,29 +316,40 @@ void ActionEditor::updateContent()
                 case MachineActuatorComponent::action_types::set:
                     actionValue = LogicValue::getValue1(sig->getSize());
                     currentTableWidget = new QTableWidgetItem(actionValue.toString());
-                    currentTableWidget->setFlags(0);
+
+                    currentFlags = currentTableWidget->flags();
+                    currentFlags = currentFlags & ~Qt::ItemIsEnabled;
+
                     break;
                 case MachineActuatorComponent::action_types::reset:
                     actionValue = LogicValue::getValue0(sig->getSize());
                     currentTableWidget = new QTableWidgetItem(actionValue.toString());
-                    currentTableWidget->setFlags(0);
+
+                    currentFlags = currentTableWidget->flags();
+                    currentFlags = currentFlags & ~Qt::ItemIsEnabled;
+
                     break;
                 case MachineActuatorComponent::action_types::activeOnState:
                 case MachineActuatorComponent::action_types::assign:
                 case MachineActuatorComponent::action_types::pulse:
                     actionValue = l_actuator->getActionValue(sig);
                     currentTableWidget = new QTableWidgetItem(actionValue.toString());
-                    currentTableWidget->setFlags(currentTableWidget->flags() | Qt::ItemIsEditable);
+
+                    currentFlags = currentTableWidget->flags();
+
                     break;
                 }
+
             }
 
-            actionList->setItem(actionList->rowCount()-1, 2, currentTableWidget);
-            tableItemsMapping[currentTableWidget] = sig;
+            currentFlags = currentFlags & ~Qt::ItemIsEditable;
+            currentTableWidget->setFlags(currentFlags);
+
+            this->actionList->setItem(this->actionList->rowCount()-1, 2, currentTableWidget);
+            this->tableItemsMapping[currentTableWidget] = sig;
         }
     }
 
-    connect(actionList, &QTableWidget::itemChanged, this, &ActionEditor::itemValueChangedEventHandler);
     this->updateButtonsState();
 }
 
@@ -322,6 +363,34 @@ void ActionEditor::updateButtonsState()
     else
     {
         this->buttonRemoveAction->setEnabled(false);
+    }
+}
+
+void ActionEditor::editValue(QTableWidgetItem* item)
+{
+    if ( ( (item->flags() & Qt::ItemIsEnabled) != 0 ) && ( item->column() == 2 ) )
+    {
+        if (this->itemUnderEdition == nullptr) // Do not allow multiple simultaneous editions
+        {
+            shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+            shared_ptr<Signal> sig = this->tableItemsMapping[item].lock();
+
+            if ( (l_actuator != nullptr) && (sig != nullptr) )
+            {
+                uint currentValueSize = l_actuator->getActionValue(sig).getSize();
+                QRegularExpression re("[01]{0," + QString::number(currentValueSize) + "}");
+                this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
+
+                Qt::ItemFlags currentFlags = item->flags();
+                item->setFlags(currentFlags | Qt::ItemIsEditable);
+
+                this->actionList->openPersistentEditor(item);
+
+                this->itemUnderEdition = item;
+                DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+                connect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
+            }
+        }
     }
 }
 
@@ -362,7 +431,7 @@ void ActionEditor::addAction()
                 menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
             }
 
-            menu->popup(buttonAddAction->mapToGlobal(QPoint(buttonAddAction->width(), -menu->sizeHint().height())));
+            menu->popup(this->buttonAddAction->mapToGlobal(QPoint(this->buttonAddAction->width(), -menu->sizeHint().height())));
         }
     }
     else
@@ -405,39 +474,68 @@ void ActionEditor::treatMenuAdd(QAction* action)
     }
 }
 
-void ActionEditor::itemValueChangedEventHandler(QTableWidgetItem* item)
+void ActionEditor::validateEdit()
 {
-    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
-    shared_ptr<Signal> l_signal = tableItemsMapping[item].lock();
-
-    if ( (l_actuator != nullptr) && (l_signal != nullptr) )
+    if (this->itemUnderEdition != nullptr)
     {
-        if (item->column() == 2)
-        {
-            int param1 = l_actuator->getActionParam1(l_signal);
-            int param2 = l_actuator->getActionParam2(l_signal);
+        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+        disconnect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
 
-            try
+        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+        shared_ptr<Signal> l_signal = this->tableItemsMapping[this->itemUnderEdition].lock();
+
+        if ( (l_actuator != nullptr) && (l_signal != nullptr) )
+        {
+            if (this->itemUnderEdition->column() == 2)
             {
-                LogicValue value = LogicValue::fromString(item->text()); // Throws StatesException
-                l_actuator->setActionValue(l_signal, value, param1, param2);
-            }
-            catch (const StatesException& e)
-            {
-                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                int param1 = l_actuator->getActionParam1(l_signal);
+                int param2 = l_actuator->getActionParam2(l_signal);
+
+                try
                 {
-                    qDebug() << "(ActionEditor:) Info: Wrong input for action value, change ignored.";
+                    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+
+                    LogicValue value = LogicValue::fromString(editor->text()); // Throws StatesException
+                    bool result = l_actuator->setActionValue(l_signal, value, param1, param2);
+
+                    if (result == false)
+                    {
+                        this->editValue(this->itemUnderEdition);
+                        this->listDelegate->getCurentEditor()->markAsErroneous();
+                    }
+
+                    this->itemUnderEdition = nullptr;
                 }
-                else
-                    throw;
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+                    {
+                        qDebug() << "(ActionEditor:) Info: Wrong input for action value, change ignored.";
+                    }
+                    else
+                        throw;
+                }
             }
         }
+        else
+        {
+            this->itemUnderEdition = nullptr;
+            this->updateContent();
+        }
     }
-    else
+}
+
+void ActionEditor::cancelEdit()
+{
+    if (this->itemUnderEdition != nullptr)
     {
-        this->updateContent();
+        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+        disconnect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
+
+        this->itemUnderEdition = nullptr;
     }
 
+    this->updateContent();
 }
 
 void ActionEditor::treatMenuEventHandler(QAction* action)
@@ -549,7 +647,7 @@ QList<shared_ptr<Signal>> ActionEditor::getSelectedSignals()
         QTableWidgetItem* currentItem = this->actionList->item(index.row(), 1);
         if (currentItem != nullptr)
         {
-            selectionString.append(tableItemsMapping[currentItem].lock());
+            selectionString.append(this->tableItemsMapping[currentItem].lock());
         }
     }
 

@@ -119,7 +119,23 @@
         <translation>sur un signal de type vecteur</translation>
     </message>
     <message>
-        <source> to display range options.</source>
+        <source>Editing actions</source>
+        <translation>Éditer les actions</translation>
+    </message>
+    <message>
+        <source>Double-click</source>
+        <translation>Double-cliquez</translation>
+    </message>
+    <message>
+        <source>on an affected value</source>
+        <translation>sur une valeur d&apos;affectation</translation>
+    </message>
+    <message>
+        <source>to edit it.</source>
+        <translation>pour l&apos;éditer.</translation>
+    </message>
+    <message>
+        <source>to display range options.</source>
         <translation>pour afficher les options de sous-vecteur.</translation>
     </message>
 </context>
@@ -773,18 +789,6 @@
 <context>
     <name>ImageExportDialog</name>
     <message>
-        <source>Choose image options:</source>
-        <translation type="vanished">Sélectionnez les options de l&apos;image :</translation>
-    </message>
-    <message>
-        <source>Image format:</source>
-        <translation type="vanished">Format de l&apos;image :</translation>
-    </message>
-    <message>
-        <source>Include component external view:</source>
-        <translation type="vanished">Inclure la vue externe du compoant :</translation>
-    </message>
-    <message>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -811,22 +815,6 @@
     <message>
         <source>Customize image</source>
         <translation>Personnaliser l&apos;image</translation>
-    </message>
-    <message>
-        <source>Include constants:</source>
-        <translation type="vanished">include les constantes :</translation>
-    </message>
-    <message>
-        <source>Include variables:</source>
-        <translation type="vanished">Inclure les variables :</translation>
-    </message>
-    <message>
-        <source>Place information to the right:</source>
-        <translation type="vanished">Placer les informations à droite :</translation>
-    </message>
-    <message>
-        <source>Add border:</source>
-        <translation type="vanished">Ajouter une bordure :</translation>
     </message>
     <message>
         <source>Preview</source>
@@ -1181,12 +1169,16 @@
         <translation>Double-cliquez sur une valeur pour la modifier.</translation>
     </message>
     <message>
-        <source>Switch between signals types using tabs below.</source>
-        <translation>Naviguez entre les types de signaux à l&apos;aide des onglets ci-dessous.</translation>
-    </message>
-    <message>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
+    </message>
+    <message>
+        <source>Switch between signals types using tabs.</source>
+        <translation>Naviguez entre les types de signaux à l&apos;aide des onglets.</translation>
+    </message>
+    <message>
+        <source>Hint:</source>
+        <translation>Astuce :</translation>
     </message>
 </context>
 <context>
@@ -1258,6 +1250,18 @@
     <message>
         <source>Delete signals</source>
         <translation>Supprimer les signaux</translation>
+    </message>
+    <message>
+        <source>Rename signal</source>
+        <translation>Renommer le signal</translation>
+    </message>
+    <message>
+        <source>Resize signal</source>
+        <translation>Redimentionner le signal</translation>
+    </message>
+    <message>
+        <source>Change signal value</source>
+        <translation>Changer la valeur du signal</translation>
     </message>
 </context>
 <context>
@@ -1378,7 +1382,7 @@
     </message>
     <message>
         <source>Actions triggered at state activation:</source>
-        <translation>Actions déclencées à l&apos;activation de l&apos;état :</translation>
+        <translation>Actions déclenchées à l&apos;activation de l&apos;état :</translation>
     </message>
 </context>
 <context>
@@ -1403,16 +1407,8 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <source>Save</source>
-        <translation>Enregistrer</translation>
-    </message>
-    <message>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
-    </message>
-    <message>
-        <source>Load</source>
-        <translation>Charger</translation>
     </message>
     <message>
         <source>Load machine</source>
@@ -1435,30 +1431,6 @@
         <translation>Écraser la machine courante ?</translation>
     </message>
     <message>
-        <source>Export to VHDL</source>
-        <translation>Exporter en VHDL</translation>
-    </message>
-    <message>
-        <source>Export machine to VHDL</source>
-        <translation>Exporter la machine en VHDL</translation>
-    </message>
-    <message>
-        <source>Save machine in a new file</source>
-        <translation>Enregistrer la machine dans un nouveau fichier</translation>
-    </message>
-    <message>
-        <source>Save as</source>
-        <translation>Enregistrer sous</translation>
-    </message>
-    <message>
-        <source>Update saved file with current content</source>
-        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
-    </message>
-    <message>
-        <source>Load machine from file</source>
-        <translation>Charger une machine depuis un fichier</translation>
-    </message>
-    <message>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
@@ -1475,16 +1447,51 @@
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <source>Export to image file</source>
-        <translation>Exporter vers un fichier image</translation>
-    </message>
-    <message>
-        <source>Export machine to an image file</source>
-        <translation>Exporter la machine vers un fichier image</translation>
-    </message>
-    <message>
         <source>Created with</source>
         <translation>Créé avec</translation>
+    </message>
+    <message>
+        <source>Quit StateS?</source>
+        <translation>Quitter StateS ?</translation>
+    </message>
+    <message>
+        <source>Load file</source>
+        <translation>Charger un fichier</translation>
+    </message>
+    <message>
+        <source>?</source>
+        <translation>?</translation>
+    </message>
+</context>
+<context>
+    <name>ToolBar</name>
+    <message>
+        <source>Save</source>
+        <translation>Enregistrer</translation>
+    </message>
+    <message>
+        <source>Save machine in a new file</source>
+        <translation>Enregistrer la machine dans un nouveau fichier</translation>
+    </message>
+    <message>
+        <source>Save as</source>
+        <translation>Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>Update saved file with current content</source>
+        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
+    </message>
+    <message>
+        <source>use ctrl+S shortcut to avoid confirm dialog</source>
+        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+    </message>
+    <message>
+        <source>Load</source>
+        <translation>Charger</translation>
+    </message>
+    <message>
+        <source>Load machine from file</source>
+        <translation>Charger une machine depuis un fichier</translation>
     </message>
     <message>
         <source>New FSM</source>
@@ -1495,20 +1502,20 @@
         <translation>Créer une nouvelle FSM</translation>
     </message>
     <message>
-        <source>Quit StateS?</source>
-        <translation>Quitter StateS ?</translation>
+        <source>Export to image file</source>
+        <translation>Exporter vers un fichier image</translation>
     </message>
     <message>
-        <source>use ctrl+S shortcut to avoid confirm dialog</source>
-        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+        <source>Export machine to an image file</source>
+        <translation>Exporter la machine vers un fichier image</translation>
     </message>
     <message>
-        <source>Load file</source>
-        <translation>Charger un fichier</translation>
+        <source>Export to VHDL</source>
+        <translation>Exporter en VHDL</translation>
     </message>
     <message>
-        <source>?</source>
-        <translation>?</translation>
+        <source>Export machine to VHDL</source>
+        <translation>Exporter la machine en VHDL</translation>
     </message>
 </context>
 <context>

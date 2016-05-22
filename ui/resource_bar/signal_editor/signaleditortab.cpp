@@ -38,36 +38,20 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
 {
     this->machineComponentView = machineComponentView;
 
-    this->setLayout(new QVBoxLayout());
+    QVBoxLayout* layout = new QVBoxLayout(this);
 
     //
     // Title
 
     QLabel* title = new QLabel("<b>" + tr("Signal editor")  + "</b>");
     title->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(title);
-
-    //
-    // Help line
-
-    QLabel* hint = new QLabel(tr("Switch between signals types using tabs below.")
-                              + "<br />"
-                              + tr("Signals length can not exceed 64 bits.")
-                              + "<br />"
-                              + tr("Allowed characters are alphanumerical ones, space and")
-                              + " {'_', '@', '#', '-'}."
-                              + "<br />"
-                              + tr("Double-click on a value to edit it.")
-                              );
-    hint->setAlignment(Qt::AlignCenter);
-    hint->setWordWrap(true);
-    this->layout()->addWidget(hint);
+    layout->addWidget(title);
 
     //
     // Signals
 
     QTabWidget* signalsTabs = new QTabWidget();
-    this->layout()->addWidget(signalsTabs);
+    layout->addWidget(signalsTabs);
 
     signalsTabs->insertTab(0, new SignalListEditor(machine, Machine::signal_type::Input),         tr("Inputs"));
     signalsTabs->insertTab(1, new SignalListEditor(machine, Machine::signal_type::Output),        tr("Outputs"));
@@ -77,9 +61,29 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
     signalsTabs->setCurrentIndex(0);
 
     //
+    // Hint
+
+    QLabel* hintText = new QLabel(tr("Switch between signals types using tabs.")
+                                  + "<br />"
+                                  + tr("Signals length can not exceed 64 bits.")
+                                  + "<br />"
+                                  + tr("Allowed characters are alphanumerical ones, space and")
+                                  + " {'_', '@', '#', '-'}."
+                                  + "<br />"
+                                  + tr("Double-click on a value to edit it.")
+                                  );
+    hintText->setAlignment(Qt::AlignCenter);
+    hintText->setWordWrap(true);
+
+    QString hintTitle = tr("Hint:") + " " + tr("Signal editor");
+    CollapsibleWidgetWithTitle* hint = new CollapsibleWidgetWithTitle(hintTitle, hintText);
+    layout->addWidget(hint);
+
+    //
     // Machine visualization
+
     this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
-    this->layout()->addWidget(this->machineDisplay);
+    layout->addWidget(this->machineDisplay);
 }
 
 void SignalEditorTab::showEvent(QShowEvent* e)

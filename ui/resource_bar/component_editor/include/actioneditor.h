@@ -39,6 +39,7 @@ class QTableWidgetItem;
 class MachineActuatorComponent;
 class Signal;
 class CollapsibleWidgetWithTitle;
+class DynamicTableItemDelegate;
 
 
 class ActionEditor : public QWidget
@@ -53,16 +54,20 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent* e) override;
+    void keyReleaseEvent(QKeyEvent* e) override;
     void contextMenuEvent(QContextMenuEvent* event) override;
 
 private slots:
     void updateContent();
     void updateButtonsState();
+    void editValue(QTableWidgetItem* item);
 
     void addAction();
     void removeAction();
     void treatMenuAdd(QAction*);
-    void itemValueChangedEventHandler(QTableWidgetItem* item);
+
+    void validateEdit();
+    void cancelEdit();
 
     void treatMenuEventHandler(QAction* action);
 
@@ -76,8 +81,10 @@ private:
 
     QMap<QTableWidgetItem*, weak_ptr<Signal>> tableItemsMapping;
 
-    // Qwidgets with parent
+    // Qwidgets
+    DynamicTableItemDelegate* listDelegate;
     QTableWidget* actionList = nullptr;
+    QTableWidgetItem* itemUnderEdition = nullptr;
 
     QPushButton* buttonAddAction = nullptr;
     QPushButton* buttonRemoveAction = nullptr;

@@ -50,8 +50,6 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
         QVBoxLayout* layout = new QVBoxLayout(this);
         layout->setAlignment(Qt::AlignTop);
 
-        // Tools
-
         connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
         connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
 
@@ -59,44 +57,54 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
 
         if (fsm != nullptr)
         {
+            //
+            // Title
+
             QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
             title->setAlignment(Qt::AlignCenter);
             layout->addWidget(title);
 
+            //
+            // Tools
+
             layout->addWidget(new FsmToolsPanel(machineBuilder));
-
-            QHBoxLayout* nameLayout = new QHBoxLayout();
-
-            QLabel* machineNameLabel = new QLabel(tr("Component name:"));
-            this->stateName = new DynamicLineEdit(fsm->getName(), true);
-
-            connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
-            connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
-
-            connect(machine.get(), &Machine::nameChangedEvent, this, &MachineBuilderTab::updateContent);
-
-            nameLayout->addWidget(machineNameLabel);
-            nameLayout->addWidget(this->stateName);
-
-            layout->addLayout(nameLayout);
-
         }
         else
         {
             qDebug() << "(MachineBuilderTab:) Error, unknown machine type";
         }
 
-        // Machine visualization
-        this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
-        layout->addWidget(this->machineDisplay);
+        //
+        // Name
 
+        QHBoxLayout* nameLayout = new QHBoxLayout();
+
+        QLabel* machineNameLabel = new QLabel(tr("Component name:"));
+        this->stateName = new DynamicLineEdit(fsm->getName(), true);
+
+        connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
+        connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
+
+        connect(machine.get(), &Machine::nameChangedEvent, this, &MachineBuilderTab::updateContent);
+
+        nameLayout->addWidget(machineNameLabel);
+        nameLayout->addWidget(this->stateName);
+
+        layout->addLayout(nameLayout);
+
+        //
         // Hints
-
 
         this->hintDisplay = new CollapsibleWidgetWithTitle();
         layout->addWidget(this->hintDisplay);
 
         this->updateHint(MachineBuilder::tool::none);
+
+        //
+        // Machine visualization
+
+        this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+        layout->addWidget(this->machineDisplay);
     }
 }
 

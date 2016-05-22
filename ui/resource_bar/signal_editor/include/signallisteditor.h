@@ -47,7 +47,7 @@ class SignalListEditor : public QWidget
 
 private:
     enum class mode{initMode, standard, addingSignal, renamingSignal, resizingSignal, changingSignalInitialValue};
-    enum ContextAction { Cancel = 0, DeleteSignal = 1, Up = 2, Down = 3};
+    enum ContextAction { Cancel = 0, DeleteSignal = 1, Up = 2, Down = 3, RenameSignal = 4, ResizeSignal = 5, ChangeSignalValue = 6};
 
 public:
     explicit SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent = nullptr);
@@ -80,8 +80,8 @@ private slots:
     void cancelCurrentEdit();
 
     // Other
-    void raiseSignal();
-    void lowerSignal();
+    void raiseSelectedSignals();
+    void lowerSelectedSignals();
     void removeSelectedSignals();
     void treatMenuEventHandler(QAction* action);
 
@@ -115,7 +115,7 @@ private:
 
     // Cell under edition
     QTableWidgetItem* currentTableItem = nullptr;
-    QString signalSelectionToRestore = QString::null;
+    QStringList signalSelectionToRestore;
     weak_ptr<Signal> currentSignal;
 
     // Signal begin created
