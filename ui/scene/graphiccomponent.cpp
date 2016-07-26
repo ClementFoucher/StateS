@@ -22,14 +22,18 @@
 // Current class header
 #include "graphiccomponent.h"
 
+// Qt classes
+#include <QPen>
+
 // StateS classes
 #include "statesexception.h"
 
 
+QPen GraphicComponent::selectionPen = QPen(QBrush(QColor(0, 0, 204, 200), Qt::SolidPattern), 1, Qt::DashLine);
+
 GraphicComponent::GraphicComponent(QObject* parent) :
     QObject(parent)
 {
-
 }
 
 GraphicComponent::GraphicComponent(shared_ptr<MachineComponent> logicComponent, QObject* parent) :
@@ -50,7 +54,7 @@ void GraphicComponent::setLogicComponent(shared_ptr<MachineComponent> logicCompo
     }
 }
 
-shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() // Throws StatesException
+shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() const // Throws StatesException
 {
     shared_ptr<MachineComponent> l_logicComponent = this->logicComponent.lock();
 

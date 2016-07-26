@@ -83,7 +83,7 @@ int FsmGraphicTransitionNeighborhood::computeTransitionPosition(FsmGraphicTransi
     int rank = (pow(-1, map.key(me)) * (map.key(me)/2 + 1));
     // If there is an odd number of mates, allow rank to begin from 0 (straight line)
     if ((map.count() % 2) == 1)
-        // To do so, decrement positive kays => 1, -1, 2, -2, 3 will become 0, -1, 1, -2, 2
+        // To do so, decrement positive keys => 1, -1, 2, -2, 3 will become 0, -1, 1, -2, 2
         if (rank > 0) rank--;
 
     return rank;

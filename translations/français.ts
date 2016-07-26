@@ -47,6 +47,22 @@
         <source>Contact:</source>
         <translation>Contact :</translation>
     </message>
+    <message>
+        <source>This application was compiled using</source>
+        <translation>Cette application a été compilée avec</translation>
+    </message>
+    <message>
+        <source>Copyright and technical information</source>
+        <translation>Informations techniques et de copyright </translation>
+    </message>
+    <message>
+        <source>Currently running on</source>
+        <translation>Version actuellement utilisée</translation>
+    </message>
+    <message>
+        <source>Contact and links</source>
+        <translation>Contact et liens</translation>
+    </message>
 </context>
 <context>
     <name>ActionEditor</name>

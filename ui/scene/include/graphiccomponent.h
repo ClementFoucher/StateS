@@ -51,10 +51,13 @@ signals:
 
 protected:
     void setLogicComponent(shared_ptr<MachineComponent> logicComponent); // Throws StatesException
-    shared_ptr<MachineComponent> getLogicComponent(); // Throws StatesException
+    shared_ptr<MachineComponent> getLogicComponent() const; // Throws StatesException
 
 private:
     weak_ptr<MachineComponent> logicComponent;
+
+protected:
+    static QPen selectionPen;
 
 };
 

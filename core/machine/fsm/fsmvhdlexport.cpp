@@ -524,7 +524,6 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
                 MachineActuatorComponent::action_types type = state->getActionType(sig);
                 this->writeSignalAffectationValue(stream, state, sig, type);
-
             }
         }
 

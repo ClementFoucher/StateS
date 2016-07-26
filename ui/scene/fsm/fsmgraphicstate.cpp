@@ -28,6 +28,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QKeyEvent>
+#include <QStyleOptionGraphicsItem>
 
 // StateS classes
 #include "machine.h"
@@ -38,6 +39,7 @@
 #include "contextmenu.h"
 #include "fsm.h"
 #include "machinebuilder.h"
+#include "statesexception.h"
 
 
 //
@@ -85,21 +87,21 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 }
 
 FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
+    GraphicActuator(dynamic_pointer_cast<MachineActuatorComponent>(logicState)),
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
+
 {
-    this->setLogicActuator(logicState);
     this->setPen(pen);
 
     this->setFlag(QGraphicsItem::ItemIsMovable);
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
-    this->setFlag(ItemSendsScenePositionChanges);
+    this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+    this->setFlag(QGraphicsItem::ItemClipsToShape);
 
     logicState->setGraphicRepresentation(this);
     connect(logicState.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicState::rebuildRepresentation);
     connect(logicState.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicState::rebuildRepresentation);
-
-    this->logicState = logicState;
 
     shared_ptr<Fsm> machine = logicState->getOwningFsm();
     connect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
@@ -112,10 +114,10 @@ FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
 
 FsmGraphicState::~FsmGraphicState()
 {
-    shared_ptr<FsmState> l_logicState = this->logicState.lock();
-
-    if (l_logicState != nullptr)
+    try
     {
+        shared_ptr<FsmState> l_logicState = this->getLogicState(); // Throws StatesException - catched
+
         disconnect(l_logicState.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicState::rebuildRepresentation);
         disconnect(l_logicState.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicState::rebuildRepresentation);
 
@@ -125,11 +127,15 @@ FsmGraphicState::~FsmGraphicState()
 
         l_logicState->clearGraphicRepresentation();
     }
+    catch(const StatesException& e)
+    {
+        // If no logicState, nothing to do
+    }
 }
 
-shared_ptr<FsmState> FsmGraphicState::getLogicState() const
+shared_ptr<FsmState> FsmGraphicState::getLogicState() const // Throws StatesException
 {
-    return this->logicState.lock();
+    return dynamic_pointer_cast<FsmState>(this->getLogicActuator());  // Throws StatesException - Propagated
 }
 
 QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
@@ -153,6 +159,10 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
             }
         }
     }
+    else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
+    {
+        this->updateSelectionShapeDisplay();
+    }
 
     // Reposition action box
     if (scene() != nullptr)
@@ -168,7 +178,7 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 
 void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    shared_ptr<FsmState> l_logicState = this->logicState.lock();
+    shared_ptr<FsmState> l_logicState = this->getLogicState();
 
     if (l_logicState != nullptr)
     {
@@ -205,6 +215,15 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
             delete menu;
         }
     }
+}
+
+void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+{
+    // This disables the automatic selection shape.
+    // Thanks to Stephen Chu on StackOverflow for the trick.
+    QStyleOptionGraphicsItem myOption(*option);
+    myOption.state &= ~QStyle::State_Selected;
+    QGraphicsEllipseItem::paint(painter, &myOption, widget);
 }
 
 void FsmGraphicState::keyPressEvent(QKeyEvent *event)
@@ -258,7 +277,7 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_F2)
     {
-        emit renameStateCalledEvent(this->logicState.lock());
+        emit renameStateCalledEvent(this->getLogicState());
     }
     else
     {
@@ -270,16 +289,43 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
  * @brief Move even is inhibited until the state
  * is actually placed on the scene. This function
  * enables it afterwhat.
- * @param enable
  */
 void FsmGraphicState::enableMoveEvent()
 {
     this->moveEventEnabled = true;
 }
 
+QPainterPath FsmGraphicState::shape() const
+{
+    QPainterPath path;
+    QPainterPathStroker* stroker;
+
+    if (this->selectionShape != nullptr)
+    {
+        stroker = new QPainterPathStroker(selectionPen);
+        path.addEllipse(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)));
+    }
+    else
+    {
+        stroker = new QPainterPathStroker(pen);
+        path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
+    }
+
+    path.setFillRule(Qt::WindingFill);
+    path = path.united(stroker->createStroke(path));
+    path = path.simplified();
+    delete stroker;
+    return path;
+}
+
+QRectF FsmGraphicState::boundingRect() const
+{
+    return this->shape().boundingRect();
+}
+
 void FsmGraphicState::treatMenu(QAction* action)
 {
-    shared_ptr<FsmState> l_logicState = this->logicState.lock();
+    shared_ptr<FsmState> l_logicState = this->getLogicState();
 
     if (l_logicState != nullptr)
     {
@@ -318,7 +364,7 @@ void FsmGraphicState::machineModeChangedEventHandler(Machine::mode)
 
 void FsmGraphicState::askDelete()
 {
-    shared_ptr<FsmState> l_logicState = this->logicState.lock();
+    shared_ptr<FsmState> l_logicState = this->getLogicState();
     shared_ptr<Fsm> owningFsm = l_logicState->getOwningFsm();
 
     int linkedTransitions = l_logicState->getOutgoingTransitions().count() + l_logicState->getIncomingTransitions().count();
@@ -342,13 +388,28 @@ void FsmGraphicState::askDelete()
         owningFsm->removeState(l_logicState);
 }
 
+void FsmGraphicState::updateSelectionShapeDisplay()
+{
+    if ( (this->isSelected()) && (this->selectionShape == nullptr) )
+    {
+        this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
+        this->selectionShape->setPen(selectionPen);
+    }
+    else if ( (!this->isSelected()) && (this->selectionShape != nullptr) )
+    {
+        delete this->selectionShape;
+        this->selectionShape = nullptr;
+    }
+}
+
 void FsmGraphicState::rebuildRepresentation()
 {
     // Clear all child items
     qDeleteAll(this->childItems());
     this->childItems().clear();
+    this->selectionShape = nullptr;
 
-    shared_ptr<FsmState> l_logicState = this->logicState.lock();
+    shared_ptr<FsmState> l_logicState = this->getLogicState();
 
     if (l_logicState != nullptr)
     {
@@ -373,5 +434,7 @@ void FsmGraphicState::rebuildRepresentation()
         {
             actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
         }
+
+        this->updateSelectionShapeDisplay();
     }
 }

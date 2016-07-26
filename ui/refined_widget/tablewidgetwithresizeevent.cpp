@@ -23,15 +23,14 @@
 #include "tablewidgetwithresizeevent.h"
 
 
-void TableWidgetWithResizeEvent::resizeEvent(QResizeEvent* evt)
-{
-    QTableWidget::resizeEvent(evt);
-    emit resized();
-}
-
-
 TableWidgetWithResizeEvent::TableWidgetWithResizeEvent(int rows, int columns) :
     QTableWidget(rows, columns)
 {
 
+}
+
+void TableWidgetWithResizeEvent::resizeEvent(QResizeEvent* evt)
+{
+    QTableWidget::resizeEvent(evt);
+    emit resized();
 }

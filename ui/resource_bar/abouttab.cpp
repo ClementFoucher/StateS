@@ -24,16 +24,32 @@
 
 // Qt classes
 #include <QLabel>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 // StateS classes
 #include "states.h"
+#include "svgimagegenerator.h"
 
 
 AboutTab::AboutTab(QWidget* parent) :
     QWidget(parent)
 {
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setAlignment(Qt::AlignHCenter);
+
+    layout->addStretch();
+
+    ////
+    // Header
+
+    this->icon = new QPushButton();
+    this->icon->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+    this->icon->setIconSize(QSize(100,100));
+    this->icon->setCheckable(true);
+    this->icon->setStyleSheet("border:0px");
+    connect(this->icon, &QPushButton::clicked, this, &AboutTab::iconClicked);
+    layout->addWidget(this->icon);
 
     QLabel* title = new QLabel("<b>StateS</b>");
     title->setAlignment(Qt::AlignCenter);
@@ -44,20 +60,43 @@ AboutTab::AboutTab(QWidget* parent) :
     versionLabel->setWordWrap(true);
     layout->addWidget(versionLabel);
 
+    layout->addStretch();
+
+    ////
+    // Copyright and technical info
+
+    QLabel* techTitle = new QLabel("<b>" + tr("Copyright and technical information") + "</b>");
+    techTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(techTitle);
+
     QLabel* copyrightLabel = new QLabel("© 2014-2016 Clément Foucher");
     copyrightLabel->setAlignment(Qt::AlignCenter);
     copyrightLabel->setWordWrap(true);
     layout->addWidget(copyrightLabel);
 
-    QLabel* emailLabel = new QLabel(tr("Contact:") + " <a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>" );
-    emailLabel->setAlignment(Qt::AlignCenter);
-    emailLabel->setWordWrap(true);
-    layout->addWidget(emailLabel);
-
     QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br />GNU General Public Licence " + tr("version") + " 2");
     licenseLabel->setAlignment(Qt::AlignCenter);
     licenseLabel->setWordWrap(true);
     layout->addWidget(licenseLabel);
+
+    QLabel* qtVersionLabel = new QLabel(tr("This application was compiled using") + " Qt " + QT_VERSION_STR + ".\n" + tr("Currently running on") + " Qt " + qVersion() + ".");
+    qtVersionLabel->setAlignment(Qt::AlignCenter);
+    qtVersionLabel->setWordWrap(true);
+    layout->addWidget(qtVersionLabel);
+
+    layout->addStretch();
+
+    ////
+    // Contact info
+
+    QLabel* contactTitle = new QLabel("<b>" + tr("Contact and links") + "</b>");
+    contactTitle->setAlignment(Qt::AlignCenter);
+    layout->addWidget(contactTitle);
+
+    QLabel* emailLabel = new QLabel(tr("Contact:") + " <a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>" );
+    emailLabel->setAlignment(Qt::AlignCenter);
+    emailLabel->setWordWrap(true);
+    layout->addWidget(emailLabel);
 
     QLabel* websiteLabel = new QLabel(tr("StateS web site:") + "<br /><a href=\"https://sourceforge.net/projects/states/\">https://sourceforge.net/projects/states/</a>");
     websiteLabel->setAlignment(Qt::AlignCenter);
@@ -86,11 +125,32 @@ AboutTab::AboutTab(QWidget* parent) :
     supportLabel->setOpenExternalLinks(true);
     layout->addWidget(supportLabel);
 
-    QLabel* suggestionLabel= new QLabel("<a href=\"https://sourceforge.net/p/states/discussion/\">" + tr("Suggestion? Feature request?") + "</a>");
+    QLabel* suggestionLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/discussion/\">" + tr("Suggestion? Feature request?") + "</a>");
     suggestionLabel->setAlignment(Qt::AlignCenter);
     suggestionLabel->setWordWrap(true);
     suggestionLabel->setTextFormat(Qt::RichText);
     suggestionLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     suggestionLabel->setOpenExternalLinks(true);
     layout->addWidget(suggestionLabel);
+
+    layout->addStretch();
+}
+
+void AboutTab::iconClicked()
+{
+    QPixmap pixmap = SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"));
+    QIcon newIcon;
+
+    if (this->icon->isChecked())
+    {
+        QTransform rotation;
+        rotation.rotate(90);
+        newIcon = QIcon(pixmap.transformed(rotation));
+    }
+    else
+    {
+        newIcon = QIcon(pixmap);
+    }
+
+    this->icon->setIcon(newIcon);
 }

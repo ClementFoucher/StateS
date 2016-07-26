@@ -57,14 +57,17 @@ public:
     explicit FsmGraphicState(shared_ptr<FsmState> logicState);
     ~FsmGraphicState();
 
-    shared_ptr<FsmState> getLogicState() const;
+    shared_ptr<FsmState> getLogicState() const; // Throws StatesException TODO: check uses
 
     static qreal getRadius();
 
     // Raised visibility (should be protected) to allow direct calls:
-    // Needed cause an event can be manually transmitted to various items
+    // Needed because an event can be manually transmitted to various items
     void keyPressEvent(QKeyEvent* event) override;
     void enableMoveEvent();
+
+    virtual QPainterPath shape() const override;
+    virtual QRectF boundingRect() const override;
 
 signals:
     void stateMovedEvent();
@@ -74,6 +77,7 @@ signals:
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private slots:
     void rebuildRepresentation();
@@ -82,10 +86,10 @@ private slots:
 
 private:
     void askDelete();
+    void updateSelectionShapeDisplay();
 
-    weak_ptr<FsmState> logicState;
-
-    QGraphicsTextItem*  stateName  = nullptr;
+    QGraphicsTextItem*    stateName      = nullptr;
+    QGraphicsEllipseItem* selectionShape = nullptr;
 
     bool moveEventEnabled = false;
 

@@ -68,7 +68,7 @@ public:
     void deactivateActions();
 
     void setActionType(shared_ptr<Signal> signal, action_types type);
-    bool setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1 = -1, int param2 = -1);
+    bool setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1 = -1, int param2 = -1); // TODO: throw exception
 
     action_types getActionType(shared_ptr<Signal> variable);
     LogicValue getActionValue(shared_ptr<Signal> variable);

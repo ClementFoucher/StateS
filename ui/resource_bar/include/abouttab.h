@@ -25,6 +25,9 @@
 // Parent
 #include <QWidget>
 
+// Qt classes
+class QPushButton;
+
 
 class AboutTab : public QWidget
 {
@@ -32,6 +35,12 @@ class AboutTab : public QWidget
 
 public:
     explicit AboutTab(QWidget* parent = nullptr);
+
+private slots:
+    void iconClicked();
+
+private:
+    QPushButton* icon;
 };
 
 #endif // ABOUTTAB_H

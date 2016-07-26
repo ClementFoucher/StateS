@@ -60,7 +60,7 @@ void GraphicActuator::setLogicActuator(shared_ptr<MachineActuatorComponent> actu
     this->setLogicComponent(dynamic_pointer_cast<MachineComponent>(actuator)); // Throws StatesException - propagated
 }
 
-shared_ptr<MachineActuatorComponent> GraphicActuator::getLogicActuator() // Throws StatesException
+shared_ptr<MachineActuatorComponent> GraphicActuator::getLogicActuator() const // Throws StatesException
 {
     return dynamic_pointer_cast<MachineActuatorComponent>(this->getLogicComponent()); // Throws StatesException - propagated
 }

@@ -50,12 +50,12 @@ public:
     QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const;
 
     int whatIsMyRank(FsmGraphicTransition* me) const;
+    int computeTransitionPosition(FsmGraphicTransition* me) const;
 
 signals:
     void contentChangedEvent();
 
 private:
-    int computeTransitionPosition(FsmGraphicTransition* me) const;
 
     QMap<int, FsmGraphicTransition*> map;
     FsmGraphicState* source = nullptr;

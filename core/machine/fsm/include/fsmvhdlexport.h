@@ -69,10 +69,10 @@ public:
 private:
     struct WrittableSignalCharacteristics
     {
-        bool isMoore = false;
-        bool isMealy = false;
-        bool isTempValue = false;
-        bool isKeepValue = false;
+        bool isMoore         = false;
+        bool isMealy         = false;
+        bool isTempValue     = false;
+        bool isKeepValue     = false;
         bool isRangeAdressed = false;
     };
 

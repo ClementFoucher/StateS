@@ -48,7 +48,6 @@
 
 qreal FsmGraphicTransition::arrowEndSize = 10;
 qreal FsmGraphicTransition::middleBarLength = 20;
-QPen FsmGraphicTransition::selectionPen = QPen(Qt::DashLine);
 QPen FsmGraphicTransition::standardPen = QPen(Qt::SolidPattern, 3);
 QPen FsmGraphicTransition::editPen = QPen(QBrush(Qt::red, Qt::SolidPattern), 3);
 QPen FsmGraphicTransition::activePen = QPen(QBrush(Qt::darkGreen, Qt::SolidPattern), 3);
@@ -78,6 +77,7 @@ FsmGraphicTransition::FsmGraphicTransition()
 
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
+    this->setFlag(QGraphicsItem::ItemClipsToShape);
 
     // Changing slider position is a configuration change
     connect(this, &FsmGraphicTransition::transitionSliderPositionChangedEvent, this, &GraphicComponent::graphicComponentConfigurationChangedEvent);
@@ -97,10 +97,8 @@ FsmGraphicTransition::FsmGraphicTransition(FsmGraphicState* source, const QPoint
 FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition) :
     FsmGraphicTransition()
 {
-    this->setLogicActuator(logicTransition);
-    logicTransition->setGraphicRepresentation(this);
-    connect(logicTransition.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
-    connect(logicTransition.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicTransition::updateText);
+    this->setLogicTransition(logicTransition);
+    logicTransition->setGraphicRepresentation(this); // When graphic transition is created AFTER logic transition, we need to associate them explicitly
 
     shared_ptr<Fsm> machine = logicTransition->getOwningFsm();
     connect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
@@ -110,8 +108,6 @@ FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransi
     this->setTargetState(logicTransition->getTarget()->getGraphicRepresentation());
     this->conditionLineSliderPos = logicTransition->sliderPos;
     currentMode = mode::standardMode;
-
-    this->logicTransition = logicTransition;
 
     checkNeighboors();
     finishInitialize();
@@ -130,13 +126,12 @@ FsmGraphicTransition::~FsmGraphicTransition()
 
     delete conditionText;
 
-    shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
+    shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 
     if (l_logicTransition != nullptr)
     {
         disconnect(l_logicTransition.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
         disconnect(l_logicTransition.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicTransition::updateText);
-
 
         shared_ptr<Fsm> machine = l_logicTransition->getOwningFsm();
         if (machine != nullptr)
@@ -149,14 +144,12 @@ FsmGraphicTransition::~FsmGraphicTransition()
 void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transition)
 {
     // This function can be called only once, we never reaffect a graphic transition
-    if (this->logicTransition.expired())
+    if (this->getLogicTransition() == nullptr)
     {
-        this->setLogicActuator(transition);
+        this->setLogicActuator(dynamic_pointer_cast<MachineActuatorComponent>(transition)); // Throws StatesException - ignored as we checked nullness
 
         connect(transition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
         connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                   this, &FsmGraphicTransition::updateText);
-
-        this->logicTransition = transition;
 
         this->updateText();
     }
@@ -166,7 +159,20 @@ void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transiti
 
 shared_ptr<FsmTransition> FsmGraphicTransition::getLogicTransition() const
 {
-    return this->logicTransition.lock();
+    try
+    {
+        return dynamic_pointer_cast<FsmTransition>(this->getLogicActuator());  // Throws StatesException - handled
+    }
+    catch (const StatesException& e)
+    {
+        if ( (e.getSourceClass() == "GraphicComponent") && (e.getEnumValue() == GraphicComponent::GraphicComponentErrorEnum::obsolete_base_object) )
+        {
+            // It is allowed to have no associated logic component when drawing transition
+            return nullptr;
+        }
+        else
+            throw;
+    }
 }
 
 bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
@@ -400,6 +406,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
         {
             QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
 
+            /*
             path.moveTo(0, this->middleBarLength/2);
             path.lineTo(0, -this->middleBarLength/2);
 
@@ -411,6 +418,36 @@ void FsmGraphicTransition::rebuildBoundingShape()
             arrowPath.translate(0, this->middleBarLength);
             arrowPath = arrowPath.toReversed();
             path.connectPath(arrowPath);
+            */
+
+            qreal outterScale = (arrowPath.boundingRect().width() + middleBarLength/2) / arrowPath.boundingRect().width();
+            qreal innerScale  = (arrowPath.boundingRect().width() - middleBarLength/2) / arrowPath.boundingRect().width();
+
+            QTransform t1;
+            t1.scale(outterScale, outterScale);
+            QPainterPath outterPath = t1.map(arrowPath);
+
+            QTransform t2;
+            t2.scale(innerScale, innerScale);
+            QPainterPath innerPath = t2.map(arrowPath);
+
+            if (this->neighbors->computeTransitionPosition(this) > 0)
+            {
+                outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, middleBarLength/2);
+                innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, -middleBarLength/2);
+            }
+            else
+            {
+                outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, -middleBarLength/2);
+                innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, middleBarLength/2);
+            }
+
+            innerPath = innerPath.toReversed();
+
+            path.moveTo(outterPath.pointAtPercent(0));
+            path.connectPath(outterPath);
+            path.lineTo(innerPath.pointAtPercent(0));
+            path.connectPath(innerPath);
 
             path.closeSubpath();
         }
@@ -437,7 +474,7 @@ void FsmGraphicTransition::updateSelectionShapeDisplay()
 
 void FsmGraphicTransition::updateText()
 {
-    shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
+    shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 
     //
     // Condition
@@ -798,7 +835,7 @@ bool FsmGraphicTransition::setDynamicTargetMode(const QPointF& mousePosition)
 
 bool FsmGraphicTransition::endDynamicMode(bool keepChanges)
 {
-    shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
+    shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 
     this->autoTransitionNeedsRedraw = true;
 
@@ -1021,7 +1058,7 @@ void FsmGraphicTransition::keyPressEvent(QKeyEvent* event)
     }
     else if (event->key() == Qt::Key_Delete)
     {
-        shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
+        shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 
         if (l_logicTransition != nullptr)
             l_logicTransition->getSource()->removeOutgoingTransition(l_logicTransition);
@@ -1050,7 +1087,17 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
     }
 
     return QGraphicsItem::itemChange(change, value);
+}
 
+void FsmGraphicTransition::mousePressEvent(QGraphicsSceneMouseEvent* ev)
+{
+    // We do not need to handle release and other events as mousePressEvent is either:
+    // => passed to parent class, so other events will be so
+    // => ignored, so no other event will be trigered
+    if (this->boundingShape.contains(ev->pos()))
+        QGraphicsItemGroup::mousePressEvent(ev);
+    else
+        ev->ignore();
 }
 
 void FsmGraphicTransition::treatMenu(QAction* action)
@@ -1060,17 +1107,16 @@ void FsmGraphicTransition::treatMenu(QAction* action)
     else if (action->text() == tr("Change target"))
         emit dynamicTargetCalledEvent(this);
     if (action->text() == tr("Edit"))
-        emit editCalledEvent(this->logicTransition.lock());
+        emit editCalledEvent(this->getLogicTransition());
     else if (action->text() == tr("Delete"))
     {
         // This call will destroy the current object as consequence of the logic object destruction
 
-        shared_ptr<FsmTransition> l_logicTransition = this->logicTransition.lock();
+        shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 
         if (l_logicTransition != nullptr)
             l_logicTransition->getSource()->removeOutgoingTransition(l_logicTransition);
     }
-
 }
 
 void FsmGraphicTransition::machineModeChangedEventHandler(Machine::mode)

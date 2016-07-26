@@ -91,8 +91,8 @@ public:
     qreal getConditionLineSliderPosition();
 
     QGraphicsTextItem* getConditionText() const;
-    QPainterPath shape() const override;
-    QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
+    virtual QRectF boundingRect() const override;
 
 signals:
     void editCalledEvent(shared_ptr<FsmTransition>);
@@ -104,6 +104,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
 
 private slots:
     void updateDisplay();
@@ -120,9 +121,6 @@ private:
     void checkNeighboors();
     void setNeighbors(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood);
     void quitNeighboorhood();  // Ohhh... So sad
-
-    //
-    weak_ptr<FsmTransition> logicTransition;
 
     // A FSM graphic transition must always have at least a source (may not have target when first drawing)
     FsmGraphicState* source = nullptr;
@@ -162,7 +160,6 @@ private:
     static qreal middleBarLength;
     static QPen standardPen;
     static QPen editPen;
-    static QPen selectionPen;
     static QPen inactivePen;
     static QPen activePen;
 };

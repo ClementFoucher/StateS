@@ -49,7 +49,7 @@ public:
 
 protected:
     void setLogicActuator(shared_ptr<MachineActuatorComponent> actuator); // Throws StatesException TODO: check uses
-    shared_ptr<MachineActuatorComponent> getLogicActuator(); // Throws StatesException TODO: check uses
+    shared_ptr<MachineActuatorComponent> getLogicActuator() const; // Throws StatesException
     void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
 
 private:
@@ -57,7 +57,6 @@ private:
 
 private:
     QGraphicsItemGroup* actionsBox = nullptr;
-    weak_ptr<MachineActuatorComponent> actuator;
 
 };
 
