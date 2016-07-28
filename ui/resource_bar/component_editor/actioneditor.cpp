@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -68,6 +68,7 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     this->actionList->horizontalHeaderItem(1)->setText(tr("Signal"));
     this->actionList->horizontalHeaderItem(2)->setText(tr("Value"));
     this->actionList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->actionList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(this->actionList, &QTableWidget::itemSelectionChanged, this, &ActionEditor::updateButtonsState);
     connect(this->actionList, &QTableWidget::itemDoubleClicked,    this, &ActionEditor::editValue);
     this->listDelegate = new DynamicTableItemDelegate(this->actionList);

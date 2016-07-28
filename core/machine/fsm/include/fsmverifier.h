@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,7 +52,7 @@ public:
     public:
         QString text = QString::null;
         severity type = severity::hint;
-        TruthTable* proof = nullptr;
+        shared_ptr<TruthTable> proof;
         QList<int> proofsHighlight;
     };
 
@@ -67,7 +67,6 @@ private:
     void clearProofs();
 
     weak_ptr<Fsm> machine;
-    QList<TruthTable> internalProofs;
 
     QList<shared_ptr<Issue>> issues;
 };

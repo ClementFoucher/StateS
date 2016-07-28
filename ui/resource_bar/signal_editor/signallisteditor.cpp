@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -95,6 +95,9 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
     this->newSignalsPrefix += " #";
 
     headerTexts.insert(1, tr("Size"));
+
+    this->signalsList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->signalsList->verticalHeader()->setEnabled(false);
 
     this->signalsList->setHorizontalHeaderLabels(headerTexts);
 
@@ -256,20 +259,48 @@ void SignalListEditor::updateButtonsEnableState()
         {
             this->buttonRemove->setEnabled(true);
 
-            // If exactly one line selected, disable buttons if useless
-            // TODO: do the same if a single group is selected at top or bottom
-            if (this->signalsList->selectedItems().count() == this->signalsList->columnCount())
-            {
-                if (this->signalsList->selectionModel()->selectedRows()[0].row()!= 0)
-                    this->buttonUp->setEnabled(true);
+            // Up/down buttons : only enable when relevant
 
-                if (this->signalsList->selectionModel()->selectedRows()[0].row() != this->signalsList->rowCount()-1)
-                    this->buttonDown->setEnabled(true);
+            QModelIndexList rows = this->signalsList->selectionModel()->selectedRows();
+
+            // First sort selected rows
+            QVector<int> sortedRows(rows.count());
+            for (int i = 0 ; i < rows.count() ; i++)
+            {
+                sortedRows[i] = rows[i].row();
+            }
+
+            qSort(sortedRows);
+
+            int currentRow = sortedRows[0];
+            bool areSuccesive = true;
+
+            // Then check if one or multiple groups
+            for (int i = 1 ; i < sortedRows.count() ; i++)
+            {
+                if (sortedRows[i] == currentRow+1)
+                    currentRow = sortedRows[i];
+                else
+                {
+                    areSuccesive = false;
+                    break;
+                }
+            }
+
+            if (areSuccesive == false)
+            {
+                // Lacunar selection can always be moved up or down
+                this->buttonUp->setEnabled(true);
+                this->buttonDown->setEnabled(true);
             }
             else
             {
-                this->buttonUp->setEnabled(true);
-                this->buttonDown->setEnabled(true);
+                // If single group, check if at top or at bottom
+                if (sortedRows[0] != 0)
+                    this->buttonUp->setEnabled(true);
+
+                if (sortedRows.last() != this->signalsList->rowCount()-1)
+                    this->buttonDown->setEnabled(true);
             }
         }
     }

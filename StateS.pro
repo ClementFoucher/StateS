@@ -51,7 +51,6 @@ SOURCES += \
     ui/statesui.cpp \
     ui/machinecomponentvisualizer.cpp \
     ui/displayarea.cpp \
-    ui/truthtabledisplay.cpp \
     ui/rangeextractorwidget.cpp \
     ui/editableequation.cpp \
     ui/toolbar.cpp \
@@ -107,7 +106,11 @@ SOURCES += \
     ui/simulation/clocktimeline.cpp \
     ui/simulation/signaltimeline.cpp \
     ui/simulation/simulationwidget.cpp \
-    ui/static/svgimagegenerator.cpp
+    ui/static/svgimagegenerator.cpp \
+    ui/truth_table/truthtabledisplay.cpp \
+    ui/truth_table/truthtablemaintablemodel.cpp \
+    ui/truth_table/truthtableinputtablemodel.cpp \
+    ui/truth_table/truthtableoutputtablemodel.cpp
 
 
 
@@ -141,7 +144,6 @@ HEADERS  += \
     core/exceptions/include/statesexception.h \
 #
     ui/include/statesui.h \
-    ui/include/truthtabledisplay.h \
     ui/include/displayarea.h \
     ui/include/editableequation.h \
     ui/include/rangeextractorwidget.h \
@@ -198,7 +200,11 @@ HEADERS  += \
     ui/simulation/include/clocktimeline.h \
     ui/simulation/include/signaltimeline.h \
     ui/simulation/include/simulationwidget.h \
-    ui/static/include/svgimagegenerator.h
+    ui/static/include/svgimagegenerator.h \
+    ui/truth_table/include/truthtabledisplay.h \
+    ui/truth_table/include/truthtablemaintablemodel.h \
+    ui/truth_table/include/truthtableinputtablemodel.h \
+    ui/truth_table/include/truthtableoutputtablemodel.h
 
 unix:QMAKE_CXXFLAGS += \
     -std=c++11 \
@@ -218,6 +224,7 @@ INCLUDEPATH += \
     ui/dialogs/include \
     ui/equation_editor/include \
     ui/refined_widget/include \
+    ui/truth_table/include \
     ui/resource_bar/include \
     ui/resource_bar/component_editor/include \
     ui/resource_bar/machine_builder/include \

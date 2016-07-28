@@ -901,10 +901,6 @@
         <translation>Éditeur de FSM</translation>
     </message>
     <message>
-        <source>Use &lt;i&gt;mouse center button (wheel)&lt;/i&gt; to move scene:</source>
-        <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
-    </message>
-    <message>
         <source>Component name:</source>
         <translation>Nom du composant :</translation>
     </message>
@@ -1083,6 +1079,10 @@
     <message>
         <source>transition editing</source>
         <translation>l&apos;édition de la transition</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;mouse middle button (wheel)&lt;/i&gt; to move scene:</source>
+        <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
     </message>
 </context>
 <context>
@@ -1551,6 +1551,33 @@
         <source>Result</source>
         <translation>Résultat</translation>
     </message>
+    <message>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Entrée</translation>
+    </message>
+    <message>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+</context>
+<context>
+    <name>TruthTableMainTableModel</name>
+    <message>
+        <source>Error! No table loaded.</source>
+        <translation>Erreur ! Aucune table chargée.</translation>
+    </message>
+    <message>
+        <source>Result</source>
+        <translation>Résultat</translation>
+    </message>
+    <message>
+        <source>Result:</source>
+        <translation>Résultat :</translation>
+    </message>
 </context>
 <context>
     <name>VerifierTab</name>
@@ -1595,16 +1622,16 @@
         <translation>Astuce</translation>
     </message>
     <message>
-        <source>Lines shown in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
-        <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
-    </message>
-    <message>
         <source>Details on error</source>
         <translation>Détails sur l&apos;erreur</translation>
     </message>
     <message>
         <source>Issues in blue won&apos;t block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.</source>
         <translation>Les problèmes en bleu ne bloqueront pas le fonctionnement de la machine, mais sont des erreurs structurelles qui mènent à un comportement non défini, et doivent donc être corrigées.</translation>
+    </message>
+    <message>
+        <source>Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
+        <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
     </message>
 </context>
 <context>

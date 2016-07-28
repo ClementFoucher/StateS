@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -368,26 +368,29 @@ void FsmGraphicTransition::rebuildBoundingShape()
     else if (this->neighbors == nullptr)
     {
         // Auto-transition
-        QPainterPath arcPath = ((QGraphicsPathItem*)arrowBody)->path();
+        QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
 
-        qreal outterScale = (arcPath.boundingRect().width() + middleBarLength/2) / arcPath.boundingRect().width();
-        qreal innerScale  = (arcPath.boundingRect().width() - middleBarLength/2) / arcPath.boundingRect().width();
+        qreal outterScale = (arrowPath.boundingRect().height() + 3*middleBarLength/4) / arrowPath.boundingRect().height();
+        qreal innerScale  = (arrowPath.boundingRect().height() - 3*middleBarLength/4) / arrowPath.boundingRect().height();
 
-        QTransform t1;
-        t1.scale(outterScale, outterScale);
-        QPainterPath outterPath = t1.map(arcPath);
+        QTransform expand;
+        expand.scale(outterScale, outterScale);
+        QPainterPath outterPath = expand.map(arrowPath);
 
-        QTransform t2;
-        t2.scale(innerScale, innerScale);
-        QPainterPath innerPath = t2.map(arcPath).toReversed();
+        QTransform shrink;
+        shrink.scale(innerScale, innerScale);
+        QPainterPath innerPath = shrink.map(arrowPath);
+
+        outterPath.translate(0, middleBarLength/2);
+        innerPath.translate(0, -middleBarLength/2);
+
+        innerPath = innerPath.toReversed();
 
         path.moveTo(outterPath.pointAtPercent(0));
         path.connectPath(outterPath);
-
         path.lineTo(innerPath.pointAtPercent(0));
         path.connectPath(innerPath);
 
-        path.moveTo(outterPath.pointAtPercent(0));
         path.closeSubpath();
     }
     else
@@ -406,30 +409,16 @@ void FsmGraphicTransition::rebuildBoundingShape()
         {
             QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
 
-            /*
-            path.moveTo(0, this->middleBarLength/2);
-            path.lineTo(0, -this->middleBarLength/2);
-
-            arrowPath.translate(0, -this->middleBarLength/2);
-            path.connectPath(arrowPath);
-
-            path.lineTo(arrowPath.boundingRect().width(), this->middleBarLength/2);
-
-            arrowPath.translate(0, this->middleBarLength);
-            arrowPath = arrowPath.toReversed();
-            path.connectPath(arrowPath);
-            */
-
             qreal outterScale = (arrowPath.boundingRect().width() + middleBarLength/2) / arrowPath.boundingRect().width();
             qreal innerScale  = (arrowPath.boundingRect().width() - middleBarLength/2) / arrowPath.boundingRect().width();
 
-            QTransform t1;
-            t1.scale(outterScale, outterScale);
-            QPainterPath outterPath = t1.map(arrowPath);
+            QTransform expand;
+            expand.scale(outterScale, outterScale);
+            QPainterPath outterPath = expand.map(arrowPath);
 
-            QTransform t2;
-            t2.scale(innerScale, innerScale);
-            QPainterPath innerPath = t2.map(arrowPath);
+            QTransform shrink;
+            shrink.scale(innerScale, innerScale);
+            QPainterPath innerPath = shrink.map(arrowPath);
 
             if (this->neighbors->computeTransitionPosition(this) > 0)
             {

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -63,11 +63,11 @@ private:
 
     bool checkVhdl = false;
 
-    QLabel                     * listTitle   = nullptr;
-    QListWidget                * list        = nullptr;
-    QPushButton                * buttonClear = nullptr;
-    TruthTableDisplay          * truthTable  = nullptr;
-    CollapsibleWidgetWithTitle * hintBox     = nullptr;
+    QLabel                     * listTitle         = nullptr;
+    QListWidget                * list              = nullptr;
+    QPushButton                * buttonClear       = nullptr;
+    TruthTableDisplay          * truthTableDisplay = nullptr;
+    CollapsibleWidgetWithTitle * hintBox           = nullptr;
 };
 
 #endif // VERIFIERTAB_H

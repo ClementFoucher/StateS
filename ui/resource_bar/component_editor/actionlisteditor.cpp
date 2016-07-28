@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -54,7 +54,7 @@ ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator
         {
             {
                 if ((allowedActionTypes  & MachineActuatorComponent::assign) != 0 )
-                    this->addItem(tr("Assign"));
+                    this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/assign"))), tr("Assign"));
             }
         }
     }

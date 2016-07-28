@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -83,7 +83,6 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
 
 ConditionEditor::~ConditionEditor()
 {
-    delete truthTable;
     delete truthTableDisplay; // In case not shown
 }
 
@@ -116,25 +115,10 @@ void ConditionEditor::expandTruthTable()
 
                 if (equation != nullptr)
                 {
-                    this->truthTable = new TruthTable(equation);
+                    this->truthTable = shared_ptr<TruthTable>(new TruthTable(equation));
 
-                    try
-                    {
-                        this->truthTableDisplay = new TruthTableDisplay(this->truthTable); // Throws StatesException
-                        this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
-                    }
-                    catch (const StatesException& e)
-                    {
-                        if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::signal_is_not_bool) )
-                        {
-                            delete this->truthTable;
-                            this->truthTable = nullptr;
-                            qDebug() << "(ConditionEditor:) Unable to display table: reference to expired signal";
-                        }
-                        else
-                            throw;
-                    }
-
+                    this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
+                    this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
                 }
                 else
                 {
@@ -161,7 +145,7 @@ void ConditionEditor::collapseTruthTable()
 
 bool ConditionEditor::isTruthTableDisplayed()
 {
-    if ( (this->truthTable != nullptr) && (this->truthTableDisplay->isVisible()) )
+    if ( (this->truthTableDisplay != nullptr) && (this->truthTableDisplay->isVisible()) )
          return true;
     else return false;
 }
@@ -177,8 +161,7 @@ void ConditionEditor::updateContent()
 
     delete this->truthTableDisplay;
     this->truthTableDisplay = nullptr;
-    delete this->truthTable;
-    this->truthTable = nullptr;
+    this->truthTable.reset();
 
     this->buttonExpandTruthTable->setEnabled(false);
 

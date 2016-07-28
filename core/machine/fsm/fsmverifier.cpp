@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -136,9 +136,9 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
                 }
                 else if (state->getOutgoingTransitions().count() > 1)
                 {
-                    internalProofs.append(TruthTable(equations));
+                    shared_ptr<TruthTable> currentTruthTable(new TruthTable(equations));
 
-                    QVector<QVector<LogicValue>> result = internalProofs.last().getOutputTable();
+                    QVector<QVector<LogicValue>> result = currentTruthTable->getOutputTable();
 
                     bool detected = false;
                     uint rowcount = 0;
@@ -159,7 +159,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
                             {
                                 currentIssue = shared_ptr<Issue>(new Issue());
                                 currentIssue->text = tr("Transitions from state") + " " + state->getName() + " " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time.");
-                                currentIssue->proof = &internalProofs.last();
+                                currentIssue->proof = currentTruthTable;
                                 currentIssue->type = severity::structure;
                                 this->issues.append(currentIssue);
 
@@ -171,7 +171,6 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
                         rowcount++;
                     }
-
                 }
             }
         }
@@ -242,8 +241,6 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
 
 void FsmVerifier::clearProofs()
 {
-    this->internalProofs.clear();
-
     this->issues.clear();
 }
 

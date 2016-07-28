@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -67,7 +67,7 @@ private:
     bool isTruthTableDisplayed();
 
     weak_ptr<FsmTransition> transition;
-    TruthTable* truthTable = nullptr;
+    shared_ptr<TruthTable> truthTable;
 
     // QWidgets with parent
     QGridLayout* layout = nullptr;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -112,13 +112,18 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
     return output;
 }
 
+uint TruthTable::getInputCount() const
+{
+    return this->inputSignalsTable.count();
+}
+
 /**
  * @brief TruthTable::getOutputCount
  * @return The number of outputs.
  */
 uint TruthTable::getOutputCount() const
 {
-    return this->outputValuesTable.count();
+    return this->outputEquationsTextsTable.count();
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,8 +25,11 @@
 // Parent
 #include <QTableWidget>
 
+// C++ classes
+using namespace std;
+#include <memory>
+
 // StateS classes
-#include "statesexception.h"
 class TruthTable;
 
 
@@ -35,7 +38,21 @@ class TruthTableDisplay : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit TruthTableDisplay(const TruthTable* truthTable, QWidget* parent = nullptr); // Throws StatesException
+    explicit TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights = QList<int>(), QWidget* parent = nullptr);
+
+protected:
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void showEvent  (QShowEvent* event)   override;
+
+private slots:
+    void subTableResized(int, int, int);
+    void updateSelection(const QItemSelection& selected, const QItemSelection&);
+
+private:
+    void resizeCells();
+
+    QTableView* inputTable  = nullptr;
+    QTableView* outputTable = nullptr;
 };
 
 #endif // TRUTHTABLEDISPLAY_H

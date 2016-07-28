@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,6 +52,7 @@ public:
     QVector<QVector<LogicValue>> getOutputTable() const;
     QVector<LogicValue>          getSingleOutputTable() const;
 
+    uint getInputCount()  const;
     uint getOutputCount() const;
 
 private:

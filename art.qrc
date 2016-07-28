@@ -13,5 +13,6 @@
         <file alias="pulse">art/svg/Pulse.svg</file>
         <file alias="active_on_state">art/svg/Active_on_state.svg</file>
         <file alias="export_image">art/svg/Export_image.svg</file>
+        <file alias="assign">art/svg/Assign.svg</file>
     </qresource>
 </RCC>

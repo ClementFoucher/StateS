@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -259,7 +259,7 @@ void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
         title +=  tr("Navigation");
 
         hint += "<br />";
-        hint += tr("Use <i>mouse center button (wheel)</i> to move scene:");
+        hint += tr("Use <i>mouse middle button (wheel)</i> to move scene:");
         hint += "<br />";
         hint += tr("Press and hold") + " " + tr("wheel") + " " + tr("for free move") + ",";
         hint += "<br />";
