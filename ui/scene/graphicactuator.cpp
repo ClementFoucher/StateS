@@ -105,9 +105,9 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
             Machine::mode currentMode = l_actuator->getOwningMachine()->getCurrentMode();
 
             if (currentMode == Machine::mode::simulateMode)
-                currentActionText = actions[i]->getText(true);
+                currentActionText = actions[i]->getColoredText(true);
             else
-                currentActionText = actions[i]->getText(false);
+                currentActionText = actions[i]->getText();
 
             if (actions[i]->getSize() > 1)
             {

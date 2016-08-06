@@ -57,11 +57,11 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
 
     this->buttonSetCondition = new QPushButton(tr("Set condition"));
     connect(this->buttonSetCondition, &QAbstractButton::clicked, this, &ConditionEditor::editCondition);
-    this->layout->addWidget(this->buttonSetCondition, 2, 0, 1, 1);
+    this->layout->addWidget(this->buttonSetCondition, 3, 0, 1, 1);
 
     QPushButton* buttonClearCondition = new QPushButton(tr("Clear condition"));
     connect(buttonClearCondition, &QAbstractButton::clicked, this, &ConditionEditor::clearCondition);
-    this->layout->addWidget(buttonClearCondition, 2, 1, 1, 1);
+    this->layout->addWidget(buttonClearCondition, 3, 1, 1, 1);
 
     QHBoxLayout* positionLayout = new QHBoxLayout();
     QLabel* positionLabel = new QLabel(tr("Condition position"));
@@ -72,11 +72,11 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
     this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
     connect(this->conditionTextPositionSlider, &QSlider::valueChanged, this, &ConditionEditor::conditionTextPositionSliderChanged);
     positionLayout->addWidget(this->conditionTextPositionSlider);
-    this->layout->addLayout(positionLayout, 3, 0, 1, 2);
+    this->layout->addLayout(positionLayout, 4, 0, 1, 2);
 
     this->buttonExpandTruthTable = new QPushButton(tr("Display truth table"));
     connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
-    this->layout->addWidget(this->buttonExpandTruthTable, 4, 0, 1, 2);
+    this->layout->addWidget(this->buttonExpandTruthTable, 5, 0, 1, 2);
 
     this->updateContent();
 }
@@ -174,7 +174,16 @@ void ConditionEditor::updateContent()
 
         if (transition->getCondition() != nullptr)
         {
-            this->conditionText->setText(transition->getCondition()->getText());
+            shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(transition->getCondition());
+
+            if (equationOperand != nullptr)
+            {
+                this->conditionText->setText(equationOperand->getColoredText(false, true));
+            }
+            else
+            {
+                this->conditionText->setText(transition->getCondition()->getText());
+            }
 
             if (transition->getCondition()->getSize() == 1)
             {
@@ -195,7 +204,7 @@ void ConditionEditor::updateContent()
                     this->conditionWarningText = new QLabel("<font color=red>" +
                                                             tr("Warning: equation representing condition is not valid.") +
                                                             "<br />" + tr("Thus, the current transition will never be crossed.") +
-                                                            "<br />" + tr("Edit condition to view errors.") +
+                                                            "<br />" + tr("Edit condition and hover over errors for more information.") +
                                                             "</font>"
                                                             );
                     this->conditionWarningText->setWordWrap(true);
@@ -212,7 +221,7 @@ void ConditionEditor::updateContent()
                 }
 
                 this->conditionWarningText->setAlignment(Qt::AlignCenter);
-                this->layout->addWidget(conditionWarningText, 3, 0, 1, 2);
+                this->layout->addWidget(conditionWarningText, 2, 0, 1, 2);
             }
         }
         else

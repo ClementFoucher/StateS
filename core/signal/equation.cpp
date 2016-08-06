@@ -374,13 +374,17 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
     }
 }
 
+QString Equation::getText() const
+{
+    return this->getColoredText(false, false);
+}
 
-QString Equation::getText(bool activeColored) const
+QString Equation::getColoredText(bool activeColored, bool errorColored) const
 {
     QString errorTextBegin;
     QString errorTextEnd;
 
-    if (this->getSize() == 0)
+    if ( (this->getSize() == 0) && (errorColored == true) )
     {
         errorTextBegin = "<font color=\"red\">";
         errorTextEnd   = "</font>";
@@ -405,10 +409,16 @@ QString Equation::getText(bool activeColored) const
 
         for (uint i = 0 ; i < this->allowedOperandCount ; i++)
         {
-            shared_ptr<Signal> operand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
-            if (operand != nullptr)
+            shared_ptr<Signal> signalOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
+            shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(signalOperand);
+
+            if (equationOperand != nullptr)
             {
-                text += operand->getText(activeColored);
+                text += equationOperand->getColoredText(activeColored, false);
+            }
+            else if (signalOperand != nullptr)
+            {
+                text += signalOperand->getColoredText(activeColored);
             }
             else
             {

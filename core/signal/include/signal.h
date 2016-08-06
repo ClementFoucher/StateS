@@ -62,7 +62,8 @@ public:
     virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
     void reinitialize();
 
-    virtual QString getText(bool activeColored = false) const;
+    virtual QString getText() const;
+    QString getColoredText(bool activeColored) const;
 
     virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
     LogicValue getCurrentValue() const;

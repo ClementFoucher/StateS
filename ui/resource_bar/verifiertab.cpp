@@ -122,7 +122,6 @@ void VerifierTab::checkNow()
                 this->list->item(this->list->count()-1)->setBackground(brush);
                 hasProofs = true;
             }
-
         }
 
         QString hint;
@@ -183,7 +182,7 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
         QList<int> highlights                    = issues[this->list->row(item)]->proofsHighlight;
 
         this->truthTableDisplay = new TruthTableDisplay(currentTruthTable, highlights);
-        this->layout()->addWidget(this->truthTableDisplay);
+        ((QVBoxLayout*)this->layout())->insertWidget(5, this->truthTableDisplay);
 
         QLabel* hintText = new QLabel(tr("Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated."));
         hintText->setAlignment(Qt::AlignCenter);

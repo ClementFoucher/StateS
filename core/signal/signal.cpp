@@ -82,7 +82,12 @@ void Signal::resize(uint newSize) // Throws StatesException
     emit signalResizedEvent(this->shared_from_this()); // Clear to use shared_from_this: this function can't be called in constructor
 }
 
-QString Signal::getText(bool activeColored) const
+QString Signal::getText() const
+{
+    return this->getColoredText(false);
+}
+
+QString Signal::getColoredText(bool activeColored) const
 {
     if (!activeColored)
     {

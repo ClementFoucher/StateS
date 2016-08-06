@@ -108,7 +108,8 @@ public:
     uint getSize() const override;
     void resize(uint) override; // Throws StatesException
 
-    QString getText(bool activeColored = false) const override;
+    QString getText() const override;
+    QString getColoredText(bool activeColored, bool errorColored) const;
 
     void setCurrentValue(const LogicValue& value) override; // Throws StatesException
     computationFailureCause getComputationFailureCause() const;

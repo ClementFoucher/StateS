@@ -44,6 +44,7 @@
 #include "contextmenu.h"
 #include "fsm.h"
 #include "statesexception.h"
+#include "equation.h"
 
 
 qreal FsmGraphicTransition::arrowEndSize = 10;
@@ -478,7 +479,15 @@ void FsmGraphicTransition::updateText()
             if (l_logicTransition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
             else
-                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText(true) + "</div>");
+            {
+                shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
+
+                if (equationCondition != nullptr)
+                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(true, true) + "</div>");
+                else
+                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getColoredText(true) + "</div>");
+            }
+
             if (conditionLine != nullptr)
             {
                 shared_ptr<Signal> condition = l_logicTransition->getCondition();
@@ -514,7 +523,14 @@ void FsmGraphicTransition::updateText()
             if (l_logicTransition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
             else
-                conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText() + "</div>");
+            {
+                shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
+
+                if (equationCondition != nullptr)
+                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(false, true) + "</div>");
+                else
+                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText() + "</div>");
+            }
             if (conditionLine != nullptr)
                 conditionLine->setPen(standardPen);
         }

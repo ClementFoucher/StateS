@@ -134,7 +134,7 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
 void SimulationWidget::closeEvent(QCloseEvent* event)
 {
     event->ignore();
-    emit detachTimelineEvent(false);
+    this->bindMe();
 }
 
 void SimulationWidget::mousePressEvent(QMouseEvent* event)

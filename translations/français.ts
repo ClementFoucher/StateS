@@ -250,12 +250,12 @@
         <translation>Aucun signal compatible !</translation>
     </message>
     <message>
-        <source>Edit condition to view errors.</source>
-        <translation>Éditez la condition pour visualiser les erreurs.</translation>
-    </message>
-    <message>
         <source>Condition position</source>
         <translation>Position de la condition</translation>
+    </message>
+    <message>
+        <source>Edit condition and hover over errors for more information.</source>
+        <translation>Éditez la condition et survolez les erreurs pour plus de détails</translation>
     </message>
 </context>
 <context>
