@@ -63,6 +63,10 @@
         <source>Contact and links</source>
         <translation>Contact et liens</translation>
     </message>
+    <message>
+        <source>Credits for art used in StateS</source>
+        <translation>Crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
+    </message>
 </context>
 <context>
     <name>ActionEditor</name>

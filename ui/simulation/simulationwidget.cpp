@@ -57,7 +57,8 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
     QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
     connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
 
-    this->actionDetach = new QAction(tr("Detach as independant window"), this);
+    QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+    this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
     connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
     this->toolBar->addAction(action);
@@ -202,6 +203,10 @@ void SimulationWidget::setMeFree()
     emit detachTimelineEvent(true);
 
     this->actionDetach->setText(tr("Attach to main window"));
+
+    QIcon attachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+    this->actionDetach->setIcon(attachWindowIcon);
+
     connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 }
 
@@ -212,6 +217,10 @@ void SimulationWidget::bindMe()
     emit detachTimelineEvent(false);
 
     this->actionDetach->setText(tr("Detach as independant window"));
+
+    QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+    this->actionDetach->setIcon(detachWindowIcon);
+
     connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 }
 

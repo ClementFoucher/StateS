@@ -14,5 +14,7 @@
         <file alias="active_on_state">art/svg/Active_on_state.svg</file>
         <file alias="export_image">art/svg/Export_image.svg</file>
         <file alias="assign">art/svg/Assign.svg</file>
+        <file alias="attach_window">art/svg/Attach_window.svg</file>
+        <file alias="detach_window">art/svg/Detach_window.svg</file>
     </qresource>
 </RCC>

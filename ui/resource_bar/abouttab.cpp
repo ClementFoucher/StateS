@@ -74,10 +74,23 @@ AboutTab::AboutTab(QWidget* parent) :
     copyrightLabel->setWordWrap(true);
     layout->addWidget(copyrightLabel);
 
-    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br />GNU General Public Licence " + tr("version") + " 2");
+
+    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br /><a href=\"https://www.gnu.org/licenses/gpl-2.0.html\">GNU General Public Licence " + tr("version") + " 2</a>");
     licenseLabel->setAlignment(Qt::AlignCenter);
     licenseLabel->setWordWrap(true);
+    licenseLabel->setTextFormat(Qt::RichText);
+    licenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    licenseLabel->setOpenExternalLinks(true);
     layout->addWidget(licenseLabel);
+
+    QLabel* artLicenseLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/code/ci/master/tree/art/AUTHORS.txt\">" + tr("Credits for art used in StateS") + "</a>");
+    artLicenseLabel->setAlignment(Qt::AlignCenter);
+    artLicenseLabel->setWordWrap(true);
+    artLicenseLabel->setTextFormat(Qt::RichText);
+    artLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    artLicenseLabel->setOpenExternalLinks(true);
+    layout->addWidget(artLicenseLabel);
+
 
     QLabel* qtVersionLabel = new QLabel(tr("This application was compiled using") + " Qt " + QT_VERSION_STR + ".\n" + tr("Currently running on") + " Qt " + qVersion() + ".");
     qtVersionLabel->setAlignment(Qt::AlignCenter);
@@ -96,6 +109,9 @@ AboutTab::AboutTab(QWidget* parent) :
     QLabel* emailLabel = new QLabel(tr("Contact:") + " <a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>" );
     emailLabel->setAlignment(Qt::AlignCenter);
     emailLabel->setWordWrap(true);
+    emailLabel->setTextFormat(Qt::RichText);
+    emailLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    emailLabel->setOpenExternalLinks(true);
     layout->addWidget(emailLabel);
 
     QLabel* websiteLabel = new QLabel(tr("StateS web site:") + "<br /><a href=\"https://sourceforge.net/projects/states/\">https://sourceforge.net/projects/states/</a>");
@@ -116,7 +132,7 @@ AboutTab::AboutTab(QWidget* parent) :
 
     QLabel* supportLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/tickets/\">" + tr("Found a bug?") + "</a><br />"
                                       + tr("(Please consult") + " "
-                                      + "<a href=\"https://sourceforge.net/p/states/code/ci/master/tree/known_bugs.txt\">"+ tr("known bugs list")  + "</a><br />"
+                                      + "<a href=\"https://sourceforge.net/p/states/code/ci/master/tree/text/known_bugs.txt\">"+ tr("known bugs list")  + "</a><br />"
                                       + " " + tr("before submitting a ticket)"));
     supportLabel->setAlignment(Qt::AlignCenter);
     supportLabel->setWordWrap(true);
