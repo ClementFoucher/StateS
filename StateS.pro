@@ -4,14 +4,12 @@
 #
 #-------------------------------------------------
 
-QT += \
-      core \
+QT += core \
       gui \
+      widgets \
       printsupport \
       xml \
       svg
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = StateS
 TEMPLATE = app
@@ -20,6 +18,7 @@ VERSION = 0.3.17
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
 
 SOURCES += \
+# Core
     core/main.cpp \
     core/states.cpp \
     core/basic_type/logicvalue.cpp \
@@ -47,7 +46,7 @@ SOURCES += \
     core/simulation/fsmsimulator.cpp \
     core/simulation/machinesimulator.cpp \
     core/exceptions/statesexception.cpp \
-#
+# UI
     ui/statesui.cpp \
     ui/machinecomponentvisualizer.cpp \
     ui/displayarea.cpp \
@@ -112,9 +111,8 @@ SOURCES += \
     ui/truth_table/truthtableinputtablemodel.cpp \
     ui/truth_table/truthtableoutputtablemodel.cpp
 
-
-
 HEADERS  += \
+# Core
     core/include/states.h \
     core/basic_type/include/logicvalue.h \
     core/basic_type/include/truthtable.h \
@@ -131,18 +129,18 @@ HEADERS  += \
     core/machine/fsm/include/fsmstate.h \
     core/machine/fsm/include/fsmtransition.h \
     core/machine/fsm/include/fsmsavefilemanager.h \
+    core/signal/include/StateS_signal.h \
     core/signal/include/inout.h \
     core/signal/include/input.h \
     core/signal/include/io.h \
     core/signal/include/output.h \
-    core/signal/include/signal.h \
     core/signal/include/constant.h \
     core/signal/include/equation.h \
     core/simulation/include/clock.h \
     core/simulation/include/fsmsimulator.h \
     core/simulation/include/machinesimulator.h \
     core/exceptions/include/statesexception.h \
-#
+# UI
     ui/include/statesui.h \
     ui/include/displayarea.h \
     ui/include/editableequation.h \
@@ -206,7 +204,7 @@ HEADERS  += \
     ui/truth_table/include/truthtableinputtablemodel.h \
     ui/truth_table/include/truthtableoutputtablemodel.h
 
-unix:QMAKE_CXXFLAGS += \
+QMAKE_CXXFLAGS += \
     -std=c++11 \
     -pedantic
 

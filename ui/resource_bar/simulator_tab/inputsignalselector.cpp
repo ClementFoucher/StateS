@@ -27,7 +27,7 @@
 #include <QLabel>
 
 // StateS classes
-#include "signal.h"
+#include "StateS_signal.h"
 #include "inputbitselector.h"
 
 

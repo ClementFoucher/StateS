@@ -28,7 +28,7 @@
 #include <QLabel>
 
 // StateS classes
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent) :

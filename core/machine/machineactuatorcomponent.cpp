@@ -26,7 +26,7 @@
 #include <QDebug>
 
 // StateS classes
-#include "signal.h"
+#include "StateS_signal.h"
 #include "machine.h"
 #include "statesexception.h"
 

@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "signal.h"
+#include "StateS_signal.h"
 
 // StateS classes
 #include "statesexception.h"

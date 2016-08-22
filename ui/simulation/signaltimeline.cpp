@@ -27,7 +27,7 @@
 #include <QVBoxLayout>
 
 // StateS classes
-#include "signal.h"
+#include "StateS_signal.h"
 #include "clock.h"
 #include "graphictimeline.h"
 #include "simulationwidget.h"

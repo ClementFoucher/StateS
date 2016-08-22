@@ -22,7 +22,7 @@
 #define CONSTANT_H
 
 // Parent
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 class Constant : public Signal

@@ -37,7 +37,7 @@
 #include "actionlisteditor.h"
 #include "contextmenu.h"
 #include "machine.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "rangeeditordialog.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "statesexception.h"

@@ -40,7 +40,7 @@
 #include "machine.h"
 #include "fsmtransition.h"
 #include "fsmgraphictransitionneighborhood.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
 #include "statesexception.h"

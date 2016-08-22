@@ -28,7 +28,7 @@
 
 // StateS classes
 #include "truthtable.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "statesexception.h"
 #include "truthtableinputtablemodel.h"
 #include "truthtableoutputtablemodel.h"

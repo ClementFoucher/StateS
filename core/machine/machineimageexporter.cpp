@@ -31,7 +31,7 @@
 // StateS classes
 #include "genericscene.h"
 #include "machine.h"
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 MachineImageExporter::MachineImageExporter(shared_ptr<Machine> machine, GenericScene* scene, shared_ptr<QGraphicsScene> component)

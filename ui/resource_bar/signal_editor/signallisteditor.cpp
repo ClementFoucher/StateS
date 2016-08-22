@@ -32,7 +32,7 @@
 
 // StateS classes
 #include "dynamiclineedit.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
 #include "contextmenu.h"

@@ -29,7 +29,7 @@
 #include "fsm.h"
 #include "fsmgraphicstate.h"
 #include "fsmtransition.h"
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name) :

@@ -30,7 +30,7 @@
 
 // StateS classes
 #include "fsm.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "fsmstate.h"
 #include "fsmgraphicstate.h"
 #include "fsmtransition.h"

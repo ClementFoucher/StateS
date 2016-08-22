@@ -26,7 +26,7 @@
 #include <math.h>
 
 // StateS classes
-#include "signal.h"
+#include "StateS_signal.h"
 #include "equation.h"
 #include "logicvalue.h"
 #include "constant.h"

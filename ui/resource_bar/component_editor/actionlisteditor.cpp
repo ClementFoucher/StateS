@@ -25,7 +25,7 @@
 // StateS classes
 #include "svgimagegenerator.h"
 #include "machineactuatorcomponent.h"
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 ActionListEditor::ActionListEditor(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent) :

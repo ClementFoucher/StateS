@@ -23,7 +23,7 @@
 #define EQUATION_H
 
 // Parent
-#include "signal.h"
+#include "StateS_signal.h"
 
 // C++ classes
 #include <memory>

@@ -32,7 +32,7 @@
 #include "clock.h"
 #include "fsm.h"
 #include "fsmstate.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "fsmtransition.h"
 #include "statesexception.h"
 #include "truthtable.h"

@@ -23,7 +23,7 @@
 #define IO_H
 
 // Parent
-#include "signal.h"
+#include "StateS_signal.h"
 
 
 class IO : public Signal

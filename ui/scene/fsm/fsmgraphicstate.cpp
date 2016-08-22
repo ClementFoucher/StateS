@@ -35,7 +35,7 @@
 #include "fsmgraphictransition.h"
 #include "fsmstate.h"
 #include "fsmscene.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
 #include "machinebuilder.h"

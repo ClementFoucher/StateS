@@ -28,7 +28,7 @@
 
 // StateS classes
 #include "machineactuatorcomponent.h"
-#include "signal.h"
+#include "StateS_signal.h"
 #include "machine.h"
 #include "statesexception.h"
 
