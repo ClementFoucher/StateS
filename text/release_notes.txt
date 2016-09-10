@@ -2,6 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
+- 2016-09-10 - V 0.3.I - Reworked action management to allow multiple actions on same signal (useful to allow different ranges actions); Allow action reordering; Small UI enhancements;
 - 2016-08-07 - V 0.3.H - Reworked truth table display; Enhanced lists display; Added icons; Reworked some tabs display.
 - 2016-07-26 - V 0.3.G - Small interface enhancements: toolbar placement, check user input values for correctness, signal lists management, graphic items selection.
 - 2016-05-16 - V 0.3.F - Restored truth table feature (0.3.C regression); Corrected bug with tab key on signal creation.

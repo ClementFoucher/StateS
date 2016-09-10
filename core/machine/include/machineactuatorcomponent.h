@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,76 +29,65 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QMap>
-#include <QList>
-
 // StateS classes
-#include "logicvalue.h"
+class ActionOnSignal;
 class Signal;
 
+
 /**
- * @brief The MachineActuatorComponent class manages actions on signals.
+ * @brief The MachineActuatorComponent class represents
+ * a machine component with action capabilities.
  *
- * If signal is size 1 or extract 1 bit (param2 = -1) => value is always implicit
- * Else (vector signal with whole range or sub-range) => values is implicit for
- *   set and reset, explicit for others
+ * It manages a ranked list of actions and is able to
+ * remove an action when the associated signal is deleted.
  *
- * With implicit values, actionValue does not exist.
+ * A MachineActuatorComponent triggers the actions activation
+ * and deactivation.
  */
 class MachineActuatorComponent : public MachineComponent
 {
     Q_OBJECT
 
 public:
-    enum class action_types { activeOnState, pulse, set, reset, assign };
-    typedef enum { none = 0x0, activeOnState = 0x1, pulse = 0x2, set = 0x4, reset = 0x8, assign = 0x10 } allowed_action_types;
+    typedef enum
+    {
+        none          = 0x0,
+        activeOnState = 0x1,
+        pulse         = 0x2,
+        set           = 0x4,
+        reset         = 0x8,
+        assign        = 0x10
+    } allowed_action_types;
+
+    enum MachineActuatorComponentErrorEnum
+    {
+        out_of_range = 0
+    };
 
 public:
     explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
 
-    QList<shared_ptr<Signal>> getActions();
-    void clearActions();
+    QList<shared_ptr<ActionOnSignal>> getActions() const;
+    shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
 
-    void addActionByName(const QString& signalName);
-    void addAction(shared_ptr<Signal> signal);
-    bool removeActionByName(const QString& signalName);
+    shared_ptr<ActionOnSignal> addAction(shared_ptr<Signal> signal);
+    void removeAction(uint actionRank); // Throws StatesException
+    void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
     void activateActions();
     void deactivateActions();
 
-    void setActionType(shared_ptr<Signal> signal, action_types type);
-    bool setActionValue(shared_ptr<Signal> signal, LogicValue value, int param1 = -1, int param2 = -1); // TODO: throw exception
-
-    action_types getActionType(shared_ptr<Signal> variable);
-    LogicValue getActionValue(shared_ptr<Signal> variable);
-    int getActionParam1(shared_ptr<Signal> variable);
-    int getActionParam2(shared_ptr<Signal> variable);
-
-    uint getAllowedActionTypes() const;
-
+    virtual uint getAllowedActionTypes() const = 0;
 
 signals:
     void actionListChangedEvent();
 
-protected:
-    void setAllowedActionTypes(uint flags);
-
-    QList<weak_ptr<Signal>> actions;
-
-    // Reference signals by name as we can assert they are unique
-    QMap<QString, action_types> actionType;
-    QMap<QString, LogicValue>   actionValue;
-    QMap<QString, int>          actionParam1;
-    QMap<QString, int>          actionParam2;
-
 private slots:
-    void removeAction(shared_ptr<Signal> signal);
-    void signalResizedEventHandler(shared_ptr<Signal> emitter);
     void cleanActionList();
 
 private:
-    uint allowedActionTypes = none;
+    QList<shared_ptr<ActionOnSignal>> actionList;
+
 };
 
 #endif // MACHINEACTUATORCOMPONENT_H

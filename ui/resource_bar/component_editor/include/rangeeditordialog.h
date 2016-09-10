@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,8 @@
 using namespace std;
 
 // StateS classes
-class MachineActuatorComponent;
-class Signal;
 class Equation;
+class ActionOnSignal;
 
 
 class RangeEditorDialog : public QDialog
@@ -40,16 +39,14 @@ class RangeEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    RangeEditorDialog(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent = nullptr);
+    RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
 
-    int getParam1();
-    int getParam2();
+    int getRangeL() const;
+    int getRangeR() const;
 
 private:
-    weak_ptr<MachineActuatorComponent> actuator;
-    weak_ptr<Signal> signal;
-
     shared_ptr<Equation> equation;
+
 };
 
 #endif // RANGEEDITORDIALOG_H

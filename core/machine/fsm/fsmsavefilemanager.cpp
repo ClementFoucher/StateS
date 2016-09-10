@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,6 +40,7 @@
 #include "constant.h"
 #include "statesexception.h"
 #include "fsmgraphictransition.h"
+#include "actiononsignal.h"
 
 
 QList<QString> FsmSaveFileManager::warnings = QList<QString>();
@@ -226,8 +227,8 @@ void FsmSaveFileManager::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr
             break;
         case Equation::nature::extractOp:
             stream.writeAttribute("Nature", "extract");
-            stream.writeAttribute("Param1", QString::number(complexEquation->getParam1()));
-            stream.writeAttribute("Param2", QString::number(complexEquation->getParam2()));
+            stream.writeAttribute("RangeL", QString::number(complexEquation->getRangeL()));
+            stream.writeAttribute("RangeR", QString::number(complexEquation->getRangeR()));
             break;
         case Equation::nature::concatOp:
             stream.writeAttribute("Nature", "concatenate");
@@ -265,10 +266,12 @@ void FsmSaveFileManager::writeLogicEquation(QXmlStreamWriter& stream, shared_ptr
 
 void FsmSaveFileManager::writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component)
 {
-    if (component->getActions().count() != 0)
+    QList<shared_ptr<ActionOnSignal>> actions = component->getActions();
+
+    if (actions.count() != 0)
     {
         stream.writeStartElement("Actions");
-        foreach (shared_ptr<Signal> action, component->getActions())
+        foreach (shared_ptr<ActionOnSignal> action, actions)
         {
             stream.writeStartElement("Action");
 
@@ -277,33 +280,33 @@ void FsmSaveFileManager::writeActions(QXmlStreamWriter& stream, shared_ptr<Machi
             else
                 stream.writeAttribute("Signal_Type", "Variable");
 
-            stream.writeAttribute("Name", action->getName());
+            stream.writeAttribute("Name", action->getSignalActedOn()->getName());
 
-            switch(component->getActionType(action))
+            switch(action->getActionType())
             {
-            case MachineActuatorComponent::action_types::activeOnState:
+            case ActionOnSignal::action_types::activeOnState:
                 stream.writeAttribute("Action_Type", "ActiveOnState");
                 break;
-            case MachineActuatorComponent::action_types::pulse:
+            case ActionOnSignal::action_types::pulse:
                 stream.writeAttribute("Action_Type", "Pulse");
                 break;
-            case MachineActuatorComponent::action_types::set:
+            case ActionOnSignal::action_types::set:
                 stream.writeAttribute("Action_Type", "Set");
                 break;
-            case MachineActuatorComponent::action_types::reset:
+            case ActionOnSignal::action_types::reset:
                 stream.writeAttribute("Action_Type", "Reset");
                 break;
-            case MachineActuatorComponent::action_types::assign:
+            case ActionOnSignal::action_types::assign:
                 stream.writeAttribute("Action_Type", "Assign");
                 break;
             }
 
-            if (!component->getActionValue(action).isNull())
-                stream.writeAttribute("Action_Value", component->getActionValue(action).toString());
-            if (component->getActionParam1(action) != -1)
-                stream.writeAttribute("Param1", QString::number(component->getActionParam1(action)));
-            if (component->getActionParam2(action) != -1)
-                stream.writeAttribute("Param2", QString::number(component->getActionParam2(action)));
+            if (!action->getActionValue().isNull())
+                stream.writeAttribute("Action_Value", action->getActionValue().toString());
+            if (action->getActionRangeL() != -1)
+                stream.writeAttribute("RangeL", QString::number(action->getActionRangeL()));
+            if (action->getActionRangeR() != -1)
+                stream.writeAttribute("RangeR", QString::number(action->getActionRangeR()));
 
             stream.writeEndElement(); // Action
         }
@@ -661,67 +664,102 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
             continue;
         }
 
-        component->addAction(signal);
 
-        QString actionType = currentElement.attribute("Action_Type");
 
-        if (actionType == "Pulse")
+        ActionOnSignal::action_types actionType;
+        QString actionTypeText = currentElement.attribute("Action_Type");
+
+        if (actionTypeText == "Pulse")
         {
-            component->setActionType(signal, MachineActuatorComponent::action_types::pulse);
+            actionType = ActionOnSignal::action_types::pulse;
         }
-        else if (actionType == "ActiveOnState")
+        else if (actionTypeText == "ActiveOnState")
         {
-            component->setActionType(signal, MachineActuatorComponent::action_types::activeOnState);
+            actionType = ActionOnSignal::action_types::activeOnState;
         }
-        else if (actionType == "Set")
+        else if (actionTypeText == "Set")
         {
-            component->setActionType(signal, MachineActuatorComponent::action_types::set);
+            actionType = ActionOnSignal::action_types::set;
         }
-        else if (actionType == "Reset")
+        else if (actionTypeText == "Reset")
         {
-            component->setActionType(signal, MachineActuatorComponent::action_types::reset);
+            actionType = ActionOnSignal::action_types::reset;
         }
-        else if (actionType == "Assign")
+        else if (actionTypeText == "Assign")
         {
-            component->setActionType(signal, MachineActuatorComponent::action_types::assign);
+            actionType = ActionOnSignal::action_types::assign;
         }
         else
         {
             FsmSaveFileManager::warnings.append(tr("Unexpected action type encountered while parsing action list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Action type was") + " \"" + currentElement.attribute("Action_Type") + "\".");
+            FsmSaveFileManager::warnings.append("    " + tr("Action type was") + " \"" + actionTypeText + "\".");
             FsmSaveFileManager::warnings.append("    " + tr("Action ignored."));
             continue;
         }
 
+        shared_ptr<ActionOnSignal> action = component->addAction(signal);
 
-        QString sparam1 = currentElement.attribute("Param1");
-        QString sparam2 = currentElement.attribute("Param2");
+        try
+        {
+            action->setActionType(actionType); // Throws StatesException
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_type) )
+            {
+                FsmSaveFileManager::warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
+                FsmSaveFileManager::warnings.append("    " + tr("Default action type used instead."));
+            }
+            else
+                throw;
+        }
+
+        QString srangel = currentElement.attribute("RangeL");
+        QString sranger = currentElement.attribute("RangeR");
         QString sactval = currentElement.attribute("Action_Value");
+        // For compatibility with previous saves
+        if (srangel.isNull())
+            srangel = currentElement.attribute("Param1");
+        if (sranger.isNull())
+            sranger = currentElement.attribute("Param2");
 
-        int param1;
-        int param2;
-        LogicValue actionValue;
-        bool setActionValue = false;
+        int rangeL;
+        int rangeR;
 
-        if (! sparam1.isEmpty())
+        if (! srangel.isEmpty())
         {
-            setActionValue = true;
-            param1 = sparam1.toInt();
+            rangeL = srangel.toInt();
         }
         else
-            param1 = -1;
+            rangeL = -1;
 
-        if (! sparam2.isEmpty())
+        if (! sranger.isEmpty())
         {
-            setActionValue = true;
-            param2 = sparam2.toInt();
+            rangeR = sranger.toInt();
         }
         else
-            param2 = -1;
+            rangeR = -1;
+
+        try
+        {
+            action->setActionRange(rangeL, rangeR);
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_range) )
+            {
+                FsmSaveFileManager::warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
+                FsmSaveFileManager::warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
+                continue;
+            }
+            else
+                throw;
+        }
+
 
         if(! sactval.isEmpty())
         {
-            setActionValue = true;
+            LogicValue actionValue;
             try
             {
                 actionValue = LogicValue::fromString(sactval); // Throws StatesException
@@ -731,10 +769,10 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
                 if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
                 {
                     uint avsize;
-                    if ( (param1 != -1) && (param2 == -1) )
+                    if ( (rangeL != -1) && (rangeR == -1) )
                         avsize = 1;
-                    else if ( (param1 != -1) && (param2 != -1) )
-                        avsize = param1 - param2 + 1;
+                    else if ( (rangeL != -1) && (rangeR != -1) )
+                        avsize = rangeL - rangeR + 1;
                     else
                         avsize = 1; // TODO: determine actual size
 
@@ -742,16 +780,30 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
 
                     FsmSaveFileManager::warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
                     FsmSaveFileManager::warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
+                    continue;
                 }
                 else
                     throw;
             }
-        }
-        else
-            actionValue = LogicValue::getNullValue();
 
-        if (setActionValue)
-            component->setActionValue(signal, actionValue, param1, param2);
+            if (action->isActionValueEditable() == true)
+            {
+                try
+                {
+                    action->setActionValue(actionValue);
+                }
+                catch (const StatesException& e)
+                {
+                    if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_value) )
+                    {
+                        FsmSaveFileManager::warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
+                        FsmSaveFileManager::warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
+                    }
+                    else
+                        throw;
+                }
+            }
+        }
     }
 }
 
@@ -779,9 +831,11 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
         else if (currentElement.tagName() == "LogicEquation")
         {
             Equation::nature equationType;
-            int param1 = -1;
-            int param2 = -1;
+            int rangeL = -1;
+            int rangeR = -1;
             LogicValue constantValue;
+            QString srangel;
+            QString sranger;
 
             // TODO: use operand count to increase operand map
             // if we obtain a correct value for attribute.
@@ -812,8 +866,16 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
             {
                 equationType = Equation::nature::extractOp;
 
-                param1 = currentElement.attribute("Param1").toInt();
-                param2 = currentElement.attribute("Param2").toInt();
+                srangel = currentElement.attribute("RangeL");
+                sranger = currentElement.attribute("RangeR");
+                // For compatibility with previous saves
+                if (srangel.isNull())
+                    srangel = currentElement.attribute("Param1");
+                if (sranger.isNull())
+                    sranger = currentElement.attribute("Param2");
+
+                rangeL = srangel.toInt();
+                rangeR = sranger.toInt();
             }
             else if (currentElement.attribute("Nature") == "constant")
             {
@@ -828,10 +890,10 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
                     if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
                     {
                         uint constantsize;
-                        if ( (param1 != -1) && (param2 == -1) )
+                        if ( (rangeL != -1) && (rangeR == -1) )
                             constantsize = 1;
-                        else if ( (param1 != -1) && (param2 != -1) )
-                            constantsize = param1 - param2 + 1;
+                        else if ( (rangeL != -1) && (rangeR != -1) )
+                            constantsize = rangeL - rangeR + 1;
                         else
                             constantsize = 1; // TODO: determine actual size
 
@@ -885,10 +947,16 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
                 operands.append(operandsMap[i]);
             }
 
-            shared_ptr<Equation> newEquation = shared_ptr<Equation>(new Equation(equationType, operands, param1, param2));
+            shared_ptr<Equation> newEquation = shared_ptr<Equation>(new Equation(equationType, operands));
 
             if (equationType == Equation::nature::constant)
-                newEquation->setCurrentValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
+            {
+                newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
+            }
+            else if (equationType == Equation::nature::extractOp)
+            {
+                newEquation->setRange(rangeL, rangeR);
+            }
 
             equation = newEquation;
         }

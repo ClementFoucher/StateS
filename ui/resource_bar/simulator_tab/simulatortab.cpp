@@ -81,6 +81,8 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
                 this->simulator = shared_ptr<FsmSimulator>(new FsmSimulator(l_machine));
                 l_machine->setSimulator(this->simulator);
+                // Reset simulator to reset graphic part which have been created when setSimulator emited mode change event
+                this->simulator->reset();
 
                 this->simulationTools = new QWidget();
                 this->simulationTools->setLayout(new QVBoxLayout());

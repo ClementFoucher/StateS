@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -258,8 +258,8 @@ void GraphicEquation::buildCompleteEquation()
 
             if (! this->isTemplate)
             {
-                connect(rangeExtractor, &RangeExtractorWidget::value1Changed, this, &GraphicEquation::treatExtractIndex1Changed);
-                connect(rangeExtractor, &RangeExtractorWidget::value2Changed, this, &GraphicEquation::treatExtractIndex2Changed);
+                connect(rangeExtractor, &RangeExtractorWidget::rangeLChanged, this, &GraphicEquation::treatRangeLeftBoundChanged);
+                connect(rangeExtractor, &RangeExtractorWidget::rangeRChanged, this, &GraphicEquation::treatRangeRightBoundChanged);
             }
 
             equationLayout->addWidget(rangeExtractor);
@@ -704,7 +704,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
                         break;
                     case Equation::nature::extractOp:
 
-                        if (complexEquation->getParam2() == -1)
+                        if (complexEquation->getRangeR() == -1)
                             addedAction = menu->addAction(tr("Edit index"));
                         else
                             addedAction = menu->addAction(tr("Edit range"));
@@ -716,14 +716,14 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 
                         addedAction = menu->addAction(tr("Extract single bit"));
                         addedAction->setCheckable(true);
-                        if (complexEquation->getParam2() == -1)
+                        if (complexEquation->getRangeR() == -1)
                             addedAction->setChecked(true);
                         data.setValue((int)ContextAction::ExtractSwitchSingle);
                         addedAction->setData(data);
 
                         addedAction = menu->addAction(tr("Extract range"));
                         addedAction->setCheckable(true);
-                        if (complexEquation->getParam2() != -1)
+                        if (complexEquation->getRangeR() != -1)
                             addedAction->setChecked(true);
                         data.setValue((int)ContextAction::ExtractSwitchRange);
                         addedAction->setData(data);
@@ -961,14 +961,14 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
         complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
         if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::extractOp) )
         {
-            complexEquation->setParameters(complexEquation->getParam1());
+            complexEquation->setRange(complexEquation->getRangeL());
         }
         break;
     case ContextAction::ExtractSwitchRange:
         complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
         if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::extractOp) )
         {
-            complexEquation->setParameters(complexEquation->getParam1(), 0);
+            complexEquation->setRange(complexEquation->getRangeL(), 0);
         }
         break;
     case ContextAction::EditValue:
@@ -981,23 +981,23 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
     }
 }
 
-void GraphicEquation::treatExtractIndex1Changed(int newIndex)
+void GraphicEquation::treatRangeLeftBoundChanged(int newIndex)
 {
     shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
 
     if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::extractOp) )
     {
-        complexEquation->setParameters(newIndex, complexEquation->getParam2());
+        complexEquation->setRange(newIndex, complexEquation->getRangeR());
     }
 }
 
-void GraphicEquation::treatExtractIndex2Changed(int newIndex)
+void GraphicEquation::treatRangeRightBoundChanged(int newIndex)
 {
     shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (this->equation.lock());
 
     if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::extractOp) )
     {
-        complexEquation->setParameters(complexEquation->getParam1(), newIndex);
+        complexEquation->setRange(complexEquation->getRangeL(), newIndex);
     }
 }
 
@@ -1007,7 +1007,7 @@ void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
 
     if ( (complexEquation != nullptr) && (complexEquation->getFunction() == Equation::nature::constant) )
     {
-        complexEquation->setCurrentValue(newValue); // Throws StatesException - Equation is constant and thus can take a value - ignored
+        complexEquation->setConstantValue(newValue); // Throws StatesException - Equation is constant and thus can take a value - ignored
     }
 }
 

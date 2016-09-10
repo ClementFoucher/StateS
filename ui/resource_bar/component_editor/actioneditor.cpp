@@ -26,29 +26,31 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QTableWidget>
+#include <QTableView>
 #include <QKeyEvent>
 #include <QHeaderView>
 
+// Debug
 #include <QDebug>
 
 // StateS classes
 #include "machineactuatorcomponent.h"
-#include "actionlisteditor.h"
+#include "actiontypecombobox.h"
 #include "contextmenu.h"
 #include "machine.h"
 #include "StateS_signal.h"
 #include "rangeeditordialog.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "statesexception.h"
-#include "dynamictableitemdelegate.h"
-#include "dynamiclineedit.h"
+#include "actiontablemodel.h"
+#include "actiontabledelegate.h"
+#include "actiononsignal.h"
+
 
 ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title, QWidget* parent) :
     QWidget(parent)
 {
     this->actuator = actuator;
-    connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this, &ActionEditor::updateContent);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -60,28 +62,31 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
         layout->addWidget(actionListTitle, 0, 0, 1, 2);
     }
 
-    this->actionList = new QTableWidget(0, 3);
-    this->actionList->setHorizontalHeaderItem(0, new QTableWidgetItem());
-    this->actionList->setHorizontalHeaderItem(1, new QTableWidgetItem());
-    this->actionList->setHorizontalHeaderItem(2, new QTableWidgetItem());
-    this->actionList->horizontalHeaderItem(0)->setText(tr("Type"));
-    this->actionList->horizontalHeaderItem(1)->setText(tr("Signal"));
-    this->actionList->horizontalHeaderItem(2)->setText(tr("Value"));
-    this->actionList->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->actionList->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    connect(this->actionList, &QTableWidget::itemSelectionChanged, this, &ActionEditor::updateButtonsState);
-    connect(this->actionList, &QTableWidget::itemDoubleClicked,    this, &ActionEditor::editValue);
-    this->listDelegate = new DynamicTableItemDelegate(this->actionList);
-    this->actionList->setItemDelegate(this->listDelegate);
-    layout->addWidget(this->actionList, 1, 0, 1, 2);
+    this->actionTable = new QTableView();
+    ActionTableModel* tableModel = new ActionTableModel(actuator);
+    this->actionTable->setModel(tableModel);
+    this->actionTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->actionTable->setItemDelegate(new ActionTableDelegate(actuator));
+    this->actionTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    connect(this->actionTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
+    connect(tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);
+    layout->addWidget(this->actionTable, 1, 0, 1, 42);
 
-    this->buttonAddAction = new QPushButton(tr("Add action"));
-    connect(this->buttonAddAction, &QAbstractButton::clicked, this, &ActionEditor::addAction);
-    layout->addWidget(this->buttonAddAction, 2, 0, 1, 1);
-
+    this->buttonMoveUp       = new QPushButton("↥");
+    this->buttonMoveDown     = new QPushButton("↧");
+    this->buttonAddAction    = new QPushButton(tr("Add action"));
     this->buttonRemoveAction = new QPushButton(tr("Remove action"));
-    connect(this->buttonRemoveAction, &QAbstractButton::clicked, this, &ActionEditor::removeAction);
-    layout->addWidget(this->buttonRemoveAction, 2, 1, 1, 1);
+
+    connect(this->buttonMoveUp,       &QPushButton::clicked, this, &ActionEditor::moveSelectedActionsUp);
+    connect(this->buttonMoveDown,     &QPushButton::clicked, this, &ActionEditor::moveSelectedActionsDown);
+    connect(this->buttonAddAction,    &QPushButton::clicked, this, &ActionEditor::displayAddActionMenu);
+    connect(this->buttonRemoveAction, &QPushButton::clicked, this, &ActionEditor::removeSelectedActions);
+
+    layout->addWidget(this->buttonMoveUp,       3, 0,  1, 1);
+    layout->addWidget(this->buttonMoveDown,     3, 1,  1, 1);
+    layout->addWidget(this->buttonAddAction,    3, 2,  1, 20);
+    layout->addWidget(this->buttonRemoveAction, 3, 22, 1, 20);
+
 
     this->hintDisplay = new CollapsibleWidgetWithTitle();
     QString hintTitle = tr("Hint:") + " " + tr("Editing actions");
@@ -99,322 +104,213 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 
     this->hintDisplay->setContent(hintTitle, hintText, true);
 
-    layout->addWidget(this->hintDisplay, 3, 0, 1, 2);
+    layout->addWidget(this->hintDisplay, 4, 0, 1, 42);
 
-    this->updateContent();
+    connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this->actionTable, &QTableView::resizeColumnsToContents);
+
+    this->fillFirstColumn();
+    this->updateButtonsEnableState();
 }
 
 void ActionEditor::keyPressEvent(QKeyEvent* e)
 {
-    bool transmitEvent = true;
-
-    if (e->key() == Qt::Key::Key_Delete)
+    if (! this->actuator.expired())
     {
-        if (actionList->selectedItems().count() >= 1)
+        bool transmitEvent = true;
+
+        if (e->key() == Qt::Key::Key_Delete)
         {
-            removeAction();
+            this->removeSelectedActions();
+            transmitEvent = false;
         }
-        transmitEvent = false;
-    }
-    else if (e->key() == Qt::Key::Key_Escape)
-    {
-        this->cancelEdit();
-        transmitEvent = false;
-    }
 
-    if (transmitEvent == true)
-        QWidget::keyPressEvent(e);
+        if (transmitEvent == true)
+            QWidget::keyPressEvent(e);
+    }
 }
 
 void ActionEditor::keyReleaseEvent(QKeyEvent* e)
 {
-    bool transmitEvent = true;
-
-    if (e->key() == Qt::Key::Key_Delete)
+    if (! this->actuator.expired())
     {
-        transmitEvent = false;
-    }
-    else if (e->key() == Qt::Key::Key_Escape)
-    {
-        transmitEvent = false;
-    }
+        bool transmitEvent = true;
 
-    if (transmitEvent == true)
-        QWidget::keyReleaseEvent(e);
+        if (e->key() == Qt::Key::Key_Delete)
+        {
+            transmitEvent = false;
+        }
+
+        if (transmitEvent == true)
+            QWidget::keyReleaseEvent(e);
+    }
 }
 
 void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 {
-    QPoint correctedPos = this->actionList->mapFromParent(event->pos());
-    correctedPos.setX(correctedPos.x() - this->actionList->verticalHeader()->width());
-    correctedPos.setY(correctedPos.y() - this->actionList->horizontalHeader()->height());
-    QTableWidgetItem* cellUnderMouse = this->actionList->itemAt(correctedPos);
-
-    if (cellUnderMouse != nullptr)
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
     {
-        shared_ptr<Signal> currentSignal = this->tableItemsMapping[cellUnderMouse].lock();
-        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+        QPoint correctedPos = this->actionTable->mapFromParent(event->pos());
+        correctedPos.setX(correctedPos.x() - this->actionTable->verticalHeader()->width());
+        correctedPos.setY(correctedPos.y() - this->actionTable->horizontalHeader()->height());
+        int actionRank = this->actionTable->rowAt(correctedPos.y());
 
-        if ( (currentSignal != nullptr) && (l_actuator != nullptr) )
+        if (actionRank >= 0)
         {
-            this->currentSignal = currentSignal;
+            shared_ptr<ActionOnSignal>  actionActedOn = l_actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
 
-            ContextMenu* menu = new ContextMenu();
-            menu->addTitle(tr("Action on signal") + " <i>" + currentSignal->getName() + "</i>");
-
-            QVariant data;
-            data.convert(QVariant::Int);
-            QAction* actionToAdd = nullptr;
-
-            if (currentSignal->getSize() > 1)
+            if (actionActedOn != nullptr)
             {
-                actionToAdd = menu->addAction(tr("Affect whole signal"));
-                actionToAdd->setCheckable(true);
-                if (l_actuator->getActionParam1(currentSignal) == -1)
-                    actionToAdd->setChecked(true);
-                data.setValue((int)ContextAction::AffectSwitchWhole);
-                actionToAdd->setData(data);
+                ContextMenu* menu = new ContextMenu();
+                menu->addTitle(tr("Action on signal") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
 
-                actionToAdd = menu->addAction(tr("Affect signal single bit"));
-                actionToAdd->setCheckable(true);
-                if ( (l_actuator->getActionParam1(currentSignal) != -1) && (l_actuator->getActionParam2(currentSignal) == -1) )
-                        actionToAdd->setChecked(true);
-                data.setValue((int)ContextAction::AffectSwitchSingle);
-                actionToAdd->setData(data);
+                QVariant data;
+                data.convert(QVariant::Int);
+                QAction* actionToAdd = nullptr;
 
-                actionToAdd = menu->addAction(tr("Affect signal range"));
-                actionToAdd->setCheckable(true);
-                if ( (l_actuator->getActionParam1(currentSignal) != -1) && (l_actuator->getActionParam2(currentSignal) != -1) )
-                        actionToAdd->setChecked(true);
-                data.setValue((int)ContextAction::AffectSwitchRange);
-                actionToAdd->setData(data);
+                if (actionActedOn->isActionValueEditable())
+                {
+                    actionToAdd = menu->addAction(tr("Edit value"));
+                    int dataValue = ((int)ContextAction::EditValue) | (actionRank << 8);
+                    data.setValue(dataValue);
+                    actionToAdd->setData(data);
+                }
+
+                if (actionRank != 0)
+                {
+                    actionToAdd = menu->addAction(tr("Move up"));
+                    int dataValue = ((int)ContextAction::MoveUp) | (actionRank << 8);
+                    data.setValue(dataValue);
+                    actionToAdd->setData(data);
+                }
+
+                if (actionRank != this->actionTable->model()->rowCount()-1)
+                {
+                    actionToAdd = menu->addAction(tr("Move down"));
+                    int dataValue = ((int)ContextAction::MoveDown) | (actionRank << 8);
+                    data.setValue(dataValue);
+                    actionToAdd->setData(data);
+                }
 
                 menu->addSeparator();
 
-                if ( (l_actuator->getActionParam1(currentSignal) != -1) || (l_actuator->getActionParam2(currentSignal) != -1) )
+                if (actionActedOn->getSignalActedOn()->getSize() > 1)
                 {
-                    if (l_actuator->getActionParam2(currentSignal) == -1)
-                        actionToAdd = menu->addAction(tr("Edit affected bit"));
-                    else
-                        actionToAdd = menu->addAction(tr("Edit range"));
-
-                    data.setValue((int)ContextAction::AffectEditRange);
+                    actionToAdd = menu->addAction(tr("Affect whole signal"));
+                    actionToAdd->setCheckable(true);
+                    if (actionActedOn->getActionRangeL() == -1)
+                        actionToAdd->setChecked(true);
+                    int dataValue = ((int)ContextAction::AffectSwitchWhole) | (actionRank << 8);
+                    data.setValue(dataValue);
                     actionToAdd->setData(data);
+
+                    actionToAdd = menu->addAction(tr("Affect signal single bit"));
+                    actionToAdd->setCheckable(true);
+                    if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() == -1) )
+                        actionToAdd->setChecked(true);
+                    dataValue = ((int)ContextAction::AffectSwitchSingle) | (actionRank << 8);
+                    data.setValue(dataValue);
+                    actionToAdd->setData(data);
+
+                    actionToAdd = menu->addAction(tr("Affect signal range"));
+                    actionToAdd->setCheckable(true);
+                    if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() != -1) )
+                        actionToAdd->setChecked(true);
+                    dataValue = ((int)ContextAction::AffectSwitchRange) | (actionRank << 8);
+                    data.setValue(dataValue);
+                    actionToAdd->setData(data);
+
+                    if ( (actionActedOn->getActionRangeL() != -1) || (actionActedOn->getActionRangeR() != -1) )
+                    {
+                        if (actionActedOn->getActionRangeR() == -1)
+                            actionToAdd = menu->addAction(tr("Edit affected bit"));
+                        else
+                            actionToAdd = menu->addAction(tr("Edit range"));
+
+                        int dataValue = ((int)ContextAction::AffectEditRange) | (actionRank << 8);
+                        data.setValue(dataValue);
+                        actionToAdd->setData(data);
+                    }
 
                     menu->addSeparator();
                 }
+
+                actionToAdd = menu->addAction(tr("Delete action"));
+                int dataValue = ((int)ContextAction::DeleteAction) | (actionRank << 8);
+                data.setValue(dataValue);
+                actionToAdd->setData(data);
+
+                actionToAdd = menu->addAction(tr("Cancel"));
+                dataValue = ((int)ContextAction::Cancel) | (actionRank << 8);
+                data.setValue(dataValue);
+                actionToAdd->setData(data);
+
+                menu->popup(this->mapToGlobal(event->pos()));
+
+                connect(menu, &QMenu::triggered, this, &ActionEditor::treatContextMenuEventHandler);
             }
-
-            actionToAdd = menu->addAction(tr("Delete action"));
-            data.setValue((int)ContextAction::DeleteAction);
-            actionToAdd->setData(data);
-
-            actionToAdd = menu->addAction(tr("Cancel"));
-            data.setValue((int)ContextAction::Cancel);
-            actionToAdd->setData(data);
-
-            menu->popup(this->mapToGlobal(event->pos()));
-
-            connect(menu, &QMenu::triggered, this, &ActionEditor::treatMenuEventHandler);
         }
     }
 }
 
-void ActionEditor::updateContent()
+void ActionEditor::selectionChangedEventHandler(const QItemSelection&, const QItemSelection&)
 {
-    this->actionList->clearContents();
-    this->actionList->setRowCount(0);
-    this->tableItemsMapping.clear();
-    this->listDelegate->setValidator(nullptr);
+    if (! this->actuator.expired())
+    {
+        this->updateButtonsEnableState();
 
+        // Store selection to restore it on model update
+        this->latestSelection.clear();
+
+        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+        if (l_actuator != nullptr)
+        {
+            QItemSelectionModel* selectionModel = this->actionTable->selectionModel();
+
+            QModelIndexList selectedRows = selectionModel->selectedRows();
+
+            foreach (QModelIndex index, selectedRows)
+            {
+                this->latestSelection.append(l_actuator->getAction(index.row()));
+            }
+        }
+    }
+}
+
+void ActionEditor::fillFirstColumn()
+{
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
-
     if (l_actuator != nullptr)
     {
-        foreach(shared_ptr<Signal> sig, l_actuator->getActions())
+        if (l_actuator->getActions().count() != 0)
         {
-            this->actionList->insertRow(this->actionList->rowCount());
-
-            // Add action list cell
-            this->actionList->setCellWidget(this->actionList->rowCount()-1, 0, new ActionListEditor(l_actuator, sig));
-
-            // Build name
-            QString nameText = sig->getName();
-            if (sig->getSize() > 1)
+            // Fill column with drop-down list
+            for(int i = 0 ; i < this->actionTable->model()->rowCount() ; i++)
             {
-                int param1 = l_actuator->getActionParam1(sig);
-                int param2 = l_actuator->getActionParam2(sig);
-
-                if (param1 != -1)
-                {
-                    nameText += "[" + QString::number(param1);
-
-                    if (param2 != -1)
-                    {
-                        nameText += ".." + QString::number(param2);
-                    }
-
-                    nameText += "]";
-                }
+                this->actionTable->setIndexWidget(this->actionTable->model()->index(i, 0), new ActionTypeComboBox(l_actuator->getAllowedActionTypes(), l_actuator->getAction(i))); // Throws StatesException - Ignored: list generated from action list
             }
-
-            // Add signal name cell
-            QTableWidgetItem* currentTableWidget = new QTableWidgetItem(nameText);
-            Qt::ItemFlags currentFlags = currentTableWidget->flags();
-            currentTableWidget->setFlags(currentFlags & ~Qt::ItemIsEditable);
-            this->actionList->setItem(this->actionList->rowCount()-1, 1, currentTableWidget);
-            this->tableItemsMapping[currentTableWidget] = sig;
-
-            // Add action value cell
-
-            int actionValueSize;
-
-            if (sig->getSize() == 1)
-                actionValueSize = 1;
-            else
-            {
-                int param1 = l_actuator->getActionParam1(sig);
-                int param2 = l_actuator->getActionParam2(sig);
-
-                if ( (param1 != -1) && (param2 == -1) )
-                    actionValueSize = 1;
-                else if ( (param1 == -1) && (param2 == -1) )
-                    actionValueSize = sig->getSize();
-                else
-                    actionValueSize = param1 - param2 + 1;
-            }
-
-            if (actionValueSize == 1)
-            {
-                LogicValue actionValue;
-
-                // Values are always implicit
-                switch (l_actuator->getActionType(sig))
-                {
-                case MachineActuatorComponent::action_types::activeOnState:
-                case MachineActuatorComponent::action_types::assign:
-                case MachineActuatorComponent::action_types::pulse:
-                case MachineActuatorComponent::action_types::set:
-                    actionValue = LogicValue::getValue1(1);
-                    break;
-                case MachineActuatorComponent::action_types::reset:
-                    actionValue = LogicValue::getValue0(1);
-                    break;
-                }
-
-                currentTableWidget = new QTableWidgetItem(actionValue.toString());
-
-                currentFlags = currentTableWidget->flags();
-                currentFlags = currentFlags & ~Qt::ItemIsEnabled;
-            }
-            else
-            {
-                LogicValue actionValue;
-
-                // Values are always implicit
-                switch (l_actuator->getActionType(sig))
-                {
-                case MachineActuatorComponent::action_types::set:
-                    actionValue = LogicValue::getValue1(sig->getSize());
-                    currentTableWidget = new QTableWidgetItem(actionValue.toString());
-
-                    currentFlags = currentTableWidget->flags();
-                    currentFlags = currentFlags & ~Qt::ItemIsEnabled;
-
-                    break;
-                case MachineActuatorComponent::action_types::reset:
-                    actionValue = LogicValue::getValue0(sig->getSize());
-                    currentTableWidget = new QTableWidgetItem(actionValue.toString());
-
-                    currentFlags = currentTableWidget->flags();
-                    currentFlags = currentFlags & ~Qt::ItemIsEnabled;
-
-                    break;
-                case MachineActuatorComponent::action_types::activeOnState:
-                case MachineActuatorComponent::action_types::assign:
-                case MachineActuatorComponent::action_types::pulse:
-                    actionValue = l_actuator->getActionValue(sig);
-                    currentTableWidget = new QTableWidgetItem(actionValue.toString());
-
-                    currentFlags = currentTableWidget->flags();
-
-                    break;
-                }
-
-            }
-
-            currentFlags = currentFlags & ~Qt::ItemIsEditable;
-            currentTableWidget->setFlags(currentFlags);
-
-            this->actionList->setItem(this->actionList->rowCount()-1, 2, currentTableWidget);
-            this->tableItemsMapping[currentTableWidget] = sig;
         }
-    }
-
-    this->updateButtonsState();
-}
-
-void ActionEditor::updateButtonsState()
-{
-    // TODO: handle multiple items when undo is implemented
-    if (this->getSelectedSignals().count() == 1)
-    {
-        this->buttonRemoveAction->setEnabled(true);
-    }
-    else
-    {
-        this->buttonRemoveAction->setEnabled(false);
-    }
-}
-
-void ActionEditor::editValue(QTableWidgetItem* item)
-{
-    if ( ( (item->flags() & Qt::ItemIsEnabled) != 0 ) && ( item->column() == 2 ) )
-    {
-        if (this->itemUnderEdition == nullptr) // Do not allow multiple simultaneous editions
+        else
         {
-            shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
-            shared_ptr<Signal> sig = this->tableItemsMapping[item].lock();
-
-            if ( (l_actuator != nullptr) && (sig != nullptr) )
-            {
-                uint currentValueSize = l_actuator->getActionValue(sig).getSize();
-                QRegularExpression re("[01]{0," + QString::number(currentValueSize) + "}");
-                this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
-
-                Qt::ItemFlags currentFlags = item->flags();
-                item->setFlags(currentFlags | Qt::ItemIsEditable);
-
-                this->actionList->openPersistentEditor(item);
-
-                this->itemUnderEdition = item;
-                DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-                connect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
-            }
+            // Clear potential previous widgets if action count drops to 0
+            // (special message displayed)
+            this->actionTable->setIndexWidget(this->actionTable->model()->index(0, 0), nullptr);
         }
     }
 }
 
-void ActionEditor::addAction()
+void ActionEditor::displayAddActionMenu() const
 {
-    ContextMenu* menu;
-
-    QList<shared_ptr<Signal>> availableActions;
-
-    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
-
-    if (actuator != nullptr)
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
     {
-        shared_ptr<Machine> owningMachine = actuator->getOwningMachine();
+        shared_ptr<Machine> owningMachine = l_actuator->getOwningMachine();
 
         if (owningMachine != nullptr)
         {
-            foreach(shared_ptr<Signal> var, owningMachine->getWrittableSignals())
-            {
-                if (!actuator->getActions().contains(var))
-                    availableActions.append(var);
-            }
+            ContextMenu* menu;
 
+            QList<shared_ptr<Signal>> availableActions = owningMachine->getWrittableSignals();
             if (availableActions.count() != 0)
             {
                 menu = new ContextMenu();
@@ -425,7 +321,7 @@ void ActionEditor::addAction()
                     menu->addAction(var->getName());
                 }
 
-                connect(menu, &QMenu::triggered, this, &ActionEditor::treatMenuAdd);
+                connect(menu, &QMenu::triggered, this, &ActionEditor::treatAddActionMenuEventHandler);
             }
             else
             {
@@ -435,222 +331,408 @@ void ActionEditor::addAction()
             menu->popup(this->buttonAddAction->mapToGlobal(QPoint(this->buttonAddAction->width(), -menu->sizeHint().height())));
         }
     }
-    else
-    {
-        this->updateContent();
-    }
 }
 
-void ActionEditor::removeAction()
+void ActionEditor::removeSelectedActions()
 {
-    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
-
-    if (actuator != nullptr)
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
     {
-        QList<shared_ptr<Signal>> list = this->getSelectedSignals();
-
         // TODO: handle multiple items when undo is implemented
-        if (list.count() == 1)
+        if (this->actionTable->selectionModel()->selectedRows().count() == 1)
         {
-            actuator->removeActionByName(list[0]->getName());
+            // TODO: put next element in list in selection?
+            this->latestSelection.clear();
+            l_actuator->removeAction(this->actionTable->selectionModel()->selectedRows()[0].row()); // Throws StatesException - Ignored: list generated from action list
         }
     }
-    else
-    {
-        this->updateContent();
-    }
 }
 
-void ActionEditor::treatMenuAdd(QAction* action)
+void ActionEditor::treatAddActionMenuEventHandler(QAction* action)
 {
-    shared_ptr<MachineActuatorComponent> actuator = this->actuator.lock();
-
-    if (actuator != nullptr)
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
     {
-        actuator->addActionByName(action->text());
-    }
-    else
-    {
-        this->updateContent();
-    }
-}
+        shared_ptr<Machine> owningMachine = l_actuator->getOwningMachine();
+        QString signalName = action->text();
 
-void ActionEditor::validateEdit()
-{
-    if (this->itemUnderEdition != nullptr)
-    {
-        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-        disconnect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
-
-        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
-        shared_ptr<Signal> l_signal = this->tableItemsMapping[this->itemUnderEdition].lock();
-
-        if ( (l_actuator != nullptr) && (l_signal != nullptr) )
+        if (owningMachine != nullptr)
         {
-            if (this->itemUnderEdition->column() == 2)
+            // Find signal from name
+            foreach (shared_ptr<Signal> var, owningMachine->getWrittableSignals())
             {
-                int param1 = l_actuator->getActionParam1(l_signal);
-                int param2 = l_actuator->getActionParam2(l_signal);
-
-                try
+                if (var->getName() == signalName)
                 {
-                    DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-
-                    LogicValue value = LogicValue::fromString(editor->text()); // Throws StatesException
-                    bool result = l_actuator->setActionValue(l_signal, value, param1, param2);
-
-                    if (result == false)
-                    {
-                        this->editValue(this->itemUnderEdition);
-                        this->listDelegate->getCurentEditor()->markAsErroneous();
-                    }
-
-                    this->itemUnderEdition = nullptr;
-                }
-                catch (const StatesException& e)
-                {
-                    if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
-                    {
-                        qDebug() << "(ActionEditor:) Info: Wrong input for action value, change ignored.";
-                    }
-                    else
-                        throw;
+                    l_actuator->addAction(var);
+                    break;
                 }
             }
         }
-        else
+    }
+}
+
+void ActionEditor::treatContextMenuEventHandler(QAction* action)
+{
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
+    {
+        int dataValue   = action->data().toInt();
+        uint actionRank = (dataValue&0xFFF0)>>8;
+
+        shared_ptr<ActionOnSignal> action = l_actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
+
+        int oldRangeL = action->getActionRangeL();
+        int oldRangeR = action->getActionRangeR();
+        QModelIndex index;
+
+        int newRangeL = -1;
+        int newRangeR = -1;
+        bool setRange = false;
+
+        switch (dataValue&0xF)
         {
-            this->itemUnderEdition = nullptr;
-            this->updateContent();
+        case ContextAction::Cancel:
+            break;
+        case ContextAction::EditValue:
+            index = this->actionTable->model()->index(actionRank, 2);
+
+            this->actionTable->setCurrentIndex(index);
+            this->actionTable->edit(index);
+
+            break;
+        case ContextAction::DeleteAction:
+            l_actuator->removeAction(actionRank); // Throws StatesException - Ignored: list generated from action list
+            break;
+        case ContextAction::AffectSwitchWhole:
+            if ( (oldRangeL != -1) || (oldRangeR != -1) )
+            {
+                setRange = true;
+            }
+            break;
+        case ContextAction::AffectSwitchSingle:
+            if (oldRangeL == -1)
+            {
+                newRangeL = 0;
+                setRange = true;
+            }
+            else if  (oldRangeR != -1)
+            {
+                newRangeL = oldRangeL;
+                setRange = true;
+            }
+            break;
+        case ContextAction::AffectSwitchRange:
+            if (oldRangeL == -1)
+            {
+                newRangeL = 1;
+                newRangeR = 0;
+                setRange = true;
+            }
+            else if  (oldRangeR == -1)
+            {
+                if (oldRangeL != 0)
+                {
+                    newRangeL = oldRangeL;
+                    newRangeR = 0;
+                    setRange = true;
+                }
+                else
+                {
+                    newRangeL = 1;
+                    newRangeR = 0;
+                    setRange = true;
+                }
+            }
+            break;
+        case ContextAction::MoveDown:
+            l_actuator->changeActionRank(actionRank, actionRank+1);
+            break;
+        case ContextAction::MoveUp:
+            l_actuator->changeActionRank(actionRank, actionRank-1);
+            break;
+        case ContextAction::AffectEditRange:
+            unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(action));
+            rangeEditor->exec();
+
+            if (rangeEditor->result() == QDialog::Accepted)
+            {
+                newRangeL = rangeEditor->getRangeL();
+                newRangeR = rangeEditor->getRangeR();
+                setRange = true;
+            }
+            break;
+        }
+
+        try
+        {
+            if (setRange == true)
+                action->setActionRange(newRangeL, newRangeR);
+        }
+        catch (const StatesException& e)
+        {
+            if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_range) )
+            {
+                qDebug() << "(ActionEditor:) Warning: Incorrect range was set. Range change ignored.";
+            }
+            else
+                throw;
         }
     }
 }
 
-void ActionEditor::cancelEdit()
+
+/**
+ * @brief ActionEditor::sortSelectionList makes sure
+ * the selection ordrer of the items in list is ascending.
+ * This is useful for moving up/down actions process.
+ */
+void ActionEditor::sortSelectionList()
 {
-    if (this->itemUnderEdition != nullptr)
+    if (! this->actuator.expired())
     {
-        DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-        disconnect(editor, &DynamicLineEdit::returnPressed,   this, &ActionEditor::validateEdit);
+        QItemSelectionModel* selectionModel = this->actionTable->selectionModel();
 
-        this->itemUnderEdition = nullptr;
+        disconnect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
+
+        QItemSelection selectedItems = selectionModel->selection();
+
+        selectionModel->clearSelection();
+
+        if ( ! selectedItems.isEmpty() )
+        {
+            for (int i = 0 ; i < this->actionTable->model()->rowCount() ; i++)
+            {
+                foreach (QModelIndex index, selectedItems.indexes())
+                {
+                    if (index.row() == i)
+                    {
+                        // Obtain current selection
+                        QItemSelection selectedItems = selectionModel->selection();
+
+                        // Select new row
+                        this->actionTable->selectRow(i);
+
+                        // Merge selections
+                        selectedItems.merge(selectionModel->selection(), QItemSelectionModel::Select);
+                        selectionModel->clearSelection();
+                        selectionModel->select(selectedItems, QItemSelectionModel::Select);
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
     }
-
-    this->updateContent();
 }
 
-void ActionEditor::treatMenuEventHandler(QAction* action)
+void ActionEditor::tableChangedEventHandler()
 {
-    QVariant data = action->data();
-    int dataValue = data.toInt();
+    if (! this->actuator.expired())
+    {
+        this->fillFirstColumn();
+        this->restoreSelection();
+        this->updateButtonsEnableState();
+    }
+}
+
+void ActionEditor::restoreSelection()
+{
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
+    {
+        QItemSelectionModel* selectionModel = this->actionTable->selectionModel();
+
+        disconnect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
+
+        selectionModel->clearSelection();
+
+        // First get locked references to previously selected actions
+        QList<shared_ptr<ActionOnSignal>> previousSelection;
+
+        foreach (weak_ptr<ActionOnSignal> weakAction, this->latestSelection)
+        {
+            shared_ptr<ActionOnSignal> lockedAction = weakAction.lock();
+
+            if (lockedAction != nullptr)
+                previousSelection.append(lockedAction);
+        }
+
+        // Then select back previously selected actions
+        for (int i = 0 ; i < l_actuator->getActions().count() ; i++)
+        {
+            shared_ptr<ActionOnSignal> action = l_actuator->getAction(i);
+
+            if (previousSelection.contains(action))
+            {
+                // Obtain current selection
+                QItemSelection selectedItems = selectionModel->selection();
+
+                // Select new row
+                this->actionTable->selectRow(i);
+
+                // Merge selections
+                selectedItems.merge(selectionModel->selection(), QItemSelectionModel::Select);
+                this->actionTable->clearSelection();
+                selectionModel->select(selectedItems, QItemSelectionModel::Select);
+            }
+        }
+
+        connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
+    }
+}
+
+void ActionEditor::updateButtonsEnableState()
+{
+    this->buttonMoveUp      ->setEnabled(false);
+    this->buttonMoveDown    ->setEnabled(false);
+    this->buttonRemoveAction->setEnabled(false);
 
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
-    shared_ptr<Signal> l_currentSignal = this->currentSignal.lock();
-
-    try
+    if (l_actuator != nullptr)
     {
-        int param1 = l_actuator->getActionParam1(l_currentSignal);
-        int param2 = l_actuator->getActionParam2(l_currentSignal);
-
-        if ( (l_actuator != nullptr) && (l_currentSignal != nullptr) )
+        if (l_actuator->getActions().count() != 0)
         {
-            switch (dataValue)
+            QItemSelectionModel* selectionModel = this->actionTable->selectionModel();
+
+            // Update remove button state
+            // TODO: handle multiple items when undo is implemented
+            if (selectionModel->selectedRows().count() == 1)
             {
-            case ContextAction::Cancel:
-                break;
-            case ContextAction::DeleteAction:
-                l_actuator->removeActionByName(l_currentSignal->getName());
-                break;
-            case ContextAction::AffectSwitchWhole:
-                if ( (param1 != -1) || (param2 != -1) )
+                this->buttonRemoveAction->setEnabled(true);
+            }
+
+            // Up/down buttons : only enable when relevant
+            QModelIndexList rows = selectionModel->selectedRows();
+
+            if (rows.count() != 0)
+            {
+                // First sort selected rows
+                QVector<int> sortedRows(rows.count());
+                for (int i = 0 ; i < rows.count() ; i++)
                 {
-                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(l_currentSignal->getSize()); // Throws StatesException
-                    l_actuator->setActionValue(l_currentSignal, newInitialValue, -1, -1);
+                    sortedRows[i] = rows[i].row();
                 }
-                break;
-            case ContextAction::AffectSwitchSingle:
-                if (param1 == -1)
+
+                qSort(sortedRows);
+
+                int currentRow = sortedRows[0];
+                bool areSuccesive = true;
+
+                // Then check if one or multiple groups
+                for (int i = 1 ; i < sortedRows.count() ; i++)
                 {
-                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(1); // Throws StatesException: ignored, value is not 0
-                    l_actuator->setActionValue(l_currentSignal, newInitialValue, 0, -1);
-                }
-                else if  (param2 != -1)
-                {
-                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(1); // Throws StatesException: ignored, value is not 0
-                    l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, -1);
-                }
-                break;
-            case ContextAction::AffectSwitchRange:
-                if (param1 == -1)
-                {
-                    LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                    newInitialValue.resize(2); // Throws StatesException: ignored, value is not 0
-                    l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
-                }
-                else if  (param2 == -1)
-                {
-                    if (param1 != 0)
-                    {
-                        LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                        newInitialValue.resize(param1 + 1); // Throws StatesException
-                        l_actuator->setActionValue(l_currentSignal, newInitialValue, param1, 0);
-                    }
+                    if (sortedRows[i] == currentRow+1)
+                        currentRow = sortedRows[i];
                     else
                     {
-                        LogicValue newInitialValue = l_actuator->getActionValue(l_currentSignal);
-                        newInitialValue.resize(2); // Throws StatesException: ignored, value is not 0
-                        l_actuator->setActionValue(l_currentSignal, newInitialValue, 1, 0);
+                        areSuccesive = false;
+                        break;
                     }
                 }
-                break;
-            case ContextAction::AffectEditRange:
-                unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(l_actuator, l_currentSignal));
-                rangeEditor->exec();
 
-                if (rangeEditor->result() == QDialog::Accepted)
+                if (areSuccesive == false)
                 {
-                    LogicValue newAffectValue = l_actuator->getActionValue(l_currentSignal);
-                    int newParam1 = rangeEditor->getParam1();
-                    int newParam2 = rangeEditor->getParam2();
-
-                    if (newParam2 != -1)
-                        newAffectValue.resize(newParam1 - newParam2 + 1); // Throws StatesException
-                    else
-                        newAffectValue.resize(1); // Throws StatesException: ignored, value is not 0
-                    l_actuator->setActionValue(l_currentSignal, newAffectValue, newParam1, newParam2);
+                    // Lacunar selection can always be moved up or down
+                    this->buttonMoveUp->setEnabled(true);
+                    this->buttonMoveDown->setEnabled(true);
                 }
-                break;
+                else
+                {
+                    // If single group, check if at top or at bottom
+                    if (sortedRows[0] != 0)
+                        this->buttonMoveUp->setEnabled(true);
+
+                    if (sortedRows.last() != this->actionTable->model()->rowCount()-1)
+                        this->buttonMoveDown->setEnabled(true);
+                }
             }
         }
     }
-    catch (const StatesException& e)
-    {
-        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::resized_to_0) )
-        {
-            qDebug() << "(ActionEditor:) Warning: Error trying to resize a signal. A param value is probably broken.";
-        }
-        else
-            throw;
-    }
-
-    this->currentSignal.reset();
 }
 
-QList<shared_ptr<Signal>> ActionEditor::getSelectedSignals()
-{
-    QList<shared_ptr<Signal>> selectionString;
 
-    foreach (QModelIndex index, this->actionList->selectionModel()->selectedRows(1))
+void ActionEditor::moveSelectedActionsUp()
+{
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
     {
-        QTableWidgetItem* currentItem = this->actionList->item(index.row(), 1);
-        if (currentItem != nullptr)
+        this->sortSelectionList();
+
+        QList<int> selectedActionsRanks;
+
+        QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
+        foreach (QModelIndex index, rows)
         {
-            selectionString.append(this->tableItemsMapping[currentItem].lock());
+            selectedActionsRanks.append(index.row());
+        }
+
+        for (int i = 0 ; i < rows.count() ; i++)
+        {
+            // Actually lower upper signals rater than raising signal itself
+
+            // Check if previous row is selected
+            int currentActionRank = selectedActionsRanks.at(i) ;
+            if (currentActionRank != 0)
+            {
+                bool previousSelected = false;
+                foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+                {
+                    if (index.row() == currentActionRank-1)
+                    {
+                        previousSelected = true;
+                        break;
+                    }
+                }
+
+                if ( previousSelected == false )
+                {
+                    l_actuator->changeActionRank(currentActionRank-1, currentActionRank);
+                }
+            }
         }
     }
+}
 
-    return selectionString;
+void ActionEditor::moveSelectedActionsDown()
+{
+    shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+    if (l_actuator != nullptr)
+    {
+        this->sortSelectionList();
+
+        QList<int> selectedActionsRanks;
+
+        QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
+        foreach (QModelIndex index, rows)
+        {
+            selectedActionsRanks.push_front(index.row());
+        }
+
+        for (int i = 0 ; i < rows.count() ; i++)
+        {
+            // Actually raise lower signals rater than lowering signal itself
+
+            // Check if next row is selected
+            int currentActionRank = selectedActionsRanks.at(i) ;
+            if (currentActionRank != this->actionTable->model()->rowCount()-1)
+            {
+                bool nextSelected = false;
+                foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+                {
+                    if (index.row() == currentActionRank+1)
+                    {
+                        nextSelected = true;
+                        break;
+                    }
+                }
+
+                if ( nextSelected == false )
+                {
+                    l_actuator->changeActionRank(currentActionRank+1, currentActionRank);
+                }
+            }
+        }
+    }
 }

@@ -14,7 +14,7 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.17
+VERSION = 0.3.18
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
 
 SOURCES += \
@@ -77,7 +77,6 @@ SOURCES += \
     ui/resource_bar/verifiertab.cpp \
     ui/resource_bar/component_editor/transitioneditortab.cpp \
     ui/resource_bar/component_editor/stateeditortab.cpp \
-    ui/resource_bar/component_editor/actionlisteditor.cpp \
     ui/resource_bar/component_editor/actioneditor.cpp \
     ui/resource_bar/component_editor/componenteditortab.cpp \
     ui/resource_bar/component_editor/rangeeditordialog.cpp \
@@ -107,9 +106,12 @@ SOURCES += \
     ui/simulation/simulationwidget.cpp \
     ui/static/svgimagegenerator.cpp \
     ui/truth_table/truthtabledisplay.cpp \
-    ui/truth_table/truthtablemaintablemodel.cpp \
     ui/truth_table/truthtableinputtablemodel.cpp \
-    ui/truth_table/truthtableoutputtablemodel.cpp
+    ui/truth_table/truthtableoutputtablemodel.cpp \
+    core/machine/actiononsignal.cpp \
+    ui/resource_bar/component_editor/actiontypecombobox.cpp \
+    ui/resource_bar/component_editor/actiontablemodel.cpp \
+    ui/resource_bar/component_editor/actiontabledelegate.cpp
 
 HEADERS  += \
 # Core
@@ -171,7 +173,6 @@ HEADERS  += \
     ui/resource_bar/include/verifiertab.h \
     ui/resource_bar/component_editor/include/stateeditortab.h \
     ui/resource_bar/component_editor/include/transitioneditortab.h \
-    ui/resource_bar/component_editor/include/actionlisteditor.h \
     ui/resource_bar/component_editor/include/componenteditortab.h \
     ui/resource_bar/component_editor/include/rangeeditordialog.h \
     ui/resource_bar/component_editor/include/actioneditor.h \
@@ -200,9 +201,12 @@ HEADERS  += \
     ui/simulation/include/simulationwidget.h \
     ui/static/include/svgimagegenerator.h \
     ui/truth_table/include/truthtabledisplay.h \
-    ui/truth_table/include/truthtablemaintablemodel.h \
     ui/truth_table/include/truthtableinputtablemodel.h \
-    ui/truth_table/include/truthtableoutputtablemodel.h
+    ui/truth_table/include/truthtableoutputtablemodel.h \
+    core/machine/include/actiononsignal.h \
+    ui/resource_bar/component_editor/include/actiontypecombobox.h \
+    ui/resource_bar/component_editor/include/actiontablemodel.h \
+    ui/resource_bar/component_editor/include/actiontabledelegate.h
 
 QMAKE_CXXFLAGS += \
     -std=c++11 \

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,33 +28,31 @@
 #include <QPushButton>
 
 // StateS classes
-#include "machineactuatorcomponent.h"
 #include "equation.h"
 #include "graphicequation.h"
+#include "actiononsignal.h"
 
 
-RangeEditorDialog::RangeEditorDialog(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent) :
+RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent) :
     QDialog(parent)
 {
-    this->actuator = actuator;
-    this->signal   = signal;
-
-    int param1 = actuator->getActionParam1(signal);
-    int param2 = actuator->getActionParam2(signal);
+    int rangeL = action->getActionRangeL();
+    int rangeR = action->getActionRangeR();
 
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* title;
 
-    if (param2 == -1)
+    if (rangeR == -1)
         title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>");
     else
         title = new QLabel("<b>" + tr("Choose range") + "</b>");
     title->setAlignment(Qt::AlignCenter);
     layout->addWidget(title);
 
-    this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1, param1, param2));
-    this->equation->setOperand(0, signal); // Throws StatesException - Extract op aways has operand 0 - ignored
+    this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
+    this->equation->setRange(rangeL, rangeR);
+    this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 
     GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true);
     layout->addWidget(graphicEquation);
@@ -71,13 +69,12 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<MachineActuatorComponent> actuat
     buttonsLayout->addWidget(buttonCancel);
 }
 
-
-int RangeEditorDialog::getParam1()
+int RangeEditorDialog::getRangeL() const
 {
-    return this->equation->getParam1();
+    return this->equation->getRangeL();
 }
 
-int RangeEditorDialog::getParam2()
+int RangeEditorDialog::getRangeR() const
 {
-    return this->equation->getParam2();
+    return this->equation->getRangeR();
 }

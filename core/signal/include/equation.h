@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -53,7 +53,6 @@ using namespace std;
  * Machine Signals are primary held by the machine => weak_ptr.
  *
  */
-
 class Equation : public Signal
 {
     Q_OBJECT
@@ -100,8 +99,8 @@ public:
                                       };
 
 public:
-    explicit Equation(nature function, int allowedOperandCount = -1, int param1 = -1, int param2 = -1);
-    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1 = -1, int param2 = -1);
+    explicit Equation(nature function, int allowedOperandCount = -1);
+    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
 
     shared_ptr<Equation> clone() const;
 
@@ -111,15 +110,12 @@ public:
     QString getText() const override;
     QString getColoredText(bool activeColored, bool errorColored) const;
 
-    void setCurrentValue(const LogicValue& value) override; // Throws StatesException
     computationFailureCause getComputationFailureCause() const;
 
     nature getFunction() const;
-    void setFunction(const nature& newFunction, int param1 = -1, int param2 = -1);
-    void setParameters(int param1, int param2 = -1); // TODO: throw exception when function is not extract? Or simply qDebug...
+    void setFunction(const nature& newFunction);
+
     bool isInverted() const;
-    int getParam1() const; // TODO: throw exception when function is not extract?
-    int getParam2() const; // TODO: throw exception when function is not extract?
 
     shared_ptr<Signal> getOperand(uint i) const; // Throws StatesException
     bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false); // Throws StatesException
@@ -131,8 +127,20 @@ public:
     void increaseOperandCount(); // Throws StatesException
     void decreaseOperandCount(); // Throws StatesException
 
+    // Functions specific to some action types
+    void setConstantValue(const LogicValue& value); // Throws StatesException
+    void setRange(int rangeL, int rangeR = -1); // TODO: throw exception when function is not extract? Or simply qDebug... What about out of range values?
+    int getRangeL() const; // TODO: throw exception when function is not extract?
+    int getRangeR() const; // TODO: throw exception when function is not extract?
+
+    // Override to throw exception
+    virtual void setInitialValue(const LogicValue&)                   override; // Throws StatesException
+    virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
+    virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
+
 private slots:
     void computeCurrentValue();
+    void signalDeletedEventHandler();
 
 private:
     void increaseOperandCountInternal();
@@ -146,14 +154,16 @@ private:
     QVector<weak_ptr<Signal>>     signalOperands;
     QVector<shared_ptr<Equation>> equationOperands;
 
-    // This size hold the maximum operands count
+    // This size holds the maximum operands count
     // It can be increased or decreased (min 2 operands)
     // except for constant size operators (ident, not, eq, diff, constant)
     uint allowedOperandCount = 0;
 
-    // Parameters
-    int param1;
-    int param2;
+    // Parameters specific to some action types
+    int rangeL;
+    int rangeR;
+    LogicValue constantValue;
+
 };
 
 #endif // EQUATION_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,66 +30,82 @@
 using namespace std;
 
 // Qt classes
-#include <QMap>
 class QPushButton;
-class QTableWidget;
-class QTableWidgetItem;
+class QTableView;
+class QItemSelection;
 
 // StateS Classes
 class MachineActuatorComponent;
-class Signal;
 class CollapsibleWidgetWithTitle;
-class DynamicTableItemDelegate;
+class ActionOnSignal;
 
 
+/**
+ * @brief The ActionEditor class displays a list of actions
+ * for a MachineActuatorComponent and tools to edit it.
+ *
+ * It has a weak dependence on the actuator, and becomes
+ * passive (all functions inhibited) if the actuator is
+ * deleted.
+ */
 class ActionEditor : public QWidget
 {
     Q_OBJECT
 
 private:
-    enum ContextAction { Cancel = 0, DeleteAction = 1, AffectSwitchWhole = 2, AffectSwitchSingle = 3, AffectSwitchRange = 4, AffectEditRange = 5};
+    enum ContextAction
+    {
+        Cancel             = 0,
+        DeleteAction       = 1,
+        AffectSwitchWhole  = 2,
+        AffectSwitchSingle = 3,
+        AffectSwitchRange  = 4,
+        AffectEditRange    = 5,
+        EditValue          = 6,
+        MoveUp             = 7,
+        MoveDown           = 8
+    };
 
 public:
-    explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
+    explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString::null, QWidget* parent = nullptr);
 
 protected:
-    void keyPressEvent(QKeyEvent* e) override;
-    void keyReleaseEvent(QKeyEvent* e) override;
-    void contextMenuEvent(QContextMenuEvent* event) override;
+    virtual void keyPressEvent   (QKeyEvent* e)             override;
+    virtual void keyReleaseEvent (QKeyEvent* e)             override;
+    virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
 private slots:
-    void updateContent();
-    void updateButtonsState();
-    void editValue(QTableWidgetItem* item);
+    void selectionChangedEventHandler(const QItemSelection&, const QItemSelection&);
 
-    void addAction();
-    void removeAction();
-    void treatMenuAdd(QAction*);
+    void displayAddActionMenu() const;
+    void removeSelectedActions();
 
-    void validateEdit();
-    void cancelEdit();
+    void treatAddActionMenuEventHandler(QAction* action);
+    void treatContextMenuEventHandler  (QAction* action);
 
-    void treatMenuEventHandler(QAction* action);
+    void moveSelectedActionsUp();
+    void moveSelectedActionsDown();
+
+    void tableChangedEventHandler();
 
 private:
-    QList<shared_ptr<Signal> > getSelectedSignals();
+    void fillFirstColumn();
+    void updateButtonsEnableState();
+
+    void sortSelectionList();
+    void restoreSelection();
 
 private:
     weak_ptr<MachineActuatorComponent> actuator;
 
-    CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+    QTableView*                 actionTable        = nullptr;
+    QPushButton*                buttonAddAction    = nullptr;
+    QPushButton*                buttonRemoveAction = nullptr;
+    QPushButton*                buttonMoveUp       = nullptr;
+    QPushButton*                buttonMoveDown     = nullptr;
+    CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
 
-    QMap<QTableWidgetItem*, weak_ptr<Signal>> tableItemsMapping;
-
-    // Qwidgets
-    DynamicTableItemDelegate* listDelegate;
-    QTableWidget* actionList = nullptr;
-    QTableWidgetItem* itemUnderEdition = nullptr;
-
-    QPushButton* buttonAddAction = nullptr;
-    QPushButton* buttonRemoveAction = nullptr;
-
-    weak_ptr<Signal> currentSignal;
+    QList<weak_ptr<ActionOnSignal>> latestSelection;
 };
 
 #endif // ACTIONEDITOR_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,8 +38,9 @@ public:
     explicit Constant(const QString& name);
     explicit Constant(const QString& name, uint size); // Throws StatesException
 
-    virtual void setInitialValue(const LogicValue& newInitialValue) override; // Throws StatesException
-    virtual void setCurrentValue(const LogicValue& value) override; // Throws StatesException
+    virtual void setInitialValue(const LogicValue& newInitialValue)   override; // Throws StatesException
+    virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
+    virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
 };
 
 #endif // CONSTANT_H

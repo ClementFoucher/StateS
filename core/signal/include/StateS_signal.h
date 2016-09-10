@@ -43,7 +43,8 @@ public: // Static
         building_zero_sized = 0,
         resized_to_0        = 1,
         size_mismatch       = 2,
-        signal_is_not_bool  = 3
+        signal_is_not_bool  = 3,
+        value_is_read_only  = 4
     };
 
 public:
@@ -66,6 +67,7 @@ public:
     QString getColoredText(bool activeColored) const;
 
     virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
+    virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
     LogicValue getCurrentValue() const;
 
     void resetValue();
@@ -83,7 +85,7 @@ signals:
 
     // Specific events detail
     void signalRenamedEvent();
-    void signalResizedEvent(shared_ptr<Signal> emitter);
+    void signalResizedEvent();
     void SignalInitialValueChangedEvent();
 
     // Deletion event

@@ -125,7 +125,17 @@ signals:
 protected:
     void setMode(mode newMode);
 
-protected:
+private:
+    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value);
+    QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
+    void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+    bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+    bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+    bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+
+    void rebuildComponentVisualization();
+
+private:
     // Store all signals as shared_ptr<Signal> for helper functions,
     // but can actually be shared_ptr<Input/Output/Constant>
 
@@ -142,17 +152,7 @@ protected:
 
     QString name;
 
-private:
-    shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value);
-    QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
-    void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-    bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-    bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-    bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
 
-    void rebuildComponentVisualization();
-
-private:
     QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 
     // Local copy of visu => pointer because scene takes ownership

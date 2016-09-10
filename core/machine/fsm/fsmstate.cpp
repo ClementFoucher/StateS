@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,8 +36,6 @@ FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name) :
     FsmComponent(parent)
 {
     this->name = name;
-
-    this->setAllowedActionTypes(activeOnState | set | reset | assign);
 
     // Propagates local events to the more general events
     connect(this, &FsmState::stateRenamedEvent,           this, &MachineComponent::componentStaticConfigurationChangedEvent);
@@ -92,6 +90,11 @@ void FsmState::clearGraphicRepresentation()
         disconnect(this->graphicRepresentation, &GraphicComponent::graphicComponentConfigurationChangedEvent, this, &FsmState::componentStaticConfigurationChangedEvent);
         this->graphicRepresentation = nullptr;
     }
+}
+
+uint FsmState::getAllowedActionTypes() const
+{
+   return (activeOnState | set | reset | assign);
 }
 
 void FsmState::cleanIncomingTransitionsList()

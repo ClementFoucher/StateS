@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,15 +29,14 @@
 // StateS classes
 #include "statesexception.h"
 
+
 // Main constructor
 /**
  * @brief Equation::Equation
  * @param function
  * @param operandCount Number of operands. Omitting this value results in a default-sized equation with 2 operands for variable operand functions.
- * @param param1
- * @param param2
  */
-Equation::Equation(nature function, int operandCount, int param1, int param2) :
+Equation::Equation(nature function, int operandCount) :
     Signal("<sub>(equation)</sub>")
 {
     this->function = function;
@@ -100,42 +99,17 @@ Equation::Equation(nature function, int operandCount, int param1, int param2) :
         }
     }
 
-    // Parameters affectation
-    switch(this->function)
-    {
-    case nature::extractOp:
-        this->param1 = param1;
-        this->param2 = param2;
-        break;
-    case nature::constant:
-    case nature::notOp:
-    case nature::identity:
-    case nature::equalOp:
-    case nature::diffOp:
-    case nature::andOp:
-    case nature::orOp:
-    case nature::xorOp:
-    case nature::nandOp:
-    case nature::norOp:
-    case nature::xnorOp:
-    case nature::concatOp:
-        this->param1 = -1;
-        this->param2 = -1;
-
-        if ( (param1 != -1) || (param2 != -1) )
-        {
-            qDebug() << "(Equation:) Warning: provided values for parameters while equation is not extract op.";
-            qDebug() << "Parameters value ignored.";
-        }
-        break;
-    }
+    // Default values
+    this->rangeL = -1;
+    this->rangeR = -1;
+    this->constantValue = LogicValue::getNullValue();
 
     this->signalOperands   = QVector<weak_ptr<Signal>>    (this->allowedOperandCount);
     this->equationOperands = QVector<shared_ptr<Equation>>(this->allowedOperandCount);
 }
 
-Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList, int param1, int param2) :
-    Equation(function, operandList.count(), param1, param2)
+Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandList) :
+    Equation(function, operandList.count())
 {
     for (int i = 0 ; i < operandList.count() ; i++)
     {
@@ -149,10 +123,17 @@ Equation::Equation(nature function, const QVector<shared_ptr<Signal>>& operandLi
 
 shared_ptr<Equation> Equation::clone() const
 {
-    shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands(), this->param1, this->param2));
+    shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands()));
 
-    if (this->function == nature::constant)
-        eq->setCurrentValue(this->currentValue); // Throws StatesException - Constant equations can have their value set - ignored
+    if (this->function == Equation::nature::constant)
+    {
+        eq->setConstantValue(this->constantValue); // Throws StatesException - constantValue is built for signal size - ignored
+    }
+    else if (this->function == Equation::nature::extractOp)
+    {
+        eq->setRange(this->rangeL, this->rangeR);
+    }
+
 
     return eq;
 }
@@ -179,7 +160,7 @@ Equation::nature Equation::getFunction() const
     return function;
 }
 
-void Equation::setFunction(const nature& newFunction, int param1, int param2)
+void Equation::setFunction(const nature& newFunction)
 {
     switch(newFunction)
     {
@@ -236,13 +217,8 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
 
     if (this->function == nature::extractOp)
     {
-        this->param1 = param1;
-        this->param2 = param2;
-    }
-    else
-    {
-        this->param1 = -1;
-        this->param2 = -1;
+        this->rangeL = -1;
+        this->rangeR = -1;
     }
 
     emit signalStaticConfigurationChangedEvent();
@@ -250,12 +226,12 @@ void Equation::setFunction(const nature& newFunction, int param1, int param2)
     this->computeCurrentValue();
 }
 
-void Equation::setParameters(int param1, int param2)
+void Equation::setRange(int rangeL, int rangeR)
 {
     if (this->function == nature::extractOp)
     {
-        this->param1 = param1;
-        this->param2 = param2;
+        this->rangeL = rangeL;
+        this->rangeR = rangeR;
 
         emit signalStaticConfigurationChangedEvent();
 
@@ -313,8 +289,7 @@ bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet) // 
             }
             else
             {
-                connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Equation::computeCurrentValue);
-                connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+                connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
                 signalOperands[i] = newOperand;
                 actualNewOperand = newOperand;
             }
@@ -358,8 +333,7 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 
         if (oldOperand != nullptr)
         {
-            disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Equation::computeCurrentValue);
-            disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+            disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
         }
 
         equationOperands[i].reset();
@@ -464,14 +438,14 @@ QString Equation::getColoredText(bool activeColored, bool errorColored) const
         {
             text += "[";
 
-            if (this->param1 != -1)
-                text += QString::number(this->param1);
+            if (this->rangeL != -1)
+                text += QString::number(this->rangeL);
             else
                 text += "…";
 
-            if (this->param2 != -1)
+            if (this->rangeR != -1)
             {
-                text += ".." + QString::number(this->param2);
+                text += ".." + QString::number(this->rangeR);
             }
 
             text += "]";
@@ -486,11 +460,13 @@ QString Equation::getColoredText(bool activeColored, bool errorColored) const
     return text;
 }
 
-void Equation::setCurrentValue(const LogicValue& value) // Throws StatesException
+void Equation::setConstantValue(const LogicValue& value) // Throws StatesException
 {
     if (this->function == nature::constant)
     {
-        this->currentValue = value;
+        this->constantValue = value;
+
+        this->computeCurrentValue();
 
         emit Signal::signalStaticConfigurationChangedEvent();
     }
@@ -530,14 +506,29 @@ bool Equation::isInverted() const
     return result;
 }
 
-int Equation::getParam1() const
+int Equation::getRangeL() const
 {
-    return this->param1;
+    return this->rangeL;
 }
 
-int Equation::getParam2() const
+int Equation::getRangeR() const
 {
-    return this->param2;
+    return this->rangeR;
+}
+
+void Equation::setInitialValue(const LogicValue&)
+{
+    throw StatesException("Equation", set_value_requested, "Trying to affect an initial value to an equation");
+}
+
+void Equation::setCurrentValue(const LogicValue&)
+{
+    throw StatesException("Equation", set_value_requested, "Trying to affect a current value to an equation");
+}
+
+void Equation::setCurrentValueSubRange(const LogicValue&, int, int)
+{
+    throw StatesException("Equation", set_value_requested, "Trying to affect a current value to an equation");
 }
 
 /**
@@ -563,11 +554,9 @@ QVector<shared_ptr<Signal>> Equation::getOperands() const
 
 void Equation::computeCurrentValue()
 {
-    // Current value is stored instead of dynamically computed
-    // to avoid emit change events if value actually didn't changed
-
-    if (this->function == nature::constant)
-        return;
+    // Current value is computed dynamically when operands or
+    // equation change.
+    // It emits change events only if value actually changed
 
     bool doCompute = true;
 
@@ -632,19 +621,19 @@ void Equation::computeCurrentValue()
         }
             break;
         case nature::extractOp:
-            if (this->param1 != -1)
+            if (this->rangeL != -1)
             {
-                if (this->param2 != -1)
+                if (this->rangeR != -1)
                 {
-                    if (this->param1 >= this->param2)
+                    if (this->rangeL >= this->rangeR)
                     {
-                        int range = this->param1 - this->param2 + 1;
+                        int range = this->rangeL - this->rangeR + 1;
                         LogicValue subVector(range);
                         LogicValue originalValue = operands[0]->getCurrentValue();
 
                         for (int i = 0 ; i < range ; i++)
                         {
-                            subVector[i] = originalValue[this->param2 + i];
+                            subVector[i] = originalValue[this->rangeR + i];
                         }
 
                         this->currentValue = subVector;
@@ -658,15 +647,15 @@ void Equation::computeCurrentValue()
                 }
                 else
                 {
-                    if ((uint)param1 < operands[0]->getSize())
+                    if ((uint)rangeL < operands[0]->getSize())
                     {
                         LogicValue result(1);
-                        result[0] = operands[0]->getCurrentValue()[param1];
+                        result[0] = operands[0]->getCurrentValue()[rangeL];
                         this->currentValue = result;
                     }
                     else
                     {
-                        param1 = -1;
+                        rangeL = -1;
                         this->currentValue = LogicValue::getNullValue();
                         this->failureCause = computationFailureCause::incorrectParameter;
                     }
@@ -749,7 +738,7 @@ void Equation::computeCurrentValue()
         }
             break;
         case nature::constant:
-            // Nothing to do
+            this->currentValue = this->constantValue;
             break;
         }
     }
@@ -758,13 +747,14 @@ void Equation::computeCurrentValue()
         this->currentValue = LogicValue::getNullValue();
     }
 
-    emit signalDynamicStateChangedEvent();
+    if (previousValue != this->currentValue)
+        emit signalDynamicStateChangedEvent();
 
     if (previousValue.getSize() != this->currentValue.getSize())
     {
         try
         {
-            emit signalResizedEvent(this->shared_from_this());
+            emit signalResizedEvent();
         }
         catch (const std::bad_weak_ptr&)
         {
@@ -772,6 +762,12 @@ void Equation::computeCurrentValue()
             // This happens when this function is called from the constructor
         }
     }
+}
+
+void Equation::signalDeletedEventHandler()
+{
+    this->computeCurrentValue();
+    emit this->signalStaticConfigurationChangedEvent();
 }
 
 bool Equation::signalHasSize(shared_ptr<Signal> sig)

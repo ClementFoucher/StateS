@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,23 +29,25 @@
 Constant::Constant(const QString& name) :
     Signal(name)
 {
-
 }
 
 Constant::Constant(const QString& name, uint size) : // Throws StatesException
     Signal(name, size) // Throws StatesException: propagated
 {
-
 }
 
 void Constant::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
 {
-    Signal::setInitialValue(newInitialValue); // Throws StatesException: propagated
-
-    Signal::setCurrentValue(newInitialValue);
+    Signal::setInitialValue(newInitialValue); // Throws StatesException - Propagated
+    Signal::setCurrentValue(newInitialValue); // Throws StatesException - Propagated
 }
 
 void Constant::setCurrentValue(const LogicValue&) // Throws StatesException
+{
+    throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+}
+
+void Constant::setCurrentValueSubRange(const LogicValue&, int, int) // Throws StatesException
 {
     throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
 }

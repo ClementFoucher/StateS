@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -18,36 +18,36 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef ACTIONLISTEDITOR_H
-#define ACTIONLISTEDITOR_H
+#ifndef ACTIONTABLEDELEGATE_H
+#define ACTIONTABLEDELEGATE_H
 
 // Parent
-#include <QComboBox>
+#include <QStyledItemDelegate>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
 // StateS classes
-class Signal;
 class MachineActuatorComponent;
 
 
-class ActionListEditor : public QComboBox
+/**
+ * @brief The ActionTableDelegate class provides an editor
+ * for the action value cells in an ActionEditor table.
+ */
+class ActionTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit ActionListEditor(shared_ptr<MachineActuatorComponent> actuator, shared_ptr<Signal> signal, QWidget* parent = nullptr);
+    explicit ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget* parent = nullptr);
 
-private slots:
-    void treatIndexChanged(int index);
-    void updateIndex();
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
 
 private:
-    weak_ptr<Signal> signal;
     weak_ptr<MachineActuatorComponent> actuator;
+
 };
 
-#endif // ACTIONLISTEDITOR_H
+#endif // ACTIONTABLEDELEGATE_H

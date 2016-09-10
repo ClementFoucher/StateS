@@ -98,7 +98,7 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
 
         foreach (shared_ptr<Input> var, machine->getInputs())
         {
-            SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock, true);
+            SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock);
             layout->addWidget(varTL);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,30 +22,43 @@
 // Current class header
 #include "clock.h"
 
+// Qt classes
+#include <QTimer>
+
 
 Clock::Clock() :
     QObject()
 {
-    connect(&(this->timer), &QTimer::timeout, this, &Clock::clockEvent);
 }
 
 void Clock::start(uint intervalms)
 {
-    this->timer.setInterval(intervalms);
-    this->timer.start();
+    if (this->timer == nullptr)
+    {
+        this->timer = shared_ptr<QTimer>(new QTimer());
+        connect(this->timer.get(), &QTimer::timeout, this, &Clock::nextStep);
+    }
+
+    this->timer->setInterval(intervalms);
+    this->timer->start();
 }
 
 void Clock::stop()
 {
-    this->timer.stop();
+    if (this->timer != nullptr)
+    {
+        this->timer->stop();
+    }
 }
 
 void Clock::nextStep()
 {
+    emit prepareForClockEvent();
     emit clockEvent();
 }
 
 void Clock::reset()
 {
-    emit resetEvent();
+    emit resetLogicEvent();
+    emit resetGraphicEvent();
 }

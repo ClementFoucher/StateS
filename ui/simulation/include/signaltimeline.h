@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,9 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QList>
-
 // StateS classes
 class Signal;
 class Clock;
@@ -44,16 +41,15 @@ class SignalTimeline : public QWidget
     Q_OBJECT
 
 public:
-    explicit SignalTimeline(uint delay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic = false, QWidget* parent = nullptr);
+    explicit SignalTimeline(uint delay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 private slots:
     void clockEventHandler();
-    void prepareClockEventHandler();
     void resetEventHandler();
+    void updateCurrentValue();
     void updateDelayOutputOption(uint delay);
 
 private:
-    bool isDynamic;
     weak_ptr<Signal> signal;
 
     QList<GraphicTimeLine*> signalLineDisplay;

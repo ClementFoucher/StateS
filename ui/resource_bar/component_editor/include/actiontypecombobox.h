@@ -19,39 +19,39 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTEXTMENU_H
-#define CONTEXTMENU_H
+#ifndef ACTIONTYPECOMBOBOX_H
+#define ACTIONTYPECOMBOBOX_H
 
 // Parent
-#include <QMenu>
+#include <QComboBox>
+
+// C++ classes
+#include <memory>
+using namespace std;
+
+// StateS classes
+class ActionOnSignal;
 
 
 /**
- * @brief The ContextMenu class
- * This class muse be used only using standard pointers,
- * as deletion is automatic on component hide.
+ * @brief The ActionTypeComboBox class displays
+ * a drop-down list displaying the allowed action
+ * types for a specific action, and changes the
+ * action type according to user selection in the
+ * list.
  */
-
-
-class ContextMenu : public QMenu
+class ActionTypeComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-    static ContextMenu* createErrorMenu(const QString& text, QWidget* parent = nullptr);
+    explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
 
-    static const QString errorStyle;
-    static const QString listStyle;
+private slots:
+    void treatIndexChanged(int index);
 
-public:
-    explicit ContextMenu(QWidget* parent = nullptr);
-
-    void addTitle(const QString& titleText);
-    void addSubTitle(const QString& titleText);
-    void setListStyle();
-
-public:
-    bool event(QEvent* e) override;
+private:
+    weak_ptr<ActionOnSignal> action;
 };
 
-#endif // CONTEXTMENU_H
+#endif // ACTIONTYPECOMBOBOX_H

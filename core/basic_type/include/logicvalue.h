@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -49,10 +49,12 @@ public:
     void resize(uint newSize); // Throws StatesException
     uint getSize() const;
 
-    LogicValue getValue0() const;
-    LogicValue getValue1() const;
+    bool increment();
 
     bool isNull() const;
+    QString toString() const;
+
+    // Operator overloading
 
     // Compare operator will return false is used with different size other value
     bool operator==(const LogicValue& otherValue) const;
@@ -69,12 +71,9 @@ public:
     LogicValue operator&=(const LogicValue& otherValue); // TODO: Throws StatesException
     LogicValue operator|=(const LogicValue& otherValue); // TODO: Throws StatesException
     LogicValue operator^=(const LogicValue& otherValue); // TODO: Throws StatesException
-    bool increment();
 
     bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
     bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
-
-    QString toString() const;
 };
 
 #endif // LOGICVALUE_H

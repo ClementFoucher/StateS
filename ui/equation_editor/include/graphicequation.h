@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -81,8 +81,8 @@ protected slots:
 
 private slots:
     void treatMenuEventHandler(QAction* action);
-    void treatExtractIndex1Changed(int newIndex);
-    void treatExtractIndex2Changed(int newIndex);
+    void treatRangeLeftBoundChanged(int newIndex);
+    void treatRangeRightBoundChanged(int newIndex);
     void treatConstantValueChanged(LogicValue newValue);
     void updateBorder();
 

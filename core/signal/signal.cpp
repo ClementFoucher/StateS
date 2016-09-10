@@ -79,7 +79,7 @@ void Signal::resize(uint newSize) // Throws StatesException
     this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
     this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
 
-    emit signalResizedEvent(this->shared_from_this()); // Clear to use shared_from_this: this function can't be called in constructor
+    emit signalResizedEvent();
 }
 
 QString Signal::getText() const
@@ -109,15 +109,53 @@ QString Signal::getColoredText(bool activeColored) const
 
 void Signal::setCurrentValue(const LogicValue& value) // Throws StatesException
 {
-    if (value.getSize() == this->getSize())
-    {
-        this->currentValue = value;
+    // We have to make sure we use this call fuction,
+    // and not the overriding ones:
+    Signal::setCurrentValueSubRange(value, -1, -1); // Throws StatesException - Propagted
+}
 
+void Signal::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR) // Throws StatesException
+{
+    bool setOk = false;
+
+    if (rangeL < 0)
+    {
+        // Full range affectation
+        if (this->getSize() == value.getSize())
+        {
+            this->currentValue = value;
+            setOk = true;
+        }
+    }
+    else if (rangeR < 0)
+    {
+        // Single bit affectation
+        if ( (value.getSize() == 1) && ((uint)rangeL < this->getSize()) )
+        {
+            this->currentValue[rangeL] = value[0];
+            setOk = true;
+        }
+    }
+    else
+    {
+        // Sub-range affectation
+        if ( ((uint)rangeL < this->getSize()) && (rangeL > rangeR) && (value.getSize() == (uint)rangeR+rangeL+1) )
+        {
+            for (int i = rangeR ; i <= rangeL ; i++)
+            {
+                this->currentValue[i] = value[i-rangeR];
+            }
+            setOk = true;
+        }
+    }
+
+    if (setOk == true)
+    {
         emit signalDynamicStateChangedEvent();
     }
     else
     {
-        throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size");
+        throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
     }
 }
 
@@ -131,7 +169,7 @@ LogicValue Signal::getInitialValue() const
     return this->initialValue;
 }
 
-void Signal::setInitialValue(const LogicValue &newInitialValue) // Throws StatesException
+void Signal::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
 {
     if (this->getSize() == newInitialValue.getSize())
     {

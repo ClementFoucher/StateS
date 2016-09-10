@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,6 +59,8 @@ public:
     void setCondition(shared_ptr<Signal> signalNewCondition);
 
     void clearCondition();
+
+    virtual uint getAllowedActionTypes() const override;
 
     qreal sliderPos; // Public because we don't care, just used by loader
 

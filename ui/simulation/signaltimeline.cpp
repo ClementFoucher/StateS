@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,18 +31,16 @@
 #include "clock.h"
 #include "graphictimeline.h"
 #include "simulationwidget.h"
-#include "output.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, bool dynamic, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
     // If this parameter is not null, this is only for this connection
     if (simulationWidget != nullptr)
         connect(simulationWidget, &SimulationWidget::outputDelayChangedEvent, this, &SignalTimeline::updateDelayOutputOption);
 
-    this->signal      = signal;
-    this->isDynamic   = dynamic;
+    this->signal = signal;
 
     QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
@@ -81,15 +79,14 @@ SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWid
         globalLayout->addLayout(bitsLayout);
     }
 
-    if (isDynamic)
-    {
-        connect(signal.get(), &Signal::signalDynamicStateChangedEvent, this, &SignalTimeline::prepareClockEventHandler);
-    }
+    connect(signal.get(), &Signal::signalDynamicStateChangedEvent, this, &SignalTimeline::updateCurrentValue);
 
-    connect(clock.get(), &Clock::clockEvent, this, &SignalTimeline::clockEventHandler);
-    connect(clock.get(), &Clock::resetEvent, this, &SignalTimeline::resetEventHandler);
+    connect(clock.get(), &Clock::prepareForClockEvent, this, &SignalTimeline::clockEventHandler);
+    connect(clock.get(), &Clock::resetGraphicEvent,    this, &SignalTimeline::resetEventHandler);
 }
 
+// On clock event, duplicate current value:
+// it will be edited dynamically with signal update
 void SignalTimeline::clockEventHandler()
 {
     shared_ptr<Signal> signal = this->signal.lock();
@@ -103,8 +100,8 @@ void SignalTimeline::clockEventHandler()
     }
 }
 
-// This is used for input, because state may have changed since previous clock
-void SignalTimeline::prepareClockEventHandler()
+// Value is updated depending on actions on signal
+void SignalTimeline::updateCurrentValue()
 {
     shared_ptr<Signal> signal = this->signal.lock();
 
@@ -125,7 +122,7 @@ void SignalTimeline::resetEventHandler()
     {
         for (uint i = 0 ; i < signal->getSize() ; i++)
         {
-            this->signalLineDisplay[i]->reset(signal->getInitialValue()[i]);
+            this->signalLineDisplay[i]->reset(signal->getCurrentValue()[i]);
         }
     }
 }

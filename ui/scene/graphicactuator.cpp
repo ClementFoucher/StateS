@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@
 #include "StateS_signal.h"
 #include "machine.h"
 #include "statesexception.h"
+#include "actiononsignal.h"
 
 
 GraphicActuator::GraphicActuator(QObject* parent) :
@@ -90,7 +91,7 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
     }
 
     // Begin build
-    QList<shared_ptr<Signal>> actions = l_actuator->getActions();
+    QList<shared_ptr<ActionOnSignal>> actions = l_actuator->getActions();
     if (actions.count() != 0)
     {
         qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
@@ -98,70 +99,73 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 
         for (int i = 0 ; i < actions.count() ; i++)
         {
-            QGraphicsTextItem* actionText = new QGraphicsTextItem(actions[i]->getText(), actionsBox);
+            shared_ptr<ActionOnSignal> currentAction = actions[i];
+            shared_ptr<Signal> currentSignal = currentAction->getSignalActedOn();
+
+            QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), actionsBox);
 
             QString currentActionText;
 
             Machine::mode currentMode = l_actuator->getOwningMachine()->getCurrentMode();
 
             if (currentMode == Machine::mode::simulateMode)
-                currentActionText = actions[i]->getColoredText(true);
+                currentActionText = currentSignal->getColoredText(true);
             else
-                currentActionText = actions[i]->getText();
+                currentActionText = currentSignal->getText();
 
-            if (actions[i]->getSize() > 1)
+            if (currentSignal->getSize() > 1)
             {
-                int param1 = l_actuator->getActionParam1(actions[i]);
-                int param2 = l_actuator->getActionParam2(actions[i]);
+                int rangeL = currentAction->getActionRangeL();
+                int rangeR = currentAction->getActionRangeR();
 
-                if (param1 != -1)
+                if (rangeL != -1)
                 {
                     currentActionText += "[";
-                    currentActionText += QString::number(param1);
+                    currentActionText += QString::number(rangeL);
 
-                    if (param2 != -1)
+                    if (rangeR != -1)
                     {
                         currentActionText += "..";
-                        currentActionText += QString::number(param2);
+                        currentActionText += QString::number(rangeR);
                     }
 
                     currentActionText += "]";
                 }
             }
 
-            if ((actions[i]->getSize() > 1) &&  (   (l_actuator->getActionParam1(actions[i]) == -1) ||
-                                                    ( (l_actuator->getActionParam1(actions[i]) != -1) && (l_actuator->getActionParam2(actions[i]) != -1) )
-                                                    ) )
+            if ((currentSignal->getSize() > 1) &&  (   (currentAction->getActionRangeL() < 0) ||
+                                                     ( (currentAction->getActionRangeL() >= 0) && (currentAction->getActionRangeR() >= 0) )
+                                                     ) )
             {
                 // Range vector
-                MachineActuatorComponent::action_types type = l_actuator->getActionType(actions[i]);
-                if (type == MachineActuatorComponent::action_types::set)
+                ActionOnSignal::action_types type = currentAction->getActionType();
+                if (type == ActionOnSignal::action_types::set)
                 {
-                    currentActionText += " ← " + LogicValue::getValue1(actions[i]->getSize()).toString(); // + "<sub>b</sub>";
+                    currentActionText += " ← " + LogicValue::getValue1(currentSignal->getSize()).toString(); // + "<sub>b</sub>";
                 }
-                else if (type == MachineActuatorComponent::action_types::reset)
+                else if (type == ActionOnSignal::action_types::reset)
                 {
-                    currentActionText += " ← " + LogicValue::getValue0(actions[i]->getSize()).toString(); // + "<sub>b</sub>";
+                    currentActionText += " ← " + LogicValue::getValue0(currentSignal->getSize()).toString(); // + "<sub>b</sub>";
                 }
-                else if (type == MachineActuatorComponent::action_types::assign)
+                else if (type == ActionOnSignal::action_types::assign)
                 {
-                    currentActionText += " ← " + l_actuator->getActionValue(actions[i]).toString(); // + "<sub>b</sub>";
+                    currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
                 }
-                else if ( (type == MachineActuatorComponent::action_types::activeOnState) ||
-                          (type == MachineActuatorComponent::action_types::pulse) )
+                else if ( (type == ActionOnSignal::action_types::activeOnState) ||
+                          (type == ActionOnSignal::action_types::pulse) )
                 {
-                    currentActionText += " ↷ " + l_actuator->getActionValue(actions[i]).toString(); // + "<sub>b</sub>";
+                    currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
                 }
             }
             else
             {
                 // Single bit
-                MachineActuatorComponent::action_types type = l_actuator->getActionType(actions[i]);
-                if (type == MachineActuatorComponent::action_types::set)
+                ActionOnSignal::action_types type = currentAction->getActionType();
+                if (type == ActionOnSignal::action_types::set)
                 {
                     currentActionText += " ← 1"; // + "<sub>b</sub>";
                 }
-                else if (type == MachineActuatorComponent::action_types::reset)
+                else if (type == ActionOnSignal::action_types::reset)
                 {
                     currentActionText += " ← 0"; // + "<sub>b</sub>";
                 }

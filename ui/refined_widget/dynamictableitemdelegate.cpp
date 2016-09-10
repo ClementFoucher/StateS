@@ -36,7 +36,7 @@ DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
 
 QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /* option */, const QModelIndex& index ) const
 {
-    this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator, parent);
+    this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator.get(), parent);
 
     return this->latestEditor;
 }

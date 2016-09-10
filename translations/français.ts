@@ -71,14 +71,6 @@
 <context>
     <name>ActionEditor</name>
     <message>
-        <source>Type</source>
-        <translation>Type</translation>
-    </message>
-    <message>
-        <source>Signal</source>
-        <translation>Signal</translation>
-    </message>
-    <message>
         <source>Add action</source>
         <translation>Ajouter une action</translation>
     </message>
@@ -89,10 +81,6 @@
     <message>
         <source>No compatible signal!</source>
         <translation>Aucun signal compatible !</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation>Valeur</translation>
     </message>
     <message>
         <source>Action on signal</source>
@@ -158,12 +146,47 @@
         <source>to display range options.</source>
         <translation>pour afficher les options de sous-vecteur.</translation>
     </message>
+    <message>
+        <source>Edit value</source>
+        <translation>Éditer la valeur</translation>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation>Déplacer vers le haut</translation>
+    </message>
+    <message>
+        <source>Move down</source>
+        <translation>Déplacer vers le bas</translation>
+    </message>
 </context>
 <context>
-    <name>ActionListEditor</name>
+    <name>ActionTableModel</name>
+    <message>
+        <source>No action.</source>
+        <translation>Aucune action.</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation>Signal</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Valeur</translation>
+    </message>
+</context>
+<context>
+    <name>ActionTypeComboBox</name>
     <message>
         <source>Pulse</source>
         <translation>Impulsion</translation>
+    </message>
+    <message>
+        <source>Active on state</source>
+        <translation>Actif sur état</translation>
     </message>
     <message>
         <source>Set</source>
@@ -176,10 +199,6 @@
     <message>
         <source>Assign</source>
         <translation>Affecter</translation>
-    </message>
-    <message>
-        <source>Active on state</source>
-        <translation>Actif sur état</translation>
     </message>
 </context>
 <context>
@@ -259,7 +278,7 @@
     </message>
     <message>
         <source>Edit condition and hover over errors for more information.</source>
-        <translation>Éditez la condition et survolez les erreurs pour plus de détails</translation>
+        <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
 </context>
 <context>
@@ -541,6 +560,22 @@
     <message>
         <source>equation</source>
         <translation>équation</translation>
+    </message>
+    <message>
+        <source>Error in action type for signal</source>
+        <translation>Erreur dans le type d&apos;action pour le signal</translation>
+    </message>
+    <message>
+        <source>Default action type used instead.</source>
+        <translation>Type d&apos;action par défaut utilisé.</translation>
+    </message>
+    <message>
+        <source>Error in action range for signal</source>
+        <translation>Erreur dans le range du signal</translation>
+    </message>
+    <message>
+        <source>Range ignored. Default value will be ignored too if present.</source>
+        <translation>Le range a été ignoré. La valeur par défaut sera ignorée également si elle existe.</translation>
     </message>
 </context>
 <context>
@@ -1566,21 +1601,6 @@
     <message>
         <source>Outputs</source>
         <translation>Sorties</translation>
-    </message>
-</context>
-<context>
-    <name>TruthTableMainTableModel</name>
-    <message>
-        <source>Error! No table loaded.</source>
-        <translation>Erreur ! Aucune table chargée.</translation>
-    </message>
-    <message>
-        <source>Result</source>
-        <translation>Résultat</translation>
-    </message>
-    <message>
-        <source>Result:</source>
-        <translation>Résultat :</translation>
     </message>
 </context>
 <context>

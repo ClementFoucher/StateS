@@ -48,8 +48,8 @@ public:
     void setEdited(bool edited) override;
 
 signals:
-    void value1Changed(int newValue);
-    void value2Changed(int newValue);
+    void rangeLChanged(int newValue);
+    void rangeRChanged(int newValue);
 
 protected:
     void mousePressEvent      (QMouseEvent* event) override;
@@ -65,11 +65,11 @@ private:
 private:
     weak_ptr<Equation> equation;
 
-    QLabel* param1Text = nullptr;
-    QLabel* param2Text = nullptr;
+    QLabel* rangeLText = nullptr;
+    QLabel* rangeRText = nullptr;
 
-    LineEditWithUpDownButtons* param1Editor = nullptr;
-    LineEditWithUpDownButtons* param2Editor = nullptr;
+    LineEditWithUpDownButtons* rangeLEditor = nullptr;
+    LineEditWithUpDownButtons* rangeREditor = nullptr;
 
     bool editMode = false;
 

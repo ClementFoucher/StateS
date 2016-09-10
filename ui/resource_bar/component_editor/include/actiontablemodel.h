@@ -18,9 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef TRUTHTABLEMAINTABLEMODEL_H
-#define TRUTHTABLEMAINTABLEMODEL_H
+#ifndef ACTIONTABLEMODEL_H
+#define ACTIONTABLEMODEL_H
 
 // Parent class
 #include <QAbstractTableModel>
@@ -29,31 +28,44 @@
 using namespace std;
 #include <memory>
 
-// Qt classes
-class QTableView;
-
 // StateS classes
-class TruthTable;
+class MachineActuatorComponent;
 
 
-class TruthTableMainTableModel : public QAbstractTableModel
+/**
+ * @brief The ActionTableModel class provides content
+ * for action table displayed in ActionEditor based on
+ * an a MachineActuatorComponen information. It allows
+ * edition for action value.
+ * The first column is not handled by the model but
+ * by a specific widget.
+ *
+ * The model emits a layoutChanged() signal whenever
+ * the actuator component changes so that the table
+ * view model is refreshed.
+ *
+ * If no action is set on the current actuator,
+ * it displays a single cell with text "No action.".
+ */
+class ActionTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit TruthTableMainTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
+    explicit ActionTableModel(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
 
     virtual int columnCount(const QModelIndex& parent) const                              override;
     virtual int rowCount(const QModelIndex& parent) const                                 override;
     virtual QVariant data(const QModelIndex& index, int role) const                       override;
+    virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
 
-private:
-    weak_ptr<TruthTable> truthTable;
+private slots:
+    void refreshList();
 
-    QTableView* inputTable = nullptr;
-    QTableView* outputTable = nullptr;
+private:
+    weak_ptr<MachineActuatorComponent> actuator;
 };
 
-#endif // TRUTHTABLEMAINTABLEMODEL_H
+#endif // ACTIONTABLEMODEL_H

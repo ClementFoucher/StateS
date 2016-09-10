@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,8 +37,6 @@ FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source
 {
     this->source = source;
     this->target = target;
-
-    this->setAllowedActionTypes(pulse | set | reset | assign);
 
     this->setCondition(condition);
 
@@ -138,4 +136,9 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 void FsmTransition::clearCondition()
 {
     setCondition(nullptr);
+}
+
+uint FsmTransition::getAllowedActionTypes() const
+{
+    return (pulse | set | reset | assign);
 }

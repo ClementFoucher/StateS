@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,10 +32,10 @@ class QString;
 class QTextStream;
 
 // StateS classes
-#include "machineactuatorcomponent.h"
 class Fsm;
 class Signal;
 class FsmState;
+class ActionOnSignal;
 
 
 class FsmVhdlExport
@@ -97,7 +97,7 @@ private:
     void writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
 
     void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-    void writeSignalAffectationValue(QTextStream& stream, shared_ptr<FsmState> state, shared_ptr<Signal> signal, MachineActuatorComponent::action_types type) const;
+    void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const;
 
     QString generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const;
 

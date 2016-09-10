@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,6 +39,7 @@ using namespace std;
 #include "input.h"
 #include "output.h"
 #include "equation.h"
+#include "actiononsignal.h"
 
 
 FsmVhdlExport::FsmVhdlExport(shared_ptr<Fsm> machine)
@@ -187,57 +188,62 @@ FsmVhdlExport::WrittableSignalCharacteristics FsmVhdlExport::determineWrittableS
 
     foreach(shared_ptr<FsmState> state, l_machine->getStates())
     {
-        if (state->getActions().contains(signal))
+        foreach (shared_ptr<ActionOnSignal> action, state->getActions())
         {
-            characteristics.isMoore = true;
-
-            MachineActuatorComponent::action_types actionType = state->getActionType(signal);
-
-            switch (actionType)
+            if (action->getSignalActedOn() == signal)
             {
-            case MachineActuatorComponent::action_types::assign:
-            case MachineActuatorComponent::action_types::set:
-            case MachineActuatorComponent::action_types::reset:
-                characteristics.isKeepValue = true;
-                break;
-            case MachineActuatorComponent::action_types::activeOnState:
-            case MachineActuatorComponent::action_types::pulse:
-                characteristics.isTempValue = true;
-                break;
-            }
+                characteristics.isMoore = true;
 
-            if (state->getActionParam1(signal) != -1)
-            {
-                characteristics.isRangeAdressed = true;
+                ActionOnSignal::action_types actionType = action->getActionType();
+
+                switch (actionType)
+                {
+                case ActionOnSignal::action_types::assign:
+                case ActionOnSignal::action_types::set:
+                case ActionOnSignal::action_types::reset:
+                    characteristics.isKeepValue = true;
+                    break;
+                case ActionOnSignal::action_types::activeOnState:
+                case ActionOnSignal::action_types::pulse:
+                    characteristics.isTempValue = true;
+                    break;
+                }
+
+                if (action->getActionRangeL() != -1)
+                {
+                    characteristics.isRangeAdressed = true;
+                }
             }
         }
     }
 
-
     foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
     {
-        if (transition->getActions().contains(signal))
+        foreach (shared_ptr<ActionOnSignal> action, transition->getActions())
         {
-            characteristics.isMealy = true;
-
-            MachineActuatorComponent::action_types actionType = transition->getActionType(signal);
-
-            switch (actionType)
+            if (action->getSignalActedOn() == signal)
             {
-            case MachineActuatorComponent::action_types::assign:
-            case MachineActuatorComponent::action_types::set:
-            case MachineActuatorComponent::action_types::reset:
-                characteristics.isKeepValue = true;
-                break;
-            case MachineActuatorComponent::action_types::activeOnState:
-            case MachineActuatorComponent::action_types::pulse:
-                characteristics.isTempValue = true;
-                break;
-            }
+                characteristics.isMealy = true;
 
-            if (transition->getActionParam1(signal) != -1)
-            {
-                characteristics.isRangeAdressed = true;
+                ActionOnSignal::action_types actionType = action->getActionType();
+
+                switch (actionType)
+                {
+                case ActionOnSignal::action_types::assign:
+                case ActionOnSignal::action_types::set:
+                case ActionOnSignal::action_types::reset:
+                    characteristics.isKeepValue = true;
+                    break;
+                case ActionOnSignal::action_types::activeOnState:
+                case ActionOnSignal::action_types::pulse:
+                    characteristics.isTempValue = true;
+                    break;
+                }
+
+                if (action->getActionRangeL() != -1)
+                {
+                    characteristics.isRangeAdressed = true;
+                }
             }
         }
     }
@@ -516,14 +522,13 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
         stream << " =>\n";
 
         int writtenActions = 0;
-        foreach(shared_ptr<Signal> sig, state->getActions())
+        foreach(shared_ptr<ActionOnSignal> action, state->getActions())
         {
-            if (this->mooreSignals.contains(sig))
+            if (this->mooreSignals.contains(action->getSignalActedOn()))
             {
                 writtenActions++;
 
-                MachineActuatorComponent::action_types type = state->getActionType(sig);
-                this->writeSignalAffectationValue(stream, state, sig, type);
+                this->writeSignalAffectationValue(stream, action);
             }
         }
 
@@ -550,9 +555,13 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
             foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
             {
-                if (transition->getActions().contains(signal))
+                foreach (shared_ptr<ActionOnSignal> action, transition->getActions())
                 {
-                    transitions.append(transition);
+                    if (action->getSignalActedOn() == signal)
+                    {
+                        transitions.append(transition);
+                        break;
+                    }
                 }
             }
 
@@ -563,14 +572,20 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
                 foreach(shared_ptr<FsmTransition> transition, transitions)
                 {
-                    if (signal->getSize() > 1)
-                        stream << "\"" << transition->getActionValue(signal).toString() << "\"";
-                    else
-                        stream << "'1'";
+                    foreach (shared_ptr<ActionOnSignal> action, transition->getActions())
+                    {
+                        if (action->getSignalActedOn() == signal)
+                        {
+                            if (signal->getSize() > 1)
+                                stream << "\"" << action->getActionValue().toString() << "\"";
+                            else
+                                stream << "'1'";
 
-                    stream << " when (current_state = " << this->stateVhdlName[transition->getSource()] << ")";
-                    stream << " and " << this->generateEquationText(transition->getCondition(), l_machine);
-                    stream << " else\n    ";
+                            stream << " when (current_state = " << this->stateVhdlName[transition->getSource()] << ")";
+                            stream << " and " << this->generateEquationText(transition->getCondition(), l_machine);
+                            stream << " else\n    ";
+                        }
+                    }
                 }
 
                 stream << LogicValue::getValue0(signal->getSize()).toString() << ";\n";
@@ -616,25 +631,29 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
     }
 }
 
-void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<FsmState> state, shared_ptr<Signal> signal, MachineActuatorComponent::action_types type) const
+void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const
 {
+    shared_ptr<Signal> signal = action->getSignalActedOn();
+
     stream << "      ";
     stream << this->signalVhdlName[signal];
     stream << " <= ";
+
+    ActionOnSignal::action_types type = action->getActionType();
 
     if (signal->getSize() == 1)
     {
         switch(type)
         {
-        case MachineActuatorComponent::action_types::activeOnState:
-        case MachineActuatorComponent::action_types::pulse:
-        case MachineActuatorComponent::action_types::set:
+        case ActionOnSignal::action_types::activeOnState:
+        case ActionOnSignal::action_types::pulse:
+        case ActionOnSignal::action_types::set:
             stream << "'1'";
             break;
-        case MachineActuatorComponent::action_types::reset:
+        case ActionOnSignal::action_types::reset:
             stream << "'0'";
             break;
-        case MachineActuatorComponent::action_types::assign:
+        case ActionOnSignal::action_types::assign:
             // Impossible case
             break;
         }
@@ -643,18 +662,18 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
     {
         switch(type)
         {
-        case MachineActuatorComponent::action_types::activeOnState:
-        case MachineActuatorComponent::action_types::pulse:
-            stream << "\"" <<  state->getActionValue(signal).toString() << "\"";
+        case ActionOnSignal::action_types::activeOnState:
+        case ActionOnSignal::action_types::pulse:
+            stream << "\"" <<  action->getActionValue().toString() << "\"";
             break;
-        case MachineActuatorComponent::action_types::set:
+        case ActionOnSignal::action_types::set:
             stream << "\"" << LogicValue::getValue1(signal->getSize()).toString() << "\"";
             break;
-        case MachineActuatorComponent::action_types::reset:
+        case ActionOnSignal::action_types::reset:
             stream << "\"" << LogicValue::getValue0(signal->getSize()).toString() << "\"";
             break;
-        case MachineActuatorComponent::action_types::assign:
-            stream << "\"" << state->getActionValue(signal).toString() << "\"";
+        case ActionOnSignal::action_types::assign:
+            stream << "\"" << action->getActionValue().toString() << "\"";
             break;
 
         }
@@ -680,18 +699,18 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
         }
         else if (function == Equation::nature::extractOp)
         {
-            int param1 = complexEquation->getParam1();
-            int param2 = complexEquation->getParam2();
+            int rangeL = complexEquation->getRangeL();
+            int rangeR = complexEquation->getRangeR();
 
             text += generateEquationText(complexEquation->getOperand(0), l_machine); // Throws StatesException - Extract op always has operand 0, even if nullptr - ignored
 
             text += "(";
-            text += QString::number(param1);
+            text += QString::number(rangeL);
 
-            if (param2 != -1)
+            if (rangeR != -1)
             {
                 text += " downto ";
-                text += QString::number(param2);
+                text += QString::number(rangeR);
             }
 
             text += ")";

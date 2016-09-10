@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -94,16 +94,6 @@ void LogicValue::resize(uint newSize) // Throws StatesException
 uint LogicValue::getSize() const
 {
     return this->size();
-}
-
-LogicValue LogicValue::getValue0() const
-{
-    return LogicValue(this->size(), false);
-}
-
-LogicValue LogicValue::getValue1() const
-{
-    return LogicValue(this->size(), true);
 }
 
 bool LogicValue::isNull() const

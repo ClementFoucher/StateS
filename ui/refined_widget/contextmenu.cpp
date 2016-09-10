@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,6 +44,7 @@ void ContextMenu::addTitle(const QString& titleText)
     QLabel* title = new QLabel("<b>" + titleText + "</b>");
     title->setAlignment(Qt::AlignCenter);
     title->setMinimumHeight(50);
+    title->setMargin(10);
 
     QWidgetAction* a = new QWidgetAction(this);
     a->setDefaultWidget(title);
@@ -52,12 +53,13 @@ void ContextMenu::addTitle(const QString& titleText)
 
 void ContextMenu::addSubTitle(const QString& titleText)
 {
-    QLabel* title = new QLabel(titleText);
-    title->setAlignment(Qt::AlignCenter);
-    title->setMinimumHeight(40);
+    QLabel* subtitle = new QLabel(titleText);
+    subtitle->setAlignment(Qt::AlignCenter);
+    subtitle->setMinimumHeight(40);
+    subtitle->setMargin(10);
 
     QWidgetAction* a = new QWidgetAction(this);
-    a->setDefaultWidget(title);
+    a->setDefaultWidget(subtitle);
     this->addAction(a);
 }
 

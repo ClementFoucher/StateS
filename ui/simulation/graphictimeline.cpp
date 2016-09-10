@@ -30,7 +30,7 @@ GraphicTimeLine::GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool init
     QWidget(parent)
 {
     this->pointsPerCycle = pointsPerCycle;
-    this->eventDelay    = eventDelay;
+    this->eventDelay     = eventDelay;
 
     this->stepLength = 5;
 

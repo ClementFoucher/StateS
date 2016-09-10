@@ -34,7 +34,6 @@ class QPushButton;
 class QLineEdit;
 
 // StateS classes
-class SimulationWidget;
 class InputsSelector;
 class FsmSimulator;
 class Fsm;

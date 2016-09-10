@@ -29,8 +29,8 @@
 GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     GraphicTimeLine(2, 0, false, parent)
 {
-    connect(clock.get(), &Clock::clockEvent, this, &GraphicClockTimeLine::clockEventHandler);
-    connect(clock.get(), &Clock::resetEvent, this, &GraphicClockTimeLine::resetEventHandler);
+    connect(clock.get(), &Clock::prepareForClockEvent, this, &GraphicClockTimeLine::clockEventHandler);
+    connect(clock.get(), &Clock::resetGraphicEvent,    this, &GraphicClockTimeLine::resetEventHandler);
 }
 
 void GraphicClockTimeLine::clockEventHandler()

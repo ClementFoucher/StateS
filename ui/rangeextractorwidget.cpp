@@ -128,50 +128,50 @@ void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
         {
             QWidget* childUnderMouse = this->childAt(event->pos());
 
-            if (childUnderMouse == this->param1Text)
+            if (childUnderMouse == this->rangeLText)
             {
                 if (event->delta() > 0)
                 {
-                    int newValue = this->param1Text->text().toInt() + 1;
+                    int newValue = this->rangeLText->text().toInt() + 1;
 
                     if (newValue < (int)l_equation->getOperand(0)->getSize()) // Throws StatesException - Extract op aways has operand 0 - ignored
-                        emit value1Changed(newValue);
+                        emit rangeLChanged(newValue);
                 }
                 else
                 {
-                    int newValue = this->param1Text->text().toInt() - 1;
+                    int newValue = this->rangeLText->text().toInt() - 1;
 
-                    if (l_equation->getParam2() != -1)
+                    if (l_equation->getRangeR() != -1)
                     {
-                        if (newValue > l_equation->getParam2())
-                            emit value1Changed(newValue);
+                        if (newValue > l_equation->getRangeR())
+                            emit rangeLChanged(newValue);
                     }
                     else if (newValue >= 0)
                     {
-                        emit value1Changed(newValue);
+                        emit rangeLChanged(newValue);
                     }
 
                 }
             }
-            else if ( (this->param2Text != nullptr) && (this->childAt(event->pos()) == this->param2Text) )
+            else if ( (this->rangeRText != nullptr) && (this->childAt(event->pos()) == this->rangeRText) )
             {
                 if (event->delta() > 0)
                 {
-                    int newValue = this->param2Text->text().toInt() + 1;
+                    int newValue = this->rangeRText->text().toInt() + 1;
 
                     // Param 1 must be set first
-                    if (l_equation->getParam1() != -1)
+                    if (l_equation->getRangeL() != -1)
                     {
-                        if (newValue < l_equation->getParam1())
-                            emit value2Changed(newValue);
+                        if (newValue < l_equation->getRangeL())
+                            emit rangeRChanged(newValue);
                     }
                 }
                 else
                 {
-                    int newValue = this->param2Text->text().toInt() - 1;
+                    int newValue = this->rangeRText->text().toInt() - 1;
 
                     if (newValue >= 0)
-                        emit value2Changed(newValue);
+                        emit rangeRChanged(newValue);
                 }
             }
 
@@ -189,52 +189,52 @@ void RangeExtractorWidget::update()
         if (this->editMode == true)
         {
             // If we changed mode, we need to reset display
-            if ( ( (this->param2Editor != nullptr) && (l_equation->getParam2() == -1) ) ||
-                 ( (this->param2Editor == nullptr) && (l_equation->getParam2() != -1) ) )
+            if ( ( (this->rangeREditor != nullptr) && (l_equation->getRangeR() == -1) ) ||
+                 ( (this->rangeREditor == nullptr) && (l_equation->getRangeR() != -1) ) )
             {
                 this->reset();
             }
             else
             {
-                if (l_equation->getParam1() != -1)
-                    text = QString::number(l_equation->getParam1());
+                if (l_equation->getRangeL() != -1)
+                    text = QString::number(l_equation->getRangeL());
 
                 int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
-                if (l_equation->getParam2() != -1)
+                if (l_equation->getRangeR() != -1)
                 {
-                    this->param1Editor->updateContent(l_equation->getParam2(), signalSize-1, text);;
+                    this->rangeLEditor->updateContent(l_equation->getRangeR(), signalSize-1, text);;
 
-                    text = QString::number(l_equation->getParam2());
-                    this->param2Editor->updateContent(0, l_equation->getParam1(), text);
+                    text = QString::number(l_equation->getRangeR());
+                    this->rangeREditor->updateContent(0, l_equation->getRangeL(), text);
                 }
                 else
                 {
-                    this->param1Editor->updateContent(0, signalSize-1, text);
+                    this->rangeLEditor->updateContent(0, signalSize-1, text);
                 }
             }
         }
         else
         {
             // If we changed mode, we need to reset display
-            if ( ( (this->param2Text != nullptr) && (l_equation->getParam2() == -1) ) ||
-                 ( (this->param2Text == nullptr) && (l_equation->getParam2() != -1) ) )
+            if ( ( (this->rangeRText != nullptr) && (l_equation->getRangeR() == -1) ) ||
+                 ( (this->rangeRText == nullptr) && (l_equation->getRangeR() != -1) ) )
             {
                 this->reset();
             }
             else
             {
-                if (l_equation->getParam1() != -1)
-                    text = QString::number(l_equation->getParam1());
+                if (l_equation->getRangeL() != -1)
+                    text = QString::number(l_equation->getRangeL());
                 else
                     text = "…";
 
-                this->param1Text->setText(text);
+                this->rangeLText->setText(text);
 
-                if (l_equation->getParam2() != -1)
+                if (l_equation->getRangeR() != -1)
                 {
-                    text = QString::number(l_equation->getParam2());
-                    this->param2Text->setText(text);
+                    text = QString::number(l_equation->getRangeR());
+                    this->rangeRText->setText(text);
                 }
             }
         }
@@ -246,10 +246,10 @@ void RangeExtractorWidget::reset()
     qDeleteAll(this->children());
     delete this->layout();
 
-    this->param1Text   = nullptr;
-    this->param2Text   = nullptr;
-    this->param1Editor = nullptr;
-    this->param2Editor = nullptr;
+    this->rangeLText   = nullptr;
+    this->rangeRText   = nullptr;
+    this->rangeLEditor = nullptr;
+    this->rangeREditor = nullptr;
 
     shared_ptr<Equation> l_equation = this->equation.lock();
 
@@ -263,56 +263,56 @@ void RangeExtractorWidget::reset()
 
         if (this->editMode == true)
         {
-            if (l_equation->getParam1() != -1)
-                text = QString::number(l_equation->getParam1());
+            if (l_equation->getRangeL() != -1)
+                text = QString::number(l_equation->getRangeL());
 
             int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
-            if (l_equation->getParam2() != -1)
+            if (l_equation->getRangeR() != -1)
             {
-                this->param1Editor = new LineEditWithUpDownButtons(l_equation->getParam2()+1, signalSize-1, text);
-                layout->addWidget(this->param1Editor);
+                this->rangeLEditor = new LineEditWithUpDownButtons(l_equation->getRangeR()+1, signalSize-1, text);
+                layout->addWidget(this->rangeLEditor);
 
                 label = new QLabel("..");
                 layout->addWidget(label);
 
-                text = QString::number(l_equation->getParam2());
-                this->param2Editor = new LineEditWithUpDownButtons(0, l_equation->getParam1()-1, text);
-                layout->addWidget(this->param2Editor);
+                text = QString::number(l_equation->getRangeR());
+                this->rangeREditor = new LineEditWithUpDownButtons(0, l_equation->getRangeL()-1, text);
+                layout->addWidget(this->rangeREditor);
 
-                connect(this->param2Editor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::value2Changed);
+                connect(this->rangeREditor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::rangeRChanged);
             }
             else
             {
-                this->param1Editor = new LineEditWithUpDownButtons(0, signalSize-1, text);
-                layout->addWidget(this->param1Editor);
+                this->rangeLEditor = new LineEditWithUpDownButtons(0, signalSize-1, text);
+                layout->addWidget(this->rangeLEditor);
             }
 
-            connect(this->param1Editor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::value1Changed);
+            connect(this->rangeLEditor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::rangeLChanged);
         }
         else
         {
-            if (l_equation->getParam1() != -1)
-                text = QString::number(l_equation->getParam1());
+            if (l_equation->getRangeL() != -1)
+                text = QString::number(l_equation->getRangeL());
             else
                 text = "…";
 
-            this->param1Text = new QLabel(text);
-            this->param1Text->setStyleSheet("QLabel {border: 2px solid green; border-radius: 5px}");
+            this->rangeLText = new QLabel(text);
+            this->rangeLText->setStyleSheet("QLabel {border: 2px solid green; border-radius: 5px}");
 
-            layout->addWidget(this->param1Text);
+            layout->addWidget(this->rangeLText);
 
-            if (l_equation->getParam2() != -1)
+            if (l_equation->getRangeR() != -1)
             {
                 label = new QLabel("..");
                 layout->addWidget(label);
 
-                text = QString::number(l_equation->getParam2());
+                text = QString::number(l_equation->getRangeR());
 
-                this->param2Text = new QLabel(text);
-                this->param2Text->setStyleSheet("QLabel {border: 2px solid green; border-radius: 5px}");
+                this->rangeRText = new QLabel(text);
+                this->rangeRText->setStyleSheet("QLabel {border: 2px solid green; border-radius: 5px}");
 
-                layout->addWidget(this->param2Text);
+                layout->addWidget(this->rangeRText);
             }
 
 

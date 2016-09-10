@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,8 +25,12 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QTimer>
+class QTimer;
 
 
 class Clock : public QObject
@@ -36,17 +40,22 @@ class Clock : public QObject
 public:
     explicit Clock();
 
-    void nextStep();
     void start(uint intervalms);
     void stop();
     void reset();
 
+public slots:
+    void nextStep();
+
 signals:
+    void prepareForClockEvent();
     void clockEvent();
-    void resetEvent();
+
+    void resetLogicEvent();
+    void resetGraphicEvent();
 
 private:
-    QTimer timer;
+    shared_ptr<QTimer> timer;
 };
 
 #endif // CLOCK_H

@@ -260,7 +260,6 @@ void SignalListEditor::updateButtonsEnableState()
             this->buttonRemove->setEnabled(true);
 
             // Up/down buttons : only enable when relevant
-
             QModelIndexList rows = this->signalsList->selectionModel()->selectedRows();
 
             // First sort selected rows
@@ -449,13 +448,19 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
             data.convert(QVariant::Int);
             QAction* actionToAdd = nullptr;
 
-            actionToAdd = menu->addAction(tr("Up"));
-            data.setValue((int)ContextAction::Up);
-            actionToAdd->setData(data);
+            if (this->buttonUp->isEnabled())
+            {
+                actionToAdd = menu->addAction(tr("Up"));
+                data.setValue((int)ContextAction::Up);
+                actionToAdd->setData(data);
+            }
 
-            actionToAdd = menu->addAction(tr("Down"));
-            data.setValue((int)ContextAction::Down);
-            actionToAdd->setData(data);
+            if (this->buttonDown->isEnabled())
+            {
+                actionToAdd = menu->addAction(tr("Down"));
+                data.setValue((int)ContextAction::Down);
+                actionToAdd->setData(data);
+            }
 
             menu->addSeparator();
 
@@ -811,7 +816,7 @@ void SignalListEditor::lowerSelectedSignals()
         // Update list to make sure selection order matches list order
         this->updateList();
 
-        QList<int>  signalsRanks;
+        QList<int> signalsRanks;
 
         QModelIndexList rows = this->signalsList->selectionModel()->selectedRows();
         foreach (QModelIndex index, rows)
@@ -961,7 +966,7 @@ void SignalListEditor::editCurrentCell(bool erroneous)
         {
             // A string made of only '0' and '1' chars, witch length is between 0 and size
             QRegularExpression re("[01]{0," + QString::number(currentSignal->getSize()) + "}");
-            this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
+            this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re)));
         }
     }
     else if (this->currentMode == mode::addingSignal)
@@ -976,7 +981,7 @@ void SignalListEditor::editCurrentCell(bool erroneous)
 
             // A string made of only '0' and '1' chars, witch length is between 0 and size
             QRegularExpression re("[01]{0," + QString::number(currentSize) + "}");
-            this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re, 0)));
+            this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re)));
         }
         else
         {

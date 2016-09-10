@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -70,6 +70,8 @@ public:
     void clearGraphicRepresentation();
 
     QPointF position; // Public because we don't care, just used by loader
+
+    virtual uint getAllowedActionTypes() const override;
 
 signals:
     void stateRenamedEvent();
