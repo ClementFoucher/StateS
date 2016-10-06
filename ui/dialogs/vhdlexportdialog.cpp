@@ -36,6 +36,8 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
     this->baseFileName = baseFileName;
     this->searchPath   = searchPath;
 
+    this->setWindowTitle(tr("VHDL export"));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     if (isIncompatible)

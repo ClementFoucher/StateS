@@ -1,6 +1,6 @@
 
 ******************************
-* StateS v. 0.3.I Known Bugs *
+* StateS v. 0.3.J Known Bugs *
 ******************************
 
 
@@ -24,6 +24,6 @@
 -> Mealy-only, transitory values only, full-range affected outputs.
 
 
-// Not bugs, but still:
+// Major feature still missing:
 
 - No undo!

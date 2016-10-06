@@ -108,10 +108,14 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 
             Machine::mode currentMode = l_actuator->getOwningMachine()->getCurrentMode();
 
+            // Signal name
+
             if (currentMode == Machine::mode::simulateMode)
                 currentActionText = currentSignal->getColoredText(true);
             else
                 currentActionText = currentSignal->getText();
+
+            // Signal range
 
             if (currentSignal->getSize() > 1)
             {
@@ -133,46 +137,26 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
                 }
             }
 
-            if ((currentSignal->getSize() > 1) &&  (   (currentAction->getActionRangeL() < 0) ||
-                                                     ( (currentAction->getActionRangeL() >= 0) && (currentAction->getActionRangeR() >= 0) )
-                                                     ) )
+            // Action value
+
+            ActionOnSignal::action_types type = currentAction->getActionType();
+
+            switch (currentAction->getActionType())
             {
-                // Range vector
-                ActionOnSignal::action_types type = currentAction->getActionType();
-                if (type == ActionOnSignal::action_types::set)
-                {
-                    currentActionText += " ← " + LogicValue::getValue1(currentSignal->getSize()).toString(); // + "<sub>b</sub>";
-                }
-                else if (type == ActionOnSignal::action_types::reset)
-                {
-                    currentActionText += " ← " + LogicValue::getValue0(currentSignal->getSize()).toString(); // + "<sub>b</sub>";
-                }
-                else if (type == ActionOnSignal::action_types::assign)
-                {
-                    currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
-                }
-                else if ( (type == ActionOnSignal::action_types::activeOnState) ||
-                          (type == ActionOnSignal::action_types::pulse) )
+            case ActionOnSignal::action_types::set:
+            case ActionOnSignal::action_types::reset:
+            case ActionOnSignal::action_types::assign:
+                currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+                break;
+            case ActionOnSignal::action_types::activeOnState:
+            case ActionOnSignal::action_types::pulse:
+                if (currentAction->getActionSize() > 1)
                 {
                     currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
                 }
             }
-            else
-            {
-                // Single bit
-                ActionOnSignal::action_types type = currentAction->getActionType();
-                if (type == ActionOnSignal::action_types::set)
-                {
-                    currentActionText += " ← 1"; // + "<sub>b</sub>";
-                }
-                else if (type == ActionOnSignal::action_types::reset)
-                {
-                    currentActionText += " ← 0"; // + "<sub>b</sub>";
-                }
-            }
 
             actionText->setHtml(currentActionText);
-
 
             if (maxTextWidth < actionText->boundingRect().width())
                 maxTextWidth = actionText->boundingRect().width();

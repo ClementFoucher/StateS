@@ -35,7 +35,7 @@
 
 QString StateS::getVersion()
 {
-    return "0.3.I";
+    return "0.3.J";
 }
 
 StateS::StateS(const QString& initialFilePath)

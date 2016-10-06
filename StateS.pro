@@ -14,7 +14,7 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.18
+VERSION = 0.3.19
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
 
 SOURCES += \
@@ -241,7 +241,6 @@ OTHER_FILES += \
     text/known_bugs.txt \
     text/Readme/README.txt \
     text/Readme/Linux/README \
-    text/Readme/Linux/32/README \
     text/Readme/Windows/README.txt \
     LICENSE \
     LICENSE.txt \

@@ -39,6 +39,8 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget*
     int rangeL = action->getActionRangeL();
     int rangeR = action->getActionRangeR();
 
+    this->setWindowTitle(tr("Edit range"));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* title;

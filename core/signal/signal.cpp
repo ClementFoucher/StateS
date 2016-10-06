@@ -205,7 +205,7 @@ bool Signal::isTrue() const // Throws StatesException
 {
     if (this->getSize() == 1)
     {
-        if (this->currentValue[0] == 1)
+        if (this->currentValue == LogicValue::getValue1(1))
             return true;
         else
             return false;

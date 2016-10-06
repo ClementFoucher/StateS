@@ -46,6 +46,8 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<Mac
     this->previewWidget->setMinimumSize(200, 200);
     this->previewWidget->setPixmap(*this->previewPixmap.get());
 
+    this->setWindowTitle(tr("Image export"));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* title = new QLabel("<b>" + tr("Customize image") + "</b>");

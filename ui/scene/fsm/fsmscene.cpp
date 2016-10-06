@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -422,6 +422,14 @@ void FsmScene::keyPressEvent(QKeyEvent* event)
                     // Same as if there were no selected items at all
                     event->ignore();
                 }
+            }
+        }
+        if (event->key() == Qt::Key_Delete)
+        {
+            // Allow deleting scene components only in idle state
+            if (this->sceneMode == sceneMode_e::idle)
+            {
+                GenericScene::keyPressEvent(event);
             }
         }
         else

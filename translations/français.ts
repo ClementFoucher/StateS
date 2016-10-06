@@ -349,6 +349,10 @@
         <source>OK</source>
         <translation>OK</translation>
     </message>
+    <message>
+        <source>Errors encountred</source>
+        <translation>Erreurs rencontrées</translation>
+    </message>
 </context>
 <context>
     <name>Fsm</name>
@@ -903,6 +907,10 @@
         <source>Ratio between machine view and aditional information</source>
         <translation>Ratio entre la taille de la machine et celle des informations aditionnelles</translation>
     </message>
+    <message>
+        <source>Image export</source>
+        <translation>Exporter une image</translation>
+    </message>
 </context>
 <context>
     <name>InputBitSelector</name>
@@ -1152,6 +1160,10 @@
     <message>
         <source>Cancel</source>
         <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Edit range</source>
+        <translation>Éditer le sous-vecteur</translation>
     </message>
 </context>
 <context>
@@ -1715,6 +1727,10 @@
     <message>
         <source>Please run machine verifier to identify affected signals.</source>
         <translation>Veuillez utiliser le vérificateur pour identifier les signaux affectés.</translation>
+    </message>
+    <message>
+        <source>VHDL export</source>
+        <translation>Exporter en VHDL</translation>
     </message>
 </context>
 </TS>

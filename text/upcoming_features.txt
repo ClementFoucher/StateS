@@ -3,7 +3,9 @@
 * Expected Features in Future StateS Versions *
 ***********************************************
 
+
 These features will be implemented... some day.
+
 
 ** Interface **
 
@@ -11,10 +13,13 @@ These features will be implemented... some day.
 - Support of hexadecimal notation for bit vector signals,
 - Allow complex path for transitions display.
 
+
 ** Core **
 
+- Undo feature,
 - Integer type signals support, allowing basic operations like increment,
 - Signal to signal affectation, instead of just constant to values.
+
 
 ** Long-term **
 
@@ -23,6 +28,8 @@ These features will be implemented... some day.
 - Truth-table based equation edition,
 - Grafcet-type machines.
 
+
 ** Very long-term **
 
+- Petri Nets support,
 - Support a coupling interface to send outputs/receive inputs from another software (or more generally, another environment -- hardware?).

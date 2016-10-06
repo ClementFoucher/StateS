@@ -42,23 +42,25 @@ LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, Q
     this->translator = shared_ptr<QTranslator>(new QTranslator());
     this->translator->load(":/translations/français/français");
 
-    new QVBoxLayout(this);
+    this->setWindowTitle("StateS");
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
 
     this->title = new QLabel();
     this->title->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(this->title);
+    layout->addWidget(this->title);
 
     ReactiveButton* buttonEnglish = new ReactiveButton("English");
     connect(buttonEnglish, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setEnglish);
     connect(buttonEnglish, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setEnglish);
     connect(buttonEnglish, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
-    this->layout()->addWidget(buttonEnglish);
+    layout->addWidget(buttonEnglish);
 
     ReactiveButton* buttonFrench = new ReactiveButton("Français");
     connect(buttonFrench, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setFrench);
     connect(buttonFrench, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setFrench);
     connect(buttonFrench, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
-    this->layout()->addWidget(buttonFrench);
+    layout->addWidget(buttonFrench);
 
     retranslateUi();
 }

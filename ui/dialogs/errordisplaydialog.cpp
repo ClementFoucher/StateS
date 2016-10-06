@@ -46,6 +46,8 @@ ErrorDisplayDialog::ErrorDisplayDialog(const QString& errorTitle, const QString&
 
 void ErrorDisplayDialog::build(const QString& errorTitle, const QList<QString>& errors)
 {
+    this->setWindowTitle(tr("Errors encountred"));
+
     QVBoxLayout* layout = new QVBoxLayout(this);
 
     QLabel* titleLabel = new QLabel(errorTitle);
