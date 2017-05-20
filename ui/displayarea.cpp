@@ -26,6 +26,7 @@
 #include "scenewidget.h"
 #include "simulationwidget.h"
 #include "toolbar.h"
+#include "genericscene.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -76,7 +77,7 @@ ToolBar* DisplayArea::getToolbar() const
 
 QRectF DisplayArea::getVisibleArea() const
 {
-    return this->machineDisplayArea->mapToScene(this->machineDisplayArea->rect()).boundingRect();
+    return this->machineDisplayArea->getVisibleArea();
 }
 
 void DisplayArea::setViewCenter(const QPointF& center)
@@ -89,11 +90,19 @@ qreal DisplayArea::getZoomLevel() const
     return this->machineDisplayArea->transform().m11();
 }
 
-void DisplayArea::setZoomLevel(qreal factor)
+void DisplayArea::setZoomLevel(qreal level)
 {
-    QTransform scaleMatrix;
-    scaleMatrix.scale(factor, factor);
-    this->machineDisplayArea->setTransform(scaleMatrix);
+    this->machineDisplayArea->setZoomLevel(level);
+}
+
+void DisplayArea::clearSelection()
+{
+    this->machineDisplayArea->getScene()->clearSelection();
+}
+
+QRectF DisplayArea::getSceneMinimalRect() const
+{
+    return this->machineDisplayArea->getScene()->itemsBoundingRect();
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)

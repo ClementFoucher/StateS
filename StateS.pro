@@ -128,7 +128,6 @@ HEADERS  += \
     core/machine/include/machinecomponent.h \
     core/machine/include/machineactuatorcomponent.h \
     core/machine/include/machinebuilder.h \
-    core/machine/include/scenewidget.h \
     core/machine/include/machineimageexporter.h \
     core/machine/fsm/include/fsmcomponent.h \
     core/machine/fsm/include/fsmvhdlexport.h \
@@ -214,7 +213,8 @@ HEADERS  += \
     ui/resource_bar/component_editor/include/actiontablemodel.h \
     ui/resource_bar/component_editor/include/actiontabledelegate.h \
     core/machine/include/machineconfiguration.h \
-    core/machine/include/machinesavefilemanager.h
+    core/machine/include/machinesavefilemanager.h \
+    ui/scene/include/scenewidget.h
 
 INCLUDEPATH += \
 # Core

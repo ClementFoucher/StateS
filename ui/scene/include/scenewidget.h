@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@ using namespace std;
 
 // Qt classes
 class QPushButton;
+class QLabel;
 
 // For enum
 #include "machinebuilder.h"
@@ -58,6 +59,8 @@ public:
 
     void setMachine(shared_ptr<Machine> newMachine); // TODO: throw exception
     GenericScene* getScene() const;
+    void setZoomLevel(qreal level);
+    QRectF getVisibleArea() const;
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -77,6 +80,8 @@ private slots:
     void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
     void zoomIn();
     void zoomOut();
+    void zoomFit();
+    void resetZoom();
 
 private:
     void updateSceneMode(sceneMode_e newMode);
@@ -87,8 +92,11 @@ private:
     weak_ptr<MachineBuilder> machineBuilder;
 
     // Local widgets
+    QLabel*      labelZoom     = nullptr;
     QPushButton* buttonZoomIn  = nullptr;
+    QPushButton* buttonNoZoom  = nullptr;
     QPushButton* buttonZoomOut = nullptr;
+    QPushButton* buttonZoomFit = nullptr;
 
     // Local variables
     sceneMode_e sceneMode      = sceneMode_e::noScene;

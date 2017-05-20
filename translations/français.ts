@@ -229,6 +229,10 @@
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
+    <message>
+        <source>no title</source>
+        <translation>aucun titre</translation>
+    </message>
 </context>
 <context>
     <name>ConditionEditor</name>
@@ -450,16 +454,8 @@
         <translation>Nom par défaut utilisé :</translation>
     </message>
     <message>
-        <source>Unnamed signal encountered while parsing signal list.</source>
-        <translation>Signal non nommé trouvé lors du parcours de la liste des signaux.</translation>
-    </message>
-    <message>
         <source>Token ignored.</source>
         <translation>Clé ignorée.</translation>
-    </message>
-    <message>
-        <source>Unexpected signal type encountered while parsing signal list:</source>
-        <translation>Type de signal inconnu rouvé lors du parcours de la liste des signaux :</translation>
     </message>
     <message>
         <source>Expected</source>
@@ -472,30 +468,6 @@
     <message>
         <source>got</source>
         <translation>a trouvé</translation>
-    </message>
-    <message>
-        <source>Signal name was:</source>
-        <translation>Le nom du signal était :</translation>
-    </message>
-    <message>
-        <source>Unable to resize signal</source>
-        <translation>Impossible de redimensionner le signal</translation>
-    </message>
-    <message>
-        <source>Signal size ignored and defaulted to</source>
-        <translation>La taille du signal a été ignorée et forcée à</translation>
-    </message>
-    <message>
-        <source>Given initial value was</source>
-        <translation>La valeur initiale fournie était</translation>
-    </message>
-    <message>
-        <source>Initial value ignored and defaulted to</source>
-        <translation>La valeur initiale a été ignorée et forcée à</translation>
-    </message>
-    <message>
-        <source>The initial value size does not match signal size.</source>
-        <translation>La taille de la valeur initial ne correspond à celle du signal.</translation>
     </message>
     <message>
         <source>Unexpected token encountered while parsing state list:</source>
@@ -1144,6 +1116,57 @@
     </message>
 </context>
 <context>
+    <name>MachineSaveFileManager</name>
+    <message>
+        <source>Unnamed signal encountered while parsing signal list.</source>
+        <translation>Signal non nommé trouvé lors du parcours de la liste des signaux.</translation>
+    </message>
+    <message>
+        <source>Token ignored.</source>
+        <translation>Clé ignorée.</translation>
+    </message>
+    <message>
+        <source>Unexpected signal type encountered while parsing signal list:</source>
+        <translation>Type de signal inconnu rouvé lors du parcours de la liste des signaux :</translation>
+    </message>
+    <message>
+        <source>Expected</source>
+        <translation>Attendait</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>ou</translation>
+    </message>
+    <message>
+        <source>got</source>
+        <translation>a trouvé</translation>
+    </message>
+    <message>
+        <source>Signal name was:</source>
+        <translation>Le nom du signal était :</translation>
+    </message>
+    <message>
+        <source>Unable to resize signal</source>
+        <translation>Impossible de redimensionner le signal</translation>
+    </message>
+    <message>
+        <source>Signal size ignored and defaulted to</source>
+        <translation>La taille du signal a été ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>Given initial value was</source>
+        <translation>La valeur initiale fournie était</translation>
+    </message>
+    <message>
+        <source>Initial value ignored and defaulted to</source>
+        <translation>La valeur initiale a été ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>The initial value size does not match signal size.</source>
+        <translation>La taille de la valeur initiale ne correspond à celle du signal.</translation>
+    </message>
+</context>
+<context>
     <name>RangeEditorDialog</name>
     <message>
         <source>Choose extracted bit</source>
@@ -1199,6 +1222,29 @@
     <message>
         <source>Verifier</source>
         <translation>Vérificateur</translation>
+    </message>
+</context>
+<context>
+    <name>SceneWidget</name>
+    <message>
+        <source>Zoom</source>
+        <translation>Zoom</translation>
+    </message>
+    <message>
+        <source>Zoom in</source>
+        <translation>Zoom avant</translation>
+    </message>
+    <message>
+        <source>Reset zoom</source>
+        <translation>Réinitialiser le zoom</translation>
+    </message>
+    <message>
+        <source>Zoom out</source>
+        <translation>Zoom arrière</translation>
+    </message>
+    <message>
+        <source>Zoom to fit machine</source>
+        <translation>Ajuster le zoom à la taille de la machine</translation>
     </message>
 </context>
 <context>

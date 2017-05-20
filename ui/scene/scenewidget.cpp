@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,6 +30,7 @@
 #include <QStyle>
 #include <QScrollBar>
 #include <QPushButton>
+#include <QLabel>
 
 // StateS classes
 #include "fsmscene.h"
@@ -42,17 +43,32 @@
 SceneWidget::SceneWidget(QWidget* parent) :
     StatesGraphicsView(parent)
 {
+    this->labelZoom     = new QLabel(tr("Zoom"), this);
     this->buttonZoomIn  = new QPushButton("+", this);
+    this->buttonNoZoom  = new QPushButton("⟳", this);
     this->buttonZoomOut = new QPushButton("-", this);
+    this->buttonZoomFit = new QPushButton("❊", this);
+
+    this->buttonZoomIn ->setToolTip(tr("Zoom in"));
+    this->buttonNoZoom ->setToolTip(tr("Reset zoom"));
+    this->buttonZoomOut->setToolTip(tr("Zoom out"));
+    this->buttonZoomFit->setToolTip(tr("Zoom to fit machine"));
 
     this->buttonZoomIn ->resize(QSize(20, 20));
+    this->buttonNoZoom ->resize(QSize(20, 20));
     this->buttonZoomOut->resize(QSize(20, 20));
+    this->buttonZoomFit->resize(QSize(40, 20));
 
     connect(this->buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
+    connect(this->buttonNoZoom,  &QAbstractButton::clicked, this, &SceneWidget::resetZoom);
     connect(this->buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
+    connect(this->buttonZoomFit, &QAbstractButton::clicked, this, &SceneWidget::zoomFit);
 
+    this->labelZoom    ->setVisible(false);
     this->buttonZoomIn ->setVisible(false);
+    this->buttonZoomFit->setVisible(false);
     this->buttonZoomOut->setVisible(false);
+    this->buttonNoZoom ->setVisible(false);
 
     this->updateSceneMode(sceneMode_e::noScene);
 }
@@ -123,6 +139,18 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
 GenericScene* SceneWidget::getScene() const
 {
     return dynamic_cast<GenericScene*>(this->scene());
+}
+
+void SceneWidget::setZoomLevel(qreal level)
+{
+    QTransform scaleMatrix;
+    scaleMatrix.scale(level, level);
+    this->setTransform(scaleMatrix);
+}
+
+QRectF SceneWidget::getVisibleArea() const
+{
+    return this->mapToScene(this->rect()).boundingRect();
 }
 
 void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
@@ -201,8 +229,25 @@ void SceneWidget::resizeEvent(QResizeEvent* event)
     if (this->verticalScrollBar()->isVisible())
         rightAlign += this->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 
-    this->buttonZoomIn ->move(this->width() - this->buttonZoomIn->width() - rightAlign, 10);
-    this->buttonZoomOut->move(this->width() - this->buttonZoomOut->width() - rightAlign, this->buttonZoomIn->height() + 20);
+    int vpos = 10;
+    int xpos = this->width() - this->labelZoom->width() - rightAlign;
+    this->labelZoom->move(xpos, vpos);
+
+    vpos = vpos + this->labelZoom->height() + 10;
+    xpos = xpos + this->labelZoom->width()/2 - this->buttonZoomIn->width()/2;
+    this->buttonZoomIn->move(xpos, vpos);
+
+    vpos = vpos + this->buttonZoomIn->height() + 10;
+    xpos = xpos + this->buttonZoomIn->width()/2 - this->buttonNoZoom->width()/2;
+    this->buttonNoZoom ->move(xpos, vpos);
+
+    vpos = vpos + this->buttonNoZoom->height() + 10;
+    xpos = xpos + this->buttonNoZoom->width()/2 - this->buttonZoomOut->width()/2;
+    this->buttonZoomOut->move(xpos, vpos);
+
+    vpos = vpos + this->buttonZoomOut->height() + 10;
+    xpos = xpos + this->buttonZoomOut->width()/2 - this->buttonZoomFit->width()/2;
+    this->buttonZoomFit->move(xpos, vpos);
 
     // Transmit event
     QGraphicsView::resizeEvent(event);
@@ -321,6 +366,26 @@ void SceneWidget::zoomOut()
     scale(1/1.15, 1/1.15);
 }
 
+void SceneWidget::zoomFit()
+{
+    QRectF idealView   = this->getScene()->itemsBoundingRect();
+    QRectF currentView = this->getVisibleArea();
+
+    qreal scaleDiff = currentView.width() / idealView.width();
+
+    this->scale(scaleDiff, scaleDiff);
+
+    this->centerOn(idealView.center());
+
+    this->zoomOut();
+    this->zoomOut();
+}
+
+void SceneWidget::resetZoom()
+{
+    this->setZoomLevel(1);
+}
+
 void SceneWidget::updateSceneMode(sceneMode_e newMode)
 {
     if (newMode != this->sceneMode)
@@ -332,13 +397,19 @@ void SceneWidget::updateSceneMode(sceneMode_e newMode)
 
         if ( (this->sceneMode == sceneMode_e::noScene) || (this->sceneMode == sceneMode_e::movingScene) )
         {
+            this->labelZoom    ->setVisible(false);
             this->buttonZoomIn ->setVisible(false);
+            this->buttonNoZoom ->setVisible(false);
             this->buttonZoomOut->setVisible(false);
+            this->buttonZoomFit->setVisible(false);
         }
         else
         {
+            this->labelZoom    ->setVisible(true);
             this->buttonZoomIn ->setVisible(true);
+            this->buttonNoZoom ->setVisible(true);
             this->buttonZoomOut->setVisible(true);
+            this->buttonZoomFit->setVisible(true);
         }
 
         this->updateDragMode();

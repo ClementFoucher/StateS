@@ -59,7 +59,9 @@ public:
     QRectF getVisibleArea() const;
     void setViewCenter(const QPointF& center);
     qreal getZoomLevel() const;
-    void setZoomLevel(qreal factor);
+    void setZoomLevel(qreal level);
+    void clearSelection();
+    QRectF getSceneMinimalRect() const;
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
