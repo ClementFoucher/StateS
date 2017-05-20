@@ -79,10 +79,21 @@ QRectF DisplayArea::getVisibleArea() const
     return this->machineDisplayArea->mapToScene(this->machineDisplayArea->rect()).boundingRect();
 }
 
-void DisplayArea::setVisibleArea(const QRectF& area)
+void DisplayArea::setViewCenter(const QPointF& center)
 {
-    QPointF center = this->machineDisplayArea->mapFromScene(area.center());
     this->machineDisplayArea->centerOn(center);
+}
+
+qreal DisplayArea::getZoomLevel() const
+{
+    return this->machineDisplayArea->transform().m11();
+}
+
+void DisplayArea::setZoomLevel(qreal factor)
+{
+    QTransform scaleMatrix;
+    scaleMatrix.scale(factor, factor);
+    this->machineDisplayArea->setTransform(scaleMatrix);
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)

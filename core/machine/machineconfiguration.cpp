@@ -22,7 +22,10 @@
 // Current file header
 #include "machineconfiguration.h"
 
-MachineConfiguration::MachineConfiguration(QObject* parent) : QObject(parent)
+MachineConfiguration::MachineConfiguration(QObject* parent) :
+    QObject(parent)
 {
-
+    this->zoomLevel = 1;
+    this->sceneTranslation = QPointF();
+    this->viewCenter       = QPointF(0, 0);
 }

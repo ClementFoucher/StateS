@@ -150,7 +150,8 @@ void StatesUi::setCurrentFilePath(const QString& path)
 
 void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
 {
-    this->displayArea->setVisibleArea(configuration->sceneVisibleArea);
+    this->displayArea->setZoomLevel(configuration->zoomLevel);
+    this->displayArea->setViewCenter(configuration->viewCenter);
 }
 
 void StatesUi::beginNewMachineProcedure()
@@ -400,7 +401,8 @@ shared_ptr<MachineConfiguration> StatesUi::buildConfiguration() const
     QRectF minimalRect = this->displayArea->getScene()->itemsBoundingRect();
 
     configuration->sceneTranslation = -minimalRect.topLeft();
-    configuration->sceneVisibleArea = this->displayArea->getVisibleArea();
+    configuration->zoomLevel        = this->displayArea->getZoomLevel();
+    configuration->viewCenter       = this->displayArea->getVisibleArea().center();
 
     return configuration;
 }
@@ -422,7 +424,9 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
         }
     }
     else // No machine or saved machine: do not ask, implicit confirmation.
+    {
         userConfirmed = true;
+    }
 
     return userConfirmed;
 }

@@ -34,7 +34,8 @@ class MachineConfiguration : public QObject
 
 public:
     QPointF sceneTranslation;
-    QRectF  sceneVisibleArea;
+    QPointF viewCenter;
+    qreal   zoomLevel;
 
 public:
     explicit MachineConfiguration(QObject* parent = nullptr);

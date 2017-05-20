@@ -58,12 +58,15 @@ void MachineSaveFileManager::writeConfiguration(QXmlStreamWriter& stream, shared
 {
     stream.writeStartElement("Configuration");
 
-    stream.writeStartElement("VisibleArea"); // Visible area after translation
-    stream.writeAttribute("X",      QString::number(configuration->sceneVisibleArea.left() + configuration->sceneTranslation.x()));
-    stream.writeAttribute("Y",      QString::number(configuration->sceneVisibleArea.top()  + configuration->sceneTranslation.y()));
-    stream.writeAttribute("Width",  QString::number(configuration->sceneVisibleArea.width()));
-    stream.writeAttribute("Height", QString::number(configuration->sceneVisibleArea.height()));
+    stream.writeStartElement("Scale");
+    stream.writeAttribute("Value", QString::number(configuration->zoomLevel));
     stream.writeEndElement();
+
+    stream.writeStartElement("ViewCentralPoint");
+    stream.writeAttribute("X", QString::number(configuration->viewCenter.x() + configuration->sceneTranslation.x()));
+    stream.writeAttribute("Y", QString::number(configuration->viewCenter.y() + configuration->sceneTranslation.y()));
+    stream.writeEndElement();
+
 
     stream.writeEndElement();
 }
@@ -109,7 +112,18 @@ void MachineSaveFileManager::parseConfiguration(QDomElement element)
     {
         QDomElement currentElement = signalNodes.at(i).toElement();
 
-        if (currentElement.tagName() == "VisibleArea")
+        if (currentElement.tagName() == "Scale")
+        {
+            bool ok;
+            float level = currentElement.attribute("Value").toFloat(&ok);
+            if (ok == false)
+            {
+                continue;
+            }
+
+            this->configuration->zoomLevel = level;
+        }
+        else if (currentElement.tagName() == "ViewCentralPoint")
         {
             bool ok;
             float x = currentElement.attribute("X").toFloat(&ok);
@@ -117,25 +131,14 @@ void MachineSaveFileManager::parseConfiguration(QDomElement element)
             {
                 continue;
             }
+
             float y = currentElement.attribute("Y").toFloat(&ok);
             if (ok == false)
             {
                 continue;
             }
-            float width  = currentElement.attribute("Width").toFloat(&ok);
-            if (ok == false)
-            {
-                continue;
-            }
-            float height = currentElement.attribute("Height").toFloat(&ok);
-            if (ok == false)
-            {
-                continue;
-            }
 
-            QRectF visibleArea(x, y, width, height);
-
-            this->configuration->sceneVisibleArea = visibleArea;
+            this->configuration->viewCenter = QPointF(x,y);
         }
     }
 }

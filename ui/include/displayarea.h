@@ -57,7 +57,9 @@ public:
     GenericScene* getScene() const;
     ToolBar* getToolbar() const;
     QRectF getVisibleArea() const;
-    void setVisibleArea(const QRectF& area);
+    void setViewCenter(const QPointF& center);
+    qreal getZoomLevel() const;
+    void setZoomLevel(qreal factor);
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
