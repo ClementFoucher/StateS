@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -56,6 +56,8 @@ public:
     void setMachine(shared_ptr<Machine> newMachine);
     GenericScene* getScene() const;
     ToolBar* getToolbar() const;
+    QRectF getVisibleArea() const;
+    void setVisibleArea(const QRectF& area);
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);

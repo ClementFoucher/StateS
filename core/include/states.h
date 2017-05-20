@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,6 +32,7 @@ using namespace std;
 // StateS classes
 class StatesUi;
 class Machine;
+class MachineConfiguration;
 
 
 /**
@@ -59,8 +60,8 @@ private slots:
     void generateNewFsm();
     void clearMachine();
     void loadMachine(const QString& path);
-    void saveCurrentMachine(const QString& path);
-    void saveCurrentMachineInCurrentFile();
+    void saveCurrentMachine(const QString& path, shared_ptr<MachineConfiguration> configuration);
+    void saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> configuration);
 
 private:
     unique_ptr<StatesUi> statesUi;

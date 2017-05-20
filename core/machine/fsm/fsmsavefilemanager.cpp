@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -43,18 +43,20 @@
 #include "actiononsignal.h"
 
 
-QList<QString> FsmSaveFileManager::warnings = QList<QString>();
-
-
 QList<QString> FsmSaveFileManager::getLastOperationWarnings()
 {
-    return FsmSaveFileManager::warnings;
+    return this->warnings;
 }
 
-
-void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, const QString& filePath) // Throws StatesException
+FsmSaveFileManager::FsmSaveFileManager(QObject* parent) :
+    MachineSaveFileManager(parent)
 {
-    FsmSaveFileManager::warnings.clear();
+
+}
+
+void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath) // Throws StatesException
+{
+    this->warnings.clear();
 
     QFileInfo fileInfo(filePath);
     if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
@@ -80,9 +82,10 @@ void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, const QString& fil
     stream.writeStartElement("FSM");
     stream.writeAttribute("Name", machine->getName());
 
-    FsmSaveFileManager::writeSignals(stream, machine);
-    FsmSaveFileManager::writeStates(stream, machine);
-    FsmSaveFileManager::writeTransitions(stream, machine);
+    this->writeConfiguration(stream, configuration);
+    this->writeSignals(stream, machine);
+    this->writeStates(stream, machine);
+    this->writeTransitions(stream, machine);
 
     stream.writeEndElement(); // End FSM element
     stream.writeEndDocument();
@@ -90,38 +93,6 @@ void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, const QString& fil
     file->close();
 
     machine->setUnsavedState(false);
-}
-
-void FsmSaveFileManager::writeSignals(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
-{
-    stream.writeStartElement("Signals");
-
-    foreach (shared_ptr<Signal> var, machine->getAllSignals())
-    {
-        // Type
-        if (dynamic_pointer_cast<Input>(var) != nullptr)
-            stream.writeStartElement("Input");
-        else if (dynamic_pointer_cast<Output>(var) != nullptr)
-            stream.writeStartElement("Output");
-        else if (dynamic_pointer_cast<Constant>(var) != nullptr)
-            stream.writeStartElement("Constant");
-        else
-            stream.writeStartElement("Variable");
-
-        // Name
-        stream.writeAttribute("Name", var->getName());
-
-        // Size
-        stream.writeAttribute("Size", QString::number(var->getSize()));
-
-        // Initial value (except for outputs)
-        if (dynamic_pointer_cast<Output>(var) == nullptr)
-            stream.writeAttribute("Initial_value", var->getInitialValue().toString());
-
-        stream.writeEndElement();
-    }
-
-    stream.writeEndElement();
 }
 
 void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
@@ -144,7 +115,7 @@ void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> m
         stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
 
         // Actions
-        FsmSaveFileManager::writeActions(stream, state);
+        this->writeActions(stream, state);
 
         stream.writeEndElement();
     }
@@ -170,12 +141,12 @@ void FsmSaveFileManager::writeTransitions(QXmlStreamWriter& stream, shared_ptr<F
         if (transition->getCondition() != nullptr)
         {
             stream.writeStartElement("Condition");
-            FsmSaveFileManager::writeLogicEquation(stream, transition->getCondition());
+            this->writeLogicEquation(stream, transition->getCondition());
             stream.writeEndElement(); // Condition
         }
 
         // Actions
-        FsmSaveFileManager::writeActions(stream, transition);
+        this->writeActions(stream, transition);
 
         stream.writeEndElement();
     }
@@ -315,10 +286,9 @@ void FsmSaveFileManager::writeActions(QXmlStreamWriter& stream, shared_ptr<Machi
 }
 
 
-
 shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Throws StatesException
 {
-    FsmSaveFileManager::warnings.clear();
+    this->warnings.clear();
 
     QFileInfo fileInfo(filePath);
 
@@ -368,21 +338,33 @@ shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Thr
     }
     if (noName == true)
     {
-        FsmSaveFileManager::warnings.append(tr("No name was found for the machine."));
-        FsmSaveFileManager::warnings.append("    " + tr("Name defaulted to:") + " " + machineName + ".");
+        this->warnings.append(tr("No name was found for the machine."));
+        this->warnings.append("    " + tr("Name defaulted to:") + " " + machineName + ".");
     }
     machine->setName(machineName);
 
     QDomNodeList fsmNodes = rootNode.childNodes();
 
-    // First parse signals
+    // First parse configuration
+    for (int i = 0 ; i < fsmNodes.count() ; i++)
+    {
+        QDomElement currentElement = fsmNodes.at(i).toElement();
+
+        if (currentElement.tagName() == "Configuration")
+        {
+            this->parseConfiguration(currentElement);
+            break;
+        }
+    }
+
+    // Parse signals
     for (int i = 0 ; i < fsmNodes.count() ; i++)
     {
         QDomElement currentElement = fsmNodes.at(i).toElement();
 
         if (currentElement.tagName() == "Signals")
         {
-            parseSignals(currentElement, machine);
+            this->parseSignals(currentElement, machine);
             break;
         }
     }
@@ -394,7 +376,7 @@ shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Thr
 
         if (currentElement.tagName() == "States")
         {
-            parseStates(currentElement, machine);
+            this->parseStates(currentElement, machine);
             break;
         }
     }
@@ -406,7 +388,7 @@ shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Thr
 
         if (currentElement.tagName() == "Transitions")
         {
-            parseTransitions(currentElement, machine);
+            this->parseTransitions(currentElement, machine);
             break;
         }
     }
@@ -416,106 +398,6 @@ shared_ptr<Fsm> FsmSaveFileManager::loadFromFile(const QString& filePath) // Thr
     machine->setUnsavedState(false);
 
     return machine;
-}
-
-
-
-void FsmSaveFileManager::parseSignals(QDomElement element, shared_ptr<Fsm> machine)
-{
-    QDomNodeList signalNodes = element.childNodes();
-    QString currentElementName;
-
-    for (int i = 0 ; i < signalNodes.count() ; i++)
-    {
-        QDomElement currentElement = signalNodes.at(i).toElement();
-        currentElementName = currentElement.attribute("Name");
-
-        if (currentElementName.isEmpty())
-        {
-            FsmSaveFileManager::warnings.append(tr("Unnamed signal encountered while parsing signal list."));
-            FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
-            continue;
-        }
-
-        shared_ptr<Signal> signal;
-        if (currentElement.tagName() == "Input")
-        {
-            signal = machine->addSignal(Fsm::signal_type::Input, currentElementName);
-        }
-        else if (currentElement.tagName() == "Output")
-        {
-            signal = machine->addSignal(Fsm::signal_type::Output, currentElementName);
-        }
-        else if (currentElement.tagName() == "Variable")
-        {
-            signal = machine->addSignal(Fsm::signal_type::LocalVariable, currentElementName);
-        }
-        else if (currentElement.tagName() == "Constant")
-        {
-            signal = machine->addSignal(Fsm::signal_type::Constant, currentElementName);
-        }
-        else
-        {
-            FsmSaveFileManager::warnings.append(tr("Unexpected signal type encountered while parsing signal list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Input\", \"Output\", \"Variable\" " + tr("or") + " \"Constant\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Signal name was:") + " " + currentElementName + ".");
-            FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
-            continue;
-        }
-
-
-
-        // Set size
-        uint size = (uint)currentElement.attribute("Size").toInt();
-        if (size != 1)
-        {
-            try
-            {
-                machine->resizeSignal(currentElementName, size); // Throws StatesException (Signal, Equation and Machine)
-                // Equation: ignored, this is not an equation,
-                // Machine: ignored, we just created the signal,
-                // Only Signal has to be handled
-            }
-            catch (const StatesException& e)
-            {
-                if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::resized_to_0) )
-                {
-                    FsmSaveFileManager::warnings.append(tr("Unable to resize signal") + " \"" + currentElementName + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Signal size ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
-                }
-                else
-                    throw;
-            }
-        }
-
-        // Set initial value
-        if (currentElement.tagName() != "Output")
-        {
-            try
-            {
-                LogicValue initialValue = LogicValue::fromString(currentElement.attribute("Initial_value")); // Throws StatesException
-
-                machine->changeSignalInitialValue(currentElementName, initialValue); // Throws StatesException
-            }
-            catch (const StatesException& e)
-            {
-                if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
-                {
-                    FsmSaveFileManager::warnings.append("Error in initial value of signal " + currentElementName + ".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Given initial value was") + " \"" + currentElement.attribute("Initial_value") + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
-                }
-                else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::size_mismatch) )
-                {
-                    FsmSaveFileManager::warnings.append("Error in initial value of signal " + currentElementName + ".");
-                    FsmSaveFileManager::warnings.append("    " + tr("The initial value size does not match signal size."));
-                    FsmSaveFileManager::warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
-                }
-                else
-                    throw;
-            }
-        }
-    }
 }
 
 void FsmSaveFileManager::parseStates(QDomElement element, shared_ptr<Fsm> machine)
@@ -549,18 +431,18 @@ void FsmSaveFileManager::parseStates(QDomElement element, shared_ptr<Fsm> machin
                 }
                 else
                 {
-                    FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing state list:"));
-                    FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Actions\"," + tr("got") + " \"" + currentElement.tagName() + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
+                    this->warnings.append(tr("Unexpected token encountered while parsing state list:"));
+                    this->warnings.append("    " + tr("Expected") + " \"Actions\"," + tr("got") + " \"" + currentElement.tagName() + "\".");
+                    this->warnings.append("    " + tr("Token ignored."));
                     continue;
                 }
             }
         }
         else
         {
-            FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing state list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"State\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
+            this->warnings.append(tr("Unexpected token encountered while parsing state list:"));
+            this->warnings.append("    " + tr("Expected") + " \"State\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
+            this->warnings.append("    " + tr("Token ignored."));
             continue;
         }
     }
@@ -614,18 +496,18 @@ void FsmSaveFileManager::parseTransitions(QDomElement element, shared_ptr<Fsm> m
                 }
                 else
                 {
-                    FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing transition list:"));
-                    FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Condition\" " + tr("or") + " \"Actions\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
+                    this->warnings.append(tr("Unexpected token encountered while parsing transition list:"));
+                    this->warnings.append("    " + tr("Expected") + " \"Condition\" " + tr("or") + " \"Actions\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
+                    this->warnings.append("    " + tr("Token ignored."));
                     continue;
                 }
             }
         }
         else
         {
-            FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing transition list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Transition\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Token ignored."));
+            this->warnings.append(tr("Unexpected token encountered while parsing transition list:"));
+            this->warnings.append("    " + tr("Expected") + " \"Transition\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
+            this->warnings.append("    " + tr("Token ignored."));
             continue;
         }
     }
@@ -641,9 +523,9 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
 
         if (currentElement.tagName() != "Action")
         {
-            FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing action list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Action ignored."));
+            this->warnings.append(tr("Unexpected token encountered while parsing action list:"));
+            this->warnings.append("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
+            this->warnings.append("    " + tr("Action ignored."));
             continue;
         }
 
@@ -658,13 +540,11 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
 
         if (signal == nullptr)
         {
-            FsmSaveFileManager::warnings.append(tr("Reference to undeclared signal encountered while parsing action list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Signal name was") + " \"" + signalName + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Action ignored."));
+            this->warnings.append(tr("Reference to undeclared signal encountered while parsing action list:"));
+            this->warnings.append("    " + tr("Signal name was") + " \"" + signalName + "\".");
+            this->warnings.append("    " + tr("Action ignored."));
             continue;
         }
-
-
 
         ActionOnSignal::action_types actionType;
         QString actionTypeText = currentElement.attribute("Action_Type");
@@ -691,9 +571,9 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
         }
         else
         {
-            FsmSaveFileManager::warnings.append(tr("Unexpected action type encountered while parsing action list:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Action type was") + " \"" + actionTypeText + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Action ignored."));
+            this->warnings.append(tr("Unexpected action type encountered while parsing action list:"));
+            this->warnings.append("    " + tr("Action type was") + " \"" + actionTypeText + "\".");
+            this->warnings.append("    " + tr("Action ignored."));
             continue;
         }
 
@@ -707,8 +587,8 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
         {
             if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_type) )
             {
-                FsmSaveFileManager::warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
-                FsmSaveFileManager::warnings.append("    " + tr("Default action type used instead."));
+                this->warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
+                this->warnings.append("    " + tr("Default action type used instead."));
             }
             else
                 throw;
@@ -748,8 +628,8 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
         {
             if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_range) )
             {
-                FsmSaveFileManager::warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
-                FsmSaveFileManager::warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
+                this->warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
+                this->warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
                 continue;
             }
             else
@@ -778,8 +658,8 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
 
                     actionValue = LogicValue::getValue0(avsize);
 
-                    FsmSaveFileManager::warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
+                    this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
+                    this->warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
                     continue;
                 }
                 else
@@ -796,8 +676,8 @@ void FsmSaveFileManager::parseActions(QDomElement element, shared_ptr<MachineAct
                 {
                     if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_value) )
                     {
-                        FsmSaveFileManager::warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
-                        FsmSaveFileManager::warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
+                        this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
+                        this->warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
                     }
                     else
                         throw;
@@ -899,8 +779,8 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
 
                         constantValue = LogicValue::getValue0(constantsize);
 
-                        FsmSaveFileManager::warnings.append(tr("Error in constant value while parsing equation:"));
-                        FsmSaveFileManager::warnings.append("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
+                        this->warnings.append(tr("Error in constant value while parsing equation:"));
+                        this->warnings.append("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
                     }
                     else
                         throw;
@@ -908,9 +788,9 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
             }
             else
             {
-                FsmSaveFileManager::warnings.append(tr("Unexpected equation nature encountered while parsing logic equation:"));
-                FsmSaveFileManager::warnings.append("    " + tr("Equation nature was:") + " \"" + currentElement.attribute("Nature") + "\".");
-                FsmSaveFileManager::warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
+                this->warnings.append(tr("Unexpected equation nature encountered while parsing logic equation:"));
+                this->warnings.append("    " + tr("Equation nature was:") + " \"" + currentElement.attribute("Nature") + "\".");
+                this->warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
                 continue;
             }
 
@@ -928,9 +808,9 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
                 }
                 else
                 {
-                    FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing logic equation:"));
-                    FsmSaveFileManager::warnings.append("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
-                    FsmSaveFileManager::warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
+                    this->warnings.append(tr("Unexpected token encountered while parsing logic equation:"));
+                    this->warnings.append("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + currentElement.tagName() + "\".");
+                    this->warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
                     continue;
                 }
             }
@@ -962,9 +842,9 @@ shared_ptr<Signal> FsmSaveFileManager::parseEquation(QDomElement element, shared
         }
         else
         {
-            FsmSaveFileManager::warnings.append(tr("Unexpected token encountered while parsing logic equation:"));
-            FsmSaveFileManager::warnings.append("    " + tr("Expected") + " " + tr("signal") + " (LogicVariable) " + tr("or") + " " + tr("equation") + " (LogicEquation), " + tr("got") + "  \"" + currentElement.tagName() + "\".");
-            FsmSaveFileManager::warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
+            this->warnings.append(tr("Unexpected token encountered while parsing logic equation:"));
+            this->warnings.append("    " + tr("Expected") + " " + tr("signal") + " (LogicVariable) " + tr("or") + " " + tr("equation") + " (LogicEquation), " + tr("got") + "  \"" + currentElement.tagName() + "\".");
+            this->warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
             continue;
         }
     }

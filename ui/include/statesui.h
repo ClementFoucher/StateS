@@ -34,6 +34,7 @@ class Machine;
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
+class MachineConfiguration;
 
 
 /**
@@ -59,6 +60,7 @@ public:
 
     void setMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
     void setCurrentFilePath(const QString& path);
+    void setConfiguration(shared_ptr<MachineConfiguration> configuration);
 
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
@@ -70,8 +72,8 @@ signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
     void loadMachineRequestEvent(const QString& path);
-    void saveMachineRequestEvent(const QString& path);
-    void saveMachineInCurrentFileRequestEvent();
+    void saveMachineRequestEvent(const QString& path, shared_ptr<MachineConfiguration> configuration);
+    void saveMachineInCurrentFileRequestEvent(shared_ptr<MachineConfiguration> configuration);
 
 protected:
     void closeEvent     (QCloseEvent* event) override;
@@ -95,6 +97,7 @@ private slots:
 
 private:
     void updateTitle();
+    shared_ptr<MachineConfiguration> buildConfiguration() const;
     bool displayUnsavedConfirmation(const QString& cause);
     QString getCurrentDirPath() const;
 

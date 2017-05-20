@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@
 #include "fsm.h"
 #include "fsmsavefilemanager.h"
 #include "statesexception.h"
+#include "machineconfiguration.h"
 
 
 QString StateS::getVersion()
@@ -111,13 +112,18 @@ void StateS::loadMachine(const QString& path)
 
         try
         {
-            this->machine = FsmSaveFileManager::loadFromFile(this->currentFilePath); // Throws StatesException
-            QList<QString> warnings = FsmSaveFileManager::getLastOperationWarnings();
+            FsmSaveFileManager* saveManager = new FsmSaveFileManager();
+
+            this->machine = saveManager->loadFromFile(this->currentFilePath); // Throws StatesException
+            QList<QString> warnings = saveManager->getLastOperationWarnings();
             if (!warnings.isEmpty())
             {
                 this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
             }
             this->statesUi->setMachine(this->machine, this->currentFilePath);
+            this->statesUi->setConfiguration(saveManager->getConfiguration());
+
+            delete saveManager;
         }
         catch (const StatesException& e)
         {
@@ -135,7 +141,7 @@ void StateS::loadMachine(const QString& path)
  * Save current machine to file.
  * This is the 'save as' action.
  */
-void StateS::saveCurrentMachine(const QString& path)
+void StateS::saveCurrentMachine(const QString& path, shared_ptr<MachineConfiguration> configuration)
 {
     bool fileOk = false;
 
@@ -149,7 +155,7 @@ void StateS::saveCurrentMachine(const QString& path)
     {
         this->currentFilePath = path;
 
-        this->saveCurrentMachineInCurrentFile();
+        this->saveCurrentMachineInCurrentFile(configuration);
 
         this->statesUi->setCurrentFilePath(this->currentFilePath);
     }
@@ -159,7 +165,7 @@ void StateS::saveCurrentMachine(const QString& path)
  * Save current machine to currently registered save file.
  * This is the 'save' action.
  */
-void StateS::saveCurrentMachineInCurrentFile()
+void StateS::saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> configuration)
 {
     bool fileOk = false;
 
@@ -173,12 +179,16 @@ void StateS::saveCurrentMachineInCurrentFile()
     {
         try
         {
-            FsmSaveFileManager::writeToFile(dynamic_pointer_cast<Fsm>(this->machine), this->currentFilePath); // Throws StatesException
-            QList<QString> warnings = FsmSaveFileManager::getLastOperationWarnings();
+            FsmSaveFileManager* saveManager = new FsmSaveFileManager();
+
+            saveManager->writeToFile(dynamic_pointer_cast<Fsm>(this->machine), configuration, this->currentFilePath); // Throws StatesException
+            QList<QString> warnings = saveManager->getLastOperationWarnings();
             if (!warnings.isEmpty())
             {
                 this->statesUi->displayErrorMessage(tr("Issues occured writing the file. StateS still managed to save machine."), warnings);
             }
+
+            delete saveManager;
         }
         catch (const StatesException& e)
         {

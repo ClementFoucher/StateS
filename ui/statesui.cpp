@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,6 +45,7 @@
 #include "fsmvhdlexport.h"
 #include "errordisplaydialog.h"
 #include "toolbar.h"
+#include "machineconfiguration.h"
 
 
 StatesUi::StatesUi() :
@@ -75,11 +76,11 @@ StatesUi::StatesUi() :
     connect(this->displayArea, &DisplayArea::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
     connect(this->displayArea, &DisplayArea::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
 
-    QList<int> length;
+    QList<int> widths;
     // Begin with 2/3 - 1/3
-    length.append( ( 66 * splitter->sizeHint().width() ) / 100 );
-    length.append( ( 33 * splitter->sizeHint().width() ) / 100 );
-    splitter->setSizes(length);
+    widths.append( ( 66 * splitter->sizeHint().width() ) / 100 );
+    widths.append( ( 33 * splitter->sizeHint().width() ) / 100 );
+    splitter->setSizes(widths);
 
     // Connect tool bar
     ToolBar* toolBar = this->displayArea->getToolbar();
@@ -147,6 +148,11 @@ void StatesUi::setCurrentFilePath(const QString& path)
     this->updateTitle();
 }
 
+void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
+{
+    this->displayArea->setVisibleArea(configuration->sceneVisibleArea);
+}
+
 void StatesUi::beginNewMachineProcedure()
 {
     bool doNew = this->displayUnsavedConfirmation(tr("Clear current machine?"));
@@ -192,7 +198,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
     {
         if (! this->currentFilePath.isEmpty())
         {
-            emit this->saveMachineInCurrentFileRequestEvent();
+            emit this->saveMachineInCurrentFileRequestEvent(this->buildConfiguration());
             // Should make button blink for one second.
             // How to without locking UI?
         }
@@ -317,7 +323,7 @@ void StatesUi::beginSaveAsProcedure()
             if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
                 fileName += ".SfsmS";
 
-            emit this->saveMachineRequestEvent(fileName);
+            emit this->saveMachineRequestEvent(fileName, this->buildConfiguration());
         }
     }
 }
@@ -353,7 +359,9 @@ void StatesUi::beginSaveProcedure()
     }
 
     if (doSave)
-        emit saveMachineInCurrentFileRequestEvent();
+    {
+        emit saveMachineInCurrentFileRequestEvent(this->buildConfiguration());
+    }
 }
 
 void StatesUi::updateTitle()
@@ -383,6 +391,15 @@ void StatesUi::updateTitle()
 
         this->setWindowTitle(title);
     }
+}
+
+shared_ptr<MachineConfiguration> StatesUi::buildConfiguration() const
+{
+    shared_ptr<MachineConfiguration> configuration(new MachineConfiguration());
+
+    configuration->sceneVisibleArea = this->displayArea->getVisibleArea();
+
+    return configuration;
 }
 
 bool StatesUi::displayUnsavedConfirmation(const QString& cause)

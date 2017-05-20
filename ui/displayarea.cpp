@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -72,6 +72,17 @@ GenericScene* DisplayArea::getScene() const
 ToolBar* DisplayArea::getToolbar() const
 {
     return this->toolBar;
+}
+
+QRectF DisplayArea::getVisibleArea() const
+{
+    return this->machineDisplayArea->mapToScene(this->machineDisplayArea->rect()).boundingRect();
+}
+
+void DisplayArea::setVisibleArea(const QRectF& area)
+{
+    QPointF center = this->machineDisplayArea->mapFromScene(area.center());
+    this->machineDisplayArea->centerOn(center);
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)

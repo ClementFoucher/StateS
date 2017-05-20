@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,7 +22,7 @@
 #define FSMSAVEFILEMANAGER_H
 
 // Parent
-#include <QObject>
+#include "machinesavefilemanager.h"
 
 // C++ classes
 #include <memory>
@@ -37,9 +37,10 @@ class QDomElement;
 class Fsm;
 class Signal;
 class MachineActuatorComponent;
+class MachineConfiguration;
 
 
-class FsmSaveFileManager : public QObject
+class FsmSaveFileManager : public MachineSaveFileManager
 {
     Q_OBJECT
 
@@ -56,25 +57,22 @@ public: // Static
     };
 
 public:
-    static void writeToFile(shared_ptr<Fsm> machine, const QString& filePath); // Throws StatesException
-    static shared_ptr<Fsm> loadFromFile(const QString& filePath); // Throws StatesException
-    static QList<QString> getLastOperationWarnings();
+    explicit FsmSaveFileManager(QObject* parent = nullptr);
+
+    void writeToFile(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath); // Throws StatesException
+    shared_ptr<Fsm> loadFromFile(const QString& filePath); // Throws StatesException
+    QList<QString> getLastOperationWarnings();
 
 private:
-    static void writeSignals(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
-    static void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
-    static void writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
-    static void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation);
-    static void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component);
+    void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
+    void writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
+    void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation);
+    void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component);
 
-    static void parseSignals(QDomElement element, shared_ptr<Fsm> machine);
-    static void parseStates(QDomElement element, shared_ptr<Fsm> machine);
-    static void parseTransitions(QDomElement element, shared_ptr<Fsm> machine);
-    static shared_ptr<Signal> parseEquation(QDomElement element, shared_ptr<Fsm> machine);
-    static void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component, shared_ptr<Fsm> machine);
-
-private:
-    static QList<QString> warnings;
+    void parseStates(QDomElement element, shared_ptr<Fsm> machine);
+    void parseTransitions(QDomElement element, shared_ptr<Fsm> machine);
+    shared_ptr<Signal> parseEquation(QDomElement element, shared_ptr<Fsm> machine);
+    void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component, shared_ptr<Fsm> machine);
 };
 
 #endif // FSMSAVEFILEMANAGER_H

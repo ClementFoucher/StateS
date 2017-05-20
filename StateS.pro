@@ -15,7 +15,11 @@ TARGET = StateS
 TEMPLATE = app
 
 VERSION = 0.3.19
-QMAKE_TARGET_COPYRIGHT = copyright 2014-2016 Clément Foucher
+QMAKE_TARGET_COPYRIGHT = copyright 2014-2017 Clément Foucher
+
+CONFIG += c++11
+
+QMAKE_CXXFLAGS += -pedantic
 
 SOURCES += \
 # Core
@@ -111,7 +115,9 @@ SOURCES += \
     core/machine/actiononsignal.cpp \
     ui/resource_bar/component_editor/actiontypecombobox.cpp \
     ui/resource_bar/component_editor/actiontablemodel.cpp \
-    ui/resource_bar/component_editor/actiontabledelegate.cpp
+    ui/resource_bar/component_editor/actiontabledelegate.cpp \
+    core/machine/machineconfiguration.cpp \
+    core/machine/machinesavefilemanager.cpp
 
 HEADERS  += \
 # Core
@@ -206,11 +212,9 @@ HEADERS  += \
     core/machine/include/actiononsignal.h \
     ui/resource_bar/component_editor/include/actiontypecombobox.h \
     ui/resource_bar/component_editor/include/actiontablemodel.h \
-    ui/resource_bar/component_editor/include/actiontabledelegate.h
-
-QMAKE_CXXFLAGS += \
-    -std=c++11 \
-    -pedantic
+    ui/resource_bar/component_editor/include/actiontabledelegate.h \
+    core/machine/include/machineconfiguration.h \
+    core/machine/include/machinesavefilemanager.h
 
 INCLUDEPATH += \
 # Core
