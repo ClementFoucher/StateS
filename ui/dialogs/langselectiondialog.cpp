@@ -62,7 +62,7 @@ LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, Q
     connect(buttonFrench, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
     layout->addWidget(buttonFrench);
 
-    retranslateUi();
+    this->retranslateUi();
 }
 
 void LangSelectionDialog::retranslateUi()
@@ -72,14 +72,14 @@ void LangSelectionDialog::retranslateUi()
 
 void LangSelectionDialog::setEnglish()
 {
-    this->application->removeTranslator(translator.get());
-    retranslateUi();
+    this->application->removeTranslator(this->translator.get());
+    this->retranslateUi();
 }
 
 void LangSelectionDialog::setFrench()
 {
-    this->application->installTranslator(translator.get());
-    retranslateUi();
+    this->application->installTranslator(this->translator.get());
+    this->retranslateUi();
 }
 
 shared_ptr<QTranslator> LangSelectionDialog::getTranslator()

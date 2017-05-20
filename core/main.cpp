@@ -56,16 +56,16 @@ int main(int argc, char* argv[])
     shared_ptr<QApplication> app(new QApplication(argc, argv));
 
     // Show language selection dialog and obtain translator from it
-    unique_ptr<LangSelectionDialog> langageSelectionWindow(new LangSelectionDialog(app));
-    langageSelectionWindow->setWindowFlags(Qt::Dialog | langageSelectionWindow->windowFlags());
-    langageSelectionWindow->setWindowTitle("StateS");
-    langageSelectionWindow->exec();
+    unique_ptr<LangSelectionDialog> languageSelectionWindow(new LangSelectionDialog(app));
+    languageSelectionWindow->setWindowFlags(Qt::Dialog | languageSelectionWindow->windowFlags());
+    languageSelectionWindow->setWindowTitle("StateS");
+    languageSelectionWindow->exec();
 
-    shared_ptr<QTranslator> translator = langageSelectionWindow->getTranslator();
+    shared_ptr<QTranslator> translator = languageSelectionWindow->getTranslator();
 
     // This wont be used again in application lifetime
     // Clear associated resources
-    langageSelectionWindow.reset();
+    languageSelectionWindow.reset();
 
     // Build StateS main object and begin execution
     QString initialFilePath = QString::null;

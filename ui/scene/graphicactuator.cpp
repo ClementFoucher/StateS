@@ -139,8 +139,6 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 
             // Action value
 
-            ActionOnSignal::action_types type = currentAction->getActionType();
-
             switch (currentAction->getActionType())
             {
             case ActionOnSignal::action_types::set:

@@ -39,4 +39,3 @@ void BlankScene::setDisplaySize(const QSize&)
 {
     // TODO: adapt text size if window is small
 }
-

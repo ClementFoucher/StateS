@@ -2,7 +2,7 @@
 * StateS v. 0.3 *
 *****************
 
-- 2017-05-20 - V 0.3.K - Finally corrected the annoying furtive popup on Windows; Save and restore view position and zoom level.
+- 2017-05-20 - V 0.3.K - Finally corrected the annoying furtive popup on Windows; Enhanced zoom level and view position management, and save and restore them with machines.
 - 2016-10-06 - V 0.3.J - Disable delete key when in simulation mode; Small UI enhancements.
 - 2016-09-10 - V 0.3.I - Reworked action management to allow multiple actions on same signal (useful to allow different ranges actions); Allow action reordering; Small UI enhancements;
 - 2016-08-07 - V 0.3.H - Reworked truth table display; Enhanced lists display; Added icons; Reworked some tabs display.

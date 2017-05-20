@@ -14,7 +14,7 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.19
+VERSION = 0.3.20
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2017 Clément Foucher
 
 CONFIG += c++11

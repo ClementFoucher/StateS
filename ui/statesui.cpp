@@ -236,8 +236,7 @@ void StatesUi::beginExportImageProcedure()
 
     if (l_machine != nullptr)
     {
-        // TODO: Should not act directly on scene
-        this->displayArea->getScene()->clearSelection();
+        this->displayArea->clearSelection();
 
         shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, this->displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
@@ -398,9 +397,7 @@ shared_ptr<MachineConfiguration> StatesUi::buildConfiguration() const
 {
     shared_ptr<MachineConfiguration> configuration(new MachineConfiguration());
 
-    QRectF minimalRect = this->displayArea->getScene()->itemsBoundingRect();
-
-    configuration->sceneTranslation = -minimalRect.topLeft();
+    configuration->sceneTranslation = -(this->displayArea->getSceneMinimalRect().topLeft());
     configuration->zoomLevel        = this->displayArea->getZoomLevel();
     configuration->viewCenter       = this->displayArea->getVisibleArea().center();
 
