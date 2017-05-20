@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -58,19 +58,17 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
 
 void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* content, bool deletePreviousContent)
 {
-    if (title != QString::null)
-        this->title->setText("<b>" + title + "</b>");
-    else
-    {
-        this->title->setText("<b><i>(" + tr("no content") + ")</i></b>");
-        this->title->setEnabled(false);
-    }
-
     if (this->content != nullptr)
     {
-        this->layout->removeWidget(this->content);
         if (deletePreviousContent)
+        {
             delete this->content;
+        }
+        else
+        {
+            this->content->setVisible(false);
+            this->layout->removeWidget(this->content);
+        }
     }
 
     this->content = content;
@@ -82,14 +80,33 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* conte
         this->layout->addWidget(this->content, 1, 0, 1, 4);
 
         this->buttonCollapse->setEnabled(true);
+
         if (title != QString::null)
+        {
+            this->title->setText("<b>" + title + "</b>");
             this->title->setEnabled(true);
+        }
+        else
+        {
+            this->title->setText("<b><i>(" + tr("no title") + ")</i></b>");
+            this->title->setEnabled(false);
+        }
     }
     else
     {
+        this->title->setText("<b><i>(" + tr("no content") + ")</i></b>");
         this->title->setEnabled(false);
         this->buttonCollapse->setEnabled(false);
     }
+}
+
+void CollapsibleWidgetWithTitle::setContent(const QString& title, const QString& textContent, bool deletePreviousContent)
+{
+    QLabel* newContent = new QLabel(textContent, this);
+    newContent->setAlignment(Qt::AlignCenter);
+    newContent->setWordWrap(true);
+
+    this->setContent(title, newContent, deletePreviousContent);
 }
 
 void CollapsibleWidgetWithTitle::updateVisibility(bool show)

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -206,11 +206,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
             break;
         }
 
-        QLabel* hintText = new QLabel(hint);
-        hintText->setAlignment(Qt::AlignCenter);
-        hintText->setWordWrap(true);
-
-        this->hintDisplay->setContent(title, hintText, true);
+        this->hintDisplay->setContent(title, hint, true);
     }
 }
 
@@ -314,9 +310,5 @@ void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
         break;
     }
 
-    QLabel* hintText = new QLabel(hint);
-    hintText->setAlignment(Qt::AlignCenter);
-    hintText->setWordWrap(true);
-
-    this->hintDisplay->setContent(title, hintText, true);
+    this->hintDisplay->setContent(title, hint, true);
 }

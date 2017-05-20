@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,6 +41,7 @@ public:
     explicit CollapsibleWidgetWithTitle(const QString& title = QString(), QWidget* content = nullptr, QWidget* parent = nullptr);
 
     void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
+    void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
 
 private slots:
     void updateVisibility(bool show);

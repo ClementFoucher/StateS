@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -138,11 +138,7 @@ void VerifierTab::checkNow()
         this->hintBox = new CollapsibleWidgetWithTitle();
         this->layout()->addWidget(this->hintBox);
 
-        QLabel* hintText = new QLabel(hint);
-        hintText->setAlignment(Qt::AlignCenter);
-        hintText->setWordWrap(true);
-
-        this->hintBox->setContent(tr("Hint"), hintText, true);
+        this->hintBox->setContent(tr("Hint"), hint, true);
     }
 
     this->buttonClear = new QPushButton(tr("Clear verification"));
@@ -184,12 +180,9 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
         this->truthTableDisplay = new TruthTableDisplay(currentTruthTable, highlights);
         ((QVBoxLayout*)this->layout())->insertWidget(5, this->truthTableDisplay);
 
-        QLabel* hintText = new QLabel(tr("Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated."));
-        hintText->setAlignment(Qt::AlignCenter);
-        hintText->setWordWrap(true);
+        QString text = tr("Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.");
 
-        this->hintBox->setContent(tr("Details on error"), hintText, true);
+        this->hintBox->setContent(tr("Details on error"), text, true);
     }
 }
-
 

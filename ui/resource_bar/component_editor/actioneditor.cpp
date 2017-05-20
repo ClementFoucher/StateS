@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -98,11 +98,7 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     hint += tr("Right-click") + " " + tr("on a vector signal") + " " + tr("to display range options.");
     hint += "<br />";
 
-    QLabel* hintText = new QLabel(hint);
-    hintText->setAlignment(Qt::AlignCenter);
-    hintText->setWordWrap(true);
-
-    this->hintDisplay->setContent(hintTitle, hintText, true);
+    this->hintDisplay->setContent(hintTitle, hint, true);
 
     layout->addWidget(this->hintDisplay, 4, 0, 1, 42);
 

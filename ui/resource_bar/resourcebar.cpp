@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -229,5 +229,11 @@ void ResourceBar::tabChanged(int)
     shared_ptr<Machine> l_machine = this->machine.lock();
 
     if (l_machine != nullptr)
-        l_machine->getMachineBuilder()->setTool(MachineBuilder::tool::none);
+    {
+        shared_ptr<MachineBuilder> builder = l_machine->getMachineBuilder();
+        if (builder->getTool() != MachineBuilder::tool::none)
+        {
+            builder->setTool(MachineBuilder::tool::none);
+        }
+    }
 }
