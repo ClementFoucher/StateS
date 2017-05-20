@@ -33,6 +33,7 @@ class MachineConfiguration : public QObject
     Q_OBJECT
 
 public:
+    QPointF sceneTranslation;
     QRectF  sceneVisibleArea;
 
 public:

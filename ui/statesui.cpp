@@ -397,6 +397,9 @@ shared_ptr<MachineConfiguration> StatesUi::buildConfiguration() const
 {
     shared_ptr<MachineConfiguration> configuration(new MachineConfiguration());
 
+    QRectF minimalRect = this->displayArea->getScene()->itemsBoundingRect();
+
+    configuration->sceneTranslation = -minimalRect.topLeft();
     configuration->sceneVisibleArea = this->displayArea->getVisibleArea();
 
     return configuration;

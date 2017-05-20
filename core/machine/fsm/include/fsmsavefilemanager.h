@@ -64,7 +64,7 @@ public:
     QList<QString> getLastOperationWarnings();
 
 private:
-    void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
+    void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
     void writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
     void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation);
     void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component);

@@ -41,6 +41,7 @@
 #include "statesexception.h"
 #include "fsmgraphictransition.h"
 #include "actiononsignal.h"
+#include "machineconfiguration.h"
 
 
 QList<QString> FsmSaveFileManager::getLastOperationWarnings()
@@ -84,7 +85,7 @@ void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, shared_ptr<Machine
 
     this->writeConfiguration(stream, configuration);
     this->writeSignals(stream, machine);
-    this->writeStates(stream, machine);
+    this->writeStates(stream, machine, configuration);
     this->writeTransitions(stream, machine);
 
     stream.writeEndElement(); // End FSM element
@@ -95,7 +96,7 @@ void FsmSaveFileManager::writeToFile(shared_ptr<Fsm> machine, shared_ptr<Machine
     machine->setUnsavedState(false);
 }
 
-void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine)
+void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration)
 {
     stream.writeStartElement("States");
 
@@ -110,9 +111,9 @@ void FsmSaveFileManager::writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> m
         if (state->isInitial())
             stream.writeAttribute("IsInitial", "true");
 
-        // Position
-        stream.writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
-        stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
+        // Position => offseted so that scene top-left corner is in (0,0)
+        stream.writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + configuration->sceneTranslation.x()));
+        stream.writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + configuration->sceneTranslation.y()));
 
         // Actions
         this->writeActions(stream, state);

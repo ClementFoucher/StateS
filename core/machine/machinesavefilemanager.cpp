@@ -44,16 +44,23 @@ MachineSaveFileManager::MachineSaveFileManager(QObject* parent) :
 
 shared_ptr<MachineConfiguration> MachineSaveFileManager::getConfiguration()
 {
-    return this->configuration;
+    if (this->configuration != nullptr)
+    {
+        return this->configuration;
+    }
+    else
+    {
+        return shared_ptr<MachineConfiguration>(new MachineConfiguration());
+    }
 }
 
 void MachineSaveFileManager::writeConfiguration(QXmlStreamWriter& stream, shared_ptr<MachineConfiguration> configuration)
 {
     stream.writeStartElement("Configuration");
 
-    stream.writeStartElement("VisibleArea");
-    stream.writeAttribute("X",      QString::number(configuration->sceneVisibleArea.left()));// - configuration->sceneBoundingBox.left()));
-    stream.writeAttribute("Y",      QString::number(configuration->sceneVisibleArea.top()));// - configuration->sceneBoundingBox.top()));
+    stream.writeStartElement("VisibleArea"); // Visible area after translation
+    stream.writeAttribute("X",      QString::number(configuration->sceneVisibleArea.left() + configuration->sceneTranslation.x()));
+    stream.writeAttribute("Y",      QString::number(configuration->sceneVisibleArea.top()  + configuration->sceneTranslation.y()));
     stream.writeAttribute("Width",  QString::number(configuration->sceneVisibleArea.width()));
     stream.writeAttribute("Height", QString::number(configuration->sceneVisibleArea.height()));
     stream.writeEndElement();
