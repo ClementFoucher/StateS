@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FSM Name="Demo">
+<FSM Name="Demo machine">
+    <Configuration>
+        <Scale Value="0.657516"/>
+        <ViewCentralPoint X="621.129" Y="408.042"/>
+    </Configuration>
     <Signals>
         <Input Name="bootOK" Size="1" Initial_value="0"/>
         <Input Name="check" Size="1" Initial_value="0"/>
@@ -14,30 +18,30 @@
         <Output Name="power" Size="1"/>
     </Signals>
     <States>
-        <State Name="Init" X="223.2" Y="-178.6">
+        <State Name="Init" X="458.787" Y="51.5">
             <Actions>
-                <Action Signal_Type="Output" Name="power" Action_Type="Pulse"/>
+                <Action Signal_Type="Variable" Name="power" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </State>
-        <State Name="On" X="498.2" Y="55.4">
+        <State Name="On" X="733.787" Y="285.5">
             <Actions>
-                <Action Signal_Type="Output" Name="power" Action_Type="Pulse"/>
+                <Action Signal_Type="Variable" Name="power" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </State>
-        <State Name="Error" X="118.2" Y="349.4">
+        <State Name="Error" X="353.787" Y="579.5">
             <Actions>
-                <Action Signal_Type="Output" Name="alarm" Action_Type="Pulse"/>
+                <Action Signal_Type="Variable" Name="alarm" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </State>
-        <State Name="Off" IsInitial="true" X="-176.8" Y="55.4"/>
-        <State Name="Blink_led_0" X="491.781" Y="525.942">
+        <State Name="Off" IsInitial="true" X="58.7868" Y="285.5"/>
+        <State Name="Blink_led_0" X="727.368" Y="756.042">
             <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="ActiveOnState" Param1="0"/>
+                <Action Signal_Type="Variable" Name="leds" Action_Type="ActiveOnState" Action_Value="1" RangeL="0"/>
             </Actions>
         </State>
-        <State Name="Blink_led_1" X="960.525" Y="516.972">
+        <State Name="Blink_led_1" X="1196.11" Y="747.072">
             <Actions>
-                <Action Signal_Type="Output" Name="leds" Action_Type="ActiveOnState" Param1="1"/>
+                <Action Signal_Type="Variable" Name="leds" Action_Type="ActiveOnState" Action_Value="1" RangeL="1"/>
             </Actions>
         </State>
     </States>
@@ -87,7 +91,7 @@
                 <LogicVariable Name="check"/>
             </Condition>
             <Actions>
-                <Action Signal_Type="Output" Name="checkOK" Action_Type="Pulse"/>
+                <Action Signal_Type="Variable" Name="checkOK" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </Transition>
         <Transition Source="Off" Target="Error" SliderPos="50">
@@ -111,10 +115,10 @@
                 </LogicEquation>
             </Condition>
             <Actions>
-                <Action Signal_Type="Output" Name="boot" Action_Type="Pulse"/>
+                <Action Signal_Type="Variable" Name="boot" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </Transition>
-        <Transition Source="Blink_led_0" Target="Blink_led_1" SliderPos="71">
+        <Transition Source="Blink_led_0" Target="Blink_led_1" SliderPos="70">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
@@ -128,7 +132,7 @@
                 </LogicEquation>
             </Condition>
         </Transition>
-        <Transition Source="Blink_led_1" Target="Blink_led_0" SliderPos="35">
+        <Transition Source="Blink_led_1" Target="Blink_led_0" SliderPos="34">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>

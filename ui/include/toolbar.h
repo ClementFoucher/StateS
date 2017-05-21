@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,9 +32,11 @@ class ToolBar : public QToolBar
 public:
     explicit ToolBar(QWidget* parent = nullptr);
 
-    void setSaveAsActionEnabled (bool enable);
-    void setSaveActionEnabled   (bool enable);
-    void setExportActionsEnabled(bool enable);
+    void setSaveAsActionEnabled       (bool enable);
+    void setSaveActionEnabled         (bool enable);
+    void setExportActionsEnabled      (bool enable);
+    void setAddCheckpointActionEnabled(bool enable);
+    void setUndoActionEnabled         (bool enable);
 
 signals:
     void saveAsRequestedEvent     ();
@@ -43,15 +45,19 @@ signals:
     void newMachineRequestedEvent ();
     void exportImageRequestedEvent();
     void exportHdlRequestedEvent  ();
+    void addChekpoint             ();
+    void undo                     ();
 
 private:
-    QAction* actionSaveAs      = nullptr;
-    QAction* actionSave        = nullptr;
-    QAction* actionLoad        = nullptr;
-    QAction* actionNewFsm      = nullptr;
-    //QAction* actionClear      = nullptr;
-    QAction* actionExportImage = nullptr;
-    QAction* actionExportHdl   = nullptr;
+    QAction* actionSaveAs        = nullptr;
+    QAction* actionSave          = nullptr;
+    QAction* actionLoad          = nullptr;
+    QAction* actionNewFsm        = nullptr;
+    //QAction* actionClear        = nullptr;
+    QAction* actionExportImage   = nullptr;
+    QAction* actionExportHdl     = nullptr;
+    QAction* actionAddCheckpoint = nullptr;
+    QAction* actionUndo          = nullptr;
 };
 
 #endif // TOOLBAR_H

@@ -2,27 +2,30 @@
 
 The following image files are used in StateS:
 
-__________________________________________________________________________________________________
- File name                | Author        | Licence                                              |
--------------------------------------------------------------------------------------------------|
-Usb_stick_by_mimooh.svg   | Mimooh        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Gnome-go-jump.svg         | GNOME Project | GNU Lesser General Public License version 3          |
-Gtk-undo-ltr.svg          | GNOME Project | GNU Lesser Public Licence version 2.1                |
-Gtk-redo-ltr.svg          | GNOME Project | GNU Lesser Public Licence version 2.1                |
-29699-kleanSweep.svg      | gg3po         | GNU Public Licence version 2                         |
-StateS.svg/.png           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Create_FSM.svg            | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Export_PDF.svg            | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Export_VHDL.svg           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Save.svg                  | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Load.svg                  | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Rising_edge.svg           | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Falling_edge.svg          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Pulse.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Active_on_state.svg       | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Assign.svg                | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Detach_window.svg         | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
-Attach_window.svg         | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+__________________________________________________________________________________________________________
+ File name                        | Author        | Licence                                              |
+---------------------------------------------------------------------------------------------------------|
+Usb_stick_by_mimooh.svg           | Mimooh        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Gnome-go-jump.svg                 | GNOME Project | GNU Lesser General Public License version 3          |
+Gtk-undo-ltr.svg                  | GNOME Project | GNU Lesser Public Licence version 2.1                |
+Gtk-redo-ltr.svg                  | GNOME Project | GNU Lesser Public Licence version 2.1                |
+29699-kleanSweep.svg              | gg3po         | GNU Public Licence version 2                         |
+Oxygen15.04.1-flag-blue.svg       | KDE Project   | GNU Lesser General Public License version 3          |
+Oxygen480-actions-flag-yellow.svg | KDE Project   | GNU Lesser General Public License version 3          |
+StateS.svg/.png                   | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Create_FSM.svg                    | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Export_PDF.svg                    | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Export_VHDL.svg                   | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Save.svg                          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Load.svg                          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Rising_edge.svg                   | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Falling_edge.svg                  | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Pulse.svg                         | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Active_on_state.svg               | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Assign.svg                        | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Detach_window.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Attach_window.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Undo.svg                          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 
 
 

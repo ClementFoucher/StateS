@@ -91,9 +91,14 @@ StatesUi::StatesUi() :
     connect(toolBar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
     connect(toolBar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
     connect(toolBar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
+    connect(toolBar, &ToolBar::addChekpoint,              this, &StatesUi::addCheckpoint);
+    connect(toolBar, &ToolBar::undo,                      this, &StatesUi::undo);
+
+    toolBar->setAddCheckpointActionEnabled(false);
+    toolBar->setUndoActionEnabled(false);
 }
 
-void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
+void StatesUi::setMachine(shared_ptr<Machine> newMachine)
 {
     if (! this->machine.expired())
     {
@@ -107,7 +112,7 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
         //toolBar->setClearActionEnabled(true);
         toolBar->setExportActionsEnabled(true);
 
-        if (path.length() != 0)
+        if (this->currentFilePath.length() != 0)
             toolBar->setSaveActionEnabled(newMachine->isUnsaved());
         else
             toolBar->setSaveActionEnabled(false);
@@ -126,8 +131,6 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, const QString& path)
 
     this->resourceBar->setMachine(newMachine);
     this->displayArea->setMachine(newMachine);
-
-    this->setCurrentFilePath(path);
 }
 
 void StatesUi::setCurrentFilePath(const QString& path)
@@ -150,8 +153,11 @@ void StatesUi::setCurrentFilePath(const QString& path)
 
 void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
 {
-    this->displayArea->setZoomLevel(configuration->zoomLevel);
-    this->displayArea->setViewCenter(configuration->viewCenter);
+    if (configuration != nullptr)
+    {
+        this->displayArea->setZoomLevel(configuration->zoomLevel);
+        this->displayArea->setViewCenter(configuration->viewCenter);
+    }
 }
 
 void StatesUi::beginNewMachineProcedure()
@@ -471,4 +477,14 @@ void StatesUi::displayErrorMessage(const QString& errorTitle, const QString& err
     unique_ptr<ErrorDisplayDialog> errorDialog = unique_ptr<ErrorDisplayDialog>(new ErrorDisplayDialog(errorTitle, error, this));
     errorDialog->setModal(true);
     errorDialog->exec();
+}
+
+void StatesUi::setAddCheckpointButtonEnabled(bool enabled)
+{
+    this->displayArea->getToolbar()->setAddCheckpointActionEnabled(enabled);
+}
+
+void StatesUi::setUndoButtonEnabled(bool enabled)
+{
+    this->displayArea->getToolbar()->setUndoActionEnabled(enabled);
 }

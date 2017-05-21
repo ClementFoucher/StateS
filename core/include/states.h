@@ -29,6 +29,13 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+#include <QStack>
+#include <QList>
+
+// Diff Match Patch classes
+class Patch;
+
 // StateS classes
 class StatesUi;
 class Machine;
@@ -56,18 +63,33 @@ public:
 
     void run();
 
+public slots:
+    void addCheckpoint();
+    void machineChanged();
+    void undo();
+
 private slots:
     void generateNewFsm();
     void clearMachine();
-    void loadMachine(const QString& path);
+    void loadFsm(const QString& path);
     void saveCurrentMachine(const QString& path, shared_ptr<MachineConfiguration> configuration);
     void saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> configuration);
+
+private:
+    void updateLatestXml();
+    void refreshMachine(shared_ptr<Machine> newMachine);
+    void loadNewMachine(shared_ptr<Machine> newMachine, const QString& title);
 
 private:
     unique_ptr<StatesUi> statesUi;
     shared_ptr<Machine>  machine;
 
     QString currentFilePath = QString::null;
+
+    QString latestXmlCode;
+    QStack<QList<Patch>> undoQueue;
+
+    bool machineIsAtCheckpoint;
 };
 
 #endif // STATES_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -58,7 +58,7 @@ class StatesUi : public QMainWindow
 public:
     explicit StatesUi();
 
-    void setMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
+    void setMachine(shared_ptr<Machine> newMachine);
     void setCurrentFilePath(const QString& path);
     void setConfiguration(shared_ptr<MachineConfiguration> configuration);
 
@@ -68,12 +68,18 @@ public:
     void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
     void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
+    void setAddCheckpointButtonEnabled(bool enabled);
+    void setUndoButtonEnabled(bool enabled);
+
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
     void loadMachineRequestEvent(const QString& path);
     void saveMachineRequestEvent(const QString& path, shared_ptr<MachineConfiguration> configuration);
     void saveMachineInCurrentFileRequestEvent(shared_ptr<MachineConfiguration> configuration);
+
+    void addCheckpoint();
+    void undo();
 
 protected:
     void closeEvent     (QCloseEvent* event) override;

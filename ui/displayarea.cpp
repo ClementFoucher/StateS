@@ -33,6 +33,7 @@ DisplayArea::DisplayArea(QWidget* parent) :
     QMainWindow(parent)
 {
     this->setWindowFlags(Qt::Widget);
+    this->setContextMenuPolicy(Qt::NoContextMenu);
     this->machineDisplayArea = new SceneWidget();
 
     connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);

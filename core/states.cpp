@@ -26,6 +26,9 @@
 #include <QFileInfo>
 #include <QDir>
 
+// Diff Match Patch classes
+#include <diff_match_patch.h>
+
 // StateS classes
 #include "statesui.h"
 #include "fsm.h"
@@ -43,17 +46,20 @@ StateS::StateS(const QString& initialFilePath)
 {
     // Create interface
     this->statesUi = unique_ptr<StatesUi>(new StatesUi());
+    this->undoQueue = QStack<QList<Patch>>();
 
-    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                  this, &StateS::generateNewFsm);
-    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,            this, &StateS::clearMachine);
-    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,             this, &StateS::loadMachine);
-    connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,             this, &StateS::saveCurrentMachine);
-    connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent,this, &StateS::saveCurrentMachineInCurrentFile);
+    connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
+    connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadFsm);
+    connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,              this, &StateS::saveCurrentMachine);
+    connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent, this, &StateS::saveCurrentMachineInCurrentFile);
+    connect(this->statesUi.get(), &StatesUi::addCheckpoint,                        this, &StateS::addCheckpoint);
+    connect(this->statesUi.get(), &StatesUi::undo,                                 this, &StateS::undo);
 
     // Initialize machine
     if (! initialFilePath.isEmpty())
     {
-        this->loadMachine(initialFilePath);
+        this->loadFsm(initialFilePath);
     }
     else
     {
@@ -73,6 +79,87 @@ void StateS::run()
     this->statesUi->show();
 }
 
+void StateS::addCheckpoint()
+{
+    QString newXml;
+
+    shared_ptr<MachineSaveFileManager> saveManager;
+    if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
+    {
+        saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+    }
+    else
+    {
+        this->latestXmlCode = QString();
+        return;
+    }
+
+    newXml = saveManager->getMachineXml(this->machine);
+
+    // Compute diff
+    diff_match_patch diffComputer = diff_match_patch();
+    QList<Patch> diffList = diffComputer.patch_make(newXml, this->latestXmlCode);
+    this->undoQueue.push(diffList);
+
+    this->latestXmlCode = newXml;
+
+    this->statesUi->setAddCheckpointButtonEnabled(false);
+    this->statesUi->setUndoButtonEnabled(true);
+    this->machineIsAtCheckpoint = true;
+}
+
+void StateS::machineChanged()
+{
+    this->statesUi->setAddCheckpointButtonEnabled(true);
+    this->statesUi->setUndoButtonEnabled(true);
+    this->machineIsAtCheckpoint = false;
+}
+
+void StateS::undo()
+{
+    shared_ptr<MachineSaveFileManager> saveManager;
+    if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
+    {
+        saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+    }
+    else
+    {
+        this->latestXmlCode = QString();
+        return;
+    }
+
+    if (this->machineIsAtCheckpoint == true)
+    {
+        if (this->undoQueue.isEmpty() == false)
+        {
+            QList<Patch> latestAction = this->undoQueue.pop();
+
+            diff_match_patch diffUnroller = diff_match_patch();
+
+            QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(latestAction, this->latestXmlCode);
+
+            shared_ptr<Machine> newMachine = saveManager->loadMachineFromXml(result.first);
+
+            this->refreshMachine(newMachine);
+
+            this->latestXmlCode = result.first;
+        }
+    }
+    else
+    {
+        this->refreshMachine(saveManager->loadMachineFromXml(this->latestXmlCode));
+
+        this->machineIsAtCheckpoint = true;
+    }
+
+    if (this->undoQueue.isEmpty() == true)
+    {
+        this->statesUi->setUndoButtonEnabled(false);
+    }
+
+    this->statesUi->setAddCheckpointButtonEnabled(false);
+}
+
 /*
  * Replace existing machine with a newly created FSM.
  * This is the 'New' action.
@@ -81,8 +168,8 @@ void StateS::generateNewFsm()
 {
     this->clearMachine();
 
-    this->machine = shared_ptr<Fsm>(new Fsm());
-    this->statesUi->setMachine(this->machine);
+    shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
+    this->loadNewMachine(newMachine, QString::null);
 }
 
 /*
@@ -91,16 +178,14 @@ void StateS::generateNewFsm()
  */
 void StateS::clearMachine()
 {
-    this->statesUi->setMachine(nullptr);
-    this->machine.reset();
-    this->currentFilePath = QString::null;
+    this->loadNewMachine(nullptr, QString::null);
 }
 
 /*
  * Load a machine from a saved file.
  * This is the 'load' action.
  */
-void StateS::loadMachine(const QString& path)
+void StateS::loadFsm(const QString& path)
 {
     QFileInfo file(path);
 
@@ -108,26 +193,29 @@ void StateS::loadMachine(const QString& path)
     {
         this->clearMachine();
 
-        this->currentFilePath = path;
-
         try
         {
-            FsmSaveFileManager* saveManager = new FsmSaveFileManager();
+            shared_ptr<MachineSaveFileManager> saveManager(new FsmSaveFileManager());
 
-            this->machine = saveManager->loadFromFile(this->currentFilePath); // Throws StatesException
-            QList<QString> warnings = saveManager->getLastOperationWarnings();
+            shared_ptr<Machine> newMachine = saveManager->loadMachineFromFile(path); // Throws StatesException
+
+            QList<QString> warnings = saveManager->getWarnings();
             if (!warnings.isEmpty())
             {
                 this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
             }
-            this->statesUi->setMachine(this->machine, this->currentFilePath);
-            this->statesUi->setConfiguration(saveManager->getConfiguration());
 
-            delete saveManager;
+            this->loadNewMachine(newMachine, path);
+
+            this->statesUi->setConfiguration(saveManager->getConfiguration());
         }
         catch (const StatesException& e)
         {
             if (e.getSourceClass() == "FsmSaveFileManager")
+            {
+                this->statesUi->displayErrorMessage(tr("Unable to load file."), QString(e.what()));
+            }
+            else if (e.getSourceClass() == "MachineSaveFileManager")
             {
                 this->statesUi->displayErrorMessage(tr("Unable to load file."), QString(e.what()));
             }
@@ -179,16 +267,22 @@ void StateS::saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> co
     {
         try
         {
-            FsmSaveFileManager* saveManager = new FsmSaveFileManager();
+            shared_ptr<MachineSaveFileManager> saveManager;
+            if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
+            {
+                saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+            }
+            else
+            {
+                return;
+            }
 
-            saveManager->writeToFile(dynamic_pointer_cast<Fsm>(this->machine), configuration, this->currentFilePath); // Throws StatesException
-            QList<QString> warnings = saveManager->getLastOperationWarnings();
+            saveManager->writeMachineToFile(dynamic_pointer_cast<Fsm>(this->machine), configuration, this->currentFilePath); // Throws StatesException
+            QList<QString> warnings = saveManager->getWarnings();
             if (!warnings.isEmpty())
             {
                 this->statesUi->displayErrorMessage(tr("Issues occured writing the file. StateS still managed to save machine."), warnings);
             }
-
-            delete saveManager;
         }
         catch (const StatesException& e)
         {
@@ -196,8 +290,64 @@ void StateS::saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> co
             {
                 this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
             }
+            if (e.getSourceClass() == "MachineSaveFileManager")
+            {
+                this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+            }
             else
                 throw;
         }
     }
+}
+
+void StateS::updateLatestXml()
+{
+    if (this->machine != nullptr)
+    {
+        shared_ptr<MachineSaveFileManager> saveManager;
+        if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
+        {
+            saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+        }
+        else
+        {
+            this->latestXmlCode = QString();
+            return;
+        }
+
+        this->latestXmlCode = saveManager->getMachineXml(this->machine);
+    }
+    else
+    {
+        this->latestXmlCode = QString();
+    }
+}
+
+void StateS::refreshMachine(shared_ptr<Machine> newMachine)
+{
+    if (this->machine != nullptr)
+    {
+        disconnect(this->machine.get(), &Machine::machineEdited, this, &StateS::machineChanged);
+    }
+    this->statesUi->setMachine(newMachine);
+    this->machine = newMachine;
+
+    if (this->machine != nullptr)
+    {
+        connect(this->machine.get(), &Machine::machineEdited, this, &StateS::machineChanged);
+    }
+}
+
+void StateS::loadNewMachine(shared_ptr<Machine> newMachine, const QString& title)
+{
+    this->refreshMachine(newMachine);
+
+    this->statesUi->setAddCheckpointButtonEnabled(false);
+    this->statesUi->setUndoButtonEnabled(false);
+
+    this->undoQueue = QStack<QList<Patch>>();
+    this->updateLatestXml();
+    this->machineIsAtCheckpoint = true;
+    this->currentFilePath = title;
+    this->statesUi->setCurrentFilePath(this->currentFilePath);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -900,6 +900,10 @@ bool Machine::isUnsaved() const
 
 void Machine::setUnsavedState(bool unsaved)
 {
+    if (unsaved == true)
+    {
+        emit machineEdited();
+    }
     if (this->unsaved != unsaved)
     {
         this->unsaved = unsaved;

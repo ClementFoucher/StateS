@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -85,6 +85,22 @@ ToolBar::ToolBar(QWidget* parent) :
     this->actionExportHdl->setToolTip(tr("Export machine to VHDL"));
     connect(this->actionExportHdl, &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
     this->addAction(this->actionExportHdl);
+
+    this->addSeparator();
+
+    this->actionAddCheckpoint = new QAction(this);
+    this->actionAddCheckpoint->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/add_checkpoint"))));
+    this->actionAddCheckpoint->setText(tr("Add checkpoint"));
+    this->actionExportHdl->setToolTip(tr("Add a checkpoint to which you can rollback later"));
+    connect(this->actionAddCheckpoint, &QAction::triggered, this, &ToolBar::addChekpoint);
+    this->addAction(this->actionAddCheckpoint);
+
+    this->actionUndo = new QAction(this);
+    this->actionUndo->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/undo"))));
+    this->actionUndo->setText(tr("Undo"));
+    this->actionUndo->setToolTip(tr("Roll back to latest checkpoint"));
+    connect(this->actionUndo, &QAction::triggered, this, &ToolBar::undo);
+    this->addAction(this->actionUndo);
 }
 
 void ToolBar::setSaveAsActionEnabled(bool enable)
@@ -101,4 +117,14 @@ void ToolBar::setExportActionsEnabled(bool enable)
 {
     this->actionExportImage->setEnabled(enable);
     this->actionExportHdl  ->setEnabled(enable);
+}
+
+void ToolBar::setAddCheckpointActionEnabled(bool enable)
+{
+    this->actionAddCheckpoint->setEnabled(enable);
+}
+
+void ToolBar::setUndoActionEnabled(bool enable)
+{
+    this->actionUndo->setEnabled(enable);
 }

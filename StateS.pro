@@ -19,8 +19,6 @@ QMAKE_TARGET_COPYRIGHT = copyright 2014-2017 Clément Foucher
 
 CONFIG += c++11
 
-QMAKE_CXXFLAGS += -pedantic
-
 SOURCES += \
 # Core
     core/main.cpp \
@@ -32,6 +30,9 @@ SOURCES += \
     core/machine/machineactuatorcomponent.cpp \
     core/machine/machinebuilder.cpp \
     core/machine/machineimageexporter.cpp \
+    core/machine/actiononsignal.cpp \
+    core/machine/machineconfiguration.cpp \
+    core/machine/machinesavefilemanager.cpp \
     core/machine/fsm/fsmcomponent.cpp \
     core/machine/fsm/fsmvhdlexport.cpp \
     core/machine/fsm/fsmverifier.cpp \
@@ -112,12 +113,11 @@ SOURCES += \
     ui/truth_table/truthtabledisplay.cpp \
     ui/truth_table/truthtableinputtablemodel.cpp \
     ui/truth_table/truthtableoutputtablemodel.cpp \
-    core/machine/actiononsignal.cpp \
     ui/resource_bar/component_editor/actiontypecombobox.cpp \
     ui/resource_bar/component_editor/actiontablemodel.cpp \
     ui/resource_bar/component_editor/actiontabledelegate.cpp \
-    core/machine/machineconfiguration.cpp \
-    core/machine/machinesavefilemanager.cpp
+# Other
+    third_party/diff_match_patch/diff_match_patch.cpp
 
 HEADERS  += \
 # Core
@@ -129,6 +129,9 @@ HEADERS  += \
     core/machine/include/machineactuatorcomponent.h \
     core/machine/include/machinebuilder.h \
     core/machine/include/machineimageexporter.h \
+    core/machine/include/actiononsignal.h \
+    core/machine/include/machineconfiguration.h \
+    core/machine/include/machinesavefilemanager.h \
     core/machine/fsm/include/fsmcomponent.h \
     core/machine/fsm/include/fsmvhdlexport.h \
     core/machine/fsm/include/fsmverifier.h \
@@ -208,13 +211,12 @@ HEADERS  += \
     ui/truth_table/include/truthtabledisplay.h \
     ui/truth_table/include/truthtableinputtablemodel.h \
     ui/truth_table/include/truthtableoutputtablemodel.h \
-    core/machine/include/actiononsignal.h \
     ui/resource_bar/component_editor/include/actiontypecombobox.h \
     ui/resource_bar/component_editor/include/actiontablemodel.h \
     ui/resource_bar/component_editor/include/actiontabledelegate.h \
-    core/machine/include/machineconfiguration.h \
-    core/machine/include/machinesavefilemanager.h \
-    ui/scene/include/scenewidget.h
+    ui/scene/include/scenewidget.h \
+# Other
+    third_party/diff_match_patch/diff_match_patch.h
 
 INCLUDEPATH += \
 # Core
@@ -239,7 +241,9 @@ INCLUDEPATH += \
     ui/scene/include \
     ui/scene/fsm/include \
     ui/simulation/include \
-    ui/static/include
+    ui/static/include \
+# Other
+    third_party/diff_match_patch
 
 OTHER_FILES += \
     text/known_bugs.txt \

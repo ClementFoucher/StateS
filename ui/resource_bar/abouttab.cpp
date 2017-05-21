@@ -69,13 +69,13 @@ AboutTab::AboutTab(QWidget* parent) :
     techTitle->setAlignment(Qt::AlignCenter);
     layout->addWidget(techTitle);
 
-    QLabel* copyrightLabel = new QLabel("© 2014-2016 Clément Foucher");
+    QLabel* copyrightLabel = new QLabel("© 2014-2017 Clément Foucher");
     copyrightLabel->setAlignment(Qt::AlignCenter);
     copyrightLabel->setWordWrap(true);
     layout->addWidget(copyrightLabel);
 
 
-    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br /><a href=\"https://www.gnu.org/licenses/gpl-2.0.html\">GNU General Public Licence " + tr("version") + " 2</a>");
+    QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the") + "<br /><a href=\"https://www.gnu.org/licenses/gpl-2.0.html\">" + tr("GNU General Public Licence") + " " + tr("version") + " 2</a>.");
     licenseLabel->setAlignment(Qt::AlignCenter);
     licenseLabel->setWordWrap(true);
     licenseLabel->setTextFormat(Qt::RichText);
@@ -83,13 +83,21 @@ AboutTab::AboutTab(QWidget* parent) :
     licenseLabel->setOpenExternalLinks(true);
     layout->addWidget(licenseLabel);
 
-    QLabel* artLicenseLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/code/ci/master/tree/art/AUTHORS.txt\">" + tr("Credits for art used in StateS") + "</a>");
+    QLabel* artLicenseLabel = new QLabel(tr("See") + " <a href=\"https://sourceforge.net/p/states/code/ci/master/tree/art/AUTHORS.txt\">" + tr("credits for art used in StateS") + "</a>");
     artLicenseLabel->setAlignment(Qt::AlignCenter);
     artLicenseLabel->setWordWrap(true);
     artLicenseLabel->setTextFormat(Qt::RichText);
     artLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     artLicenseLabel->setOpenExternalLinks(true);
     layout->addWidget(artLicenseLabel);
+
+    QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software includes third-party work licensed under the") + " <a href=\"https://www.apache.org/licenses/\">" + tr("Apache License") + " " + tr("version") + " 2.0</a>");
+    thirdPartyLicenseLabel->setAlignment(Qt::AlignCenter);
+    thirdPartyLicenseLabel->setWordWrap(true);
+    thirdPartyLicenseLabel->setTextFormat(Qt::RichText);
+    thirdPartyLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    thirdPartyLicenseLabel->setOpenExternalLinks(true);
+    layout->addWidget(thirdPartyLicenseLabel);
 
 
     QLabel* qtVersionLabel = new QLabel(tr("This application was compiled using") + " Qt " + QT_VERSION_STR + ".\n" + tr("Currently running on") + " Qt " + qVersion() + ".");

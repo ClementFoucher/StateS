@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -121,6 +121,8 @@ signals:
 
     void changedModeEvent(mode newMode);
     void machineUnsavedStateChanged(bool isUnsaved);
+
+    void machineEdited();
 
 protected:
     void setMode(mode newMode);

@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>Distributed under the terms of the</source>
-        <translation>Distribué selon les termes de la licence</translation>
+        <translation>Distribué selon les termes de la</translation>
     </message>
     <message>
         <source>version</source>
@@ -64,8 +64,24 @@
         <translation>Contact et liens</translation>
     </message>
     <message>
-        <source>Credits for art used in StateS</source>
-        <translation>Crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
+        <source>GNU General Public Licence</source>
+        <translation>Licence publique générale GNU</translation>
+    </message>
+    <message>
+        <source>See</source>
+        <translation>Voir</translation>
+    </message>
+    <message>
+        <source>credits for art used in StateS</source>
+        <translation>les crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
+    </message>
+    <message>
+        <source>This software includes third-party work licensed under the</source>
+        <translation>Ce logiciel utilise du travail provenant de sources tierces licenciées sous la</translation>
+    </message>
+    <message>
+        <source>Apache License</source>
+        <translation>licence Apache</translation>
     </message>
 </context>
 <context>
@@ -442,18 +458,6 @@
 <context>
     <name>FsmSaveFileManager</name>
     <message>
-        <source>Machine</source>
-        <translation>Machine</translation>
-    </message>
-    <message>
-        <source>No name was found for the machine.</source>
-        <translation>Aucun nom trouvé pour la machine.</translation>
-    </message>
-    <message>
-        <source>Name defaulted to:</source>
-        <translation>Nom par défaut utilisé :</translation>
-    </message>
-    <message>
         <source>Token ignored.</source>
         <translation>Clé ignorée.</translation>
     </message>
@@ -476,82 +480,6 @@
     <message>
         <source>Unexpected token encountered while parsing transition list:</source>
         <translation>Clé inconnue trouvée lors du parcours de la liste des transitions :</translation>
-    </message>
-    <message>
-        <source>Unexpected token encountered while parsing action list:</source>
-        <translation>Clé inconnue trouvée lors du parcours de la liste des actions :</translation>
-    </message>
-    <message>
-        <source>Action ignored.</source>
-        <translation>Action ignorée.</translation>
-    </message>
-    <message>
-        <source>Reference to undeclared signal encountered while parsing action list:</source>
-        <translation>Référence à un signal non déclaré trouvée lors du parcours de la liste des actions :</translation>
-    </message>
-    <message>
-        <source>Signal name was</source>
-        <translation>Le nom du signal était</translation>
-    </message>
-    <message>
-        <source>Unexpected action type encountered while parsing action list:</source>
-        <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
-    </message>
-    <message>
-        <source>Action type was</source>
-        <translation>Le type d&apos;action était</translation>
-    </message>
-    <message>
-        <source>Error in action value for signal</source>
-        <translation>Erreur dans la valeur de l&apos;action pour le signal</translation>
-    </message>
-    <message>
-        <source>Value ignored and set to</source>
-        <translation>Valeur ignorée et forcée à</translation>
-    </message>
-    <message>
-        <source>Error in constant value while parsing equation:</source>
-        <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
-    </message>
-    <message>
-        <source>Unexpected equation nature encountered while parsing logic equation:</source>
-        <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
-    </message>
-    <message>
-        <source>Equation nature was:</source>
-        <translation>La nature de l&apos;équation était :</translation>
-    </message>
-    <message>
-        <source>Token ignored. Will retry with other tokens if existing.</source>
-        <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
-    </message>
-    <message>
-        <source>Unexpected token encountered while parsing logic equation:</source>
-        <translation>Clé inconne trouvée lors du parcours d&apos;une équation :</translation>
-    </message>
-    <message>
-        <source>signal</source>
-        <translation>signal</translation>
-    </message>
-    <message>
-        <source>equation</source>
-        <translation>équation</translation>
-    </message>
-    <message>
-        <source>Error in action type for signal</source>
-        <translation>Erreur dans le type d&apos;action pour le signal</translation>
-    </message>
-    <message>
-        <source>Default action type used instead.</source>
-        <translation>Type d&apos;action par défaut utilisé.</translation>
-    </message>
-    <message>
-        <source>Error in action range for signal</source>
-        <translation>Erreur dans le range du signal</translation>
-    </message>
-    <message>
-        <source>Range ignored. Default value will be ignored too if present.</source>
-        <translation>Le range a été ignoré. La valeur par défaut sera ignorée également si elle existe.</translation>
     </message>
 </context>
 <context>
@@ -1165,6 +1093,94 @@
         <source>The initial value size does not match signal size.</source>
         <translation>La taille de la valeur initiale ne correspond à celle du signal.</translation>
     </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
+    </message>
+    <message>
+        <source>No name was found for the machine.</source>
+        <translation>Aucun nom trouvé pour la machine.</translation>
+    </message>
+    <message>
+        <source>Name defaulted to:</source>
+        <translation>Nom par défaut utilisé :</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing action list:</source>
+        <translation>Clé inconnue trouvée lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Action ignored.</source>
+        <translation>Action ignorée.</translation>
+    </message>
+    <message>
+        <source>Reference to undeclared signal encountered while parsing action list:</source>
+        <translation>Référence à un signal non déclaré trouvée lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Signal name was</source>
+        <translation>Le nom du signal était</translation>
+    </message>
+    <message>
+        <source>Unexpected action type encountered while parsing action list:</source>
+        <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
+    </message>
+    <message>
+        <source>Action type was</source>
+        <translation>Le type d&apos;action était</translation>
+    </message>
+    <message>
+        <source>Error in action type for signal</source>
+        <translation>Erreur dans le type d&apos;action pour le signal</translation>
+    </message>
+    <message>
+        <source>Default action type used instead.</source>
+        <translation>Type d&apos;action par défaut utilisé.</translation>
+    </message>
+    <message>
+        <source>Error in action range for signal</source>
+        <translation>Erreur dans le range du signal</translation>
+    </message>
+    <message>
+        <source>Range ignored. Default value will be ignored too if present.</source>
+        <translation>Le range a été ignoré. La valeur par défaut sera ignorée également si elle existe.</translation>
+    </message>
+    <message>
+        <source>Error in action value for signal</source>
+        <translation>Erreur dans la valeur de l&apos;action pour le signal</translation>
+    </message>
+    <message>
+        <source>Value ignored and set to</source>
+        <translation>Valeur ignorée et forcée à</translation>
+    </message>
+    <message>
+        <source>Error in constant value while parsing equation:</source>
+        <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>Unexpected equation nature encountered while parsing logic equation:</source>
+        <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>Equation nature was:</source>
+        <translation>La nature de l&apos;équation était :</translation>
+    </message>
+    <message>
+        <source>Token ignored. Will retry with other tokens if existing.</source>
+        <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
+    </message>
+    <message>
+        <source>Unexpected token encountered while parsing logic equation:</source>
+        <translation>Clé inconne trouvée lors du parcours d&apos;une équation :</translation>
+    </message>
+    <message>
+        <source>signal</source>
+        <translation>signal</translation>
+    </message>
+    <message>
+        <source>equation</source>
+        <translation>équation</translation>
+    </message>
 </context>
 <context>
     <name>RangeEditorDialog</name>
@@ -1629,6 +1645,22 @@
     <message>
         <source>Export machine to VHDL</source>
         <translation>Exporter la machine en VHDL</translation>
+    </message>
+    <message>
+        <source>Add checkpoint</source>
+        <translation>Ajouter un marqueur</translation>
+    </message>
+    <message>
+        <source>Add a checkpoint to which you can rollback later</source>
+        <translation>Ajoute un marqueur sur la version actuelle auquel vous pourrez revenir plus tard</translation>
+    </message>
+    <message>
+        <source>Undo</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Roll back to latest checkpoint</source>
+        <translation>Revenir à la dernière version marquée</translation>
     </message>
 </context>
 <context>

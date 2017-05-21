@@ -30,13 +30,10 @@ using namespace std;
 
 // Qt classes
 class QString;
-class QXmlStreamWriter;
 class QDomElement;
 
 // StateS classes
 class Fsm;
-class Signal;
-class MachineActuatorComponent;
 class MachineConfiguration;
 
 
@@ -48,31 +45,28 @@ public: // Static
 
     enum FsmSaveFileManagerErrorEnum
     {
-        unable_to_replace = 0,
-        permission_denied = 1,
-        unkown_directory  = 2,
-        unable_to_open    = 3,
-        inexistant_file   = 4,
-        wrong_xml         = 5
+        wrong_xml = 0
     };
 
 public:
     explicit FsmSaveFileManager(QObject* parent = nullptr);
 
-    void writeToFile(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath); // Throws StatesException
-    shared_ptr<Fsm> loadFromFile(const QString& filePath); // Throws StatesException
-    QList<QString> getLastOperationWarnings();
+    void writeMachineToFile(shared_ptr<Machine> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath) override; // Throws StatesException
+    shared_ptr<Machine> loadMachineFromFile(const QString& filePath) override; // Throws StatesException
+
+    QString getMachineXml(shared_ptr<Machine> machine) override;
+    shared_ptr<Machine> loadMachineFromXml(const QString& machineXml) override;
 
 private:
-    void writeStates(QXmlStreamWriter& stream, shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
-    void writeTransitions(QXmlStreamWriter& stream, shared_ptr<Fsm> machine);
-    void writeLogicEquation(QXmlStreamWriter& stream, shared_ptr<Signal> equation);
-    void writeActions(QXmlStreamWriter& stream, shared_ptr<MachineActuatorComponent> component);
+    void writeFsmToStream(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
 
-    void parseStates(QDomElement element, shared_ptr<Fsm> machine);
-    void parseTransitions(QDomElement element, shared_ptr<Fsm> machine);
-    shared_ptr<Signal> parseEquation(QDomElement element, shared_ptr<Fsm> machine);
-    void parseActions(QDomElement element, shared_ptr<MachineActuatorComponent> component, shared_ptr<Fsm> machine);
+    void writeFsmStates(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
+    void writeFsmTransitions(shared_ptr<Fsm> machine);
+
+    shared_ptr<Fsm> loadFsmFromDocument();
+
+    void parseFsmStates(QDomElement element, shared_ptr<Fsm> machine);
+    void parseFsmTransitions(QDomElement element, shared_ptr<Fsm> machine);
 };
 
 #endif // FSMSAVEFILEMANAGER_H
