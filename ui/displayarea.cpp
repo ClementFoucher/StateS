@@ -34,15 +34,12 @@ DisplayArea::DisplayArea(QWidget* parent) :
 {
     this->setWindowFlags(Qt::Widget);
     this->setContextMenuPolicy(Qt::NoContextMenu);
-    this->machineDisplayArea = new SceneWidget();
-
-    connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);
-    connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &DisplayArea::editSelectedItemEvent);
-    connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &DisplayArea::renameSelectedItemEvent);
 
     this->toolBar = new ToolBar(this);
     this->toolBar->setMovable(true);
     this->addToolBar(Qt::LeftToolBarArea, this->toolBar);
+
+    this->machineDisplayArea = new SceneWidget();
 
     this->currentDisplayArea = this->machineDisplayArea;
     this->showCurrentDisplay();
@@ -66,44 +63,14 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
     this->resetDisplay();
 }
 
-GenericScene* DisplayArea::getScene() const
-{
-    return this->machineDisplayArea->getScene();
-}
-
 ToolBar* DisplayArea::getToolbar() const
 {
     return this->toolBar;
 }
 
-QRectF DisplayArea::getVisibleArea() const
+SceneWidget* DisplayArea::getSceneWidget()
 {
-    return this->machineDisplayArea->getVisibleArea();
-}
-
-void DisplayArea::setViewCenter(const QPointF& center)
-{
-    this->machineDisplayArea->centerOn(center);
-}
-
-qreal DisplayArea::getZoomLevel() const
-{
-    return this->machineDisplayArea->transform().m11();
-}
-
-void DisplayArea::setZoomLevel(qreal level)
-{
-    this->machineDisplayArea->setZoomLevel(level);
-}
-
-void DisplayArea::clearSelection()
-{
-    this->machineDisplayArea->getScene()->clearSelection();
-}
-
-QRectF DisplayArea::getSceneMinimalRect() const
-{
-    return this->machineDisplayArea->getScene()->itemsBoundingRect();
+    return this->machineDisplayArea;
 }
 
 void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)

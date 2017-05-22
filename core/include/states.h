@@ -34,7 +34,7 @@ using namespace std;
 #include <QList>
 
 // Diff Match Patch classes
-class Patch;
+#include "diff_match_patch.h"
 
 // StateS classes
 class StatesUi;
@@ -59,7 +59,6 @@ public:
 
 public:
     explicit StateS(const QString& initialFilePath = QString::null);
-    ~StateS();
 
     void run();
 
@@ -69,19 +68,22 @@ public slots:
     void undo();
 
 private slots:
-    void generateNewFsm();
     void clearMachine();
+
+    void saveCurrentMachine(const QString& path);
+    void saveCurrentMachineInCurrentFile();
+
+    void generateNewFsm();
     void loadFsm(const QString& path);
-    void saveCurrentMachine(const QString& path, shared_ptr<MachineConfiguration> configuration);
-    void saveCurrentMachineInCurrentFile(shared_ptr<MachineConfiguration> configuration);
 
 private:
-    void updateLatestXml();
     void refreshMachine(shared_ptr<Machine> newMachine);
-    void loadNewMachine(shared_ptr<Machine> newMachine, const QString& title);
+    void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
+    void updateLatestXml();
+    void updateFilePath(const QString& newPath);
 
 private:
-    unique_ptr<StatesUi> statesUi;
+    shared_ptr<StatesUi> statesUi;
     shared_ptr<Machine>  machine;
 
     QString currentFilePath = QString::null;
@@ -90,6 +92,7 @@ private:
     QStack<QList<Patch>> undoQueue;
 
     bool machineIsAtCheckpoint;
+    bool machineSaved;
 };
 
 #endif // STATES_H

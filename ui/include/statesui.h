@@ -35,6 +35,8 @@ class ResourceBar;
 class DisplayArea;
 class MachineComponent;
 class MachineConfiguration;
+class ToolBar;
+class SceneWidget;
 
 
 /**
@@ -59,8 +61,10 @@ public:
     explicit StatesUi();
 
     void setMachine(shared_ptr<Machine> newMachine);
-    void setCurrentFilePath(const QString& path);
+    void setTitle(const QString& title);
+    void setUnsavedFlag(bool unsaved);
     void setConfiguration(shared_ptr<MachineConfiguration> configuration);
+    shared_ptr<MachineConfiguration> getConfiguration() const;
 
     void dragEnterEvent(QDragEnterEvent* event);
     void dropEvent(QDropEvent* event);
@@ -68,18 +72,20 @@ public:
     void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
     void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
+    void setSaveAsActionEnabled       (bool enable);
+    void setSaveActionEnabled         (bool enable);
+    void setExportActionsEnabled      (bool enable);
     void setAddCheckpointButtonEnabled(bool enabled);
-    void setUndoButtonEnabled(bool enabled);
+    void setUndoButtonEnabled         (bool enabled);
 
 signals:
     void newFsmRequestEvent();
     void clearMachineRequestEvent();
     void loadMachineRequestEvent(const QString& path);
-    void saveMachineRequestEvent(const QString& path, shared_ptr<MachineConfiguration> configuration);
-    void saveMachineInCurrentFileRequestEvent(shared_ptr<MachineConfiguration> configuration);
-
-    void addCheckpoint();
-    void undo();
+    void saveMachineRequestEvent(const QString& path);
+    void saveMachineInCurrentFileRequestEvent();
+    void addCheckpointRequestEvent();
+    void undoRequestEvent();
 
 protected:
     void closeEvent     (QCloseEvent* event) override;
@@ -99,22 +105,21 @@ private slots:
     void editSelectedItem();
     void renameSelectedItem();
 
-    void machineUnsavedStateChangedEventHandler(bool);
-
 private:
     void updateTitle();
-    shared_ptr<MachineConfiguration> buildConfiguration() const;
     bool displayUnsavedConfirmation(const QString& cause);
-    QString getCurrentDirPath() const;
 
 private:
     // Display area and resource bar
     DisplayArea* displayArea = nullptr;
+    ToolBar*     toolbar     = nullptr;
+    SceneWidget* sceneWidget = nullptr;
     ResourceBar* resourceBar = nullptr;
 
     // Current machine
     weak_ptr<Machine> machine;
-    QString currentFilePath = QString::null;
+    QString windowTitle = QString::null;
+    bool unsavedFlag = false;
 };
 
 #endif // STATESUI_H

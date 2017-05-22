@@ -141,6 +141,11 @@ GenericScene* SceneWidget::getScene() const
     return dynamic_cast<GenericScene*>(this->scene());
 }
 
+qreal SceneWidget::getZoomLevel()
+{
+    return this->transform().m11();
+}
+
 void SceneWidget::setZoomLevel(qreal level)
 {
     QTransform scaleMatrix;

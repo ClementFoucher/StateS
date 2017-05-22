@@ -58,6 +58,7 @@ public:
 
 public:
     explicit Machine();
+    ~Machine();
 
     // Accessors
 
@@ -108,9 +109,6 @@ public:
     bool cleanSignalName(QString& nameToClean) const;
     QString getUniqueSignalName(const QString& prefix) const;
 
-    bool isUnsaved() const;
-    void setUnsavedState(bool unsaved);
-
 signals:
     void nameChangedEvent(const QString& newName);
     void inputListChangedEvent();
@@ -136,6 +134,9 @@ private:
     bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
 
     void rebuildComponentVisualization();
+
+protected:
+    bool isBeingDestroyed = false;
 
 private:
     // Store all signals as shared_ptr<Signal> for helper functions,
@@ -164,7 +165,6 @@ private:
     shared_ptr<MachineBuilder> machineBuilder = nullptr;
     mode currentMode = mode::editMode;
 
-    bool unsaved = false;
     weak_ptr<MachineSimulator> simulator;
 };
 

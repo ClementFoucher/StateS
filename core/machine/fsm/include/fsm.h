@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,6 +41,7 @@ class Fsm : public Machine, public enable_shared_from_this<Fsm>
 
 public:
     explicit Fsm();
+    ~Fsm();
 
     // States
     shared_ptr<FsmState> addState(QString name = QString());

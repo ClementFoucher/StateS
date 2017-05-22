@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,6 +44,10 @@ FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name) :
 
 FsmState::~FsmState()
 {
+    // Do not propgate events on deletion
+    disconnect(this, &FsmState::stateRenamedEvent,           this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    disconnect(this, &FsmState::stateLogicStateChangedEvent, this, &MachineComponent::componentDynamicStateChangedEvent);
+
     // For each incoming transition, contact owner to explicitly delete it
 
     this->cleanIncomingTransitionsList(); // Clean first so that all transitions are valid
@@ -135,7 +139,8 @@ void FsmState::removeOutgoingTransition(shared_ptr<FsmTransition> transition)
     disconnect(transition.get(), &FsmTransition::componentStaticConfigurationChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
     this->outputTransitions.removeAll(transition);
 
-    emit componentStaticConfigurationChangedEvent();
+    if (this->getOwningMachine() != nullptr) // Owning machine is not being destroyed
+        emit componentStaticConfigurationChangedEvent();
 }
 
 const QList<shared_ptr<FsmTransition>> FsmState::getOutgoingTransitions() const
@@ -167,7 +172,9 @@ void FsmState::removeIncomingTransition(shared_ptr<FsmTransition> transition)
         }
     }
     this->inputTransitions = newList;
-    emit componentStaticConfigurationChangedEvent();
+
+    if (this->getOwningMachine() != nullptr) // Owning machine is not being destroyed
+        emit componentStaticConfigurationChangedEvent();
 }
 
 const QList<weak_ptr<FsmTransition>> FsmState::getIncomingTransitions()

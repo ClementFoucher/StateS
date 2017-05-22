@@ -31,76 +31,85 @@ ToolBar::ToolBar(QWidget* parent) :
 {
     this->setIconSize(QSize(64, 64));
 
+    // Build actions
+
     this->actionSaveAs = new QAction(this);
     this->actionSaveAs->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save_as"))));
     this->actionSaveAs->setText(tr("Save"));
     this->actionSaveAs->setToolTip(tr("Save machine in a new file"));
-    connect(this->actionSaveAs, &QAction::triggered, this, &ToolBar::saveAsRequestedEvent);
-    this->addAction(this->actionSaveAs);
 
     this->actionSave = new QAction(this);
     this->actionSave->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/save"))));
     this->actionSave->setText(tr("Save as"));
     this->actionSave->setToolTip(tr("Update saved file with current content") + " (" + tr("use ctrl+S shortcut to avoid confirm dialog") + ")");
-    this->actionSave->setEnabled(false);
-    connect(this->actionSave, &QAction::triggered, this, &ToolBar::saveRequestedEvent);
-    this->addAction(this->actionSave);
 
     this->actionLoad = new QAction(this);
     this->actionLoad->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/load"))));
     this->actionLoad->setText(tr("Load"));
     this->actionLoad->setToolTip(tr("Load machine from file"));
-    connect(this->actionLoad, &QAction::triggered, this, &ToolBar::loadRequestedEvent);
-    this->addAction(this->actionLoad);
-
-    this->addSeparator();
 
     this->actionNewFsm = new QAction(this);
-    //this->actionNewFsm->setIcon(QIcon(StateS::getPixmapFromSvg(QString(":/icons/new_FSM"))));
+    //this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/new_FSM"))));
     this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionNewFsm->setText(tr("New FSM"));
     this->actionNewFsm->setToolTip(tr("Create new FSM"));
-    connect(this->actionNewFsm, &QAction::triggered, this, &ToolBar::newMachineRequestedEvent);
-    this->addAction(this->actionNewFsm);
 
    /* this->actionClear = new QAction(this);
     this->actionClear->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
     this->actionClear->setText(tr("Clear"));
-    this->actionClear->setToolTip(tr("Clear machine"));
-    connect(this->actionClear, &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
-    this->addAction(this->actionClear);*/
-
-    this->addSeparator();
+    this->actionClear->setToolTip(tr("Clear machine"));*/
 
     this->actionExportImage = new QAction(this);
     this->actionExportImage->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_image"))));
     this->actionExportImage->setText(tr("Export to image file"));
     this->actionExportImage->setToolTip(tr("Export machine to an image file"));
-    connect(this->actionExportImage, &QAction::triggered, this, &ToolBar::exportImageRequestedEvent);
-    this->addAction(this->actionExportImage);
 
     this->actionExportHdl = new QAction(this);
     this->actionExportHdl->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
     this->actionExportHdl->setText(tr("Export to VHDL"));
     this->actionExportHdl->setToolTip(tr("Export machine to VHDL"));
-    connect(this->actionExportHdl, &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
-    this->addAction(this->actionExportHdl);
-
-    this->addSeparator();
 
     this->actionAddCheckpoint = new QAction(this);
     this->actionAddCheckpoint->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/add_checkpoint"))));
     this->actionAddCheckpoint->setText(tr("Add checkpoint"));
-    this->actionExportHdl->setToolTip(tr("Add a checkpoint to which you can rollback later"));
-    connect(this->actionAddCheckpoint, &QAction::triggered, this, &ToolBar::addChekpoint);
-    this->addAction(this->actionAddCheckpoint);
+    this->actionAddCheckpoint->setToolTip(tr("Add a checkpoint to which you can rollback later"));
 
     this->actionUndo = new QAction(this);
     this->actionUndo->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/undo"))));
     this->actionUndo->setText(tr("Undo"));
     this->actionUndo->setToolTip(tr("Roll back to latest checkpoint"));
-    connect(this->actionUndo, &QAction::triggered, this, &ToolBar::undo);
+
+    this->actionSaveAs->setEnabled(false);
+    this->actionSave->setEnabled(false);
+    this->actionExportImage->setEnabled(false);
+    this->actionExportHdl->setEnabled(false);
+    this->actionAddCheckpoint->setEnabled(false);
+    this->actionUndo->setEnabled(false);
+
+    // Add actions
+    this->addAction(this->actionSaveAs);
+    this->addAction(this->actionSave);
+    this->addAction(this->actionLoad);
+    this->addSeparator();
+    this->addAction(this->actionNewFsm);
+    //this->addAction(this->actionClear);
+    this->addSeparator();
+    this->addAction(this->actionExportImage);
+    this->addAction(this->actionExportHdl);
+    this->addSeparator();
+    this->addAction(this->actionAddCheckpoint);
     this->addAction(this->actionUndo);
+
+    // Connect actions
+    connect(this->actionSaveAs,        &QAction::triggered, this, &ToolBar::saveAsRequestedEvent);
+    connect(this->actionSave,          &QAction::triggered, this, &ToolBar::saveRequestedEvent);
+    connect(this->actionLoad,          &QAction::triggered, this, &ToolBar::loadRequestedEvent);
+    connect(this->actionNewFsm,        &QAction::triggered, this, &ToolBar::newMachineRequestedEvent);
+    //connect(this->actionClear,         &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
+    connect(this->actionExportImage,   &QAction::triggered, this, &ToolBar::exportImageRequestedEvent);
+    connect(this->actionExportHdl,     &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
+    connect(this->actionAddCheckpoint, &QAction::triggered, this, &ToolBar::addChekpoint);
+    connect(this->actionUndo,          &QAction::triggered, this, &ToolBar::undo);
 }
 
 void ToolBar::setSaveAsActionEnabled(bool enable)

@@ -45,6 +45,8 @@ class GenericScene;
  * @brief The DisplayArea class handles the central display.
  * Usually, this is just the machine graphic representation,
  * but in simulation mode, the timeline is also handled here.
+ * DisplayArea ilso owns the tool bar to allow placing it near
+ * the resoure bar.
  */
 class DisplayArea : public QMainWindow
 {
@@ -54,19 +56,9 @@ public:
     explicit DisplayArea(QWidget* parent = nullptr);
 
     void setMachine(shared_ptr<Machine> newMachine);
-    GenericScene* getScene() const;
-    ToolBar* getToolbar() const;
-    QRectF getVisibleArea() const;
-    void setViewCenter(const QPointF& center);
-    qreal getZoomLevel() const;
-    void setZoomLevel(qreal level);
-    void clearSelection();
-    QRectF getSceneMinimalRect() const;
 
-signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+    ToolBar* getToolbar() const;
+    SceneWidget* getSceneWidget();
 
 private slots:
     void simulationModeToggledEventHandler(Machine::mode newMode);

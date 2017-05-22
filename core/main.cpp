@@ -32,6 +32,7 @@ using namespace std;
 #include "langselectiondialog.h"
 #include "states.h"
 #include "statesexception.h"
+#include "statesui.h"
 
 #define DEBUG_TO_FILE 0
 

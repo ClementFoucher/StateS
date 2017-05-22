@@ -59,6 +59,8 @@ public:
 
     void setMachine(shared_ptr<Machine> newMachine); // TODO: throw exception
     GenericScene* getScene() const;
+
+    qreal getZoomLevel();
     void setZoomLevel(qreal level);
     QRectF getVisibleArea() const;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,6 +32,12 @@ Fsm::Fsm()
 
 }
 
+Fsm::~Fsm()
+{
+    this->isBeingDestroyed = true;
+    this->clear();
+}
+
 const QList<shared_ptr<FsmState>>& Fsm::getStates() const
 {
     return states;
@@ -43,7 +49,7 @@ shared_ptr<FsmState> Fsm::addState(QString name)
     connect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::savableValueEditedEventHandler);
     states.append(state);
 
-    this->setUnsavedState(true);
+    emit machineEdited();
 
     return state;
 }
@@ -52,7 +58,9 @@ void Fsm::removeState(shared_ptr<FsmState> state)
 {
     disconnect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::savableValueEditedEventHandler);
     states.removeAll(state);
-    this->setUnsavedState(true);
+
+    if (this->isBeingDestroyed == false)
+        emit machineEdited();
 }
 
 bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
@@ -69,7 +77,7 @@ bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
     {
         // Nothing to do, but still force event to reloead text
         state->setName(cleanedName);
-        this->setUnsavedState(true);
+        emit machineEdited();
         return true;
     }
 
@@ -79,7 +87,7 @@ bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
     if (actualName == cleanedName)
     {
         state->setName(actualName);
-        this->setUnsavedState(true);
+        emit machineEdited();
         return true;
     }
     else
@@ -195,13 +203,16 @@ void Fsm::setInitialState(const QString& name)
         {
             this->initialState = newInitialState;
 
-            if (newInitialState != nullptr)
-                emit newInitialState->componentStaticConfigurationChangedEvent();
+            if (this->isBeingDestroyed == false)
+            {
+                if (newInitialState != nullptr)
+                    emit newInitialState->componentStaticConfigurationChangedEvent();
 
-            if (previousInitialState != nullptr)
-                emit previousInitialState->componentStaticConfigurationChangedEvent();
+                if (previousInitialState != nullptr)
+                    emit previousInitialState->componentStaticConfigurationChangedEvent();
 
-            this->setUnsavedState(true);
+                emit machineEdited();
+            }
         }
     }
 }
@@ -213,7 +224,7 @@ shared_ptr<FsmState> Fsm::getInitialState() const
 
 void Fsm::savableValueEditedEventHandler()
 {
-    this->setUnsavedState(true);
+    emit machineEdited();
 }
 
 shared_ptr<FsmState> Fsm::getStateByName(const QString &name) const

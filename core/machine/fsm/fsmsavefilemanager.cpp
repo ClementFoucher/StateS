@@ -60,8 +60,6 @@ void FsmSaveFileManager::writeMachineToFile(shared_ptr<Machine> machine, shared_
     this->createSaveFile(filePath);
     this->writeFsmToStream(dynamic_pointer_cast<Fsm>(machine), configuration);
     this->finalizeSaveFile();
-
-    machine->setUnsavedState(false);
 }
 
 shared_ptr<Machine> FsmSaveFileManager::loadMachineFromFile(const QString& filePath)
@@ -71,7 +69,6 @@ shared_ptr<Machine> FsmSaveFileManager::loadMachineFromFile(const QString& fileP
     shared_ptr<Fsm> machine = this->loadFsmFromDocument();
 
     this->closeLoadFile();
-    machine->setUnsavedState(false);
 
     return machine;
 }

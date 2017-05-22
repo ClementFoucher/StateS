@@ -46,6 +46,7 @@
 #include "errordisplaydialog.h"
 #include "toolbar.h"
 #include "machineconfiguration.h"
+#include "scenewidget.h"
 
 
 StatesUi::StatesUi() :
@@ -71,83 +72,47 @@ StatesUi::StatesUi() :
 
     this->displayArea = new DisplayArea(splitter);
     this->resourceBar = new ResourceBar(splitter);
+    this->toolbar     = this->displayArea->getToolbar();
+    this->sceneWidget = this->displayArea->getSceneWidget();
 
-    connect(this->displayArea, &DisplayArea::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
-    connect(this->displayArea, &DisplayArea::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
-    connect(this->displayArea, &DisplayArea::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
+    connect(this->sceneWidget, &SceneWidget::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
+    connect(this->sceneWidget, &SceneWidget::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
+    connect(this->sceneWidget, &SceneWidget::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
 
+    // Begin view with 2/3 scene - 1/3 resource bar
     QList<int> widths;
-    // Begin with 2/3 - 1/3
     widths.append( ( 66 * splitter->sizeHint().width() ) / 100 );
     widths.append( ( 33 * splitter->sizeHint().width() ) / 100 );
     splitter->setSizes(widths);
 
     // Connect tool bar
-    ToolBar* toolBar = this->displayArea->getToolbar();
-
-    connect(toolBar, &ToolBar::saveAsRequestedEvent,      this, &StatesUi::beginSaveAsProcedure);
-    connect(toolBar, &ToolBar::saveRequestedEvent,        this, &StatesUi::beginSaveProcedure);
-    connect(toolBar, &ToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
-    connect(toolBar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
-    connect(toolBar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
-    connect(toolBar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
-    connect(toolBar, &ToolBar::addChekpoint,              this, &StatesUi::addCheckpoint);
-    connect(toolBar, &ToolBar::undo,                      this, &StatesUi::undo);
-
-    toolBar->setAddCheckpointActionEnabled(false);
-    toolBar->setUndoActionEnabled(false);
+    connect(this->toolbar, &ToolBar::saveAsRequestedEvent,      this, &StatesUi::beginSaveAsProcedure);
+    connect(this->toolbar, &ToolBar::saveRequestedEvent,        this, &StatesUi::beginSaveProcedure);
+    connect(this->toolbar, &ToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
+    connect(this->toolbar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
+    connect(this->toolbar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
+    connect(this->toolbar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
+    connect(this->toolbar, &ToolBar::addChekpoint,              this, &StatesUi::addCheckpointRequestEvent);
+    connect(this->toolbar, &ToolBar::undo,                      this, &StatesUi::undoRequestEvent);
 }
 
 void StatesUi::setMachine(shared_ptr<Machine> newMachine)
 {
-    if (! this->machine.expired())
-    {
-        disconnect(this->machine.lock().get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
-    }
-
-    ToolBar* toolBar = this->displayArea->getToolbar();
-    if (newMachine != nullptr)
-    {
-        toolBar->setSaveAsActionEnabled(true);
-        //toolBar->setClearActionEnabled(true);
-        toolBar->setExportActionsEnabled(true);
-
-        if (this->currentFilePath.length() != 0)
-            toolBar->setSaveActionEnabled(newMachine->isUnsaved());
-        else
-            toolBar->setSaveActionEnabled(false);
-
-        connect(newMachine.get(), &Machine::machineUnsavedStateChanged, this, &StatesUi::machineUnsavedStateChangedEventHandler);
-    }
-    else
-    {
-        toolBar->setSaveActionEnabled(false);
-        //toolBar->setClearActionEnabled(false);
-        toolBar->setExportActionsEnabled(false);
-        toolBar->setSaveActionEnabled(false);
-    }
-
     this->machine = newMachine;
 
     this->resourceBar->setMachine(newMachine);
     this->displayArea->setMachine(newMachine);
 }
 
-void StatesUi::setCurrentFilePath(const QString& path)
+void StatesUi::setTitle(const QString& title)
 {
-    shared_ptr<Machine> l_machine = this->machine.lock();
+    this->windowTitle = title;
+    this->updateTitle();
+}
 
-    if (l_machine != nullptr)
-    {
-        this->currentFilePath = path;
-
-        ToolBar* toolBar = this->displayArea->getToolbar();
-        if (path.length() != 0)
-            toolBar->setSaveActionEnabled(l_machine->isUnsaved());
-        else
-            toolBar->setSaveActionEnabled(false);
-    }
-
+void StatesUi::setUnsavedFlag(bool unsaved)
+{
+    this->unsavedFlag = unsaved;
     this->updateTitle();
 }
 
@@ -155,8 +120,8 @@ void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
 {
     if (configuration != nullptr)
     {
-        this->displayArea->setZoomLevel(configuration->zoomLevel);
-        this->displayArea->setViewCenter(configuration->viewCenter);
+        this->sceneWidget->setZoomLevel(configuration->zoomLevel);
+        this->sceneWidget->centerOn(configuration->viewCenter);
     }
 }
 
@@ -203,9 +168,9 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 
     if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
-        if (! this->currentFilePath.isEmpty())
+        if (! this->windowTitle.isEmpty())
         {
-            emit this->saveMachineInCurrentFileRequestEvent(this->buildConfiguration());
+            emit this->saveMachineInCurrentFileRequestEvent();
             // Should make button blink for one second.
             // How to without locking UI?
         }
@@ -242,11 +207,11 @@ void StatesUi::beginExportImageProcedure()
 
     if (l_machine != nullptr)
     {
-        this->displayArea->clearSelection();
+        this->sceneWidget->getScene()->clearSelection();
 
-        shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, this->displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
+        shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, this->sceneWidget->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
-        unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, this->getCurrentDirPath()));
+        unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, this->windowTitle));
         exportOptions->setModal(true);
 
         exportOptions->exec();
@@ -270,7 +235,7 @@ void StatesUi::beginExportVhdlProcedure()
         unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport(dynamic_pointer_cast<Fsm>(l_machine)));
         shared_ptr<FsmVhdlExport::ExportCompatibility> compat = exporter->checkCompatibility();
 
-        unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->getCurrentDirPath(), !compat->isCompatible()));
+        unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->windowTitle, !compat->isCompatible()));
         exportOptions->setModal(true);
 
 
@@ -300,22 +265,6 @@ void StatesUi::renameSelectedItem()
     this->resourceBar->renameSelectedItem();
 }
 
-void StatesUi::machineUnsavedStateChangedEventHandler(bool)
-{
-    shared_ptr<Machine> l_machine = this->machine.lock();
-
-    if (l_machine != nullptr)
-    {
-        ToolBar* toolBar = this->displayArea->getToolbar();
-        if (this->currentFilePath.length() != 0)
-            toolBar->setSaveActionEnabled(l_machine->isUnsaved());
-        else
-            toolBar->setSaveActionEnabled(false);
-    }
-
-    this->updateTitle();
-}
-
 void StatesUi::beginSaveAsProcedure()
 {
     shared_ptr<Machine> l_machine = this->machine.lock();
@@ -329,7 +278,7 @@ void StatesUi::beginSaveAsProcedure()
             if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
                 fileName += ".SfsmS";
 
-            emit this->saveMachineRequestEvent(fileName, this->buildConfiguration());
+            emit this->saveMachineRequestEvent(fileName);
         }
     }
 }
@@ -356,7 +305,7 @@ void StatesUi::beginSaveProcedure()
     if (! this->machine.expired())
     {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->currentFilePath + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
+        reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->windowTitle + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
 
         if (reply == QMessageBox::StandardButton::Ok)
         {
@@ -366,7 +315,7 @@ void StatesUi::beginSaveProcedure()
 
     if (doSave)
     {
-        emit saveMachineInCurrentFileRequestEvent(this->buildConfiguration());
+        emit saveMachineInCurrentFileRequestEvent();
     }
 }
 
@@ -382,9 +331,9 @@ void StatesUi::updateTitle()
     {
         QString title;
 
-        if (this->currentFilePath != QString::null)
+        if (this->windowTitle != QString::null)
         {
-            title = "StateS — " + this->currentFilePath;
+            title = "StateS — " + this->windowTitle;
 
         }
         else
@@ -392,20 +341,20 @@ void StatesUi::updateTitle()
             title = "StateS — (" + tr("Unsaved machine") + ")";
         }
 
-        if (l_machine->isUnsaved())
+        if (this->unsavedFlag == true)
             title += "*";
 
         this->setWindowTitle(title);
     }
 }
 
-shared_ptr<MachineConfiguration> StatesUi::buildConfiguration() const
+shared_ptr<MachineConfiguration> StatesUi::getConfiguration() const
 {
     shared_ptr<MachineConfiguration> configuration(new MachineConfiguration());
 
-    configuration->sceneTranslation = -(this->displayArea->getSceneMinimalRect().topLeft());
-    configuration->zoomLevel        = this->displayArea->getZoomLevel();
-    configuration->viewCenter       = this->displayArea->getVisibleArea().center();
+    configuration->sceneTranslation = -(this->sceneWidget->getScene()->itemsBoundingRect().topLeft());
+    configuration->zoomLevel        = this->sceneWidget->getZoomLevel();
+    configuration->viewCenter       = this->sceneWidget->getVisibleArea().center();
 
     return configuration;
 }
@@ -416,7 +365,7 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
 
     shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if ( (l_machine != nullptr) && (l_machine->isUnsaved()) )
+    if ( (l_machine != nullptr) && (this->unsavedFlag == true) )
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, tr("User confirmation needed"), cause + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
@@ -432,11 +381,6 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
     }
 
     return userConfirmed;
-}
-
-QString StatesUi::getCurrentDirPath() const
-{
-    return this->currentFilePath;
 }
 
 void StatesUi::dragEnterEvent(QDragEnterEvent* event)
@@ -479,12 +423,27 @@ void StatesUi::displayErrorMessage(const QString& errorTitle, const QString& err
     errorDialog->exec();
 }
 
+void StatesUi::setSaveAsActionEnabled(bool enable)
+{
+    this->toolbar->setSaveAsActionEnabled(enable);
+}
+
+void StatesUi::setSaveActionEnabled(bool enable)
+{
+    this->toolbar->setSaveActionEnabled(enable);
+}
+
+void StatesUi::setExportActionsEnabled(bool enable)
+{
+    this->toolbar->setExportActionsEnabled(enable);
+}
+
 void StatesUi::setAddCheckpointButtonEnabled(bool enabled)
 {
-    this->displayArea->getToolbar()->setAddCheckpointActionEnabled(enabled);
+    this->toolbar->setAddCheckpointActionEnabled(enabled);
 }
 
 void StatesUi::setUndoButtonEnabled(bool enabled)
 {
-    this->displayArea->getToolbar()->setUndoActionEnabled(enabled);
+    this->toolbar->setUndoActionEnabled(enabled);
 }
