@@ -27,6 +27,7 @@
 #include <QDomElement>
 
 // StateS classes
+#include "states.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmgraphicstate.h"
@@ -210,6 +211,7 @@ void FsmSaveFileManager::writeFsmToStream(shared_ptr<Fsm> machine, shared_ptr<Ma
 {
     this->stream->writeStartElement("FSM");
     this->stream->writeAttribute("Name", machine->getName());
+    this->stream->writeAttribute("StateS_version", StateS::getVersion());
 
     this->writeMachineCommonElements(machine, configuration);
     this->writeFsmStates(machine, configuration);

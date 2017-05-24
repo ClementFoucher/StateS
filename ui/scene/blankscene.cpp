@@ -24,6 +24,8 @@
 
 #include <QFont>
 #include <QGraphicsItem>
+
+
 BlankScene::BlankScene(QObject* parent) :
     GenericScene(parent)
 {

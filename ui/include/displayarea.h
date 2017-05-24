@@ -37,8 +37,6 @@ class QTabWidget;
 class SceneWidget;
 class SimulationWidget;
 class ToolBar;
-class MachineComponent;
-class GenericScene;
 
 
 /**
@@ -57,8 +55,8 @@ public:
 
     void setMachine(shared_ptr<Machine> newMachine);
 
-    ToolBar* getToolbar() const;
-    SceneWidget* getSceneWidget();
+    ToolBar*     getToolbar()     const;
+    SceneWidget* getSceneWidget() const;
 
 private slots:
     void simulationModeToggledEventHandler(Machine::mode newMode);
@@ -66,21 +64,14 @@ private slots:
 
 private:
     void displayTabs();
-    void displayScene();
     void resetDisplay();
-    void showCurrentDisplay();
+    void setCurrentDisplay(QWidget* newDisplay);
 
 private:
-    // Content
     SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
-    SimulationWidget* timeline           = nullptr;
-    ToolBar*          toolBar            = nullptr;
-
-    // Used if containing both widgets at the same time
-    QTabWidget*       tabbedDisplayArea  = nullptr;
-
-    // Used to remember which widget is currently displayed
-    QWidget*          currentDisplayArea = nullptr;
+    ToolBar*          toolBar            = nullptr; // Persistant through object life
+    SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
+    QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
 
     weak_ptr<Machine> machine;
 };

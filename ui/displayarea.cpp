@@ -22,6 +22,9 @@
 // Current class header
 #include "displayarea.h"
 
+// Qt classes
+//#include <Connection>
+
 // StateS classes
 #include "scenewidget.h"
 #include "simulationwidget.h"
@@ -39,26 +42,27 @@ DisplayArea::DisplayArea(QWidget* parent) :
     this->toolBar->setMovable(true);
     this->addToolBar(Qt::LeftToolBarArea, this->toolBar);
 
-    this->machineDisplayArea = new SceneWidget();
+    this->machineDisplayArea = new SceneWidget(this);
 
-    this->currentDisplayArea = this->machineDisplayArea;
-    this->showCurrentDisplay();
+    this->setCurrentDisplay(this->machineDisplayArea);
 }
 
 void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 {
     // Clear
     shared_ptr<Machine> oldMachine = this->machine.lock();
-
     if (oldMachine != nullptr)
+    {
         disconnect(oldMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+    }
 
     // Set
-    this->machineDisplayArea->setMachine(newMachine);
     this->machine = newMachine;
 
     if (newMachine != nullptr)
+    {
         connect(newMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+    }
 
     this->resetDisplay();
 }
@@ -68,7 +72,7 @@ ToolBar* DisplayArea::getToolbar() const
     return this->toolBar;
 }
 
-SceneWidget* DisplayArea::getSceneWidget()
+SceneWidget* DisplayArea::getSceneWidget() const
 {
     return this->machineDisplayArea;
 }
@@ -96,8 +100,15 @@ void DisplayArea::setTimelineDetachedState(bool detach)
     {
         if (detach)
         {
-            this->displayScene();
+            // Must be done first to not delete display area along with tabs
+            this->setCurrentDisplay(this->machineDisplayArea);
+
+            // Detach timeline as an independent window
+            this->timeline->setParent(nullptr);
             this->timeline->show();
+
+            delete this->tabbedDisplayArea;
+            this->tabbedDisplayArea = nullptr;
         }
         else
         {
@@ -115,43 +126,24 @@ void DisplayArea::displayTabs()
         this->tabbedDisplayArea->addTab(this->machineDisplayArea, tr("Machine"));
         this->tabbedDisplayArea->addTab(this->timeline,           tr("Timeline"));
 
-        this->currentDisplayArea = this->tabbedDisplayArea;
-        this->showCurrentDisplay();
+        this->setCurrentDisplay(this->tabbedDisplayArea);
     }
-}
-
-void DisplayArea::displayScene()
-{
-    this->machineDisplayArea->setParent(this);
-    if (this->timeline != nullptr)
-    {
-        this->timeline->setParent(nullptr);
-        this->timeline->show();
-    }
-
-    delete this->tabbedDisplayArea;
-    this->tabbedDisplayArea = nullptr;
-
-    this->currentDisplayArea = this->machineDisplayArea;
-    this->showCurrentDisplay();
 }
 
 void DisplayArea::resetDisplay()
 {
-    this->machineDisplayArea->setParent(this);
+    // Must be done first to not delete display area along with tabs
+    this->setCurrentDisplay(this->machineDisplayArea);
 
     delete this->timeline;
     delete this->tabbedDisplayArea;
 
     this->timeline           = nullptr;
     this->tabbedDisplayArea  = nullptr;
-
-    this->currentDisplayArea = this->machineDisplayArea;
-    this->showCurrentDisplay();
 }
 
-void DisplayArea::showCurrentDisplay()
+void DisplayArea::setCurrentDisplay(QWidget* newDisplay)
 {
-    this->setCentralWidget(this->currentDisplayArea);
-    this->currentDisplayArea->show();
+    this->setCentralWidget(newDisplay);
+    newDisplay->show();
 }

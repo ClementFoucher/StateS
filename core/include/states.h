@@ -62,12 +62,11 @@ public:
 
     void run();
 
-public slots:
+private slots:
     void addCheckpoint();
     void machineChanged();
     void undo();
 
-private slots:
     void clearMachine();
 
     void saveCurrentMachine(const QString& path);

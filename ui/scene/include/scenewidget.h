@@ -46,23 +46,30 @@ class GenericScene;
  * @brief The SceneWidget class displays a graphic scene
  * linked to a machine. Replacing the machine makes the
  * SceneWidget replace its graphic scene.
+ * This class is also in charge of the zoom level UI,
+ * and adapts the cursor depending on actions.
  */
 class SceneWidget : public StatesGraphicsView
 {
     Q_OBJECT
 
 private:
-    enum class sceneMode_e { noScene, idle, withTool, quittingTool, movingScene };
+    enum class sceneMode_e { noScene, idle, movingScene };
+    enum class mouseCursor_e { none, state, transition };
+
+    static double scaleFactor;
 
 public:
     explicit SceneWidget(QWidget* parent = nullptr);
 
     void setMachine(shared_ptr<Machine> newMachine); // TODO: throw exception
+
     GenericScene* getScene() const;
 
-    qreal getZoomLevel();
-    void setZoomLevel(qreal level);
     QRectF getVisibleArea() const;
+
+    qreal getZoomLevel() const;
+    void  setZoomLevel(qreal level);
 
 signals:
     void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -80,30 +87,33 @@ protected:
 private slots:
     void toolChangedEventHandler(MachineBuilder::tool newTool);
     void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
+
     void zoomIn();
     void zoomOut();
     void zoomFit();
     void resetZoom();
 
 private:
+    void updateTool(MachineBuilder::tool newTool);
+    void updateMouseCursor(mouseCursor_e cursor);
     void updateSceneMode(sceneMode_e newMode);
-    void updateDragMode();
+    void setZoomPanelVisible(bool visible);
 
 private:
-    // References
-    weak_ptr<MachineBuilder> machineBuilder;
-
-    // Local widgets
+    // Zoom panel
     QLabel*      labelZoom     = nullptr;
     QPushButton* buttonZoomIn  = nullptr;
     QPushButton* buttonNoZoom  = nullptr;
     QPushButton* buttonZoomOut = nullptr;
     QPushButton* buttonZoomFit = nullptr;
 
-    // Local variables
-    sceneMode_e sceneMode      = sceneMode_e::noScene;
-    sceneMode_e savedSceneMode = sceneMode_e::noScene; // Used to restore correct mode after moving scene
+    // Current state
+    sceneMode_e   sceneMode     = sceneMode_e::noScene;
+    mouseCursor_e currentCursor = mouseCursor_e::none;
 
+    // Connections
+    QMetaObject::Connection machineBuilderChangedToolEventConnection;
+    QMetaObject::Connection machineBuilderSingleUseToolSelectedConnection;
 };
 
 #endif // SCENEWIDGET_H

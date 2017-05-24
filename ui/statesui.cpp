@@ -102,6 +102,7 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine)
 
     this->resourceBar->setMachine(newMachine);
     this->displayArea->setMachine(newMachine);
+    this->sceneWidget->setMachine(newMachine);
 }
 
 void StatesUi::setTitle(const QString& title)

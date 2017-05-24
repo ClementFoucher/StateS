@@ -63,10 +63,10 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
     }
 
     this->actionTable = new QTableView();
-    ActionTableModel* tableModel = new ActionTableModel(actuator);
+    ActionTableModel* tableModel = new ActionTableModel(actuator, this->actionTable);
     this->actionTable->setModel(tableModel);
     this->actionTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->actionTable->setItemDelegate(new ActionTableDelegate(actuator));
+    this->actionTable->setItemDelegate(new ActionTableDelegate(actuator, this->actionTable));
     this->actionTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(this->actionTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
     connect(tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);

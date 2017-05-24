@@ -145,6 +145,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                         // Set state initial
                         logicState->setInitial();
 
+                        // Only one initial state in a FSM, switch to regular state tool
+                        machineBuilder->setTool(MachineBuilder::tool::state);
+
                         // Transmitting event so that new state is selected
                         // and can be moved within the same click
                     }
