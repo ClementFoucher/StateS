@@ -18,55 +18,36 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef FSMSAVEFILEMANAGER_H
-#define FSMSAVEFILEMANAGER_H
+#ifndef FSMXMLWRITER_H
+#define FSMXMLWRITER_H
 
 // Parent
-#include "machinesavefilemanager.h"
+#include "machinexmlwriter.h"
 
 // C++ classes
 #include <memory>
 using namespace std;
-
-// Qt classes
-class QString;
-class QDomElement;
 
 // StateS classes
 class Fsm;
 class MachineConfiguration;
 
 
-class FsmSaveFileManager : public MachineSaveFileManager
+class FsmXmlWriter : public MachineXmlWriter
 {
     Q_OBJECT
 
-public: // Static
-
-    enum FsmSaveFileManagerErrorEnum
-    {
-        wrong_xml = 0
-    };
-
 public:
-    explicit FsmSaveFileManager(QObject* parent = nullptr);
+    explicit FsmXmlWriter(QObject* parent = nullptr);
 
     void writeMachineToFile(shared_ptr<Machine> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath) override; // Throws StatesException
-    shared_ptr<Machine> loadMachineFromFile(const QString& filePath) override; // Throws StatesException
-
     QString getMachineXml(shared_ptr<Machine> machine) override;
-    shared_ptr<Machine> loadMachineFromXml(const QString& machineXml) override;
 
 private:
-    void writeFsmToStream(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
+    void writeFsmToStream(shared_ptr<Fsm> machine);
 
-    void writeFsmStates(shared_ptr<Fsm> machine, shared_ptr<MachineConfiguration> configuration);
+    void writeFsmStates(shared_ptr<Fsm> machine);
     void writeFsmTransitions(shared_ptr<Fsm> machine);
-
-    shared_ptr<Fsm> loadFsmFromDocument();
-
-    void parseFsmStates(QDomElement element, shared_ptr<Fsm> machine);
-    void parseFsmTransitions(QDomElement element, shared_ptr<Fsm> machine);
 };
 
-#endif // FSMSAVEFILEMANAGER_H
+#endif // FSMXMLWRITER_H

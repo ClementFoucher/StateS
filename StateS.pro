@@ -8,7 +8,6 @@ QT += core \
       gui \
       widgets \
       printsupport \
-      xml \
       svg
 
 TARGET = StateS
@@ -23,6 +22,7 @@ SOURCES += \
 # Core
     core/main.cpp \
     core/states.cpp \
+    core/statesxmlanalyzer.cpp \
     core/basic_type/logicvalue.cpp \
     core/basic_type/truthtable.cpp \
     core/machine/machine.cpp \
@@ -32,14 +32,16 @@ SOURCES += \
     core/machine/machineimageexporter.cpp \
     core/machine/actiononsignal.cpp \
     core/machine/machineconfiguration.cpp \
-    core/machine/machinesavefilemanager.cpp \
+    core/machine/machinexmlparser.cpp \
+    core/machine/machinexmlwriter.cpp \
     core/machine/fsm/fsmcomponent.cpp \
     core/machine/fsm/fsmvhdlexport.cpp \
     core/machine/fsm/fsmverifier.cpp \
     core/machine/fsm/fsm.cpp \
     core/machine/fsm/fsmstate.cpp \
     core/machine/fsm/fsmtransition.cpp \
-    core/machine/fsm/fsmsavefilemanager.cpp \
+    core/machine/fsm/fsmxmlparser.cpp \
+    core/machine/fsm/fsmxmlwriter.cpp \
     core/signal/inout.cpp \
     core/signal/input.cpp \
     core/signal/io.cpp \
@@ -119,9 +121,11 @@ SOURCES += \
 # Other
     third_party/diff_match_patch/diff_match_patch.cpp
 
+
 HEADERS  += \
 # Core
     core/include/states.h \
+    core/include/statesxmlanalyzer.h \
     core/basic_type/include/logicvalue.h \
     core/basic_type/include/truthtable.h \
     core/machine/include/machine.h \
@@ -131,14 +135,16 @@ HEADERS  += \
     core/machine/include/machineimageexporter.h \
     core/machine/include/actiononsignal.h \
     core/machine/include/machineconfiguration.h \
-    core/machine/include/machinesavefilemanager.h \
+    core/machine/include/machinexmlparser.h \
+    core/machine/include/machinexmlwriter.h \
     core/machine/fsm/include/fsmcomponent.h \
     core/machine/fsm/include/fsmvhdlexport.h \
     core/machine/fsm/include/fsmverifier.h \
     core/machine/fsm/include/fsm.h \
     core/machine/fsm/include/fsmstate.h \
     core/machine/fsm/include/fsmtransition.h \
-    core/machine/fsm/include/fsmsavefilemanager.h \
+    core/machine/fsm/include/fsmxmlparser.h \
+    core/machine/fsm/include/fsmxmlwriter.h \
     core/signal/include/StateS_signal.h \
     core/signal/include/inout.h \
     core/signal/include/input.h \

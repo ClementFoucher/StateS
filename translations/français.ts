@@ -456,33 +456,6 @@
     </message>
 </context>
 <context>
-    <name>FsmSaveFileManager</name>
-    <message>
-        <source>Token ignored.</source>
-        <translation>Clé ignorée.</translation>
-    </message>
-    <message>
-        <source>Expected</source>
-        <translation>Attendait</translation>
-    </message>
-    <message>
-        <source>or</source>
-        <translation>ou</translation>
-    </message>
-    <message>
-        <source>got</source>
-        <translation>a trouvé</translation>
-    </message>
-    <message>
-        <source>Unexpected token encountered while parsing state list:</source>
-        <translation>Clé inconnue trouvée lors du parcours de la liste des états :</translation>
-    </message>
-    <message>
-        <source>Unexpected token encountered while parsing transition list:</source>
-        <translation>Clé inconnue trouvée lors du parcours de la liste des transitions :</translation>
-    </message>
-</context>
-<context>
     <name>FsmScene</name>
     <message>
         <source>Add state</source>
@@ -608,6 +581,73 @@
     <message>
         <source>has both Moore and Mealy behaviors.</source>
         <translation>a un comportement à la fois de Moore et de Mealy.</translation>
+    </message>
+</context>
+<context>
+    <name>FsmXmlParser</name>
+    <message>
+        <source>Error!</source>
+        <translation>Erreur !</translation>
+    </message>
+    <message>
+        <source>Ignored node</source>
+        <translation>Nœud ignoré</translation>
+    </message>
+    <message>
+        <source>Expected</source>
+        <translation>Attendait</translation>
+    </message>
+    <message>
+        <source>got</source>
+        <translation>a trouvé</translation>
+    </message>
+    <message>
+        <source>Unable to parse operand rank for an equation.</source>
+        <translation>Impossible de lire le numéro de l&apos;opérande dans une l&apos;équation.</translation>
+    </message>
+    <message>
+        <source>Operand will be set in position 0, erasing popential existing operand.</source>
+        <translation>L&apos;opérande sera placée à la position 0, écrasant toute opérande déjà à cette position.</translation>
+    </message>
+    <message>
+        <source>Unable to extract state name.</source>
+        <translation>Impossible de lire le nom de l&apos;état.</translation>
+    </message>
+    <message>
+        <source>Warning!</source>
+        <translation>Attention !</translation>
+    </message>
+    <message>
+        <source>Unable to extract state position for state </source>
+        <translation>Impossible de lire la position de l&apos;état</translation>
+    </message>
+    <message>
+        <source>node.</source>
+        <translation>nœud.</translation>
+    </message>
+    <message>
+        <source>Node ignored.</source>
+        <translation>Nœud ignoré.</translation>
+    </message>
+    <message>
+        <source>Unexpected node encountered while parsing</source>
+        <translation>Nœud non supporté trouvé en lisant</translation>
+    </message>
+    <message>
+        <source>state list:</source>
+        <translation>liste d&apos;états:</translation>
+    </message>
+    <message>
+        <source>transition list:</source>
+        <translation>liste de transitions:</translation>
+    </message>
+    <message>
+        <source>Unexpected node found:</source>
+        <translation>Nœud non supporté trouvé :</translation>
+    </message>
+    <message>
+        <source>Unexpected node found while parsing</source>
+        <translation>Nœud non supporté trouvé en lisant</translation>
     </message>
 </context>
 <context>
@@ -1044,18 +1084,58 @@
     </message>
 </context>
 <context>
-    <name>MachineSaveFileManager</name>
+    <name>MachineXmlParser</name>
     <message>
-        <source>Unnamed signal encountered while parsing signal list.</source>
-        <translation>Signal non nommé trouvé lors du parcours de la liste des signaux.</translation>
+        <source>Information:</source>
+        <translation>Information :</translation>
     </message>
     <message>
-        <source>Token ignored.</source>
-        <translation>Clé ignorée.</translation>
+        <source>No name was found for the machine.</source>
+        <translation>Aucun nom n&apos;a été trouvé pour la machine.</translation>
+    </message>
+    <message>
+        <source>Used file name to name machine:</source>
+        <translation>Nom utilisé pour nommer la machine :</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
+    </message>
+    <message>
+        <source>Name defaulted to:</source>
+        <translation>Nom par défaut utilisé :</translation>
+    </message>
+    <message>
+        <source>Warning.</source>
+        <translation>Attention.</translation>
+    </message>
+    <message>
+        <source>Unable to parse zoom level.</source>
+        <translation>Imposible de lire le niveau de zoom.</translation>
+    </message>
+    <message>
+        <source>Found value was:</source>
+        <translation>Valeu lue :</translation>
+    </message>
+    <message>
+        <source>Unable to parse view position.</source>
+        <translation>Impossible de lire la position de la vue.</translation>
+    </message>
+    <message>
+        <source>Found values were:</source>
+        <translation>Valeurs lues :</translation>
+    </message>
+    <message>
+        <source>Error!</source>
+        <translation>Erreur !</translation>
+    </message>
+    <message>
+        <source>Signal ignored.</source>
+        <translation>Signal ignoré.</translation>
     </message>
     <message>
         <source>Unexpected signal type encountered while parsing signal list:</source>
-        <translation>Type de signal inconnu rouvé lors du parcours de la liste des signaux :</translation>
+        <translation>Type de signal inconnu trouvé lors du parcours de la liste des signaux :</translation>
     </message>
     <message>
         <source>Expected</source>
@@ -1094,32 +1174,16 @@
         <translation>La taille de la valeur initiale ne correspond à celle du signal.</translation>
     </message>
     <message>
-        <source>Machine</source>
-        <translation>Machine</translation>
-    </message>
-    <message>
-        <source>No name was found for the machine.</source>
-        <translation>Aucun nom trouvé pour la machine.</translation>
-    </message>
-    <message>
-        <source>Name defaulted to:</source>
-        <translation>Nom par défaut utilisé :</translation>
-    </message>
-    <message>
-        <source>Unexpected token encountered while parsing action list:</source>
-        <translation>Clé inconnue trouvée lors du parcours de la liste des actions :</translation>
-    </message>
-    <message>
-        <source>Action ignored.</source>
-        <translation>Action ignorée.</translation>
-    </message>
-    <message>
         <source>Reference to undeclared signal encountered while parsing action list:</source>
         <translation>Référence à un signal non déclaré trouvée lors du parcours de la liste des actions :</translation>
     </message>
     <message>
         <source>Signal name was</source>
         <translation>Le nom du signal était</translation>
+    </message>
+    <message>
+        <source>Action ignored.</source>
+        <translation>Action ignorée.</translation>
     </message>
     <message>
         <source>Unexpected action type encountered while parsing action list:</source>
@@ -1170,16 +1234,28 @@
         <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
     </message>
     <message>
-        <source>Unexpected token encountered while parsing logic equation:</source>
-        <translation>Clé inconne trouvée lors du parcours d&apos;une équation :</translation>
+        <source>Unexpected node found while parsing configuration.</source>
+        <translation>Nœud inattendu trouvé en lisant la configuration.</translation>
     </message>
     <message>
-        <source>signal</source>
-        <translation>signal</translation>
+        <source>Node name was:</source>
+        <translation>Nom du nœud :</translation>
     </message>
     <message>
-        <source>equation</source>
-        <translation>équation</translation>
+        <source>Node ignored.</source>
+        <translation>Nœud ignoré.</translation>
+    </message>
+    <message>
+        <source>Unnamed signal encountered while parsing signal list: unable to extract name.</source>
+        <translation>Signal sans nom trouvé en lisant la liste des signaux.</translation>
+    </message>
+    <message>
+        <source>Unable to extract signal size for signal</source>
+        <translation>Impossible de lire la taille du signal</translation>
+    </message>
+    <message>
+        <source>Unexpected node encountered while parsing action list:</source>
+        <translation>Nœud inattendu trouvé en lisant la liste des actions :</translation>
     </message>
 </context>
 <context>
@@ -1523,10 +1599,6 @@
     <message>
         <source>Unable to load file.</source>
         <translation>Impossible de charger le fichier.</translation>
-    </message>
-    <message>
-        <source>Issues occured writing the file. StateS still managed to save machine.</source>
-        <translation>Des problèmes ont été rencontrés lors de l&apos;écriture du fichier. StateS est tout de même parvenu à sauvegarder la machine.</translation>
     </message>
     <message>
         <source>Unable to save file.</source>

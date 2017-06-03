@@ -26,17 +26,19 @@
 #include <QFileInfo>
 #include <QDir>
 
+#include <QDebug>
+
 // Diff Match Patch classes
 #include <diff_match_patch.h>
 
 // StateS classes
 #include "statesui.h"
-#include "fsm.h"
-#include "fsmsavefilemanager.h"
 #include "statesexception.h"
 #include "machineconfiguration.h"
-
-#include <QDebug>
+#include "fsm.h"
+#include "machinexmlwriter.h"
+#include "fsmxmlwriter.h"
+#include "machinexmlparser.h"
 
 
 QString StateS::getVersion()
@@ -90,10 +92,10 @@ void StateS::addCheckpoint()
 {
     QString newXml;
 
-    shared_ptr<MachineSaveFileManager> saveManager;
+    shared_ptr<MachineXmlWriter> saveManager;
     if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
     {
-        saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+        saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
     }
     else
     {
@@ -139,17 +141,6 @@ void StateS::machineChanged()
  */
 void StateS::undo()
 {
-    shared_ptr<MachineSaveFileManager> saveManager;
-    if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
-    {
-        saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
-    }
-    else
-    {
-        this->latestXmlCode = QString();
-        return;
-    }
-
     if (this->machineIsAtCheckpoint == true)
     {
         if (this->undoQueue.isEmpty() == false)
@@ -160,16 +151,16 @@ void StateS::undo()
 
             QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(latestAction, this->latestXmlCode);
 
-            shared_ptr<Machine> newMachine = saveManager->loadMachineFromXml(result.first);
-
-            this->refreshMachine(newMachine);
+            shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildStringParser(result.first);
+            this->refreshMachine(parser->getMachine());
 
             this->latestXmlCode = result.first;
         }
     }
     else
     {
-        this->refreshMachine(saveManager->loadMachineFromXml(this->latestXmlCode));
+        shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildStringParser(this->latestXmlCode);
+        this->refreshMachine(parser->getMachine());
 
         this->machineIsAtCheckpoint = true;
     }
@@ -219,19 +210,16 @@ void StateS::loadFsm(const QString& path)
 
         try
         {
-            shared_ptr<MachineSaveFileManager> saveManager(new FsmSaveFileManager());
+            shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildFileParser(shared_ptr<QFile>(new QFile(path)));
 
-            shared_ptr<Machine> newMachine = saveManager->loadMachineFromFile(path); // Throws StatesException
-
-            QList<QString> warnings = saveManager->getWarnings();
+            QList<QString> warnings = parser->getWarnings();
             if (!warnings.isEmpty())
             {
                 this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
             }
 
-            this->loadNewMachine(newMachine, path);
-
-            this->statesUi->setConfiguration(saveManager->getConfiguration());
+            this->loadNewMachine(parser->getMachine(), path);
+            this->statesUi->setConfiguration(parser->getConfiguration());
         }
         catch (const StatesException& e)
         {
@@ -296,10 +284,10 @@ void StateS::saveCurrentMachineInCurrentFile()
     {
         try
         {
-            shared_ptr<MachineSaveFileManager> saveManager;
+            shared_ptr<MachineXmlWriter> saveManager;
             if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
             {
-                saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+                saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
             }
             else
             {
@@ -307,11 +295,6 @@ void StateS::saveCurrentMachineInCurrentFile()
             }
 
             saveManager->writeMachineToFile(dynamic_pointer_cast<Fsm>(this->machine), this->statesUi->getConfiguration(), this->currentFilePath); // Throws StatesException
-            QList<QString> warnings = saveManager->getWarnings();
-            if (!warnings.isEmpty())
-            {
-                this->statesUi->displayErrorMessage(tr("Issues occured writing the file. StateS still managed to save machine."), warnings);
-            }
             this->statesUi->setSaveActionEnabled(false);
         }
         catch (const StatesException& e)
@@ -338,10 +321,10 @@ void StateS::updateLatestXml()
 {
     if (this->machine != nullptr)
     {
-        shared_ptr<MachineSaveFileManager> saveManager;
+        shared_ptr<MachineXmlWriter> saveManager;
         if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
         {
-            saveManager = shared_ptr<MachineSaveFileManager>(new FsmSaveFileManager());
+            saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
         }
         else
         {
