@@ -59,7 +59,7 @@ public:
     SceneWidget* getSceneWidget() const;
 
 private slots:
-    void simulationModeToggledEventHandler(Machine::mode newMode);
+    void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
     void setTimelineDetachedState(bool detach);
 
 private:

@@ -35,6 +35,7 @@ class QGraphicsItem;
 
 // StateS classes
 #include "logicvalue.h"
+#include "machineundocommand.h"
 class MachineBuilder;
 class Signal;
 class Input;
@@ -47,14 +48,15 @@ class Machine : public QObject
     Q_OBJECT
 
 public: // Static
-    enum MachineErrorEnum{
+    enum MachineErrorEnum
+    {
         unknown_signal   = 0,
         impossible_error = 1
     };
 
 public:
-    enum class signal_type{Input, Output, LocalVariable, Constant};
-    enum class mode{editMode, simulateMode};
+    enum class signal_type     {Input, Output, LocalVariable, Constant};
+    enum class simulation_mode {editMode, simulateMode};
 
 public:
     explicit Machine();
@@ -90,40 +92,42 @@ public:
     void changeSignalInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
     bool changeSignalRank(const QString& name, uint newRank);
 
-    // Handled in sub classes
+    // Overriden in sub classes
 
     virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
 
+    // Undo/redo related
+    void setInhibitEvents(bool inhibit);
+    void beginAtomicEdit();
+    void endAtomicEdit();
+
     // Other
 
-    virtual void clear();
-    virtual bool isEmpty() const;
-
-    mode getCurrentMode() const;
+    simulation_mode getCurrentSimulationMode() const;
     shared_ptr<MachineSimulator> getSimulator() const;
-
     shared_ptr<MachineBuilder> getMachineBuilder() const;
-
     QGraphicsItem* getComponentVisualization();
 
     bool cleanSignalName(QString& nameToClean) const;
     QString getUniqueSignalName(const QString& prefix) const;
 
 signals:
-    void nameChangedEvent(const QString& newName);
+    void machineEditedWithoutUndoCommandGeneratedEvent(MachineUndoCommand::undo_command_id commandId);
+    void machineEditedWithUndoCommandGeneratedEvent(MachineUndoCommand* undoCommand);
+
+    void machineNameChangedEvent(const QString& newName);
     void inputListChangedEvent();
     void outputListChangedEvent();
     void localVariableListChangedEvent();
     void constantListChangedEvent();
+
     void componentVisualizationUpdatedEvent();
-
-    void changedModeEvent(mode newMode);
-    void machineUnsavedStateChanged(bool isUnsaved);
-
-    void machineEdited();
+    void simulationModeChangedEvent(simulation_mode newMode);
 
 protected:
-    void setMode(mode newMode);
+    void setSimulationMode(simulation_mode newMode);
+    void emitMachineEditedWithoutUndoCommand(MachineUndoCommand::undo_command_id commandId = MachineUndoCommand::undo_command_id::machineGenericUndoId);
+    void emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand);
 
 private:
     shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value);
@@ -132,6 +136,8 @@ private:
     bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
     bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
     bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+
+    QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 
     void rebuildComponentVisualization();
 
@@ -155,17 +161,17 @@ private:
 
     QString name;
 
-
-    QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
-
     // Local copy of visu => pointer because scene takes ownership
     QGraphicsItem* componentVisu = nullptr;
 
-    bool inhibateEvent = false;
     shared_ptr<MachineBuilder> machineBuilder = nullptr;
-    mode currentMode = mode::editMode;
+    simulation_mode currentMode = simulation_mode::editMode;
 
     weak_ptr<MachineSimulator> simulator;
+
+    bool atomicEditionOngoing       = false;
+    bool inhibitRepresentationEvent = false;
+    uint eventInhibitionLevel       = 0;
 };
 
 #endif // MACHINE_H

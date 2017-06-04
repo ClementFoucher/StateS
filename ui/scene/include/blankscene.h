@@ -36,7 +36,7 @@ class BlankScene : public GenericScene
 public:
     explicit BlankScene(QObject* parent = nullptr);
 
-    void setDisplaySize(const QSize&) override;
+    virtual void setDisplaySize(const QSize&) override;
 
 private:
     QGraphicsTextItem* text = nullptr;

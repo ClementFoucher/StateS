@@ -17,6 +17,7 @@
         <file alias="attach_window">art/svg/Attach_window.svg</file>
         <file alias="detach_window">art/svg/Detach_window.svg</file>
         <file alias="add_checkpoint">art/3rd_party/Oxygen15.04.1-flag-blue.svg</file>
+        <file alias="redo">art/svg/Redo.svg</file>
         <file alias="undo">art/svg/Undo.svg</file>
     </qresource>
 </RCC>

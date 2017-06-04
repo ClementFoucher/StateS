@@ -85,7 +85,7 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
         connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
         connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
 
-        connect(machine.get(), &Machine::nameChangedEvent, this, &MachineBuilderTab::updateContent);
+        connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineBuilderTab::updateContent);
 
         nameLayout->addWidget(machineNameLabel);
         nameLayout->addWidget(this->stateName);
@@ -106,6 +106,26 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
         this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
         layout->addWidget(this->machineDisplay);
     }
+}
+
+void MachineBuilderTab::setHintCollapsed(bool collapse)
+{
+    this->hintDisplay->setCollapsed(collapse);
+}
+
+void MachineBuilderTab::setVisuCollapsed(bool collapse)
+{
+    this->machineDisplay->setCollapsed(collapse);
+}
+
+bool MachineBuilderTab::getHintCollapsed()
+{
+    return this->hintDisplay->getCollapsed();
+}
+
+bool MachineBuilderTab::getVisuCollapsed()
+{
+    return this->machineDisplay->getCollapsed();
 }
 
 void MachineBuilderTab::showEvent(QShowEvent* e)

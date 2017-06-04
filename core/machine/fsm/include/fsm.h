@@ -33,6 +33,8 @@ using namespace std;
 class FsmState;
 class FsmTransition;
 class FsmSimulator;
+class FsmUndoCommand;
+class FsmGraphicTransition;
 
 
 class Fsm : public Machine, public enable_shared_from_this<Fsm>
@@ -44,37 +46,38 @@ public:
     ~Fsm();
 
     // States
-    shared_ptr<FsmState> addState(QString name = QString());
-    const QList<shared_ptr<FsmState>>& getStates() const;
+    shared_ptr<FsmState> addState(QPointF position, QString name = QString());
     void removeState(shared_ptr<FsmState> state);
+    QList<shared_ptr<FsmState> > getStates() const;
     shared_ptr<FsmState> getStateByName(const QString& name) const;
-
     bool renameState(shared_ptr<FsmState> state, QString newName);
 
-    void setInitialState(const QString &name);
+    // Initial state
+    void setInitialState(shared_ptr<FsmState> newInitialState);
     shared_ptr<FsmState> getInitialState() const;
 
     // Transitions
+    shared_ptr<FsmTransition> addTransition(shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
+    void removeTransition(shared_ptr<FsmTransition> transition);
     QList<shared_ptr<FsmTransition>> getTransitions() const;
+    void redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<FsmState> newSource, shared_ptr<FsmState> newTarget);
 
     // Simulation
     void setSimulator(shared_ptr<MachineSimulator> simulator) override;
     void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
-    // Other
-    void clear() override;
-    bool isEmpty() const override;
-
 private slots:
-    void savableValueEditedEventHandler();
+    void unmonitoredFsmComponentEditionEventHandler();
+    void statePositionChangedEventHandler(shared_ptr<FsmState> originator);
+    void transitionSliderPositionChangedEventHandler();
 
 private:
     QString getUniqueStateName(QString nameProposal);
 
 private:
     QList<shared_ptr<FsmState>> states;
+    QList<shared_ptr<FsmTransition>> transitions;
     weak_ptr<FsmState> initialState;
-    weak_ptr<FsmSimulator> simulator;
 };
 
 #endif // FSM_H

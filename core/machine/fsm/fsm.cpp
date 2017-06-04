@@ -24,7 +24,9 @@
 
 // StateS classes
 #include "fsmstate.h"
+#include "fsmtransition.h"
 #include "fsmsimulator.h"
+#include "fsmundocommand.h"
 
 
 Fsm::Fsm()
@@ -35,81 +37,80 @@ Fsm::Fsm()
 Fsm::~Fsm()
 {
     this->isBeingDestroyed = true;
-    this->clear();
+
+    // Force cleaning order
+    this->initialState.reset();
+    this->transitions.clear();
+    this->states.clear();
 }
 
-const QList<shared_ptr<FsmState>>& Fsm::getStates() const
+QList<shared_ptr<FsmState> > Fsm::getStates() const
 {
-    return states;
+    return this->states;
 }
 
-shared_ptr<FsmState> Fsm::addState(QString name)
+shared_ptr<FsmState> Fsm::addState(QPointF position, QString name)
 {
-    shared_ptr<FsmState> state(new FsmState(this->shared_from_this(), this->getUniqueStateName(name))); // Clear to use shared_from_this: this function can't be called in constructor
-    connect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::savableValueEditedEventHandler);
-    states.append(state);
+    this->setInhibitEvents(true);
 
-    emit machineEdited();
+    shared_ptr<FsmState> state(new FsmState(this->shared_from_this(), this->getUniqueStateName(name), position)); // Clear to use shared_from_this: this function can't be called in constructor
+    connect(state.get(), &MachineActuatorComponent::actionListChangedEvent, this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(state.get(), &FsmState::stateRenamedEvent,                      this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(state.get(), &FsmState::statePositionChangedEvent,              this, &Fsm::statePositionChangedEventHandler);
+    this->states.append(state);
+
+    this->setInhibitEvents(false);
+    this->emitMachineEditedWithoutUndoCommand();
 
     return state;
 }
 
 void Fsm::removeState(shared_ptr<FsmState> state)
 {
-    disconnect(state.get(), &FsmState::componentStaticConfigurationChangedEvent, this, &Fsm::savableValueEditedEventHandler);
-    states.removeAll(state);
+    this->setInhibitEvents(true);
 
-    if (this->isBeingDestroyed == false)
-        emit machineEdited();
+    disconnect(state.get(), &MachineActuatorComponent::actionListChangedEvent, this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    disconnect(state.get(), &FsmState::stateRenamedEvent,                      this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    disconnect(state.get(), &FsmState::statePositionChangedEvent,              this, &Fsm::statePositionChangedEventHandler);
+
+    for (shared_ptr<FsmTransition> transition : state->getOutgoingTransitions())
+    {
+        this->removeTransition(transition);
+    }
+
+    for (shared_ptr<FsmTransition> transition : state->getIncomingTransitions())
+    {
+        this->removeTransition(transition);
+    }
+
+    this->states.removeAll(state);
+
+    this->setInhibitEvents(false);
+    this->emitMachineEditedWithoutUndoCommand();
 }
 
 bool Fsm::renameState(shared_ptr<FsmState> state, QString newName)
 {
-    if (state->getName() == newName)
+    QString cleanedName = newName.trimmed();
+
+    if (state->getName() == cleanedName)
     {
         // Nothing to do
         return true;
     }
 
-    QString cleanedName = newName.trimmed();
-
-    if (state->getName() == cleanedName)
-    {
-        // Nothing to do, but still force event to reloead text
-        state->setName(cleanedName);
-        emit machineEdited();
-        return true;
-    }
-
-    // By this point, we know the new name is different from current
+    // By this point, we know the new name is at least different from current
     QString actualName = getUniqueStateName(cleanedName);
 
     if (actualName == cleanedName)
     {
         state->setName(actualName);
-        emit machineEdited();
         return true;
     }
     else
     {
         return false;
     }
-}
-
-bool Fsm::isEmpty() const
-{
-    if (Machine::isEmpty() && this->states.isEmpty())
-        return true;
-    else
-        return false;
-}
-
-void Fsm::clear()
-{
-    this->setInitialState(nullptr);
-    states.clear();
-
-    Machine::clear();
 }
 
 void Fsm::setSimulator(shared_ptr<MachineSimulator> simulator)
@@ -181,39 +182,31 @@ QString Fsm::getUniqueStateName(QString nameProposal)
 
 QList<shared_ptr<FsmTransition>> Fsm::getTransitions() const
 {
-    QList<shared_ptr<FsmTransition>> transitionList;
-
-    foreach(shared_ptr<FsmState> state, this->states)
-    {
-        transitionList += state->getOutgoingTransitions();
-    }
-
-    return transitionList;
+    return this->transitions;
 }
 
-void Fsm::setInitialState(const QString& name)
+/**
+ * @brief Fsm::setInitialState This function must ONLY
+ * BE CALLED by the setInitial function of a FsmState.
+ * @param name
+ */
+void Fsm::setInitialState(shared_ptr<FsmState> newInitialState)
 {
-    shared_ptr<FsmState> newInitialState = this->getStateByName(name);
+    this->setInhibitEvents(true);
 
-    if (newInitialState != nullptr)
+    shared_ptr<FsmState> previousInitialState = this->initialState.lock();
+
+    if (newInitialState != previousInitialState)
     {
-        shared_ptr<FsmState> previousInitialState = this->initialState.lock();
+        this->initialState = newInitialState;
 
-        if (newInitialState != previousInitialState)
+        if (previousInitialState != nullptr)
         {
-            this->initialState = newInitialState;
-
-            if (this->isBeingDestroyed == false)
-            {
-                if (newInitialState != nullptr)
-                    emit newInitialState->componentStaticConfigurationChangedEvent();
-
-                if (previousInitialState != nullptr)
-                    emit previousInitialState->componentStaticConfigurationChangedEvent();
-
-                emit machineEdited();
-            }
+            previousInitialState->notifyNotInitialAnyMore();
         }
+
+        this->setInhibitEvents(false);
+        this->emitMachineEditedWithoutUndoCommand();
     }
 }
 
@@ -222,9 +215,83 @@ shared_ptr<FsmState> Fsm::getInitialState() const
     return this->initialState.lock();
 }
 
-void Fsm::savableValueEditedEventHandler()
+shared_ptr<FsmTransition> Fsm::addTransition(shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation)
 {
-    emit machineEdited();
+    this->setInhibitEvents(true);
+
+    shared_ptr<FsmTransition> transition(new FsmTransition(this->shared_from_this(), source, target, representation));
+    connect(transition.get(), &MachineActuatorComponent::actionListChangedEvent,    this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(transition.get(), &FsmTransition::conditionChangedEvent,                this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(transition.get(), &FsmTransition::transitionSliderPositionChangedEvent, this, &Fsm::transitionSliderPositionChangedEventHandler);
+
+    source->addOutgoingTransition(transition);
+    target->addIncomingTransition(transition);
+
+    this->transitions.append(transition);
+
+    this->setInhibitEvents(false);
+    this->emitMachineEditedWithoutUndoCommand();
+
+    return transition;
+}
+
+void Fsm::redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<FsmState> newSource, shared_ptr<FsmState> newTarget)
+{
+    this->setInhibitEvents(true);
+
+    if (newSource != transition->getSource())
+    {
+        shared_ptr<FsmState> oldSource = transition->getSource();
+
+        transition->setSource(newSource);
+        oldSource->removeOutgoingTransition(transition);
+        newSource->addOutgoingTransition(transition);
+    }
+
+    if (newTarget != transition->getTarget())
+    {
+        shared_ptr<FsmState> oldTarget = transition->getTarget();
+
+        transition->setTarget(newTarget);
+        oldTarget ->removeIncomingTransition(transition);
+        newTarget->addIncomingTransition(transition);
+    }
+
+    this->setInhibitEvents(false);
+    this->emitMachineEditedWithoutUndoCommand();
+}
+
+void Fsm::removeTransition(shared_ptr<FsmTransition> transition)
+{
+    this->setInhibitEvents(true);
+
+    connect(transition.get(), &MachineActuatorComponent::actionListChangedEvent,    this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(transition.get(), &FsmTransition::conditionChangedEvent,                this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
+    connect(transition.get(), &FsmTransition::transitionSliderPositionChangedEvent, this, &Fsm::transitionSliderPositionChangedEventHandler);
+
+    transition->getSource()->removeOutgoingTransition(transition);
+    transition->getTarget()->removeIncomingTransition(transition);
+
+    this->transitions.removeAll(transition);
+
+    this->setInhibitEvents(false);
+    this->emitMachineEditedWithoutUndoCommand();
+}
+
+void Fsm::unmonitoredFsmComponentEditionEventHandler()
+{
+    this->emitMachineEditedWithoutUndoCommand();
+}
+
+void Fsm::statePositionChangedEventHandler(shared_ptr<FsmState> originator)
+{
+    FsmUndoCommand* undoCommand = new FsmUndoCommand(originator);
+    this->emitMachineEditedWithUndoCommand(undoCommand);
+}
+
+void Fsm::transitionSliderPositionChangedEventHandler()
+{
+    this->emitMachineEditedWithoutUndoCommand(MachineUndoCommand::undo_command_id::fsmUndoMoveConditionSliderId);
 }
 
 shared_ptr<FsmState> Fsm::getStateByName(const QString &name) const

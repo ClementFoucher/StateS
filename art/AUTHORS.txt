@@ -26,6 +26,7 @@ Assign.svg                        | Epok__        | Creative Commons Attribution
 Detach_window.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 Attach_window.svg                 | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 Undo.svg                          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
+Redo.svg                          | Epok__        | Creative Commons Attribution-ShareAlike 3.0 Unported |
 
 
 

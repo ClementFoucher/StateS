@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef GRAPHICCOMPONENT_H
 #define GRAPHICCOMPONENT_H
 
@@ -44,14 +45,10 @@ public: // Static
 
 public:
     explicit GraphicComponent(QObject* parent = nullptr);
-    explicit GraphicComponent(shared_ptr<MachineComponent> logicComponent, QObject* parent = nullptr);
-
-signals:
-    void graphicComponentConfigurationChangedEvent();
 
 protected:
     void setLogicComponent(shared_ptr<MachineComponent> logicComponent); // Throws StatesException
-    shared_ptr<MachineComponent> getLogicComponent() const; // Throws StatesException
+    shared_ptr<MachineComponent> getLogicComponent() const;
 
 private:
     weak_ptr<MachineComponent> logicComponent;

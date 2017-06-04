@@ -22,14 +22,10 @@
 // Current class header
 #include "displayarea.h"
 
-// Qt classes
-//#include <Connection>
-
 // StateS classes
 #include "scenewidget.h"
 #include "simulationwidget.h"
 #include "toolbar.h"
-#include "genericscene.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -53,7 +49,7 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
     shared_ptr<Machine> oldMachine = this->machine.lock();
     if (oldMachine != nullptr)
     {
-        disconnect(oldMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+        disconnect(oldMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
     }
 
     // Set
@@ -61,7 +57,7 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 
     if (newMachine != nullptr)
     {
-        connect(newMachine.get(), &Machine::changedModeEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+        connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
     }
 
     this->resetDisplay();
@@ -77,11 +73,11 @@ SceneWidget* DisplayArea::getSceneWidget() const
     return this->machineDisplayArea;
 }
 
-void DisplayArea::simulationModeToggledEventHandler(Machine::mode newMode)
+void DisplayArea::simulationModeToggledEventHandler(Machine::simulation_mode newMode)
 {
     shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if ( (l_machine != nullptr) && (newMode == Machine::mode::simulateMode) )
+    if ( (l_machine != nullptr) && (newMode == Machine::simulation_mode::simulateMode) )
     {
         this->timeline = new SimulationWidget(l_machine);
         connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &DisplayArea::setTimelineDetachedState);

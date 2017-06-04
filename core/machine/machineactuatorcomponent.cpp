@@ -35,7 +35,7 @@ MachineActuatorComponent::MachineActuatorComponent(shared_ptr<Machine> owningMac
     MachineComponent(owningMachine)
 {
     // Propagates list change events to the more general "configuration changed" event
-    connect(this, &MachineActuatorComponent::actionListChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    connect(this, &MachineActuatorComponent::actionListChangedEvent, this, &MachineComponent::componentNeedsGraphicUpdateEvent);
 }
 
 void MachineActuatorComponent::cleanActionList()
@@ -46,9 +46,13 @@ void MachineActuatorComponent::cleanActionList()
     foreach(shared_ptr<ActionOnSignal> action, this->actionList)
     {
         if (action->getSignalActedOn() != nullptr)
+        {
             newActionList.append(action);
+        }
         else
+        {
             listChanged = true;
+        }
     }
 
     if (listChanged)
@@ -81,9 +85,13 @@ shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Signal
     ActionOnSignal::action_types actionType;
 
     if ((this->getAllowedActionTypes() & activeOnState) != 0)
+    {
         actionType = ActionOnSignal::action_types::activeOnState;
+    }
     else
+    {
         actionType = ActionOnSignal::action_types::pulse;
+    }
 
 
     shared_ptr<ActionOnSignal> action(new ActionOnSignal(signal, actionType));

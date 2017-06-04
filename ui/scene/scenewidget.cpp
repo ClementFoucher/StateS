@@ -76,8 +76,10 @@ SceneWidget::SceneWidget(QWidget* parent) :
     this->setScene(new BlankScene());
 }
 
-void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
+void SceneWidget::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 {
+    QPointF center = this->getVisibleArea().center();
+
     // Clear
     GenericScene* oldScene = this->getScene();
     if (oldScene != nullptr)
@@ -85,9 +87,8 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
         this->setScene(nullptr);
         delete oldScene;
     }
-
-    disconnect(machineBuilderChangedToolEventConnection);
-    disconnect(machineBuilderSingleUseToolSelectedConnection);
+    disconnect(this->machineBuilderChangedToolEventConnection);
+    disconnect(this->machineBuilderSingleUseToolSelectedConnection);
 
     this->updateTool(MachineBuilder::tool::none);
     this->updateSceneMode(sceneMode_e::noScene);
@@ -117,10 +118,19 @@ void SceneWidget::setMachine(shared_ptr<Machine> newMachine)
             connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
 
             shared_ptr<MachineBuilder> machineBuiler = newMachine->getMachineBuilder();
-            machineBuilderChangedToolEventConnection      = connect(machineBuiler.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
-            machineBuilderSingleUseToolSelectedConnection = connect(machineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
+            this->machineBuilderChangedToolEventConnection      = connect(machineBuiler.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
+            this->machineBuilderSingleUseToolSelectedConnection = connect(machineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
 
             this->setScene(newScene);
+            if (maintainView == true)
+            {
+                this->centerOn(center);
+            }
+            else
+            {
+                this->setZoomLevel(1);
+                this->centerOn(QPointF(0, 0));
+            }
             this->updateSceneMode(sceneMode_e::idle);
         }
     }
@@ -166,6 +176,7 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool
          (newTool == MachineBuilder::singleUseTool::editTransitionTarget)
          )
     {
+        // Use an "overlay" cursor: not saved, can be canceled.
         this->updateMouseCursor(mouseCursor_e::transition);
     }
     else if (newTool == MachineBuilder::singleUseTool::none)
@@ -378,6 +389,7 @@ void SceneWidget::updateTool(MachineBuilder::tool newTool)
     }
 
     this->updateMouseCursor(this->currentCursor);
+    this->updateDragMode();
 }
 
 void SceneWidget::updateMouseCursor(mouseCursor_e cursor)
@@ -406,7 +418,6 @@ void SceneWidget::updateSceneMode(sceneMode_e newMode)
         this->sceneMode = newMode;
 
         // Update zoom buttons visibility
-
         if (this->sceneMode == sceneMode_e::idle)
         {
             this->setZoomPanelVisible(true);
@@ -416,21 +427,24 @@ void SceneWidget::updateSceneMode(sceneMode_e newMode)
             this->setZoomPanelVisible(false);
         }
 
-        // Set drag mode
-
-        QGraphicsView::DragMode dragMode = QGraphicsView::NoDrag;
-
-        if ( (this->sceneMode == sceneMode_e::idle) && (this->currentCursor == mouseCursor_e::none) )
-        {
-            dragMode = QGraphicsView::RubberBandDrag;
-        }
-        else if (this->sceneMode == sceneMode_e::movingScene)
-        {
-            dragMode = QGraphicsView::ScrollHandDrag; // Just for mouse icon, not using its properties
-        }
-
-        this->setDragMode(dragMode);
+        this->updateDragMode();
     }
+}
+
+void SceneWidget::updateDragMode()
+{
+    QGraphicsView::DragMode dragMode = QGraphicsView::NoDrag;
+
+    if ( (this->sceneMode == sceneMode_e::idle) && (this->currentCursor == mouseCursor_e::none) )
+    {
+        dragMode = QGraphicsView::RubberBandDrag;
+    }
+    else if (this->sceneMode == sceneMode_e::movingScene)
+    {
+        dragMode = QGraphicsView::ScrollHandDrag; // Just for mouse icon, not using its properties
+    }
+
+    this->setDragMode(dragMode);
 }
 
 void SceneWidget::setZoomPanelVisible(bool visible)

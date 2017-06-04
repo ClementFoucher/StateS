@@ -41,7 +41,7 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
 
     this->buttonCollapse->setCheckable(true);
     this->buttonCollapse->setChecked(true);
-    connect(this->buttonCollapse, &QPushButton::toggled, this, &CollapsibleWidgetWithTitle::updateVisibility);
+    connect(this->buttonCollapse, &QPushButton::toggled, this, &CollapsibleWidgetWithTitle::buttonCollapseToggledEventHander);
 
     this->title->setAlignment(Qt::AlignCenter);
 
@@ -109,17 +109,32 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, const QString&
     this->setContent(title, newContent, deletePreviousContent);
 }
 
-void CollapsibleWidgetWithTitle::updateVisibility(bool show)
+void CollapsibleWidgetWithTitle::setCollapsed(bool collapse)
 {
-    if (show)
-        this->extend();
-    else
+    if (collapse)
+    {
         this->collapse();
+    }
+    else
+    {
+        this->extend();
+    }
+}
+
+bool CollapsibleWidgetWithTitle::getCollapsed()
+{
+    return !(this->buttonCollapse->isChecked());
+}
+
+void CollapsibleWidgetWithTitle::buttonCollapseToggledEventHander(bool buttonPushed)
+{
+    this->setCollapsed(!buttonPushed);
 }
 
 void CollapsibleWidgetWithTitle::collapse()
 {
     this->buttonCollapse->setText(tr("Show"));
+    this->buttonCollapse->setChecked(false);
 
     if (this->content != nullptr)
     {
@@ -130,6 +145,7 @@ void CollapsibleWidgetWithTitle::collapse()
 void CollapsibleWidgetWithTitle::extend()
 {
     this->buttonCollapse->setText(tr("Hide"));
+    this->buttonCollapse->setChecked(true);
 
     if (this->content != nullptr)
     {

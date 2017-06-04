@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,14 +42,13 @@ class GraphicActuator : public GraphicComponent
 
 public:
     explicit GraphicActuator(QObject* parent = nullptr);
-    explicit GraphicActuator(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
     ~GraphicActuator();
 
     QGraphicsItemGroup* getActionsBox() const;
 
 protected:
     void setLogicActuator(shared_ptr<MachineActuatorComponent> actuator); // Throws StatesException TODO: check uses
-    shared_ptr<MachineActuatorComponent> getLogicActuator() const; // Throws StatesException
+    shared_ptr<MachineActuatorComponent> getLogicActuator() const;
     void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
 
 private:

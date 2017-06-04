@@ -92,17 +92,17 @@ StatesUi::StatesUi() :
     connect(this->toolbar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
     connect(this->toolbar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
     connect(this->toolbar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
-    connect(this->toolbar, &ToolBar::addChekpoint,              this, &StatesUi::addCheckpointRequestEvent);
     connect(this->toolbar, &ToolBar::undo,                      this, &StatesUi::undoRequestEvent);
+    connect(this->toolbar, &ToolBar::redo,                      this, &StatesUi::redoRequestEvent);
 }
 
-void StatesUi::setMachine(shared_ptr<Machine> newMachine)
+void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 {
     this->machine = newMachine;
 
-    this->resourceBar->setMachine(newMachine);
+    this->resourceBar->setMachine(newMachine, maintainView);
     this->displayArea->setMachine(newMachine);
-    this->sceneWidget->setMachine(newMachine);
+    this->sceneWidget->setMachine(newMachine, maintainView);
 }
 
 void StatesUi::setTitle(const QString& title)
@@ -113,8 +113,11 @@ void StatesUi::setTitle(const QString& title)
 
 void StatesUi::setUnsavedFlag(bool unsaved)
 {
-    this->unsavedFlag = unsaved;
-    this->updateTitle();
+    if (this->unsavedFlag != unsaved)
+    {
+        this->unsavedFlag = unsaved;
+        this->updateTitle();
+    }
 }
 
 void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
@@ -167,7 +170,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 {
     bool transmitEvent = true;
 
-    if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
+    if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
         if (! this->windowTitle.isEmpty())
         {
@@ -183,23 +186,54 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 
         transmitEvent = false;
     }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) == 0) && (event->key() == Qt::Key_Z) )
+    {
+        emit this->undoRequestEvent();
+        transmitEvent = false;
+    }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_Y) )
+    {
+        emit this->redoRequestEvent();
+        transmitEvent = false;
+    }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) != 0) && (event->key() == Qt::Key_Z) )
+    {
+        emit this->redoRequestEvent();
+        transmitEvent = false;
+    }
 
-    if(transmitEvent)
+    if (transmitEvent)
+    {
         QWidget::keyPressEvent(event);
+    }
 }
 
 void StatesUi::keyReleaseEvent(QKeyEvent* event)
 {
     bool transmitEvent = true;
 
-    if ( ((event->modifiers() | Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
+    // As we didn't transmitted the press event, do the same with the release
+    if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
     {
-        // As we didn't tranmitted the press event, do the same with the release
+        transmitEvent = false;
+    }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) == 0) && (event->key() == Qt::Key_Z) )
+    {
+        transmitEvent = false;
+    }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_Y) )
+    {
+        transmitEvent = false;
+    }
+    else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) != 0) && (event->key() == Qt::Key_Z) )
+    {
         transmitEvent = false;
     }
 
-    if(transmitEvent)
+    if (transmitEvent)
+    {
         QWidget::keyPressEvent(event);
+    }
 }
 
 void StatesUi::beginExportImageProcedure()
@@ -238,8 +272,6 @@ void StatesUi::beginExportVhdlProcedure()
 
         unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), this->windowTitle, !compat->isCompatible()));
         exportOptions->setModal(true);
-
-
 
         exportOptions->exec();
 
@@ -286,7 +318,7 @@ void StatesUi::beginSaveAsProcedure()
 
 void StatesUi::beginLoadProcedure()
 {
-    bool doLoad = this->displayUnsavedConfirmation(tr("Overwrite current machine?"));
+    bool doLoad = this->displayUnsavedConfirmation(tr("Discard current machine?"));
 
     if (doLoad)
     {
@@ -343,7 +375,9 @@ void StatesUi::updateTitle()
         }
 
         if (this->unsavedFlag == true)
+        {
             title += "*";
+        }
 
         this->setWindowTitle(title);
     }
@@ -439,12 +473,12 @@ void StatesUi::setExportActionsEnabled(bool enable)
     this->toolbar->setExportActionsEnabled(enable);
 }
 
-void StatesUi::setAddCheckpointButtonEnabled(bool enabled)
+void StatesUi::setUndoButtonEnabled(bool enable)
 {
-    this->toolbar->setAddCheckpointActionEnabled(enabled);
+    this->toolbar->setUndoActionEnabled(enable);
 }
 
-void StatesUi::setUndoButtonEnabled(bool enabled)
+void StatesUi::setRedoButtonEnabled(bool enable)
 {
-    this->toolbar->setUndoActionEnabled(enabled);
+    this->toolbar->setRedoActionEnabled(enable);
 }

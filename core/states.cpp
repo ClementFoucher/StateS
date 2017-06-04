@@ -26,8 +26,6 @@
 #include <QFileInfo>
 #include <QDir>
 
-#include <QDebug>
-
 // Diff Match Patch classes
 #include <diff_match_patch.h>
 
@@ -39,12 +37,35 @@
 #include "machinexmlwriter.h"
 #include "fsmxmlwriter.h"
 #include "machinexmlparser.h"
+#include "diffundocommand.h"
+#include "fsmundocommand.h"
+
+
+////
+// Static members
+
+shared_ptr<Machine> StateS::machine = nullptr;
+QString StateS::machineXmlRepresentation = QString::null;
 
 
 QString StateS::getVersion()
 {
-    return "0.3.K";
+    return "0.4";
 }
+
+shared_ptr<Machine> StateS::getCurrentMachine()
+{
+    return machine;
+}
+
+QString StateS::getCurrentXmlCode()
+{
+    return machineXmlRepresentation;
+}
+
+
+////
+// Object members
 
 /**
  * @brief StateS::StateS is the main object, handling both the UI
@@ -56,20 +77,23 @@ StateS::StateS(const QString& initialFilePath)
 {
     // Create interface
     this->statesUi = unique_ptr<StatesUi>(new StatesUi());
-    this->undoQueue = QStack<QList<Patch>>();
 
     connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
     connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
-    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadFsm);
+    connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadMachine);
     connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,              this, &StateS::saveCurrentMachine);
     connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent, this, &StateS::saveCurrentMachineInCurrentFile);
-    connect(this->statesUi.get(), &StatesUi::addCheckpointRequestEvent,            this, &StateS::addCheckpoint);
     connect(this->statesUi.get(), &StatesUi::undoRequestEvent,                     this, &StateS::undo);
+    connect(this->statesUi.get(), &StatesUi::redoRequestEvent,                     this, &StateS::redo);
+
+    connect(&this->undoStack, &QUndoStack::cleanChanged,   this, &StateS::undoStackCleanStateChangeEventHandler);
+    connect(&this->undoStack, &QUndoStack::canUndoChanged, this, &StateS::undoActionAvailabilityChangeEventHandler);
+    connect(&this->undoStack, &QUndoStack::canRedoChanged, this, &StateS::redoActionAvailabilityChangeEventHandler);
 
     // Initialize machine
     if (! initialFilePath.isEmpty())
     {
-        this->loadFsm(initialFilePath);
+        this->loadMachine(initialFilePath);
     }
     else
     {
@@ -84,54 +108,39 @@ void StateS::run()
 }
 
 /**
- * @brief StateS::addCheckpoint computes the differences since
- * the latest checkpoint, store them in the undo stack then
- * store the current state as the latest checkpoint.
+ * @brief StateS::machineChangedEventHandler notifies that
+ * the machine have been changed using a diff.
+ * This must be handled here because such an undo command
+ * emits events that must be connected to a slot.
+ * The updateXmlRepresentation has not to be called as we
+ * update the XML representation as part of the process.
  */
-void StateS::addCheckpoint()
+void StateS::computeDiffUndoCommand(MachineUndoCommand::undo_command_id commandId)
 {
-    QString newXml;
+    QString previousXmlCode = this->machineXmlRepresentation;
+    shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
+    this->machineXmlRepresentation = saveManager->getMachineXml();
 
-    shared_ptr<MachineXmlWriter> saveManager;
-    if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
-    {
-        saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
-    }
-    else
-    {
-        this->latestXmlCode = QString();
-        return;
-    }
+    DiffUndoCommand* undoCommand = new DiffUndoCommand(previousXmlCode, commandId);
+    connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &StateS::refreshMachineFromDiffUndoRedo);
 
-    newXml = saveManager->getMachineXml(this->machine);
-
-    // Compute diff
-    diff_match_patch diffComputer = diff_match_patch();
-    QList<Patch> diffList = diffComputer.patch_make(newXml, this->latestXmlCode);
-    this->undoQueue.push(diffList);
-
-    this->latestXmlCode = newXml;
-
-    this->statesUi->setAddCheckpointButtonEnabled(false);
-    this->statesUi->setUndoButtonEnabled(true);
-    this->machineIsAtCheckpoint = true;
+    this->undoStack.push(undoCommand);
+    this->setMachineDirty();
 }
 
 /**
- * @brief StateS::machineChanged notifies that the machine
- * have been changed since the latest checkpoint. This allow
- * to register a new checkpoint.
+ * @brief StateS::machineUndoCommandHandler indicates that
+ * the machine has changed and produced a specific undo command.
+ * Specific undo commands are particularly monitored changes
+ * which can have advanced behavior like undo merge capacity.
+ * They don't rely on a diff but do specific changes to the machine.
+ * @param undoCommand
  */
-void StateS::machineChanged()
+void StateS::addUndoCommand(MachineUndoCommand* undoCommand)
 {
-    this->statesUi->setAddCheckpointButtonEnabled(true);
-    this->statesUi->setUndoButtonEnabled(true);
-    this->statesUi->setUnsavedFlag(true);
-    if (this->currentFilePath.length() != 0)
-        this->statesUi->setSaveActionEnabled(true);
-
-    this->machineIsAtCheckpoint = false;
-    this->machineSaved = false;
+    this->undoStack.push(undoCommand);
+    this->updateXmlRepresentation();
+    this->setMachineDirty();
 }
 
 /**
@@ -141,36 +150,19 @@ void StateS::machineChanged()
  */
 void StateS::undo()
 {
-    if (this->machineIsAtCheckpoint == true)
-    {
-        if (this->undoQueue.isEmpty() == false)
-        {
-            QList<Patch> latestAction = this->undoQueue.pop();
+    this->undoStack.undo();
+    this->updateXmlRepresentation();
+}
 
-            diff_match_patch diffUnroller = diff_match_patch();
-
-            QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(latestAction, this->latestXmlCode);
-
-            shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildStringParser(result.first);
-            this->refreshMachine(parser->getMachine());
-
-            this->latestXmlCode = result.first;
-        }
-    }
-    else
-    {
-        shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildStringParser(this->latestXmlCode);
-        this->refreshMachine(parser->getMachine());
-
-        this->machineIsAtCheckpoint = true;
-    }
-
-    if (this->undoQueue.isEmpty() == true)
-    {
-        this->statesUi->setUndoButtonEnabled(false);
-    }
-
-    this->statesUi->setAddCheckpointButtonEnabled(false);
+/**
+ * @brief StateS::redo advances by one checkpoint
+ * in the undo stack, coming back to the state before
+ * the latest 'Undo' action.
+ */
+void StateS::redo()
+{
+    this->undoStack.redo();
+    this->updateXmlRepresentation();
 }
 
 /**
@@ -196,11 +188,11 @@ void StateS::clearMachine()
 }
 
 /**
- * @brief StateS::loadFsm loads a machine from a saved file.
- * This is the 'load' action.
+ * @brief StateS::loadMachine loads a machine from a saved file.
+ * This is the 'Load' action.
  * @param path
  */
-void StateS::loadFsm(const QString& path)
+void StateS::loadMachine(const QString& path)
 {
     QFileInfo file(path);
 
@@ -237,10 +229,35 @@ void StateS::loadFsm(const QString& path)
     }
 }
 
+void StateS::refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine)
+{
+    this->refreshMachine(machine, true);
+}
+
+void StateS::undoStackCleanStateChangeEventHandler(bool clean)
+{
+    this->statesUi->setUnsavedFlag(!clean);
+
+    if (this->currentFilePath.length() != 0)
+    {
+        this->statesUi->setSaveActionEnabled(!clean);
+    }
+}
+
+void StateS::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
+{
+    this->statesUi->setUndoButtonEnabled(undoAvailable);
+}
+
+void StateS::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
+{
+    this->statesUi->setRedoButtonEnabled(redoAvailable);
+}
+
 /**
  * @brief StateS::saveCurrentMachine saves the current machine to
  * a specified file.
- * This is the 'save as' action.
+ * This is the 'Save as' action.
  * @param path
  * @param configuration
  */
@@ -250,24 +267,25 @@ void StateS::saveCurrentMachine(const QString& path)
 
     QFileInfo file(path);
     if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+    {
         fileOk = true;
+    }
     else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+    {
         fileOk = true;
+    }
 
     if (fileOk)
     {
         this->updateFilePath(path);
-
         this->saveCurrentMachineInCurrentFile();
-
-        this->statesUi->setTitle(this->currentFilePath);
     }
 }
 
 /**
  * @brief StateS::saveCurrentMachineInCurrentFile saves the current machine to
  * currently registered save file.
- * This is the 'save' action.
+ * This is the 'Save' action.
  * @param configuration
  */
 void StateS::saveCurrentMachineInCurrentFile()
@@ -276,26 +294,23 @@ void StateS::saveCurrentMachineInCurrentFile()
 
     QFileInfo file(this->currentFilePath);
     if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+    {
         fileOk = true;
+    }
     else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+    {
         fileOk = true;
+    }
 
     if (fileOk)
     {
         try
         {
-            shared_ptr<MachineXmlWriter> saveManager;
-            if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
-            {
-                saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
-            }
-            else
-            {
-                return;
-            }
+            shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
 
-            saveManager->writeMachineToFile(dynamic_pointer_cast<Fsm>(this->machine), this->statesUi->getConfiguration(), this->currentFilePath); // Throws StatesException
+            saveManager->writeMachineToFile(this->statesUi->getConfiguration(), this->currentFilePath); // Throws StatesException
             this->statesUi->setSaveActionEnabled(false);
+            this->undoStack.setClean();
         }
         catch (const StatesException& e)
         {
@@ -317,32 +332,16 @@ void StateS::saveCurrentMachineInCurrentFile()
  * @brief StateS::updateLatestXml computes the current machine XML
  * to make the current state the latest checkpoint.
  */
-void StateS::updateLatestXml()
+void StateS::updateXmlRepresentation()
 {
-    if (this->machine != nullptr)
+    this->machineXmlRepresentation = QString();
+    if (machine != nullptr)
     {
-        shared_ptr<MachineXmlWriter> saveManager;
-        if (dynamic_pointer_cast<Fsm>(this->machine) != nullptr)
-        {
-            saveManager = shared_ptr<MachineXmlWriter>(new FsmXmlWriter());
-        }
-        else
-        {
-            qDebug() << "Unable to compute XML from a unkown machine type";
-        }
-
+        shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
         if (saveManager != nullptr)
         {
-            this->latestXmlCode = saveManager->getMachineXml(this->machine);
+            this->machineXmlRepresentation = saveManager->getMachineXml();
         }
-        else
-        {
-            this->latestXmlCode = QString();
-        }
-    }
-    else
-    {
-        this->latestXmlCode = QString();
     }
 }
 
@@ -350,13 +349,26 @@ void StateS::updateFilePath(const QString& newPath)
 {
     this->currentFilePath = newPath;
 
-    if ( (this->currentFilePath.size() != 0) && (this->machineSaved == false))
+    // Update  UI
+
+    if ( (this->currentFilePath.size() != 0) && (this->undoStack.isClean() == false))
     {
         this->statesUi->setSaveActionEnabled(true);
     }
     else
     {
         this->statesUi->setSaveActionEnabled(false);
+    }
+
+    this->statesUi->setTitle(this->currentFilePath);
+}
+
+void StateS::setMachineDirty()
+{
+    this->statesUi->setUnsavedFlag(true);
+    if (this->currentFilePath.length() != 0)
+    {
+        this->statesUi->setSaveActionEnabled(true);
     }
 }
 
@@ -366,22 +378,25 @@ void StateS::updateFilePath(const QString& newPath)
  * the current machine.
  * @param newMachine
  */
-void StateS::refreshMachine(shared_ptr<Machine> newMachine)
+void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool maintainView)
 {
     // Cut links with older machine
-    if (this->machine != nullptr)
+    if (machine != nullptr)
     {
-        disconnect(this->machine.get(), &Machine::machineEdited, this, &StateS::machineChanged);
+        disconnect(machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
+        disconnect(machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
     }
 
     // Renew machine
-    this->statesUi->setMachine(newMachine);
-    this->machine = newMachine;
+    this->statesUi->setMachine(newMachine, maintainView);
+    machine = newMachine;
 
     // Establish links with new machine
-    if (this->machine != nullptr)
+    if (machine != nullptr)
     {
-        connect(this->machine.get(), &Machine::machineEdited, this, &StateS::machineChanged);
+        connect(machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
+        connect(machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
+
         this->statesUi->setSaveAsActionEnabled(true);
         this->statesUi->setExportActionsEnabled(true);
     }
@@ -402,22 +417,18 @@ void StateS::refreshMachine(shared_ptr<Machine> newMachine)
  */
 void StateS::loadNewMachine(shared_ptr<Machine> newMachine, const QString& path)
 {
-    this->machineSaved = true;
-
     // Refresh current machine
-    this->refreshMachine(newMachine);
+    this->refreshMachine(newMachine, false);
 
     // Update UI
-    this->statesUi->setTitle(path);
     this->statesUi->setUnsavedFlag(false);
-    this->statesUi->setAddCheckpointButtonEnabled(false);
     this->statesUi->setUndoButtonEnabled(false);
+    this->statesUi->setRedoButtonEnabled(false);
     this->statesUi->setSaveActionEnabled(false);
 
     // Initialize time machine
-    this->undoQueue = QStack<QList<Patch>>();
-    this->updateLatestXml();
-    this->machineIsAtCheckpoint = true;
+    this->undoStack.clear();
+    this->updateXmlRepresentation();
 
     // Update file path
     this->updateFilePath(path);

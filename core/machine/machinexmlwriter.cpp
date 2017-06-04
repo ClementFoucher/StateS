@@ -38,17 +38,33 @@
 #include "constant.h"
 #include "equation.h"
 #include "actiononsignal.h"
+#include "fsm.h"
+#include "fsmxmlwriter.h"
 
 
-MachineXmlWriter::MachineXmlWriter(QObject* parent) :
-    QObject(parent)
+shared_ptr<MachineXmlWriter> MachineXmlWriter::buildMachineWriter(shared_ptr<Machine> machine)
 {
+    shared_ptr<MachineXmlWriter> machineWriter;
+
+    shared_ptr<Fsm> machineAsFsm = dynamic_pointer_cast<Fsm>(machine);
+    if (machineAsFsm != nullptr)
+    {
+        machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(dynamic_pointer_cast<Fsm>(machine)));
+    }
+
+    return machineWriter;
 }
 
-void MachineXmlWriter::writeMachineCommonElements(shared_ptr<Machine> machine)
+MachineXmlWriter::MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent) :
+    QObject(parent)
+{
+    this->machine = machine;
+}
+
+void MachineXmlWriter::writeMachineCommonElements()
 {
     this->writeMachineConfiguration();
-    this->writeMachineSignals(machine);
+    this->writeMachineSignals();
 }
 
 void MachineXmlWriter::writeMachineConfiguration()
@@ -70,11 +86,11 @@ void MachineXmlWriter::writeMachineConfiguration()
     }
 }
 
-void MachineXmlWriter::writeMachineSignals(shared_ptr<Machine> machine)
+void MachineXmlWriter::writeMachineSignals()
 {
     this->stream->writeStartElement("Signals");
 
-    foreach (shared_ptr<Signal> var, machine->getAllSignals())
+    foreach (shared_ptr<Signal> var, this->machine->getAllSignals())
     {
         // Type
         if (dynamic_pointer_cast<Input>(var) != nullptr)

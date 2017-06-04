@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,15 +31,10 @@
 
 QPen GraphicComponent::selectionPen = QPen(QBrush(QColor(0, 0, 204, 200), Qt::SolidPattern), 1, Qt::DashLine);
 
+
 GraphicComponent::GraphicComponent(QObject* parent) :
     QObject(parent)
 {
-}
-
-GraphicComponent::GraphicComponent(shared_ptr<MachineComponent> logicComponent, QObject* parent) :
-    QObject(parent)
-{
-    this->logicComponent = logicComponent;
 }
 
 void GraphicComponent::setLogicComponent(shared_ptr<MachineComponent> logicComponent) // Throws StatesException
@@ -54,16 +49,7 @@ void GraphicComponent::setLogicComponent(shared_ptr<MachineComponent> logicCompo
     }
 }
 
-shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() const // Throws StatesException
+shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() const
 {
-    shared_ptr<MachineComponent> l_logicComponent = this->logicComponent.lock();
-
-    if (l_logicComponent != nullptr)
-    {
-        return l_logicComponent;
-    }
-    else
-    {
-        throw StatesException("GraphicComponent", obsolete_base_object, "The logic object we refer to is inexistant or obsolete. The graphic object isn't usable.");
-    }
+    return this->logicComponent.lock();
 }

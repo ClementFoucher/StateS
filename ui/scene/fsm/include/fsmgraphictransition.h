@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -58,11 +58,8 @@ public:
 public:
     static QPixmap getPixmap(uint size);
 
-private:
-    // Private constructor for handling common initialization elements
-    explicit FsmGraphicTransition();
-
 public:
+    explicit FsmGraphicTransition();
     // This is static build of transition, we already have a logic element to represent
     explicit FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition);
     // This constructor toggles dynamic mode on target. This is used when drawing a transition graphically
@@ -88,17 +85,18 @@ public:
     shared_ptr<FsmGraphicTransitionNeighborhood> helloIMYourNewNeighbor();
 
     void setConditionLineSliderPosition(qreal position); // Todo: throw exception
-    qreal getConditionLineSliderPosition();
+    qreal getConditionLineSliderPosition() const;
 
     QGraphicsTextItem* getConditionText() const;
     virtual QPainterPath shape() const override;
     virtual QRectF boundingRect() const override;
 
 signals:
+    void transitionSliderPositionChangedEvent();
+
     void editCalledEvent(shared_ptr<FsmTransition>);
     void dynamicSourceCalledEvent(FsmGraphicTransition*);
     void dynamicTargetCalledEvent(FsmGraphicTransition*);
-    void transitionSliderPositionChangedEvent();
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
@@ -110,7 +108,7 @@ private slots:
     void updateDisplay();
     void updateText();
     void treatMenu(QAction* action);
-    void machineModeChangedEventHandler(Machine::mode);
+    void machineModeChangedEventHandler(Machine::simulation_mode);
 
 private:
     void finishInitialize();
@@ -118,10 +116,12 @@ private:
     void rebuildBoundingShape();
     void updateSelectionShapeDisplay();
 
-    void checkNeighboors();
-    void setNeighbors(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood);
-    void quitNeighboorhood();  // Ohhh... So sad
+    void checkNeighbors();
+    void setNeighborhood(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood);
+    void quitNeighborhood();  // Ohhh... So sad
+    void refreshNeighborhood();
 
+private:
     // A FSM graphic transition must always have at least a source (may not have target when first drawing)
     FsmGraphicState* source = nullptr;
     FsmGraphicState* target = nullptr;

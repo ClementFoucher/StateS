@@ -57,7 +57,7 @@ class ResourceBar : public QTabWidget
 public:
     explicit ResourceBar(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine);
+    void setMachine(shared_ptr<Machine> newMachine, bool maintainView = false);
 
     void setSelectedItem(shared_ptr<MachineComponent> item);
     void editSelectedItem();
@@ -67,7 +67,7 @@ public:
 
 private slots:
     void clearSelection();
-    void machineModeChangedEventHandler(Machine::mode newMode);
+    void machineModeChangedEventHandler(Machine::simulation_mode newMode);
     void tabChanged(int);
 
 private:

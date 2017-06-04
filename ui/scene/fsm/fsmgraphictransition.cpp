@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,6 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QGraphicsView>
-
-// Debug
-#include <QDebug>
 
 // States classes
 #include "fsmgraphicstate.h"
@@ -79,51 +76,46 @@ FsmGraphicTransition::FsmGraphicTransition()
     this->setFlag(QGraphicsItem::ItemIsSelectable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setFlag(QGraphicsItem::ItemClipsToShape);
-
-    // Changing slider position is a configuration change
-    connect(this, &FsmGraphicTransition::transitionSliderPositionChangedEvent, this, &GraphicComponent::graphicComponentConfigurationChangedEvent);
 }
 
 FsmGraphicTransition::FsmGraphicTransition(FsmGraphicState* source, const QPointF& dynamicMousePosition) :
     FsmGraphicTransition()
 {
-    currentMode = mode::initMode;
+    this->currentMode = mode::initMode;
     this->setSourceState(source);
     this->setDynamicTargetMode(dynamicMousePosition);
     // We are now in dynamic target mode
 
-    finishInitialize();
+    this->finishInitialize();
 }
 
 FsmGraphicTransition::FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition) :
     FsmGraphicTransition()
 {
     this->setLogicTransition(logicTransition);
-    logicTransition->setGraphicRepresentation(this); // When graphic transition is created AFTER logic transition, we need to associate them explicitly
 
     shared_ptr<Fsm> machine = logicTransition->getOwningFsm();
-    connect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
+    connect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
 
     currentMode = mode::initMode;
     this->setSourceState(logicTransition->getSource()->getGraphicRepresentation());
     this->setTargetState(logicTransition->getTarget()->getGraphicRepresentation());
-    this->conditionLineSliderPos = logicTransition->sliderPos;
     currentMode = mode::standardMode;
 
-    checkNeighboors();
-    finishInitialize();
+    this->checkNeighbors();
+    this->finishInitialize();
 }
 
 void FsmGraphicTransition::finishInitialize()
 {
-    rebuildArrowEnd();
-    updateText();
-    updateDisplay();
+    this->rebuildArrowEnd();
+    this->updateText();
+    this->updateDisplay();
 }
 
 FsmGraphicTransition::~FsmGraphicTransition()
 {
-    quitNeighboorhood();
+    this->quitNeighborhood();
 
     delete conditionText;
 
@@ -131,56 +123,46 @@ FsmGraphicTransition::~FsmGraphicTransition()
 
     if (l_logicTransition != nullptr)
     {
-        disconnect(l_logicTransition.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
-        disconnect(l_logicTransition.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicTransition::updateText);
+        disconnect(l_logicTransition.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,    this, &FsmGraphicTransition::updateText);
+        disconnect(l_logicTransition.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicTransition::updateText);
 
         shared_ptr<Fsm> machine = l_logicTransition->getOwningFsm();
         if (machine != nullptr)
-            disconnect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
-
-        l_logicTransition->clearGraphicRepresentation();
+        {
+            disconnect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
+        }
     }
 }
 
 void FsmGraphicTransition::setLogicTransition(shared_ptr<FsmTransition> transition)
 {
-    // This function can be called only once, we never reaffect a graphic transition
     if (this->getLogicTransition() == nullptr)
     {
         this->setLogicActuator(dynamic_pointer_cast<MachineActuatorComponent>(transition)); // Throws StatesException - ignored as we checked nullness
 
-        connect(transition.get(), &MachineActuatorComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicTransition::updateText);
-        connect(transition.get(), &FsmTransition::componentDynamicStateChangedEvent,                   this, &FsmGraphicTransition::updateText);
+        connect(transition.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,    this, &FsmGraphicTransition::updateText);
+        connect(transition.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicTransition::updateText);
 
-        this->updateText();
+        this->currentMode = mode::initMode;
+        this->setSourceState(transition->getSource()->getGraphicRepresentation());
+        this->setTargetState(transition->getTarget()->getGraphicRepresentation());
+        this->currentMode = mode::standardMode;
+
+        this->refreshNeighborhood();
+        this->finishInitialize();
     }
-    else
-        qDebug() << "(FmGraphicTransition:) Error! Trying to reaffect logic transition while already linked! Ignored call.";
 }
 
 shared_ptr<FsmTransition> FsmGraphicTransition::getLogicTransition() const
 {
-    try
-    {
-        return dynamic_pointer_cast<FsmTransition>(this->getLogicActuator());  // Throws StatesException - handled
-    }
-    catch (const StatesException& e)
-    {
-        if ( (e.getSourceClass() == "GraphicComponent") && (e.getEnumValue() == GraphicComponent::GraphicComponentErrorEnum::obsolete_base_object) )
-        {
-            // It is allowed to have no associated logic component when drawing transition
-            return nullptr;
-        }
-        else
-            throw;
-    }
+    return dynamic_pointer_cast<FsmTransition>(this->getLogicActuator());
 }
 
 bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
 {
-    autoTransitionNeedsRedraw = true;
+    this->autoTransitionNeedsRedraw = true;
 
-    if (currentMode == mode::initMode)
+    if (this->currentMode == mode::initMode)
     {
         this->source = newSource;
 
@@ -189,7 +171,7 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
 
         return true;
     }
-    else if (currentMode == mode::standardMode)
+    else if (this->currentMode == mode::standardMode)
     {
         if (newSource == nullptr) // We can't change source for nullptr
             return false;
@@ -203,8 +185,8 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
                 disconnect(this->source, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
-            if (dynamicState != newSource)
-                quitNeighboorhood();
+            if (this->dynamicState != newSource)
+                this->quitNeighborhood();
 
             this->source = newSource;
 
@@ -212,27 +194,27 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
             connect(this->source, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
-            if (dynamicState != newSource)
+            if (this->dynamicState != newSource)
             {
-                checkNeighboors();
-                updateDisplay();
+                this->checkNeighbors();
+                this->updateDisplay();
             }
 
             return true;
         }
     }
-    else if (currentMode == mode::dynamicSourceMode)
+    else if (this->currentMode == mode::dynamicSourceMode)
     {
         if (newSource == this->dynamicState)
             return true;
         else
         {
-            quitNeighboorhood();
+            this->quitNeighborhood();
 
-            dynamicState = newSource;
+            this->dynamicState = newSource;
 
-            checkNeighboors();
-            updateDisplay();
+            this->checkNeighbors();
+            this->updateDisplay();
 
             return true;
         }
@@ -244,9 +226,9 @@ bool FsmGraphicTransition::setSourceState(FsmGraphicState* newSource)
 
 bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
 {
-    autoTransitionNeedsRedraw = true;
+    this->autoTransitionNeedsRedraw = true;
 
-    if (currentMode == mode::initMode)
+    if (this->currentMode == mode::initMode)
     {
         this->target = newTarget;
 
@@ -255,7 +237,7 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
 
         return true;
     }
-    else if (currentMode == mode::standardMode)
+    else if (this->currentMode == mode::standardMode)
     {
         if (newTarget == nullptr) // We can't change target for nullptr
             return false;
@@ -264,7 +246,7 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
         else
         {
             // Disconnect existing signal, if existing (state can be created without target graphically)
-            if (target != nullptr)
+            if (this->target != nullptr)
             {
                 // If we were a single-state transition, do not disconnect as we still have source connected!
                 if (this->source != this->target)
@@ -272,8 +254,8 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
             }
 
             // If dynamic target state exists, we are already in the right neighborhood
-            if (dynamicState != newTarget)
-                quitNeighboorhood();
+            if (this->dynamicState != newTarget)
+                this->quitNeighborhood();
 
 
             this->target = newTarget;
@@ -282,25 +264,25 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
             connect(this->target, &FsmGraphicState::stateMovedEvent, this, &FsmGraphicTransition::updateDisplay);
 
             // If dynamic target state exists, we are already in the right neighborhood
-            if (dynamicState != newTarget)
+            if (this->dynamicState != newTarget)
             {
-                checkNeighboors();
-                updateDisplay();
+                this->checkNeighbors();
+                this->updateDisplay();
             }
 
             return true;
         }
     }
-    else if (currentMode == mode::dynamicTargetMode)
+    else if (this->currentMode == mode::dynamicTargetMode)
     {
         if (newTarget == this->dynamicState)
             return true;
         else
         {
-            quitNeighboorhood();
-            dynamicState = newTarget;
-            checkNeighboors();
-            updateDisplay();
+            this->quitNeighborhood();
+            this->dynamicState = newTarget;
+            this->checkNeighbors();
+            this->updateDisplay();
 
             return true;
         }
@@ -311,11 +293,11 @@ bool FsmGraphicTransition::setTargetState(FsmGraphicState* newTarget)
 
 void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
 {
-    this->dynamicState= nullptr;
+    this->dynamicState = nullptr;
     this->mousePosition = mousePos;
 
-    quitNeighboorhood();
-    updateDisplay();
+    this->quitNeighborhood();
+    this->updateDisplay();
 }
 
 FsmGraphicState* FsmGraphicTransition::getSource() const
@@ -330,27 +312,27 @@ FsmGraphicState* FsmGraphicTransition::getTarget() const
 
 void FsmGraphicTransition::rebuildArrowEnd()
 {
-    delete arrowEnd;
-    arrowEnd = new QGraphicsItemGroup(this);
+    delete this->arrowEnd;
+    this->arrowEnd = new QGraphicsItemGroup(this);
 
     //QPainterPath arrowPath;
-    QGraphicsLineItem* arrowEnd1 = new QGraphicsLineItem(arrowEnd);
-    QGraphicsLineItem* arrowEnd2 = new QGraphicsLineItem(arrowEnd);
+    QGraphicsLineItem* arrowEnd1 = new QGraphicsLineItem(this->arrowEnd);
+    QGraphicsLineItem* arrowEnd2 = new QGraphicsLineItem(this->arrowEnd);
 
-    arrowEnd1->setPen(*currentPen);
-    arrowEnd2->setPen(*currentPen);
+    arrowEnd1->setPen(*this->currentPen);
+    arrowEnd2->setPen(*this->currentPen);
 
     // Original arrow point north-west
-    arrowEnd1->setLine(0, 0, arrowEndSize, 0);
-    arrowEnd2->setLine(0, 0, 0, arrowEndSize);
+    arrowEnd1->setLine(0, 0, this->arrowEndSize, 0);
+    arrowEnd2->setLine(0, 0, 0, this->arrowEndSize);
 }
 
 void FsmGraphicTransition::rebuildBoundingShape()
 {
     this->prepareGeometryChange();
 
-    QGraphicsLineItem* arrowBodyStraightLine = dynamic_cast<QGraphicsLineItem*>(arrowBody);
-    QGraphicsPathItem* arrowBodyPath = dynamic_cast<QGraphicsPathItem*>(arrowBody);
+    QGraphicsLineItem* arrowBodyStraightLine = dynamic_cast<QGraphicsLineItem*>(this->arrowBody);
+    QGraphicsPathItem* arrowBodyPath = dynamic_cast<QGraphicsPathItem*>(this->arrowBody);
 
     QPainterPath path;
     QTransform t;
@@ -399,7 +381,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
         // Arc transiton
 
         // Special case: the path can actually be a straight line
-        if ( (neighbors != nullptr) && (neighbors->count() % 2 == 1) && (neighbors->whatIsMyRank(this) == 0) )
+        if ( (this->neighbors != nullptr) && (this->neighbors->count() % 2 == 1) && (this->neighbors->whatIsMyRank(this) == 0) )
         {
             QLineF straightLine = QLineF(QPointF(0, 0), arrowBodyPath->boundingRect().bottomRight());
             QRectF boundRect(0, -middleBarLength/2, straightLine.length(), middleBarLength);
@@ -408,7 +390,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
         }
         else
         {
-            QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
+            QPainterPath arrowPath = ((QGraphicsPathItem*)this->arrowBody)->path();
 
             qreal outterScale = (arrowPath.boundingRect().width() + middleBarLength/2) / arrowPath.boundingRect().width();
             qreal innerScale  = (arrowPath.boundingRect().width() - middleBarLength/2) / arrowPath.boundingRect().width();
@@ -442,7 +424,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
             path.closeSubpath();
         }
 
-        t.rotate(-sceneAngle);
+        t.rotate(-this->sceneAngle);
     }
 
     this->boundingShape = t.map(path);
@@ -472,9 +454,9 @@ void FsmGraphicTransition::updateText()
     // Should also make background semi-transparent... (we could avoid color?)
     if (l_logicTransition != nullptr)
     {
-        Machine::mode currentMode = l_logicTransition->getOwningFsm()->getCurrentMode();
+        Machine::simulation_mode currentMode = l_logicTransition->getOwningFsm()->getCurrentSimulationMode();
 
-        if ( (scene() != nullptr) && (currentMode == Machine::mode::simulateMode) )
+        if ( (scene() != nullptr) && (currentMode == Machine::simulation_mode::simulateMode) )
         {
             if (l_logicTransition->getCondition() == nullptr)
                 conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
@@ -483,9 +465,9 @@ void FsmGraphicTransition::updateText()
                 shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
 
                 if (equationCondition != nullptr)
-                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(true, true) + "</div>");
+                    this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(true, true) + "</div>");
                 else
-                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getColoredText(true) + "</div>");
+                    this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getColoredText(true) + "</div>");
             }
 
             if (conditionLine != nullptr)
@@ -496,16 +478,16 @@ void FsmGraphicTransition::updateText()
                     try
                     {
                         if (condition->isTrue())
-                            conditionLine->setPen(activePen);
+                            this->conditionLine->setPen(activePen);
                         else
-                            conditionLine->setPen(inactivePen);
+                            this->conditionLine->setPen(inactivePen);
                     }
                     catch (const StatesException& e)
                     {
                         if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::signal_is_not_bool) )
                         {
                             // Condition is incorrect, considered false
-                            conditionLine->setPen(inactivePen);
+                            this->conditionLine->setPen(inactivePen);
                         }
                         else
                             throw;
@@ -514,45 +496,45 @@ void FsmGraphicTransition::updateText()
                 else
                 {
                     // Missing condition is implicitly 1
-                    conditionLine->setPen(activePen);
+                    this->conditionLine->setPen(activePen);
                 }
             }
         }
         else
         {
             if (l_logicTransition->getCondition() == nullptr)
-                conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
+                this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
             else
             {
                 shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
 
                 if (equationCondition != nullptr)
-                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(false, true) + "</div>");
+                    this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + equationCondition->getColoredText(false, true) + "</div>");
                 else
-                    conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText() + "</div>");
+                    this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>" + l_logicTransition->getCondition()->getText() + "</div>");
             }
-            if (conditionLine != nullptr)
-                conditionLine->setPen(standardPen);
+            if (this->conditionLine != nullptr)
+                this->conditionLine->setPen(standardPen);
         }
     }
     else
-        conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
+        this->conditionText->setHtml("<div style='background-color:#E8E8E8;'>1</div>");
 
     //
     // Actions
 
-    this->buildActionsBox(*currentPen, false);
+    this->buildActionsBox(*this->currentPen, false);
 }
 
 void FsmGraphicTransition::updateDisplay()
 {
     //
     // First deal with mates as this function can be called by a neighborhood change
-    if (neighbors != nullptr)
+    if (this->neighbors != nullptr)
     {
-        if (neighbors->count() == 1)
+        if (this->neighbors->count() == 1)
         {
-            neighbors.reset();
+            this->neighbors.reset();
         }
     }
 
@@ -564,43 +546,43 @@ void FsmGraphicTransition::updateDisplay()
     FsmGraphicState* currentSourceState = nullptr;
     FsmGraphicState* currentTargetState = nullptr;
 
-    if (currentMode == mode::standardMode)
+    if (this->currentMode == mode::standardMode)
     {
-        currentSourcePoint = source->scenePos();
-        currentTargetPoint = target->scenePos();
+        currentSourcePoint = this->source->scenePos();
+        currentTargetPoint = this->target->scenePos();
 
-        currentSourceState = source;
-        currentTargetState = target;
+        currentSourceState = this->source;
+        currentTargetState = this->target;
     }
-    else if (currentMode == mode::dynamicSourceMode)
+    else if (this->currentMode == mode::dynamicSourceMode)
     {
-        if (dynamicState != nullptr)
+        if (this->dynamicState != nullptr)
         {
-            currentSourcePoint = dynamicState->scenePos();
-            currentSourceState = dynamicState;
+            currentSourcePoint = this->dynamicState->scenePos();
+            currentSourceState = this->dynamicState;
         }
         else
         {
-            currentSourcePoint = mousePosition;
+            currentSourcePoint = this->mousePosition;
             currentSourceState = nullptr;
         }
 
-        currentTargetPoint = target->scenePos();
-        currentTargetState = target;
+        currentTargetPoint = this->target->scenePos();
+        currentTargetState = this->target;
     }
-    else if (currentMode == mode::dynamicTargetMode)
+    else if (this->currentMode == mode::dynamicTargetMode)
     {
-        currentSourcePoint = source->scenePos();
-        currentSourceState = source;
+        currentSourcePoint = this->source->scenePos();
+        currentSourceState = this->source;
 
-        if (dynamicState != nullptr)
+        if (this->dynamicState != nullptr)
         {
-            currentTargetPoint = dynamicState->scenePos();
-            currentTargetState = dynamicState;
+            currentTargetPoint = this->dynamicState->scenePos();
+            currentTargetState = this->dynamicState;
         }
         else
         {
-            currentTargetPoint = mousePosition;
+            currentTargetPoint = this->mousePosition;
             currentTargetState = nullptr;
         }
     }
@@ -609,7 +591,7 @@ void FsmGraphicTransition::updateDisplay()
     // Redraw arrow body
     QPointF conditionLinePos;
 
-    if ( (neighbors == nullptr) && (currentSourceState != currentTargetState) )
+    if ( (this->neighbors == nullptr) && (currentSourceState != currentTargetState) )
     {
         delete this->conditionLine;
         delete this->arrowBody;
@@ -622,7 +604,7 @@ void FsmGraphicTransition::updateDisplay()
         QLineF straightLine(QPointF(0, 0), currentTargetPoint - currentSourcePoint);
 
         // Set line appropriate size (reduce current size by correct number of state radius to point on states border)
-        if ( ((currentMode == mode::dynamicSourceMode) || (currentMode == mode::dynamicTargetMode)) && (dynamicState == nullptr) )
+        if ( ((this->currentMode == mode::dynamicSourceMode) || (this->currentMode == mode::dynamicTargetMode)) && (this->dynamicState == nullptr) )
         {
             // Reduce line length to match space between state center and mouse position
             straightLine.setLength(straightLine.length() - FsmGraphicState::getRadius());
@@ -636,25 +618,24 @@ void FsmGraphicTransition::updateDisplay()
         // Create line graphic representation
         QGraphicsLineItem* line = new QGraphicsLineItem(this);
         //   line->setFlag(QGraphicsItem::ItemIsSelectable);
-        line->setPen(*currentPen);
+        line->setPen(*this->currentPen);
         line->setLine(straightLine);
-        arrowBody = line;
+        this->arrowBody = line;
 
         // Display condition
         QLineF conditionLineF = straightLine.normalVector();
         conditionLineF.setLength(middleBarLength);
-        conditionLine = new QGraphicsLineItem(conditionLineF, this);
-        conditionLine->setPen(*currentPen);
+        this->conditionLine = new QGraphicsLineItem(conditionLineF, this);
+        this->conditionLine->setPen(*this->currentPen);
         // Determine position
-        //conditionLineSliderPos
         conditionLinePos = QPointF(straightLine.p2()*this->conditionLineSliderPos);
-        conditionLine->setPos(conditionLinePos - conditionLineF.p2()/2);
+        this->conditionLine->setPos(conditionLinePos - conditionLineF.p2()/2);
 
         //
         // Update positions with actual ones used for construction
 
         // If source is a state, line should be translated to begin on state border
-        if ( !((currentMode == mode::dynamicSourceMode) && (dynamicState == nullptr)) )
+        if ( !((this->currentMode == mode::dynamicSourceMode) && (this->dynamicState == nullptr)) )
         {
             // Translation vector is based on straight line (same vector) and normalized to required translation length
             QLineF translationVector(straightLine);
@@ -667,9 +648,9 @@ void FsmGraphicTransition::updateDisplay()
         currentTargetPoint = currentSourcePoint + straightLine.p2();
 
         // Compute arrow end rotation based on line angle
-        arrowEnd->setRotation(135-straightLine.angle());
+        this->arrowEnd->setRotation(135-straightLine.angle());
         // Set arrow position to be at target side
-        arrowEnd->setPos(currentTargetPoint - currentSourcePoint); // Positions are intended in scene coordinates. Relocate wrt. this item coordinates: (0, 0) is at source point position
+        this->arrowEnd->setPos(currentTargetPoint - currentSourcePoint); // Positions are intended in scene coordinates. Relocate wrt. this item coordinates: (0, 0) is at source point position
 
         this->setPos(currentSourcePoint);
     }
@@ -677,7 +658,7 @@ void FsmGraphicTransition::updateDisplay()
     {
         // Auto-transition
 
-        if (autoTransitionNeedsRedraw)
+        if (this->autoTransitionNeedsRedraw)
         {
             delete this->conditionLine;
             delete this->arrowBody;
@@ -686,8 +667,8 @@ void FsmGraphicTransition::updateDisplay()
             this->arrowBody     = nullptr;
 
             uint rank;
-            if (neighbors != nullptr)
-                rank = neighbors->whatIsMyRank(this);
+            if (this->neighbors != nullptr)
+                rank = this->neighbors->whatIsMyRank(this);
             else
                 rank = 0;
 
@@ -720,22 +701,22 @@ void FsmGraphicTransition::updateDisplay()
             arc.lineTo(stateCenterToArcEndVector.p2());
 
             QGraphicsPathItem* arcItem = new QGraphicsPathItem(arc, this);
-            arcItem->setPen(*currentPen);
-            arrowBody = arcItem;
+            arcItem->setPen(*this->currentPen);
+            this->arrowBody = arcItem;
 
             QLineF conditionLineF(0, -middleBarLength/2, 0, 1);
             conditionLineF.setLength(middleBarLength);
-            conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
-            conditionLine->setPen(*currentPen);
+            this->conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
+            this->conditionLine->setPen(*this->currentPen);
 
-            this->autoTransitionConditionPosition = arc.pointAtPercent(conditionLineSliderPos);
-            conditionLine->setPos(this->autoTransitionConditionPosition);
-            conditionLine->setRotation(-arc.angleAtPercent(conditionLineSliderPos));
+            this->autoTransitionConditionPosition = arc.pointAtPercent(this->conditionLineSliderPos);
+            this->conditionLine->setPos(this->autoTransitionConditionPosition);
+            this->conditionLine->setRotation(-arc.angleAtPercent(this->conditionLineSliderPos));
 
-            arrowEnd->setPos(stateCenterToArcEndVector.p2());
-            arrowEnd->setRotation(180);
+            this->arrowEnd->setPos(stateCenterToArcEndVector.p2());
+            this->arrowEnd->setRotation(180);
 
-            autoTransitionNeedsRedraw = false;
+            this->autoTransitionNeedsRedraw = false;
         }
 
         conditionLinePos = this->autoTransitionConditionPosition;
@@ -754,9 +735,9 @@ void FsmGraphicTransition::updateDisplay()
         // depends on their rank in mates
 
         // Get actual source and target in mates's coordinate system
-        if ( ((currentMode == mode::standardMode)      && (neighbors->getSource() != this->source)) ||
-             ((currentMode == mode::dynamicTargetMode) && (neighbors->getSource() != this->source)) ||
-             ((currentMode == mode::dynamicSourceMode) && (neighbors->getSource() != this->dynamicState))
+        if ( ((this->currentMode == mode::standardMode)      && (this->neighbors->getSource() != this->source)) ||
+             ((this->currentMode == mode::dynamicTargetMode) && (this->neighbors->getSource() != this->source)) ||
+             ((this->currentMode == mode::dynamicSourceMode) && (this->neighbors->getSource() != this->dynamicState))
            )
         {
             QPointF temp = currentTargetPoint;
@@ -770,24 +751,23 @@ void FsmGraphicTransition::updateDisplay()
         QPointF curveTarget;
         qreal endAngle1;
         qreal endAngle2;
-        arrowBody = neighbors->buildMyBody(currentPen, this, deltaCurveOrigin, conditionLinePos, curveTarget, endAngle1, endAngle2, &conditionLine, this->conditionLineSliderPos);
-        //arrowBody = path;
+        this->arrowBody = this->neighbors->buildMyBody(this->currentPen, this, deltaCurveOrigin, conditionLinePos, curveTarget, endAngle1, endAngle2, &this->conditionLine, this->conditionLineSliderPos);
 
-        sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();
+        this->sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();
 
         // Place arrow end on correct side
 
-        if (((currentMode == mode::standardMode)      && (neighbors->getSource() == this->source)) ||
-            ((currentMode == mode::dynamicTargetMode) && (neighbors->getSource() == this->source)) ||
-            ((currentMode == mode::dynamicSourceMode) && (neighbors->getSource() == this->dynamicState)))
+        if (((this->currentMode == mode::standardMode)      && (this->neighbors->getSource() == this->source)) ||
+            ((this->currentMode == mode::dynamicTargetMode) && (this->neighbors->getSource() == this->source)) ||
+            ((this->currentMode == mode::dynamicSourceMode) && (this->neighbors->getSource() == this->dynamicState)))
         {
-            arrowEnd->setPos(curveTarget);
-            arrowEnd->setRotation(135-endAngle1);
+            this->arrowEnd->setPos(curveTarget);
+            this->arrowEnd->setRotation(135-endAngle1);
         }
         else
         {
-            arrowEnd->setPos(0, 0);
-            arrowEnd->setRotation(135-endAngle2);
+            this->arrowEnd->setPos(0, 0);
+            this->arrowEnd->setRotation(135-endAngle2);
         }
 
         this->setPos(currentSourcePoint+deltaCurveOrigin);
@@ -796,11 +776,11 @@ void FsmGraphicTransition::updateDisplay()
 
     }
 
-    conditionText->setPos(mapToScene(conditionLinePos) + QPointF(0, 5));
+    this->conditionText->setPos(mapToScene(conditionLinePos) + QPointF(0, 5));
 
     QGraphicsItemGroup* actionBox = this->getActionsBox();
     if (actionBox != nullptr)
-        actionBox->setPos(mapToScene(conditionLinePos + conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+        actionBox->setPos(mapToScene(conditionLinePos + this->conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
 
     this->rebuildBoundingShape();
     this->updateSelectionShapeDisplay();
@@ -808,7 +788,7 @@ void FsmGraphicTransition::updateDisplay()
 
 bool FsmGraphicTransition::setDynamicSourceMode(const QPointF& mousePosition)
 {
-    if (currentMode != mode::standardMode)
+    if (this->currentMode != mode::standardMode)
         return false;
     else
     {
@@ -824,7 +804,7 @@ bool FsmGraphicTransition::setDynamicSourceMode(const QPointF& mousePosition)
 
 bool FsmGraphicTransition::setDynamicTargetMode(const QPointF& mousePosition)
 {
-    if ( (currentMode != mode::standardMode) && (currentMode != mode::initMode) )
+    if ( (this->currentMode != mode::standardMode) && (this->currentMode != mode::initMode) )
         return false;
     else
     {
@@ -846,46 +826,37 @@ bool FsmGraphicTransition::endDynamicMode(bool keepChanges)
 
     if (keepChanges)
     {
-        if (dynamicState == nullptr)
+        if (this->dynamicState == nullptr)
         {
             return false;
         }
-        else if (currentMode == mode::dynamicSourceMode)
+        else if (this->currentMode == mode::dynamicSourceMode)
         {
-            currentMode = mode::standardMode;
-            setSourceState(dynamicState);
+            this->currentMode = mode::standardMode;
+            this->setSourceState(this->dynamicState);
             if (l_logicTransition != nullptr)
             {
-                shared_ptr<FsmState> oldOwner = l_logicTransition->getSource();
-                shared_ptr<FsmState> newOwner = dynamicState->getLogicState();
-
-                l_logicTransition->setSource(newOwner);
-                oldOwner->removeOutgoingTransition(l_logicTransition);
-                newOwner->addOutgoingTransition(l_logicTransition);
+                shared_ptr<Fsm> fsm = l_logicTransition->getOwningFsm();
+                fsm->redirectTransition(l_logicTransition, this->dynamicState->getLogicState(), l_logicTransition->getTarget());
             }
         }
         else if (currentMode == mode::dynamicTargetMode)
         {
-            currentMode = mode::standardMode;
-            setTargetState(dynamicState);
+            this->currentMode = mode::standardMode;
+            this->setTargetState(dynamicState);
             if (l_logicTransition != nullptr)
             {
-                shared_ptr<FsmState> oldTarget = l_logicTransition->getTarget();
-                shared_ptr<FsmState> newTarget = dynamicState->getLogicState();
-
-                l_logicTransition->setTarget(newTarget);
-                oldTarget->removeIncomingTransition(l_logicTransition);
-                newTarget->addIncomingTransition(l_logicTransition);
+                shared_ptr<Fsm> fsm = l_logicTransition->getOwningFsm();
+                fsm->redirectTransition(l_logicTransition, l_logicTransition->getSource(), this->dynamicState->getLogicState());
             }
         }
     }
 
-    dynamicState = nullptr;
+    this->dynamicState = nullptr;
     if (!keepChanges)
     {
-        currentMode = mode::standardMode;
-        quitNeighboorhood();
-        checkNeighboors();
+        this->currentMode = mode::standardMode;
+        this->refreshNeighborhood();
     }
 
     this->currentPen = &standardPen;
@@ -896,7 +867,7 @@ bool FsmGraphicTransition::endDynamicMode(bool keepChanges)
     return true;
 }
 
-void FsmGraphicTransition::checkNeighboors()
+void FsmGraphicTransition::checkNeighbors()
 {
     // Algo is as follows:
     // Check all outcoming transitions from both ends' states (except me)
@@ -907,20 +878,20 @@ void FsmGraphicTransition::checkNeighboors()
     FsmGraphicState* actualSourceState;
     FsmGraphicState* actualTargetState;
 
-    if (currentMode == mode::dynamicSourceMode)
+    if (this->currentMode == mode::dynamicSourceMode)
     {
-        actualSourceState = dynamicState;
-        actualTargetState = target;
+        actualSourceState = this->dynamicState;
+        actualTargetState = this->target;
     }
-    else if (currentMode == mode::dynamicTargetMode)
+    else if (this->currentMode == mode::dynamicTargetMode)
     {
-        actualSourceState = source;
-        actualTargetState = dynamicState;
+        actualSourceState = this->source;
+        actualTargetState = this->dynamicState;
     }
     else
     {
-        actualSourceState = source;
-        actualTargetState = target;
+        actualSourceState = this->source;
+        actualTargetState = this->target;
     }
 
     shared_ptr<FsmTransition> newFriend;
@@ -954,21 +925,21 @@ void FsmGraphicTransition::checkNeighboors()
 
     if (newFriend != nullptr)
     {
-        setNeighbors(newFriend->getGraphicRepresentation()->helloIMYourNewNeighbor());
+        setNeighborhood(newFriend->getGraphicRepresentation()->helloIMYourNewNeighbor());
     }
 }
 
 shared_ptr<FsmGraphicTransitionNeighborhood> FsmGraphicTransition::helloIMYourNewNeighbor()
 {
-    if (neighbors == nullptr)
+    if (this->neighbors == nullptr)
     {
         shared_ptr<FsmGraphicTransitionNeighborhood> newNeighborhood(new FsmGraphicTransitionNeighborhood(this->source, this->target));
-        this->setNeighbors(newNeighborhood);
+        this->setNeighborhood(newNeighborhood);
         // Redraw useless (harmful?) as there is currenly only me in mates.
         // Redraw will be automatic on mate joining neighborhood
     }
 
-    return neighbors;
+    return this->neighbors;
 }
 
 void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
@@ -982,12 +953,12 @@ void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
     }
 }
 
-qreal FsmGraphicTransition::getConditionLineSliderPosition()
+qreal FsmGraphicTransition::getConditionLineSliderPosition() const
 {
     return this->conditionLineSliderPos;
 }
 
-void FsmGraphicTransition::setNeighbors(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood)
+void FsmGraphicTransition::setNeighborhood(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood)
 {
     // Should not happen if already having one.
     // Maybe we should test it?
@@ -999,19 +970,25 @@ void FsmGraphicTransition::setNeighbors(shared_ptr<FsmGraphicTransitionNeighborh
     this->updateSelectionShapeDisplay();
 }
 
-void FsmGraphicTransition::quitNeighboorhood()
+void FsmGraphicTransition::quitNeighborhood()
 {
     // Algo is as follows:
     // If no mates => nothing to do!
     // Else quit neighborhood. This will notify remaning members,
     // and if only one remaining, it will disolve neighborhood
 
-    if (neighbors != nullptr)
+    if (this->neighbors != nullptr)
     {
         disconnect(this->neighbors.get(), &FsmGraphicTransitionNeighborhood::contentChangedEvent, this, &FsmGraphicTransition::updateDisplay);
-        neighbors->removeAndNotify(this);
-        neighbors.reset();
+        this->neighbors->removeAndNotify(this);
+        this->neighbors = nullptr;
     }
+}
+
+void FsmGraphicTransition::refreshNeighborhood()
+{
+    this->quitNeighborhood();
+    this->checkNeighbors();
 }
 
 QGraphicsTextItem* FsmGraphicTransition::getConditionText() const
@@ -1031,7 +1008,7 @@ QRectF FsmGraphicTransition::boundingRect() const
 
 void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    if (currentMode == mode::standardMode)
+    if (this->currentMode == mode::standardMode)
     {
         ContextMenu* menu = new ContextMenu();
         menu->addTitle(tr("Transition"));
@@ -1064,9 +1041,12 @@ void FsmGraphicTransition::keyPressEvent(QKeyEvent* event)
     else if (event->key() == Qt::Key_Delete)
     {
         shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
+        shared_ptr<Fsm> fsm = l_logicTransition->getOwningFsm();
 
         if (l_logicTransition != nullptr)
-            l_logicTransition->getSource()->removeOutgoingTransition(l_logicTransition);
+        {
+            fsm->removeTransition(l_logicTransition);
+        }
     }
     else
     {
@@ -1118,13 +1098,16 @@ void FsmGraphicTransition::treatMenu(QAction* action)
         // This call will destroy the current object as consequence of the logic object destruction
 
         shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
+        shared_ptr<Fsm> fsm = l_logicTransition->getOwningFsm();
 
         if (l_logicTransition != nullptr)
-            l_logicTransition->getSource()->removeOutgoingTransition(l_logicTransition);
+        {
+            fsm->removeTransition(l_logicTransition);
+        }
     }
 }
 
-void FsmGraphicTransition::machineModeChangedEventHandler(Machine::mode)
+void FsmGraphicTransition::machineModeChangedEventHandler(Machine::simulation_mode)
 {
     this->updateText();
 }

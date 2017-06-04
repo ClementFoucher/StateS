@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -86,10 +86,8 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
     return pixmap;
 }
 
-FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
-    GraphicActuator(dynamic_pointer_cast<MachineActuatorComponent>(logicState)),
+FsmGraphicState::FsmGraphicState() :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
-
 {
     this->setPen(pen);
 
@@ -99,52 +97,49 @@ FsmGraphicState::FsmGraphicState(shared_ptr<FsmState> logicState) :
     this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
     this->setFlag(QGraphicsItem::ItemClipsToShape);
 
-    logicState->setGraphicRepresentation(this);
-    connect(logicState.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicState::rebuildRepresentation);
-    connect(logicState.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicState::rebuildRepresentation);
-
-    shared_ptr<Fsm> machine = logicState->getOwningFsm();
-    connect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
-
-    rebuildRepresentation();
-
-    // Moving state changes its configuration
-    connect(this, &FsmGraphicState::stateMovedEvent, this, &GraphicComponent::graphicComponentConfigurationChangedEvent);
+    this->rebuildRepresentation();
 }
 
 FsmGraphicState::~FsmGraphicState()
 {
-    try
-    {
-        shared_ptr<FsmState> l_logicState = this->getLogicState(); // Throws StatesException - catched
-
-        disconnect(l_logicState.get(), &MachineComponent::componentStaticConfigurationChangedEvent, this, &FsmGraphicState::rebuildRepresentation);
-        disconnect(l_logicState.get(), &MachineComponent::componentDynamicStateChangedEvent,        this, &FsmGraphicState::rebuildRepresentation);
-
-        shared_ptr<Fsm> machine = l_logicState->getOwningFsm();
-        if (machine != nullptr)
-            disconnect(machine.get(), &Fsm::changedModeEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
-
-        l_logicState->clearGraphicRepresentation();
-    }
-    catch(const StatesException& e)
-    {
-        // If no logicState, nothing to do
-    }
 }
 
-shared_ptr<FsmState> FsmGraphicState::getLogicState() const // Throws StatesException
+shared_ptr<FsmState> FsmGraphicState::getLogicState() const
 {
-    return dynamic_pointer_cast<FsmState>(this->getLogicActuator());  // Throws StatesException - Propagated
+    return dynamic_pointer_cast<FsmState>(this->getLogicActuator());
+}
+
+/**
+ * @brief FsmGraphicState::setLogicState is called by the
+ * logic state to make the connection. It is only actually
+ * handled on the first call.
+ * @param logicState
+ */
+void FsmGraphicState::setLogicState(shared_ptr<FsmState> logicState)
+{
+    if (this->getLogicState() == nullptr)
+    {
+        this->setLogicActuator(logicState); // Throws StatesException - ignored as we checked nullness
+
+        connect(logicState.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,                this, &FsmGraphicState::componentUpdatedEventHandler);
+        connect(logicState.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicState::componentUpdatedEventHandler);
+
+        shared_ptr<Fsm> machine = logicState->getOwningFsm();
+        connect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
+
+        this->rebuildRepresentation();
+    }
 }
 
 QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
     // Inform connected transitions we are moving
-    if ((change == GraphicsItemChange::ItemPositionChange) || (change == GraphicsItemChange::ItemPositionHasChanged))
+    if (change == GraphicsItemChange::ItemPositionHasChanged)
     {
         if (this->moveEventEnabled)
+        {
             emit stateMovedEvent();
+        }
     }
     else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
     {
@@ -185,18 +180,20 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
         ContextMenu* menu = new ContextMenu();
         menu->addTitle(tr("State") + " <i>" + l_logicState->getName() + "</i>");
 
-        Machine::mode currentMode = l_logicState->getOwningFsm()->getCurrentMode();
+        Machine::simulation_mode currentMode = l_logicState->getOwningFsm()->getCurrentSimulationMode();
 
-        if (currentMode == Machine::mode::editMode )
+        if (currentMode == Machine::simulation_mode::editMode )
         {
             if (!l_logicState->isInitial())
+            {
                 menu->addAction(tr("Set initial"));
+            }
             menu->addAction(tr("Edit"));
             menu->addAction(tr("Draw transition from this state"));
             menu->addAction(tr("Rename"));
             menu->addAction(tr("Delete"));
         }
-        else if (currentMode == Machine::mode::simulateMode )
+        else if (currentMode == Machine::simulation_mode::simulateMode )
         {
             if (! l_logicState->getIsActive())
             {
@@ -224,6 +221,11 @@ void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
     QStyleOptionGraphicsItem myOption(*option);
     myOption.state &= ~QStyle::State_Selected;
     QGraphicsEllipseItem::paint(painter, &myOption, widget);
+}
+
+void FsmGraphicState::componentUpdatedEventHandler()
+{
+    this->rebuildRepresentation();
 }
 
 void FsmGraphicState::keyPressEvent(QKeyEvent *event)
@@ -348,16 +350,15 @@ void FsmGraphicState::treatMenu(QAction* action)
         else if (action->text() == tr("Draw transition from this state"))
         {
             ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
-            l_logicState->getOwningFsm()->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::drawTransitionFromScene);
         }
         else if (action->text() == tr("Set active"))
         {
-                l_logicState->getOwningFsm()->forceStateActivation(l_logicState);
+            l_logicState->getOwningFsm()->forceStateActivation(l_logicState);
         }
     }
 }
 
-void FsmGraphicState::machineModeChangedEventHandler(Machine::mode)
+void FsmGraphicState::machineModeChangedEventHandler(Machine::simulation_mode)
 {
     this->rebuildRepresentation();
 }

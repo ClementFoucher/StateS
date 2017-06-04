@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,18 +46,21 @@ FsmScene::FsmScene(shared_ptr<Fsm> machine) :
 {
     this->machine   = machine;
     this->sceneMode = sceneMode_e::idle;
+    shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
 
     connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
-    connect(machine.get(), &Fsm::changedModeEvent, this, &FsmScene::simulationModeChanged);
+    connect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmScene::simulationModeChanged);
+    connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &FsmScene::changedToolEventHandler);
+    connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &FsmScene::changedSingleUseToolEventHandler);
 
     foreach(shared_ptr<FsmState> state, machine->getStates())
     {
-        addState(state, state->position);
+        this->addState(state->getGraphicRepresentation());
     }
 
     foreach(shared_ptr<FsmTransition> transition, machine->getTransitions())
     {
-        addTransition(new FsmGraphicTransition(transition));
+        this->addTransition(transition->getGraphicRepresentation());
     }
 }
 
@@ -91,19 +94,43 @@ FsmScene::~FsmScene()
 
 void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos)
 {
-    this->sceneMode = sceneMode_e::drawingTransition;
-
-
-    if (!currentMousePos.isNull())
-        this->currentTransition = new FsmGraphicTransition(source, currentMousePos);
-    else
+    shared_ptr<Machine> l_machine = this->machine.lock();
+    if (l_machine != nullptr)
     {
-        // Compute mouse pos wrt. scene
-        QPointF sceneMousePos = views()[0]->mapToScene(this->views()[0]->mapFromGlobal(QCursor::pos()));
-        this->currentTransition = new FsmGraphicTransition(source, sceneMousePos);
-    }
+        // Update mouse cursor and cancel pending drawings
+        l_machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::drawTransitionFromScene);
 
-    addTransition(this->currentTransition);
+        this->sceneMode = sceneMode_e::drawingTransition;
+
+        if (!currentMousePos.isNull())
+        {
+            this->currentTransition = new FsmGraphicTransition(source, currentMousePos);
+        }
+        else
+        {
+            // Compute mouse pos wrt. scene
+            QPointF sceneMousePos = views()[0]->mapToScene(this->views()[0]->mapFromGlobal(QCursor::pos()));
+            this->currentTransition = new FsmGraphicTransition(source, sceneMousePos);
+        }
+
+        this->addTransition(this->currentTransition);
+    }
+}
+
+void FsmScene::changedToolEventHandler(MachineBuilder::tool)
+{
+    if (this->currentTransition != nullptr)
+    {
+        this->cancelDrawTransition();
+    }
+}
+
+void FsmScene::changedSingleUseToolEventHandler(MachineBuilder::singleUseTool)
+{
+    if (this->currentTransition != nullptr)
+    {
+        this->cancelDrawTransition();
+    }
 }
 
 void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
@@ -126,10 +153,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                     if (currentTool == MachineBuilder::tool::state)
                     {
                         // Create logic state
-                        shared_ptr<FsmState> logicState = l_machine->addState();
+                        shared_ptr<FsmState> logicState = l_machine->addState(me->scenePos());
 
                         // Create graphic state
-                        addState(logicState, me->scenePos());
+                        this->addState(logicState->getGraphicRepresentation());
 
                         // Transmitting event so that new state is selected
                         // and can be moved within the same click
@@ -137,10 +164,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
                     else if (currentTool == MachineBuilder::tool::initial_state)
                     {
                         // Create logic state
-                        shared_ptr<FsmState> logicState = l_machine->addState();
+                        shared_ptr<FsmState> logicState = l_machine->addState(me->scenePos());
 
                         // Create graphic state
-                        addState(logicState, me->scenePos());
+                        addState(logicState->getGraphicRepresentation());
 
                         // Set state initial
                         logicState->setInitial();
@@ -157,8 +184,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 
                         if ( stateUnderMouse != nullptr)
                         {
-                            beginDrawTransition(stateUnderMouse, me->scenePos());
-                            machineBuilder->setSingleUseTool(MachineBuilder::singleUseTool::beginDrawTransitionFromTool);
+                            this->beginDrawTransition(stateUnderMouse, me->scenePos());
                             transmitEvent = false;
                         }
                     }
@@ -178,9 +204,13 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 
                     // TODO: Does left click on nothing should cancel insertion?
                     if (stateUnderMouse != nullptr)
+                    {
                         this->currentTransition->endDynamicMode(true);
+                    }
                     else
+                    {
                         this->currentTransition->endDynamicMode(false);
+                    }
 
                     this->sceneMode = sceneMode_e::goingBackToIdle;
                     machineBuilder->setTool(MachineBuilder::tool::quittingTool);
@@ -244,7 +274,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
         }
 
         if (transmitEvent)
+        {
             GenericScene::mousePressEvent(me);
+        }
     }
 }
 
@@ -294,7 +326,9 @@ void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
     }
 
     if (transmitEvent)
+    {
         GenericScene::mouseMoveEvent(me);
+    }
 }
 
 void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
@@ -319,10 +353,7 @@ void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
                 shared_ptr<FsmState> source = this->currentTransition->getSource()->getLogicState();
                 shared_ptr<FsmState> target = this->currentTransition->getTarget()->getLogicState();
 
-                shared_ptr<FsmTransition> logicTransition(new FsmTransition(l_machine, source, target, nullptr, this->currentTransition));
-                source->addOutgoingTransition(logicTransition);
-                target->addIncomingTransition(logicTransition);
-                this->currentTransition->setLogicTransition(logicTransition);
+                shared_ptr<FsmTransition> logicTransition = l_machine->addTransition(source, target, this->currentTransition);
             }
             else
                 delete this->currentTransition;
@@ -355,12 +386,18 @@ void FsmScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* me)
     bool transmitEvent = true;
 
     if (this->sceneMode == sceneMode_e::drawingTransition)
+    {
         transmitEvent = false;
+    }
     else if (this->sceneMode == sceneMode_e::goingBackToIdle)
+    {
         transmitEvent = false;
+    }
 
     if (transmitEvent)
+    {
         GenericScene::mouseReleaseEvent(me);
+    }
 }
 
 void FsmScene::keyPressEvent(QKeyEvent* event)
@@ -447,7 +484,9 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
     // Do not show menus while a transition in a dynamic mode
     if ( (this->sceneMode == sceneMode_e::idle) || (this->sceneMode == sceneMode_e::simulating) )
+    {
         GenericScene::contextMenuEvent(event);
+    }
 }
 
 void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition)
@@ -488,9 +527,13 @@ void FsmScene::handleSelection()
 {
     // Set focus for context event
     if (this->selectedItems().count() == 1)
+    {
         this->selectedItems()[0]->setFocus();
+    }
     else
+    {
         this->clearFocus();
+    }
 
     // Updates resource panel selected item
     if (this->selectedItems().count() == 1)
@@ -517,9 +560,8 @@ void FsmScene::handleSelection()
 
 FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
 {
-    QList<QGraphicsItem *>  itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder); //this->((SceneWidget*)parent())->transform());
+    QList<QGraphicsItem*> itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder);
     // Warning: if using transform on view, the upper line should be adapted!
-
 
     foreach( QGraphicsItem* item, itemsAtThisPoint)
     {
@@ -527,7 +569,9 @@ FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
         FsmGraphicState* currentItem = dynamic_cast<FsmGraphicState*> (item);
 
         if ( currentItem != nullptr)
+        {
             return currentItem;
+        }
     }
 
     return nullptr;
@@ -537,22 +581,22 @@ FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
 void FsmScene::setDisplaySize(const QSize& newSize)
 {
     this->displaySize = newSize;
-    updateSceneRect();
+    this->updateSceneRect();
 }
 
-void FsmScene::simulationModeChanged(Machine::mode newMode)
+void FsmScene::simulationModeChanged(Machine::simulation_mode newMode)
 {
     shared_ptr<Fsm> l_machine = this->machine.lock();
 
     if (l_machine != nullptr)
     {
-        if (newMode == Machine::mode::editMode)
+        if (newMode == Machine::simulation_mode::editMode)
         {
-            handleSelection();
+            this->handleSelection();
             this->sceneMode = sceneMode_e::idle;
             l_machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
         }
-        else if (newMode == Machine::mode::simulateMode)
+        else if (newMode == Machine::simulation_mode::simulateMode)
         {
             this->sceneMode = sceneMode_e::simulating;
             l_machine->getMachineBuilder()->setSingleUseTool(MachineBuilder::singleUseTool::none);
@@ -560,19 +604,20 @@ void FsmScene::simulationModeChanged(Machine::mode newMode)
     }
 }
 
+/**
+ * @brief FsmScene::updateSceneRect
+ * This function is called on resize, and
+ * when mouse button release (can be item moved).
+ * Not dynamically linked to item moving event,
+ * as it caused too much difficulty with asynchonous
+ * events. Mutex did no good as it desynchronized item
+ * position and mouse position.
+ *
+ * Scene size is at least size of the display view,
+ * But can be bigger is machine is bigger
+ */
 void FsmScene::updateSceneRect()
 {
-    // This function is called on resize, and
-    // When mouse button release (can be item moved).
-    // Not dynamically linked to item moving event,
-    // as it caused too much difficulty with asynchonous
-    // events. Mutex did no good as it desynchonized item
-    // position and mouse position.
-
-
-    // Scene size is at least size of the display view,
-    // But can be bigger is machine is bigger
-
     // Initially, set scene to be size of display, centered on point 0
     // As this is this base view that will be extended,
     // Point (0, 0) will always be part of displayed scene.
@@ -582,9 +627,9 @@ void FsmScene::updateSceneRect()
 
 
     // Then adjust to include items not seen (includes a margin)
-    int leftmostPosition = baseDisplayRectangle.topLeft().x();
-    int topmostPosition = baseDisplayRectangle.topLeft().y();
-    int rightmostPosition = baseDisplayRectangle.bottomRight().x();
+    int leftmostPosition   = baseDisplayRectangle.topLeft().x();
+    int topmostPosition    = baseDisplayRectangle.topLeft().y();
+    int rightmostPosition  = baseDisplayRectangle.bottomRight().x();
     int bottommostPosition = baseDisplayRectangle.bottomRight().y();
 
     int margin = 100;
@@ -593,10 +638,10 @@ void FsmScene::updateSceneRect()
     {
         // Get item's boundig box scene coordinates
         // Use two points instead of the rect to avoid polygon conversion
-        QPointF itemTopLeftF = item->mapToScene(item->boundingRect().topLeft());
-        QPoint itemTopLeft = itemTopLeftF.toPoint();
+        QPointF itemTopLeftF     = item->mapToScene(item->boundingRect().topLeft());
+        QPoint  itemTopLeft      = itemTopLeftF.toPoint();
         QPointF itemBottomRightF = item->mapToScene(item->boundingRect().bottomRight());
-        QPoint itemBottomRight = itemBottomRightF.toPoint();
+        QPoint  itemBottomRight  = itemBottomRightF.toPoint();
 
         if (itemTopLeft.x()-margin < leftmostPosition)
             leftmostPosition = itemTopLeft.x()-margin;
@@ -618,14 +663,14 @@ void FsmScene::updateSceneRect()
 
 void FsmScene::stateCallsEditEventHandler(shared_ptr<FsmState> state)
 {
-    clearSelection();
+    this->clearSelection();
     state->getGraphicRepresentation()->setSelected(true);
     emit editSelectedItemEvent();
 }
 
 void FsmScene::stateCallsRenameEventHandler(shared_ptr<FsmState> state)
 {
-    clearSelection();
+    this->clearSelection();
     state->getGraphicRepresentation()->setSelected(true);
     emit renameSelectedItemEvent();
 }
@@ -639,16 +684,16 @@ void FsmScene::treatMenu(QAction* action)
         this->sceneMode = sceneMode_e::idle;
         if (action->text() == tr("Add state"))
         {
-            shared_ptr<FsmState> logicState = l_machine->addState();
+            shared_ptr<FsmState> logicState = l_machine->addState(this->mousePos);
 
-            addState(logicState, this->mousePos);
+            this->addState(logicState->getGraphicRepresentation());
         }
         else if (action->text() == tr("Add initial state"))
         {
-            shared_ptr<FsmState> logicState = l_machine->addState();
+            shared_ptr<FsmState> logicState = l_machine->addState(this->mousePos);
             logicState->setInitial();
 
-            addState(logicState, this->mousePos);
+            this->addState(logicState->getGraphicRepresentation());
         }
     }
 }
@@ -660,21 +705,18 @@ void FsmScene::menuHiding()
 
 void FsmScene::transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition)
 {
-    clearSelection();
+    this->clearSelection();
     transition->getGraphicRepresentation()->setSelected(true);
     emit editSelectedItemEvent();
 }
 
-FsmGraphicState* FsmScene::addState(shared_ptr<FsmState> logicState, QPointF location)
+FsmGraphicState* FsmScene::addState(FsmGraphicState* newState)
 {
-    // Create graphic state
-    FsmGraphicState* newState = new FsmGraphicState(logicState);
-    addItem(newState);
-    newState->setPos(location);
+    this->addItem(newState);
     newState->setZValue(1);
 
     QGraphicsItemGroup* actionsBox = newState->getActionsBox();
-    addItem(actionsBox);
+    this->addItem(actionsBox);
     actionsBox->setZValue(3);
 
     connect(newState, &FsmGraphicState::editStateCalledEvent,   this, &FsmScene::stateCallsEditEventHandler);
@@ -689,16 +731,39 @@ void FsmScene::addTransition(FsmGraphicTransition* newTransition)
 {
     connect(newTransition, &FsmGraphicTransition::dynamicSourceCalledEvent, this, &FsmScene::transitionCallsDynamicSourceEventHandler);
     connect(newTransition, &FsmGraphicTransition::dynamicTargetCalledEvent, this, &FsmScene::transitionCallsDynamicTargetEventHandler);
-    connect(newTransition, &FsmGraphicTransition::editCalledEvent, this, &FsmScene::transitionCallsEditEventHandler);
+    connect(newTransition, &FsmGraphicTransition::editCalledEvent,          this, &FsmScene::transitionCallsEditEventHandler);
 
-    addItem(newTransition);
+    this->addItem(newTransition);
     newTransition->setZValue(2);
 
     QGraphicsTextItem* condition = newTransition->getConditionText();
-    addItem(condition);
+    this->addItem(condition);
     condition->setZValue(3);
 
     QGraphicsItemGroup* actionsBox = newTransition->getActionsBox();
-    addItem(actionsBox);
+    this->addItem(actionsBox);
     actionsBox->setZValue(3);
+}
+
+void FsmScene::cancelDrawTransition()
+{
+    shared_ptr<Fsm> l_machine = this->machine.lock();
+
+    if (l_machine != nullptr)
+    {
+        if (this->sceneMode == sceneMode_e::drawingTransition)
+        {
+            delete this->currentTransition;
+            this->currentTransition = nullptr;
+
+            this->sceneMode = sceneMode_e::idle;
+        }
+        else if ( (this->sceneMode == sceneMode_e::editingTransitionSource) || (this->sceneMode == sceneMode_e::editingTransitionTarget) )
+        {
+            this->currentTransition->endDynamicMode(false);
+            this->currentTransition = nullptr;
+
+            this->sceneMode = sceneMode_e::idle;
+        }
+    }
 }

@@ -36,33 +36,35 @@
 #include "machineconfiguration.h"
 
 
-FsmXmlWriter::FsmXmlWriter(QObject* parent) :
-    MachineXmlWriter(parent)
+FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent) :
+    MachineXmlWriter(fsm, parent)
 {
 
 }
 
-QString FsmXmlWriter::getMachineXml(shared_ptr<Machine> machine)
+QString FsmXmlWriter::getMachineXml()
 {
     this->configuration = nullptr;
     this->createSaveString();
-    this->writeFsmToStream(dynamic_pointer_cast<Fsm>(machine));
+    this->writeFsmToStream();
     return this->xmlString;
 }
 
-void FsmXmlWriter::writeMachineToFile(shared_ptr<Machine> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath)
+void FsmXmlWriter::writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath)
 {
     this->configuration = configuration;
     this->createSaveFile(filePath);
-    this->writeFsmToStream(dynamic_pointer_cast<Fsm>(machine));
+    this->writeFsmToStream();
     this->finalizeSaveFile();
 }
 
-void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> machine)
+void FsmXmlWriter::writeFsmStates()
 {
+    shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+
     this->stream->writeStartElement("States");
 
-    foreach (shared_ptr<FsmState> state, machine->getStates())
+    foreach (shared_ptr<FsmState> state, fsm->getStates())
     {
         this->stream->writeStartElement("State");
 
@@ -95,11 +97,13 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> machine)
     this->stream->writeEndElement();
 }
 
-void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> machine)
+void FsmXmlWriter::writeFsmTransitions()
 {
+    shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+
     this->stream->writeStartElement("Transitions");
 
-    foreach (shared_ptr<FsmTransition> transition, machine->getTransitions())
+    foreach (shared_ptr<FsmTransition> transition, fsm->getTransitions())
     {
         this->stream->writeStartElement("Transition");
 
@@ -126,15 +130,15 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> machine)
     this->stream->writeEndElement();
 }
 
-void FsmXmlWriter::writeFsmToStream(shared_ptr<Fsm> machine)
+void FsmXmlWriter::writeFsmToStream()
 {
     this->stream->writeStartElement("FSM");
-    this->stream->writeAttribute("Name", machine->getName());
+    this->stream->writeAttribute("Name", this->machine->getName());
     this->stream->writeAttribute("StateS_version", StateS::getVersion());
 
-    this->writeMachineCommonElements(machine);
-    this->writeFsmStates(machine);
-    this->writeFsmTransitions(machine);
+    this->writeMachineCommonElements();
+    this->writeFsmStates();
+    this->writeFsmTransitions();
 
     this->stream->writeEndElement(); // End FSM element
 }

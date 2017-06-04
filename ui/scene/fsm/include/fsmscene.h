@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,6 +34,7 @@ class QAction;
 
 // To access enums
 #include "machine.h"
+#include "machinebuilder.h"
 
 // StateS classes
 class FsmGraphicTransition;
@@ -72,7 +73,7 @@ public:
     explicit FsmScene(shared_ptr<Fsm> machine);
     ~FsmScene();
 
-    void setDisplaySize(const QSize& newSize) override;
+    virtual void setDisplaySize(const QSize& newSize) override;
 
     void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos);
 
@@ -85,13 +86,15 @@ protected:
     void keyPressEvent        (QKeyEvent*)                      override;
 
 private slots:
-    void simulationModeChanged(Machine::mode newMode);
+    void simulationModeChanged(Machine::simulation_mode newMode);
 
     void handleSelection();
     void stateCallsEditEventHandler(shared_ptr<FsmState> state);
     void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
     void treatMenu(QAction*);
     void menuHiding();
+    void changedToolEventHandler(MachineBuilder::tool);
+    void changedSingleUseToolEventHandler(MachineBuilder::singleUseTool);
 
     void updateSceneRect();
 
@@ -101,8 +104,9 @@ private slots:
 
 private:
     FsmGraphicState* getStateAt(const QPointF& location) const;
-    FsmGraphicState* addState(shared_ptr<FsmState> logicState, QPointF location);
+    FsmGraphicState* addState(FsmGraphicState* newState);
     void addTransition(FsmGraphicTransition* newTransition);
+    void cancelDrawTransition();
 
 private:
     weak_ptr<Fsm> machine;
@@ -113,7 +117,6 @@ private:
     QPointF mousePos;
 
     QSize displaySize;
-
 };
 
 #endif // FSMSCENE_H

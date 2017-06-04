@@ -334,12 +334,23 @@ void ActionEditor::removeSelectedActions()
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
     if (l_actuator != nullptr)
     {
-        // TODO: handle multiple items when undo is implemented
-        if (this->actionTable->selectionModel()->selectedRows().count() == 1)
+        shared_ptr<Machine> machine = l_actuator->getOwningMachine();
+        if (machine != nullptr)
         {
-            // TODO: put next element in list in selection?
-            this->latestSelection.clear();
-            l_actuator->removeAction(this->actionTable->selectionModel()->selectedRows()[0].row()); // Throws StatesException - Ignored: list generated from action list
+            QModelIndexList indexList = this->actionTable->selectionModel()->selectedRows();
+            if (indexList.isEmpty() == false)
+            {
+                this->latestSelection.clear();
+                // Sort the list backwards to avoid index shifting while removing actions
+                std::sort(indexList.rbegin(), indexList.rend());
+
+                machine->beginAtomicEdit();
+                for (QModelIndex index : indexList)
+                {
+                    l_actuator->removeAction(index.row()); // Throws StatesException - Ignored: list generated from action list
+                }
+                machine->endAtomicEdit();
+            }
         }
     }
 }
@@ -593,8 +604,7 @@ void ActionEditor::updateButtonsEnableState()
             QItemSelectionModel* selectionModel = this->actionTable->selectionModel();
 
             // Update remove button state
-            // TODO: handle multiple items when undo is implemented
-            if (selectionModel->selectedRows().count() == 1)
+            if (selectionModel->selectedRows().count() != 0)
             {
                 this->buttonRemoveAction->setEnabled(true);
             }
@@ -654,39 +664,45 @@ void ActionEditor::moveSelectedActionsUp()
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
     if (l_actuator != nullptr)
     {
-        this->sortSelectionList();
-
-        QList<int> selectedActionsRanks;
-
-        QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
-        foreach (QModelIndex index, rows)
+        shared_ptr<Machine> machine = l_actuator->getOwningMachine();
+        if (machine != nullptr)
         {
-            selectedActionsRanks.append(index.row());
-        }
+            this->sortSelectionList();
 
-        for (int i = 0 ; i < rows.count() ; i++)
-        {
-            // Actually lower upper signals rater than raising signal itself
+            QList<int> selectedActionsRanks;
 
-            // Check if previous row is selected
-            int currentActionRank = selectedActionsRanks.at(i) ;
-            if (currentActionRank != 0)
+            QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
+            foreach (QModelIndex index, rows)
             {
-                bool previousSelected = false;
-                foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+                selectedActionsRanks.append(index.row());
+            }
+
+            machine->beginAtomicEdit();
+            for (int i = 0 ; i < rows.count() ; i++)
+            {
+                // Actually lower upper signals rather than raise signal itself
+
+                // Check if previous row is selected
+                int currentActionRank = selectedActionsRanks.at(i) ;
+                if (currentActionRank != 0)
                 {
-                    if (index.row() == currentActionRank-1)
+                    bool previousSelected = false;
+                    foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
                     {
-                        previousSelected = true;
-                        break;
+                        if (index.row() == currentActionRank-1)
+                        {
+                            previousSelected = true;
+                            break;
+                        }
+                    }
+
+                    if ( previousSelected == false )
+                    {
+                        l_actuator->changeActionRank(currentActionRank-1, currentActionRank);
                     }
                 }
-
-                if ( previousSelected == false )
-                {
-                    l_actuator->changeActionRank(currentActionRank-1, currentActionRank);
-                }
             }
+            machine->endAtomicEdit();
         }
     }
 }
@@ -696,39 +712,45 @@ void ActionEditor::moveSelectedActionsDown()
     shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
     if (l_actuator != nullptr)
     {
-        this->sortSelectionList();
-
-        QList<int> selectedActionsRanks;
-
-        QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
-        foreach (QModelIndex index, rows)
+        shared_ptr<Machine> machine = l_actuator->getOwningMachine();
+        if (machine != nullptr)
         {
-            selectedActionsRanks.push_front(index.row());
-        }
+            this->sortSelectionList();
 
-        for (int i = 0 ; i < rows.count() ; i++)
-        {
-            // Actually raise lower signals rater than lowering signal itself
+            QList<int> selectedActionsRanks;
 
-            // Check if next row is selected
-            int currentActionRank = selectedActionsRanks.at(i) ;
-            if (currentActionRank != this->actionTable->model()->rowCount()-1)
+            QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
+            foreach (QModelIndex index, rows)
             {
-                bool nextSelected = false;
-                foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+                selectedActionsRanks.push_front(index.row());
+            }
+
+            machine->beginAtomicEdit();
+            for (int i = 0 ; i < rows.count() ; i++)
+            {
+                // Actually raise lower signals rater than lowering signal itself
+
+                // Check if next row is selected
+                int currentActionRank = selectedActionsRanks.at(i) ;
+                if (currentActionRank != this->actionTable->model()->rowCount()-1)
                 {
-                    if (index.row() == currentActionRank+1)
+                    bool nextSelected = false;
+                    foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
                     {
-                        nextSelected = true;
-                        break;
+                        if (index.row() == currentActionRank+1)
+                        {
+                            nextSelected = true;
+                            break;
+                        }
+                    }
+
+                    if ( nextSelected == false )
+                    {
+                        l_actuator->changeActionRank(currentActionRank+1, currentActionRank);
                     }
                 }
-
-                if ( nextSelected == false )
-                {
-                    l_actuator->changeActionRank(currentActionRank+1, currentActionRank);
-                }
             }
+            machine->endAtomicEdit();
         }
     }
 }

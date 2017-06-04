@@ -60,7 +60,7 @@ class StatesUi : public QMainWindow
 public:
     explicit StatesUi();
 
-    void setMachine(shared_ptr<Machine> newMachine);
+    void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
     void setTitle(const QString& title);
     void setUnsavedFlag(bool unsaved);
     void setConfiguration(shared_ptr<MachineConfiguration> configuration);
@@ -75,8 +75,8 @@ public:
     void setSaveAsActionEnabled       (bool enable);
     void setSaveActionEnabled         (bool enable);
     void setExportActionsEnabled      (bool enable);
-    void setAddCheckpointButtonEnabled(bool enabled);
-    void setUndoButtonEnabled         (bool enabled);
+    void setUndoButtonEnabled         (bool enable);
+    void setRedoButtonEnabled         (bool enable);
 
 signals:
     void newFsmRequestEvent();
@@ -84,8 +84,8 @@ signals:
     void loadMachineRequestEvent(const QString& path);
     void saveMachineRequestEvent(const QString& path);
     void saveMachineInCurrentFileRequestEvent();
-    void addCheckpointRequestEvent();
     void undoRequestEvent();
+    void redoRequestEvent();
 
 protected:
     void closeEvent     (QCloseEvent* event) override;

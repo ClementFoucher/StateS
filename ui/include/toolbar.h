@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
 
@@ -32,11 +33,11 @@ class ToolBar : public QToolBar
 public:
     explicit ToolBar(QWidget* parent = nullptr);
 
-    void setSaveAsActionEnabled       (bool enable);
-    void setSaveActionEnabled         (bool enable);
-    void setExportActionsEnabled      (bool enable);
-    void setAddCheckpointActionEnabled(bool enable);
-    void setUndoActionEnabled         (bool enable);
+    void setSaveAsActionEnabled (bool enable);
+    void setSaveActionEnabled   (bool enable);
+    void setExportActionsEnabled(bool enable);
+    void setUndoActionEnabled   (bool enable);
+    void setRedoActionEnabled   (bool enable);
 
 signals:
     void saveAsRequestedEvent     ();
@@ -45,8 +46,8 @@ signals:
     void newMachineRequestedEvent ();
     void exportImageRequestedEvent();
     void exportHdlRequestedEvent  ();
-    void addChekpoint             ();
     void undo                     ();
+    void redo                     ();
 
 private:
     QAction* actionSaveAs        = nullptr;
@@ -56,8 +57,8 @@ private:
     //QAction* actionClear        = nullptr;
     QAction* actionExportImage   = nullptr;
     QAction* actionExportHdl     = nullptr;
-    QAction* actionAddCheckpoint = nullptr;
     QAction* actionUndo          = nullptr;
+    QAction* actionRedo          = nullptr;
 };
 
 #endif // TOOLBAR_H

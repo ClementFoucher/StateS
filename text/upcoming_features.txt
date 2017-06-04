@@ -16,7 +16,6 @@ These features will be implemented... some day.
 
 ** Core **
 
-- Undo feature,
 - Integer type signals support, allowing basic operations like increment,
 - Signal to signal affectation, instead of just constant to values.
 

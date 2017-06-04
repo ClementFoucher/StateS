@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,12 +40,6 @@ GraphicActuator::GraphicActuator(QObject* parent) :
     this->initialize();
 }
 
-GraphicActuator::GraphicActuator(shared_ptr<MachineActuatorComponent> actuator, QObject* parent) :
-    GraphicComponent(dynamic_pointer_cast<MachineComponent>(actuator), parent)
-{
-    this->initialize();
-}
-
 GraphicActuator::~GraphicActuator()
 {
     delete actionsBox;
@@ -61,9 +55,9 @@ void GraphicActuator::setLogicActuator(shared_ptr<MachineActuatorComponent> actu
     this->setLogicComponent(dynamic_pointer_cast<MachineComponent>(actuator)); // Throws StatesException - propagated
 }
 
-shared_ptr<MachineActuatorComponent> GraphicActuator::getLogicActuator() const // Throws StatesException
+shared_ptr<MachineActuatorComponent> GraphicActuator::getLogicActuator() const
 {
-    return dynamic_pointer_cast<MachineActuatorComponent>(this->getLogicComponent()); // Throws StatesException - propagated
+    return dynamic_pointer_cast<MachineActuatorComponent>(this->getLogicComponent());
 }
 
 void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
@@ -73,123 +67,111 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
     actionsBox->childItems().clear();
 
     // Check base reference
-    shared_ptr<MachineActuatorComponent> l_actuator;
+    shared_ptr<MachineActuatorComponent> l_actuator = this->getLogicActuator();
 
-    try
+    if (l_actuator != nullptr)
     {
-        l_actuator = this->getLogicActuator();
-    }
-    catch (const StatesException& e)
-    {
-        if ( (e.getSourceClass() == "GraphicComponent") && (e.getEnumValue() == GraphicComponent::GraphicComponentErrorEnum::obsolete_base_object) )
+        // Begin build
+        QList<shared_ptr<ActionOnSignal>> actions = l_actuator->getActions();
+        if (actions.count() != 0)
         {
-            // Just ignore building action
-            return;
-        }
-        else
-            throw;
-    }
+            qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
+            qreal maxTextWidth = 0;
 
-    // Begin build
-    QList<shared_ptr<ActionOnSignal>> actions = l_actuator->getActions();
-    if (actions.count() != 0)
-    {
-        qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
-        qreal maxTextWidth = 0;
-
-        for (int i = 0 ; i < actions.count() ; i++)
-        {
-            shared_ptr<ActionOnSignal> currentAction = actions[i];
-            shared_ptr<Signal> currentSignal = currentAction->getSignalActedOn();
-
-            QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), actionsBox);
-
-            QString currentActionText;
-
-            Machine::mode currentMode = l_actuator->getOwningMachine()->getCurrentMode();
-
-            // Signal name
-
-            if (currentMode == Machine::mode::simulateMode)
-                currentActionText = currentSignal->getColoredText(true);
-            else
-                currentActionText = currentSignal->getText();
-
-            // Signal range
-
-            if (currentSignal->getSize() > 1)
+            for (int i = 0 ; i < actions.count() ; i++)
             {
-                int rangeL = currentAction->getActionRangeL();
-                int rangeR = currentAction->getActionRangeR();
+                shared_ptr<ActionOnSignal> currentAction = actions[i];
+                shared_ptr<Signal> currentSignal = currentAction->getSignalActedOn();
 
-                if (rangeL != -1)
+                QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), actionsBox);
+
+                QString currentActionText;
+
+                Machine::simulation_mode currentMode = l_actuator->getOwningMachine()->getCurrentSimulationMode();
+
+                // Signal name
+
+                if (currentMode == Machine::simulation_mode::simulateMode)
+                    currentActionText = currentSignal->getColoredText(true);
+                else
+                    currentActionText = currentSignal->getText();
+
+                // Signal range
+
+                if (currentSignal->getSize() > 1)
                 {
-                    currentActionText += "[";
-                    currentActionText += QString::number(rangeL);
+                    int rangeL = currentAction->getActionRangeL();
+                    int rangeR = currentAction->getActionRangeR();
 
-                    if (rangeR != -1)
+                    if (rangeL != -1)
                     {
-                        currentActionText += "..";
-                        currentActionText += QString::number(rangeR);
+                        currentActionText += "[";
+                        currentActionText += QString::number(rangeL);
+
+                        if (rangeR != -1)
+                        {
+                            currentActionText += "..";
+                            currentActionText += QString::number(rangeR);
+                        }
+
+                        currentActionText += "]";
                     }
-
-                    currentActionText += "]";
                 }
-            }
 
-            // Action value
+                // Action value
 
-            switch (currentAction->getActionType())
-            {
-            case ActionOnSignal::action_types::set:
-            case ActionOnSignal::action_types::reset:
-            case ActionOnSignal::action_types::assign:
-                currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
-                break;
-            case ActionOnSignal::action_types::activeOnState:
-            case ActionOnSignal::action_types::pulse:
-                if (currentAction->getActionSize() > 1)
+                switch (currentAction->getActionType())
                 {
-                    currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+                case ActionOnSignal::action_types::set:
+                case ActionOnSignal::action_types::reset:
+                case ActionOnSignal::action_types::assign:
+                    currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+                    break;
+                case ActionOnSignal::action_types::activeOnState:
+                case ActionOnSignal::action_types::pulse:
+                    if (currentAction->getActionSize() > 1)
+                    {
+                        currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+                    }
                 }
+
+                actionText->setHtml(currentActionText);
+
+                if (maxTextWidth < actionText->boundingRect().width())
+                    maxTextWidth = actionText->boundingRect().width();
+
+                if (center)
+                    actionText->setPos(0, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
+                else
+                    actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
+
+                actionText->setZValue(1);
             }
 
-            actionText->setHtml(currentActionText);
-
-            if (maxTextWidth < actionText->boundingRect().width())
-                maxTextWidth = actionText->boundingRect().width();
-
+            QPainterPath actionBorderPath;
             if (center)
-                actionText->setPos(0, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
+            {
+                actionBorderPath.lineTo(0,                 ((qreal)actions.count()/2)*textHeight);
+                actionBorderPath.lineTo(0 + maxTextWidth,  ((qreal)actions.count()/2)*textHeight);
+                actionBorderPath.lineTo(0 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
+                actionBorderPath.lineTo(0,                -((qreal)actions.count()/2)*textHeight);
+                actionBorderPath.lineTo(0,                0);
+                actionBorderPath.lineTo(-20 ,             0);
+            }
             else
-                actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
+            {
+                actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
+                actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
+                actionBorderPath.lineTo(maxTextWidth, 0);
+                actionBorderPath.lineTo(0,            0);
+            }
 
-            actionText->setZValue(1);
+            QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
+            stateActionsOutline->setPen(pen);
+            stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
+            stateActionsOutline->setZValue(0);
+            stateActionsOutline->setPos(0, 0);
         }
-
-        QPainterPath actionBorderPath;
-        if (center)
-        {
-            actionBorderPath.lineTo(0,                 ((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(0 + maxTextWidth,  ((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(0 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(0,                -((qreal)actions.count()/2)*textHeight);
-            actionBorderPath.lineTo(0,                0);
-            actionBorderPath.lineTo(-20 ,             0);
-        }
-        else
-        {
-            actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
-            actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
-            actionBorderPath.lineTo(maxTextWidth, 0);
-            actionBorderPath.lineTo(0,            0);
-        }
-
-        QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
-        stateActionsOutline->setPen(pen);
-        stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
-        stateActionsOutline->setZValue(0);
-        stateActionsOutline->setPos(0, 0);
     }
 }
 

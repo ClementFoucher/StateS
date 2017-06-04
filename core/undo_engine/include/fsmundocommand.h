@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,35 +19,43 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINECOMPONENT_H
-#define MACHINECOMPONENT_H
+#ifndef FSMUNDOCOMMAND_H
+#define FSMUNDOCOMMAND_H
 
-// Parent
-#include <QObject>
+// Parent class
+#include "machineundocommand.h"
 
 // C++ classes
 #include <memory>
 using namespace std;
 
+// Qt classes
+#include <QPointF>
+
 // StateS classes
-class Machine;
+class FsmState;
 
 
-class MachineComponent : public QObject
+class FsmUndoCommand : public MachineUndoCommand
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MachineComponent(shared_ptr<Machine> owningMachine);
+	explicit FsmUndoCommand(shared_ptr<FsmState> state);
 
-    shared_ptr<Machine> getOwningMachine() const;
+	virtual void undo() override;
+	virtual void redo() override;
 
-signals:
-    void componentNeedsGraphicUpdateEvent();    // Triggered when logic object has been edited in a way that requires a graphic redraw
-    void componentSimulatedStateChangedEvent(); // Triggered when logic object state changes during simulation
+	virtual bool mergeWith(const QUndoCommand* command) override;
+
+	QString getComponentRef() const;
+	QPointF getNextPosition() const;
 
 private:
-    weak_ptr<Machine> owningMachine;
+	QString componentRef;
+
+	QPointF previousPosition;
+	QPointF nextPosition;
 };
 
-#endif // MACHINECOMPONENT_H
+#endif // FSMUNDOCOMMAND_H

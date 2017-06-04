@@ -30,6 +30,7 @@
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
+#include "fsmgraphictransition.h"
 
 
 FsmXmlParser::FsmXmlParser(QObject* parent) :
@@ -329,8 +330,7 @@ void FsmXmlParser::parseState()
         }
 
         shared_ptr<Fsm> fsm = this->getFsm();
-        shared_ptr<FsmState> state = fsm->addState(stateName);
-        state->position = position;
+        shared_ptr<FsmState> state = fsm->addState(position, stateName);
 
         if (attributes.value("IsInitial") != QString::null)
         {
@@ -363,9 +363,7 @@ void FsmXmlParser::parseTransition()
         shared_ptr<FsmState> target = fsm->getStateByName(targetName);
 
         // TODO: check if states exist
-        shared_ptr<FsmTransition> transition(new FsmTransition(fsm, source, target, nullptr));
-        source->addOutgoingTransition(transition);
-        target->addIncomingTransition(transition);
+        shared_ptr<FsmTransition> transition = fsm->addTransition(source, target);
 
         QStringRef sliderPosString = attributes.value("SliderPos");
         qreal sliderPos;
@@ -384,7 +382,7 @@ void FsmXmlParser::parseTransition()
         {
             sliderPos = 0.5;
         }
-        transition->sliderPos = sliderPos;
+        transition->getGraphicRepresentation()->setConditionLineSliderPosition(sliderPos);
 
         this->currentActuator = transition;
     }

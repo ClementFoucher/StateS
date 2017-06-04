@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>Copyright and technical information</source>
-        <translation>Informations techniques et de copyright </translation>
+        <translation>Informations techniques et de copyright</translation>
     </message>
     <message>
         <source>Currently running on</source>
@@ -1628,10 +1628,6 @@
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <source>Overwrite current machine?</source>
-        <translation>Écraser la machine courante ?</translation>
-    </message>
-    <message>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
@@ -1662,6 +1658,10 @@
     <message>
         <source>?</source>
         <translation>?</translation>
+    </message>
+    <message>
+        <source>Discard current machine?</source>
+        <translation>Abandonner la machine courante ?</translation>
     </message>
 </context>
 <context>
@@ -1719,20 +1719,20 @@
         <translation>Exporter la machine en VHDL</translation>
     </message>
     <message>
-        <source>Add checkpoint</source>
-        <translation>Ajouter un marqueur</translation>
-    </message>
-    <message>
-        <source>Add a checkpoint to which you can rollback later</source>
-        <translation>Ajoute un marqueur sur la version actuelle auquel vous pourrez revenir plus tard</translation>
-    </message>
-    <message>
         <source>Undo</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <source>Roll back to latest checkpoint</source>
-        <translation>Revenir à la dernière version marquée</translation>
+        <source>Redo</source>
+        <translation>Refaire</translation>
+    </message>
+    <message>
+        <source>Undo latest edit</source>
+        <translation>Annuler la dernière modification</translation>
+    </message>
+    <message>
+        <source>Redo undone edit</source>
+        <translation>Ré-appliquer la dernière modification annulée</translation>
     </message>
 </context>
 <context>

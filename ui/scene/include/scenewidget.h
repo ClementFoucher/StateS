@@ -62,7 +62,7 @@ private:
 public:
     explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine); // TODO: throw exception
+    void setMachine(shared_ptr<Machine> newMachine, bool maintainView); // TODO: throw exception
 
     GenericScene* getScene() const;
 
@@ -97,6 +97,7 @@ private:
     void updateTool(MachineBuilder::tool newTool);
     void updateMouseCursor(mouseCursor_e cursor);
     void updateSceneMode(sceneMode_e newMode);
+    void updateDragMode();
     void setZoomPanelVisible(bool visible);
 
 private:

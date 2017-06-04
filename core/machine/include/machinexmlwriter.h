@@ -53,19 +53,21 @@ public: // Static
     };
 
 public:
-    explicit MachineXmlWriter(QObject* parent = nullptr);
+    static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<Machine> machine);
 
-    virtual void writeMachineToFile(shared_ptr<Machine> machine, shared_ptr<MachineConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
-    virtual QString getMachineXml(shared_ptr<Machine> machine) = 0;
+    virtual void writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
+    virtual QString getMachineXml() = 0;
 
 protected:
+    explicit MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent = nullptr);
+
     void createSaveFile(const QString& filePath); // Throws StatesException
     void createSaveString();
     void finalizeSaveFile();
 
-    void writeMachineCommonElements(shared_ptr<Machine> machine);
+    void writeMachineCommonElements();
     void writeMachineConfiguration();
-    void writeMachineSignals(shared_ptr<Machine> machine);
+    void writeMachineSignals();
     void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
     void writeLogicEquation(shared_ptr<Signal> equation);
 
@@ -73,6 +75,7 @@ protected:
     shared_ptr<QXmlStreamWriter> stream;
     QString xmlString;
     shared_ptr<MachineConfiguration> configuration;
+    shared_ptr<Machine> machine;
 
 private:
     shared_ptr<QFile> file;

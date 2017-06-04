@@ -16,7 +16,7 @@ TEMPLATE = app
 VERSION = 0.3.20
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2017 Clément Foucher
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += \
 # Core
@@ -53,6 +53,9 @@ SOURCES += \
     core/simulation/fsmsimulator.cpp \
     core/simulation/machinesimulator.cpp \
     core/exceptions/statesexception.cpp \
+    core/undo_engine/fsmundocommand.cpp \
+    core/undo_engine/diffundocommand.cpp \
+    core/undo_engine/machineundocommand.cpp \
 # UI
     ui/statesui.cpp \
     ui/machinecomponentvisualizer.cpp \
@@ -121,7 +124,6 @@ SOURCES += \
 # Other
     third_party/diff_match_patch/diff_match_patch.cpp
 
-
 HEADERS  += \
 # Core
     core/include/states.h \
@@ -156,6 +158,9 @@ HEADERS  += \
     core/simulation/include/fsmsimulator.h \
     core/simulation/include/machinesimulator.h \
     core/exceptions/include/statesexception.h \
+    core/undo_engine/include/fsmundocommand.h \
+    core/undo_engine/include/diffundocommand.h \
+    core/undo_engine/include/machineundocommand.h \
 # UI
     ui/include/statesui.h \
     ui/include/displayarea.h \
@@ -204,6 +209,7 @@ HEADERS  += \
     ui/scene/include/graphicactuator.h \
     ui/scene/include/blankscene.h \
     ui/scene/include/graphiccomponent.h \
+    ui/scene/include/scenewidget.h \
     ui/scene/fsm/include/fsmscene.h \
     ui/scene/fsm/include/fsmgraphicstate.h \
     ui/scene/fsm/include/fsmgraphictransition.h \
@@ -220,7 +226,6 @@ HEADERS  += \
     ui/resource_bar/component_editor/include/actiontypecombobox.h \
     ui/resource_bar/component_editor/include/actiontablemodel.h \
     ui/resource_bar/component_editor/include/actiontabledelegate.h \
-    ui/scene/include/scenewidget.h \
 # Other
     third_party/diff_match_patch/diff_match_patch.h
 
@@ -233,6 +238,7 @@ INCLUDEPATH += \
     core/signal/include \
     core/simulation/include \
     core/exceptions/include \
+    core/undo_engine/include \
 # UI
     ui/include \
     ui/dialogs/include \

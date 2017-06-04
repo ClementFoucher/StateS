@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -76,14 +76,34 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
     hintText->setWordWrap(true);
 
     QString hintTitle = tr("Hint:") + " " + tr("Signal editor");
-    CollapsibleWidgetWithTitle* hint = new CollapsibleWidgetWithTitle(hintTitle, hintText);
-    layout->addWidget(hint);
+    this->hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText);
+    layout->addWidget(this->hintDisplay);
 
     //
     // Machine visualization
 
     this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
     layout->addWidget(this->machineDisplay);
+}
+
+void SignalEditorTab::setHintCollapsed(bool collapse)
+{
+    this->hintDisplay->setCollapsed(collapse);
+}
+
+void SignalEditorTab::setVisuCollapsed(bool collapse)
+{
+    this->machineDisplay->setCollapsed(collapse);
+}
+
+bool SignalEditorTab::getHintCollapsed()
+{
+    return this->hintDisplay->getCollapsed();
+}
+
+bool SignalEditorTab::getVisuCollapsed()
+{
+    return this->machineDisplay->getCollapsed();
 }
 
 void SignalEditorTab::showEvent(QShowEvent* e)

@@ -89,6 +89,8 @@ void StateSXmlAnalyzer::parse()
                 {
                     this->version = extractedVersion;
                 }
+
+                break;
             }
         }
     }

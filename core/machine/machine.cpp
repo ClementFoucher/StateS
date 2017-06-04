@@ -31,6 +31,7 @@
 #include "machinebuilder.h"
 #include "constant.h"
 #include "statesexception.h"
+#include "machineundocommand.h"
 
 
 Machine::Machine()
@@ -44,6 +45,17 @@ Machine::Machine()
 Machine::~Machine()
 {
 	this->isBeingDestroyed = true;
+
+	// Force cleaning order
+	this->inputsRanks.clear();
+	this->outputsRanks.clear();
+	this->localVariablesRanks.clear();
+	this->constantsRanks.clear();
+
+	this->inputs.clear();
+	this->outputs.clear();
+	this->localVariables.clear();
+	this->constants.clear();
 }
 
 QString Machine::getName() const
@@ -202,44 +214,29 @@ QList<shared_ptr<Signal> > Machine::getAllSignals() const
 	return allSignals;
 }
 
-//
-
-void Machine::clear()
-{
-	this->inputs.clear();
-	this->outputs.clear();
-	this->localVariables.clear();
-	this->constants.clear();
-
-	this->inputsRanks.clear();
-	this->outputsRanks.clear();
-	this->localVariablesRanks.clear();
-	this->constantsRanks.clear();
-
-	this->rebuildComponentVisualization();
-
-	emit machineEdited();
-}
-
-bool Machine::isEmpty() const
-{
-	if (this->inputs.isEmpty() &&
-	        this->outputs.isEmpty() &&
-	        this->localVariables.isEmpty() &&
-	        this->constants.isEmpty()
-	        )
-		return true;
-	else
-		return false;
-}
-
-void Machine::setMode(Machine::mode newMode)
+void Machine::setSimulationMode(Machine::simulation_mode newMode)
 {
 	this->currentMode = newMode;
-	emit changedModeEvent(newMode);
+	emit simulationModeChangedEvent(newMode);
 }
 
-Machine::mode Machine::getCurrentMode() const
+void Machine::emitMachineEditedWithoutUndoCommand(MachineUndoCommand::undo_command_id commandId)
+{
+	if ( (this->isBeingDestroyed == false) && (this->eventInhibitionLevel == 0) && (this->atomicEditionOngoing == false) )
+	{
+		emit machineEditedWithoutUndoCommandGeneratedEvent(commandId);
+	}
+}
+
+void Machine::emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand)
+{
+	if ( (this->isBeingDestroyed == false) && (this->eventInhibitionLevel == 0) )
+	{
+		emit machineEditedWithUndoCommandGeneratedEvent(undoCommand);
+	}
+}
+
+Machine::simulation_mode Machine::getCurrentSimulationMode() const
 {
 	return this->currentMode;
 }
@@ -251,7 +248,7 @@ shared_ptr<MachineBuilder> Machine::getMachineBuilder() const
 
 /**
  * @brief Machine::getComponentVisualization
- * Object calling this function takes ownership op
+ * Object calling this function takes ownership of
  * visu. We need to rebuild it, but silently as this
  * is not an update, just a kind of copy.
  * @return
@@ -261,9 +258,9 @@ QGraphicsItem* Machine::getComponentVisualization()
 	QGraphicsItem* currentVisu = this->componentVisu;
 	this->componentVisu = nullptr;
 
-	inhibateEvent = true;
+	this->inhibitRepresentationEvent = true;
 	rebuildComponentVisualization();
-	inhibateEvent = false;
+	this->inhibitRepresentationEvent = false;
 
 	return currentVisu;
 }
@@ -274,12 +271,15 @@ bool Machine::setName(const QString& newName)
 
 	if (correctedName.length() != 0)
 	{
+		QString oldName = this->name;
 		this->name = correctedName;
 		this->rebuildComponentVisualization();
 
-		emit nameChangedEvent(this->name);
+		emit machineNameChangedEvent(this->name);
 
-		emit machineEdited();
+		MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
+		this->emitMachineEditedWithUndoCommand(undoCommand);
+
 		return true;
 	}
 	else
@@ -446,7 +446,6 @@ void Machine::rebuildComponentVisualization()
 			visu->addToGroup(inputsGroup);
 			visu->addToGroup(outputsGroup);
 
-
 			border->setPos(0, 0);
 
 			title->setPos( (componentWidth-title->boundingRect().width())/2, verticalElementsSpacer);
@@ -466,8 +465,10 @@ void Machine::rebuildComponentVisualization()
 
 		this->componentVisu = visu;
 
-		if (!inhibateEvent)
+		if (this->inhibitRepresentationEvent == false)
+		{
 			emit componentVisualizationUpdatedEvent();
+		}
 	}
 }
 
@@ -498,6 +499,8 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, con
 
 shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value)
 {
+	this->setInhibitEvents(true);
+
 	// First check if name doesn't already exist
 	foreach (shared_ptr<Signal> signal, getAllSignals())
 	{
@@ -575,7 +578,10 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 	}
 
 	if (signal != nullptr)
-		emit machineEdited();
+	{
+		this->setInhibitEvents(false);
+		this->emitMachineEditedWithoutUndoCommand();
+	}
 
 	return signal;
 }
@@ -602,6 +608,8 @@ void Machine::addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QStrin
 
 bool Machine::deleteSignal(const QString& name)
 {
+	this->setInhibitEvents(true);
+
 	bool result;
 
 	if (inputs.contains(name))
@@ -647,8 +655,11 @@ bool Machine::deleteSignal(const QString& name)
 	else
 		result = false;
 
-	if ( (result == true) && (this->isBeingDestroyed == false))
-		emit machineEdited();
+	if (result == true)
+	{
+		this->setInhibitEvents(false);
+		this->emitMachineEditedWithoutUndoCommand();
+	}
 
 	return result;
 }
@@ -682,6 +693,8 @@ bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_pt
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
+	this->setInhibitEvents(true);
+
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	QString correctedNewName = newName;
@@ -715,7 +728,9 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		return true;
 	}
 	else if ( allSignals.contains(correctedNewName) ) // Do not allow rename to existing name
+	{
 		return false;
+	}
 	else
 	{
 		// Update map
@@ -748,7 +763,8 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		else // Should not happen as we checked all lists
 			return false;
 
-		emit machineEdited();
+		this->setInhibitEvents(false);
+		this->emitMachineEditedWithoutUndoCommand();
 		return true;
 	}
 }
@@ -772,6 +788,8 @@ bool Machine::renameSignalInList(const QString& oldName, const QString& newName,
 
 void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesException
 {
+	this->setInhibitEvents(true);
+
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
@@ -799,14 +817,19 @@ void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesEx
 			emit constantListChangedEvent();
 		}
 		else // Should not happen as we checked all lists
+		{
 			throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
+		}
 
-		emit machineEdited();
+		this->setInhibitEvents(false);
+		this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 
 void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
 {
+	this->setInhibitEvents(true);
+
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
@@ -834,16 +857,21 @@ void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
 		else // Should not happen as we checked all lists
 			throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
 
-		emit machineEdited();
+		this->setInhibitEvents(false);
+		this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 
 bool Machine::changeSignalRank(const QString& name, uint newRank)
 {
+	this->setInhibitEvents(true);
+
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
+	{
 		return false;
+	}
 	else
 	{
 		if (inputs.contains(name))
@@ -875,9 +903,8 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
 		else // Should not happen as we checked all lists
 			return false;
 
-		emit machineEdited();
+		this->setInhibitEvents(false);
 		return true;
-
 	}
 }
 
@@ -885,13 +912,13 @@ void Machine::setSimulator(shared_ptr<MachineSimulator> simulator)
 {
 	this->simulator = simulator;
 
-	if (! this->simulator.expired())
+	if (simulator != nullptr)
 	{
-		this->setMode(Machine::mode::simulateMode);
+		this->setSimulationMode(Machine::simulation_mode::simulateMode);
 	}
 	else
 	{
-		this->setMode(Machine::mode::editMode);
+		this->setSimulationMode(Machine::simulation_mode::editMode);
 	}
 }
 
@@ -948,7 +975,6 @@ bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString,
 
 	// Done
 	return true;
-
 }
 
 /**
@@ -1013,6 +1039,32 @@ QString Machine::getUniqueSignalName(const QString& prefix) const
 	}
 
 	return currentName;
+}
+
+void Machine::setInhibitEvents(bool inhibit)
+{
+	if (inhibit == true)
+	{
+		this->eventInhibitionLevel++;
+	}
+	else if (this->eventInhibitionLevel != 0)
+	{
+		this->eventInhibitionLevel--;
+	}
+}
+
+void Machine::beginAtomicEdit()
+{
+	this->atomicEditionOngoing = true;
+}
+
+void Machine::endAtomicEdit()
+{
+	if (this->atomicEditionOngoing == true)
+	{
+		this->atomicEditionOngoing = false;
+		this->emitMachineEditedWithoutUndoCommand();
+	}
 }
 
 QHash<QString, shared_ptr<Signal> > Machine::getAllSignalsMap() const

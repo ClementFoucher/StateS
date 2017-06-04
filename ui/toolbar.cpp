@@ -69,22 +69,22 @@ ToolBar::ToolBar(QWidget* parent) :
     this->actionExportHdl->setText(tr("Export to VHDL"));
     this->actionExportHdl->setToolTip(tr("Export machine to VHDL"));
 
-    this->actionAddCheckpoint = new QAction(this);
-    this->actionAddCheckpoint->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/add_checkpoint"))));
-    this->actionAddCheckpoint->setText(tr("Add checkpoint"));
-    this->actionAddCheckpoint->setToolTip(tr("Add a checkpoint to which you can rollback later"));
-
     this->actionUndo = new QAction(this);
     this->actionUndo->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/undo"))));
     this->actionUndo->setText(tr("Undo"));
-    this->actionUndo->setToolTip(tr("Roll back to latest checkpoint"));
+    this->actionUndo->setToolTip(tr("Undo latest edit"));
+
+    this->actionRedo = new QAction(this);
+    this->actionRedo->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/redo"))));
+    this->actionRedo->setText(tr("Redo"));
+    this->actionRedo->setToolTip(tr("Redo undone edit"));
 
     this->actionSaveAs->setEnabled(false);
     this->actionSave->setEnabled(false);
     this->actionExportImage->setEnabled(false);
     this->actionExportHdl->setEnabled(false);
-    this->actionAddCheckpoint->setEnabled(false);
     this->actionUndo->setEnabled(false);
+    this->actionRedo->setEnabled(false);
 
     // Add actions
     this->addAction(this->actionSaveAs);
@@ -97,19 +97,20 @@ ToolBar::ToolBar(QWidget* parent) :
     this->addAction(this->actionExportImage);
     this->addAction(this->actionExportHdl);
     this->addSeparator();
-    this->addAction(this->actionAddCheckpoint);
     this->addAction(this->actionUndo);
+    this->addAction(this->actionRedo);
+
 
     // Connect actions
-    connect(this->actionSaveAs,        &QAction::triggered, this, &ToolBar::saveAsRequestedEvent);
-    connect(this->actionSave,          &QAction::triggered, this, &ToolBar::saveRequestedEvent);
-    connect(this->actionLoad,          &QAction::triggered, this, &ToolBar::loadRequestedEvent);
-    connect(this->actionNewFsm,        &QAction::triggered, this, &ToolBar::newMachineRequestedEvent);
-    //connect(this->actionClear,         &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
-    connect(this->actionExportImage,   &QAction::triggered, this, &ToolBar::exportImageRequestedEvent);
-    connect(this->actionExportHdl,     &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
-    connect(this->actionAddCheckpoint, &QAction::triggered, this, &ToolBar::addChekpoint);
-    connect(this->actionUndo,          &QAction::triggered, this, &ToolBar::undo);
+    connect(this->actionSaveAs,      &QAction::triggered, this, &ToolBar::saveAsRequestedEvent);
+    connect(this->actionSave,        &QAction::triggered, this, &ToolBar::saveRequestedEvent);
+    connect(this->actionLoad,        &QAction::triggered, this, &ToolBar::loadRequestedEvent);
+    connect(this->actionNewFsm,      &QAction::triggered, this, &ToolBar::newMachineRequestedEvent);
+    //connect(this->actionClear,       &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
+    connect(this->actionExportImage, &QAction::triggered, this, &ToolBar::exportImageRequestedEvent);
+    connect(this->actionExportHdl,   &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
+    connect(this->actionUndo,        &QAction::triggered, this, &ToolBar::undo);
+    connect(this->actionRedo,        &QAction::triggered, this, &ToolBar::redo);
 }
 
 void ToolBar::setSaveAsActionEnabled(bool enable)
@@ -128,12 +129,12 @@ void ToolBar::setExportActionsEnabled(bool enable)
     this->actionExportHdl  ->setEnabled(enable);
 }
 
-void ToolBar::setAddCheckpointActionEnabled(bool enable)
-{
-    this->actionAddCheckpoint->setEnabled(enable);
-}
-
 void ToolBar::setUndoActionEnabled(bool enable)
 {
     this->actionUndo->setEnabled(enable);
+}
+
+void ToolBar::setRedoActionEnabled(bool enable)
+{
+    this->actionRedo->setEnabled(enable);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,37 +35,34 @@ class FsmGraphicTransition;
 class Equation;
 
 
-class FsmTransition : public FsmComponent
+class FsmTransition : public FsmComponent, public enable_shared_from_this<FsmTransition>
 {
     Q_OBJECT
 
 public:
-    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicTransition* graphicRepresentation = nullptr);
+    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
     ~FsmTransition();
 
-    shared_ptr<FsmState> getTarget() const;
     void setTarget(shared_ptr<FsmState> value);
+    shared_ptr<FsmState> getTarget() const;
 
-    shared_ptr<FsmState> getSource() const;
     void setSource(shared_ptr<FsmState> value);
+    shared_ptr<FsmState> getSource() const;
 
-    FsmGraphicTransition* getGraphicRepresentation() const;
-    void setGraphicRepresentation(FsmGraphicTransition* representation); // TODO: throw exception
-    void clearGraphicRepresentation();
-
-    void setCrossed() const;
-
-    shared_ptr<Signal> getCondition() const;
     void setCondition(shared_ptr<Signal> signalNewCondition);
-
+    shared_ptr<Signal> getCondition() const;
     void clearCondition();
+
+    FsmGraphicTransition* getGraphicRepresentation();
 
     virtual uint getAllowedActionTypes() const override;
 
-    qreal sliderPos; // Public because we don't care, just used by loader
-
 signals:
     void conditionChangedEvent();
+    void transitionSliderPositionChangedEvent();
+
+private slots:
+    void graphicRepresentationDeletedEventHandler();
 
 private:
     FsmGraphicTransition* graphicRepresentation = nullptr;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -54,10 +54,11 @@ private:
 
     // Public
 public:
-    explicit FsmGraphicState(shared_ptr<FsmState> logicState);
+    explicit FsmGraphicState();
     ~FsmGraphicState();
 
-    shared_ptr<FsmState> getLogicState() const; // Throws StatesException TODO: check uses
+    void setLogicState(shared_ptr<FsmState> logicState);
+    shared_ptr<FsmState> getLogicState() const;
 
     static qreal getRadius();
 
@@ -66,11 +67,14 @@ public:
     void keyPressEvent(QKeyEvent* event) override;
     void enableMoveEvent();
 
-    virtual QPainterPath shape() const override;
+    virtual QPainterPath shape()  const override;
     virtual QRectF boundingRect() const override;
+
+    void rebuildRepresentation();
 
 signals:
     void stateMovedEvent();
+
     void editStateCalledEvent(shared_ptr<FsmState> state);
     void renameStateCalledEvent(shared_ptr<FsmState> state);
 
@@ -80,19 +84,19 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private slots:
-    void rebuildRepresentation();
+    void componentUpdatedEventHandler();
     void treatMenu(QAction* action);
-    void machineModeChangedEventHandler(Machine::mode);
+    void machineModeChangedEventHandler(Machine::simulation_mode);
 
 private:
     void askDelete();
     void updateSelectionShapeDisplay();
 
+private:
     QGraphicsTextItem*    stateName      = nullptr;
     QGraphicsEllipseItem* selectionShape = nullptr;
 
     bool moveEventEnabled = false;
-
 };
 
 #endif // FSMGRAPHICSTATE_H

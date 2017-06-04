@@ -43,14 +43,24 @@ ResourceBar::ResourceBar(QWidget* parent) :
     this->setMachine(nullptr);
 }
 
-void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
+void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 {
+    int index = (maintainView == true) ? this->currentIndex() : 0;
+    bool builderHintCollapsed = false;
+    bool builderVisuCollapsed = false;
+    bool signalsHintCollapsed = false;
+    bool signalsVisuCollapsed = false;
+
     if (!this->machine.expired())
     {
-        disconnect(this->machine.lock().get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
+        disconnect(this->machine.lock().get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
+        builderHintCollapsed = this->machineBuildTab->getHintCollapsed();
+        builderVisuCollapsed = this->machineBuildTab->getVisuCollapsed();
+        signalsHintCollapsed = this->signalsTab->getHintCollapsed();
+        signalsVisuCollapsed = this->signalsTab->getVisuCollapsed();
     }
 
-    this->machineComponentScene.reset();
+    this->machineComponentScene = nullptr;
     this->machine = newMachine;
 
     while(this->count() != 0)
@@ -74,7 +84,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
         this->simulatorTab    = new SimulatorTab     (newMachine);
         this->verifierTab     = new VerifierTab      (newMachine);
 
-        connect(newMachine.get(), &Machine::changedModeEvent, this, &ResourceBar::machineModeChangedEventHandler);
+        connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
 
         this->insertTab(0, this->machineBuildTab, tr("Builder"));
         this->insertTab(1, this->signalsTab,      tr("Signals"));
@@ -86,10 +96,19 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine)
 
         this->setTabEnabled(2, false);
 
-        this->setCurrentIndex(0);
+        this->setCurrentIndex(index);
+        if (maintainView == true)
+        {
+            this->machineBuildTab->setHintCollapsed(builderHintCollapsed);
+            this->machineBuildTab->setVisuCollapsed(builderVisuCollapsed);
+            this->signalsTab->setHintCollapsed(signalsHintCollapsed);
+            this->signalsTab->setVisuCollapsed(signalsVisuCollapsed);
+        }
 
-        if (newMachine->getCurrentMode() == Machine::mode::simulateMode)
+        if (newMachine->getCurrentSimulationMode() == Machine::simulation_mode::simulateMode)
+        {
             this->beginSimulation();
+        }
     }
     else
     {
@@ -120,7 +139,7 @@ void ResourceBar::setSelectedItem(shared_ptr<MachineComponent> item)
 {
     shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if ( (l_machine != nullptr) && (l_machine->getCurrentMode() == Machine::mode::editMode) )
+    if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
     {
         shared_ptr<FsmState>      state      = dynamic_pointer_cast<FsmState>     (item);
         shared_ptr<FsmTransition> transition = dynamic_pointer_cast<FsmTransition>(item);
@@ -186,17 +205,25 @@ void ResourceBar::clearSelection()
     this->setTabEnabled(2, false);
 
     if (currentTab != 2)
+    {
         this->setCurrentIndex(currentTab);
+    }
     else
+    {
         this->setCurrentIndex(0);
+    }
 }
 
-void ResourceBar::machineModeChangedEventHandler(Machine::mode newMode)
+void ResourceBar::machineModeChangedEventHandler(Machine::simulation_mode newMode)
 {
-    if (newMode == Machine::mode::simulateMode)
+    if (newMode == Machine::simulation_mode::simulateMode)
+    {
         this->beginSimulation();
+    }
     else
+    {
         this->terminateSimulation();
+    }
 }
 
 void ResourceBar::beginSimulation()

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,6 +45,11 @@ class MachineBuilderTab : public QWidget
 
 public:
     explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+
+    void setHintCollapsed(bool collapse);
+    void setVisuCollapsed(bool collapse);
+    bool getHintCollapsed();
+    bool getVisuCollapsed();
 
 protected:
     void showEvent      (QShowEvent* e)  override;

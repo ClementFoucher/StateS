@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -329,11 +329,7 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
     }
     else if (event->key() == Qt::Key::Key_Delete)
     {
-        // TODO: hanlde multiple deletion when undo is implemented
-        if (this->getSelectedSignals().count() == 1)
-        {
-            removeSelectedSignals();
-        }
+        this->removeSelectedSignals();
         transmitEvent = false;
     }
     else if (event->key() == Qt::Key::Key_Tab)
@@ -341,8 +337,10 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
         transmitEvent = false;
     }
 
-    if (transmitEvent)
+    if (transmitEvent == true)
+    {
         QWidget::keyPressEvent(event);
+    }
 }
 
 void SignalListEditor::keyReleaseEvent(QKeyEvent* event)
@@ -796,13 +794,18 @@ void SignalListEditor::raiseSelectedSignals()
             signalsRanks.append(index.row());
         }
 
-        for (int i = 0 ; i < rows.count() ; i++)
+        if (rows.isEmpty() == false)
         {
-            if ( (signalsRanks.at(i) != 0) && ( ! this->signalsList->item(signalsRanks.at(i)-1, 0)->isSelected() ) )
+            l_machine->beginAtomicEdit();
+            for (int i = 0 ; i < rows.count() ; i++)
             {
-                // Actually lower upper signals rater than raising signal itself
-                l_machine->changeSignalRank(this->signalsList->item(signalsRanks.at(i)-1, 0)->text(), signalsRanks.at(i));
+                if ( (signalsRanks.at(i) != 0) && ( ! this->signalsList->item(signalsRanks.at(i)-1, 0)->isSelected() ) )
+                {
+                    // Actually lower upper signals rater than raising signal itself
+                    l_machine->changeSignalRank(this->signalsList->item(signalsRanks.at(i)-1, 0)->text(), signalsRanks.at(i));
+                }
             }
+            l_machine->endAtomicEdit();
         }
     }
 }
@@ -824,13 +827,18 @@ void SignalListEditor::lowerSelectedSignals()
             signalsRanks.push_front(index.row());
         }
 
-        for (int i = 0 ; i < rows.count() ; i++)
+        if (rows.isEmpty() == false)
         {
-            if ( (signalsRanks.at(i) != this->signalsList->rowCount()-1) && ( ! this->signalsList->item(signalsRanks.at(i)+1, 0)->isSelected() ) )
+            l_machine->beginAtomicEdit();
+            for (int i = 0 ; i < rows.count() ; i++)
             {
-                // Actually raise lower signals rater than lowering signal itself
-                l_machine->changeSignalRank(this->signalsList->item(signalsRanks.at(i)+1, 0)->text(), signalsRanks.at(i));
+                if ( (signalsRanks.at(i) != this->signalsList->rowCount()-1) && ( ! this->signalsList->item(signalsRanks.at(i)+1, 0)->isSelected() ) )
+                {
+                    // Actually raise lower signals rater than lowering signal itself
+                    l_machine->changeSignalRank(this->signalsList->item(signalsRanks.at(i)+1, 0)->text(), signalsRanks.at(i));
+                }
             }
+            l_machine->endAtomicEdit();
         }
     }
 }
@@ -855,9 +863,14 @@ void SignalListEditor::removeSelectedSignals()
         if (lastSelectionIndex < this->signalsList->rowCount()-1)
             this->signalSelectionToRestore.append(signalsList->item(lastSelectionIndex+1,0)->text());
 
-        foreach (QString signalName, selection)
+        if (selection.isEmpty() == false)
         {
-            l_machine->deleteSignal(signalName);
+            l_machine->beginAtomicEdit();
+            foreach (QString signalName, selection)
+            {
+                l_machine->deleteSignal(signalName);
+            }
+            l_machine->endAtomicEdit();
         }
     }
 }

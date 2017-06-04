@@ -43,8 +43,11 @@ public:
     void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
     void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
 
+    void setCollapsed(bool collapse);
+    bool getCollapsed();
+
 private slots:
-    void updateVisibility(bool show);
+    void buttonCollapseToggledEventHander(bool buttonPushed);
 
 private:
     QGridLayout* layout         = nullptr;

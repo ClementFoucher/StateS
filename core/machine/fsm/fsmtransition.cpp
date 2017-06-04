@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2017 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,9 +22,6 @@
 // Current class header
 #include "fsmtransition.h"
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "equation.h"
 #include "fsm.h"
@@ -32,24 +29,45 @@
 #include "fsmgraphictransition.h"
 
 
-FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, shared_ptr<Signal> condition, FsmGraphicTransition* graphicRepresentation) :
+FsmTransition::FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation) :
     FsmComponent(parent)
 {
     this->source = source;
     this->target = target;
 
-    this->setCondition(condition);
+    if (representation != nullptr)
+    {
+        this->graphicRepresentation = representation;
+    }
+    else
+    {
+        this->graphicRepresentation = new FsmGraphicTransition();
+    }
 
-    if (graphicRepresentation != nullptr)
-        this->setGraphicRepresentation(graphicRepresentation);
+    connect(this->graphicRepresentation, &QObject::destroyed,                                         this, &FsmTransition::graphicRepresentationDeletedEventHandler);
+    connect(this->graphicRepresentation, &FsmGraphicTransition::transitionSliderPositionChangedEvent, this, &FsmTransition::transitionSliderPositionChangedEvent);
 
     // Propagates local events to the more general "configuration changed" event
-    connect(this, &FsmTransition::conditionChangedEvent, this, &MachineComponent::componentStaticConfigurationChangedEvent);
+    connect(this, &FsmTransition::conditionChangedEvent, this, &MachineComponent::componentNeedsGraphicUpdateEvent);
 }
 
 FsmTransition::~FsmTransition()
 {
     delete this->graphicRepresentation;
+}
+
+FsmGraphicTransition* FsmTransition::getGraphicRepresentation()
+{
+    if (this->graphicRepresentation != nullptr)
+    {
+        this->graphicRepresentation->setLogicTransition(this->shared_from_this());
+    }
+    return this->graphicRepresentation;
+}
+
+void FsmTransition::graphicRepresentationDeletedEventHandler()
+{
+    this->graphicRepresentation = nullptr;
 }
 
 shared_ptr<FsmState> FsmTransition::getSource() const
@@ -62,34 +80,9 @@ void FsmTransition::setSource(shared_ptr<FsmState> newSource)
     this->source = newSource;
 }
 
-FsmGraphicTransition* FsmTransition::getGraphicRepresentation() const
-{
-    return this->graphicRepresentation;
-}
-
-void FsmTransition::setGraphicRepresentation(FsmGraphicTransition* representation)
-{
-    if (this->graphicRepresentation == nullptr)
-    {
-        this->graphicRepresentation = representation;
-        connect(representation, &GraphicComponent::graphicComponentConfigurationChangedEvent, this, &FsmTransition::componentStaticConfigurationChangedEvent);
-    }
-    else
-        qDebug() << "(FsmTransition:) Error! Setting graphic representation while already have one. Ignored command.";
-}
-
-void FsmTransition::clearGraphicRepresentation()
-{
-    if (this->graphicRepresentation != nullptr)
-    {
-        disconnect(this->graphicRepresentation, &GraphicComponent::graphicComponentConfigurationChangedEvent, this, &FsmTransition::componentStaticConfigurationChangedEvent);
-        this->graphicRepresentation = nullptr;
-    }
-}
-
 shared_ptr<FsmState> FsmTransition::getTarget() const
 {
-    return target.lock();
+    return this->target.lock();
 }
 
 void FsmTransition::setTarget(shared_ptr<FsmState> newTarget)
@@ -99,17 +92,24 @@ void FsmTransition::setTarget(shared_ptr<FsmState> newTarget)
 
 shared_ptr<Signal> FsmTransition::getCondition() const
 {
-    if (this->condition->getFunction() != Equation::nature::identity)
-        return this->condition;
+    if (this->condition != nullptr)
+    {
+        if (this->condition->getFunction() != Equation::nature::identity)
+            return this->condition;
+        else
+            return this->condition->getOperand(0); // Throws StatesException - Identity op always has operand 0, even if nullptr - ignored
+    }
     else
-        return this->condition->getOperand(0); // Throws StatesException - Identity op always has operand 0, even if nullptr - ignored
+    {
+        return nullptr;
+    }
 }
 
 void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 {
     if (this->condition != nullptr)
     {
-        disconnect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentDynamicStateChangedEvent);
+        disconnect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentSimulatedStateChangedEvent);
         disconnect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEvent);
     }
 
@@ -126,7 +126,7 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
     if (this->condition != nullptr)
     {
         // Propagate events
-        connect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentDynamicStateChangedEvent);
+        connect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentSimulatedStateChangedEvent);
         connect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEvent);
     }
 
@@ -135,7 +135,7 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 
 void FsmTransition::clearCondition()
 {
-    setCondition(nullptr);
+    this->setCondition(nullptr);
 }
 
 uint FsmTransition::getAllowedActionTypes() const
