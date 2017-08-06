@@ -40,7 +40,7 @@ LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, Q
     this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
 
     this->translator = shared_ptr<QTranslator>(new QTranslator());
-    this->translator->load(":/translations/français/français");
+    this->translator->load(":/translations/french");
 
     this->setWindowTitle("StateS");
 

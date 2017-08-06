@@ -13,10 +13,11 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.3.20
+VERSION = 0.4
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2017 Clément Foucher
 
 CONFIG += c++14
+QMAKE_LFLAGS += -no-pie
 
 SOURCES += \
 # Core
@@ -272,8 +273,8 @@ OTHER_FILES += \
     text/upcoming_features.txt
 
 RESOURCES += \
-    art.qrc \
-    translations.qrc
+    art/art.qrc \
+    translations/translations.qrc
 
 TRANSLATIONS += \
-    translations/français.ts
+    translations/french.ts

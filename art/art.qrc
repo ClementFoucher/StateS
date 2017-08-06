@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="load">svg/Load.svg</file>
+        <file alias="save">svg/Save.svg</file>
+        <file alias="clear">3rd_party/29699-kleanSweep.svg</file>
+        <file alias="new_FSM">svg/Create_FSM.svg</file>
+        <file alias="export_PDF">svg/Export_PDF.svg</file>
+        <file alias="StateS">svg/StateS.svg</file>
+        <file alias="export_VHDL">svg/Export_VHDL.svg</file>
+        <file alias="save_as">svg/Save_as.svg</file>
+        <file alias="rising_edge">svg/Rising_edge.svg</file>
+        <file alias="falling_edge">svg/Falling_edge.svg</file>
+        <file alias="pulse">svg/Pulse.svg</file>
+        <file alias="active_on_state">svg/Active_on_state.svg</file>
+        <file alias="export_image">svg/Export_image.svg</file>
+        <file alias="assign">svg/Assign.svg</file>
+        <file alias="attach_window">svg/Attach_window.svg</file>
+        <file alias="detach_window">svg/Detach_window.svg</file>
+        <file alias="add_checkpoint">3rd_party/Oxygen15.04.1-flag-blue.svg</file>
+        <file alias="redo">svg/Redo.svg</file>
+        <file alias="undo">svg/Undo.svg</file>
+    </qresource>
+</RCC>
