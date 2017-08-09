@@ -39,28 +39,28 @@ class MachineBuilder;
 
 class FsmToolsPanel : public MachineToolsPanel
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit FsmToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
 protected slots:
-    bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
+	bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
 
 private slots:
-    void buttonAddStatePushed(bool activated);
-    void buttonAddInitialStatePushed(bool activated);
-    void buttonAddTransitionPushed(bool activated);
-    void buttonNotToolPushed(bool);
+	void buttonAddStatePushed(bool activated);
+	void buttonAddInitialStatePushed(bool activated);
+	void buttonAddTransitionPushed(bool activated);
+	void buttonNotToolPushed(bool);
 
 private:
-    void lockOnError();
+	void lockOnError();
 
-    // QWidgets with parent
-    QPushButton* buttonAddState        = nullptr;
-    QPushButton* buttonAddInitialState = nullptr;
-    QPushButton* buttonAddTransition   = nullptr;
-    QPushButton* buttonNoTool          = nullptr;
+	// QWidgets with parent
+	QPushButton* buttonAddState        = nullptr;
+	QPushButton* buttonAddInitialState = nullptr;
+	QPushButton* buttonAddTransition   = nullptr;
+	QPushButton* buttonNoTool          = nullptr;
 };
 
 #endif // FSMTOOLSPANEL_H

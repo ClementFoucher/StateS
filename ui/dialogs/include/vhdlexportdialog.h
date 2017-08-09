@@ -31,26 +31,26 @@ class QComboBox;
 
 class VhdlExportDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent = nullptr);
+	explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent = nullptr);
 
-    bool isResetPositive();
-    bool prefixIOs();
-    QString getFilePath();
+	bool isResetPositive();
+	bool prefixIOs();
+	QString getFilePath();
 
 protected:
-    void accept() override;
+	void accept() override;
 
 private:
-    // Use pointers because these are QWidgets with a parent
-    QComboBox* resetLogicSelectionBox = nullptr;
-    QComboBox* addPrefixSelectionBox  = nullptr;
+	// Use pointers because these are QWidgets with a parent
+	QComboBox* resetLogicSelectionBox = nullptr;
+	QComboBox* addPrefixSelectionBox  = nullptr;
 
-    QString baseFileName;
-    QString searchPath;
-    QString filePath = QString::null;
+	QString baseFileName;
+	QString searchPath;
+	QString filePath = QString::null;
 };
 
 #endif // VHDLEXPORTDIALOG_H

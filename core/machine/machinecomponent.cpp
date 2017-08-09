@@ -25,10 +25,10 @@
 
 MachineComponent::MachineComponent(shared_ptr<Machine> owningMachine)
 {
-    this->owningMachine = owningMachine;
+	this->owningMachine = owningMachine;
 }
 
 shared_ptr<Machine> MachineComponent::getOwningMachine() const
 {
-    return this->owningMachine.lock();
+	return this->owningMachine.lock();
 }

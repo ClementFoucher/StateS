@@ -30,50 +30,50 @@ class LogicValue : private QVector<bool>
 {
 public: // Static
 
-    enum LogicValueErrorEnum{
-        unsupported_char = 0,
-        resized_to_0     = 1,
-        outside_range    = 2
-    };
+	enum LogicValueErrorEnum{
+		unsupported_char = 0,
+		resized_to_0     = 1,
+		outside_range    = 2
+	};
 
-    static LogicValue getValue0(uint size);
-    static LogicValue getValue1(uint size);
-    static LogicValue getNullValue();
-    static LogicValue fromString(const QString& textValue); // Throws StatesException
+	static LogicValue getValue0(uint size);
+	static LogicValue getValue1(uint size);
+	static LogicValue getNullValue();
+	static LogicValue fromString(const QString& textValue); // Throws StatesException
 
 public:
-    explicit LogicValue();
-    LogicValue(const LogicValue& stateToCopy);
-    explicit LogicValue(uint bitCount, bool initialValue = false);
+	explicit LogicValue();
+	LogicValue(const LogicValue& stateToCopy);
+	explicit LogicValue(uint bitCount, bool initialValue = false);
 
-    void resize(uint newSize); // Throws StatesException
-    uint getSize() const;
+	void resize(uint newSize); // Throws StatesException
+	uint getSize() const;
 
-    bool increment();
+	bool increment();
 
-    bool isNull() const;
-    QString toString() const;
+	bool isNull() const;
+	QString toString() const;
 
-    // Operator overloading
+	// Operator overloading
 
-    // Compare operator will return false is used with different size other value
-    bool operator==(const LogicValue& otherValue) const;
-    bool operator!=(const LogicValue& otherValue) const;
+	// Compare operator will return false is used with different size other value
+	bool operator==(const LogicValue& otherValue) const;
+	bool operator!=(const LogicValue& otherValue) const;
 
-    LogicValue operator!() const;
-    // Logic operators result will be null state is used with different size other value // TODO: Throws StatesException
-    LogicValue operator&(const LogicValue& otherValue) const; // TODO: Throws StatesException
-    LogicValue operator|(const LogicValue& otherValue) const; // TODO: Throws StatesException
-    LogicValue operator^(const LogicValue& otherValue) const; // TODO: Throws StatesException
+	LogicValue operator!() const;
+	// Logic operators result will be null state is used with different size other value // TODO: Throws StatesException
+	LogicValue operator&(const LogicValue& otherValue) const; // TODO: Throws StatesException
+	LogicValue operator|(const LogicValue& otherValue) const; // TODO: Throws StatesException
+	LogicValue operator^(const LogicValue& otherValue) const; // TODO: Throws StatesException
 
-    LogicValue operator=(const LogicValue& otherValue);
-    // If used with different size state, value will be unchanged, and call will return null state // TODO: Throws StatesException
-    LogicValue operator&=(const LogicValue& otherValue); // TODO: Throws StatesException
-    LogicValue operator|=(const LogicValue& otherValue); // TODO: Throws StatesException
-    LogicValue operator^=(const LogicValue& otherValue); // TODO: Throws StatesException
+	LogicValue operator=(const LogicValue& otherValue);
+	// If used with different size state, value will be unchanged, and call will return null state // TODO: Throws StatesException
+	LogicValue operator&=(const LogicValue& otherValue); // TODO: Throws StatesException
+	LogicValue operator|=(const LogicValue& otherValue); // TODO: Throws StatesException
+	LogicValue operator^=(const LogicValue& otherValue); // TODO: Throws StatesException
 
-    bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
-    bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
+	bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
+	bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
 };
 
 #endif // LOGICVALUE_H

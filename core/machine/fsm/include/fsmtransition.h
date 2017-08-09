@@ -37,40 +37,40 @@ class Equation;
 
 class FsmTransition : public FsmComponent, public enable_shared_from_this<FsmTransition>
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
-    ~FsmTransition();
+	explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
+	~FsmTransition();
 
-    void setTarget(shared_ptr<FsmState> value);
-    shared_ptr<FsmState> getTarget() const;
+	void setTarget(shared_ptr<FsmState> value);
+	shared_ptr<FsmState> getTarget() const;
 
-    void setSource(shared_ptr<FsmState> value);
-    shared_ptr<FsmState> getSource() const;
+	void setSource(shared_ptr<FsmState> value);
+	shared_ptr<FsmState> getSource() const;
 
-    void setCondition(shared_ptr<Signal> signalNewCondition);
-    shared_ptr<Signal> getCondition() const;
-    void clearCondition();
+	void setCondition(shared_ptr<Signal> signalNewCondition);
+	shared_ptr<Signal> getCondition() const;
+	void clearCondition();
 
-    FsmGraphicTransition* getGraphicRepresentation();
+	FsmGraphicTransition* getGraphicRepresentation();
 
-    virtual uint getAllowedActionTypes() const override;
+	virtual uint getAllowedActionTypes() const override;
 
 signals:
-    void conditionChangedEvent();
-    void transitionSliderPositionChangedEvent();
+	void conditionChangedEvent();
+	void transitionSliderPositionChangedEvent();
 
 private slots:
-    void graphicRepresentationDeletedEventHandler();
+	void graphicRepresentationDeletedEventHandler();
 
 private:
-    FsmGraphicTransition* graphicRepresentation = nullptr;
+	FsmGraphicTransition* graphicRepresentation = nullptr;
 
-    weak_ptr<FsmState> source;
-    weak_ptr<FsmState> target;
+	weak_ptr<FsmState> source;
+	weak_ptr<FsmState> target;
 
-    shared_ptr<Equation> condition;
+	shared_ptr<Equation> condition;
 };
 
 #endif // FSMTRANSITION_H

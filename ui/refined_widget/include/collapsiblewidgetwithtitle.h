@@ -35,28 +35,28 @@ class QResizeEvent;
 
 class CollapsibleWidgetWithTitle : public QFrame
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit CollapsibleWidgetWithTitle(const QString& title = QString(), QWidget* content = nullptr, QWidget* parent = nullptr);
+	explicit CollapsibleWidgetWithTitle(const QString& title = QString(), QWidget* content = nullptr, QWidget* parent = nullptr);
 
-    void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
-    void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
+	void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
+	void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
 
-    void setCollapsed(bool collapse);
-    bool getCollapsed();
+	void setCollapsed(bool collapse);
+	bool getCollapsed();
 
 private slots:
-    void buttonCollapseToggledEventHander(bool buttonPushed);
+	void buttonCollapseToggledEventHander(bool buttonPushed);
 
 private:
-    QGridLayout* layout         = nullptr;
-    QPushButton* buttonCollapse = nullptr;
-    QLabel*      title          = nullptr;
-    QWidget*     content        = nullptr;
+	QGridLayout* layout         = nullptr;
+	QPushButton* buttonCollapse = nullptr;
+	QLabel*      title          = nullptr;
+	QWidget*     content        = nullptr;
 
-    void collapse();
-    void extend();
+	void collapse();
+	void extend();
 
 };
 

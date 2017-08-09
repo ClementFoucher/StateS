@@ -27,14 +27,14 @@
 
 class ErrorDisplayDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent = nullptr);
-    explicit ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent = nullptr);
+	explicit ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent = nullptr);
+	explicit ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent = nullptr);
 
 private:
-    void build(const QString& errorTitle, const QList<QString>& errors);
+	void build(const QString& errorTitle, const QList<QString>& errors);
 };
 
 #endif // ERRORDISPLAYDIALOG_H

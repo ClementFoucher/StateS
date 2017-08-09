@@ -28,23 +28,23 @@
 
 class ReactiveButton : public QPushButton
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ReactiveButton(QWidget* parent = nullptr);
-    explicit ReactiveButton(const QString& text, QWidget* parent = nullptr);
+	explicit ReactiveButton(QWidget* parent = nullptr);
+	explicit ReactiveButton(const QString& text, QWidget* parent = nullptr);
 
 signals:
-    void mouseEnterEvent();
-    void mouseLeaveEvent();
-    void keyboardFocusInEvent();
-    void keyboardFocusOutEvent();
+	void mouseEnterEvent();
+	void mouseLeaveEvent();
+	void keyboardFocusInEvent();
+	void keyboardFocusOutEvent();
 
 protected:
-    void enterEvent(QEvent*) override;
-    void leaveEvent(QEvent*) override;
-    void focusInEvent (QFocusEvent*) override;
-    void focusOutEvent(QFocusEvent*) override;
+	void enterEvent(QEvent*) override;
+	void leaveEvent(QEvent*) override;
+	void focusInEvent (QFocusEvent*) override;
+	void focusOutEvent(QFocusEvent*) override;
 
 };
 

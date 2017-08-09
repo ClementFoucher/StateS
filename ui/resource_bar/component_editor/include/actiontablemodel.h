@@ -49,23 +49,23 @@ class MachineActuatorComponent;
  */
 class ActionTableModel : public QAbstractTableModel
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ActionTableModel(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
+	explicit ActionTableModel(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
 
-    virtual int columnCount(const QModelIndex& parent) const                              override;
-    virtual int rowCount(const QModelIndex& parent) const                                 override;
-    virtual QVariant data(const QModelIndex& index, int role) const                       override;
-    virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
+	virtual int columnCount(const QModelIndex& parent) const                              override;
+	virtual int rowCount(const QModelIndex& parent) const                                 override;
+	virtual QVariant data(const QModelIndex& index, int role) const                       override;
+	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+	virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
 
 private slots:
-    void refreshList();
+	void refreshList();
 
 private:
-    weak_ptr<MachineActuatorComponent> actuator;
+	weak_ptr<MachineActuatorComponent> actuator;
 };
 
 #endif // ACTIONTABLEMODEL_H

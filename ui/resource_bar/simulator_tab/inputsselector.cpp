@@ -34,23 +34,23 @@
 InputsSelector::InputsSelector(QList<shared_ptr<Input> > inputList, QWidget *parent) :
     QScrollArea(parent)
 {
-    this->setWidget(new QWidget());
+	this->setWidget(new QWidget());
 
-    QVBoxLayout* layout = new QVBoxLayout(this->widget());
+	QVBoxLayout* layout = new QVBoxLayout(this->widget());
 
-    foreach (shared_ptr<Input> currentInput, inputList)
-    {
-        InputSignalSelector* currentSignalSelector = new InputSignalSelector(currentInput);
-        layout->addWidget(currentSignalSelector);
-    }
+	foreach (shared_ptr<Input> currentInput, inputList)
+	{
+		InputSignalSelector* currentSignalSelector = new InputSignalSelector(currentInput);
+		layout->addWidget(currentSignalSelector);
+	}
 }
 
 void InputsSelector::resizeEvent(QResizeEvent*)
 {
-    int width = this->width() - this->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - this->style()->pixelMetric(QStyle::PM_DockWidgetSeparatorExtent);
-    int height = (this->widget()->layout()->itemAt(0)->sizeHint().height() * this->widget()->layout()->count());
+	int width = this->width() - this->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - this->style()->pixelMetric(QStyle::PM_DockWidgetSeparatorExtent);
+	int height = (this->widget()->layout()->itemAt(0)->sizeHint().height() * this->widget()->layout()->count());
 
-    this->widget()->resize(width, height);
+	this->widget()->resize(width, height);
 }
 
 

@@ -34,25 +34,25 @@
 ActionTableDelegate::ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget *parent) :
     QStyledItemDelegate(parent)
 {
-    this->actuator = actuator;
+	this->actuator = actuator;
 }
 
 QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
 {
-    QWidget* editor = nullptr;
+	QWidget* editor = nullptr;
 
-    if(index.column() == 2)
-    {
-        shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+	if(index.column() == 2)
+	{
+		shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
 
-        if (l_actuator != nullptr)
-        {
-            shared_ptr<ActionOnSignal> action = l_actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
-            QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
+		if (l_actuator != nullptr)
+		{
+			shared_ptr<ActionOnSignal> action = l_actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
+			QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
-            editor = new DynamicLineEdit(QString::null, false, new QRegularExpressionValidator(re), parent);
-        }
-    }
+			editor = new DynamicLineEdit(QString::null, false, new QRegularExpressionValidator(re), parent);
+		}
+	}
 
-    return editor;
+	return editor;
 }

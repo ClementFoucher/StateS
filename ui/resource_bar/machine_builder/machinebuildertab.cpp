@@ -40,105 +40,105 @@
 MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
-    this->machineComponentView = machineComponentView;
-    this->machine              = machine;
+	this->machineComponentView = machineComponentView;
+	this->machine              = machine;
 
-    if (machine != nullptr)
-    {
-        shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
+	if (machine != nullptr)
+	{
+		shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
 
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        layout->setAlignment(Qt::AlignTop);
+		QVBoxLayout* layout = new QVBoxLayout(this);
+		layout->setAlignment(Qt::AlignTop);
 
-        connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
-        connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
+		connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
+		connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
 
-        shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machine);
+		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machine);
 
-        if (fsm != nullptr)
-        {
-            //
-            // Title
+		if (fsm != nullptr)
+		{
+			//
+			// Title
 
-            QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
-            title->setAlignment(Qt::AlignCenter);
-            layout->addWidget(title);
+			QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
+			title->setAlignment(Qt::AlignCenter);
+			layout->addWidget(title);
 
-            //
-            // Tools
+			//
+			// Tools
 
-            layout->addWidget(new FsmToolsPanel(machineBuilder));
-        }
-        else
-        {
-            qDebug() << "(MachineBuilderTab:) Error, unknown machine type";
-        }
+			layout->addWidget(new FsmToolsPanel(machineBuilder));
+		}
+		else
+		{
+			qDebug() << "(MachineBuilderTab:) Error, unknown machine type";
+		}
 
-        //
-        // Name
+		//
+		// Name
 
-        QHBoxLayout* nameLayout = new QHBoxLayout();
+		QHBoxLayout* nameLayout = new QHBoxLayout();
 
-        QLabel* machineNameLabel = new QLabel(tr("Component name:"));
-        this->stateName = new DynamicLineEdit(fsm->getName(), true);
+		QLabel* machineNameLabel = new QLabel(tr("Component name:"));
+		this->stateName = new DynamicLineEdit(fsm->getName(), true);
 
-        connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
-        connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
+		connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
+		connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
 
-        connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineBuilderTab::updateContent);
+		connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineBuilderTab::updateContent);
 
-        nameLayout->addWidget(machineNameLabel);
-        nameLayout->addWidget(this->stateName);
+		nameLayout->addWidget(machineNameLabel);
+		nameLayout->addWidget(this->stateName);
 
-        layout->addLayout(nameLayout);
+		layout->addLayout(nameLayout);
 
-        //
-        // Hints
+		//
+		// Hints
 
-        this->hintDisplay = new CollapsibleWidgetWithTitle();
-        layout->addWidget(this->hintDisplay);
+		this->hintDisplay = new CollapsibleWidgetWithTitle();
+		layout->addWidget(this->hintDisplay);
 
-        this->updateHint(MachineBuilder::tool::none);
+		this->updateHint(MachineBuilder::tool::none);
 
-        //
-        // Machine visualization
+		//
+		// Machine visualization
 
-        this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
-        layout->addWidget(this->machineDisplay);
-    }
+		this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+		layout->addWidget(this->machineDisplay);
+	}
 }
 
 void MachineBuilderTab::setHintCollapsed(bool collapse)
 {
-    this->hintDisplay->setCollapsed(collapse);
+	this->hintDisplay->setCollapsed(collapse);
 }
 
 void MachineBuilderTab::setVisuCollapsed(bool collapse)
 {
-    this->machineDisplay->setCollapsed(collapse);
+	this->machineDisplay->setCollapsed(collapse);
 }
 
 bool MachineBuilderTab::getHintCollapsed()
 {
-    return this->hintDisplay->getCollapsed();
+	return this->hintDisplay->getCollapsed();
 }
 
 bool MachineBuilderTab::getVisuCollapsed()
 {
-    return this->machineDisplay->getCollapsed();
+	return this->machineDisplay->getCollapsed();
 }
 
 void MachineBuilderTab::showEvent(QShowEvent* e)
 {
-    // Ensure we get the view back
-    shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
+	// Ensure we get the view back
+	shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
 
-    if (machineComponentView != nullptr)
-    {
-        this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
-    }
+	if (machineComponentView != nullptr)
+	{
+		this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
+	}
 
-    QWidget::showEvent(e);
+	QWidget::showEvent(e);
 }
 
 /**
@@ -148,187 +148,187 @@ void MachineBuilderTab::showEvent(QShowEvent* e)
  */
 void MachineBuilderTab::mousePressEvent(QMouseEvent *e)
 {
-    this->stateName->clearFocus();
+	this->stateName->clearFocus();
 
-    QWidget::mousePressEvent(e);
+	QWidget::mousePressEvent(e);
 }
 
 void MachineBuilderTab::toolChangedEventHandler(MachineBuilder::tool newTool)
 {
-    this->updateHint(newTool);
+	this->updateHint(newTool);
 }
 
 void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool)
 {
-    if (tempTool == MachineBuilder::singleUseTool::none)
-    {
-        shared_ptr<Machine> l_machine = this->machine.lock();
+	if (tempTool == MachineBuilder::singleUseTool::none)
+	{
+		shared_ptr<Machine> l_machine = this->machine.lock();
 
-        if (l_machine!= nullptr)
-            this->updateHint(l_machine->getMachineBuilder()->getTool());
-        else
-            this->updateHint(MachineBuilder::tool::none);
-    }
-    else
-    {
-        QString title;
-        QString hint;
+		if (l_machine!= nullptr)
+			this->updateHint(l_machine->getMachineBuilder()->getTool());
+		else
+			this->updateHint(MachineBuilder::tool::none);
+	}
+	else
+	{
+		QString title;
+		QString hint;
 
-        title = tr("Hint:") + " ";
+		title = tr("Hint:") + " ";
 
-        switch(tempTool)
-        {
-        case MachineBuilder::singleUseTool::drawTransitionFromScene:
-            title +=  tr("Drawing a transition");
+		switch(tempTool)
+		{
+		case MachineBuilder::singleUseTool::drawTransitionFromScene:
+			title +=  tr("Drawing a transition");
 
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
-            hint += "<br />";
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition insertion") + ".";
-            hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
+			hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition insertion") + ".";
+			hint += "<br />";
 
-            break;
-        case MachineBuilder::singleUseTool::beginDrawTransitionFromTool:
-            title +=  tr("Drawing a transition");
+			break;
+		case MachineBuilder::singleUseTool::beginDrawTransitionFromTool:
+			title +=  tr("Drawing a transition");
 
-            hint += "<br />";
-            hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
-            hint += "<br />";
-            hint += "<br />";
-            hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("anywhere else") + " " + tr("to cancel") + " " + tr("transition insertion") + ".";
-            hint += "<br />";
+			hint += "<br />";
+			hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
+			hint += "<br />";
+			hint += "<br />";
+			hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("anywhere else") + " " + tr("to cancel") + " " + tr("transition insertion") + ".";
+			hint += "<br />";
 
-            break;
-        case MachineBuilder::singleUseTool::editTransitionSource:
-            title +=  tr("Editing a transition");
+			break;
+		case MachineBuilder::singleUseTool::editTransitionSource:
+			title +=  tr("Editing a transition");
 
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the source") + " " + tr("of this transition") + ".";
-            hint += "<br />";
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
-            hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the source") + " " + tr("of this transition") + ".";
+			hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
+			hint += "<br />";
 
-            break;
-        case MachineBuilder::singleUseTool::editTransitionTarget:
-            title +=  tr("Editing a transition");
+			break;
+		case MachineBuilder::singleUseTool::editTransitionTarget:
+			title +=  tr("Editing a transition");
 
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
-            hint += "<br />";
-            hint += "<br />";
-            hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
-            hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
+			hint += "<br />";
+			hint += "<br />";
+			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
+			hint += "<br />";
 
-            break;
-        default:
-            break;
-        }
+			break;
+		default:
+			break;
+		}
 
-        this->hintDisplay->setContent(title, hint, true);
-    }
+		this->hintDisplay->setContent(title, hint, true);
+	}
 }
 
 void MachineBuilderTab::nameTextChangedEventHandler(const QString& name)
 {
-    shared_ptr<Machine> l_machine = this->machine.lock();
+	shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (l_machine != nullptr)
-    {
-        if (name != l_machine->getName())
-        {
-            bool accepted = l_machine->setName(name);
+	if (l_machine != nullptr)
+	{
+		if (name != l_machine->getName())
+		{
+			bool accepted = l_machine->setName(name);
 
-            if (!accepted)
-                this->stateName->markAsErroneous();
-        }
-    }
+			if (!accepted)
+				this->stateName->markAsErroneous();
+		}
+	}
 }
 
 void MachineBuilderTab::updateContent()
 {
-    shared_ptr<Machine> l_machine = this->machine.lock();
+	shared_ptr<Machine> l_machine = this->machine.lock();
 
-    if (l_machine != nullptr)
-    {
-        this->stateName->setText(l_machine->getName());
-    }
-    else
-    {
-        this->stateName->setText("<i>(" + tr("No machine") + ")</i>");
-        this->stateName->setEnabled(false);
-    }
+	if (l_machine != nullptr)
+	{
+		this->stateName->setText(l_machine->getName());
+	}
+	else
+	{
+		this->stateName->setText("<i>(" + tr("No machine") + ")</i>");
+		this->stateName->setEnabled(false);
+	}
 }
 
 void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
 {
-    QString title;
-    QString hint;
+	QString title;
+	QString hint;
 
-    title = tr("Hint:") + " ";
+	title = tr("Hint:") + " ";
 
-    switch(newTool)
-    {
-    case MachineBuilder::tool::none:
-    case MachineBuilder::tool::quittingTool:
-        title +=  tr("Navigation");
+	switch(newTool)
+	{
+	case MachineBuilder::tool::none:
+	case MachineBuilder::tool::quittingTool:
+		title +=  tr("Navigation");
 
-        hint += "<br />";
-        hint += tr("Use <i>mouse middle button (wheel)</i> to move scene:");
-        hint += "<br />";
-        hint += tr("Press and hold") + " " + tr("wheel") + " " + tr("for free move") + ",";
-        hint += "<br />";
-        hint += tr("Scroll") + " " + tr("wheel") + " " + tr("to move vertically") + ",";
-        hint += "<br />";
-        hint += tr("Scroll") + " " + tr("wheel") + " " + tr("while holding") + " <i>" + tr("shift") + "</i> " + tr("to move horizontally") + ".";
-        hint += "<br />";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("ctrl") + "+" + tr("mouse wheel") + "</i> " + tr("to zoom in/out") + ".";
-        hint += "<br />";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("or") + " " + tr("a transition") + " " + tr("to select it") + ",";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to display context menu") + ".";
-        hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use <i>mouse middle button (wheel)</i> to move scene:");
+		hint += "<br />";
+		hint += tr("Press and hold") + " " + tr("wheel") + " " + tr("for free move") + ",";
+		hint += "<br />";
+		hint += tr("Scroll") + " " + tr("wheel") + " " + tr("to move vertically") + ",";
+		hint += "<br />";
+		hint += tr("Scroll") + " " + tr("wheel") + " " + tr("while holding") + " <i>" + tr("shift") + "</i> " + tr("to move horizontally") + ".";
+		hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("ctrl") + "+" + tr("mouse wheel") + "</i> " + tr("to zoom in/out") + ".";
+		hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("or") + " " + tr("a transition") + " " + tr("to select it") + ",";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to display context menu") + ".";
+		hint += "<br />";
 
-        break;
-    case MachineBuilder::tool::initial_state:
-        title +=  tr("Adding an initial state");
+		break;
+	case MachineBuilder::tool::initial_state:
+		title +=  tr("Adding an initial state");
 
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("to add") + " " + tr("a state") + " " + tr("at mouse position") + ".";
-        hint += "<br />";
-        hint += tr("This state will be set as the initial state of this machine") + ".";
-        hint += "<br />";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
-        hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("to add") + " " + tr("a state") + " " + tr("at mouse position") + ".";
+		hint += "<br />";
+		hint += tr("This state will be set as the initial state of this machine") + ".";
+		hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
+		hint += "<br />";
 
-        break;
-    case MachineBuilder::tool::state:
-        title +=  tr("Adding a state");
+		break;
+	case MachineBuilder::tool::state:
+		title +=  tr("Adding a state");
 
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("to add") + " " + tr("a state") + " " + tr("at mouse position") + ".";
-        hint += "<br />";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
-        hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("to add") + " " + tr("a state") + " " + tr("at mouse position") + ".";
+		hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
+		hint += "<br />";
 
-        break;
-    case MachineBuilder::tool::transition:
-        title +=  tr("Drawing a transition");
+		break;
+	case MachineBuilder::tool::transition:
+		title +=  tr("Drawing a transition");
 
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("and maintain button") + " " + tr("to begin") + " " + tr("drawing a transition") + " "  + tr("from this state") + ".";
-        hint += "<br />";
-        hint += "<br />";
-        hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
-        hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("and maintain button") + " " + tr("to begin") + " " + tr("drawing a transition") + " "  + tr("from this state") + ".";
+		hint += "<br />";
+		hint += "<br />";
+		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
+		hint += "<br />";
 
-        break;
-    }
+		break;
+	}
 
-    this->hintDisplay->setContent(title, hint, true);
+	this->hintDisplay->setContent(title, hint, true);
 }

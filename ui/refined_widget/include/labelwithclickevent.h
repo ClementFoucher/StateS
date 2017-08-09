@@ -28,16 +28,16 @@
 
 class LabelWithClickEvent : public QLabel
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    LabelWithClickEvent(const QString& text);
+	LabelWithClickEvent(const QString& text);
 
 signals:
-    bool clicked(QMouseEvent* e);
+	bool clicked(QMouseEvent* e);
 
 protected:
-    bool event(QEvent* e) override;
+	bool event(QEvent* e) override;
 };
 
 #endif // LABELWITHCLICKEVENT_H

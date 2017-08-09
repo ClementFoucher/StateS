@@ -35,26 +35,26 @@ class MachineComponent;
 
 class GraphicComponent : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public: // Static
-    enum GraphicComponentErrorEnum{
-        reaffect_component   = 0,
-        obsolete_base_object = 1
-    };
+	enum GraphicComponentErrorEnum{
+		reaffect_component   = 0,
+		obsolete_base_object = 1
+	};
 
 public:
-    explicit GraphicComponent(QObject* parent = nullptr);
+	explicit GraphicComponent(QObject* parent = nullptr);
 
 protected:
-    void setLogicComponent(shared_ptr<MachineComponent> logicComponent); // Throws StatesException
-    shared_ptr<MachineComponent> getLogicComponent() const;
+	void setLogicComponent(shared_ptr<MachineComponent> logicComponent); // Throws StatesException
+	shared_ptr<MachineComponent> getLogicComponent() const;
 
 private:
-    weak_ptr<MachineComponent> logicComponent;
+	weak_ptr<MachineComponent> logicComponent;
 
 protected:
-    static QPen selectionPen;
+	static QPen selectionPen;
 
 };
 

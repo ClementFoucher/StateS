@@ -36,47 +36,47 @@
 RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent) :
     QDialog(parent)
 {
-    int rangeL = action->getActionRangeL();
-    int rangeR = action->getActionRangeR();
+	int rangeL = action->getActionRangeL();
+	int rangeR = action->getActionRangeR();
 
-    this->setWindowTitle(tr("Edit range"));
+	this->setWindowTitle(tr("Edit range"));
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
-    QLabel* title;
+	QLabel* title;
 
-    if (rangeR == -1)
-        title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>");
-    else
-        title = new QLabel("<b>" + tr("Choose range") + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+	if (rangeR == -1)
+		title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>");
+	else
+		title = new QLabel("<b>" + tr("Choose range") + "</b>");
+	title->setAlignment(Qt::AlignCenter);
+	layout->addWidget(title);
 
-    this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
-    this->equation->setRange(rangeL, rangeR);
-    this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
+	this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
+	this->equation->setRange(rangeL, rangeR);
+	this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 
-    GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true);
-    layout->addWidget(graphicEquation);
+	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true);
+	layout->addWidget(graphicEquation);
 
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
-    layout->addLayout(buttonsLayout);
+	QHBoxLayout* buttonsLayout = new QHBoxLayout();
+	layout->addLayout(buttonsLayout);
 
-    QPushButton* buttonOK = new QPushButton(tr("OK"));
-    connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
-    buttonsLayout->addWidget(buttonOK);
+	QPushButton* buttonOK = new QPushButton(tr("OK"));
+	connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
+	buttonsLayout->addWidget(buttonOK);
 
-    QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
-    connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
-    buttonsLayout->addWidget(buttonCancel);
+	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
+	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
+	buttonsLayout->addWidget(buttonCancel);
 }
 
 int RangeEditorDialog::getRangeL() const
 {
-    return this->equation->getRangeL();
+	return this->equation->getRangeL();
 }
 
 int RangeEditorDialog::getRangeR() const
 {
-    return this->equation->getRangeR();
+	return this->equation->getRangeR();
 }

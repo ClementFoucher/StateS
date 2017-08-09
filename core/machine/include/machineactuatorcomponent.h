@@ -46,47 +46,47 @@ class Signal;
  */
 class MachineActuatorComponent : public MachineComponent
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    typedef enum
-    {
-        none          = 0x0,
-        activeOnState = 0x1,
-        pulse         = 0x2,
-        set           = 0x4,
-        reset         = 0x8,
-        assign        = 0x10
-    } allowed_action_types;
+	typedef enum
+	{
+		none          = 0x0,
+		activeOnState = 0x1,
+		pulse         = 0x2,
+		set           = 0x4,
+		reset         = 0x8,
+		assign        = 0x10
+	} allowed_action_types;
 
-    enum MachineActuatorComponentErrorEnum
-    {
-        out_of_range = 0
-    };
+	enum MachineActuatorComponentErrorEnum
+	{
+		out_of_range = 0
+	};
 
 public:
-    explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
+	explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
 
-    QList<shared_ptr<ActionOnSignal>> getActions() const;
-    shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
+	QList<shared_ptr<ActionOnSignal>> getActions() const;
+	shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
 
-    shared_ptr<ActionOnSignal> addAction(shared_ptr<Signal> signal);
-    void removeAction(uint actionRank); // Throws StatesException
-    void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
+	shared_ptr<ActionOnSignal> addAction(shared_ptr<Signal> signal);
+	void removeAction(uint actionRank); // Throws StatesException
+	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
-    void activateActions();
-    void deactivateActions();
+	void activateActions();
+	void deactivateActions();
 
-    virtual uint getAllowedActionTypes() const = 0;
+	virtual uint getAllowedActionTypes() const = 0;
 
 signals:
-    void actionListChangedEvent();
+	void actionListChangedEvent();
 
 private slots:
-    void cleanActionList();
+	void cleanActionList();
 
 private:
-    QList<shared_ptr<ActionOnSignal>> actionList;
+	QList<shared_ptr<ActionOnSignal>> actionList;
 
 };
 

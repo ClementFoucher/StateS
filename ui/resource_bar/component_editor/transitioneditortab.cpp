@@ -35,15 +35,15 @@
 TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent) :
     ComponentEditorTab(parent)
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
-    QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
+	title->setAlignment(Qt::AlignCenter);
+	layout->addWidget(title);
 
-    ConditionEditor* conditionEditor = new ConditionEditor(transition);
-    layout->addWidget(conditionEditor);
+	ConditionEditor* conditionEditor = new ConditionEditor(transition);
+	layout->addWidget(conditionEditor);
 
-    ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"));
-    layout->addWidget(actionEditor);
+	ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"));
+	layout->addWidget(actionEditor);
 }

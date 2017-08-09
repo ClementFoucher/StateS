@@ -30,15 +30,15 @@
 
 class MachineConfiguration : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    QPointF sceneTranslation;
-    QPointF viewCenter;
-    qreal   zoomLevel;
+	QPointF sceneTranslation;
+	QPointF viewCenter;
+	qreal   zoomLevel;
 
 public:
-    explicit MachineConfiguration(QObject* parent = nullptr);
+	explicit MachineConfiguration(QObject* parent = nullptr);
 
 };
 

@@ -43,29 +43,29 @@ class Machine;
 
 class SimulatorTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit SimulatorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
-    ~SimulatorTab();
+	explicit SimulatorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	~SimulatorTab();
 
 private slots:
-    void triggerSimulationMode(bool enabled);
-    void buttonLauchAutoStepClicked();
-    void delayOptionToggleEventHandler(bool enabled);
+	void triggerSimulationMode(bool enabled);
+	void buttonLauchAutoStepClicked();
+	void delayOptionToggleEventHandler(bool enabled);
 
 private:
-    weak_ptr<Fsm> machine;
-    shared_ptr<FsmSimulator> simulator;
+	weak_ptr<Fsm> machine;
+	shared_ptr<FsmSimulator> simulator;
 
-    // QWidgets with parent
-    QPushButton  * buttonTriggerSimulation = nullptr;
-    QPushButton  * buttonTriggerAutoStep   = nullptr;
-    CheckBoxHtml * checkBoxDelay           = nullptr;
-    QLineEdit    * autoStepValue           = nullptr;
-    QWidget      * simulationTools         = nullptr;
+	// QWidgets with parent
+	QPushButton  * buttonTriggerSimulation = nullptr;
+	QPushButton  * buttonTriggerAutoStep   = nullptr;
+	CheckBoxHtml * checkBoxDelay           = nullptr;
+	QLineEdit    * autoStepValue           = nullptr;
+	QWidget      * simulationTools         = nullptr;
 
-    InputsSelector* inputList = nullptr;
+	InputsSelector* inputList = nullptr;
 };
 
 #endif // SIMULATORTAB_H

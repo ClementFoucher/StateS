@@ -38,16 +38,16 @@ Constant::Constant(const QString& name, uint size) : // Throws StatesException
 
 void Constant::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
 {
-    Signal::setInitialValue(newInitialValue); // Throws StatesException - Propagated
-    Signal::setCurrentValue(newInitialValue); // Throws StatesException - Propagated
+	Signal::setInitialValue(newInitialValue); // Throws StatesException - Propagated
+	Signal::setCurrentValue(newInitialValue); // Throws StatesException - Propagated
 }
 
 void Constant::setCurrentValue(const LogicValue&) // Throws StatesException
 {
-    throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+	throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
 }
 
 void Constant::setCurrentValueSubRange(const LogicValue&, int, int) // Throws StatesException
 {
-    throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+	throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
 }

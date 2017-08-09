@@ -36,5 +36,5 @@ Input::Input(const QString& name, uint size) : // Throws StatesException
 
 IO::direction Input::getDirection() const
 {
-    return IO::direction::input;
+	return IO::direction::input;
 }

@@ -39,41 +39,42 @@ class Equation;
 
 class RangeExtractorWidget : public EditableEquation
 {
-    Q_OBJECT
-public:
-    explicit RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent = nullptr);
+	Q_OBJECT
 
-    bool validEdit() override;
-    bool cancelEdit() override;
-    void setEdited(bool edited) override;
+public:
+	explicit RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent = nullptr);
+
+	bool validEdit() override;
+	bool cancelEdit() override;
+	void setEdited(bool edited) override;
 
 signals:
-    void rangeLChanged(int newValue);
-    void rangeRChanged(int newValue);
+	void rangeLChanged(int newValue);
+	void rangeRChanged(int newValue);
 
 protected:
-    void mousePressEvent      (QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
-    void mouseMoveEvent       (QMouseEvent* event) override;
-    void mouseReleaseEvent    (QMouseEvent* event) override;
-    void wheelEvent           (QWheelEvent* event) override;
+	void mousePressEvent      (QMouseEvent* event) override;
+	void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void mouseMoveEvent       (QMouseEvent* event) override;
+	void mouseReleaseEvent    (QMouseEvent* event) override;
+	void wheelEvent           (QWheelEvent* event) override;
 
 private:
-    void update();
-    void reset();
+	void update();
+	void reset();
 
 private:
-    weak_ptr<Equation> equation;
+	weak_ptr<Equation> equation;
 
-    QLabel* rangeLText = nullptr;
-    QLabel* rangeRText = nullptr;
+	QLabel* rangeLText = nullptr;
+	QLabel* rangeRText = nullptr;
 
-    LineEditWithUpDownButtons* rangeLEditor = nullptr;
-    LineEditWithUpDownButtons* rangeREditor = nullptr;
+	LineEditWithUpDownButtons* rangeLEditor = nullptr;
+	LineEditWithUpDownButtons* rangeREditor = nullptr;
 
-    bool editMode = false;
+	bool editMode = false;
 
-    bool inMouseEvent = false;
+	bool inMouseEvent = false;
 };
 
 #endif // RANGEEXTRACTORWIDGET_H

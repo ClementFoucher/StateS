@@ -35,10 +35,10 @@ class Signal;
 
 class InputSignalSelector : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget* parent = nullptr);
+	explicit InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget* parent = nullptr);
 };
 
 #endif // INPUTVSIGNALSELECTOR_H

@@ -34,70 +34,70 @@
 InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent) :
     QFrame(parent)
 {
-    this->signalToCommand = signalToCommand;
-    this->bitNumber       = bitNumber;
+	this->signalToCommand = signalToCommand;
+	this->bitNumber       = bitNumber;
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
+	QHBoxLayout* layout = new QHBoxLayout(this);
 
-    this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
-    this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + signalToCommand->getName());
-    layout->addWidget(this->bitValue);
+	this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+	this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + signalToCommand->getName());
+	layout->addWidget(this->bitValue);
 
-    this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
+	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-    connect(signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
+	connect(signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEvent* event)
 {
-    this->setStyleSheet("InputBitSelector {border: 1px solid black; border-radius: 10px}");
+	this->setStyleSheet("InputBitSelector {border: 1px solid black; border-radius: 10px}");
 
-    QFrame::enterEvent(event);
+	QFrame::enterEvent(event);
 }
 
 
 void InputBitSelector::leaveEvent(QEvent* event)
 {
-    this->setStyleSheet("");
+	this->setStyleSheet("");
 
-    QFrame::leaveEvent(event);
+	QFrame::leaveEvent(event);
 }
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-    shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
+	shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
 
-    if (signalToCommand != nullptr)
-    {
-        LogicValue signalValue = signalToCommand->getCurrentValue();
+	if (signalToCommand != nullptr)
+	{
+		LogicValue signalValue = signalToCommand->getCurrentValue();
 
-        signalValue[this->bitNumber] = !signalValue[this->bitNumber];
+		signalValue[this->bitNumber] = !signalValue[this->bitNumber];
 
-        signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
-    }
+		signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
+	}
 }
 
 void InputBitSelector::mouseMoveEvent(QMouseEvent*)
 {
-    // Just because this class never sends event to parent
+	// Just because this class never sends event to parent
 }
 
 void InputBitSelector::mouseReleaseEvent(QMouseEvent*)
 {
-    // Just because this class never sends event to parent
+	// Just because this class never sends event to parent
 }
 
 void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 {
-    // Just because this class never sends event to parent
+	// Just because this class never sends event to parent
 }
 
 void InputBitSelector::signalValueChangedEventHandler()
 {
-    shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
+	shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
 
-    if (signalToCommand != nullptr)
-    {
-        this->bitValue->setText(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
-    }
+	if (signalToCommand != nullptr)
+	{
+		this->bitValue->setText(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+	}
 }

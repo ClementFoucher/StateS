@@ -34,41 +34,41 @@ class Fsm;
 
 class FsmXmlParser : public MachineXmlParser
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    enum class group_e { none, configuration_group, signals_group, states_group, transitions_group };
-    enum class subgroup_e { none,
-                            state, transition,
-                            actions_group, action,
-                            condition, logicVariable, logicEquation, operand
-                          };
+	enum class group_e { none, configuration_group, signals_group, states_group, transitions_group };
+	enum class subgroup_e { none,
+		                    state, transition,
+		                    actions_group, action,
+		                    condition, logicVariable, logicEquation, operand
+	                      };
 
 public:
-    explicit FsmXmlParser(const QString& xmlString);
-    explicit FsmXmlParser(shared_ptr<QFile> file);
+	explicit FsmXmlParser(const QString& xmlString);
+	explicit FsmXmlParser(shared_ptr<QFile> file);
 
-    void treatStartElement();
-    void treatEndElement();
-
-private:
-    explicit FsmXmlParser(QObject* parent = nullptr);
-
-    virtual void buildMachineFromXml() override;
-
-    void parseState();
-    void parseTransition();
-
-    shared_ptr<Fsm> getFsm() const;
+	void treatStartElement();
+	void treatEndElement();
 
 private:
-    QString fileName;
+	explicit FsmXmlParser(QObject* parent = nullptr);
 
-    // Remember position in file
-    group_e    currentGroup;
-    subgroup_e currentSubGroup;
+	virtual void buildMachineFromXml() override;
 
-    int currentLevel;
+	void parseState();
+	void parseTransition();
+
+	shared_ptr<Fsm> getFsm() const;
+
+private:
+	QString fileName;
+
+	// Remember position in file
+	group_e    currentGroup;
+	subgroup_e currentSubGroup;
+
+	int currentLevel;
 };
 
 #endif // FSMXMLPARSER_H

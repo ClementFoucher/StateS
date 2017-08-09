@@ -38,24 +38,24 @@ class MachineActuatorComponent;
 
 class GraphicActuator : public GraphicComponent
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GraphicActuator(QObject* parent = nullptr);
-    ~GraphicActuator();
+	explicit GraphicActuator(QObject* parent = nullptr);
+	~GraphicActuator();
 
-    QGraphicsItemGroup* getActionsBox() const;
+	QGraphicsItemGroup* getActionsBox() const;
 
 protected:
-    void setLogicActuator(shared_ptr<MachineActuatorComponent> actuator); // Throws StatesException TODO: check uses
-    shared_ptr<MachineActuatorComponent> getLogicActuator() const;
-    void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
+	void setLogicActuator(shared_ptr<MachineActuatorComponent> actuator); // Throws StatesException TODO: check uses
+	shared_ptr<MachineActuatorComponent> getLogicActuator() const;
+	void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
 
 private:
-    void initialize();
+	void initialize();
 
 private:
-    QGraphicsItemGroup* actionsBox = nullptr;
+	QGraphicsItemGroup* actionsBox = nullptr;
 
 };
 

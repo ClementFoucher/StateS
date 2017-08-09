@@ -36,92 +36,92 @@
 ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
     EditableEquation(parent)
 {
-    this->currentValue = initialValue;
-    this->setEdited(false);
+	this->currentValue = initialValue;
+	this->setEdited(false);
 }
 
 bool ConstantValueSetter::validEdit()
 {
-    if (this->valueEditor != nullptr)
-    {
-        try
-        {
-            this->currentValue = LogicValue::fromString(this->valueEditor->text()); // Throws StatesException
-            emit valueChanged(this->currentValue);
-            this->setEdited(false);
+	if (this->valueEditor != nullptr)
+	{
+		try
+		{
+			this->currentValue = LogicValue::fromString(this->valueEditor->text()); // Throws StatesException
+			emit valueChanged(this->currentValue);
+			this->setEdited(false);
 
-            return true;
-        }
-        catch (const StatesException& e)
-        {
-            if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
-            {
-                qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
-                return false;
-            }
-            else
-                throw;
-        }
-    }
-    else
-        return false;
+			return true;
+		}
+		catch (const StatesException& e)
+		{
+			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+			{
+				qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
+				return false;
+			}
+			else
+				throw;
+		}
+	}
+	else
+		return false;
 }
 
 bool ConstantValueSetter::cancelEdit()
 {
-    if (this->valueEditor != nullptr)
-        return true;
+	if (this->valueEditor != nullptr)
+		return true;
 
-    else return false;
+	else return false;
 }
 
 void ConstantValueSetter::setEdited(bool edited)
 {
-    delete this->valueEditor;
-    delete this->valueText;
-    delete this->layout();
+	delete this->valueEditor;
+	delete this->valueText;
+	delete this->layout();
 
-    this->valueEditor = nullptr;
-    this->valueText   = nullptr;
+	this->valueEditor = nullptr;
+	this->valueText   = nullptr;
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
-    if (edited)
-    {
-        QString value = QString::null;
+	if (edited)
+	{
+		QString value = QString::null;
 
-        if (!this->currentValue.isNull())
-            value = this->currentValue.toString();
+		if (!this->currentValue.isNull())
+			value = this->currentValue.toString();
 
-        this->valueEditor = new DynamicLineEdit(value, true);
+		this->valueEditor = new DynamicLineEdit(value, true);
 
-        connect(this->valueEditor, &DynamicLineEdit::newTextAvailableEvent, this, &ConstantValueSetter::newValueAvailable);
+		connect(this->valueEditor, &DynamicLineEdit::newTextAvailableEvent, this, &ConstantValueSetter::newValueAvailable);
 
-        layout->addWidget(this->valueEditor);
-        this->valueEditor->setFocus();
-    }
-    else
-    {
-        this->valueText = new QLabel(this->currentValue.toString());
+		layout->addWidget(this->valueEditor);
+		this->valueEditor->setFocus();
+	}
+	else
+	{
+		this->valueText = new QLabel(this->currentValue.toString());
 
-        layout->addWidget(this->valueText);
-    }
+		layout->addWidget(this->valueText);
+	}
 }
 
 void ConstantValueSetter::newValueAvailable(const QString& newValue)
 {
-    try
-    {
-        LogicValue value = LogicValue::fromString(newValue); // Throws StatesException
-        emit valueChanged(value);
-    }
-    catch (const StatesException& e)
-    {
-        if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
-        {
-            qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
-        }
-        else
-            throw;
-    }
+	try
+	{
+		LogicValue value = LogicValue::fromString(newValue); // Throws StatesException
+		emit valueChanged(value);
+	}
+	catch (const StatesException& e)
+	{
+		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+		{
+			qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
+		}
+		else
+			throw;
+	}
 }

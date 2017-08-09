@@ -55,68 +55,68 @@ class FsmTransition;
  */
 class FsmScene : public GenericScene
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    enum sceneMode_e
-    {
-        idle,
-        goingBackToIdle,
-        askedForMenu,
-        drawingTransition,
-        editingTransitionSource,
-        editingTransitionTarget,
-        simulating
-    };
+	enum sceneMode_e
+	{
+		idle,
+		goingBackToIdle,
+		askedForMenu,
+		drawingTransition,
+		editingTransitionSource,
+		editingTransitionTarget,
+		simulating
+	};
 
 public:
-    explicit FsmScene(shared_ptr<Fsm> machine);
-    ~FsmScene();
+	explicit FsmScene(shared_ptr<Fsm> machine);
+	~FsmScene();
 
-    virtual void setDisplaySize(const QSize& newSize) override;
+	virtual void setDisplaySize(const QSize& newSize) override;
 
-    void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos);
+	void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos);
 
 protected:
-    void mousePressEvent      (QGraphicsSceneMouseEvent*)       override;
-    void mouseMoveEvent       (QGraphicsSceneMouseEvent*)       override;
-    void mouseReleaseEvent    (QGraphicsSceneMouseEvent*)       override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)       override;
-    void contextMenuEvent     (QGraphicsSceneContextMenuEvent*) override;
-    void keyPressEvent        (QKeyEvent*)                      override;
+	void mousePressEvent      (QGraphicsSceneMouseEvent*)       override;
+	void mouseMoveEvent       (QGraphicsSceneMouseEvent*)       override;
+	void mouseReleaseEvent    (QGraphicsSceneMouseEvent*)       override;
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)       override;
+	void contextMenuEvent     (QGraphicsSceneContextMenuEvent*) override;
+	void keyPressEvent        (QKeyEvent*)                      override;
 
 private slots:
-    void simulationModeChanged(Machine::simulation_mode newMode);
+	void simulationModeChanged(Machine::simulation_mode newMode);
 
-    void handleSelection();
-    void stateCallsEditEventHandler(shared_ptr<FsmState> state);
-    void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
-    void treatMenu(QAction*);
-    void menuHiding();
-    void changedToolEventHandler(MachineBuilder::tool);
-    void changedSingleUseToolEventHandler(MachineBuilder::singleUseTool);
+	void handleSelection();
+	void stateCallsEditEventHandler(shared_ptr<FsmState> state);
+	void stateCallsRenameEventHandler(shared_ptr<FsmState> state);
+	void treatMenu(QAction*);
+	void menuHiding();
+	void changedToolEventHandler(MachineBuilder::tool);
+	void changedSingleUseToolEventHandler(MachineBuilder::singleUseTool);
 
-    void updateSceneRect();
+	void updateSceneRect();
 
-    void transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition);
-    void transitionCallsDynamicTargetEventHandler(FsmGraphicTransition* transition);
-    void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
-
-private:
-    FsmGraphicState* getStateAt(const QPointF& location) const;
-    FsmGraphicState* addState(FsmGraphicState* newState);
-    void addTransition(FsmGraphicTransition* newTransition);
-    void cancelDrawTransition();
+	void transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition);
+	void transitionCallsDynamicTargetEventHandler(FsmGraphicTransition* transition);
+	void transitionCallsEditEventHandler(shared_ptr<FsmTransition> transition);
 
 private:
-    weak_ptr<Fsm> machine;
+	FsmGraphicState* getStateAt(const QPointF& location) const;
+	FsmGraphicState* addState(FsmGraphicState* newState);
+	void addTransition(FsmGraphicTransition* newTransition);
+	void cancelDrawTransition();
 
-    sceneMode_e sceneMode;
-    FsmGraphicTransition* currentTransition = nullptr;
+private:
+	weak_ptr<Fsm> machine;
 
-    QPointF mousePos;
+	sceneMode_e sceneMode;
+	FsmGraphicTransition* currentTransition = nullptr;
 
-    QSize displaySize;
+	QPointF mousePos;
+
+	QSize displaySize;
 };
 
 #endif // FSMSCENE_H

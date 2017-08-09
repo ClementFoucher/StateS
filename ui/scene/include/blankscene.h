@@ -31,16 +31,16 @@ class QGraphicsTextItem;
 
 class BlankScene : public GenericScene
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit BlankScene(QObject* parent = nullptr);
+	explicit BlankScene(QObject* parent = nullptr);
 
-    virtual void setDisplaySize(const QSize&) override;
+	virtual void setDisplaySize(const QSize&) override;
 
 private:
-    QGraphicsTextItem* text = nullptr;
-    QFont defaultFont;
+	QGraphicsTextItem* text = nullptr;
+	QFont defaultFont;
 };
 
 #endif // BLANKSCENE_H

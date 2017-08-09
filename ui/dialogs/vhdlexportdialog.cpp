@@ -33,91 +33,91 @@
 VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent) :
     QDialog(parent)
 {
-    this->baseFileName = baseFileName;
-    this->searchPath   = searchPath;
+	this->baseFileName = baseFileName;
+	this->searchPath   = searchPath;
 
-    this->setWindowTitle(tr("VHDL export"));
+	this->setWindowTitle(tr("VHDL export"));
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
-    if (isIncompatible)
-    {
-        QLabel* warning = new QLabel("<font color=red>"
-                                     + tr("Warning! Experimental feature.") + "<br />"
-                                     + tr("Output generation has strong restrictions:") + "<br />"
-                                     + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
-                                     + tr("Please run machine verifier to identify affected signals.") + "</font>");
-        warning->setAlignment(Qt::AlignCenter);
-        layout->addWidget(warning);
-    }
+	if (isIncompatible)
+	{
+		QLabel* warning = new QLabel("<font color=red>"
+		                             + tr("Warning! Experimental feature.") + "<br />"
+		                             + tr("Output generation has strong restrictions:") + "<br />"
+		                             + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
+		                             + tr("Please run machine verifier to identify affected signals.") + "</font>");
+		warning->setAlignment(Qt::AlignCenter);
+		layout->addWidget(warning);
+	}
 
-    QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+	QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
+	title->setAlignment(Qt::AlignCenter);
+	layout->addWidget(title);
 
-    QFormLayout* formLayout = new QFormLayout();
-    layout->addLayout(formLayout);
+	QFormLayout* formLayout = new QFormLayout();
+	layout->addLayout(formLayout);
 
-    this->resetLogicSelectionBox = new QComboBox();
-    this->resetLogicSelectionBox->addItem(tr("Positive"));
-    this->resetLogicSelectionBox->addItem(tr("Negative"));
-    formLayout->addRow(tr("Reset logic:"), this->resetLogicSelectionBox);
+	this->resetLogicSelectionBox = new QComboBox();
+	this->resetLogicSelectionBox->addItem(tr("Positive"));
+	this->resetLogicSelectionBox->addItem(tr("Negative"));
+	formLayout->addRow(tr("Reset logic:"), this->resetLogicSelectionBox);
 
-    this->addPrefixSelectionBox = new QComboBox();
-    this->addPrefixSelectionBox->addItem(tr("No"));
-    this->addPrefixSelectionBox->addItem(tr("Yes"));
-    formLayout->addRow(tr("Prefix inputs and outputs with 'I_' and 'O_' respectively:"), this->addPrefixSelectionBox);
+	this->addPrefixSelectionBox = new QComboBox();
+	this->addPrefixSelectionBox->addItem(tr("No"));
+	this->addPrefixSelectionBox->addItem(tr("Yes"));
+	formLayout->addRow(tr("Prefix inputs and outputs with 'I_' and 'O_' respectively:"), this->addPrefixSelectionBox);
 
-    QHBoxLayout* buttonsLayout = new QHBoxLayout();
-    layout->addLayout(buttonsLayout);
+	QHBoxLayout* buttonsLayout = new QHBoxLayout();
+	layout->addLayout(buttonsLayout);
 
-    QPushButton* buttonOK = new QPushButton(tr("OK"));
-    connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
-    buttonsLayout->addWidget(buttonOK);
+	QPushButton* buttonOK = new QPushButton(tr("OK"));
+	connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
+	buttonsLayout->addWidget(buttonOK);
 
-    QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
-    connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
-    buttonsLayout->addWidget(buttonCancel);
+	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
+	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
+	buttonsLayout->addWidget(buttonCancel);
 }
 
 bool VhdlExportDialog::isResetPositive()
 {
-    if (this->resetLogicSelectionBox->currentIndex() == 0)
-        return true;
-    else
-        return false;
+	if (this->resetLogicSelectionBox->currentIndex() == 0)
+		return true;
+	else
+		return false;
 }
 
 bool VhdlExportDialog::prefixIOs()
 {
-    if (this->addPrefixSelectionBox->currentIndex() == 0)
-        return false;
-    else
-        return true;
+	if (this->addPrefixSelectionBox->currentIndex() == 0)
+		return false;
+	else
+		return true;
 }
 
 QString VhdlExportDialog::getFilePath()
 {
-    return this->filePath;
+	return this->filePath;
 }
 
 void VhdlExportDialog::accept()
 {
-    QString defaultFilePath;
+	QString defaultFilePath;
 
-    if (! this->searchPath.isEmpty())
-    {
-        defaultFilePath += this->searchPath;
-        defaultFilePath += "/"; // TODO: check if environment dependant!
-    }
+	if (! this->searchPath.isEmpty())
+	{
+		defaultFilePath += this->searchPath;
+		defaultFilePath += "/"; // TODO: check if environment dependant!
+	}
 
-    defaultFilePath += this->baseFileName;
+	defaultFilePath += this->baseFileName;
 
-    this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), defaultFilePath + ".vhdl", "*.vhdl");
+	this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), defaultFilePath + ".vhdl", "*.vhdl");
 
-    if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
-        this->filePath += ".vhdl";
+	if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
+		this->filePath += ".vhdl";
 
-    if (! this->filePath.isEmpty())
-        QDialog::accept();
+	if (! this->filePath.isEmpty())
+		QDialog::accept();
 }

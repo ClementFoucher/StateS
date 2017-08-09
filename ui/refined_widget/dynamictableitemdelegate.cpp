@@ -36,26 +36,26 @@ DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
 
 QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /* option */, const QModelIndex& index ) const
 {
-    this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator.get(), parent);
+	this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator.get(), parent);
 
-    return this->latestEditor;
+	return this->latestEditor;
 }
 
 void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-    // Update current editor text when requested: this function prevents losing focus on selection
-    QString content = index.model()->data(index, Qt::EditRole).toString();
+	// Update current editor text when requested: this function prevents losing focus on selection
+	QString content = index.model()->data(index, Qt::EditRole).toString();
 
-    DynamicLineEdit* lineEdit = static_cast<DynamicLineEdit*>(editor);
-    lineEdit->setText(content);
+	DynamicLineEdit* lineEdit = static_cast<DynamicLineEdit*>(editor);
+	lineEdit->setText(content);
 }
 
 void DynamicTableItemDelegate::setValidator(shared_ptr<QValidator> validator)
 {
-    this->validator = validator;
+	this->validator = validator;
 }
 
 DynamicLineEdit* DynamicTableItemDelegate::getCurentEditor() const
 {
-    return this->latestEditor;
+	return this->latestEditor;
 }

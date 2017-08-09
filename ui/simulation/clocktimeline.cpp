@@ -33,14 +33,14 @@
 ClockTimeLine::ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
-    QLabel* title = new QLabel(tr("Clock"));
+	QLabel* title = new QLabel(tr("Clock"));
 
-    GraphicClockTimeLine* timeLineDisplay = new GraphicClockTimeLine(clock);
-    timeLineDisplay->setMinimumHeight(20);
-    timeLineDisplay->setMaximumHeight(20);
+	GraphicClockTimeLine* timeLineDisplay = new GraphicClockTimeLine(clock);
+	timeLineDisplay->setMinimumHeight(20);
+	timeLineDisplay->setMaximumHeight(20);
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
+	QHBoxLayout* layout = new QHBoxLayout(this);
 
-    layout->addWidget(title);
-    layout->addWidget(timeLineDisplay);
+	layout->addWidget(title);
+	layout->addWidget(timeLineDisplay);
 }

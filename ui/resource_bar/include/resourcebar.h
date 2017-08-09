@@ -52,37 +52,37 @@ class MachineComponent;
  */
 class ResourceBar : public QTabWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ResourceBar(QWidget* parent = nullptr);
+	explicit ResourceBar(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine, bool maintainView = false);
+	void setMachine(shared_ptr<Machine> newMachine, bool maintainView = false);
 
-    void setSelectedItem(shared_ptr<MachineComponent> item);
-    void editSelectedItem();
-    void renameSelectedItem();
+	void setSelectedItem(shared_ptr<MachineComponent> item);
+	void editSelectedItem();
+	void renameSelectedItem();
 
-    shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
+	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 private slots:
-    void clearSelection();
-    void machineModeChangedEventHandler(Machine::simulation_mode newMode);
-    void tabChanged(int);
+	void clearSelection();
+	void machineModeChangedEventHandler(Machine::simulation_mode newMode);
+	void tabChanged(int);
 
 private:
-    void beginSimulation();
-    void terminateSimulation();
+	void beginSimulation();
+	void terminateSimulation();
 
 private:
-    weak_ptr<Machine> machine;
-    shared_ptr<MachineComponentVisualizer> machineComponentScene;
+	weak_ptr<Machine> machine;
+	shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-    MachineBuilderTab  * machineBuildTab = nullptr;
-    SignalEditorTab    * signalsTab      = nullptr;
-    ComponentEditorTab * editorTab       = nullptr;
-    SimulatorTab       * simulatorTab    = nullptr;
-    VerifierTab        * verifierTab     = nullptr;
+	MachineBuilderTab  * machineBuildTab = nullptr;
+	SignalEditorTab    * signalsTab      = nullptr;
+	ComponentEditorTab * editorTab       = nullptr;
+	SimulatorTab       * simulatorTab    = nullptr;
+	VerifierTab        * verifierTab     = nullptr;
 };
 
 #endif // RESOURCEBAR_H

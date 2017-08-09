@@ -38,5 +38,5 @@ FsmComponent::FsmComponent(shared_ptr<Fsm> owningFsm) :
 
 shared_ptr<Fsm> FsmComponent::getOwningFsm() const
 {
-    return dynamic_pointer_cast<Fsm>(this->getOwningMachine());
+	return dynamic_pointer_cast<Fsm>(this->getOwningMachine());
 }

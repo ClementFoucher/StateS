@@ -25,7 +25,7 @@
 MachineConfiguration::MachineConfiguration(QObject* parent) :
     QObject(parent)
 {
-    this->zoomLevel = 1;
-    this->sceneTranslation = QPointF();
-    this->viewCenter       = QPointF(0, 0);
+	this->zoomLevel = 1;
+	this->sceneTranslation = QPointF();
+	this->viewCenter       = QPointF(0, 0);
 }

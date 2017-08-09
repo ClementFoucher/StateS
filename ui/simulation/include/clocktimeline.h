@@ -35,10 +35,10 @@ class Clock;
 
 class ClockTimeLine : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 };
 
 #endif // CLOCKTIMELINE_H

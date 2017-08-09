@@ -39,17 +39,17 @@ GraphicComponent::GraphicComponent(QObject* parent) :
 
 void GraphicComponent::setLogicComponent(shared_ptr<MachineComponent> logicComponent) // Throws StatesException
 {
-    if (this->logicComponent.expired())
-    {
-        this->logicComponent = logicComponent;
-    }
-    else
-    {
-        throw StatesException("GraphicComponent", reaffect_component, "Trying to reaffect base component: this is illegal as a graphic ocmponent should be built for a single logic component.");
-    }
+	if (this->logicComponent.expired())
+	{
+		this->logicComponent = logicComponent;
+	}
+	else
+	{
+		throw StatesException("GraphicComponent", reaffect_component, "Trying to reaffect base component: this is illegal as a graphic ocmponent should be built for a single logic component.");
+	}
 }
 
 shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() const
 {
-    return this->logicComponent.lock();
+	return this->logicComponent.lock();
 }

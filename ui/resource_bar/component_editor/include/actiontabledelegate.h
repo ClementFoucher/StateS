@@ -38,15 +38,15 @@ class MachineActuatorComponent;
  */
 class ActionTableDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget* parent = nullptr);
+	explicit ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget* parent = nullptr);
 
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
 
 private:
-    weak_ptr<MachineActuatorComponent> actuator;
+	weak_ptr<MachineActuatorComponent> actuator;
 
 };
 

@@ -41,44 +41,44 @@ class MachineActuatorComponent;
 
 class MachineXmlWriter : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public: // Static
 
-    enum MachineaveFileManagerErrorEnum
-    {
-        unable_to_replace = 0,
-        unkown_directory  = 1,
-        unable_to_open    = 2
-    };
+	enum MachineaveFileManagerErrorEnum
+	{
+		unable_to_replace = 0,
+		unkown_directory  = 1,
+		unable_to_open    = 2
+	};
 
 public:
-    static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<Machine> machine);
+	static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<Machine> machine);
 
-    virtual void writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
-    virtual QString getMachineXml() = 0;
-
-protected:
-    explicit MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent = nullptr);
-
-    void createSaveFile(const QString& filePath); // Throws StatesException
-    void createSaveString();
-    void finalizeSaveFile();
-
-    void writeMachineCommonElements();
-    void writeMachineConfiguration();
-    void writeMachineSignals();
-    void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
-    void writeLogicEquation(shared_ptr<Signal> equation);
+	virtual void writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
+	virtual QString getMachineXml() = 0;
 
 protected:
-    shared_ptr<QXmlStreamWriter> stream;
-    QString xmlString;
-    shared_ptr<MachineConfiguration> configuration;
-    shared_ptr<Machine> machine;
+	explicit MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent = nullptr);
+
+	void createSaveFile(const QString& filePath); // Throws StatesException
+	void createSaveString();
+	void finalizeSaveFile();
+
+	void writeMachineCommonElements();
+	void writeMachineConfiguration();
+	void writeMachineSignals();
+	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
+	void writeLogicEquation(shared_ptr<Signal> equation);
+
+protected:
+	shared_ptr<QXmlStreamWriter> stream;
+	QString xmlString;
+	shared_ptr<MachineConfiguration> configuration;
+	shared_ptr<Machine> machine;
 
 private:
-    shared_ptr<QFile> file;
+	shared_ptr<QFile> file;
 };
 
 #endif // MACHINEXMLWRITER_H

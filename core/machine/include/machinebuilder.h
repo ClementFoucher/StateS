@@ -28,35 +28,35 @@
 
 class MachineBuilder : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    enum class tool {none,
-                     // Loosing tool is handle at mouse press, change mode is handled at mouse release.
-                     // Between these, we use a temporary tool (equivalent to none).
-                     quittingTool,
-                     state, transition, initial_state
-                    };
+	enum class tool {none,
+		             // Loosing tool is handle at mouse press, change mode is handled at mouse release.
+		             // Between these, we use a temporary tool (equivalent to none).
+		             quittingTool,
+		             state, transition, initial_state
+	                };
 
-    enum class singleUseTool { none,
-                               drawTransitionFromScene,
-                               beginDrawTransitionFromTool,
-                               editTransitionSource,
-                               editTransitionTarget
-                             };
+	enum class singleUseTool { none,
+		                       drawTransitionFromScene,
+		                       beginDrawTransitionFromTool,
+		                       editTransitionSource,
+		                       editTransitionTarget
+	                         };
 public:
-    explicit MachineBuilder(QObject* parent = nullptr);
+	explicit MachineBuilder(QObject* parent = nullptr);
 
-    tool getTool() const;
-    void setTool(tool newTool);
-    void setSingleUseTool(singleUseTool t);
+	tool getTool() const;
+	void setTool(tool newTool);
+	void setSingleUseTool(singleUseTool t);
 
 signals:
-    void changedToolEvent(tool t);
-    void singleUseToolSelected(singleUseTool t);
+	void changedToolEvent(tool t);
+	void singleUseToolSelected(singleUseTool t);
 
 private:
-    tool currentTool = tool::none;
+	tool currentTool = tool::none;
 
 };
 

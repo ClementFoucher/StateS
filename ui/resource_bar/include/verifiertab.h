@@ -46,28 +46,28 @@ class CollapsibleWidgetWithTitle;
 
 class VerifierTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit VerifierTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit VerifierTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
 private slots:
-    void checkNow();
-    void clearDisplay();
-    void setCheckVhdl(bool doCheck);
+	void checkNow();
+	void clearDisplay();
+	void setCheckVhdl(bool doCheck);
 
-    void proofRequested(QListWidgetItem* item);
+	void proofRequested(QListWidgetItem* item);
 
 private:
-    unique_ptr<FsmVerifier> verifier;
+	unique_ptr<FsmVerifier> verifier;
 
-    bool checkVhdl = false;
+	bool checkVhdl = false;
 
-    QLabel                     * listTitle         = nullptr;
-    QListWidget                * list              = nullptr;
-    QPushButton                * buttonClear       = nullptr;
-    TruthTableDisplay          * truthTableDisplay = nullptr;
-    CollapsibleWidgetWithTitle * hintBox           = nullptr;
+	QLabel                     * listTitle         = nullptr;
+	QListWidget                * list              = nullptr;
+	QPushButton                * buttonClear       = nullptr;
+	TruthTableDisplay          * truthTableDisplay = nullptr;
+	CollapsibleWidgetWithTitle * hintBox           = nullptr;
 };
 
 #endif // VERIFIERTAB_H

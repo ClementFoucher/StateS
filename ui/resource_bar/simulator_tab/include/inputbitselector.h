@@ -38,28 +38,28 @@ class Signal;
 
 class InputBitSelector : public QFrame
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent = nullptr);
+	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent = nullptr);
 
 protected slots:
-    void enterEvent(QEvent* event) override;
-    void leaveEvent(QEvent* event) override;
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
-    void mouseReleaseEvent(QMouseEvent*) override;
-    void mouseDoubleClickEvent(QMouseEvent*) override;
+	void enterEvent(QEvent* event) override;
+	void leaveEvent(QEvent* event) override;
+	void mousePressEvent(QMouseEvent*) override;
+	void mouseMoveEvent(QMouseEvent*) override;
+	void mouseReleaseEvent(QMouseEvent*) override;
+	void mouseDoubleClickEvent(QMouseEvent*) override;
 
 private slots:
-    void signalValueChangedEventHandler();
+	void signalValueChangedEventHandler();
 
 private:
-    weak_ptr<Signal> signalToCommand;
-    uint bitNumber = 0;
+	weak_ptr<Signal> signalToCommand;
+	uint bitNumber = 0;
 
-    // QWidget with parent
-    QLabel* bitValue = nullptr;
+	// QWidget with parent
+	QLabel* bitValue = nullptr;
 };
 
 #endif // INPUTBITSELECTOR_H

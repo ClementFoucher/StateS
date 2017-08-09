@@ -40,25 +40,25 @@ class ReactiveButton;
 
 class LangSelectionDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent = nullptr);
+	explicit LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent = nullptr);
 
-    shared_ptr<QTranslator> getTranslator();
+	shared_ptr<QTranslator> getTranslator();
 
 private slots:
-    void setEnglish();
-    void setFrench();
+	void setEnglish();
+	void setFrench();
 
 private:
-    void retranslateUi();
+	void retranslateUi();
 
-    shared_ptr<QTranslator>  translator;
-    shared_ptr<QApplication> application;
+	shared_ptr<QTranslator>  translator;
+	shared_ptr<QApplication> application;
 
-    // Use pointer because this is a QWidget with a parent
-    QLabel* title = nullptr;
+	// Use pointer because this is a QWidget with a parent
+	QLabel* title = nullptr;
 };
 
 #endif // LANGSELECTIONDIALOG_H

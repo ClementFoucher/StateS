@@ -31,16 +31,16 @@ class GraphicEquation;
 
 class EquationMimeData : public QMimeData
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit EquationMimeData(GraphicEquation* equation);
+	explicit EquationMimeData(GraphicEquation* equation);
 
-    GraphicEquation* getEquation() const;
+	GraphicEquation* getEquation() const;
 
 private:
-    // Use pointer because this is a QWidget with a parent
-    GraphicEquation* equation = nullptr;
+	// Use pointer because this is a QWidget with a parent
+	GraphicEquation* equation = nullptr;
 };
 
 #endif // EQUATIONMIMEDATA_H

@@ -35,17 +35,17 @@ class MachineComponent;
 
 class GenericScene : public QGraphicsScene
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GenericScene(QObject* parent = nullptr);
+	explicit GenericScene(QObject* parent = nullptr);
 
-    virtual void setDisplaySize(const QSize& newSize) = 0;
+	virtual void setDisplaySize(const QSize& newSize) = 0;
 
 signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+	void itemSelectedEvent(shared_ptr<MachineComponent> component);
+	void editSelectedItemEvent();
+	void renameSelectedItemEvent();
 };
 
 #endif // GENERICSCENE_H

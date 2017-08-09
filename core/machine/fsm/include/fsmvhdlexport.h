@@ -41,93 +41,93 @@ class ActionOnSignal;
 class FsmVhdlExport
 {
 public:
-    class ExportCompatibility
-    {
-    public:
-        QList<shared_ptr<Signal>> bothMooreAndMealy;
-        QList<shared_ptr<Signal>> bothTempAndKeepValue;
-        QList<shared_ptr<Signal>> rangeAdressed;
-        QList<shared_ptr<Signal>> mealyWithKeep;
+	class ExportCompatibility
+	{
+	public:
+		QList<shared_ptr<Signal>> bothMooreAndMealy;
+		QList<shared_ptr<Signal>> bothTempAndKeepValue;
+		QList<shared_ptr<Signal>> rangeAdressed;
+		QList<shared_ptr<Signal>> mealyWithKeep;
 
-        bool isCompatible()
-        {
-            if (bothMooreAndMealy.isEmpty()    &&
-                bothTempAndKeepValue.isEmpty() &&
-                rangeAdressed.isEmpty()        &&
-                mealyWithKeep.isEmpty()
-               )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    };
+		bool isCompatible()
+		{
+			if (bothMooreAndMealy.isEmpty()    &&
+			    bothTempAndKeepValue.isEmpty() &&
+			    rangeAdressed.isEmpty()        &&
+			    mealyWithKeep.isEmpty()
+			   )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
 
 private:
-    struct WrittableSignalCharacteristics
-    {
-        bool isMoore         = false;
-        bool isMealy         = false;
-        bool isTempValue     = false;
-        bool isKeepValue     = false;
-        bool isRangeAdressed = false;
-    };
+	struct WrittableSignalCharacteristics
+	{
+		bool isMoore         = false;
+		bool isMealy         = false;
+		bool isTempValue     = false;
+		bool isKeepValue     = false;
+		bool isRangeAdressed = false;
+	};
 
 public:
-    FsmVhdlExport(shared_ptr<Fsm> machine);
-    void setOptions(bool resetLogicPositive, bool prefixSignals);
+	FsmVhdlExport(shared_ptr<Fsm> machine);
+	void setOptions(bool resetLogicPositive, bool prefixSignals);
 
-    bool writeToFile(const QString& path);
-    shared_ptr<ExportCompatibility> checkCompatibility();
+	bool writeToFile(const QString& path);
+	shared_ptr<ExportCompatibility> checkCompatibility();
 
-
-private:
-    void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-    WrittableSignalCharacteristics determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
-    QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
-    QString cleanNameForVhdl(const QString& name) const;
-
-    void writeHeader(QTextStream& stream) const;
-    void writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-    void writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-    void writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-    void writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-
-    void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-    void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const;
-
-    QString generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const;
 
 private:
-    weak_ptr<Fsm> machine;
-    bool resetLogicPositive;
-    bool prefixSignals;
+	void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
+	WrittableSignalCharacteristics determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
+	QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
+	QString cleanNameForVhdl(const QString& name) const;
 
-    QMap<shared_ptr<Signal>, QString> signalVhdlName;
-    QMap<shared_ptr<FsmState>, QString> stateVhdlName;
-    QString machineVhdlName;
+	void writeHeader(QTextStream& stream) const;
+	void writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
 
-    // The following is used to determine how a writtable signal should be affected value.
+	void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const;
 
-    // For now, we only handle these cases:
-    // - A signal is either Mealy or Moore, not both.
-    // - A signal either keeps its value or has an active-on-state/pulse value, not both.
+	QString generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const;
 
-    QList<shared_ptr<Signal>> mooreSignals;
-    QList<shared_ptr<Signal>> mealySignals; // TODO: Mealy signals are currently ignored.
+private:
+	weak_ptr<Fsm> machine;
+	bool resetLogicPositive;
+	bool prefixSignals;
 
-    QList<shared_ptr<Signal>> tempValueSignals;
-    QList<shared_ptr<Signal>> keepValueSignals;
+	QMap<shared_ptr<Signal>, QString> signalVhdlName;
+	QMap<shared_ptr<FsmState>, QString> stateVhdlName;
+	QString machineVhdlName;
 
-    // At first, the signals with range adressing should be treated
-    // as independant bits, each bit acting like a whole signal.
-    // Then maybe determine independant ranges, not alway go @ bit level.
+	// The following is used to determine how a writtable signal should be affected value.
 
-    // TODO: Range adresssed signals are currently ignored.
-    //QList<shared_ptr<Signal>> rangeAdressedSignals;
+	// For now, we only handle these cases:
+	// - A signal is either Mealy or Moore, not both.
+	// - A signal either keeps its value or has an active-on-state/pulse value, not both.
+
+	QList<shared_ptr<Signal>> mooreSignals;
+	QList<shared_ptr<Signal>> mealySignals; // TODO: Mealy signals are currently ignored.
+
+	QList<shared_ptr<Signal>> tempValueSignals;
+	QList<shared_ptr<Signal>> keepValueSignals;
+
+	// At first, the signals with range adressing should be treated
+	// as independant bits, each bit acting like a whole signal.
+	// Then maybe determine independant ranges, not alway go @ bit level.
+
+	// TODO: Range adresssed signals are currently ignored.
+	//QList<shared_ptr<Signal>> rangeAdressedSignals;
 };
 
 #endif // FSMVHDLEXPORT_H

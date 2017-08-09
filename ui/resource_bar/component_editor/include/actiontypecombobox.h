@@ -42,16 +42,16 @@ class ActionOnSignal;
  */
 class ActionTypeComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
+	explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
 
 private slots:
-    void treatIndexChanged(int index);
+	void treatIndexChanged(int index);
 
 private:
-    weak_ptr<ActionOnSignal> action;
+	weak_ptr<ActionOnSignal> action;
 };
 
 #endif // ACTIONTYPECOMBOBOX_H

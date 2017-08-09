@@ -34,17 +34,17 @@ class StatesException : exception
 {
 
 private:
-    QString sourceClass;
-    uint    errorEnumValue;
-    string  errorText;
+	QString sourceClass;
+	uint    errorEnumValue;
+	string  errorText;
 
 public:
-    explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
+	explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
 
-    QString getSourceClass() const;
-    uint    getEnumValue() const;
+	QString getSourceClass() const;
+	uint    getEnumValue() const;
 
-    virtual const char* what() const noexcept override;
+	virtual const char* what() const noexcept override;
 };
 
 #endif // STATESEXCEPTION_H

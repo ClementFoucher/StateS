@@ -33,32 +33,32 @@ Clock::Clock() :
 
 void Clock::start(uint intervalms)
 {
-    if (this->timer == nullptr)
-    {
-        this->timer = shared_ptr<QTimer>(new QTimer());
-        connect(this->timer.get(), &QTimer::timeout, this, &Clock::nextStep);
-    }
+	if (this->timer == nullptr)
+	{
+		this->timer = shared_ptr<QTimer>(new QTimer());
+		connect(this->timer.get(), &QTimer::timeout, this, &Clock::nextStep);
+	}
 
-    this->timer->setInterval(intervalms);
-    this->timer->start();
+	this->timer->setInterval(intervalms);
+	this->timer->start();
 }
 
 void Clock::stop()
 {
-    if (this->timer != nullptr)
-    {
-        this->timer->stop();
-    }
+	if (this->timer != nullptr)
+	{
+		this->timer->stop();
+	}
 }
 
 void Clock::nextStep()
 {
-    emit prepareForClockEvent();
-    emit clockEvent();
+	emit prepareForClockEvent();
+	emit clockEvent();
 }
 
 void Clock::reset()
 {
-    emit resetLogicEvent();
-    emit resetGraphicEvent();
+	emit resetLogicEvent();
+	emit resetGraphicEvent();
 }

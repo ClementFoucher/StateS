@@ -26,5 +26,5 @@
 MachineToolsPanel::MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
     QWidget(parent)
 {
-    this->machineBuilder = machineBuilder;
+	this->machineBuilder = machineBuilder;
 }

@@ -34,29 +34,29 @@ class DynamicLineEdit;
 
 class LineEditWithUpDownButtons : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent = nullptr);
+	explicit LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent = nullptr);
 
-    void updateContent(int min, int max, const QString& text);
-    void edit();
+	void updateContent(int min, int max, const QString& text);
+	void edit();
 
 signals:
-    void valueChanged(int newValue);
+	void valueChanged(int newValue);
 
 protected:
-    void wheelEvent(QWheelEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
 
 private slots:
-    void up();
-    void down();
+	void up();
+	void down();
 
-    void textUpdatedByUsedEventHandler(const QString& newText);
+	void textUpdatedByUsedEventHandler(const QString& newText);
 
 private:
-    DynamicLineEdit* lineEdit  = nullptr;
-    QIntValidator*   validator = nullptr;
+	DynamicLineEdit* lineEdit  = nullptr;
+	QIntValidator*   validator = nullptr;
 
 };
 

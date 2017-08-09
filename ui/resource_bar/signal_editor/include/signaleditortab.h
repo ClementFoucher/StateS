@@ -37,24 +37,24 @@ class CollapsibleWidgetWithTitle;
 
 class SignalEditorTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
-    void setHintCollapsed(bool collapse);
-    void setVisuCollapsed(bool collapse);
-    bool getHintCollapsed();
-    bool getVisuCollapsed();
+	void setHintCollapsed(bool collapse);
+	void setVisuCollapsed(bool collapse);
+	bool getHintCollapsed();
+	bool getVisuCollapsed();
 
 protected:
-    void showEvent(QShowEvent* e) override;
+	void showEvent(QShowEvent* e) override;
 
 private:
-    weak_ptr<MachineComponentVisualizer> machineComponentView;
+	weak_ptr<MachineComponentVisualizer> machineComponentView;
 
-    CollapsibleWidgetWithTitle* hintDisplay;
-    CollapsibleWidgetWithTitle* machineDisplay;
+	CollapsibleWidgetWithTitle* hintDisplay;
+	CollapsibleWidgetWithTitle* machineDisplay;
 };
 
 #endif // SIGNALSEDITORTAB_H

@@ -35,31 +35,31 @@ class QValidator;
 
 class DynamicLineEdit : public QLineEdit
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator = nullptr, QWidget* parent = nullptr);
+	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator = nullptr, QWidget* parent = nullptr);
 
-    void markAsErroneous();
-    void resetView();
+	void markAsErroneous();
+	void resetView();
 
 signals:
-    void newTextAvailableEvent(const QString& text);
-    void userCancelEvent();
-    void upKeyPressed();
-    void downKeyPressed();
+	void newTextAvailableEvent(const QString& text);
+	void userCancelEvent();
+	void upKeyPressed();
+	void downKeyPressed();
 
 protected:
-    void focusInEvent   (QFocusEvent* event) override;
-    void keyPressEvent  (QKeyEvent*   event) override;
-    void keyReleaseEvent(QKeyEvent*   event) override;
+	void focusInEvent   (QFocusEvent* event) override;
+	void keyPressEvent  (QKeyEvent*   event) override;
+	void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
-    void userValidatedEventHandler();
+	void userValidatedEventHandler();
 
 private:
-    bool erroneous = false;
-    bool selfManaged = false;
+	bool erroneous = false;
+	bool selfManaged = false;
 };
 
 #endif // DYNAMICLINEEDIT_H

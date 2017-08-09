@@ -40,32 +40,32 @@ class Machine;
 
 class MachineComponentVisualizer : public StatesGraphicsView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
-    shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
+	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 protected:
-    void mousePressEvent(QMouseEvent* me) override;
-    void mouseMoveEvent(QMouseEvent* me) override;
-    void mouseReleaseEvent(QMouseEvent* me) override;
-    void mouseDoubleClickEvent(QMouseEvent* me) override;
-    void wheelEvent(QWheelEvent* event) override;
+	void mousePressEvent(QMouseEvent* me) override;
+	void mouseMoveEvent(QMouseEvent* me) override;
+	void mouseReleaseEvent(QMouseEvent* me) override;
+	void mouseDoubleClickEvent(QMouseEvent* me) override;
+	void wheelEvent(QWheelEvent* event) override;
 
 private slots:
-    void updateMachineVisualization();
+	void updateMachineVisualization();
 
 private:
-    weak_ptr<Machine> machine;
+	weak_ptr<Machine> machine;
 
-    shared_ptr<QGraphicsScene> scene;
+	shared_ptr<QGraphicsScene> scene;
 
-    // Qwidget with parent
-    QGraphicsView* view = nullptr;
+	// Qwidget with parent
+	QGraphicsView* view = nullptr;
 
-    bool isMoving = false;
+	bool isMoving = false;
 };
 
 #endif // MACHINECOMPONENTVISUALIZER_H

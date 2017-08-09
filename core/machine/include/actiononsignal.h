@@ -58,57 +58,57 @@ class Signal;
  */
 class ActionOnSignal : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    enum ActionOnSignalErrorEnum
-    {
-        illegal_type              = 0,
-        illegal_value             = 1,
-        illegal_range             = 2,
-        action_value_is_read_only = 3
-    };
+	enum ActionOnSignalErrorEnum
+	{
+		illegal_type              = 0,
+		illegal_value             = 1,
+		illegal_range             = 2,
+		action_value_is_read_only = 3
+	};
 
 public:
-    enum class action_types { activeOnState, pulse, set, reset, assign };
+	enum class action_types { activeOnState, pulse, set, reset, assign };
 
 public:
-    explicit ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue = LogicValue::getNullValue(),
-                            int rangeL = -1, int rangeR = -1, QObject* parent = nullptr);
+	explicit ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue = LogicValue::getNullValue(),
+	                        int rangeL = -1, int rangeR = -1, QObject* parent = nullptr);
 
-    void setActionType (action_types newType); // Throws StatesException
-    void setActionValue(LogicValue newValue);  // Throws StatesException
-    void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
+	void setActionType (action_types newType); // Throws StatesException
+	void setActionValue(LogicValue newValue);  // Throws StatesException
+	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
 
-    shared_ptr<Signal> getSignalActedOn()      const;
-    action_types       getActionType()         const;
-    LogicValue         getActionValue()        const;
-    int                getActionRangeL()       const;
-    int                getActionRangeR()       const;
-    uint               getActionSize()         const;
-    bool               isActionValueEditable() const;
+	shared_ptr<Signal> getSignalActedOn()      const;
+	action_types       getActionType()         const;
+	LogicValue         getActionValue()        const;
+	int                getActionRangeL()       const;
+	int                getActionRangeR()       const;
+	uint               getActionSize()         const;
+	bool               isActionValueEditable() const;
 
-    void beginAction();
-    void endAction();
+	void beginAction();
+	void endAction();
 
 signals:
-    void actionChangedEvent();
+	void actionChangedEvent();
 
 private slots:
-    void signalResizedEventHandler();
+	void signalResizedEventHandler();
 
 private:
-    bool checkIfRangeFitsSignal(int rangeL, int rangeR) const;
+	bool checkIfRangeFitsSignal(int rangeL, int rangeR) const;
 
 private:
-    weak_ptr<Signal> signal;
+	weak_ptr<Signal> signal;
 
-    action_types actionType;
-    LogicValue   actionValue;
-    int          rangeL;
-    int          rangeR;
+	action_types actionType;
+	LogicValue   actionValue;
+	int          rangeL;
+	int          rangeR;
 
-    bool isActionActing = false;
+	bool isActionActing = false;
 
 };
 

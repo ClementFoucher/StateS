@@ -29,69 +29,69 @@
 
 StateSXmlAnalyzer::StateSXmlAnalyzer()
 {
-    this->type         = machineType::None;
-    this->version      = "Unknown version";
-    this->xmlIsCorrect = true;
+	this->type         = machineType::None;
+	this->version      = "Unknown version";
+	this->xmlIsCorrect = true;
 }
 
 StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file) :
     StateSXmlAnalyzer()
 {
-    if (file->isOpen() == false)
-    {
-        file->open(QIODevice::ReadOnly);
-    }
-    else
-    {
-        file->reset();
-    }
+	if (file->isOpen() == false)
+	{
+		file->open(QIODevice::ReadOnly);
+	}
+	else
+	{
+		file->reset();
+	}
 
-    this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
-    this->parse();
+	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
+	this->parse();
 }
 
 StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource) :
     StateSXmlAnalyzer()
 {
-    this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlSource));
-    this->parse();
+	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlSource));
+	this->parse();
 }
 
 StateSXmlAnalyzer::machineType StateSXmlAnalyzer::getMachineType()
 {
-    return this->type;
+	return this->type;
 }
 
 QString StateSXmlAnalyzer::getStateSVersion()
 {
-    return this->version;
+	return this->version;
 }
 
 bool StateSXmlAnalyzer::getXmlIsCorrect()
 {
-    return this->xmlIsCorrect;
+	return this->xmlIsCorrect;
 }
 
 void StateSXmlAnalyzer::parse()
 {
-    while (this->xmlReader->atEnd() == false)
-    {
-        this->xmlReader->readNext();
+	while (this->xmlReader->atEnd() == false)
+	{
+		this->xmlReader->readNext();
 
-        if (this->xmlReader->isStartElement())
-        {
-            if (this->xmlReader->name() == "FSM")
-            {
-                this->type = machineType::Fsm;
-                QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
+		if (this->xmlReader->isStartElement())
+		{
+			if (this->xmlReader->name() == "FSM")
+			{
+				this->type = machineType::Fsm;
+				QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
 
-                if (! extractedVersion.isNull())
-                {
-                    this->version = extractedVersion;
-                }
+				if (! extractedVersion.isNull())
+				{
+					this->version = extractedVersion;
+				}
 
-                break;
-            }
-        }
-    }
+				break;
+			}
+		}
+	}
 }

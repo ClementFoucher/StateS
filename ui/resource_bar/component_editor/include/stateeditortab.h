@@ -36,24 +36,24 @@ class DynamicLineEdit;
 
 class StateEditorTab : public ComponentEditorTab
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit StateEditorTab(shared_ptr<FsmState> state, QWidget* parent = nullptr);
+	explicit StateEditorTab(shared_ptr<FsmState> state, QWidget* parent = nullptr);
 
-    void setEditName();
+	void setEditName();
 
 protected:
-    void mousePressEvent(QMouseEvent* e) override;
+	void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-    void nameTextChangedEventHandler(const QString& name);
-    void updateContent();
+	void nameTextChangedEventHandler(const QString& name);
+	void updateContent();
 
 private:
-    weak_ptr<FsmState> state;
+	weak_ptr<FsmState> state;
 
-    DynamicLineEdit* textStateName = nullptr;
+	DynamicLineEdit* textStateName = nullptr;
 };
 
 #endif // STATEEDITORTAB_H

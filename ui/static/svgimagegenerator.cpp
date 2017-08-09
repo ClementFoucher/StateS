@@ -30,11 +30,11 @@
 
 QPixmap SvgImageGenerator::getPixmapFromSvg(const QString& path)
 {
-    QSvgRenderer svgRenderer(path);
-    QPixmap pixmap(svgRenderer.defaultSize());
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    svgRenderer.render(&painter);
+	QSvgRenderer svgRenderer(path);
+	QPixmap pixmap(svgRenderer.defaultSize());
+	pixmap.fill(Qt::transparent);
+	QPainter painter(&pixmap);
+	svgRenderer.render(&painter);
 
-    return pixmap;
+	return pixmap;
 }

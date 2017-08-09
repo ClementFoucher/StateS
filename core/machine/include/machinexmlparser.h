@@ -43,46 +43,46 @@ class Equation;
 
 class MachineXmlParser : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    // Pseudo-constructors returning the correct inheriting class depending on the machine type.
-    static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
-    static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
+	// Pseudo-constructors returning the correct inheriting class depending on the machine type.
+	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
+	static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
 
-    shared_ptr<Machine>              getMachine();
-    shared_ptr<MachineConfiguration> getConfiguration();
-    QList<QString>                   getWarnings();
-
-protected:
-    explicit MachineXmlParser(QObject* parent = nullptr);
-
-    void parseMachineName(const QString& fileName);
-    void parseConfiguration();
-    void parseSignal();
-    void parseAction();
-    void parseLogicEquation();
-
-    void treatBeginOperand(uint operandRank);
-    void treatEndOperand();
-
-private:
-    virtual void buildMachineFromXml() = 0;
+	shared_ptr<Machine>              getMachine();
+	shared_ptr<MachineConfiguration> getConfiguration();
+	QList<QString>                   getWarnings();
 
 protected:
-    QList<QString> warnings;
-    shared_ptr<Machine> machine;
+	explicit MachineXmlParser(QObject* parent = nullptr);
 
-    shared_ptr<MachineActuatorComponent> currentActuator;
-    shared_ptr<Signal> rootLogicEquation;
-    shared_ptr<Signal> currentLogicEquation;
+	void parseMachineName(const QString& fileName);
+	void parseConfiguration();
+	void parseSignal();
+	void parseAction();
+	void parseLogicEquation();
 
-    shared_ptr<QXmlStreamReader> xmlReader;
+	void treatBeginOperand(uint operandRank);
+	void treatEndOperand();
 
 private:
-    shared_ptr<MachineConfiguration> configuration;
-    QStack<shared_ptr<Equation>> equationStack;
-    QStack<uint> operandRankStack;
+	virtual void buildMachineFromXml() = 0;
+
+protected:
+	QList<QString> warnings;
+	shared_ptr<Machine> machine;
+
+	shared_ptr<MachineActuatorComponent> currentActuator;
+	shared_ptr<Signal> rootLogicEquation;
+	shared_ptr<Signal> currentLogicEquation;
+
+	shared_ptr<QXmlStreamReader> xmlReader;
+
+private:
+	shared_ptr<MachineConfiguration> configuration;
+	QStack<shared_ptr<Equation>> equationStack;
+	QStack<uint> operandRankStack;
 };
 
 #endif // MACHINEXMLPARSER_H

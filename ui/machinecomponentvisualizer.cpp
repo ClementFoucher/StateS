@@ -37,111 +37,111 @@
 MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent) :
     StatesGraphicsView(parent)
 {
-    this->machine = machine;
+	this->machine = machine;
 
-    this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
+	this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
 
-    this->setDragMode(QGraphicsView::ScrollHandDrag);
-    this->setScene(this->scene.get());
+	this->setDragMode(QGraphicsView::ScrollHandDrag);
+	this->setScene(this->scene.get());
 
-    this->updateMachineVisualization();
+	this->updateMachineVisualization();
 
-    connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
 shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const
 {
-    return this->scene;
+	return this->scene;
 }
 
 void MachineComponentVisualizer::mousePressEvent(QMouseEvent* me)
 {
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if ( (me->button() == Qt::LeftButton) || (me->button() == Qt::MiddleButton) )
-    {
-        this->isMoving = true;
-        transmitEvent = false;
-    }
+	if ( (me->button() == Qt::LeftButton) || (me->button() == Qt::MiddleButton) )
+	{
+		this->isMoving = true;
+		transmitEvent = false;
+	}
 
-    if (transmitEvent)
-        QGraphicsView::mousePressEvent(me);
+	if (transmitEvent)
+		QGraphicsView::mousePressEvent(me);
 }
 
 void MachineComponentVisualizer::mouseMoveEvent(QMouseEvent* me)
 {
-    static QPoint lastMouseEventPos(0, 0);
+	static QPoint lastMouseEventPos(0, 0);
 
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if (this->isMoving == true)
-    {
-        QScrollBar* hBar = horizontalScrollBar();
-        QScrollBar* vBar = verticalScrollBar();
-        QPoint delta = me->pos() - lastMouseEventPos;
-        hBar->setValue(hBar->value() + -delta.x());
-        vBar->setValue(vBar->value() - delta.y());
+	if (this->isMoving == true)
+	{
+		QScrollBar* hBar = horizontalScrollBar();
+		QScrollBar* vBar = verticalScrollBar();
+		QPoint delta = me->pos() - lastMouseEventPos;
+		hBar->setValue(hBar->value() + -delta.x());
+		vBar->setValue(vBar->value() - delta.y());
 
-        transmitEvent = false;
-    }
+		transmitEvent = false;
+	}
 
-    lastMouseEventPos = me->pos();
+	lastMouseEventPos = me->pos();
 
-    if (transmitEvent)
-        QGraphicsView::mouseMoveEvent(me);
+	if (transmitEvent)
+		QGraphicsView::mouseMoveEvent(me);
 }
 
 void MachineComponentVisualizer::mouseReleaseEvent(QMouseEvent* me)
 {
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if (this->isMoving == true)
-    {
-        this->isMoving = false;
-        transmitEvent = false;
-    }
+	if (this->isMoving == true)
+	{
+		this->isMoving = false;
+		transmitEvent = false;
+	}
 
-    if (transmitEvent)
-        QGraphicsView::mouseReleaseEvent(me);
+	if (transmitEvent)
+		QGraphicsView::mouseReleaseEvent(me);
 }
 
 void MachineComponentVisualizer::mouseDoubleClickEvent(QMouseEvent* me)
 {
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if (this->isMoving == true)
-    {
-        transmitEvent = false;
-    }
+	if (this->isMoving == true)
+	{
+		transmitEvent = false;
+	}
 
-    if (transmitEvent)
-        QGraphicsView::mouseMoveEvent(me);
+	if (transmitEvent)
+		QGraphicsView::mouseMoveEvent(me);
 }
 
 void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
 {
-    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-    double scaleFactor = 1.15;
-    if(event->delta() > 0)
-    {
-        this->scale(scaleFactor, scaleFactor);
-    }
-    else
-    {
-        this->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-    }
+	double scaleFactor = 1.15;
+	if(event->delta() > 0)
+	{
+		this->scale(scaleFactor, scaleFactor);
+	}
+	else
+	{
+		this->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+	}
 }
 
 void MachineComponentVisualizer::updateMachineVisualization()
 {
-    this->scene->clear();
+	this->scene->clear();
 
-    shared_ptr<Machine> machine = this->machine.lock();
-    if (machine != nullptr)
-    {
-        QGraphicsItem* component = machine->getComponentVisualization();
-        this->scene->addItem(component);
-    }
+	shared_ptr<Machine> machine = this->machine.lock();
+	if (machine != nullptr)
+	{
+		QGraphicsItem* component = machine->getComponentVisualization();
+		this->scene->addItem(component);
+	}
 }
 

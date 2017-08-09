@@ -38,24 +38,24 @@ class LabelWithClickEvent;
  */
 class CheckBoxHtml : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
+	explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
 
-    void setText(QString newText);
-    void setChecked(bool check);
-    bool isChecked();
+	void setText(QString newText);
+	void setChecked(bool check);
+	bool isChecked();
 
 signals:
-    void toggled(bool checked = false);
+	void toggled(bool checked = false);
 
 protected:
-    bool event(QEvent* e) override;
+	bool event(QEvent* e) override;
 
 private:
-    LabelWithClickEvent* label;
-    QCheckBox*           checkBox;
+	LabelWithClickEvent* label;
+	QCheckBox*           checkBox;
 };
 
 #endif // CHECKBOXHTML_H

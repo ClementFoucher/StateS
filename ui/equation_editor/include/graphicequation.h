@@ -41,80 +41,80 @@ class EditableEquation;
 
 class GraphicEquation : public QFrame
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    enum CommonAction { Cancel = 0 };
-    enum DropAction { ReplaceExisting = 1, ExistingAsOperand = 2};
-    enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
+	enum CommonAction { Cancel = 0 };
+	enum DropAction { ReplaceExisting = 1, ExistingAsOperand = 2};
+	enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
 
 public:
-    explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
 
-    void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand); // TODO: throw exception
+	void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand); // TODO: throw exception
 
-    shared_ptr<Signal> getLogicEquation() const;
+	shared_ptr<Signal> getLogicEquation() const;
 
-    void forceCompleteRendering();
-    bool validEdit();
-    bool cancelEdit();
+	void forceCompleteRendering();
+	bool validEdit();
+	bool cancelEdit();
 
 
 protected:
-    void enterEvent(QEvent*) override;
-    void leaveEvent(QEvent*) override;
+	void enterEvent(QEvent*) override;
+	void leaveEvent(QEvent*) override;
 
-    void mousePressEvent      (QMouseEvent* event) override;
-    void mouseMoveEvent       (QMouseEvent* event) override;
-    void mouseReleaseEvent    (QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void mousePressEvent      (QMouseEvent* event) override;
+	void mouseMoveEvent       (QMouseEvent* event) override;
+	void mouseReleaseEvent    (QMouseEvent* event) override;
+	void mouseDoubleClickEvent(QMouseEvent* event) override;
 
-    void dragEnterEvent(QDragEnterEvent* event) override;
-    void dragLeaveEvent(QDragLeaveEvent* event) override;
-    void dropEvent     (QDropEvent*      event) override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dragLeaveEvent(QDragLeaveEvent* event) override;
+	void dropEvent     (QDropEvent*      event) override;
 
-    void contextMenuEvent(QContextMenuEvent* event) override;
+	void contextMenuEvent(QContextMenuEvent* event) override;
 
 protected slots:
-    void enterChildrenEventHandler();
-    void leaveChildrenEventHandler();
+	void enterChildrenEventHandler();
+	void leaveChildrenEventHandler();
 
 private slots:
-    void treatMenuEventHandler(QAction* action);
-    void treatRangeLeftBoundChanged(int newIndex);
-    void treatRangeRightBoundChanged(int newIndex);
-    void treatConstantValueChanged(LogicValue newValue);
-    void updateBorder();
+	void treatMenuEventHandler(QAction* action);
+	void treatRangeLeftBoundChanged(int newIndex);
+	void treatRangeRightBoundChanged(int newIndex);
+	void treatConstantValueChanged(LogicValue newValue);
+	void updateBorder();
 
 private:
-    void setDefaultBorderColor();
-    void setHilightedBorderColor();
+	void setDefaultBorderColor();
+	void setHilightedBorderColor();
 
-    void replaceEquation(shared_ptr<Signal> newEquation);
-    void buildEquation();
-    void buildTemplateEquation();
-    void buildSignalEquation();
-    void buildCompleteEquation();
+	void replaceEquation(shared_ptr<Signal> newEquation);
+	void buildEquation();
+	void buildTemplateEquation();
+	void buildSignalEquation();
+	void buildCompleteEquation();
 
 private:
-    // Use pointer because this is a QWidget with a parent
-    GraphicEquation* parentEquation() const;
+	// Use pointer because this is a QWidget with a parent
+	GraphicEquation* parentEquation() const;
 
-    bool isTemplate = false;
+	bool isTemplate = false;
 
-    weak_ptr<Signal> equation;
-    // Only top-level GraphicEquation holds root Equation
-    shared_ptr<Signal> rootEquation;
+	weak_ptr<Signal> equation;
+	// Only top-level GraphicEquation holds root Equation
+	shared_ptr<Signal> rootEquation;
 
-    shared_ptr<Signal> droppedEquation;
+	shared_ptr<Signal> droppedEquation;
 
-    bool completeRendering = false;
-    bool mouseIn = false;
+	bool completeRendering = false;
+	bool mouseIn = false;
 
-    EditableEquation* editorWidget = nullptr;
+	EditableEquation* editorWidget = nullptr;
 
-    bool inMouseEvent = false;
-    bool lockSignal;
+	bool inMouseEvent = false;
+	bool lockSignal;
 };
 
 #endif // GRAPHICEQUATION_H

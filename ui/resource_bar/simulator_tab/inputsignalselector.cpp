@@ -34,17 +34,17 @@
 InputSignalSelector::InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget *parent) :
     QWidget(parent)
 {
-    QHBoxLayout* globalLayout = new QHBoxLayout(this);
+	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
-    QLabel* signalName = new QLabel(relatedSignal->getName());
-    globalLayout->addWidget(signalName);
+	QLabel* signalName = new QLabel(relatedSignal->getName());
+	globalLayout->addWidget(signalName);
 
-    QHBoxLayout* bitLayout = new QHBoxLayout();
-    globalLayout->addLayout(bitLayout, 0);
+	QHBoxLayout* bitLayout = new QHBoxLayout();
+	globalLayout->addLayout(bitLayout, 0);
 
-    for (int i = (int)relatedSignal->getSize()-1 ; i >= 0 ; i--)
-    {
-        InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i);
-        bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
-    }
+	for (int i = (int)relatedSignal->getSize()-1 ; i >= 0 ; i--)
+	{
+		InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i);
+		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
+	}
 }

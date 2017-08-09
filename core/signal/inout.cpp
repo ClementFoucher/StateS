@@ -36,5 +36,5 @@ InOut::InOut(const QString& name, uint size) : // Throws StatesException
 
 IO::direction InOut::getDirection() const
 {
-    return IO::direction::inout;
+	return IO::direction::inout;
 }

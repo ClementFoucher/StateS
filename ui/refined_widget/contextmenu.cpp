@@ -35,71 +35,71 @@ const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px d
 ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)
 {
-    connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
-    this->setStyleSheet( QString( "border: 1px solid"));
+	connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
+	this->setStyleSheet( QString( "border: 1px solid"));
 }
 
 void ContextMenu::addTitle(const QString& titleText)
 {
-    QLabel* title = new QLabel("<b>" + titleText + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    title->setMinimumHeight(50);
-    title->setMargin(10);
+	QLabel* title = new QLabel("<b>" + titleText + "</b>");
+	title->setAlignment(Qt::AlignCenter);
+	title->setMinimumHeight(50);
+	title->setMargin(10);
 
-    QWidgetAction* a = new QWidgetAction(this);
-    a->setDefaultWidget(title);
-    this->addAction(a);
+	QWidgetAction* a = new QWidgetAction(this);
+	a->setDefaultWidget(title);
+	this->addAction(a);
 }
 
 void ContextMenu::addSubTitle(const QString& titleText)
 {
-    QLabel* subtitle = new QLabel(titleText);
-    subtitle->setAlignment(Qt::AlignCenter);
-    subtitle->setMinimumHeight(40);
-    subtitle->setMargin(10);
+	QLabel* subtitle = new QLabel(titleText);
+	subtitle->setAlignment(Qt::AlignCenter);
+	subtitle->setMinimumHeight(40);
+	subtitle->setMargin(10);
 
-    QWidgetAction* a = new QWidgetAction(this);
-    a->setDefaultWidget(subtitle);
-    this->addAction(a);
+	QWidgetAction* a = new QWidgetAction(this);
+	a->setDefaultWidget(subtitle);
+	this->addAction(a);
 }
 
 void ContextMenu::setListStyle()
 {
-    this->setStyleSheet(listStyle);
+	this->setStyleSheet(listStyle);
 }
 
 // Code found in Qt FAQ to add tool tip support to menus...
 // Why not default?
 bool ContextMenu::event(QEvent* e)
 {
-    if (this->activeAction() != nullptr)
-    {
-        if (this->activeAction()->toolTip().isEmpty())
-        {
-            const QHelpEvent* helpEvent = dynamic_cast <QHelpEvent*>(e);
+	if (this->activeAction() != nullptr)
+	{
+		if (this->activeAction()->toolTip().isEmpty())
+		{
+			const QHelpEvent* helpEvent = dynamic_cast <QHelpEvent*>(e);
 
-            if ( (helpEvent != nullptr) && (helpEvent->type() == QEvent::ToolTip) )
-            {
-                QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
-            }
-            else
-            {
-                QToolTip::hideText();
-            }
-        }
-    }
+			if ( (helpEvent != nullptr) && (helpEvent->type() == QEvent::ToolTip) )
+			{
+				QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
+			}
+			else
+			{
+				QToolTip::hideText();
+			}
+		}
+	}
 
-    return QMenu::event(e);
+	return QMenu::event(e);
 }
 
 ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)
 {
-    ContextMenu* newMenu = new ContextMenu(parent);
-    newMenu->setStyleSheet("");
+	ContextMenu* newMenu = new ContextMenu(parent);
+	newMenu->setStyleSheet("");
 
-    newMenu->addAction(text);
+	newMenu->addAction(text);
 
-    newMenu[0].setStyleSheet(errorStyle);
+	newMenu[0].setStyleSheet(errorStyle);
 
-    return newMenu;
+	return newMenu;
 }

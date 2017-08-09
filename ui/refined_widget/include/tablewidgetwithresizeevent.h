@@ -28,16 +28,16 @@
 
 class TableWidgetWithResizeEvent : public QTableWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit TableWidgetWithResizeEvent(int rows, int columns);
+	explicit TableWidgetWithResizeEvent(int rows, int columns);
 
 signals:
-    void resized();
+	void resized();
 
 protected:
-    void resizeEvent(QResizeEvent*) override;
+	void resizeEvent(QResizeEvent*) override;
 };
 
 #endif // TABLEWIDGETWITHRESIZEEVENT_H

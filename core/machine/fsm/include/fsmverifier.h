@@ -42,33 +42,33 @@ class Fsm;
 // Should be reviewd a some point.
 class FsmVerifier : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    enum severity { blocking, structure, tool, hint };
+	enum severity { blocking, structure, tool, hint };
 
-    class Issue
-    {
-    public:
-        QString text = QString::null;
-        severity type = severity::hint;
-        shared_ptr<TruthTable> proof;
-        QList<int> proofsHighlight;
-    };
+	class Issue
+	{
+	public:
+		QString text = QString::null;
+		severity type = severity::hint;
+		shared_ptr<TruthTable> proof;
+		QList<int> proofsHighlight;
+	};
 
 public:
-    explicit FsmVerifier(shared_ptr<Fsm> machine);
-    ~FsmVerifier();
+	explicit FsmVerifier(shared_ptr<Fsm> machine);
+	~FsmVerifier();
 
-    const QList<shared_ptr<Issue>>& getIssues();
-    const QList<shared_ptr<Issue>>& verifyFsm(bool checkVhdl);
+	const QList<shared_ptr<Issue>>& getIssues();
+	const QList<shared_ptr<Issue>>& verifyFsm(bool checkVhdl);
 
 private:
-    void clearProofs();
+	void clearProofs();
 
-    weak_ptr<Fsm> machine;
+	weak_ptr<Fsm> machine;
 
-    QList<shared_ptr<Issue>> issues;
+	QList<shared_ptr<Issue>> issues;
 };
 
 #endif // FSMVERIFIER_H

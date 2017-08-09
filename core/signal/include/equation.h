@@ -55,114 +55,114 @@ using namespace std;
  */
 class Equation : public Signal
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public: // Static
 
-    enum EquationErrorEnum{
-        resized_requested       = 0,
-        out_of_range_access     = 1,
-        set_value_requested     = 2,
-        reduced_operand_while_0 = 3,
-        change_operand_illegal  = 4
-    };
+	enum EquationErrorEnum{
+		resized_requested       = 0,
+		out_of_range_access     = 1,
+		set_value_requested     = 2,
+		reduced_operand_while_0 = 3,
+		change_operand_illegal  = 4
+	};
 
 private:
-    static bool signalHasSize(shared_ptr<Signal> sig);
+	static bool signalHasSize(shared_ptr<Signal> sig);
 
 public:
-    // This enum is always treated using a switch in order to obtain a warning
-    // when adding a new member in all places it is used.
-    enum class nature{notOp,  // Not equations always have exactly one operand
-                      andOp,
-                      orOp,
-                      xorOp,
-                      nandOp,
-                      norOp,
-                      xnorOp,
-                      equalOp, // Equal equations always have exactly two operand and are size one
-                      diffOp,  // Diff  equations always have exactly two operand and are size one
-                      extractOp, // Extract equations always have exacly one operand
-                      concatOp,
-                      constant, // To allow dynamically creating constants (which are not machine signals)
-                      identity // For internal use only, exactly one operand
-                     };
+	// This enum is always treated using a switch in order to obtain a warning
+	// when adding a new member in all places it is used.
+	enum class nature{notOp,  // Not equations always have exactly one operand
+		              andOp,
+		              orOp,
+		              xorOp,
+		              nandOp,
+		              norOp,
+		              xnorOp,
+		              equalOp, // Equal equations always have exactly two operand and are size one
+		              diffOp,  // Diff  equations always have exactly two operand and are size one
+		              extractOp, // Extract equations always have exacly one operand
+		              concatOp,
+		              constant, // To allow dynamically creating constants (which are not machine signals)
+		              identity // For internal use only, exactly one operand
+	                 };
 
-    enum class computationFailureCause{uncomputed,
-                                       nofail,
-                                       nullOperand,
-                                       incompleteOperand,
-                                       sizeMismatch,
-                                       missingParameter,
-                                       incorrectParameter,
-                                       notImplemented
-                                      };
+	enum class computationFailureCause{uncomputed,
+		                               nofail,
+		                               nullOperand,
+		                               incompleteOperand,
+		                               sizeMismatch,
+		                               missingParameter,
+		                               incorrectParameter,
+		                               notImplemented
+	                                  };
 
 public:
-    explicit Equation(nature function, int allowedOperandCount = -1);
-    explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
+	explicit Equation(nature function, int allowedOperandCount = -1);
+	explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
 
-    shared_ptr<Equation> clone() const;
+	shared_ptr<Equation> clone() const;
 
-    uint getSize() const override;
-    void resize(uint) override; // Throws StatesException
+	uint getSize() const override;
+	void resize(uint) override; // Throws StatesException
 
-    QString getText() const override;
-    QString getColoredText(bool activeColored, bool errorColored) const;
+	QString getText() const override;
+	QString getColoredText(bool activeColored, bool errorColored) const;
 
-    computationFailureCause getComputationFailureCause() const;
+	computationFailureCause getComputationFailureCause() const;
 
-    nature getFunction() const;
-    void setFunction(const nature& newFunction);
+	nature getFunction() const;
+	void setFunction(const nature& newFunction);
 
-    bool isInverted() const;
+	bool isInverted() const;
 
-    shared_ptr<Signal> getOperand(uint i) const; // Throws StatesException
-    bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false); // Throws StatesException
-    void clearOperand(uint i, bool quiet = false); // Throws StatesException
+	shared_ptr<Signal> getOperand(uint i) const; // Throws StatesException
+	bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false); // Throws StatesException
+	void clearOperand(uint i, bool quiet = false); // Throws StatesException
 
-    QVector<shared_ptr<Signal>> getOperands() const;
+	QVector<shared_ptr<Signal>> getOperands() const;
 
-    uint getOperandCount() const;
-    void increaseOperandCount(); // Throws StatesException
-    void decreaseOperandCount(); // Throws StatesException
+	uint getOperandCount() const;
+	void increaseOperandCount(); // Throws StatesException
+	void decreaseOperandCount(); // Throws StatesException
 
-    // Functions specific to some action types
-    void setConstantValue(const LogicValue& value); // Throws StatesException
-    void setRange(int rangeL, int rangeR = -1); // TODO: throw exception when function is not extract? Or simply qDebug... What about out of range values?
-    int getRangeL() const; // TODO: throw exception when function is not extract?
-    int getRangeR() const; // TODO: throw exception when function is not extract?
+	// Functions specific to some action types
+	void setConstantValue(const LogicValue& value); // Throws StatesException
+	void setRange(int rangeL, int rangeR = -1); // TODO: throw exception when function is not extract? Or simply qDebug... What about out of range values?
+	int getRangeL() const; // TODO: throw exception when function is not extract?
+	int getRangeR() const; // TODO: throw exception when function is not extract?
 
-    // Override to throw exception
-    virtual void setInitialValue(const LogicValue&)                   override; // Throws StatesException
-    virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
-    virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
+	// Override to throw exception
+	virtual void setInitialValue(const LogicValue&)                   override; // Throws StatesException
+	virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
+	virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
 
 private slots:
-    void computeCurrentValue();
-    void signalDeletedEventHandler();
+	void computeCurrentValue();
+	void signalDeletedEventHandler();
 
 private:
-    void increaseOperandCountInternal();
-    void decreaseOperandCountInternal(); // Throws StatesException
+	void increaseOperandCountInternal();
+	void decreaseOperandCountInternal(); // Throws StatesException
 
 private:
-    computationFailureCause failureCause = computationFailureCause::uncomputed;
+	computationFailureCause failureCause = computationFailureCause::uncomputed;
 
-    nature function;
-    // Different storage for different ownership (weak/shared)
-    QVector<weak_ptr<Signal>>     signalOperands;
-    QVector<shared_ptr<Equation>> equationOperands;
+	nature function;
+	// Different storage for different ownership (weak/shared)
+	QVector<weak_ptr<Signal>>     signalOperands;
+	QVector<shared_ptr<Equation>> equationOperands;
 
-    // This size holds the maximum operands count
-    // It can be increased or decreased (min 2 operands)
-    // except for constant size operators (ident, not, eq, diff, constant)
-    uint allowedOperandCount = 0;
+	// This size holds the maximum operands count
+	// It can be increased or decreased (min 2 operands)
+	// except for constant size operators (ident, not, eq, diff, constant)
+	uint allowedOperandCount = 0;
 
-    // Parameters specific to some action types
-    int rangeL;
-    int rangeR;
-    LogicValue constantValue;
+	// Parameters specific to some action types
+	int rangeL;
+	int rangeR;
+	LogicValue constantValue;
 
 };
 

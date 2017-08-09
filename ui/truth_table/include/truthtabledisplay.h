@@ -35,24 +35,24 @@ class TruthTable;
 
 class TruthTableDisplay : public QTableWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights = QList<int>(), QWidget* parent = nullptr);
+	explicit TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights = QList<int>(), QWidget* parent = nullptr);
 
 protected:
-    virtual void resizeEvent(QResizeEvent* event) override;
-    virtual void showEvent  (QShowEvent* event)   override;
+	virtual void resizeEvent(QResizeEvent* event) override;
+	virtual void showEvent  (QShowEvent* event)   override;
 
 private slots:
-    void subTableResized(int, int, int);
-    void updateSelection(const QItemSelection& selected, const QItemSelection&);
+	void subTableResized(int, int, int);
+	void updateSelection(const QItemSelection& selected, const QItemSelection&);
 
 private:
-    void resizeCells();
+	void resizeCells();
 
-    QTableView* inputTable  = nullptr;
-    QTableView* outputTable = nullptr;
+	QTableView* inputTable  = nullptr;
+	QTableView* outputTable = nullptr;
 };
 
 #endif // TRUTHTABLEDISPLAY_H

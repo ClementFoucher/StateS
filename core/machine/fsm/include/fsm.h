@@ -39,45 +39,45 @@ class FsmGraphicTransition;
 
 class Fsm : public Machine, public enable_shared_from_this<Fsm>
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Fsm();
-    ~Fsm();
+	explicit Fsm();
+	~Fsm();
 
-    // States
-    shared_ptr<FsmState> addState(QPointF position, QString name = QString());
-    void removeState(shared_ptr<FsmState> state);
-    QList<shared_ptr<FsmState> > getStates() const;
-    shared_ptr<FsmState> getStateByName(const QString& name) const;
-    bool renameState(shared_ptr<FsmState> state, QString newName);
+	// States
+	shared_ptr<FsmState> addState(QPointF position, QString name = QString());
+	void removeState(shared_ptr<FsmState> state);
+	QList<shared_ptr<FsmState> > getStates() const;
+	shared_ptr<FsmState> getStateByName(const QString& name) const;
+	bool renameState(shared_ptr<FsmState> state, QString newName);
 
-    // Initial state
-    void setInitialState(shared_ptr<FsmState> newInitialState);
-    shared_ptr<FsmState> getInitialState() const;
+	// Initial state
+	void setInitialState(shared_ptr<FsmState> newInitialState);
+	shared_ptr<FsmState> getInitialState() const;
 
-    // Transitions
-    shared_ptr<FsmTransition> addTransition(shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
-    void removeTransition(shared_ptr<FsmTransition> transition);
-    QList<shared_ptr<FsmTransition>> getTransitions() const;
-    void redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<FsmState> newSource, shared_ptr<FsmState> newTarget);
+	// Transitions
+	shared_ptr<FsmTransition> addTransition(shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
+	void removeTransition(shared_ptr<FsmTransition> transition);
+	QList<shared_ptr<FsmTransition>> getTransitions() const;
+	void redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<FsmState> newSource, shared_ptr<FsmState> newTarget);
 
-    // Simulation
-    void setSimulator(shared_ptr<MachineSimulator> simulator) override;
-    void forceStateActivation(shared_ptr<FsmState> stateToActivate);
+	// Simulation
+	void setSimulator(shared_ptr<MachineSimulator> simulator) override;
+	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private slots:
-    void unmonitoredFsmComponentEditionEventHandler();
-    void statePositionChangedEventHandler(shared_ptr<FsmState> originator);
-    void transitionSliderPositionChangedEventHandler();
+	void unmonitoredFsmComponentEditionEventHandler();
+	void statePositionChangedEventHandler(shared_ptr<FsmState> originator);
+	void transitionSliderPositionChangedEventHandler();
 
 private:
-    QString getUniqueStateName(QString nameProposal);
+	QString getUniqueStateName(QString nameProposal);
 
 private:
-    QList<shared_ptr<FsmState>> states;
-    QList<shared_ptr<FsmTransition>> transitions;
-    weak_ptr<FsmState> initialState;
+	QList<shared_ptr<FsmState>> states;
+	QList<shared_ptr<FsmTransition>> transitions;
+	weak_ptr<FsmState> initialState;
 };
 
 #endif // FSM_H

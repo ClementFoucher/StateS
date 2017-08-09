@@ -32,41 +32,41 @@
 ErrorDisplayDialog::ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent) :
     QDialog(parent)
 {
-    this->build(errorTitle, errors);
+	this->build(errorTitle, errors);
 }
 
 ErrorDisplayDialog::ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent) :
     QDialog(parent)
 {
-    QList<QString> singleErrorList = QList<QString>();
-    singleErrorList.append(error);
+	QList<QString> singleErrorList = QList<QString>();
+	singleErrorList.append(error);
 
-    this->build(errorTitle, singleErrorList);
+	this->build(errorTitle, singleErrorList);
 }
 
 void ErrorDisplayDialog::build(const QString& errorTitle, const QList<QString>& errors)
 {
-    this->setWindowTitle(tr("Errors encountred"));
+	this->setWindowTitle(tr("Errors encountred"));
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 
-    QLabel* titleLabel = new QLabel(errorTitle);
-    layout->addWidget(titleLabel);
+	QLabel* titleLabel = new QLabel(errorTitle);
+	layout->addWidget(titleLabel);
 
-    QLabel* errorsLabel = new QLabel(tr("List of errors:"));
-    layout->addWidget(errorsLabel);
+	QLabel* errorsLabel = new QLabel(tr("List of errors:"));
+	layout->addWidget(errorsLabel);
 
-    QListWidget* errorList = new QListWidget();
-    errorList->setWordWrap(true);
+	QListWidget* errorList = new QListWidget();
+	errorList->setWordWrap(true);
 
-    for (QString s : errors)
-    {
-        errorList->addItem(s);
-    }
+	for (QString s : errors)
+	{
+		errorList->addItem(s);
+	}
 
-    layout->addWidget(errorList);
+	layout->addWidget(errorList);
 
-    QPushButton* buttonOk = new QPushButton(tr("OK"));
-    connect(buttonOk, &QPushButton::clicked, this, &QDialog::accept);
-    layout->addWidget(buttonOk);
+	QPushButton* buttonOk = new QPushButton(tr("OK"));
+	connect(buttonOk, &QPushButton::clicked, this, &QDialog::accept);
+	layout->addWidget(buttonOk);
 }

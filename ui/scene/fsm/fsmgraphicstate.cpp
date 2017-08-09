@@ -53,7 +53,7 @@ QPen FsmGraphicState::pen = QPen(Qt::SolidPattern, 3);
 
 qreal FsmGraphicState::getRadius()
 {
-    return radius;
+	return radius;
 }
 
 //
@@ -62,42 +62,42 @@ qreal FsmGraphicState::getRadius()
 
 QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 {
-    QPixmap pixmap(QSize(size, size));
-    pixmap.fill(Qt::transparent);
+	QPixmap pixmap(QSize(size, size));
+	pixmap.fill(Qt::transparent);
 
-    QPainter painter(&pixmap);
+	QPainter painter(&pixmap);
 
-    painter.setPen(FsmGraphicState::pen);
-    painter.setBrush(FsmGraphicState::inactiveBrush);
-    painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2, FsmGraphicState::pen.width()/2, size-FsmGraphicState::pen.width(), size-FsmGraphicState::pen.width()));
+	painter.setPen(FsmGraphicState::pen);
+	painter.setBrush(FsmGraphicState::inactiveBrush);
+	painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2, FsmGraphicState::pen.width()/2, size-FsmGraphicState::pen.width(), size-FsmGraphicState::pen.width()));
 
-    if (isInitial)
-    {
-        qreal space = size/10 + FsmGraphicState::pen.width();
-        painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2 + space, FsmGraphicState::pen.width()/2 + space, size-FsmGraphicState::pen.width() - space*2, size-FsmGraphicState::pen.width() - space*2));
-    }
+	if (isInitial)
+	{
+		qreal space = size/10 + FsmGraphicState::pen.width();
+		painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2 + space, FsmGraphicState::pen.width()/2 + space, size-FsmGraphicState::pen.width() - space*2, size-FsmGraphicState::pen.width() - space*2));
+	}
 
-    if (addArrow)
-    {
-        painter.drawLine(0, 0, size/3, 0);
-        painter.drawLine(0, 0, 0, size/3);
-    }
+	if (addArrow)
+	{
+		painter.drawLine(0, 0, size/3, 0);
+		painter.drawLine(0, 0, 0, size/3);
+	}
 
-    return pixmap;
+	return pixmap;
 }
 
 FsmGraphicState::FsmGraphicState() :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
-    this->setPen(pen);
+	this->setPen(pen);
 
-    this->setFlag(QGraphicsItem::ItemIsMovable);
-    this->setFlag(QGraphicsItem::ItemIsSelectable);
-    this->setFlag(QGraphicsItem::ItemIsFocusable);
-    this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
-    this->setFlag(QGraphicsItem::ItemClipsToShape);
+	this->setFlag(QGraphicsItem::ItemIsMovable);
+	this->setFlag(QGraphicsItem::ItemIsSelectable);
+	this->setFlag(QGraphicsItem::ItemIsFocusable);
+	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+	this->setFlag(QGraphicsItem::ItemClipsToShape);
 
-    this->rebuildRepresentation();
+	this->rebuildRepresentation();
 }
 
 FsmGraphicState::~FsmGraphicState()
@@ -106,7 +106,7 @@ FsmGraphicState::~FsmGraphicState()
 
 shared_ptr<FsmState> FsmGraphicState::getLogicState() const
 {
-    return dynamic_pointer_cast<FsmState>(this->getLogicActuator());
+	return dynamic_pointer_cast<FsmState>(this->getLogicActuator());
 }
 
 /**
@@ -117,174 +117,174 @@ shared_ptr<FsmState> FsmGraphicState::getLogicState() const
  */
 void FsmGraphicState::setLogicState(shared_ptr<FsmState> logicState)
 {
-    if (this->getLogicState() == nullptr)
-    {
-        this->setLogicActuator(logicState); // Throws StatesException - ignored as we checked nullness
+	if (this->getLogicState() == nullptr)
+	{
+		this->setLogicActuator(logicState); // Throws StatesException - ignored as we checked nullness
 
-        connect(logicState.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,                this, &FsmGraphicState::componentUpdatedEventHandler);
-        connect(logicState.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicState::componentUpdatedEventHandler);
+		connect(logicState.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,                this, &FsmGraphicState::componentUpdatedEventHandler);
+		connect(logicState.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicState::componentUpdatedEventHandler);
 
-        shared_ptr<Fsm> machine = logicState->getOwningFsm();
-        connect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
+		shared_ptr<Fsm> machine = logicState->getOwningFsm();
+		connect(machine.get(), &Fsm::simulationModeChangedEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
 
-        this->rebuildRepresentation();
-    }
+		this->rebuildRepresentation();
+	}
 }
 
 QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-    // Inform connected transitions we are moving
-    if (change == GraphicsItemChange::ItemPositionHasChanged)
-    {
-        if (this->moveEventEnabled)
-        {
-            emit stateMovedEvent();
-        }
-    }
-    else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
-    {
-        // If changing to selected
-        if (value.toBool() == true)
-        {
-            // Refuse selection if there is a transition already selected
-            foreach(QGraphicsItem* selectedItem, this->scene()->selectedItems())
-            {
-                if (dynamic_cast<FsmGraphicTransition*>(selectedItem) != nullptr)
-                    return (QVariant)false;
-            }
-        }
-    }
-    else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
-    {
-        this->updateSelectionShapeDisplay();
-    }
+	// Inform connected transitions we are moving
+	if (change == GraphicsItemChange::ItemPositionHasChanged)
+	{
+		if (this->moveEventEnabled)
+		{
+			emit stateMovedEvent();
+		}
+	}
+	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
+	{
+		// If changing to selected
+		if (value.toBool() == true)
+		{
+			// Refuse selection if there is a transition already selected
+			foreach(QGraphicsItem* selectedItem, this->scene()->selectedItems())
+			{
+				if (dynamic_cast<FsmGraphicTransition*>(selectedItem) != nullptr)
+					return (QVariant)false;
+			}
+		}
+	}
+	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
+	{
+		this->updateSelectionShapeDisplay();
+	}
 
-    // Reposition action box
-    if (scene() != nullptr)
-    {
-        QGraphicsItemGroup* actionBox = this->getActionsBox();
-        if (actionBox != nullptr)
-            actionBox->setPos(mapToScene(radius + 20, 0));
-    }
+	// Reposition action box
+	if (scene() != nullptr)
+	{
+		QGraphicsItemGroup* actionBox = this->getActionsBox();
+		if (actionBox != nullptr)
+			actionBox->setPos(mapToScene(radius + 20, 0));
+	}
 
-    return QGraphicsEllipseItem::itemChange(change, value);
+	return QGraphicsEllipseItem::itemChange(change, value);
 }
 
 
 void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-    shared_ptr<FsmState> l_logicState = this->getLogicState();
+	shared_ptr<FsmState> l_logicState = this->getLogicState();
 
-    if (l_logicState != nullptr)
-    {
-        ContextMenu* menu = new ContextMenu();
-        menu->addTitle(tr("State") + " <i>" + l_logicState->getName() + "</i>");
+	if (l_logicState != nullptr)
+	{
+		ContextMenu* menu = new ContextMenu();
+		menu->addTitle(tr("State") + " <i>" + l_logicState->getName() + "</i>");
 
-        Machine::simulation_mode currentMode = l_logicState->getOwningFsm()->getCurrentSimulationMode();
+		Machine::simulation_mode currentMode = l_logicState->getOwningFsm()->getCurrentSimulationMode();
 
-        if (currentMode == Machine::simulation_mode::editMode )
-        {
-            if (!l_logicState->isInitial())
-            {
-                menu->addAction(tr("Set initial"));
-            }
-            menu->addAction(tr("Edit"));
-            menu->addAction(tr("Draw transition from this state"));
-            menu->addAction(tr("Rename"));
-            menu->addAction(tr("Delete"));
-        }
-        else if (currentMode == Machine::simulation_mode::simulateMode )
-        {
-            if (! l_logicState->getIsActive())
-            {
-                menu->addAction(tr("Set active"));
-            }
-        }
+		if (currentMode == Machine::simulation_mode::editMode )
+		{
+			if (!l_logicState->isInitial())
+			{
+				menu->addAction(tr("Set initial"));
+			}
+			menu->addAction(tr("Edit"));
+			menu->addAction(tr("Draw transition from this state"));
+			menu->addAction(tr("Rename"));
+			menu->addAction(tr("Delete"));
+		}
+		else if (currentMode == Machine::simulation_mode::simulateMode )
+		{
+			if (! l_logicState->getIsActive())
+			{
+				menu->addAction(tr("Set active"));
+			}
+		}
 
-        if (menu->actions().count() > 1) // > 1 because title is always here
-        {
-            menu->popup(event->screenPos());
+		if (menu->actions().count() > 1) // > 1 because title is always here
+		{
+			menu->popup(event->screenPos());
 
-            connect(menu, &QMenu::triggered, this, &FsmGraphicState::treatMenu);
-        }
-        else
-        {
-            delete menu;
-        }
-    }
+			connect(menu, &QMenu::triggered, this, &FsmGraphicState::treatMenu);
+		}
+		else
+		{
+			delete menu;
+		}
+	}
 }
 
 void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-    // This disables the automatic selection shape.
-    // Thanks to Stephen Chu on StackOverflow for the trick.
-    QStyleOptionGraphicsItem myOption(*option);
-    myOption.state &= ~QStyle::State_Selected;
-    QGraphicsEllipseItem::paint(painter, &myOption, widget);
+	// This disables the automatic selection shape.
+	// Thanks to Stephen Chu on StackOverflow for the trick.
+	QStyleOptionGraphicsItem myOption(*option);
+	myOption.state &= ~QStyle::State_Selected;
+	QGraphicsEllipseItem::paint(painter, &myOption, widget);
 }
 
 void FsmGraphicState::componentUpdatedEventHandler()
 {
-    this->rebuildRepresentation();
+	this->rebuildRepresentation();
 }
 
 void FsmGraphicState::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Delete)
-    {
-        askDelete();
-    }
-    else if (event->key() == Qt::Key_Menu)
-    {
-        QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
+	if (event->key() == Qt::Key_Delete)
+	{
+		askDelete();
+	}
+	else if (event->key() == Qt::Key_Menu)
+	{
+		QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
 
-        QGraphicsView * view = scene()->views()[0];
+		QGraphicsView * view = scene()->views()[0];
 
-        QPoint posOnParent = view->mapFromScene(this->scenePos());
+		QPoint posOnParent = view->mapFromScene(this->scenePos());
 
-        QPoint posOnScreen = view->mapToGlobal(posOnParent);
-        contextEvent->setScreenPos(posOnScreen);
+		QPoint posOnScreen = view->mapToGlobal(posOnParent);
+		contextEvent->setScreenPos(posOnScreen);
 
-        this->contextMenuEvent(contextEvent);
-    }
-    else if ( (event->key() == Qt::Key_Right) |
-              (event->key() == Qt::Key_Left) |
-              (event->key() == Qt::Key_Up) |
-              (event->key() == Qt::Key_Down)
-            )
-    {
-        if ((event->modifiers() & Qt::ShiftModifier) != 0)
-        {
-            // Small moves
-            if (event->key() == Qt::Key_Right)
-                this->setPos(this->pos() + QPointF(1,0));
-            else if (event->key() == Qt::Key_Left)
-                this->setPos(this->pos() + QPointF(-1,0));
-            else if (event->key() == Qt::Key_Up)
-                this->setPos(this->pos() + QPointF(0, -1));
-            else if (event->key() == Qt::Key_Down)
-                this->setPos(this->pos() + QPointF(0, 1));
-        }
-        else
-        {
-            if (event->key() == Qt::Key_Right)
-                this->setPos(this->pos() + QPointF(10,0));
-            else if (event->key() == Qt::Key_Left)
-                this->setPos(this->pos() + QPointF(-10,0));
-            else if (event->key() == Qt::Key_Up)
-                this->setPos(this->pos() + QPointF(0, -10));
-            else if (event->key() == Qt::Key_Down)
-                this->setPos(this->pos() + QPointF(0, 10));
-        }
-    }
-    else if (event->key() == Qt::Key_F2)
-    {
-        emit renameStateCalledEvent(this->getLogicState());
-    }
-    else
-    {
-        event->ignore();
-    }
+		this->contextMenuEvent(contextEvent);
+	}
+	else if ( (event->key() == Qt::Key_Right) |
+	          (event->key() == Qt::Key_Left) |
+	          (event->key() == Qt::Key_Up) |
+	          (event->key() == Qt::Key_Down)
+	        )
+	{
+		if ((event->modifiers() & Qt::ShiftModifier) != 0)
+		{
+			// Small moves
+			if (event->key() == Qt::Key_Right)
+				this->setPos(this->pos() + QPointF(1,0));
+			else if (event->key() == Qt::Key_Left)
+				this->setPos(this->pos() + QPointF(-1,0));
+			else if (event->key() == Qt::Key_Up)
+				this->setPos(this->pos() + QPointF(0, -1));
+			else if (event->key() == Qt::Key_Down)
+				this->setPos(this->pos() + QPointF(0, 1));
+		}
+		else
+		{
+			if (event->key() == Qt::Key_Right)
+				this->setPos(this->pos() + QPointF(10,0));
+			else if (event->key() == Qt::Key_Left)
+				this->setPos(this->pos() + QPointF(-10,0));
+			else if (event->key() == Qt::Key_Up)
+				this->setPos(this->pos() + QPointF(0, -10));
+			else if (event->key() == Qt::Key_Down)
+				this->setPos(this->pos() + QPointF(0, 10));
+		}
+	}
+	else if (event->key() == Qt::Key_F2)
+	{
+		emit renameStateCalledEvent(this->getLogicState());
+	}
+	else
+	{
+		event->ignore();
+	}
 }
 
 /**
@@ -294,148 +294,148 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
  */
 void FsmGraphicState::enableMoveEvent()
 {
-    this->moveEventEnabled = true;
+	this->moveEventEnabled = true;
 }
 
 QPainterPath FsmGraphicState::shape() const
 {
-    QPainterPath path;
-    QPainterPathStroker* stroker;
+	QPainterPath path;
+	QPainterPathStroker* stroker;
 
-    if (this->selectionShape != nullptr)
-    {
-        stroker = new QPainterPathStroker(selectionPen);
-        path.addEllipse(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)));
-    }
-    else
-    {
-        stroker = new QPainterPathStroker(pen);
-        path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
-    }
+	if (this->selectionShape != nullptr)
+	{
+		stroker = new QPainterPathStroker(selectionPen);
+		path.addEllipse(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)));
+	}
+	else
+	{
+		stroker = new QPainterPathStroker(pen);
+		path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
+	}
 
-    path.setFillRule(Qt::WindingFill);
-    path = path.united(stroker->createStroke(path));
-    path = path.simplified();
-    delete stroker;
-    return path;
+	path.setFillRule(Qt::WindingFill);
+	path = path.united(stroker->createStroke(path));
+	path = path.simplified();
+	delete stroker;
+	return path;
 }
 
 QRectF FsmGraphicState::boundingRect() const
 {
-    return this->shape().boundingRect();
+	return this->shape().boundingRect();
 }
 
 void FsmGraphicState::treatMenu(QAction* action)
 {
-    shared_ptr<FsmState> l_logicState = this->getLogicState();
+	shared_ptr<FsmState> l_logicState = this->getLogicState();
 
-    if (l_logicState != nullptr)
-    {
-        if (action->text() == tr("Edit"))
-        {
-            emit editStateCalledEvent(l_logicState);
-        }
-        else if (action->text() == tr("Set initial"))
-        {
-                l_logicState->setInitial();
-        }
-        else if (action->text() == tr("Rename"))
-        {
-            emit renameStateCalledEvent(l_logicState);
-        }
-        else if (action->text() == tr("Delete"))
-        {
-            askDelete();
-        }
-        else if (action->text() == tr("Draw transition from this state"))
-        {
-            ((FsmScene*)scene())->beginDrawTransition(this, QPointF());
-        }
-        else if (action->text() == tr("Set active"))
-        {
-            l_logicState->getOwningFsm()->forceStateActivation(l_logicState);
-        }
-    }
+	if (l_logicState != nullptr)
+	{
+		if (action->text() == tr("Edit"))
+		{
+			emit editStateCalledEvent(l_logicState);
+		}
+		else if (action->text() == tr("Set initial"))
+		{
+			    l_logicState->setInitial();
+		}
+		else if (action->text() == tr("Rename"))
+		{
+			emit renameStateCalledEvent(l_logicState);
+		}
+		else if (action->text() == tr("Delete"))
+		{
+			askDelete();
+		}
+		else if (action->text() == tr("Draw transition from this state"))
+		{
+			((FsmScene*)scene())->beginDrawTransition(this, QPointF());
+		}
+		else if (action->text() == tr("Set active"))
+		{
+			l_logicState->getOwningFsm()->forceStateActivation(l_logicState);
+		}
+	}
 }
 
 void FsmGraphicState::machineModeChangedEventHandler(Machine::simulation_mode)
 {
-    this->rebuildRepresentation();
+	this->rebuildRepresentation();
 }
 
 void FsmGraphicState::askDelete()
 {
-    shared_ptr<FsmState> l_logicState = this->getLogicState();
-    shared_ptr<Fsm> owningFsm = l_logicState->getOwningFsm();
+	shared_ptr<FsmState> l_logicState = this->getLogicState();
+	shared_ptr<Fsm> owningFsm = l_logicState->getOwningFsm();
 
-    int linkedTransitions = l_logicState->getOutgoingTransitions().count() + l_logicState->getIncomingTransitions().count();
-    if (linkedTransitions != 0)
-    {
-        QString messageText = tr("Delete current state?") + "<br />";
-        if (linkedTransitions == 1)
-            messageText += tr("The connected transition will be deleted");
-        else
-            messageText += tr("All") + " " + QString::number(linkedTransitions) + " " + tr("connected transitions will be deleted");
+	int linkedTransitions = l_logicState->getOutgoingTransitions().count() + l_logicState->getIncomingTransitions().count();
+	if (linkedTransitions != 0)
+	{
+		QString messageText = tr("Delete current state?") + "<br />";
+		if (linkedTransitions == 1)
+			messageText += tr("The connected transition will be deleted");
+		else
+			messageText += tr("All") + " " + QString::number(linkedTransitions) + " " + tr("connected transitions will be deleted");
 
-        QMessageBox::StandardButton reply = QMessageBox::question(scene()->views()[0], tr("User confirmation needed"), messageText, QMessageBox::Ok | QMessageBox::Cancel);
+		QMessageBox::StandardButton reply = QMessageBox::question(scene()->views()[0], tr("User confirmation needed"), messageText, QMessageBox::Ok | QMessageBox::Cancel);
 
-        if (reply == QMessageBox::StandardButton::Ok)
-        {
-            // This call will destroy the current object as consequence of the logic object destruction
-            owningFsm->removeState(l_logicState);
-        }
-    }
-    else
-        owningFsm->removeState(l_logicState);
+		if (reply == QMessageBox::StandardButton::Ok)
+		{
+			// This call will destroy the current object as consequence of the logic object destruction
+			owningFsm->removeState(l_logicState);
+		}
+	}
+	else
+		owningFsm->removeState(l_logicState);
 }
 
 void FsmGraphicState::updateSelectionShapeDisplay()
 {
-    if ( (this->isSelected()) && (this->selectionShape == nullptr) )
-    {
-        this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
-        this->selectionShape->setPen(selectionPen);
-    }
-    else if ( (!this->isSelected()) && (this->selectionShape != nullptr) )
-    {
-        delete this->selectionShape;
-        this->selectionShape = nullptr;
-    }
+	if ( (this->isSelected()) && (this->selectionShape == nullptr) )
+	{
+		this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
+		this->selectionShape->setPen(selectionPen);
+	}
+	else if ( (!this->isSelected()) && (this->selectionShape != nullptr) )
+	{
+		delete this->selectionShape;
+		this->selectionShape = nullptr;
+	}
 }
 
 void FsmGraphicState::rebuildRepresentation()
 {
-    // Clear all child items
-    qDeleteAll(this->childItems());
-    this->childItems().clear();
-    this->selectionShape = nullptr;
+	// Clear all child items
+	qDeleteAll(this->childItems());
+	this->childItems().clear();
+	this->selectionShape = nullptr;
 
-    shared_ptr<FsmState> l_logicState = this->getLogicState();
+	shared_ptr<FsmState> l_logicState = this->getLogicState();
 
-    if (l_logicState != nullptr)
-    {
-        if (l_logicState->getIsActive())
-            this->setBrush(activeBrush);
-        else
-            this->setBrush(inactiveBrush);
+	if (l_logicState != nullptr)
+	{
+		if (l_logicState->getIsActive())
+			this->setBrush(activeBrush);
+		else
+			this->setBrush(inactiveBrush);
 
-        stateName = new QGraphicsTextItem(l_logicState->getName(), this);
+		stateName = new QGraphicsTextItem(l_logicState->getName(), this);
 
-        stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
+		stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
 
-        if (l_logicState->isInitial())
-        {
-            QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
-            insideCircle->setPen(pen);
-        }
+		if (l_logicState->isInitial())
+		{
+			QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
+			insideCircle->setPen(pen);
+		}
 
-        this->buildActionsBox(pen, true);
-        QGraphicsItemGroup* actionsBox = this->getActionsBox();
-        if (actionsBox != nullptr)
-        {
-            actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
-        }
+		this->buildActionsBox(pen, true);
+		QGraphicsItemGroup* actionsBox = this->getActionsBox();
+		if (actionsBox != nullptr)
+		{
+			actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
+		}
 
-        this->updateSelectionShapeDisplay();
-    }
+		this->updateSelectionShapeDisplay();
+	}
 }

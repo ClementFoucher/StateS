@@ -50,62 +50,62 @@ class ActionOnSignal;
  */
 class ActionEditor : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    enum ContextAction
-    {
-        Cancel             = 0,
-        DeleteAction       = 1,
-        AffectSwitchWhole  = 2,
-        AffectSwitchSingle = 3,
-        AffectSwitchRange  = 4,
-        AffectEditRange    = 5,
-        EditValue          = 6,
-        MoveUp             = 7,
-        MoveDown           = 8
-    };
+	enum ContextAction
+	{
+		Cancel             = 0,
+		DeleteAction       = 1,
+		AffectSwitchWhole  = 2,
+		AffectSwitchSingle = 3,
+		AffectSwitchRange  = 4,
+		AffectEditRange    = 5,
+		EditValue          = 6,
+		MoveUp             = 7,
+		MoveDown           = 8
+	};
 
 public:
-    explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString::null, QWidget* parent = nullptr);
+	explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString::null, QWidget* parent = nullptr);
 
 protected:
-    virtual void keyPressEvent   (QKeyEvent* e)             override;
-    virtual void keyReleaseEvent (QKeyEvent* e)             override;
-    virtual void contextMenuEvent(QContextMenuEvent* event) override;
+	virtual void keyPressEvent   (QKeyEvent* e)             override;
+	virtual void keyReleaseEvent (QKeyEvent* e)             override;
+	virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
 private slots:
-    void selectionChangedEventHandler(const QItemSelection&, const QItemSelection&);
+	void selectionChangedEventHandler(const QItemSelection&, const QItemSelection&);
 
-    void displayAddActionMenu() const;
-    void removeSelectedActions();
+	void displayAddActionMenu() const;
+	void removeSelectedActions();
 
-    void treatAddActionMenuEventHandler(QAction* action);
-    void treatContextMenuEventHandler  (QAction* action);
+	void treatAddActionMenuEventHandler(QAction* action);
+	void treatContextMenuEventHandler  (QAction* action);
 
-    void moveSelectedActionsUp();
-    void moveSelectedActionsDown();
+	void moveSelectedActionsUp();
+	void moveSelectedActionsDown();
 
-    void tableChangedEventHandler();
-
-private:
-    void fillFirstColumn();
-    void updateButtonsEnableState();
-
-    void sortSelectionList();
-    void restoreSelection();
+	void tableChangedEventHandler();
 
 private:
-    weak_ptr<MachineActuatorComponent> actuator;
+	void fillFirstColumn();
+	void updateButtonsEnableState();
 
-    QTableView*                 actionTable        = nullptr;
-    QPushButton*                buttonAddAction    = nullptr;
-    QPushButton*                buttonRemoveAction = nullptr;
-    QPushButton*                buttonMoveUp       = nullptr;
-    QPushButton*                buttonMoveDown     = nullptr;
-    CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
+	void sortSelectionList();
+	void restoreSelection();
 
-    QList<weak_ptr<ActionOnSignal>> latestSelection;
+private:
+	weak_ptr<MachineActuatorComponent> actuator;
+
+	QTableView*                 actionTable        = nullptr;
+	QPushButton*                buttonAddAction    = nullptr;
+	QPushButton*                buttonRemoveAction = nullptr;
+	QPushButton*                buttonMoveUp       = nullptr;
+	QPushButton*                buttonMoveDown     = nullptr;
+	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
+
+	QList<weak_ptr<ActionOnSignal>> latestSelection;
 };
 
 #endif // ACTIONEDITOR_H

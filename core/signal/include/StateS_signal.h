@@ -35,70 +35,70 @@ using namespace std;
 
 class Signal : public QObject, public enable_shared_from_this<Signal>
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public: // Static
 
-    enum SignalErrorEnum{
-        building_zero_sized = 0,
-        resized_to_0        = 1,
-        size_mismatch       = 2,
-        signal_is_not_bool  = 3,
-        value_is_read_only  = 4
-    };
+	enum SignalErrorEnum{
+		building_zero_sized = 0,
+		resized_to_0        = 1,
+		size_mismatch       = 2,
+		signal_is_not_bool  = 3,
+		value_is_read_only  = 4
+	};
 
 public:
-    explicit Signal(const QString& name, uint size); // Throws StatesException
-    explicit Signal(const QString& name);
+	explicit Signal(const QString& name, uint size); // Throws StatesException
+	explicit Signal(const QString& name);
 
-    ~Signal();
+	~Signal();
 
-    QString getName() const;
-    void setName(const QString& value); // TODO: check signal name here and throw StatesException
+	QString getName() const;
+	void setName(const QString& value); // TODO: check signal name here and throw StatesException
 
-    virtual uint getSize() const;
-    virtual void resize(uint newSize); // Throws StatesException
+	virtual uint getSize() const;
+	virtual void resize(uint newSize); // Throws StatesException
 
-    LogicValue getInitialValue() const;
-    virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
-    void reinitialize();
+	LogicValue getInitialValue() const;
+	virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
+	void reinitialize();
 
-    virtual QString getText() const;
-    QString getColoredText(bool activeColored) const;
+	virtual QString getText() const;
+	QString getColoredText(bool activeColored) const;
 
-    virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
-    virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
-    LogicValue getCurrentValue() const;
+	virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
+	virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
+	LogicValue getCurrentValue() const;
 
-    void resetValue();
-    void set();
+	void resetValue();
+	void set();
 
-    // Concepts of true and false are only applicable to size 1 signals
-    // A signal with size > 1 will neither be true nor false
-    bool isTrue()  const; // Throws StatesException
-    bool isFalse() const; // Throws StatesException
+	// Concepts of true and false are only applicable to size 1 signals
+	// A signal with size > 1 will neither be true nor false
+	bool isTrue()  const; // Throws StatesException
+	bool isFalse() const; // Throws StatesException
 
 signals:
-    // General events
-    void signalStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
-    void signalDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
+	// General events
+	void signalStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
+	void signalDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
 
-    // Specific events detail
-    void signalRenamedEvent();
-    void signalResizedEvent();
-    void SignalInitialValueChangedEvent();
+	// Specific events detail
+	void signalRenamedEvent();
+	void signalResizedEvent();
+	void SignalInitialValueChangedEvent();
 
-    // Deletion event
-    void signalDeletedEvent();
+	// Deletion event
+	void signalDeletedEvent();
 
 private:
-    // Static
-    QString name;
-    LogicValue initialValue;
+	// Static
+	QString name;
+	LogicValue initialValue;
 
 protected:
-    // Dynamic
-    LogicValue currentValue;
+	// Dynamic
+	LogicValue currentValue;
 };
 
 #endif // SIGNAL_H

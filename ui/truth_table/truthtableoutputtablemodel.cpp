@@ -34,141 +34,141 @@
 TruthTableOutputTableModel::TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
     QAbstractTableModel(parent)
 {
-    this->truthTable = truthTable;
-    this->highlights = highlights;
+	this->truthTable = truthTable;
+	this->highlights = highlights;
 }
 
 int TruthTableOutputTableModel::columnCount(const QModelIndex& parent) const
 {
-    int columns = 0;
+	int columns = 0;
 
-    if (!parent.isValid())
-    {
-        shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+	if (!parent.isValid())
+	{
+		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
 
-        if (l_truthTable != nullptr)
-        {
-            columns = l_truthTable->getOutputCount();
-        }
-    }
+		if (l_truthTable != nullptr)
+		{
+			columns = l_truthTable->getOutputCount();
+		}
+	}
 
-    return columns;
+	return columns;
 }
 
 int TruthTableOutputTableModel::rowCount(const QModelIndex& parent) const
 {
-    int rows = 0;
+	int rows = 0;
 
-    if (!parent.isValid())
-    {
-        shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+	if (!parent.isValid())
+	{
+		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
 
-        if (l_truthTable != nullptr)
-        {
-            rows = l_truthTable->getInputTable().count();
-        }
-    }
+		if (l_truthTable != nullptr)
+		{
+			rows = l_truthTable->getInputTable().count();
+		}
+	}
 
-    return rows;
+	return rows;
 }
 
 QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) const
 {
-    QVariant variant = QVariant();
+	QVariant variant = QVariant();
 
-    if (index.isValid())
-    {
-        if (role == Qt::DisplayRole)
-        {
-            shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+	if (index.isValid())
+	{
+		if (role == Qt::DisplayRole)
+		{
+			shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
 
-            if (l_truthTable != nullptr)
-            {
-                if (index.column() < (int)l_truthTable->getOutputCount())
-                {
-                    QVector<QVector<LogicValue>> outputTable = l_truthTable->getOutputTable();
+			if (l_truthTable != nullptr)
+			{
+				if (index.column() < (int)l_truthTable->getOutputCount())
+				{
+					QVector<QVector<LogicValue>> outputTable = l_truthTable->getOutputTable();
 
-                    variant = QVariant(outputTable[index.row()][index.column()].toString());
-                }
-            }
-        }
-        else if (role == Qt::BackgroundColorRole)
-        {
-            if (this->truthTable.expired() == false)
-            {
-                if (this->highlights.contains(index.row()))
-                {
-                    variant = QVariant(QColor(255, 0, 0, 25));
-                }
-                else
-                {
-                    if ( (index.row() % 2) == 0)
-                        variant = QVariant(QColor(0, 255, 0, 25));
-                    else
-                        variant = QVariant(QColor(0, 255, 0, 50));
-                }
-            }
-        }
-        else if (role == Qt::TextColorRole)
-        {
-            if (this->highlights.contains(index.row()))
-            {
-                shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+					variant = QVariant(outputTable[index.row()][index.column()].toString());
+				}
+			}
+		}
+		else if (role == Qt::BackgroundColorRole)
+		{
+			if (this->truthTable.expired() == false)
+			{
+				if (this->highlights.contains(index.row()))
+				{
+					variant = QVariant(QColor(255, 0, 0, 25));
+				}
+				else
+				{
+					if ( (index.row() % 2) == 0)
+						variant = QVariant(QColor(0, 255, 0, 25));
+					else
+						variant = QVariant(QColor(0, 255, 0, 50));
+				}
+			}
+		}
+		else if (role == Qt::TextColorRole)
+		{
+			if (this->highlights.contains(index.row()))
+			{
+				shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
 
-                if (l_truthTable != nullptr)
-                {
-                    if (index.column() < (int)l_truthTable->getOutputCount())
-                    {
-                        variant = QVariant(QColor(255, 0, 0, 255));
-                    }
-                }
-            }
-        }
-    }
+				if (l_truthTable != nullptr)
+				{
+					if (index.column() < (int)l_truthTable->getOutputCount())
+					{
+						variant = QVariant(QColor(255, 0, 0, 255));
+					}
+				}
+			}
+		}
+	}
 
-    return variant;
+	return variant;
 }
 
 QVariant TruthTableOutputTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    QVariant variant = QVariant();
+	QVariant variant = QVariant();
 
-    if (role == Qt::DisplayRole)
-    {
-        shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+	if (role == Qt::DisplayRole)
+	{
+		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
 
-        if (l_truthTable != nullptr)
-        {
-            if (orientation == Qt::Horizontal)
-            {
-                if (section < (int)l_truthTable->getOutputCount())
-                {
-                    QVector<QString> equationTable = l_truthTable->getOutputsEquations();
+		if (l_truthTable != nullptr)
+		{
+			if (orientation == Qt::Horizontal)
+			{
+				if (section < (int)l_truthTable->getOutputCount())
+				{
+					QVector<QString> equationTable = l_truthTable->getOutputsEquations();
 
-                    variant = QVariant(equationTable[section]);
-                }
-            }
-            else
-            {
-                variant = QVariant(section);
-            }
-        }
-    }
+					variant = QVariant(equationTable[section]);
+				}
+			}
+			else
+			{
+				variant = QVariant(section);
+			}
+		}
+	}
 
-    return variant;
+	return variant;
 }
 
 Qt::ItemFlags TruthTableOutputTableModel::flags(const QModelIndex& index) const
 {
-    Qt::ItemFlags flags = Qt::NoItemFlags;
+	Qt::ItemFlags flags = Qt::NoItemFlags;
 
-    if (index.isValid())
-    {
-        if (this->truthTable.expired() == false)
-        {
-            flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
-        }
-    }
+	if (index.isValid())
+	{
+		if (this->truthTable.expired() == false)
+		{
+			flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
+		}
+	}
 
-    return flags;
+	return flags;
 }

@@ -28,16 +28,16 @@
 
 class IO : public Signal
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    enum class direction{input, output, inout};
+	enum class direction{input, output, inout};
 
 public:
-    explicit IO(const QString& name);
-    explicit IO(const QString& name, uint size); // Throws StatesException
+	explicit IO(const QString& name);
+	explicit IO(const QString& name, uint size); // Throws StatesException
 
-    virtual direction getDirection() const = 0;
+	virtual direction getDirection() const = 0;
 };
 
 #endif // IO_H

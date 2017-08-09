@@ -36,16 +36,16 @@ class ActionOnSignal;
 
 class RangeEditorDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
+	RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
 
-    int getRangeL() const;
-    int getRangeR() const;
+	int getRangeL() const;
+	int getRangeR() const;
 
 private:
-    shared_ptr<Equation> equation;
+	shared_ptr<Equation> equation;
 
 };
 

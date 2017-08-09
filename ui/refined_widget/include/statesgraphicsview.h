@@ -34,17 +34,17 @@
  */
 class StatesGraphicsView : public QGraphicsView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit StatesGraphicsView(QWidget* parent = nullptr);
+	explicit StatesGraphicsView(QWidget* parent = nullptr);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent* event) override;
-    void dropEvent     (QDropEvent* event)      override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dropEvent     (QDropEvent* event)      override;
 
 private:
-    StatesUi* getMainWindow();
+	StatesUi* getMainWindow();
 
 };
 

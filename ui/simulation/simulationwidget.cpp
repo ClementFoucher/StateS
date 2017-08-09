@@ -47,187 +47,187 @@
 SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent) :
     QMainWindow(parent)
 {
-    this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
-    this->setWindowTitle(tr("StateS timeline visualizer"));
+	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+	this->setWindowTitle(tr("StateS timeline visualizer"));
 
-    this->toolBar = this->addToolBar(tr("Tools"));
-    this->toolBar->setIconSize(QSize(64, 64));
+	this->toolBar = this->addToolBar(tr("Tools"));
+	this->toolBar->setIconSize(QSize(64, 64));
 
-    QIcon exportPdfIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
-    QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
-    connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
+	QIcon exportPdfIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
+	QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
+	connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
 
-    QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
-    this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
+	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
-    this->toolBar->addAction(action);
-    this->toolBar->addAction(this->actionDetach);
+	this->toolBar->addAction(action);
+	this->toolBar->addAction(this->actionDetach);
 
 
-    // Add resources in a scroll area
-    QScrollArea* scrollArea = new QScrollArea();
-    scrollArea->setWidgetResizable(true);
-    scrollArea->setFrameShape(QFrame::NoFrame);
-    scrollArea->setStyleSheet("background-color: transparent");
+	// Add resources in a scroll area
+	QScrollArea* scrollArea = new QScrollArea();
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setFrameShape(QFrame::NoFrame);
+	scrollArea->setStyleSheet("background-color: transparent");
 
-    scrollArea->setWidget(new QWidget());
+	scrollArea->setWidget(new QWidget());
 
-    this->setCentralWidget(scrollArea);
+	this->setCentralWidget(scrollArea);
 
-    shared_ptr<MachineSimulator> simulator = machine->getSimulator();
-    shared_ptr<Clock>            clock     = simulator->getClock();
+	shared_ptr<MachineSimulator> simulator = machine->getSimulator();
+	shared_ptr<Clock>            clock     = simulator->getClock();
 
-    connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &SimulationWidget::delayOutputOptionTriggered); // Relay option change event
+	connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &SimulationWidget::delayOutputOptionTriggered); // Relay option change event
 
-    QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
-    layout->setAlignment(Qt::AlignTop);
+	QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
+	layout->setAlignment(Qt::AlignTop);
 
-    QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
-    titleClock->setAlignment(Qt::AlignCenter);
+	QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
+	titleClock->setAlignment(Qt::AlignCenter);
 
-    layout->addWidget(titleClock);
-    layout->addWidget(new ClockTimeLine(clock));
+	layout->addWidget(titleClock);
+	layout->addWidget(new ClockTimeLine(clock));
 
-    if (machine->getInputs().count() != 0)
-    {
-        QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
-        titleInputs->setAlignment(Qt::AlignCenter);
+	if (machine->getInputs().count() != 0)
+	{
+		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
+		titleInputs->setAlignment(Qt::AlignCenter);
 
-        layout->addWidget(titleInputs);
+		layout->addWidget(titleInputs);
 
-        foreach (shared_ptr<Input> var, machine->getInputs())
-        {
-            SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock);
-            layout->addWidget(varTL);
-        }
-    }
+		foreach (shared_ptr<Input> var, machine->getInputs())
+		{
+			SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock);
+			layout->addWidget(varTL);
+		}
+	}
 
-    if (machine->getOutputs().count() != 0)
-    {
-        QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
-        titleOutputs->setAlignment(Qt::AlignCenter);
+	if (machine->getOutputs().count() != 0)
+	{
+		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
+		titleOutputs->setAlignment(Qt::AlignCenter);
 
-        layout->addWidget(titleOutputs);
+		layout->addWidget(titleOutputs);
 
-        foreach (shared_ptr<Output> var, machine->getOutputs())
-        {
-            SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
-            layout->addWidget(varTL);
-        }
-    }
+		foreach (shared_ptr<Output> var, machine->getOutputs())
+		{
+			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
+			layout->addWidget(varTL);
+		}
+	}
 
-    if (machine->getLocalVariables().count() != 0)
-    {
-        QLabel* titleVariables = new QLabel("<b>" + tr("Local variables") + "</b>");
-        titleVariables->setAlignment(Qt::AlignCenter);
+	if (machine->getLocalVariables().count() != 0)
+	{
+		QLabel* titleVariables = new QLabel("<b>" + tr("Local variables") + "</b>");
+		titleVariables->setAlignment(Qt::AlignCenter);
 
-        layout->addWidget(titleVariables);
+		layout->addWidget(titleVariables);
 
-        foreach (shared_ptr<Signal> var, machine->getLocalVariables())
-        {
-            SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
-            layout->addWidget(varTL);
-        }
-    }
+		foreach (shared_ptr<Signal> var, machine->getLocalVariables())
+		{
+			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
+			layout->addWidget(varTL);
+		}
+	}
 }
 
 void SimulationWidget::closeEvent(QCloseEvent* event)
 {
-    event->ignore();
-    this->bindMe();
+	event->ignore();
+	this->bindMe();
 }
 
 void SimulationWidget::mousePressEvent(QMouseEvent* event)
 {
-    // TODO: handle only left button
-    this->separatorPosition = event->x();
-    repaint();
+	// TODO: handle only left button
+	this->separatorPosition = event->x();
+	repaint();
 
-    QWidget::mousePressEvent(event);
+	QWidget::mousePressEvent(event);
 }
 
 void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    // This event is only called if we have clicked first
-    this->separatorPosition = event->x();
-    repaint();
+	// This event is only called if we have clicked first
+	this->separatorPosition = event->x();
+	repaint();
 
-    QWidget::mouseMoveEvent(event);
+	QWidget::mouseMoveEvent(event);
 
 }
 
 void SimulationWidget::paintEvent(QPaintEvent*)
 {
-    QPainter painter(this);
+	QPainter painter(this);
 
-    painter.drawLine(this->separatorPosition, 0, this->separatorPosition, this->height());
+	painter.drawLine(this->separatorPosition, 0, this->separatorPosition, this->height());
 
 }
 
 void SimulationWidget::exportToPDF()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export time line to PDF"), QString(), "*.pdf");
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Export time line to PDF"), QString(), "*.pdf");
 
-    if (!fileName.isEmpty())
-    {
-        if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
-            fileName += ".pdf";
+	if (!fileName.isEmpty())
+	{
+		if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+			fileName += ".pdf";
 
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName(fileName);
-        printer.setPageSize(QPrinter::A4);
-        printer.setPageOrientation(QPageLayout::Landscape);
+		QPrinter printer(QPrinter::HighResolution);
+		printer.setOutputFormat(QPrinter::PdfFormat);
+		printer.setOutputFileName(fileName);
+		printer.setPageSize(QPrinter::A4);
+		printer.setPageOrientation(QPageLayout::Landscape);
 
-        QPainter painter(&printer);
+		QPainter painter(&printer);
 
-        // Thanks to Qt doc for this code:
-        painter.begin(&printer);
-        double xscale = printer.pageRect().width()/double(centralWidget()->width());
-        double yscale = printer.pageRect().height()/double(centralWidget()->height());
-        double scale = qMin(xscale, yscale);
-        painter.translate(printer.paperRect().x() + printer.pageRect().width()/2,
-                          printer.paperRect().y() + printer.pageRect().height()/2);
-        painter.scale(scale, scale);
-        painter.translate(-width()/2, -height()/2);
+		// Thanks to Qt doc for this code:
+		painter.begin(&printer);
+		double xscale = printer.pageRect().width()/double(centralWidget()->width());
+		double yscale = printer.pageRect().height()/double(centralWidget()->height());
+		double scale = qMin(xscale, yscale);
+		painter.translate(printer.paperRect().x() + printer.pageRect().width()/2,
+		                  printer.paperRect().y() + printer.pageRect().height()/2);
+		painter.scale(scale, scale);
+		painter.translate(-width()/2, -height()/2);
 
-        centralWidget()->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);
-    }
+		centralWidget()->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);
+	}
 }
 
 void SimulationWidget::setMeFree()
 {
-    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 
-    emit detachTimelineEvent(true);
+	emit detachTimelineEvent(true);
 
-    this->actionDetach->setText(tr("Attach to main window"));
+	this->actionDetach->setText(tr("Attach to main window"));
 
-    QIcon attachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
-    this->actionDetach->setIcon(attachWindowIcon);
+	QIcon attachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+	this->actionDetach->setIcon(attachWindowIcon);
 
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
+	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 }
 
 void SimulationWidget::bindMe()
 {
-    disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
+	disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
 
-    emit detachTimelineEvent(false);
+	emit detachTimelineEvent(false);
 
-    this->actionDetach->setText(tr("Detach as independant window"));
+	this->actionDetach->setText(tr("Detach as independant window"));
 
-    QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
-    this->actionDetach->setIcon(detachWindowIcon);
+	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	this->actionDetach->setIcon(detachWindowIcon);
 
-    connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
 }
 
 void SimulationWidget::delayOutputOptionTriggered(bool activated)
 {
-    if (activated)
-        emit outputDelayChangedEvent(1);
-    else
-        emit outputDelayChangedEvent(0);
+	if (activated)
+		emit outputDelayChangedEvent(1);
+	else
+		emit outputDelayChangedEvent(0);
 }

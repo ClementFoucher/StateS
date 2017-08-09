@@ -31,6 +31,6 @@ TableWidgetWithResizeEvent::TableWidgetWithResizeEvent(int rows, int columns) :
 
 void TableWidgetWithResizeEvent::resizeEvent(QResizeEvent* evt)
 {
-    QTableWidget::resizeEvent(evt);
-    emit resized();
+	QTableWidget::resizeEvent(evt);
+	emit resized();
 }

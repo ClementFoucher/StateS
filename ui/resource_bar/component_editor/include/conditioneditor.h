@@ -44,43 +44,44 @@ class FsmTransition;
 
 class ConditionEditor : public QWidget
 {
-    Q_OBJECT
-public:
-    explicit ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
-    ~ConditionEditor();
+	Q_OBJECT
 
-    void updateTransition(shared_ptr<FsmTransition> newTransition);
+public:
+	explicit ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
+	~ConditionEditor();
+
+	void updateTransition(shared_ptr<FsmTransition> newTransition);
 
 private slots:
-    void editCondition();
-    void clearCondition();
+	void editCondition();
+	void clearCondition();
 
-    void treatMenuSetCondition(QAction*);
+	void treatMenuSetCondition(QAction*);
 
-    void updateContent();
+	void updateContent();
 
-    void conditionTextPositionSliderChanged(int newValue);
+	void conditionTextPositionSliderChanged(int newValue);
 
 private:
-    void expandTruthTable();
-    void collapseTruthTable();
-    bool isTruthTableDisplayed();
+	void expandTruthTable();
+	void collapseTruthTable();
+	bool isTruthTableDisplayed();
 
-    weak_ptr<FsmTransition> transition;
-    shared_ptr<TruthTable> truthTable;
+	weak_ptr<FsmTransition> transition;
+	shared_ptr<TruthTable> truthTable;
 
-    // QWidgets with parent
-    QGridLayout* layout = nullptr;
+	// QWidgets with parent
+	QGridLayout* layout = nullptr;
 
-    QLabel* conditionText        = nullptr;
-    QLabel* conditionWarningText = nullptr;
+	QLabel* conditionText        = nullptr;
+	QLabel* conditionWarningText = nullptr;
 
-    QSlider* conditionTextPositionSlider = nullptr;
+	QSlider* conditionTextPositionSlider = nullptr;
 
-    QPushButton* buttonSetCondition   = nullptr;
+	QPushButton* buttonSetCondition   = nullptr;
 
-    QPushButton*       buttonExpandTruthTable = nullptr;
-    TruthTableDisplay* truthTableDisplay      = nullptr;
+	QPushButton*       buttonExpandTruthTable = nullptr;
+	TruthTableDisplay* truthTableDisplay      = nullptr;
 };
 
 #endif // CONDITIONEDITOR_H

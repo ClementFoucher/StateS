@@ -32,28 +32,28 @@
 
 class GraphicTimeLine : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
+	GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
 
-    void addPoint(bool state);
-    void updateLastPoint(bool state);
-    void reset(bool initialValue);
-    void chageEventDelay(uint eventDelay);
+	void addPoint(bool state);
+	void updateLastPoint(bool state);
+	void reset(bool initialValue);
+	void chageEventDelay(uint eventDelay);
 
 protected:
-    void paintEvent(QPaintEvent*) override;
+	void paintEvent(QPaintEvent*) override;
 
-    uint stepLength;
+	uint stepLength;
 
 private:
-    void removeLastPoint();
+	void removeLastPoint();
 
-    QPolygon timeLinePoly;
-    QVector<bool> points;
-    uint pointsPerCycle;
-    uint eventDelay;
+	QPolygon timeLinePoly;
+	QVector<bool> points;
+	uint pointsPerCycle;
+	uint eventDelay;
 
 };
 

@@ -44,101 +44,101 @@ FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent) :
 
 QString FsmXmlWriter::getMachineXml()
 {
-    this->configuration = nullptr;
-    this->createSaveString();
-    this->writeFsmToStream();
-    return this->xmlString;
+	this->configuration = nullptr;
+	this->createSaveString();
+	this->writeFsmToStream();
+	return this->xmlString;
 }
 
 void FsmXmlWriter::writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath)
 {
-    this->configuration = configuration;
-    this->createSaveFile(filePath);
-    this->writeFsmToStream();
-    this->finalizeSaveFile();
+	this->configuration = configuration;
+	this->createSaveFile(filePath);
+	this->writeFsmToStream();
+	this->finalizeSaveFile();
 }
 
 void FsmXmlWriter::writeFsmStates()
 {
-    shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
 
-    this->stream->writeStartElement("States");
+	this->stream->writeStartElement("States");
 
-    foreach (shared_ptr<FsmState> state, fsm->getStates())
-    {
-        this->stream->writeStartElement("State");
+	foreach (shared_ptr<FsmState> state, fsm->getStates())
+	{
+		this->stream->writeStartElement("State");
 
-        // Name
-        this->stream->writeAttribute("Name", state->getName());
+		// Name
+		this->stream->writeAttribute("Name", state->getName());
 
-        // Initial
-        if (state->isInitial())
-            this->stream->writeAttribute("IsInitial", "true");
+		// Initial
+		if (state->isInitial())
+			this->stream->writeAttribute("IsInitial", "true");
 
-        if (this->configuration != nullptr)
-        {
-            // Position => offseted so that scene top-left corner is in (0,0)
-            this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + this->configuration->sceneTranslation.x()));
-            this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + this->configuration->sceneTranslation.y()));
-        }
-        else
-        {
-            // Position
-            this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
-            this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
-        }
+		if (this->configuration != nullptr)
+		{
+			// Position => offseted so that scene top-left corner is in (0,0)
+			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + this->configuration->sceneTranslation.x()));
+			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + this->configuration->sceneTranslation.y()));
+		}
+		else
+		{
+			// Position
+			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
+			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
+		}
 
-        // Actions
-        this->writeActuatorActions(state);
+		// Actions
+		this->writeActuatorActions(state);
 
-        this->stream->writeEndElement();
-    }
+		this->stream->writeEndElement();
+	}
 
-    this->stream->writeEndElement();
+	this->stream->writeEndElement();
 }
 
 void FsmXmlWriter::writeFsmTransitions()
 {
-    shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
 
-    this->stream->writeStartElement("Transitions");
+	this->stream->writeStartElement("Transitions");
 
-    foreach (shared_ptr<FsmTransition> transition, fsm->getTransitions())
-    {
-        this->stream->writeStartElement("Transition");
+	foreach (shared_ptr<FsmTransition> transition, fsm->getTransitions())
+	{
+		this->stream->writeStartElement("Transition");
 
-        this->stream->writeAttribute("Source", transition->getSource()->getName());
-        this->stream->writeAttribute("Target", transition->getTarget()->getName());
+		this->stream->writeAttribute("Source", transition->getSource()->getName());
+		this->stream->writeAttribute("Target", transition->getTarget()->getName());
 
-        int sliderPosition = transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100;
-        this->stream->writeAttribute("SliderPos", QString::number(sliderPosition));
+		int sliderPosition = transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100;
+		this->stream->writeAttribute("SliderPos", QString::number(sliderPosition));
 
-        // Deal with equations
-        if (transition->getCondition() != nullptr)
-        {
-            this->stream->writeStartElement("Condition");
-            this->writeLogicEquation(transition->getCondition());
-            this->stream->writeEndElement(); // Condition
-        }
+		// Deal with equations
+		if (transition->getCondition() != nullptr)
+		{
+			this->stream->writeStartElement("Condition");
+			this->writeLogicEquation(transition->getCondition());
+			this->stream->writeEndElement(); // Condition
+		}
 
-        // Actions
-        this->writeActuatorActions(transition);
+		// Actions
+		this->writeActuatorActions(transition);
 
-        this->stream->writeEndElement();
-    }
+		this->stream->writeEndElement();
+	}
 
-    this->stream->writeEndElement();
+	this->stream->writeEndElement();
 }
 
 void FsmXmlWriter::writeFsmToStream()
 {
-    this->stream->writeStartElement("FSM");
-    this->stream->writeAttribute("Name", this->machine->getName());
-    this->stream->writeAttribute("StateS_version", StateS::getVersion());
+	this->stream->writeStartElement("FSM");
+	this->stream->writeAttribute("Name", this->machine->getName());
+	this->stream->writeAttribute("StateS_version", StateS::getVersion());
 
-    this->writeMachineCommonElements();
-    this->writeFsmStates();
-    this->writeFsmTransitions();
+	this->writeMachineCommonElements();
+	this->writeFsmStates();
+	this->writeFsmTransitions();
 
-    this->stream->writeEndElement(); // End FSM element
+	this->stream->writeEndElement(); // End FSM element
 }

@@ -30,7 +30,7 @@ class QString;
 class SvgImageGenerator
 {
 public:
-    static QPixmap getPixmapFromSvg(const QString& path);
+	static QPixmap getPixmapFromSvg(const QString& path);
 };
 
 #endif // SVGIMAGEGENERATOR_H

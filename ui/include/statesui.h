@@ -55,71 +55,71 @@ class SceneWidget;
  */
 class StatesUi : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit StatesUi();
+	explicit StatesUi();
 
-    void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
-    void setTitle(const QString& title);
-    void setUnsavedFlag(bool unsaved);
-    void setConfiguration(shared_ptr<MachineConfiguration> configuration);
-    shared_ptr<MachineConfiguration> getConfiguration() const;
+	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
+	void setTitle(const QString& title);
+	void setUnsavedFlag(bool unsaved);
+	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
+	shared_ptr<MachineConfiguration> getConfiguration() const;
 
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dropEvent(QDropEvent* event);
+	void dragEnterEvent(QDragEnterEvent* event);
+	void dropEvent(QDropEvent* event);
 
-    void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
-    void displayErrorMessage(const QString& errorTitle, const QString& errorList);
+	void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
+	void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
-    void setSaveAsActionEnabled       (bool enable);
-    void setSaveActionEnabled         (bool enable);
-    void setExportActionsEnabled      (bool enable);
-    void setUndoButtonEnabled         (bool enable);
-    void setRedoButtonEnabled         (bool enable);
+	void setSaveAsActionEnabled       (bool enable);
+	void setSaveActionEnabled         (bool enable);
+	void setExportActionsEnabled      (bool enable);
+	void setUndoButtonEnabled         (bool enable);
+	void setRedoButtonEnabled         (bool enable);
 
 signals:
-    void newFsmRequestEvent();
-    void clearMachineRequestEvent();
-    void loadMachineRequestEvent(const QString& path);
-    void saveMachineRequestEvent(const QString& path);
-    void saveMachineInCurrentFileRequestEvent();
-    void undoRequestEvent();
-    void redoRequestEvent();
+	void newFsmRequestEvent();
+	void clearMachineRequestEvent();
+	void loadMachineRequestEvent(const QString& path);
+	void saveMachineRequestEvent(const QString& path);
+	void saveMachineInCurrentFileRequestEvent();
+	void undoRequestEvent();
+	void redoRequestEvent();
 
 protected:
-    void closeEvent     (QCloseEvent* event) override;
-    void keyPressEvent  (QKeyEvent*   event) override;
-    void keyReleaseEvent(QKeyEvent*   event) override;
+	void closeEvent     (QCloseEvent* event) override;
+	void keyPressEvent  (QKeyEvent*   event) override;
+	void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
-    void beginSaveAsProcedure();
-    void beginSaveProcedure();
-    void beginLoadProcedure();
-    void beginNewMachineProcedure();
-    void beginClearMachineProcedure();
-    void beginExportImageProcedure();
-    void beginExportVhdlProcedure();
+	void beginSaveAsProcedure();
+	void beginSaveProcedure();
+	void beginLoadProcedure();
+	void beginNewMachineProcedure();
+	void beginClearMachineProcedure();
+	void beginExportImageProcedure();
+	void beginExportVhdlProcedure();
 
-    void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
-    void editSelectedItem();
-    void renameSelectedItem();
-
-private:
-    void updateTitle();
-    bool displayUnsavedConfirmation(const QString& cause);
+	void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
+	void editSelectedItem();
+	void renameSelectedItem();
 
 private:
-    // Display area and resource bar
-    DisplayArea* displayArea = nullptr;
-    ToolBar*     toolbar     = nullptr;
-    SceneWidget* sceneWidget = nullptr;
-    ResourceBar* resourceBar = nullptr;
+	void updateTitle();
+	bool displayUnsavedConfirmation(const QString& cause);
 
-    // Current machine
-    weak_ptr<Machine> machine;
-    QString windowTitle = QString::null;
-    bool unsavedFlag = false;
+private:
+	// Display area and resource bar
+	DisplayArea* displayArea = nullptr;
+	ToolBar*     toolbar     = nullptr;
+	SceneWidget* sceneWidget = nullptr;
+	ResourceBar* resourceBar = nullptr;
+
+	// Current machine
+	weak_ptr<Machine> machine;
+	QString windowTitle = QString::null;
+	bool unsavedFlag = false;
 };
 
 #endif // STATESUI_H

@@ -35,16 +35,16 @@ class Clock;
 
 class MachineSimulator : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MachineSimulator();
+	explicit MachineSimulator();
 
-    virtual void enableOutputDelay(bool enable) = 0;
-    virtual shared_ptr<Clock> getClock() const = 0;
+	virtual void enableOutputDelay(bool enable) = 0;
+	virtual shared_ptr<Clock> getClock() const = 0;
 
 signals:
-    void outputDelayChangedEvent(bool enable);
+	void outputDelayChangedEvent(bool enable);
 };
 
 #endif // MACHINESIMULATOR_H

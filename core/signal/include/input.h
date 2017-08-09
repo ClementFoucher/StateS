@@ -28,13 +28,13 @@
 
 class Input : public IO
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Input(const QString& name);
-    explicit Input(const QString& name, uint size); // Throws StatesException
+	explicit Input(const QString& name);
+	explicit Input(const QString& name, uint size); // Throws StatesException
 
-    IO::direction getDirection() const override;
+	IO::direction getDirection() const override;
 };
 
 #endif // INPUT_H

@@ -36,35 +36,35 @@
 StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
     ComponentEditorTab(parent)
 {
-    this->state = state;
-    connect(state.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
+	this->state = state;
+	connect(state.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
-    this->setLayout(new QVBoxLayout());
+	this->setLayout(new QVBoxLayout());
 
-    QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>");
-    title->setAlignment(Qt::AlignCenter);
-    this->layout()->addWidget(title);
+	QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>");
+	title->setAlignment(Qt::AlignCenter);
+	this->layout()->addWidget(title);
 
-    QLabel* nameEditTitle = new QLabel(tr("State name"));
-    nameEditTitle->setAlignment(Qt::AlignCenter);
-    nameEditTitle->setWordWrap(true);
-    this->layout()->addWidget(nameEditTitle);
+	QLabel* nameEditTitle = new QLabel(tr("State name"));
+	nameEditTitle->setAlignment(Qt::AlignCenter);
+	nameEditTitle->setWordWrap(true);
+	this->layout()->addWidget(nameEditTitle);
 
-    this->textStateName = new DynamicLineEdit(state->getName(), true);
-    connect(this->textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
-    connect(this->textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
-    this->layout()->addWidget(this->textStateName);
+	this->textStateName = new DynamicLineEdit(state->getName(), true);
+	connect(this->textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
+	connect(this->textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
+	this->layout()->addWidget(this->textStateName);
 
-    ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"));
-    this->layout()->addWidget(actionEditor);
+	ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"));
+	this->layout()->addWidget(actionEditor);
 
-    updateContent();
+	updateContent();
 }
 
 void StateEditorTab::setEditName()
 {
-    this->textStateName->selectAll();
-    this->textStateName->setFocus();
+	this->textStateName->selectAll();
+	this->textStateName->setFocus();
 }
 
 /**
@@ -74,37 +74,37 @@ void StateEditorTab::setEditName()
  */
 void StateEditorTab::mousePressEvent(QMouseEvent* e)
 {
-    this->textStateName->clearFocus();
+	this->textStateName->clearFocus();
 
-    ComponentEditorTab::mousePressEvent(e);
+	ComponentEditorTab::mousePressEvent(e);
 }
 
 void StateEditorTab::updateContent()
 {
-    this->textStateName->resetView();
+	this->textStateName->resetView();
 
-    shared_ptr<FsmState> l_state = this->state.lock();
+	shared_ptr<FsmState> l_state = this->state.lock();
 
-    if (l_state != nullptr)
-        this->textStateName->setText(l_state->getName());
-    else
-        this->textStateName->setEnabled(false);
+	if (l_state != nullptr)
+		this->textStateName->setText(l_state->getName());
+	else
+		this->textStateName->setEnabled(false);
 }
 
 void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 {
-    shared_ptr<FsmState> l_state = this->state.lock();
+	shared_ptr<FsmState> l_state = this->state.lock();
 
-    if (l_state != nullptr)
-    {
-        if (name != l_state->getName()) // Must be checked because setting focus triggers this event
-        {
-            if ( !(l_state->getOwningFsm()->renameState(l_state, name)) )
-            {
-                this->textStateName->markAsErroneous();
-            }
-        }
-    }
-    else
-        this->textStateName->setEnabled(false);
+	if (l_state != nullptr)
+	{
+		if (name != l_state->getName()) // Must be checked because setting focus triggers this event
+		{
+			if ( !(l_state->getOwningFsm()->renameState(l_state, name)) )
+			{
+				this->textStateName->markAsErroneous();
+			}
+		}
+	}
+	else
+		this->textStateName->setEnabled(false);
 }

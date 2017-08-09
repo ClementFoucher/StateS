@@ -28,13 +28,13 @@
 
 class Output : public IO
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Output(const QString& name);
-    explicit Output(const QString& name, uint size); // Throws StatesException
+	explicit Output(const QString& name);
+	explicit Output(const QString& name, uint size); // Throws StatesException
 
-    IO::direction getDirection() const override;
+	IO::direction getDirection() const override;
 
 };
 

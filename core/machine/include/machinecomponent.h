@@ -35,19 +35,19 @@ class Machine;
 
 class MachineComponent : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MachineComponent(shared_ptr<Machine> owningMachine);
+	explicit MachineComponent(shared_ptr<Machine> owningMachine);
 
-    shared_ptr<Machine> getOwningMachine() const;
+	shared_ptr<Machine> getOwningMachine() const;
 
 signals:
-    void componentNeedsGraphicUpdateEvent();    // Triggered when logic object has been edited in a way that requires a graphic redraw
-    void componentSimulatedStateChangedEvent(); // Triggered when logic object state changes during simulation
+	void componentNeedsGraphicUpdateEvent();    // Triggered when logic object has been edited in a way that requires a graphic redraw
+	void componentSimulatedStateChangedEvent(); // Triggered when logic object state changes during simulation
 
 private:
-    weak_ptr<Machine> owningMachine;
+	weak_ptr<Machine> owningMachine;
 };
 
 #endif // MACHINECOMPONENT_H

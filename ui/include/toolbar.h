@@ -28,37 +28,37 @@
 
 class ToolBar : public QToolBar
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ToolBar(QWidget* parent = nullptr);
+	explicit ToolBar(QWidget* parent = nullptr);
 
-    void setSaveAsActionEnabled (bool enable);
-    void setSaveActionEnabled   (bool enable);
-    void setExportActionsEnabled(bool enable);
-    void setUndoActionEnabled   (bool enable);
-    void setRedoActionEnabled   (bool enable);
+	void setSaveAsActionEnabled (bool enable);
+	void setSaveActionEnabled   (bool enable);
+	void setExportActionsEnabled(bool enable);
+	void setUndoActionEnabled   (bool enable);
+	void setRedoActionEnabled   (bool enable);
 
 signals:
-    void saveAsRequestedEvent     ();
-    void saveRequestedEvent       ();
-    void loadRequestedEvent       ();
-    void newMachineRequestedEvent ();
-    void exportImageRequestedEvent();
-    void exportHdlRequestedEvent  ();
-    void undo                     ();
-    void redo                     ();
+	void saveAsRequestedEvent     ();
+	void saveRequestedEvent       ();
+	void loadRequestedEvent       ();
+	void newMachineRequestedEvent ();
+	void exportImageRequestedEvent();
+	void exportHdlRequestedEvent  ();
+	void undo                     ();
+	void redo                     ();
 
 private:
-    QAction* actionSaveAs        = nullptr;
-    QAction* actionSave          = nullptr;
-    QAction* actionLoad          = nullptr;
-    QAction* actionNewFsm        = nullptr;
-    //QAction* actionClear        = nullptr;
-    QAction* actionExportImage   = nullptr;
-    QAction* actionExportHdl     = nullptr;
-    QAction* actionUndo          = nullptr;
-    QAction* actionRedo          = nullptr;
+	QAction* actionSaveAs        = nullptr;
+	QAction* actionSave          = nullptr;
+	QAction* actionLoad          = nullptr;
+	QAction* actionNewFsm        = nullptr;
+	//QAction* actionClear        = nullptr;
+	QAction* actionExportImage   = nullptr;
+	QAction* actionExportHdl     = nullptr;
+	QAction* actionUndo          = nullptr;
+	QAction* actionRedo          = nullptr;
 };
 
 #endif // TOOLBAR_H

@@ -38,21 +38,21 @@ class SimulationWidget;
 
 class SignalTimeline : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit SignalTimeline(uint delay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit SignalTimeline(uint delay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 private slots:
-    void clockEventHandler();
-    void resetEventHandler();
-    void updateCurrentValue();
-    void updateDelayOutputOption(uint delay);
+	void clockEventHandler();
+	void resetEventHandler();
+	void updateCurrentValue();
+	void updateDelayOutputOption(uint delay);
 
 private:
-    weak_ptr<Signal> signal;
+	weak_ptr<Signal> signal;
 
-    QList<GraphicTimeLine*> signalLineDisplay;
+	QList<GraphicTimeLine*> signalLineDisplay;
 };
 
 #endif // SIGNALTIMELINE_H

@@ -44,22 +44,22 @@ class Signal;
 
 class EquationEditor : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
 
-    shared_ptr<Signal> getResultEquation() const;
+	shared_ptr<Signal> getResultEquation() const;
 
 protected:
-    void keyPressEvent        (QKeyEvent* event)   override;
-    void mousePressEvent      (QMouseEvent* event) override;
+	void keyPressEvent        (QKeyEvent* event)   override;
+	void mousePressEvent      (QMouseEvent* event) override;
 
 private:
-    weak_ptr<Machine> machine;
+	weak_ptr<Machine> machine;
 
-    // Use pointer because this is a QWidget with a parent
-    GraphicEquation* equationDisplay = nullptr;
+	// Use pointer because this is a QWidget with a parent
+	GraphicEquation* equationDisplay = nullptr;
 };
 
 #endif // EQUATIONEDITOR_H

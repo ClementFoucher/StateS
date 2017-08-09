@@ -42,38 +42,38 @@ class FsmTransition;
 
 class FsmSimulator : public MachineSimulator
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit FsmSimulator(shared_ptr<Fsm> machine);
+	explicit FsmSimulator(shared_ptr<Fsm> machine);
 
-    void enableOutputDelay(bool enable) override;
-    shared_ptr<Clock> getClock() const override;
+	void enableOutputDelay(bool enable) override;
+	shared_ptr<Clock> getClock() const override;
 
-    void reset();
-    void doStep();
-    void start(uint period);
-    void suspend();
-    void targetStateSelectionMadeEventHandler(int i);
-    void forceStateActivation(shared_ptr<FsmState> stateToActivate);
+	void reset();
+	void doStep();
+	void start(uint period);
+	void suspend();
+	void targetStateSelectionMadeEventHandler(int i);
+	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private slots:
-    void clockEventHandler();
-    void resetEventHandler();
+	void clockEventHandler();
+	void resetEventHandler();
 
 private:
-    void activateTransition(shared_ptr<FsmTransition> transition);
+	void activateTransition(shared_ptr<FsmTransition> transition);
 
 private:
-    shared_ptr<Clock> clock;
-    weak_ptr<Fsm> machine;
+	shared_ptr<Clock> clock;
+	weak_ptr<Fsm> machine;
 
-    weak_ptr<FsmState> currentState;
-    weak_ptr<FsmTransition> latestTransitionCrossed;
-    QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
+	weak_ptr<FsmState> currentState;
+	weak_ptr<FsmTransition> latestTransitionCrossed;
+	QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
 
-    QWidget* targetStateSelector;
-    QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
+	QWidget* targetStateSelector;
+	QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
 
 };
 

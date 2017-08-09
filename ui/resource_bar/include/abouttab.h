@@ -31,16 +31,16 @@ class QPushButton;
 
 class AboutTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit AboutTab(QWidget* parent = nullptr);
+	explicit AboutTab(QWidget* parent = nullptr);
 
 private slots:
-    void iconClicked();
+	void iconClicked();
 
 private:
-    QPushButton* icon;
+	QPushButton* icon;
 };
 
 #endif // ABOUTTAB_H

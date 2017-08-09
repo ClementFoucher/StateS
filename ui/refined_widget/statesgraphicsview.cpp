@@ -31,36 +31,36 @@ StatesGraphicsView::StatesGraphicsView(QWidget* parent) :
 
 void StatesGraphicsView::dragEnterEvent(QDragEnterEvent* event)
 {
-    // Search for main window and redirect call
-    StatesUi* mainWindow = this->getMainWindow();
+	// Search for main window and redirect call
+	StatesUi* mainWindow = this->getMainWindow();
 
-    if (mainWindow != nullptr)
-        mainWindow->dragEnterEvent(event);
+	if (mainWindow != nullptr)
+		mainWindow->dragEnterEvent(event);
 }
 
 void StatesGraphicsView::dropEvent(QDropEvent* event)
 {
-    // Search for main window and redirect call
-    StatesUi* mainWindow = this->getMainWindow();
+	// Search for main window and redirect call
+	StatesUi* mainWindow = this->getMainWindow();
 
-    if (mainWindow != nullptr)
-        mainWindow->dropEvent(event);
+	if (mainWindow != nullptr)
+		mainWindow->dropEvent(event);
 }
 
 StatesUi* StatesGraphicsView::getMainWindow()
 {
-    QObject* parent = this->parent();
-    StatesUi* mainWindow = static_cast<StatesUi*>(parent);
+	QObject* parent = this->parent();
+	StatesUi* mainWindow = static_cast<StatesUi*>(parent);
 
-    while (mainWindow == nullptr)
-    {
-        // Check this first in case the widget doesn't have any parent
-        if (parent == nullptr)
-            break;
+	while (mainWindow == nullptr)
+	{
+		// Check this first in case the widget doesn't have any parent
+		if (parent == nullptr)
+			break;
 
-        parent = parent->parent();
-        mainWindow = static_cast<StatesUi*>(parent);
-    }
+		parent = parent->parent();
+		mainWindow = static_cast<StatesUi*>(parent);
+	}
 
-    return mainWindow;
+	return mainWindow;
 }

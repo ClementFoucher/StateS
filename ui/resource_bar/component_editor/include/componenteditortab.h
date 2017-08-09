@@ -28,10 +28,10 @@
 
 class ComponentEditorTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ComponentEditorTab(QWidget* parent = nullptr);
+	explicit ComponentEditorTab(QWidget* parent = nullptr);
 };
 
 #endif // COMPONENTEDITORTAB_H

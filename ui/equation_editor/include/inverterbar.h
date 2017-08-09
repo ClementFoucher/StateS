@@ -28,13 +28,13 @@
 
 class InverterBar : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit InverterBar(QWidget* parent = nullptr);
+	explicit InverterBar(QWidget* parent = nullptr);
 
 protected:
-    void paintEvent(QPaintEvent*) override;
+	void paintEvent(QPaintEvent*) override;
 };
 
 #endif // INVERTERBAR_H

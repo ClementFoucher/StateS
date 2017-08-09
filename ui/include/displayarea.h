@@ -48,32 +48,32 @@ class ToolBar;
  */
 class DisplayArea : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit DisplayArea(QWidget* parent = nullptr);
+	explicit DisplayArea(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine);
+	void setMachine(shared_ptr<Machine> newMachine);
 
-    ToolBar*     getToolbar()     const;
-    SceneWidget* getSceneWidget() const;
+	ToolBar*     getToolbar()     const;
+	SceneWidget* getSceneWidget() const;
 
 private slots:
-    void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
-    void setTimelineDetachedState(bool detach);
+	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
+	void setTimelineDetachedState(bool detach);
 
 private:
-    void displayTabs();
-    void resetDisplay();
-    void setCurrentDisplay(QWidget* newDisplay);
+	void displayTabs();
+	void resetDisplay();
+	void setCurrentDisplay(QWidget* newDisplay);
 
 private:
-    SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
-    ToolBar*          toolBar            = nullptr; // Persistant through object life
-    SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
-    QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
+	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
+	ToolBar*          toolBar            = nullptr; // Persistant through object life
+	SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
+	QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
 
-    weak_ptr<Machine> machine;
+	weak_ptr<Machine> machine;
 };
 
 #endif // DISPLAYAREA_H

@@ -35,10 +35,10 @@ class FsmTransition;
 
 class TransitionEditorTab : public ComponentEditorTab
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
+	explicit TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
 };
 
 #endif // TRANSITIONEDITORTAB_H

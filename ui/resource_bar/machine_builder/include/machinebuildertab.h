@@ -41,37 +41,37 @@ class DynamicLineEdit;
 
 class MachineBuilderTab : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
-    void setHintCollapsed(bool collapse);
-    void setVisuCollapsed(bool collapse);
-    bool getHintCollapsed();
-    bool getVisuCollapsed();
+	void setHintCollapsed(bool collapse);
+	void setVisuCollapsed(bool collapse);
+	bool getHintCollapsed();
+	bool getVisuCollapsed();
 
 protected:
-    void showEvent      (QShowEvent* e)  override;
-    void mousePressEvent(QMouseEvent* e) override;
+	void showEvent      (QShowEvent* e)  override;
+	void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-    void toolChangedEventHandler(MachineBuilder::tool newTool);
-    void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
-    void nameTextChangedEventHandler(const QString& name);
-    void updateContent();
+	void toolChangedEventHandler(MachineBuilder::tool newTool);
+	void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
+	void nameTextChangedEventHandler(const QString& name);
+	void updateContent();
 
 private:
-    void updateHint(MachineBuilder::tool newTool);
+	void updateHint(MachineBuilder::tool newTool);
 
 private:
-    CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
-    CollapsibleWidgetWithTitle* machineDisplay = nullptr;
+	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
-    weak_ptr<MachineComponentVisualizer> machineComponentView;
-    weak_ptr<Machine>                    machine;
+	weak_ptr<MachineComponentVisualizer> machineComponentView;
+	weak_ptr<Machine>                    machine;
 
-    DynamicLineEdit* stateName = nullptr;
+	DynamicLineEdit* stateName = nullptr;
 };
 
 #endif // MACHINEBUILDERTAB_H

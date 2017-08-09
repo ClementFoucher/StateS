@@ -29,15 +29,15 @@
 BlankScene::BlankScene(QObject* parent) :
     GenericScene(parent)
 {
-    this->defaultFont.setBold(true);
-    this->defaultFont.setPointSize(50);
+	this->defaultFont.setBold(true);
+	this->defaultFont.setPointSize(50);
 
-    this->text = this->addText(tr("No machine loaded"), this->defaultFont);
+	this->text = this->addText(tr("No machine loaded"), this->defaultFont);
 
-    this->text->setDefaultTextColor(QColor("light gray"));
+	this->text->setDefaultTextColor(QColor("light gray"));
 }
 
 void BlankScene::setDisplaySize(const QSize&)
 {
-    // TODO: adapt text size if window is small
+	// TODO: adapt text size if window is small
 }

@@ -40,12 +40,12 @@ LabelWithClickEvent::LabelWithClickEvent(const QString &text) :
  */
 bool LabelWithClickEvent::event(QEvent *e)
 {
-    QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
+	QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
-    if (mouseEvent != nullptr)
-    {
-        return clicked(mouseEvent);
-    }
-    else
-        return QLabel::event(e);
+	if (mouseEvent != nullptr)
+	{
+		return clicked(mouseEvent);
+	}
+	else
+		return QLabel::event(e);
 }

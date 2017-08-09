@@ -35,30 +35,30 @@ class QFile;
 
 class StateSXmlAnalyzer : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    enum class machineType { None, Fsm };
+	enum class machineType { None, Fsm };
 
 public:
-    explicit StateSXmlAnalyzer(shared_ptr<QFile> file);
-    explicit StateSXmlAnalyzer(const QString& xmlSource);
+	explicit StateSXmlAnalyzer(shared_ptr<QFile> file);
+	explicit StateSXmlAnalyzer(const QString& xmlSource);
 
-    machineType getMachineType();
-    QString     getStateSVersion();
-    bool        getXmlIsCorrect();
-
-private:
-    explicit StateSXmlAnalyzer();
-
-    void parse();
+	machineType getMachineType();
+	QString     getStateSVersion();
+	bool        getXmlIsCorrect();
 
 private:
-    shared_ptr<QXmlStreamReader> xmlReader;
+	explicit StateSXmlAnalyzer();
 
-    machineType type;
-    QString     version;
-    bool        xmlIsCorrect;
+	void parse();
+
+private:
+	shared_ptr<QXmlStreamReader> xmlReader;
+
+	machineType type;
+	QString     version;
+	bool        xmlIsCorrect;
 };
 
 #endif // STATESXMLANALYZER_H

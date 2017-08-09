@@ -51,70 +51,70 @@ class GenericScene;
  */
 class SceneWidget : public StatesGraphicsView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    enum class sceneMode_e { noScene, idle, movingScene };
-    enum class mouseCursor_e { none, state, transition };
+	enum class sceneMode_e { noScene, idle, movingScene };
+	enum class mouseCursor_e { none, state, transition };
 
-    static double scaleFactor;
+	static double scaleFactor;
 
 public:
-    explicit SceneWidget(QWidget* parent = nullptr);
+	explicit SceneWidget(QWidget* parent = nullptr);
 
-    void setMachine(shared_ptr<Machine> newMachine, bool maintainView); // TODO: throw exception
+	void setMachine(shared_ptr<Machine> newMachine, bool maintainView); // TODO: throw exception
 
-    GenericScene* getScene() const;
+	GenericScene* getScene() const;
 
-    QRectF getVisibleArea() const;
+	QRectF getVisibleArea() const;
 
-    qreal getZoomLevel() const;
-    void  setZoomLevel(qreal level);
+	qreal getZoomLevel() const;
+	void  setZoomLevel(qreal level);
 
 signals:
-    void itemSelectedEvent(shared_ptr<MachineComponent> component);
-    void editSelectedItemEvent();
-    void renameSelectedItemEvent();
+	void itemSelectedEvent(shared_ptr<MachineComponent> component);
+	void editSelectedItemEvent();
+	void renameSelectedItemEvent();
 
 protected:
-    void mousePressEvent      (QMouseEvent*)  override;
-    void mouseMoveEvent       (QMouseEvent*)  override;
-    void mouseReleaseEvent    (QMouseEvent*)  override;
-    void mouseDoubleClickEvent(QMouseEvent*)  override;
-    void resizeEvent          (QResizeEvent*) override;
-    void wheelEvent           (QWheelEvent*)  override;
+	void mousePressEvent      (QMouseEvent*)  override;
+	void mouseMoveEvent       (QMouseEvent*)  override;
+	void mouseReleaseEvent    (QMouseEvent*)  override;
+	void mouseDoubleClickEvent(QMouseEvent*)  override;
+	void resizeEvent          (QResizeEvent*) override;
+	void wheelEvent           (QWheelEvent*)  override;
 
 private slots:
-    void toolChangedEventHandler(MachineBuilder::tool newTool);
-    void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
+	void toolChangedEventHandler(MachineBuilder::tool newTool);
+	void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
 
-    void zoomIn();
-    void zoomOut();
-    void zoomFit();
-    void resetZoom();
-
-private:
-    void updateTool(MachineBuilder::tool newTool);
-    void updateMouseCursor(mouseCursor_e cursor);
-    void updateSceneMode(sceneMode_e newMode);
-    void updateDragMode();
-    void setZoomPanelVisible(bool visible);
+	void zoomIn();
+	void zoomOut();
+	void zoomFit();
+	void resetZoom();
 
 private:
-    // Zoom panel
-    QLabel*      labelZoom     = nullptr;
-    QPushButton* buttonZoomIn  = nullptr;
-    QPushButton* buttonNoZoom  = nullptr;
-    QPushButton* buttonZoomOut = nullptr;
-    QPushButton* buttonZoomFit = nullptr;
+	void updateTool(MachineBuilder::tool newTool);
+	void updateMouseCursor(mouseCursor_e cursor);
+	void updateSceneMode(sceneMode_e newMode);
+	void updateDragMode();
+	void setZoomPanelVisible(bool visible);
 
-    // Current state
-    sceneMode_e   sceneMode     = sceneMode_e::noScene;
-    mouseCursor_e currentCursor = mouseCursor_e::none;
+private:
+	// Zoom panel
+	QLabel*      labelZoom     = nullptr;
+	QPushButton* buttonZoomIn  = nullptr;
+	QPushButton* buttonNoZoom  = nullptr;
+	QPushButton* buttonZoomOut = nullptr;
+	QPushButton* buttonZoomFit = nullptr;
 
-    // Connections
-    QMetaObject::Connection machineBuilderChangedToolEventConnection;
-    QMetaObject::Connection machineBuilderSingleUseToolSelectedConnection;
+	// Current state
+	sceneMode_e   sceneMode     = sceneMode_e::noScene;
+	mouseCursor_e currentCursor = mouseCursor_e::none;
+
+	// Connections
+	QMetaObject::Connection machineBuilderChangedToolEventConnection;
+	QMetaObject::Connection machineBuilderSingleUseToolSelectedConnection;
 };
 
 #endif // SCENEWIDGET_H

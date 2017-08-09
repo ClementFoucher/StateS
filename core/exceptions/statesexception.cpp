@@ -25,24 +25,24 @@
 
 StatesException::StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause)
 {
-    this->sourceClass    = sourceClass;
-    this->errorEnumValue = errorEnumValue;
+	this->sourceClass    = sourceClass;
+	this->errorEnumValue = errorEnumValue;
 
-    QString et = "Exception occured in StateS class " + sourceClass + " with cause \"" + errorCause + "\".";
-    this->errorText = et.toStdString();
+	QString et = "Exception occured in StateS class " + sourceClass + " with cause \"" + errorCause + "\".";
+	this->errorText = et.toStdString();
 }
 
 QString StatesException::getSourceClass() const
 {
-    return sourceClass;
+	return sourceClass;
 }
 
 uint StatesException::getEnumValue() const
 {
-    return this->errorEnumValue;
+	return this->errorEnumValue;
 }
 
 const char* StatesException::what() const noexcept
 {
-    return this->errorText.c_str();
+	return this->errorText.c_str();
 }

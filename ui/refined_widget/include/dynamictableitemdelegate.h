@@ -39,25 +39,25 @@ class DynamicLineEdit;
 
 class DynamicTableItemDelegate  : public QItemDelegate
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    DynamicTableItemDelegate(QObject* parent = nullptr);
+	DynamicTableItemDelegate(QObject* parent = nullptr);
 
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-    void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+	void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 
-    // This function takes ownership of the validator
-    void setValidator(shared_ptr<QValidator> validator);
+	// This function takes ownership of the validator
+	void setValidator(shared_ptr<QValidator> validator);
 
-    DynamicLineEdit* getCurentEditor() const;
+	DynamicLineEdit* getCurentEditor() const;
 
 private:
-    shared_ptr<QValidator> validator;
+	shared_ptr<QValidator> validator;
 
-    // QWidget with a parent
-    mutable DynamicLineEdit* latestEditor = nullptr;
+	// QWidget with a parent
+	mutable DynamicLineEdit* latestEditor = nullptr;
 
 };
 

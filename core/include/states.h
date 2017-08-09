@@ -52,61 +52,61 @@ class Machine;
  */
 class StateS : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    static QString getVersion();
-    static shared_ptr<Machine> getCurrentMachine();
-    static QString getCurrentXmlCode();
+	static QString getVersion();
+	static shared_ptr<Machine> getCurrentMachine();
+	static QString getCurrentXmlCode();
 
 public:
-    explicit StateS(const QString& initialFilePath = QString::null);
+	explicit StateS(const QString& initialFilePath = QString::null);
 
-    void run();
+	void run();
 
 private slots:
-    // New / load / save
-    void clearMachine();
-    void generateNewFsm();
+	// New / load / save
+	void clearMachine();
+	void generateNewFsm();
 
-    void loadMachine(const QString& path);
+	void loadMachine(const QString& path);
 
-    void saveCurrentMachine(const QString& path);
-    void saveCurrentMachineInCurrentFile();
+	void saveCurrentMachine(const QString& path);
+	void saveCurrentMachineInCurrentFile();
 
-    // Undo management
-    void computeDiffUndoCommand(MachineUndoCommand::undo_command_id commandId);
-    void addUndoCommand(MachineUndoCommand* undoCommand);
+	// Undo management
+	void computeDiffUndoCommand(MachineUndoCommand::undo_command_id commandId);
+	void addUndoCommand(MachineUndoCommand* undoCommand);
 
-    void undo();
-    void redo();
+	void undo();
+	void redo();
 
-    void refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine);
+	void refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine);
 
-    // UI updating
-    void undoStackCleanStateChangeEventHandler(bool clean);
-    void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
-    void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
-
-private:
-    void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
-    void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
-
-    void updateXmlRepresentation();
-    void updateFilePath(const QString& newPath);
-
-    // UI
-    void setMachineDirty();
+	// UI updating
+	void undoStackCleanStateChangeEventHandler(bool clean);
+	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
+	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
 private:
-    static QString machineXmlRepresentation;
-    static shared_ptr<Machine> machine;
+	void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
+	void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
+
+	void updateXmlRepresentation();
+	void updateFilePath(const QString& newPath);
+
+	// UI
+	void setMachineDirty();
 
 private:
-    shared_ptr<StatesUi> statesUi;
+	static QString machineXmlRepresentation;
+	static shared_ptr<Machine> machine;
 
-    QString currentFilePath = QString::null;
-    QUndoStack undoStack;
+private:
+	shared_ptr<StatesUi> statesUi;
+
+	QString currentFilePath = QString::null;
+	QUndoStack undoStack;
 };
 
 #endif // STATES_H

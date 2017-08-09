@@ -35,14 +35,14 @@ class Clock;
 
 class GraphicClockTimeLine : public GraphicTimeLine
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 private slots:
-    void clockEventHandler();
-    void resetEventHandler();
+	void clockEventHandler();
+	void resetEventHandler();
 };
 
 #endif // GRAPHICCLOCKTIMELINE_H

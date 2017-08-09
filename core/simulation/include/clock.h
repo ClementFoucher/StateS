@@ -35,27 +35,27 @@ class QTimer;
 
 class Clock : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Clock();
+	explicit Clock();
 
-    void start(uint intervalms);
-    void stop();
-    void reset();
+	void start(uint intervalms);
+	void stop();
+	void reset();
 
 public slots:
-    void nextStep();
+	void nextStep();
 
 signals:
-    void prepareForClockEvent();
-    void clockEvent();
+	void prepareForClockEvent();
+	void clockEvent();
 
-    void resetLogicEvent();
-    void resetGraphicEvent();
+	void resetLogicEvent();
+	void resetGraphicEvent();
 
 private:
-    shared_ptr<QTimer> timer;
+	shared_ptr<QTimer> timer;
 };
 
 #endif // CLOCK_H

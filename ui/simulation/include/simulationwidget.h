@@ -42,33 +42,33 @@ class SimulatorTab;
 
 class SimulationWidget : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit SimulationWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit SimulationWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
 signals:
-    void detachTimelineEvent(bool detach);
-    void outputDelayChangedEvent(uint newDelay);
+	void detachTimelineEvent(bool detach);
+	void outputDelayChangedEvent(uint newDelay);
 
 protected:
-    void closeEvent     (QCloseEvent*) override;
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent (QMouseEvent*) override;
-    void paintEvent     (QPaintEvent*) override;
+	void closeEvent     (QCloseEvent*) override;
+	void mousePressEvent(QMouseEvent*) override;
+	void mouseMoveEvent (QMouseEvent*) override;
+	void paintEvent     (QPaintEvent*) override;
 
 private slots:
-    void exportToPDF();
-    void setMeFree();
-    void bindMe();
-    void delayOutputOptionTriggered(bool activated);
+	void exportToPDF();
+	void setMeFree();
+	void bindMe();
+	void delayOutputOptionTriggered(bool activated);
 
 private:
-    QAction* actionDetach = nullptr;
+	QAction* actionDetach = nullptr;
 
-    QToolBar* toolBar = nullptr;
+	QToolBar* toolBar = nullptr;
 
-    uint separatorPosition = 0;
+	uint separatorPosition = 0;
 };
 
 #endif // SIMULATIONWIDGET_H

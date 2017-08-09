@@ -35,26 +35,26 @@ class DynamicLineEdit;
 
 class ConstantValueSetter : public EditableEquation
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ConstantValueSetter(LogicValue initialValue, QWidget* parent = nullptr);
+	explicit ConstantValueSetter(LogicValue initialValue, QWidget* parent = nullptr);
 
-    bool validEdit() override;
-    bool cancelEdit() override;
-    void setEdited(bool edited) override;
+	bool validEdit() override;
+	bool cancelEdit() override;
+	void setEdited(bool edited) override;
 
 signals:
-    void valueChanged(LogicValue newValue);
+	void valueChanged(LogicValue newValue);
 
 private slots:
-    void newValueAvailable(const QString& newValue);
+	void newValueAvailable(const QString& newValue);
 
 private:
-    LogicValue currentValue;
+	LogicValue currentValue;
 
-    DynamicLineEdit* valueEditor = nullptr;
-    QLabel*          valueText   = nullptr;
+	DynamicLineEdit* valueEditor = nullptr;
+	QLabel*          valueText   = nullptr;
 };
 
 #endif // CONSTANTVALUESETTER_H

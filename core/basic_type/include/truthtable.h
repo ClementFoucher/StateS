@@ -38,31 +38,31 @@ class Equation;
 class TruthTable
 {
 public: // Static
-    enum TruthTableErrorEnum{
-        reference_expired = 0
-    };
+	enum TruthTableErrorEnum{
+		reference_expired = 0
+	};
 
 public:
-    explicit TruthTable(shared_ptr<Equation> equation);
-    explicit TruthTable(QList<shared_ptr<Equation>> equations);
+	explicit TruthTable(shared_ptr<Equation> equation);
+	explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
-    QVector<shared_ptr<Signal>>  getInputs() const; // Throws StatesException
-    QVector<QVector<LogicValue>> getInputTable() const;
-    QVector<QString>             getOutputsEquations() const;
-    QVector<QVector<LogicValue>> getOutputTable() const;
-    QVector<LogicValue>          getSingleOutputTable() const;
+	QVector<shared_ptr<Signal>>  getInputs() const; // Throws StatesException
+	QVector<QVector<LogicValue>> getInputTable() const;
+	QVector<QString>             getOutputsEquations() const;
+	QVector<QVector<LogicValue>> getOutputTable() const;
+	QVector<LogicValue>          getSingleOutputTable() const;
 
-    uint getInputCount()  const;
-    uint getOutputCount() const;
+	uint getInputCount()  const;
+	uint getOutputCount() const;
 
 private:
-    QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
-    void buildTable(QVector<shared_ptr<Equation>> equations);
+	QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
+	void buildTable(QVector<shared_ptr<Equation>> equations);
 
-    QVector<weak_ptr<Signal>>    inputSignalsTable;
-    QVector<QString>             outputEquationsTextsTable;
-    QVector<QVector<LogicValue>> inputValuesTable;
-    QVector<QVector<LogicValue>> outputValuesTable;
+	QVector<weak_ptr<Signal>>    inputSignalsTable;
+	QVector<QString>             outputEquationsTextsTable;
+	QVector<QVector<LogicValue>> inputValuesTable;
+	QVector<QVector<LogicValue>> outputValuesTable;
 };
 
 #endif // TRUTHTABLE_H

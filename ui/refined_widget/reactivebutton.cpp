@@ -36,20 +36,20 @@ ReactiveButton::ReactiveButton(const QString& text, QWidget* parent) :
 
 void ReactiveButton::enterEvent(QEvent*)
 {
-    emit mouseEnterEvent();
+	emit mouseEnterEvent();
 }
 
 void ReactiveButton::leaveEvent(QEvent*)
 {
-    emit mouseLeaveEvent();
+	emit mouseLeaveEvent();
 }
 
 void ReactiveButton::focusInEvent(QFocusEvent*)
 {
-    emit keyboardFocusInEvent();
+	emit keyboardFocusInEvent();
 }
 
 void ReactiveButton::focusOutEvent(QFocusEvent*)
 {
-    emit keyboardFocusOutEvent();
+	emit keyboardFocusOutEvent();
 }

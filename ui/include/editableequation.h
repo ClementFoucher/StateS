@@ -28,14 +28,14 @@
 
 class EditableEquation : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit EditableEquation(QWidget* parent = nullptr);
+	explicit EditableEquation(QWidget* parent = nullptr);
 
-    virtual bool validEdit() = 0;
-    virtual bool cancelEdit() = 0;
-    virtual void setEdited(bool edited) = 0;
+	virtual bool validEdit() = 0;
+	virtual bool cancelEdit() = 0;
+	virtual void setEdited(bool edited) = 0;
 };
 
 #endif // EDITABLEEQUATION_H

@@ -35,16 +35,16 @@ using namespace std;
 
 class MachineToolsPanel : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 protected:
-    weak_ptr<MachineBuilder> machineBuilder;
+	weak_ptr<MachineBuilder> machineBuilder;
 
 public:
-    explicit MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
 
 protected slots:
-    virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
+	virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
 
 };
 

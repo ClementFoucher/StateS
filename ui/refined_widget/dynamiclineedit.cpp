@@ -29,87 +29,87 @@
 DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
     QLineEdit(content, parent)
 {
-    this->selfManaged = selfManaged;
+	this->selfManaged = selfManaged;
 
-    if (this->selfManaged)
-        connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	if (this->selfManaged)
+		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
 
-    if (validator != nullptr)
-        this->setValidator(validator);
+	if (validator != nullptr)
+		this->setValidator(validator);
 }
 
 void DynamicLineEdit::userValidatedEventHandler()
 {
-    // For self-managed lines: go back to normal mode on edit end.
-    this->resetView();
+	// For self-managed lines: go back to normal mode on edit end.
+	this->resetView();
 
-    // Refused mode will be triggered if text is incorrect
-    emit newTextAvailableEvent(this->text());
+	// Refused mode will be triggered if text is incorrect
+	emit newTextAvailableEvent(this->text());
 }
 
 void DynamicLineEdit::markAsErroneous()
 {
-    this->erroneous = true;
-    this->setStyleSheet( QString( "background-color: red") );
+	this->erroneous = true;
+	this->setStyleSheet( QString( "background-color: red") );
 
-    // When erroneous, force focus to continue edit
-    this->setFocus();
+	// When erroneous, force focus to continue edit
+	this->setFocus();
 }
 
 void DynamicLineEdit::resetView()
 {
-    this->erroneous = false;
-    this->setModified(false);
-    if (this->selfManaged)
-        disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
-    this->clearFocus();
-    if (this->selfManaged)
-        connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	this->erroneous = false;
+	this->setModified(false);
+	if (this->selfManaged)
+		disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	this->clearFocus();
+	if (this->selfManaged)
+		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
 
-    this->setStyleSheet( QString( "background-color: white"));
+	this->setStyleSheet( QString( "background-color: white"));
 }
 
 void DynamicLineEdit::focusInEvent(QFocusEvent* event)
 {
-    if (!erroneous)
-        this->setStyleSheet( QString( "background-color: yellow"));
+	if (!erroneous)
+		this->setStyleSheet( QString( "background-color: yellow"));
 
-    QLineEdit::focusInEvent(event);
+	QLineEdit::focusInEvent(event);
 }
 
 void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
 {
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if (event->key() == Qt::Key::Key_Escape)
-    {
-        emit userCancelEvent();
-        transmitEvent = false;
-    }
-    else if (event->key() == Qt::Key::Key_Up)
-    {
-        emit upKeyPressed();
-    }
-    else if (event->key() == Qt::Key::Key_Down)
-    {
-        emit downKeyPressed();
-    }
+	if (event->key() == Qt::Key::Key_Escape)
+	{
+		emit userCancelEvent();
+		transmitEvent = false;
+	}
+	else if (event->key() == Qt::Key::Key_Up)
+	{
+		emit upKeyPressed();
+	}
+	else if (event->key() == Qt::Key::Key_Down)
+	{
+		emit downKeyPressed();
+	}
 
-    if (transmitEvent)
-    {
-        QLineEdit::keyPressEvent(event);
-    }
+	if (transmitEvent)
+	{
+		QLineEdit::keyPressEvent(event);
+	}
 }
 
 void DynamicLineEdit::keyReleaseEvent(QKeyEvent* event)
 {
-    bool transmitEvent = true;
+	bool transmitEvent = true;
 
-    if (event->key() == Qt::Key::Key_Escape)
-    {
-        transmitEvent = false;
-    }
+	if (event->key() == Qt::Key::Key_Escape)
+	{
+		transmitEvent = false;
+	}
 
-    if (transmitEvent == true)
-        QLineEdit::keyReleaseEvent(event);
+	if (transmitEvent == true)
+		QLineEdit::keyReleaseEvent(event);
 }

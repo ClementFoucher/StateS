@@ -35,79 +35,79 @@
 CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool allowLink, QWidget* parent) :
     QWidget(parent)
 {
-    QFormLayout* layout = new QFormLayout(this);
+	QFormLayout* layout = new QFormLayout(this);
 
-    this->checkBox = new QCheckBox();
-    connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
+	this->checkBox = new QCheckBox();
+	connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
 
-    this->label = new LabelWithClickEvent(text);
-    connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::event);
+	this->label = new LabelWithClickEvent(text);
+	connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::event);
 
-    this->label->setTextFormat(Qt::RichText);
-    if (allowLink)
-    {
-        this->label->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        this->label->setOpenExternalLinks(true);
-    }
+	this->label->setTextFormat(Qt::RichText);
+	if (allowLink)
+	{
+		this->label->setTextInteractionFlags(Qt::TextBrowserInteraction);
+		this->label->setOpenExternalLinks(true);
+	}
 
-    if (boxAlign == Qt::AlignmentFlag::AlignLeft)
-    {
-        layout->addRow(this->label, this->checkBox);
-    }
-    else
-    {
-        layout->addRow(this->label, this->checkBox);
-    }
+	if (boxAlign == Qt::AlignmentFlag::AlignLeft)
+	{
+		layout->addRow(this->label, this->checkBox);
+	}
+	else
+	{
+		layout->addRow(this->label, this->checkBox);
+	}
 }
 
 bool CheckBoxHtml::event(QEvent* e)
 {
-    static bool doNotResend = false; // Used as we transmit event to a children: do not retransmit in a loop if it gives it back to its parent (this object)
+	static bool doNotResend = false; // Used as we transmit event to a children: do not retransmit in a loop if it gives it back to its parent (this object)
 
-    if (doNotResend == false)
-    {
-        QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
+	if (doNotResend == false)
+	{
+		QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
 
-        if ( (mouseEvent != nullptr) && (mouseEvent->button() == Qt::MouseButton::LeftButton) )
-        {
-            if ( (mouseEvent->type() == QEvent::Type::MouseButtonPress) ||
-                 (mouseEvent->type() == QEvent::Type::MouseButtonRelease) ||
-                 (mouseEvent->type() == QEvent::Type::MouseButtonDblClick) ||
-                 (mouseEvent->type() == QEvent::Type::MouseMove)
-                 )
-            {
+		if ( (mouseEvent != nullptr) && (mouseEvent->button() == Qt::MouseButton::LeftButton) )
+		{
+			if ( (mouseEvent->type() == QEvent::Type::MouseButtonPress) ||
+			     (mouseEvent->type() == QEvent::Type::MouseButtonRelease) ||
+			     (mouseEvent->type() == QEvent::Type::MouseButtonDblClick) ||
+			     (mouseEvent->type() == QEvent::Type::MouseMove)
+			     )
+			{
 
-                // Fake an event on the checkbox so that it handles it
-                QMouseEvent newEvent(mouseEvent->type(),
-                                     QPointF(0,0),
-                                     mouseEvent->button(),
-                                     mouseEvent->buttons(),
-                                     mouseEvent->modifiers()
-                                     );
+				// Fake an event on the checkbox so that it handles it
+				QMouseEvent newEvent(mouseEvent->type(),
+				                     QPointF(0,0),
+				                     mouseEvent->button(),
+				                     mouseEvent->buttons(),
+				                     mouseEvent->modifiers()
+				                     );
 
-                doNotResend = true;
-                bool res = QCoreApplication::sendEvent(this->checkBox, &newEvent);
-                doNotResend = false;
-                return res;
-            }
-        }
-    }
+				doNotResend = true;
+				bool res = QCoreApplication::sendEvent(this->checkBox, &newEvent);
+				doNotResend = false;
+				return res;
+			}
+		}
+	}
 
-    return QWidget::event(e);
+	return QWidget::event(e);
 }
 
 void CheckBoxHtml::setText(QString newText)
 {
-    this->label->setText(newText);
+	this->label->setText(newText);
 }
 
 void CheckBoxHtml::setChecked(bool check)
 {
-    this->checkBox->setChecked(check);
+	this->checkBox->setChecked(check);
 }
 
 bool CheckBoxHtml::isChecked()
 {
-    return this->checkBox->isChecked();
+	return this->checkBox->isChecked();
 }
 

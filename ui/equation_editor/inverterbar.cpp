@@ -29,13 +29,13 @@
 InverterBar::InverterBar(QWidget* parent) :
     QWidget(parent)
 {
-    this->setMinimumHeight(10);
-    this->setMaximumHeight(10);
+	this->setMinimumHeight(10);
+	this->setMaximumHeight(10);
 }
 
 void InverterBar::paintEvent(QPaintEvent*)
 {
-    QPainter painter(this);
+	QPainter painter(this);
 
-    painter.drawLine(5, 5, this->width() - 5, 5);
+	painter.drawLine(5, 5, this->width() - 5, 5);
 }

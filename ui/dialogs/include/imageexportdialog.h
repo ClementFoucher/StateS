@@ -37,45 +37,45 @@ class CheckBoxHtml;
 
 class ImageExportDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath = QString::null, QWidget* parent = nullptr);
+	explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath = QString::null, QWidget* parent = nullptr);
 
-    MachineImageExporter::imageFormat getImageFormat();
-    QString getFilePath();
+	MachineImageExporter::imageFormat getImageFormat();
+	QString getFilePath();
 
 protected:
-    virtual void accept() override;
-    virtual void resizeEvent(QResizeEvent*) override;
+	virtual void accept() override;
+	virtual void resizeEvent(QResizeEvent*) override;
 
 private slots:
-    void includeComponentCheckBoxChanged(bool b);
-    void includeConstantsCheckBoxChanged(bool b);
-    void includeVariablesCheckBoxChanged(bool b);
-    void infoToTheRightCheckBoxChanged(bool b);
-    void addBorderCheckBoxChanged(bool b);
-    void ratioSliderValueChanged(int i);
+	void includeComponentCheckBoxChanged(bool b);
+	void includeConstantsCheckBoxChanged(bool b);
+	void includeVariablesCheckBoxChanged(bool b);
+	void infoToTheRightCheckBoxChanged(bool b);
+	void addBorderCheckBoxChanged(bool b);
+	void ratioSliderValueChanged(int i);
 
 private:
-    void updatePreview();
+	void updatePreview();
 
 private:
-    QComboBox*    imageFormatSelectionBox  = nullptr;
-    CheckBoxHtml* includeComponentCheckBox = nullptr;
-    CheckBoxHtml* includeConstantsCheckBox = nullptr;
-    CheckBoxHtml* includeVariablesCheckBox = nullptr;
-    CheckBoxHtml* infoToTheRightCheckBox   = nullptr;
-    CheckBoxHtml* addBorderCheckBox        = nullptr;
-    QSlider*      ratioSlider              = nullptr;
-    QLabel*       previewWidget            = nullptr;
+	QComboBox*    imageFormatSelectionBox  = nullptr;
+	CheckBoxHtml* includeComponentCheckBox = nullptr;
+	CheckBoxHtml* includeConstantsCheckBox = nullptr;
+	CheckBoxHtml* includeVariablesCheckBox = nullptr;
+	CheckBoxHtml* infoToTheRightCheckBox   = nullptr;
+	CheckBoxHtml* addBorderCheckBox        = nullptr;
+	QSlider*      ratioSlider              = nullptr;
+	QLabel*       previewWidget            = nullptr;
 
-    shared_ptr<MachineImageExporter> previewManager;
-    shared_ptr<QPixmap> previewPixmap;
+	shared_ptr<MachineImageExporter> previewManager;
+	shared_ptr<QPixmap> previewPixmap;
 
-    QString baseFileName;
-    QString searchPath;
-    QString filePath = QString::null;
+	QString baseFileName;
+	QString searchPath;
+	QString filePath = QString::null;
 };
 
 #endif // IMAGEEXPORTDIALOG_H

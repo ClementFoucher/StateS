@@ -27,20 +27,20 @@
 
 class Constant : public Signal
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public: // Static
-    enum ConstantErrorEnum{
-        change_current_requested = 0
-    };
+	enum ConstantErrorEnum{
+		change_current_requested = 0
+	};
 
 public:
-    explicit Constant(const QString& name);
-    explicit Constant(const QString& name, uint size); // Throws StatesException
+	explicit Constant(const QString& name);
+	explicit Constant(const QString& name, uint size); // Throws StatesException
 
-    virtual void setInitialValue(const LogicValue& newInitialValue)   override; // Throws StatesException
-    virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
-    virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
+	virtual void setInitialValue(const LogicValue& newInitialValue)   override; // Throws StatesException
+	virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
+	virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
 };
 
 #endif // CONSTANT_H

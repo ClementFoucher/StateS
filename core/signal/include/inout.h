@@ -28,13 +28,13 @@
 
 class InOut : public IO
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit InOut(const QString& name);
-    explicit InOut(const QString& name, uint size); // Throws StatesException
+	explicit InOut(const QString& name);
+	explicit InOut(const QString& name, uint size); // Throws StatesException
 
-    IO::direction getDirection() const override;
+	IO::direction getDirection() const override;
 };
 
 #endif // INOUT_H

@@ -35,13 +35,13 @@ class Input;
 
 class InputsSelector : public QScrollArea
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit InputsSelector(QList<shared_ptr<Input>> inputList, QWidget* parent = nullptr);
+	explicit InputsSelector(QList<shared_ptr<Input>> inputList, QWidget* parent = nullptr);
 
 protected:
-    void resizeEvent(QResizeEvent*) override;
+	void resizeEvent(QResizeEvent*) override;
 };
 
 #endif // INPUTSSELECTOR_H

@@ -25,10 +25,10 @@
 
 EquationMimeData::EquationMimeData(GraphicEquation* equation)
 {
-    this->equation = equation;
+	this->equation = equation;
 }
 
 GraphicEquation* EquationMimeData::getEquation() const
 {
-    return equation;
+	return equation;
 }

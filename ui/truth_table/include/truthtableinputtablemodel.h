@@ -35,20 +35,20 @@ class TruthTable;
 
 class TruthTableInputTableModel : public QAbstractTableModel
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
+	explicit TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
 
-    virtual int columnCount(const QModelIndex& parent) const                              override;
-    virtual int rowCount(const QModelIndex& parent) const                                 override;
-    virtual QVariant data(const QModelIndex& index, int role) const                       override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
+	virtual int columnCount(const QModelIndex& parent) const                              override;
+	virtual int rowCount(const QModelIndex& parent) const                                 override;
+	virtual QVariant data(const QModelIndex& index, int role) const                       override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+	virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
 
 private:
-    weak_ptr<TruthTable> truthTable;
-    QList<int> highlights;
+	weak_ptr<TruthTable> truthTable;
+	QList<int> highlights;
 };
 
 #endif // TRUTHTABLEINPUTTABLEMODEL_H

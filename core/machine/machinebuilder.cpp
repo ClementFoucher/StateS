@@ -31,17 +31,17 @@ MachineBuilder::MachineBuilder(QObject* parent) :
 
 MachineBuilder::tool MachineBuilder::getTool() const
 {
-    return this->currentTool;
+	return this->currentTool;
 }
 
 void MachineBuilder::setTool(tool newTool)
 {
-    this->currentTool = newTool;
-    emit changedToolEvent(this->currentTool);
+	this->currentTool = newTool;
+	emit changedToolEvent(this->currentTool);
 }
 
 void MachineBuilder::setSingleUseTool(MachineBuilder::singleUseTool t)
 {
-    emit this->singleUseToolSelected(t);
+	emit this->singleUseToolSelected(t);
 }
 

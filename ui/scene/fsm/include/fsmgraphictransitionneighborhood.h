@@ -37,29 +37,29 @@ class FsmGraphicState;
 
 class FsmGraphicTransitionNeighborhood : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target);
+	explicit FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target);
 
-    void insertAndNotify(FsmGraphicTransition* value);
-    void removeAndNotify(FsmGraphicTransition* value);
+	void insertAndNotify(FsmGraphicTransition* value);
+	void removeAndNotify(FsmGraphicTransition* value);
 
-    FsmGraphicState* getSource() const;
-    int count() const;
-    QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const;
+	FsmGraphicState* getSource() const;
+	int count() const;
+	QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const;
 
-    int whatIsMyRank(FsmGraphicTransition* me) const;
-    int computeTransitionPosition(FsmGraphicTransition* me) const;
+	int whatIsMyRank(FsmGraphicTransition* me) const;
+	int computeTransitionPosition(FsmGraphicTransition* me) const;
 
 signals:
-    void contentChangedEvent();
+	void contentChangedEvent();
 
 private:
 
-    QMap<int, FsmGraphicTransition*> map;
-    FsmGraphicState* source = nullptr;
-    FsmGraphicState* target = nullptr;
+	QMap<int, FsmGraphicTransition*> map;
+	FsmGraphicState* source = nullptr;
+	FsmGraphicState* target = nullptr;
 
 
 };
