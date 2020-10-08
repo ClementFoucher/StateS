@@ -61,7 +61,7 @@ private:
 	// QWidgets with parent
 	QPushButton  * buttonTriggerSimulation = nullptr;
 	QPushButton  * buttonTriggerAutoStep   = nullptr;
-	CheckBoxHtml * checkBoxDelay           = nullptr;
+//	CheckBoxHtml * checkBoxDelay           = nullptr; // Disabled (buggy)
 	QLineEdit    * autoStepValue           = nullptr;
 	QWidget      * simulationTools         = nullptr;
 

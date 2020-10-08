@@ -90,14 +90,14 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
 				//
 				// Options
-				QGroupBox* optionsGroup = new QGroupBox(tr("Options"));
-				QVBoxLayout* optionsLayout = new QVBoxLayout(optionsGroup);
+//				QGroupBox* optionsGroup = new QGroupBox(tr("Options"));
+//				QVBoxLayout* optionsLayout = new QVBoxLayout(optionsGroup);
 
-				this->checkBoxDelay = new CheckBoxHtml(tr("Add delay from clock rising edge to outputs events on timeline"));
-				connect(this->checkBoxDelay, &CheckBoxHtml::toggled, this, &SimulatorTab::delayOptionToggleEventHandler);
-				optionsLayout->addWidget(this->checkBoxDelay);
+//				this->checkBoxDelay = new CheckBoxHtml(tr("Add delay from clock rising edge to outputs events on timeline"));
+//				connect(this->checkBoxDelay, &CheckBoxHtml::toggled, this, &SimulatorTab::delayOptionToggleEventHandler);
+//				optionsLayout->addWidget(this->checkBoxDelay);
 
-				this->simulationTools->layout()->addWidget(optionsGroup);
+//				this->simulationTools->layout()->addWidget(optionsGroup);
 
 				//
 				// Time manager
