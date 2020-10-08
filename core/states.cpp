@@ -50,7 +50,7 @@ QString StateS::machineXmlRepresentation = QString();
 
 QString StateS::getVersion()
 {
-	return "0.4";
+	return "0.4.1";
 }
 
 shared_ptr<Machine> StateS::getCurrentMachine()

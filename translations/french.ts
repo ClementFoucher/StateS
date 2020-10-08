@@ -1743,7 +1743,7 @@
     </message>
     <message>
         <source>Actions triggered when transition is crossed:</source>
-        <translation>Actions déclechées au franchissement de la transition :</translation>
+        <translation>Actions déclenchées au franchissement de la transition :</translation>
     </message>
 </context>
 <context>

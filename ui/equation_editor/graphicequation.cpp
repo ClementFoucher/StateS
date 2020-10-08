@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -264,6 +264,7 @@ void GraphicEquation::buildCompleteEquation()
 
 			equationLayout->addWidget(rangeExtractor);
 
+			connect(rangeExtractor, &RangeExtractorWidget::destroyed, this, &GraphicEquation::clearEditorWidget);
 			this->editorWidget = rangeExtractor;
 		}
 		else if (equationAsEquation->getFunction() == Equation::nature::constant)
@@ -276,6 +277,7 @@ void GraphicEquation::buildCompleteEquation()
 				connect(constantSetter, &ConstantValueSetter::valueChanged, this, &GraphicEquation::treatConstantValueChanged);
 			}
 
+			connect(constantSetter, &RangeExtractorWidget::destroyed, this, &GraphicEquation::clearEditorWidget);
 			this->editorWidget = constantSetter;
 		}
 
@@ -302,6 +304,10 @@ void GraphicEquation::buildCompleteEquation()
 	}
 }
 
+void GraphicEquation::clearEditorWidget()
+{
+	this->editorWidget = nullptr;
+}
 
 void GraphicEquation::buildSignalEquation()
 {

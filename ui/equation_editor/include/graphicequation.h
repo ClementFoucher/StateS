@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -95,6 +95,8 @@ private:
 	void buildTemplateEquation();
 	void buildSignalEquation();
 	void buildCompleteEquation();
+
+	void clearEditorWidget();
 
 private:
 	// Use pointer because this is a QWidget with a parent
