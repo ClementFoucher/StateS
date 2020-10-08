@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -144,7 +144,7 @@ void ImageExportDialog::accept()
 
 	defaultFilePath += this->baseFileName;
 
-	this->filePath = QString::null;
+	this->filePath = QString();
 
 	switch(format)
 	{

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,8 +23,8 @@
 #define STATESEXCEPTION_H
 
 // C++ classes
-using namespace std;
 #include <exception>
+using namespace std;
 
 // Qt classes
 #include <QString>

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -66,8 +66,8 @@ public:
 	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
 	shared_ptr<MachineConfiguration> getConfiguration() const;
 
-	void dragEnterEvent(QDragEnterEvent* event);
-	void dropEvent(QDropEvent* event);
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dropEvent(QDropEvent* event) override;
 
 	void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
 	void displayErrorMessage(const QString& errorTitle, const QString& errorList);
@@ -118,7 +118,7 @@ private:
 
 	// Current machine
 	weak_ptr<Machine> machine;
-	QString windowTitle = QString::null;
+	QString windowTitle = QString();
 	bool unsavedFlag = false;
 };
 

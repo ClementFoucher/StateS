@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -81,7 +81,7 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* conte
 
 		this->buttonCollapse->setEnabled(true);
 
-		if (title != QString::null)
+		if (title.isNull() == false)
 		{
 			this->title->setText("<b>" + title + "</b>");
 			this->title->setEnabled(true);

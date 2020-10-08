@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -364,7 +364,7 @@ void StatesUi::updateTitle()
 	{
 		QString title;
 
-		if (this->windowTitle != QString::null)
+		if (this->windowTitle.isNull() == false)
 		{
 			title = "StateS — " + this->windowTitle;
 

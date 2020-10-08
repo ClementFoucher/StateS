@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,6 +25,7 @@
 // Qt classes
 #include <QPointF>
 #include <QXmlStreamReader>
+#include <QFile>
 
 // StateS classes
 #include "fsm.h"
@@ -299,7 +300,7 @@ void FsmXmlParser::parseState()
 	{
 		QString stateName = attributes.value("Name").toString();
 
-		if (stateName == QString::null)
+		if (stateName.isNull())
 		{
 			this->warnings.append(tr("Error!") + " " + tr("Unable to extract state name."));
 			this->warnings.append("    " + tr("Node ignored."));
@@ -332,7 +333,7 @@ void FsmXmlParser::parseState()
 		shared_ptr<Fsm> fsm = this->getFsm();
 		shared_ptr<FsmState> state = fsm->addState(position, stateName);
 
-		if (attributes.value("IsInitial") != QString::null)
+		if (attributes.value("IsInitial").isNull() == false)
 		{
 			state->setInitial();
 		}

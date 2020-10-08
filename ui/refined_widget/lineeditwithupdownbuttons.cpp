@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -57,7 +57,7 @@ LineEditWithUpDownButtons::LineEditWithUpDownButtons(int min, int max, const QSt
 	}
 	else
 	{
-		this->lineEdit = new DynamicLineEdit(QString::null, true);
+		this->lineEdit = new DynamicLineEdit(QString(), true);
 	}
 
 	this->lineEdit->setValidator(validator);
@@ -89,7 +89,7 @@ void LineEditWithUpDownButtons::updateContent(int min, int max, const QString& t
 	}
 	else
 	{
-		this->lineEdit->setText(QString::null);
+		this->lineEdit->setText(QString());
 	}
 }
 

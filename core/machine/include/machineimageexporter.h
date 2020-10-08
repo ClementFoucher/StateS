@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -63,7 +63,7 @@ public:
 	void setInfoPos(infoPos pos);
 
 	shared_ptr<QPixmap> renderPreview(const QSizeF& previewSize);
-	void doExport(const QString& path, imageFormat format, const QString& creator = QString::null); // TODO: throw StatesException for file access
+	void doExport(const QString& path, imageFormat format, const QString& creator = QString()); // TODO: throw StatesException for file access
 
 private:
 	void generatePrintingRects();

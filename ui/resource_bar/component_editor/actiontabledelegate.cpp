@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -50,7 +50,7 @@ QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 			shared_ptr<ActionOnSignal> action = l_actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
 			QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
-			editor = new DynamicLineEdit(QString::null, false, new QRegularExpressionValidator(re), parent);
+			editor = new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);
 		}
 	}
 

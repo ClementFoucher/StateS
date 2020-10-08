@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -49,11 +49,11 @@ void MachineXmlParser::parseMachineName(const QString& fileName)
 
 	QString machineName;
 
-	if (nameAttribute != QString::null)
+	if (nameAttribute.isNull() == false)
 	{
 		machineName = nameAttribute;
 	}
-	else if (fileName != QString::null)
+	else if (fileName.isNull() == false)
 	{
 		machineName = fileName;
 		machineName = machineName.section("/", -1, -1);             // Extract file name from path
@@ -130,7 +130,7 @@ void MachineXmlParser::parseSignal()
 
 	// Get name
 	QString signalName = attributes.value("Name").toString();
-	if (signalName == QString::null)
+	if (signalName.isNull())
 	{
 		this->warnings.append(tr("Error!") + " " + tr("Unnamed signal encountered while parsing signal list: unable to extract name."));
 		this->warnings.append("    " + tr("Signal ignored."));

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -60,7 +60,7 @@ public:
 	static QString getCurrentXmlCode();
 
 public:
-	explicit StateS(const QString& initialFilePath = QString::null);
+	explicit StateS(const QString& initialFilePath = QString());
 
 	void run();
 
@@ -89,7 +89,7 @@ private slots:
 	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
 private:
-	void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString::null);
+	void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString());
 	void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
 
 	void updateXmlRepresentation();
@@ -105,7 +105,7 @@ private:
 private:
 	shared_ptr<StatesUi> statesUi;
 
-	QString currentFilePath = QString::null;
+	QString currentFilePath = QString();
 	QUndoStack undoStack;
 };
 

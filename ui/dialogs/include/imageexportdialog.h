@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,7 +40,7 @@ class ImageExportDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath = QString::null, QWidget* parent = nullptr);
+	explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath = QString(), QWidget* parent = nullptr);
 
 	MachineImageExporter::imageFormat getImageFormat();
 	QString getFilePath();
@@ -75,7 +75,7 @@ private:
 
 	QString baseFileName;
 	QString searchPath;
-	QString filePath = QString::null;
+	QString filePath = QString();
 };
 
 #endif // IMAGEEXPORTDIALOG_H

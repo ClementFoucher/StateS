@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -215,7 +215,7 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 			else
 			{
 				// Sigle "No action" cell
-				variant = QVariant(QString::null);
+				variant = QVariant(QString());
 			}
 		}
 	}

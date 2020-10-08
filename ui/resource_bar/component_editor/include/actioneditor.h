@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -67,7 +67,7 @@ private:
 	};
 
 public:
-	explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString::null, QWidget* parent = nullptr);
+	explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
 
 protected:
 	virtual void keyPressEvent   (QKeyEvent* e)             override;

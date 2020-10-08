@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	languageSelectionWindow.reset();
 
 	// Build StateS main object and begin execution
-	QString initialFilePath = QString::null;
+	QString initialFilePath = QString();
 
 	if (argc >= 2)
 	{
