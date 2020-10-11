@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,14 +16,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINETOOLSPANEL_H
-#define MACHINETOOLSPANEL_H
+#ifndef DRAWINGTOOLBAR_H
+#define DRAWINGTOOLBAR_H
 
-// Parent
-#include <QWidget>
+// Parent class
+#include <QToolBar>
 
 // C++ classes
 #include <memory>
@@ -33,19 +33,23 @@ using namespace std;
 #include "machinebuilder.h"
 
 
-class MachineToolsPanel : public QWidget
+class DrawingToolBar : public QToolBar
 {
 	Q_OBJECT
 
-protected:
-	weak_ptr<MachineBuilder> machineBuilder;
-
 public:
-	explicit MachineToolsPanel(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+
+protected:
+	void beginAddActions();
+	void endAddActions();
 
 protected slots:
 	virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
 
+protected:
+	weak_ptr<MachineBuilder> machineBuilder;
+
 };
 
-#endif // MACHINETOOLSPANEL_H
+#endif // DRAWINGTOOLBAR_H

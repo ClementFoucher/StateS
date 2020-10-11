@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "signaleditortab.h"
+#include "machineeditortab.h"
 
 // Qt classes
 #include <QLabel>
@@ -31,14 +31,31 @@
 #include "signallisteditor.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "dynamiclineedit.h"
 
 
-SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
+	this->machine              = machine;
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	//
+	// Machine name
+	QLabel* machineNameLabel = new QLabel("<b>" + tr("Machine name")  + "</b>");
+	machineNameLabel->setAlignment(Qt::AlignCenter);
+	layout->addWidget(machineNameLabel);
+
+	this->machineName = new DynamicLineEdit(machine->getName(), true);
+
+	connect(this->machineName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
+	connect(this->machineName, &DynamicLineEdit::userCancelEvent,       this, &MachineEditorTab::updateContent);
+
+	connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineEditorTab::updateContent);
+
+	layout->addWidget(this->machineName);
 
 	//
 	// Title
@@ -86,27 +103,27 @@ SignalEditorTab::SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<Machine
 	layout->addWidget(this->machineDisplay);
 }
 
-void SignalEditorTab::setHintCollapsed(bool collapse)
+void MachineEditorTab::setHintCollapsed(bool collapse)
 {
 	this->hintDisplay->setCollapsed(collapse);
 }
 
-void SignalEditorTab::setVisuCollapsed(bool collapse)
+void MachineEditorTab::setVisuCollapsed(bool collapse)
 {
 	this->machineDisplay->setCollapsed(collapse);
 }
 
-bool SignalEditorTab::getHintCollapsed()
+bool MachineEditorTab::getHintCollapsed()
 {
 	return this->hintDisplay->getCollapsed();
 }
 
-bool SignalEditorTab::getVisuCollapsed()
+bool MachineEditorTab::getVisuCollapsed()
 {
 	return this->machineDisplay->getCollapsed();
 }
 
-void SignalEditorTab::showEvent(QShowEvent* e)
+void MachineEditorTab::showEvent(QShowEvent* e)
 {
 	// Ensure we get the view back
 	shared_ptr<MachineComponentVisualizer> l_machineComponentView = this->machineComponentView.lock();
@@ -117,4 +134,47 @@ void SignalEditorTab::showEvent(QShowEvent* e)
 	}
 
 	QWidget::showEvent(e);
+}
+
+/**
+ * @brief MachineEditorTab::mousePressEvent
+ * Used to allow validation of machine name wherever we click,
+ * otherwise clicks inside this widget won't validate input.
+ */
+void MachineEditorTab::mousePressEvent(QMouseEvent* e)
+{
+	this->machineName->clearFocus();
+
+	QWidget::mousePressEvent(e);
+}
+
+void MachineEditorTab::nameTextChangedEventHandler(const QString& name)
+{
+	shared_ptr<Machine> l_machine = this->machine.lock();
+
+	if (l_machine != nullptr)
+	{
+		if (name != l_machine->getName())
+		{
+			bool accepted = l_machine->setName(name);
+
+			if (!accepted)
+				this->machineName->markAsErroneous();
+		}
+	}
+}
+
+void MachineEditorTab::updateContent()
+{
+	shared_ptr<Machine> l_machine = this->machine.lock();
+
+	if (l_machine != nullptr)
+	{
+		this->machineName->setText(l_machine->getName());
+	}
+	else
+	{
+		this->machineName->setText("<i>(" + tr("No machine") + ")</i>");
+		this->machineName->setEnabled(false);
+	}
 }

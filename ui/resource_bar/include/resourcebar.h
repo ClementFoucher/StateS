@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,8 +34,8 @@ class QGraphicsScene;
 
 // StateS classes
 #include "machine.h"
-class MachineBuilderTab;
-class SignalEditorTab;
+class HintTab;
+class MachineEditorTab;
 class ComponentEditorTab;
 class SimulatorTab;
 class VerifierTab;
@@ -78,11 +78,11 @@ private:
 	weak_ptr<Machine> machine;
 	shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-	MachineBuilderTab  * machineBuildTab = nullptr;
-	SignalEditorTab    * signalsTab      = nullptr;
-	ComponentEditorTab * editorTab       = nullptr;
-	SimulatorTab       * simulatorTab    = nullptr;
-	VerifierTab        * verifierTab     = nullptr;
+	HintTab            * hintsTab     = nullptr;
+	MachineEditorTab   * machineTab   = nullptr;
+	ComponentEditorTab * editorTab    = nullptr;
+	SimulatorTab       * simulatorTab = nullptr;
+	VerifierTab        * verifierTab  = nullptr;
 };
 
 #endif // RESOURCEBAR_H

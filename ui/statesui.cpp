@@ -79,7 +79,7 @@ StatesUi::StatesUi() :
 
 	this->displayArea = new DisplayArea(splitter);
 	this->resourceBar = new ResourceBar(splitter);
-	this->toolbar     = this->displayArea->getMainToolbar();
+	this->toolbar     = this->displayArea->getMainToolBar();
 	this->sceneWidget = this->displayArea->getSceneWidget();
 
 	connect(this->sceneWidget, &SceneWidget::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);

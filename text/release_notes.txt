@@ -2,6 +2,7 @@
 * StateS v. 0.4 *
 *****************
 
+- 2018-XX-XX - V 0.4.2 - Moved drawing tools to a toolbar so that they remain available regardless of the current tab.
 - 2018-10-08 - V 0.4.1 - Corrected a crash when editing a transition condition.
 - 2017-08-06 - V 0.4   - Undo is finally here!
 

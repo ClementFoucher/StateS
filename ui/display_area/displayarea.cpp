@@ -26,6 +26,8 @@
 #include "scenewidget.h"
 #include "simulationwidget.h"
 #include "maintoolbar.h"
+#include "fsmdrawingtoolbar.h"
+#include "fsm.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -34,9 +36,9 @@ DisplayArea::DisplayArea(QWidget* parent) :
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);
 
-	this->toolBar = new MainToolBar(this);
-	this->toolBar->setMovable(true);
-	this->addToolBar(Qt::LeftToolBarArea, this->toolBar);
+	this->mainToolBar = new MainToolBar(this);
+	this->mainToolBar->setMovable(true);
+	this->addToolBar(Qt::LeftToolBarArea, this->mainToolBar);
 
 	this->machineDisplayArea = new SceneWidget(this);
 
@@ -57,15 +59,36 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 
 	if (newMachine != nullptr)
 	{
+		shared_ptr<MachineBuilder> machineBuilder = newMachine->getMachineBuilder();
+
 		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
+
+		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
+
+		if (fsm != nullptr)
+		{
+			this->drawingToolBar = new FsmDrawingToolBar(machineBuilder);
+			this->drawingToolBar->setMovable(true);
+			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
+		}
+	}
+	else
+	{
+		this->drawingToolBar->deleteLater();
+		this->drawingToolBar = nullptr;
 	}
 
 	this->resetDisplay();
 }
 
-MainToolBar* DisplayArea::getMainToolbar() const
+MainToolBar* DisplayArea::getMainToolBar() const
 {
-	return this->toolBar;
+	return this->mainToolBar;
+}
+
+DrawingToolBar* DisplayArea::getDrawingToolBar() const
+{
+	return this->drawingToolBar;
 }
 
 SceneWidget* DisplayArea::getSceneWidget() const
@@ -81,6 +104,8 @@ void DisplayArea::simulationModeToggledEventHandler(Machine::simulation_mode new
 	{
 		this->timeline = new SimulationWidget(l_machine);
 		connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &DisplayArea::setTimelineDetachedState);
+
+		this->drawingToolBar->setEnabled(false);
 
 		this->displayTabs();
 	}
@@ -136,6 +161,11 @@ void DisplayArea::resetDisplay()
 
 	this->timeline           = nullptr;
 	this->tabbedDisplayArea  = nullptr;
+
+	if (this->drawingToolBar != nullptr)
+	{
+		this->drawingToolBar->setEnabled(true);
+	}
 }
 
 void DisplayArea::setCurrentDisplay(QWidget* newDisplay)

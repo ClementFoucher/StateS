@@ -50,7 +50,7 @@ QString StateS::machineXmlRepresentation = QString();
 
 QString StateS::getVersion()
 {
-	return "0.4.1";
+	return "0.4.2";
 }
 
 QString StateS::getCopyrightYears()

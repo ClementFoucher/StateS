@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,8 +23,8 @@
 #include "resourcebar.h"
 
 // StateS classes
-#include "machinebuildertab.h"
-#include "signaleditortab.h"
+#include "hinttab.h"
+#include "machineeditortab.h"
 #include "stateeditortab.h"
 #include "transitioneditortab.h"
 #include "simulatortab.h"
@@ -54,10 +54,10 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	if (!this->machine.expired())
 	{
 		disconnect(this->machine.lock().get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
-		builderHintCollapsed = this->machineBuildTab->getHintCollapsed();
-		builderVisuCollapsed = this->machineBuildTab->getVisuCollapsed();
-		signalsHintCollapsed = this->signalsTab->getHintCollapsed();
-		signalsVisuCollapsed = this->signalsTab->getVisuCollapsed();
+		builderHintCollapsed = this->hintsTab->getHintCollapsed();
+		builderVisuCollapsed = this->hintsTab->getVisuCollapsed();
+		signalsHintCollapsed = this->machineTab->getHintCollapsed();
+		signalsVisuCollapsed = this->machineTab->getVisuCollapsed();
 	}
 
 	this->machineComponentScene = nullptr;
@@ -68,41 +68,41 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 		delete this->widget(0);
 	}
 
-	this->machineBuildTab = nullptr;
-	this->signalsTab      = nullptr;
-	this->editorTab       = nullptr;
-	this->verifierTab     = nullptr;
-	this->simulatorTab    = nullptr;
+	this->hintsTab     = nullptr;
+	this->machineTab   = nullptr;
+	this->editorTab    = nullptr;
+	this->verifierTab  = nullptr;
+	this->simulatorTab = nullptr;
 
 	// Build
 	if (newMachine != nullptr)
 	{
 		this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
 
-		this->machineBuildTab = new MachineBuilderTab(newMachine, this->machineComponentScene);
-		this->signalsTab      = new SignalEditorTab  (newMachine, this->machineComponentScene);
-		this->simulatorTab    = new SimulatorTab     (newMachine);
-		this->verifierTab     = new VerifierTab      (newMachine);
+		this->hintsTab     = new HintTab         (newMachine, this->machineComponentScene);
+		this->machineTab   = new MachineEditorTab(newMachine, this->machineComponentScene);
+		this->simulatorTab = new SimulatorTab    (newMachine);
+		this->verifierTab  = new VerifierTab     (newMachine);
 
 		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
 
-		this->insertTab(0, this->machineBuildTab, tr("Builder"));
-		this->insertTab(1, this->signalsTab,      tr("Signals"));
-		this->insertTab(2, new QWidget(),         tr("Editor"));
-		this->insertTab(3, this->simulatorTab,    tr("Simulator"));
-		this->insertTab(4, this->verifierTab,     tr("Verifier"));
-//        this->insertTab(4, new QWidget(),         tr("Options"));
-		this->insertTab(5, new AboutTab(),        tr("About"));
+		this->insertTab(0, this->hintsTab,     tr("Hints"));
+		this->insertTab(1, this->machineTab,   tr("Signals"));
+		this->insertTab(2, new QWidget(),      tr("Editor"));
+		this->insertTab(3, this->simulatorTab, tr("Simulator"));
+		this->insertTab(4, this->verifierTab,  tr("Verifier"));
+//		this->insertTab(4, new QWidget(),      tr("Options"));
+		this->insertTab(5, new AboutTab(),     tr("About"));
 
 		this->setTabEnabled(2, false);
 
 		this->setCurrentIndex(index);
 		if (maintainView == true)
 		{
-			this->machineBuildTab->setHintCollapsed(builderHintCollapsed);
-			this->machineBuildTab->setVisuCollapsed(builderVisuCollapsed);
-			this->signalsTab->setHintCollapsed(signalsHintCollapsed);
-			this->signalsTab->setVisuCollapsed(signalsVisuCollapsed);
+			this->hintsTab->setHintCollapsed(builderHintCollapsed);
+			this->hintsTab->setVisuCollapsed(builderVisuCollapsed);
+			this->machineTab->setHintCollapsed(signalsHintCollapsed);
+			this->machineTab->setVisuCollapsed(signalsVisuCollapsed);
 		}
 
 		if (newMachine->getCurrentSimulationMode() == Machine::simulation_mode::simulateMode)
@@ -112,7 +112,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	}
 	else
 	{
-		this->insertTab(0, new QWidget(),  tr("Builder"));
+		this->insertTab(0, new QWidget(),  tr("Hints"));
 		this->insertTab(1, new QWidget(),  tr("Signals"));
 		this->insertTab(2, new QWidget(),  tr("Editor"));
 		this->insertTab(3, new QWidget(),  tr("Simulator"));
@@ -236,6 +236,7 @@ void ResourceBar::beginSimulation()
 
 		this->setTabEnabled(0, false);
 		this->setTabEnabled(1, false);
+		this->setTabEnabled(4, false);
 	}
 }
 
@@ -247,6 +248,7 @@ void ResourceBar::terminateSimulation()
 	{
 		this->setTabEnabled(0, true);
 		this->setTabEnabled(1, true);
+		this->setTabEnabled(4, true);
 	}
 }
 

@@ -112,7 +112,7 @@ private:
 private:
 	// Display area and resource bar
 	DisplayArea* displayArea = nullptr;
-	MainToolBar*     toolbar     = nullptr;
+	MainToolBar* toolbar     = nullptr;
 	SceneWidget* sceneWidget = nullptr;
 	ResourceBar* resourceBar = nullptr;
 

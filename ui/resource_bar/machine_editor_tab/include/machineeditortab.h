@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,32 +19,29 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINEBUILDERTAB_H
-#define MACHINEBUILDERTAB_H
+#ifndef MACHINEEDITORTAB_H
+#define MACHINEEDITORTAB_H
 
 // Parent
 #include <QWidget>
 
 // C++ classes
+#include <memory>
 using namespace std;
-#include "memory.h"
 
 // StateS classes
-class CollapsibleWidgetWithTitle;
+class Machine;
 class MachineComponentVisualizer;
+class CollapsibleWidgetWithTitle;
 class DynamicLineEdit;
 
-// To access enums
-#include "machinebuilder.h"
-#include "machine.h"
 
-
-class MachineBuilderTab : public QWidget
+class MachineEditorTab : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
@@ -52,27 +49,21 @@ public:
 	bool getVisuCollapsed();
 
 protected:
-	void showEvent      (QShowEvent* e)  override;
+	void showEvent(QShowEvent* e) override;
 	void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-	void toolChangedEventHandler(MachineBuilder::tool newTool);
-	void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
 	void nameTextChangedEventHandler(const QString& name);
 	void updateContent();
 
 private:
-	void updateHint(MachineBuilder::tool newTool);
-
-private:
-	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
-	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
-
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 	weak_ptr<Machine>                    machine;
 
-	DynamicLineEdit* stateName = nullptr;
+	CollapsibleWidgetWithTitle* hintDisplay;
+	CollapsibleWidgetWithTitle* machineDisplay;
+
+	DynamicLineEdit* machineName = nullptr;
 };
 
-#endif // MACHINEBUILDERTAB_H
-
+#endif // MACHINEEDITORTAB_H

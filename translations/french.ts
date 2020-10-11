@@ -382,6 +382,29 @@
     </message>
 </context>
 <context>
+    <name>FsmDrawingToolBar</name>
+    <message>
+        <source>Mouse</source>
+        <translation>Souris</translation>
+    </message>
+    <message>
+        <source>Deselect any building tool</source>
+        <translation>Déselectionner l&apos;outil actuel</translation>
+    </message>
+    <message>
+        <source>Add initial state</source>
+        <translation>Ajouter un état initial</translation>
+    </message>
+    <message>
+        <source>Add state</source>
+        <translation>Ajouter un état</translation>
+    </message>
+    <message>
+        <source>Add transition</source>
+        <translation>Ajouter une transition</translation>
+    </message>
+</context>
+<context>
     <name>FsmGraphicState</name>
     <message>
         <source>State</source>
@@ -479,25 +502,6 @@
     <message>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
-    </message>
-</context>
-<context>
-    <name>FsmToolsPanel</name>
-    <message>
-        <source>Mouse</source>
-        <translation>Souris</translation>
-    </message>
-    <message>
-        <source>Add initial state</source>
-        <translation>Ajouter un état initial</translation>
-    </message>
-    <message>
-        <source>Add state</source>
-        <translation>Ajouter un état</translation>
-    </message>
-    <message>
-        <source>Add transition</source>
-        <translation>Ajouter une transition</translation>
     </message>
 </context>
 <context>
@@ -619,7 +623,7 @@
     </message>
     <message>
         <source>Unable to extract state position for state </source>
-        <translation>Impossible de lire la position de l&apos;état</translation>
+        <translation>Impossible de lire la position de l&apos;état </translation>
     </message>
     <message>
         <source>node.</source>
@@ -670,7 +674,7 @@
     </message>
     <message>
         <source>New equation would be: </source>
-        <translation>La nouvelle équation serait :</translation>
+        <translation>La nouvelle équation serait : </translation>
     </message>
     <message>
         <source>Add one operand to that operator</source>
@@ -786,6 +790,209 @@
     </message>
 </context>
 <context>
+    <name>HintTab</name>
+    <message>
+        <source>Component visualization</source>
+        <translation>Visualisation du composant</translation>
+    </message>
+    <message>
+        <source>Hint:</source>
+        <translation>Astuce :</translation>
+    </message>
+    <message>
+        <source>Drawing a transition</source>
+        <translation>Dessiner une transition</translation>
+    </message>
+    <message>
+        <source>Use</source>
+        <translation>Utilisez</translation>
+    </message>
+    <message>
+        <source>left-click</source>
+        <translation>le clic gauche</translation>
+    </message>
+    <message>
+        <source>on a state</source>
+        <translation>sur un état</translation>
+    </message>
+    <message>
+        <source>to make it</source>
+        <translation>pour en faire</translation>
+    </message>
+    <message>
+        <source>the target</source>
+        <translation>la cible</translation>
+    </message>
+    <message>
+        <source>of this transition</source>
+        <translation>de cette transition</translation>
+    </message>
+    <message>
+        <source>right-click</source>
+        <translation>le clic droit</translation>
+    </message>
+    <message>
+        <source>to cancel</source>
+        <translation>pour annuler</translation>
+    </message>
+    <message>
+        <source>transition insertion</source>
+        <translation>l&apos;insertion de la transition</translation>
+    </message>
+    <message>
+        <source>Release</source>
+        <translation>Relâchez</translation>
+    </message>
+    <message>
+        <source>anywhere else</source>
+        <translation>n&apos;importe où ailleurs</translation>
+    </message>
+    <message>
+        <source>Editing a transition</source>
+        <translation>Éditer une transition</translation>
+    </message>
+    <message>
+        <source>the source</source>
+        <translation>la source</translation>
+    </message>
+    <message>
+        <source>transition editing</source>
+        <translation>l&apos;édition de la transition</translation>
+    </message>
+    <message>
+        <source>Navigation</source>
+        <translation>Navigation</translation>
+    </message>
+    <message>
+        <source>Use &lt;i&gt;mouse middle button (wheel)&lt;/i&gt; to move scene:</source>
+        <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
+    </message>
+    <message>
+        <source>Press and hold</source>
+        <translation>Appuyez et maintenez</translation>
+    </message>
+    <message>
+        <source>wheel</source>
+        <translation>la molette</translation>
+    </message>
+    <message>
+        <source>for free move</source>
+        <translation>pour un déplacement libre</translation>
+    </message>
+    <message>
+        <source>Scroll</source>
+        <translation>Faites tourner</translation>
+    </message>
+    <message>
+        <source>to move vertically</source>
+        <translation>pour un déplacement vertical</translation>
+    </message>
+    <message>
+        <source>while holding</source>
+        <translation>tout en maintenant</translation>
+    </message>
+    <message>
+        <source>shift</source>
+        <translation>shift</translation>
+    </message>
+    <message>
+        <source>to move horizontally</source>
+        <translation>pour un déplacement horizontal</translation>
+    </message>
+    <message>
+        <source>ctrl</source>
+        <translation>ctrl</translation>
+    </message>
+    <message>
+        <source>mouse wheel</source>
+        <translation>molette de la souris</translation>
+    </message>
+    <message>
+        <source>to zoom in/out</source>
+        <translation>pour un zoom avant/arrière</translation>
+    </message>
+    <message>
+        <source>or</source>
+        <translation>ou</translation>
+    </message>
+    <message>
+        <source>a transition</source>
+        <translation>une transition</translation>
+    </message>
+    <message>
+        <source>to select it</source>
+        <translation>pour le/la sélectionner</translation>
+    </message>
+    <message>
+        <source>to display context menu</source>
+        <translation>pour afficher un menu contextuel</translation>
+    </message>
+    <message>
+        <source>Tabs:</source>
+        <translation>Onglets :</translation>
+    </message>
+    <message>
+        <source>Machine tab is used to edit machine name and signals</source>
+        <translation>L&apos;onglet Machine est utilisé pour éditer le nom de la machine et ses signaux</translation>
+    </message>
+    <message>
+        <source>State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)</source>
+        <translation>L&apos;onglet État/Transition est utilisé pour éditer l&apos;état ou la transition actuellement selectionné (actions, conditions, etc.)</translation>
+    </message>
+    <message>
+        <source>Simulate tab allows for machine simluation</source>
+        <translation>L&apos;onglet Simuler permet de simuler la machine</translation>
+    </message>
+    <message>
+        <source>Verify tab provide tools for machine correctness verification</source>
+        <translation>L&apos;onglet Vérifier met à disposition des outils pour vérifier si la machine est correcte</translation>
+    </message>
+    <message>
+        <source>Adding an initial state</source>
+        <translation>Ajouter un état initial</translation>
+    </message>
+    <message>
+        <source>to add</source>
+        <translation>pour ajouter</translation>
+    </message>
+    <message>
+        <source>a state</source>
+        <translation>un état</translation>
+    </message>
+    <message>
+        <source>at mouse position</source>
+        <translation>à la position du curseur</translation>
+    </message>
+    <message>
+        <source>This state will be set as the initial state of this machine</source>
+        <translation>Cet état sera défini comme l&apos;état initial de cette machine</translation>
+    </message>
+    <message>
+        <source>to unselect current tool</source>
+        <translation>pour désélectionner l&apos;outil actuel</translation>
+    </message>
+    <message>
+        <source>Adding a state</source>
+        <translation>Ajouter un état</translation>
+    </message>
+    <message>
+        <source>and maintain button</source>
+        <translation>et maintenez le bouton</translation>
+    </message>
+    <message>
+        <source>to begin</source>
+        <translation>pour commencer</translation>
+    </message>
+    <message>
+        <source>drawing a transition</source>
+        <translation>à dessiner une transition</translation>
+    </message>
+    <message>
+        <source>from this state</source>
+        <translation>depuis cet état</translation>
+    </message>
+</context>
+<context>
     <name>ImageExportDialog</name>
     <message>
         <source>OK</source>
@@ -878,198 +1085,58 @@
     </message>
 </context>
 <context>
-    <name>MachineBuilderTab</name>
+    <name>MachineEditorTab</name>
     <message>
-        <source>Navigation</source>
-        <translation>Navigation</translation>
+        <source>Machine name</source>
+        <translation>Nom de la machine</translation>
     </message>
     <message>
-        <source>FSM editor</source>
-        <translation>Éditeur de FSM</translation>
+        <source>Signal editor</source>
+        <translation>Éditeur de signaux</translation>
     </message>
     <message>
-        <source>Component name:</source>
-        <translation>Nom du composant :</translation>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
     </message>
     <message>
-        <source>Component visualization</source>
-        <translation>Visualisation du composant</translation>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+    <message>
+        <source>Variables</source>
+        <translation>Variables</translation>
+    </message>
+    <message>
+        <source>Constants</source>
+        <translation>Constantes</translation>
+    </message>
+    <message>
+        <source>Switch between signals types using tabs.</source>
+        <translation>Naviguez entre les types de signaux à l&apos;aide des onglets.</translation>
+    </message>
+    <message>
+        <source>Signals length can not exceed 64 bits.</source>
+        <translation>La taille des signaux ne peut excéder 64 bits.</translation>
+    </message>
+    <message>
+        <source>Allowed characters are alphanumerical ones, space and</source>
+        <translation>Les caractères autorisés sont les caractères alphanumériques, l&apos;espace et</translation>
+    </message>
+    <message>
+        <source>Double-click on a value to edit it.</source>
+        <translation>Double-cliquez sur une valeur pour la modifier.</translation>
     </message>
     <message>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <source>Drawing a transition</source>
-        <translation>Dessiner une transition</translation>
-    </message>
-    <message>
-        <source>Use</source>
-        <translation>Utilisez</translation>
-    </message>
-    <message>
-        <source>left-click</source>
-        <translation>le clic gauche</translation>
-    </message>
-    <message>
-        <source>on a state</source>
-        <translation>sur un état</translation>
-    </message>
-    <message>
-        <source>to make it</source>
-        <translation>pour en faire</translation>
-    </message>
-    <message>
-        <source>the target</source>
-        <translation>la cible</translation>
-    </message>
-    <message>
-        <source>of this transition</source>
-        <translation>de cette transition</translation>
-    </message>
-    <message>
-        <source>right-click</source>
-        <translation>le clic droit</translation>
-    </message>
-    <message>
-        <source>to cancel</source>
-        <translation>pour annuler</translation>
-    </message>
-    <message>
-        <source>Release</source>
-        <translation>Relâchez</translation>
-    </message>
-    <message>
-        <source>anywhere else</source>
-        <translation>n&apos;importe où ailleurs</translation>
-    </message>
-    <message>
-        <source>Editing a transition</source>
-        <translation>Éditer une transition</translation>
-    </message>
-    <message>
-        <source>the source</source>
-        <translation>la source</translation>
+        <source>Component visualization</source>
+        <translation>Visualisation du composant</translation>
     </message>
     <message>
         <source>No machine</source>
         <translation>Aucune machine</translation>
-    </message>
-    <message>
-        <source>Press and hold</source>
-        <translation>Appuyez et maintenez</translation>
-    </message>
-    <message>
-        <source>wheel</source>
-        <translation>la molette</translation>
-    </message>
-    <message>
-        <source>for free move</source>
-        <translation>pour un déplacement libre</translation>
-    </message>
-    <message>
-        <source>Scroll</source>
-        <translation>Faites tourner</translation>
-    </message>
-    <message>
-        <source>to move vertically</source>
-        <translation>pour un déplacement vertical</translation>
-    </message>
-    <message>
-        <source>while holding</source>
-        <translation>tout en maintenant</translation>
-    </message>
-    <message>
-        <source>shift</source>
-        <translation>shift</translation>
-    </message>
-    <message>
-        <source>to move horizontally</source>
-        <translation>pour un déplacement horizontal</translation>
-    </message>
-    <message>
-        <source>ctrl</source>
-        <translation>ctrl</translation>
-    </message>
-    <message>
-        <source>mouse wheel</source>
-        <translation>molette de la souris</translation>
-    </message>
-    <message>
-        <source>to zoom in/out</source>
-        <translation>pour un zoom avant/arrière</translation>
-    </message>
-    <message>
-        <source>or</source>
-        <translation>ou</translation>
-    </message>
-    <message>
-        <source>a transition</source>
-        <translation>une transition</translation>
-    </message>
-    <message>
-        <source>to select it</source>
-        <translation>pour le/la sélectionner</translation>
-    </message>
-    <message>
-        <source>to display context menu</source>
-        <translation>pour afficher un menu contextuel</translation>
-    </message>
-    <message>
-        <source>Adding an initial state</source>
-        <translation>Ajouter un état initial</translation>
-    </message>
-    <message>
-        <source>to add</source>
-        <translation>pour ajouter</translation>
-    </message>
-    <message>
-        <source>a state</source>
-        <translation>un état</translation>
-    </message>
-    <message>
-        <source>at mouse position</source>
-        <translation>à la position du curseur</translation>
-    </message>
-    <message>
-        <source>This state will be set as the initial state of this machine</source>
-        <translation>Cet état sera défini comme l&apos;état initial de cette machine</translation>
-    </message>
-    <message>
-        <source>to unselect current tool</source>
-        <translation>pour désélectionner l&apos;outil actuel</translation>
-    </message>
-    <message>
-        <source>Adding a state</source>
-        <translation>Ajouter un état</translation>
-    </message>
-    <message>
-        <source>and maintain button</source>
-        <translation>et maintenez le bouton</translation>
-    </message>
-    <message>
-        <source>to begin</source>
-        <translation>pour commencer</translation>
-    </message>
-    <message>
-        <source>drawing a transition</source>
-        <translation>à dessiner une transition</translation>
-    </message>
-    <message>
-        <source>from this state</source>
-        <translation>depuis cet état</translation>
-    </message>
-    <message>
-        <source>transition insertion</source>
-        <translation>l&apos;insertion de la transition</translation>
-    </message>
-    <message>
-        <source>transition editing</source>
-        <translation>l&apos;édition de la transition</translation>
-    </message>
-    <message>
-        <source>Use &lt;i&gt;mouse middle button (wheel)&lt;/i&gt; to move scene:</source>
-        <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
     </message>
 </context>
 <context>
@@ -1259,6 +1326,77 @@
     </message>
 </context>
 <context>
+    <name>MainToolBar</name>
+    <message>
+        <source>Save</source>
+        <translation>Enregistrer</translation>
+    </message>
+    <message>
+        <source>Save machine in a new file</source>
+        <translation>Enregistrer la machine dans un nouveau fichier</translation>
+    </message>
+    <message>
+        <source>Save as</source>
+        <translation>Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>Update saved file with current content</source>
+        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
+    </message>
+    <message>
+        <source>use ctrl+S shortcut to avoid confirm dialog</source>
+        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+    </message>
+    <message>
+        <source>Load</source>
+        <translation>Charger</translation>
+    </message>
+    <message>
+        <source>Load machine from file</source>
+        <translation>Charger une machine depuis un fichier</translation>
+    </message>
+    <message>
+        <source>New FSM</source>
+        <translation>Nouvelle FSM</translation>
+    </message>
+    <message>
+        <source>Create new FSM</source>
+        <translation>Créer une nouvelle FSM</translation>
+    </message>
+    <message>
+        <source>Export to image file</source>
+        <translation>Exporter vers un fichier image</translation>
+    </message>
+    <message>
+        <source>Export machine to an image file</source>
+        <translation>Exporter la machine vers un fichier image</translation>
+    </message>
+    <message>
+        <source>Export to VHDL</source>
+        <translation>Exporter en VHDL</translation>
+    </message>
+    <message>
+        <source>Export machine to VHDL</source>
+        <translation>Exporter la machine en VHDL</translation>
+    </message>
+    <message>
+        <source>Undo</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Undo latest edit</source>
+        <translation>Annuler la dernière modification</translation>
+    </message>
+    <message>
+        <source>Redo</source>
+        <translation>Refaire</translation>
+    </message>
+    <message>
+        <source>Redo undone edit</source>
+        <translation>Ré-appliquer la dernière modification annulée</translation>
+    </message>
+</context>
+<context>
     <name>RangeEditorDialog</name>
     <message>
         <source>Choose extracted bit</source>
@@ -1283,10 +1421,6 @@
 </context>
 <context>
     <name>ResourceBar</name>
-    <message>
-        <source>Builder</source>
-        <translation>Outils</translation>
-    </message>
     <message>
         <source>Editor</source>
         <translation>Éditeur</translation>
@@ -1315,6 +1449,10 @@
         <source>Verifier</source>
         <translation>Vérificateur</translation>
     </message>
+    <message>
+        <source>Hints</source>
+        <translation>Astuces</translation>
+    </message>
 </context>
 <context>
     <name>SceneWidget</name>
@@ -1337,53 +1475,6 @@
     <message>
         <source>Zoom to fit machine</source>
         <translation>Ajuster le zoom à la taille de la machine</translation>
-    </message>
-</context>
-<context>
-    <name>SignalEditorTab</name>
-    <message>
-        <source>Signal editor</source>
-        <translation>Éditeur de signaux</translation>
-    </message>
-    <message>
-        <source>Variables</source>
-        <translation>Variables</translation>
-    </message>
-    <message>
-        <source>Constants</source>
-        <translation>Constantes</translation>
-    </message>
-    <message>
-        <source>Inputs</source>
-        <translation>Entrées</translation>
-    </message>
-    <message>
-        <source>Outputs</source>
-        <translation>Sorties</translation>
-    </message>
-    <message>
-        <source>Allowed characters are alphanumerical ones, space and</source>
-        <translation>Les caractères autorisés sont les caractères alphanumériques, l&apos;espace et</translation>
-    </message>
-    <message>
-        <source>Signals length can not exceed 64 bits.</source>
-        <translation>La taille des signaux ne peut excéder 64 bits.</translation>
-    </message>
-    <message>
-        <source>Double-click on a value to edit it.</source>
-        <translation>Double-cliquez sur une valeur pour la modifier.</translation>
-    </message>
-    <message>
-        <source>Component visualization</source>
-        <translation>Visualisation du composant</translation>
-    </message>
-    <message>
-        <source>Switch between signals types using tabs.</source>
-        <translation>Naviguez entre les types de signaux à l&apos;aide des onglets.</translation>
-    </message>
-    <message>
-        <source>Hint:</source>
-        <translation>Astuce :</translation>
     </message>
 </context>
 <context>
@@ -1559,14 +1650,6 @@
         <translation>Suspendre</translation>
     </message>
     <message>
-        <source>Options</source>
-        <translation>Options</translation>
-    </message>
-    <message>
-        <source>Add delay from clock rising edge to outputs events on timeline</source>
-        <translation>Ajouter un délai entre le front montant de l&apos;horloge et les sorties</translation>
-    </message>
-    <message>
         <source>Time manager</source>
         <translation>Gestion du temps</translation>
     </message>
@@ -1632,14 +1715,6 @@
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <source>Update content of file</source>
-        <translation>Mettre à jour le contenu du fichier</translation>
-    </message>
-    <message>
-        <source>with current machine?</source>
-        <translation>avec la machine actuelle ?</translation>
-    </message>
-    <message>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
@@ -1662,77 +1737,6 @@
     <message>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
-    </message>
-</context>
-<context>
-    <name>ToolBar</name>
-    <message>
-        <source>Save</source>
-        <translation>Enregistrer</translation>
-    </message>
-    <message>
-        <source>Save machine in a new file</source>
-        <translation>Enregistrer la machine dans un nouveau fichier</translation>
-    </message>
-    <message>
-        <source>Save as</source>
-        <translation>Enregistrer sous</translation>
-    </message>
-    <message>
-        <source>Update saved file with current content</source>
-        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
-    </message>
-    <message>
-        <source>use ctrl+S shortcut to avoid confirm dialog</source>
-        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
-    </message>
-    <message>
-        <source>Load</source>
-        <translation>Charger</translation>
-    </message>
-    <message>
-        <source>Load machine from file</source>
-        <translation>Charger une machine depuis un fichier</translation>
-    </message>
-    <message>
-        <source>New FSM</source>
-        <translation>Nouvelle FSM</translation>
-    </message>
-    <message>
-        <source>Create new FSM</source>
-        <translation>Créer une nouvelle FSM</translation>
-    </message>
-    <message>
-        <source>Export to image file</source>
-        <translation>Exporter vers un fichier image</translation>
-    </message>
-    <message>
-        <source>Export machine to an image file</source>
-        <translation>Exporter la machine vers un fichier image</translation>
-    </message>
-    <message>
-        <source>Export to VHDL</source>
-        <translation>Exporter en VHDL</translation>
-    </message>
-    <message>
-        <source>Export machine to VHDL</source>
-        <translation>Exporter la machine en VHDL</translation>
-    </message>
-    <message>
-        <source>Undo</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <source>Redo</source>
-        <translation>Refaire</translation>
-    </message>
-    <message>
-        <source>Undo latest edit</source>
-        <translation>Annuler la dernière modification</translation>
-    </message>
-    <message>
-        <source>Redo undone edit</source>
-        <translation>Ré-appliquer la dernière modification annulée</translation>
     </message>
 </context>
 <context>

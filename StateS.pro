@@ -13,7 +13,8 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-VERSION = 0.4.1
+# Remember to update these in states.cpp too
+VERSION = 0.4.2
 QMAKE_TARGET_COPYRIGHT = copyright 2014-2020 Clément Foucher
 
 CONFIG += c++14
@@ -81,26 +82,26 @@ SOURCES += \
 	ui/refined_widget/collapsiblewidgetwithtitle.cpp \
 	ui/refined_widget/statesgraphicsview.cpp \
 	ui/refined_widget/lineeditwithupdownbuttons.cpp \
+	ui/resource_bar/hinttab.cpp \
 	ui/resource_bar/abouttab.cpp \
 	ui/resource_bar/resourcebar.cpp \
 	ui/resource_bar/verifiertab.cpp \
+	ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
+	ui/resource_bar/machine_editor_tab/signallisteditor.cpp \
 	ui/resource_bar/component_editor/transitioneditortab.cpp \
 	ui/resource_bar/component_editor/stateeditortab.cpp \
 	ui/resource_bar/component_editor/actioneditor.cpp \
 	ui/resource_bar/component_editor/componenteditortab.cpp \
 	ui/resource_bar/component_editor/rangeeditordialog.cpp \
 	ui/resource_bar/component_editor/conditioneditor.cpp \
-	ui/resource_bar/machine_builder/fsmtoolspanel.cpp \
-	ui/resource_bar/machine_builder/machinetoolspanel.cpp \
-	ui/resource_bar/machine_builder/machinebuildertab.cpp \
-	ui/resource_bar/signal_editor/signaleditortab.cpp \
-	ui/resource_bar/signal_editor/signallisteditor.cpp \
 	ui/resource_bar/simulator_tab/simulatortab.cpp \
 	ui/resource_bar/simulator_tab/inputbitselector.cpp \
 	ui/resource_bar/simulator_tab/inputsselector.cpp \
 	ui/resource_bar/simulator_tab/inputsignalselector.cpp \
 	ui/display_area/displayarea.cpp \
 	ui/display_area/maintoolbar.cpp \
+	ui/display_area/drawingtoolbar.cpp \
+	ui/display_area/fsmdrawingtoolbar.cpp \
 	ui/display_area/scene/scenewidget.cpp \
 	ui/display_area/scene/genericscene.cpp \
 	ui/display_area/scene/blankscene.cpp \
@@ -125,7 +126,7 @@ SOURCES += \
 # Other
     third_party/diff_match_patch/diff_match_patch.cpp
 
-HEADERS  += \
+HEADERS += \
 # Core
     core/include/states.h \
 	core/include/statesxmlanalyzer.h \
@@ -186,6 +187,7 @@ HEADERS  += \
 	ui/refined_widget/include/statesgraphicsview.h \
 	ui/refined_widget/include/collapsiblewidgetwithtitle.h \
 	ui/refined_widget/include/lineeditwithupdownbuttons.h \
+	ui/resource_bar/include/hinttab.h \
 	ui/resource_bar/include/abouttab.h \
 	ui/resource_bar/include/resourcebar.h \
 	ui/resource_bar/include/verifiertab.h \
@@ -195,17 +197,16 @@ HEADERS  += \
 	ui/resource_bar/component_editor/include/rangeeditordialog.h \
 	ui/resource_bar/component_editor/include/actioneditor.h \
 	ui/resource_bar/component_editor/include/conditioneditor.h \
-	ui/resource_bar/machine_builder/include/fsmtoolspanel.h \
-	ui/resource_bar/machine_builder/include/machinetoolspanel.h \
-	ui/resource_bar/machine_builder/include/machinebuildertab.h \
-	ui/resource_bar/signal_editor/include/signaleditortab.h \
-	ui/resource_bar/signal_editor/include/signallisteditor.h \
+	ui/resource_bar/machine_editor_tab/include/machineeditortab.h \
+	ui/resource_bar/machine_editor_tab/include/signallisteditor.h \
 	ui/resource_bar/simulator_tab/include/simulatortab.h \
 	ui/resource_bar/simulator_tab/include/inputsignalselector.h \
 	ui/resource_bar/simulator_tab/include/inputbitselector.h \
 	ui/resource_bar/simulator_tab/include/inputsselector.h \
 	ui/display_area/include/displayarea.h \
 	ui/display_area/include/maintoolbar.h \
+	ui/display_area/include/drawingtoolbar.h \
+	ui/display_area/include/fsmdrawingtoolbar.h \
 	ui/display_area/scene/include/genericscene.h \
 	ui/display_area/scene/include/graphicactuator.h \
 	ui/display_area/scene/include/blankscene.h \
@@ -250,9 +251,8 @@ INCLUDEPATH += \
 	ui/refined_widget/include \
 	ui/truth_table/include \
 	ui/resource_bar/include \
+	ui/resource_bar/machine_editor_tab/include \
 	ui/resource_bar/component_editor/include \
-	ui/resource_bar/machine_builder/include \
-	ui/resource_bar/signal_editor/include \
 	ui/resource_bar/simulator_tab/include \
 	ui/simulation/include \
 	ui/static/include \

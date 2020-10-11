@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "machinebuildertab.h"
+#include "hinttab.h"
 
 // Qt classes
 #include <QLabel>
@@ -30,14 +30,13 @@
 #include <QDebug>
 
 // StateS classes
-#include "fsmtoolspanel.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "dynamiclineedit.h"
 #include "fsm.h"
 
 
-MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+HintTab::HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
@@ -45,52 +44,12 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
 
 	if (machine != nullptr)
 	{
-		shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
-
 		QVBoxLayout* layout = new QVBoxLayout(this);
 		layout->setAlignment(Qt::AlignTop);
 
-		connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &MachineBuilderTab::toolChangedEventHandler);
-		connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &MachineBuilderTab::singleUsetoolChangedEventHandler);
-
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machine);
-
-		if (fsm != nullptr)
-		{
-			//
-			// Title
-
-			QLabel* title = new QLabel("<b>" + tr("FSM editor") + "</b>");
-			title->setAlignment(Qt::AlignCenter);
-			layout->addWidget(title);
-
-			//
-			// Tools
-
-			layout->addWidget(new FsmToolsPanel(machineBuilder));
-		}
-		else
-		{
-			qDebug() << "(MachineBuilderTab:) Error, unknown machine type";
-		}
-
-		//
-		// Name
-
-		QHBoxLayout* nameLayout = new QHBoxLayout();
-
-		QLabel* machineNameLabel = new QLabel(tr("Component name:"));
-		this->stateName = new DynamicLineEdit(fsm->getName(), true);
-
-		connect(this->stateName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineBuilderTab::nameTextChangedEventHandler);
-		connect(this->stateName, &DynamicLineEdit::userCancelEvent,       this, &MachineBuilderTab::updateContent);
-
-		connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineBuilderTab::updateContent);
-
-		nameLayout->addWidget(machineNameLabel);
-		nameLayout->addWidget(this->stateName);
-
-		layout->addLayout(nameLayout);
+		shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
+		connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &HintTab::toolChangedEventHandler);
+		connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &HintTab::singleUsetoolChangedEventHandler);
 
 		//
 		// Hints
@@ -108,27 +67,27 @@ MachineBuilderTab::MachineBuilderTab(shared_ptr<Machine> machine, shared_ptr<Mac
 	}
 }
 
-void MachineBuilderTab::setHintCollapsed(bool collapse)
+void HintTab::setHintCollapsed(bool collapse)
 {
 	this->hintDisplay->setCollapsed(collapse);
 }
 
-void MachineBuilderTab::setVisuCollapsed(bool collapse)
+void HintTab::setVisuCollapsed(bool collapse)
 {
 	this->machineDisplay->setCollapsed(collapse);
 }
 
-bool MachineBuilderTab::getHintCollapsed()
+bool HintTab::getHintCollapsed()
 {
 	return this->hintDisplay->getCollapsed();
 }
 
-bool MachineBuilderTab::getVisuCollapsed()
+bool HintTab::getVisuCollapsed()
 {
 	return this->machineDisplay->getCollapsed();
 }
 
-void MachineBuilderTab::showEvent(QShowEvent* e)
+void HintTab::showEvent(QShowEvent* e)
 {
 	// Ensure we get the view back
 	shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
@@ -141,24 +100,12 @@ void MachineBuilderTab::showEvent(QShowEvent* e)
 	QWidget::showEvent(e);
 }
 
-/**
- * @brief MachineBuilderTab::mousePressEvent
- * Used to allow validation of name wherever we click,
- * otherwise clicks inside this widget won't validate input.
- */
-void MachineBuilderTab::mousePressEvent(QMouseEvent *e)
-{
-	this->stateName->clearFocus();
-
-	QWidget::mousePressEvent(e);
-}
-
-void MachineBuilderTab::toolChangedEventHandler(MachineBuilder::tool newTool)
+void HintTab::toolChangedEventHandler(MachineBuilder::tool newTool)
 {
 	this->updateHint(newTool);
 }
 
-void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool)
+void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool)
 {
 	if (tempTool == MachineBuilder::singleUseTool::none)
 	{
@@ -230,38 +177,7 @@ void MachineBuilderTab::singleUsetoolChangedEventHandler(MachineBuilder::singleU
 	}
 }
 
-void MachineBuilderTab::nameTextChangedEventHandler(const QString& name)
-{
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
-	if (l_machine != nullptr)
-	{
-		if (name != l_machine->getName())
-		{
-			bool accepted = l_machine->setName(name);
-
-			if (!accepted)
-				this->stateName->markAsErroneous();
-		}
-	}
-}
-
-void MachineBuilderTab::updateContent()
-{
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
-	if (l_machine != nullptr)
-	{
-		this->stateName->setText(l_machine->getName());
-	}
-	else
-	{
-		this->stateName->setText("<i>(" + tr("No machine") + ")</i>");
-		this->stateName->setEnabled(false);
-	}
-}
-
-void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
+void HintTab::updateHint(MachineBuilder::tool newTool)
 {
 	QString title;
 	QString hint;
@@ -291,6 +207,17 @@ void MachineBuilderTab::updateHint(MachineBuilder::tool newTool)
 		hint += "<br />";
 		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to display context menu") + ".";
 		hint += "<br />";
+
+		hint += "<br />";
+		hint += tr("Tabs:");
+		hint += "<br />";
+		hint += tr("Machine tab is used to edit machine name and signals");
+		hint += "<br />";
+		hint += tr("State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)");
+		hint += "<br />";
+		hint += tr("Simulate tab allows for machine simluation");
+		hint += "<br />";
+		hint += tr("Verify tab provide tools for machine correctness verification");
 
 		break;
 	case MachineBuilder::tool::initial_state:

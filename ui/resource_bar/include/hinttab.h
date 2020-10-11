@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,28 +19,32 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALSEDITORTAB_H
-#define SIGNALSEDITORTAB_H
+#ifndef MACHINEBUILDERTAB_H
+#define MACHINEBUILDERTAB_H
 
 // Parent
 #include <QWidget>
 
 // C++ classes
-#include <memory>
 using namespace std;
+#include "memory.h"
 
 // StateS classes
-class Machine;
-class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
+class MachineComponentVisualizer;
+class DynamicLineEdit;
+
+// To access enums
+#include "machinebuilder.h"
+#include "machine.h"
 
 
-class SignalEditorTab : public QWidget
+class HintTab : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit SignalEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
@@ -48,14 +52,22 @@ public:
 	bool getVisuCollapsed();
 
 protected:
-	void showEvent(QShowEvent* e) override;
+	void showEvent(QShowEvent* e)  override;
+
+private slots:
+	void toolChangedEventHandler(MachineBuilder::tool newTool);
+	void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
 
 private:
-	weak_ptr<MachineComponentVisualizer> machineComponentView;
+	void updateHint(MachineBuilder::tool newTool);
 
-	CollapsibleWidgetWithTitle* hintDisplay;
-	CollapsibleWidgetWithTitle* machineDisplay;
+private:
+	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
+
+	weak_ptr<MachineComponentVisualizer> machineComponentView;
+	weak_ptr<Machine>                    machine;
 };
 
-#endif // SIGNALSEDITORTAB_H
+#endif // MACHINEBUILDERTAB_H
 
