@@ -45,7 +45,7 @@
 #include "fsm.h"
 #include "fsmvhdlexport.h"
 #include "errordisplaydialog.h"
-#include "toolbar.h"
+#include "maintoolbar.h"
 #include "machineconfiguration.h"
 #include "scenewidget.h"
 
@@ -79,7 +79,7 @@ StatesUi::StatesUi() :
 
 	this->displayArea = new DisplayArea(splitter);
 	this->resourceBar = new ResourceBar(splitter);
-	this->toolbar     = this->displayArea->getToolbar();
+	this->toolbar     = this->displayArea->getMainToolbar();
 	this->sceneWidget = this->displayArea->getSceneWidget();
 
 	connect(this->sceneWidget, &SceneWidget::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
@@ -93,14 +93,14 @@ StatesUi::StatesUi() :
 	splitter->setSizes(widths);
 
 	// Connect tool bar
-	connect(this->toolbar, &ToolBar::saveAsRequestedEvent,      this, &StatesUi::beginSaveAsProcedure);
-	connect(this->toolbar, &ToolBar::saveRequestedEvent,        this, &StatesUi::beginSaveProcedure);
-	connect(this->toolbar, &ToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
-	connect(this->toolbar, &ToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
-	connect(this->toolbar, &ToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
-	connect(this->toolbar, &ToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
-	connect(this->toolbar, &ToolBar::undo,                      this, &StatesUi::undoRequestEvent);
-	connect(this->toolbar, &ToolBar::redo,                      this, &StatesUi::redoRequestEvent);
+	connect(this->toolbar, &MainToolBar::saveAsRequestedEvent,      this, &StatesUi::beginSaveAsProcedure);
+	connect(this->toolbar, &MainToolBar::saveRequestedEvent,        this, &StatesUi::beginSaveProcedure);
+	connect(this->toolbar, &MainToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
+	connect(this->toolbar, &MainToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
+	connect(this->toolbar, &MainToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
+	connect(this->toolbar, &MainToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
+	connect(this->toolbar, &MainToolBar::undo,                      this, &StatesUi::undoRequestEvent);
+	connect(this->toolbar, &MainToolBar::redo,                      this, &StatesUi::redoRequestEvent);
 }
 
 void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool maintainView)

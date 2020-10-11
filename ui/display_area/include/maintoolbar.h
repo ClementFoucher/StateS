@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,19 +19,19 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+#ifndef MAINTOOLBAR_H
+#define MAINTOOLBAR_H
 
 // Parent class
 #include <QToolBar>
 
 
-class ToolBar : public QToolBar
+class MainToolBar : public QToolBar
 {
 	Q_OBJECT
 
 public:
-	explicit ToolBar(QWidget* parent = nullptr);
+	explicit MainToolBar(QWidget* parent = nullptr);
 
 	void setSaveAsActionEnabled (bool enable);
 	void setSaveActionEnabled   (bool enable);
@@ -61,4 +61,4 @@ private:
 	QAction* actionRedo          = nullptr;
 };
 
-#endif // TOOLBAR_H
+#endif // MAINTOOLBAR_H

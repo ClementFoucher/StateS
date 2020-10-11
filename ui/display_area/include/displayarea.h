@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,7 +36,7 @@ class QTabWidget;
 #include "machine.h"
 class SceneWidget;
 class SimulationWidget;
-class ToolBar;
+class MainToolBar;
 
 
 /**
@@ -55,7 +55,7 @@ public:
 
 	void setMachine(shared_ptr<Machine> newMachine);
 
-	ToolBar*     getToolbar()     const;
+	MainToolBar* getMainToolbar() const;
 	SceneWidget* getSceneWidget() const;
 
 private slots:
@@ -69,7 +69,7 @@ private:
 
 private:
 	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
-	ToolBar*          toolBar            = nullptr; // Persistant through object life
+	MainToolBar*          toolBar            = nullptr; // Persistant through object life
 	SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
 	QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
 

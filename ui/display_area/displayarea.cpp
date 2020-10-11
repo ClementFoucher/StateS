@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,7 +25,7 @@
 // StateS classes
 #include "scenewidget.h"
 #include "simulationwidget.h"
-#include "toolbar.h"
+#include "maintoolbar.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -34,7 +34,7 @@ DisplayArea::DisplayArea(QWidget* parent) :
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);
 
-	this->toolBar = new ToolBar(this);
+	this->toolBar = new MainToolBar(this);
 	this->toolBar->setMovable(true);
 	this->addToolBar(Qt::LeftToolBarArea, this->toolBar);
 
@@ -63,7 +63,7 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine)
 	this->resetDisplay();
 }
 
-ToolBar* DisplayArea::getToolbar() const
+MainToolBar* DisplayArea::getMainToolbar() const
 {
 	return this->toolBar;
 }

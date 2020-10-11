@@ -35,7 +35,7 @@ class ResourceBar;
 class DisplayArea;
 class MachineComponent;
 class MachineConfiguration;
-class ToolBar;
+class MainToolBar;
 class SceneWidget;
 
 
@@ -112,7 +112,7 @@ private:
 private:
 	// Display area and resource bar
 	DisplayArea* displayArea = nullptr;
-	ToolBar*     toolbar     = nullptr;
+	MainToolBar*     toolbar     = nullptr;
 	SceneWidget* sceneWidget = nullptr;
 	ResourceBar* resourceBar = nullptr;
 

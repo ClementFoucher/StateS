@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,13 +20,13 @@
  */
 
 // Current class header
-#include "toolbar.h"
+#include "maintoolbar.h"
 
 // StateS classes
 #include "svgimagegenerator.h"
 
 
-ToolBar::ToolBar(QWidget* parent) :
+MainToolBar::MainToolBar(QWidget* parent) :
     QToolBar(parent)
 {
 	this->setIconSize(QSize(64, 64));
@@ -102,39 +102,39 @@ ToolBar::ToolBar(QWidget* parent) :
 
 
 	// Connect actions
-	connect(this->actionSaveAs,      &QAction::triggered, this, &ToolBar::saveAsRequestedEvent);
-	connect(this->actionSave,        &QAction::triggered, this, &ToolBar::saveRequestedEvent);
-	connect(this->actionLoad,        &QAction::triggered, this, &ToolBar::loadRequestedEvent);
-	connect(this->actionNewFsm,      &QAction::triggered, this, &ToolBar::newMachineRequestedEvent);
+	connect(this->actionSaveAs,      &QAction::triggered, this, &MainToolBar::saveAsRequestedEvent);
+	connect(this->actionSave,        &QAction::triggered, this, &MainToolBar::saveRequestedEvent);
+	connect(this->actionLoad,        &QAction::triggered, this, &MainToolBar::loadRequestedEvent);
+	connect(this->actionNewFsm,      &QAction::triggered, this, &MainToolBar::newMachineRequestedEvent);
 	//connect(this->actionClear,       &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
-	connect(this->actionExportImage, &QAction::triggered, this, &ToolBar::exportImageRequestedEvent);
-	connect(this->actionExportHdl,   &QAction::triggered, this, &ToolBar::exportHdlRequestedEvent);
-	connect(this->actionUndo,        &QAction::triggered, this, &ToolBar::undo);
-	connect(this->actionRedo,        &QAction::triggered, this, &ToolBar::redo);
+	connect(this->actionExportImage, &QAction::triggered, this, &MainToolBar::exportImageRequestedEvent);
+	connect(this->actionExportHdl,   &QAction::triggered, this, &MainToolBar::exportHdlRequestedEvent);
+	connect(this->actionUndo,        &QAction::triggered, this, &MainToolBar::undo);
+	connect(this->actionRedo,        &QAction::triggered, this, &MainToolBar::redo);
 }
 
-void ToolBar::setSaveAsActionEnabled(bool enable)
+void MainToolBar::setSaveAsActionEnabled(bool enable)
 {
 	this->actionSaveAs->setEnabled(enable);
 }
 
-void ToolBar::setSaveActionEnabled(bool enable)
+void MainToolBar::setSaveActionEnabled(bool enable)
 {
 	this->actionSave->setEnabled(enable);
 }
 
-void ToolBar::setExportActionsEnabled(bool enable)
+void MainToolBar::setExportActionsEnabled(bool enable)
 {
 	this->actionExportImage->setEnabled(enable);
 	this->actionExportHdl  ->setEnabled(enable);
 }
 
-void ToolBar::setUndoActionEnabled(bool enable)
+void MainToolBar::setUndoActionEnabled(bool enable)
 {
 	this->actionUndo->setEnabled(enable);
 }
 
-void ToolBar::setRedoActionEnabled(bool enable)
+void MainToolBar::setRedoActionEnabled(bool enable)
 {
 	this->actionRedo->setEnabled(enable);
 }

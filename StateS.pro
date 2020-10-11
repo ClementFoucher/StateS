@@ -60,10 +60,8 @@ SOURCES += \
 # UI
     ui/statesui.cpp \
 	ui/machinecomponentvisualizer.cpp \
-	ui/displayarea.cpp \
 	ui/rangeextractorwidget.cpp \
 	ui/editableequation.cpp \
-	ui/toolbar.cpp \
 	ui/dialogs/imageexportdialog.cpp \
 	ui/dialogs/langselectiondialog.cpp \
 	ui/dialogs/vhdlexportdialog.cpp \
@@ -101,15 +99,17 @@ SOURCES += \
 	ui/resource_bar/simulator_tab/inputbitselector.cpp \
 	ui/resource_bar/simulator_tab/inputsselector.cpp \
 	ui/resource_bar/simulator_tab/inputsignalselector.cpp \
-	ui/scene/scenewidget.cpp \
-	ui/scene/genericscene.cpp \
-	ui/scene/blankscene.cpp \
-	ui/scene/graphicactuator.cpp \
-	ui/scene/graphiccomponent.cpp \
-	ui/scene/fsm/fsmscene.cpp \
-	ui/scene/fsm/fsmgraphicstate.cpp \
-	ui/scene/fsm/fsmgraphictransition.cpp \
-	ui/scene/fsm/fsmgraphictransitionneighborhood.cpp \
+	ui/display_area/displayarea.cpp \
+	ui/display_area/maintoolbar.cpp \
+	ui/display_area/scene/scenewidget.cpp \
+	ui/display_area/scene/genericscene.cpp \
+	ui/display_area/scene/blankscene.cpp \
+	ui/display_area/scene/graphicactuator.cpp \
+	ui/display_area/scene/graphiccomponent.cpp \
+	ui/display_area/scene/fsm/fsmscene.cpp \
+	ui/display_area/scene/fsm/fsmgraphicstate.cpp \
+	ui/display_area/scene/fsm/fsmgraphictransition.cpp \
+	ui/display_area/scene/fsm/fsmgraphictransitionneighborhood.cpp \
 	ui/simulation/graphictimeline.cpp \
 	ui/simulation/graphicclocktimeline.cpp \
 	ui/simulation/clocktimeline.cpp \
@@ -164,11 +164,9 @@ HEADERS  += \
 	core/undo_engine/include/machineundocommand.h \
 # UI
     ui/include/statesui.h \
-	ui/include/displayarea.h \
 	ui/include/editableequation.h \
 	ui/include/rangeextractorwidget.h \
 	ui/include/machinecomponentvisualizer.h \
-	ui/include/toolbar.h \
 	ui/dialogs/include/vhdlexportdialog.h \
 	ui/dialogs/include/langselectiondialog.h \
 	ui/dialogs/include/errordisplaydialog.h \
@@ -206,15 +204,17 @@ HEADERS  += \
 	ui/resource_bar/simulator_tab/include/inputsignalselector.h \
 	ui/resource_bar/simulator_tab/include/inputbitselector.h \
 	ui/resource_bar/simulator_tab/include/inputsselector.h \
-	ui/scene/include/genericscene.h \
-	ui/scene/include/graphicactuator.h \
-	ui/scene/include/blankscene.h \
-	ui/scene/include/graphiccomponent.h \
-	ui/scene/include/scenewidget.h \
-	ui/scene/fsm/include/fsmscene.h \
-	ui/scene/fsm/include/fsmgraphicstate.h \
-	ui/scene/fsm/include/fsmgraphictransition.h \
-	ui/scene/fsm/include/fsmgraphictransitionneighborhood.h \
+	ui/display_area/include/displayarea.h \
+	ui/display_area/include/maintoolbar.h \
+	ui/display_area/scene/include/genericscene.h \
+	ui/display_area/scene/include/graphicactuator.h \
+	ui/display_area/scene/include/blankscene.h \
+	ui/display_area/scene/include/graphiccomponent.h \
+	ui/display_area/scene/include/scenewidget.h \
+	ui/display_area/scene/fsm/include/fsmscene.h \
+	ui/display_area/scene/fsm/include/fsmgraphicstate.h \
+	ui/display_area/scene/fsm/include/fsmgraphictransition.h \
+	ui/display_area/scene/fsm/include/fsmgraphictransitionneighborhood.h \
 	ui/simulation/include/graphictimeline.h \
 	ui/simulation/include/graphicclocktimeline.h \
 	ui/simulation/include/clocktimeline.h \
@@ -243,6 +243,9 @@ INCLUDEPATH += \
 # UI
     ui/include \
 	ui/dialogs/include \
+	ui/display_area/include \
+	ui/display_area/scene/include \
+	ui/display_area/scene/fsm/include \
 	ui/equation_editor/include \
 	ui/refined_widget/include \
 	ui/truth_table/include \
@@ -251,8 +254,6 @@ INCLUDEPATH += \
 	ui/resource_bar/machine_builder/include \
 	ui/resource_bar/signal_editor/include \
 	ui/resource_bar/simulator_tab/include \
-	ui/scene/include \
-	ui/scene/fsm/include \
 	ui/simulation/include \
 	ui/static/include \
 # Other
