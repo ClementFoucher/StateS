@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -123,7 +123,7 @@ void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
 	this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	double scaleFactor = 1.15;
-	if(event->delta() > 0)
+	if(event->angleDelta().y() > 0)
 	{
 		this->scale(scaleFactor, scaleFactor);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -310,7 +310,7 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 		{
 			this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-			if(event->delta() > 0)
+			if(event->angleDelta().y() > 0)
 			{
 				scale(scaleFactor, scaleFactor);
 			}
@@ -322,12 +322,12 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 		else if ( (event->modifiers() & Qt::ShiftModifier) != 0)
 		{
 			QScrollBar *hBar = horizontalScrollBar();
-			hBar->setValue(hBar->value() - event->delta());
+			hBar->setValue(hBar->value() - event->angleDelta().y());
 		}
 		else
 		{
 			QScrollBar *vBar = verticalScrollBar();
-			vBar->setValue(vBar->value() - event->delta());
+			vBar->setValue(vBar->value() - event->angleDelta().y());
 		}
 	}
 }

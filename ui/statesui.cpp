@@ -32,6 +32,7 @@
 #include <QAction>
 #include <QKeyEvent>
 #include <QMimeData>
+#include <QScreen>
 
 // StateS classes
 #include "states.h"
@@ -54,15 +55,21 @@ StatesUi::StatesUi() :
 {
 	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
 	this->updateTitle();
-	//this->setMaximumSize(QApplication::desktop()->availableGeometry().size());
-	this->resize(QApplication::desktop()->availableGeometry().size() - QSize(200, 200));
-	this->setAcceptDrops(true);
+
+	// Set main window size and position
+	QSize screenSize = QGuiApplication::primaryScreen()->size();
+
+	// Set the window to cover 85% of the screen
+	this->resize(screenSize - 15*screenSize/100);
 
 	// Center window
-	this->move(QPoint((QApplication::desktop()->availableGeometry().width()-this->width())/2,
-	                  (QApplication::desktop()->availableGeometry().height()-this->height())/2
+	this->move(QPoint((screenSize.width()-this->width())/2,
+	                  (screenSize.height()-this->height())/2
 	                  )
 	           );
+
+	// Allow dropping on window
+	this->setAcceptDrops(true);
 
 	// Add scene and resource bar
 	QSplitter* splitter = new QSplitter();

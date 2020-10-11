@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -126,11 +126,13 @@ void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
 	{
 		if (this->editMode == false)
 		{
-			QWidget* childUnderMouse = this->childAt(event->pos());
+			QPoint eventPosition = QPoint(event->position().x(), event->position().y());
+
+			QWidget* childUnderMouse = this->childAt(eventPosition);
 
 			if (childUnderMouse == this->rangeLText)
 			{
-				if (event->delta() > 0)
+				if (event->angleDelta().y() > 0)
 				{
 					int newValue = this->rangeLText->text().toInt() + 1;
 
@@ -153,9 +155,9 @@ void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
 
 				}
 			}
-			else if ( (this->rangeRText != nullptr) && (this->childAt(event->pos()) == this->rangeRText) )
+			else if ( (this->rangeRText != nullptr) && (this->childAt(eventPosition) == this->rangeRText) )
 			{
-				if (event->delta() > 0)
+				if (event->angleDelta().y() > 0)
 				{
 					int newValue = this->rangeRText->text().toInt() + 1;
 

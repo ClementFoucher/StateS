@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -21,6 +21,9 @@
 
 // Current class header
 #include "signallisteditor.h"
+
+// C++ classes
+#include <algorithm>
 
 // Qt classes
 #include <QVBoxLayout>
@@ -269,7 +272,7 @@ void SignalListEditor::updateButtonsEnableState()
 				sortedRows[i] = rows[i].row();
 			}
 
-			qSort(sortedRows);
+			sort(sortedRows.begin(), sortedRows.end());
 
 			int currentRow = sortedRows[0];
 			bool areSuccesive = true;

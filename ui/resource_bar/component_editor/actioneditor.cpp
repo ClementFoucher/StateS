@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -21,6 +21,9 @@
 
 // Current class header
 #include "actioneditor.h"
+
+// C++ classes
+#include <algorithm>
 
 // Qt classes
 #include <QGridLayout>
@@ -342,7 +345,7 @@ void ActionEditor::removeSelectedActions()
 			{
 				this->latestSelection.clear();
 				// Sort the list backwards to avoid index shifting while removing actions
-				std::sort(indexList.rbegin(), indexList.rend());
+				sort(indexList.rbegin(), indexList.rend());
 
 				machine->beginAtomicEdit();
 				for (QModelIndex index : indexList)
@@ -621,7 +624,7 @@ void ActionEditor::updateButtonsEnableState()
 					sortedRows[i] = rows[i].row();
 				}
 
-				qSort(sortedRows);
+				sort(sortedRows.begin(), sortedRows.end());
 
 				int currentRow = sortedRows[0];
 				bool areSuccesive = true;
