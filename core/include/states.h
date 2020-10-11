@@ -56,6 +56,7 @@ class StateS : public QObject
 
 public:
 	static QString getVersion();
+	static QString getCopyrightYears();
 	static shared_ptr<Machine> getCurrentMachine();
 	static QString getCurrentXmlCode();
 

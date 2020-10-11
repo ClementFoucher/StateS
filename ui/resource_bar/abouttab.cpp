@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -69,7 +69,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	techTitle->setAlignment(Qt::AlignCenter);
 	layout->addWidget(techTitle);
 
-	QLabel* copyrightLabel = new QLabel("© 2014-2017 Clément Foucher");
+	QLabel* copyrightLabel = new QLabel("© " + StateS::getCopyrightYears() +" Clément Foucher");
 	copyrightLabel->setAlignment(Qt::AlignCenter);
 	copyrightLabel->setWordWrap(true);
 	layout->addWidget(copyrightLabel);

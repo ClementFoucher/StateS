@@ -333,20 +333,7 @@ void StatesUi::beginLoadProcedure()
 
 void StatesUi::beginSaveProcedure()
 {
-	bool doSave = false;
-
 	if (! this->machine.expired())
-	{
-		QMessageBox::StandardButton reply;
-		reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Update content of file") + " " + this->windowTitle + " " + tr("with current machine?"), QMessageBox::Ok | QMessageBox::Cancel);
-
-		if (reply == QMessageBox::StandardButton::Ok)
-		{
-			doSave = true;
-		}
-	}
-
-	if (doSave)
 	{
 		emit saveMachineInCurrentFileRequestEvent();
 	}

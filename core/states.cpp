@@ -53,6 +53,11 @@ QString StateS::getVersion()
 	return "0.4.1";
 }
 
+QString StateS::getCopyrightYears()
+{
+	return "2014-2020";
+}
+
 shared_ptr<Machine> StateS::getCurrentMachine()
 {
 	return machine;

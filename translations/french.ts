@@ -1363,7 +1363,7 @@
     </message>
     <message>
         <source>Allowed characters are alphanumerical ones, space and</source>
-        <translation>Les caractères autorisés sont les charactères alphanumériques, l&apos;espace et</translation>
+        <translation>Les caractères autorisés sont les caractères alphanumériques, l&apos;espace et</translation>
     </message>
     <message>
         <source>Signals length can not exceed 64 bits.</source>
