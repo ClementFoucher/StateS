@@ -391,9 +391,11 @@ void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool maintainView)
 		disconnect(StateS::machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
 	}
 
-	// Renew machine
-	StateS::machine = newMachine;
+	// Renew machine:
+	// Update local machine AFTER setting it in sub-classes as they still
+	// need the old machine to clear it, and setting it here removes it.
 	this->statesUi->setMachine(newMachine, maintainView);
+	StateS::machine = newMachine;
 
 	// Establish links with new machine
 	if (StateS::machine != nullptr)
