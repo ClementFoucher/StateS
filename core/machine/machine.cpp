@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,10 +32,12 @@
 #include "constant.h"
 #include "statesexception.h"
 #include "machineundocommand.h"
+#include "machinestatus.h"
 
 
 Machine::Machine()
 {
+	this->machineStatus  = shared_ptr<MachineStatus> (new MachineStatus() );
 	this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
 	this->name = tr("Machine");
 
@@ -61,6 +63,11 @@ Machine::~Machine()
 QString Machine::getName() const
 {
 	return this->name;
+}
+
+shared_ptr<MachineStatus> Machine::getMachineStatus() const
+{
+	return this->machineStatus;
 }
 
 // General lists obtention

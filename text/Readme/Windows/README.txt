@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.4.2 *
+* StateS v. 0.4.3 *
 *******************
 
 StateS is intended to be a simple yet effective Finite State Machines (FSMs) drawer.

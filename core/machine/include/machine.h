@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,6 +41,7 @@ class Signal;
 class Input;
 class Output;
 class MachineSimulator;
+class MachineStatus;
 
 
 class Machine : public QObject
@@ -65,6 +66,7 @@ public:
 	// Accessors
 
 	QString getName() const;
+	shared_ptr<MachineStatus> getMachineStatus() const;
 
 	QList<shared_ptr<Input>>  getInputs()         const; // TODO: throw exception
 	QList<shared_ptr<Output>> getOutputs()        const; // TODO: throw exception
@@ -166,6 +168,7 @@ private:
 
 	shared_ptr<MachineBuilder> machineBuilder = nullptr;
 	simulation_mode currentMode = simulation_mode::editMode;
+	shared_ptr<MachineStatus> machineStatus = nullptr;
 
 	weak_ptr<MachineSimulator> simulator;
 

@@ -4,6 +4,14 @@
 #
 #-------------------------------------------------
 
+###
+# Update these
+VERSION = 0.4.3
+DATE = 2014-2020
+# And remember to updates version in readme and other text files
+###
+
+
 QT += core \
       gui \
 	  widgets \
@@ -13,9 +21,10 @@ QT += core \
 TARGET = StateS
 TEMPLATE = app
 
-# Remember to update these in states.cpp too
-VERSION = 0.4.2
-QMAKE_TARGET_COPYRIGHT = copyright 2014-2020 Clément Foucher
+QMAKE_TARGET_COPYRIGHT = copyright $$DATE Clément Foucher
+
+DEFINES += STATES_VERSION=\\\"$$VERSION\\\"
+DEFINES += STATES_YEARS=\\\"$$DATE\\\"
 
 CONFIG += c++14
 QMAKE_LFLAGS += -no-pie
@@ -28,6 +37,7 @@ SOURCES += \
 	core/basic_type/logicvalue.cpp \
 	core/basic_type/truthtable.cpp \
 	core/machine/machine.cpp \
+	core/machine/machinestatus.cpp \
 	core/machine/machinecomponent.cpp \
 	core/machine/machineactuatorcomponent.cpp \
 	core/machine/machinebuilder.cpp \
@@ -139,6 +149,7 @@ HEADERS += \
 	core/machine/include/machineimageexporter.h \
 	core/machine/include/actiononsignal.h \
 	core/machine/include/machineconfiguration.h \
+	core/machine/include/machinestatus.h \
 	core/machine/include/machinexmlparser.h \
 	core/machine/include/machinexmlwriter.h \
 	core/machine/fsm/include/fsmcomponent.h \

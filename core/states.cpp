@@ -39,6 +39,7 @@
 #include "machinexmlparser.h"
 #include "diffundocommand.h"
 #include "fsmundocommand.h"
+#include "machinestatus.h"
 
 
 ////
@@ -50,12 +51,12 @@ QString StateS::machineXmlRepresentation = QString();
 
 QString StateS::getVersion()
 {
-	return "0.4.2";
+	return STATES_VERSION;
 }
 
 QString StateS::getCopyrightYears()
 {
-	return "2014-2020";
+	return STATES_YEARS;
 }
 
 shared_ptr<Machine> StateS::getCurrentMachine()
@@ -215,7 +216,9 @@ void StateS::loadMachine(const QString& path)
 				this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
 			}
 
-			this->loadNewMachine(parser->getMachine(), path);
+			shared_ptr<Machine> newMachine = parser->getMachine();
+			newMachine->getMachineStatus()->setCurrentFilePath(path);
+			this->loadNewMachine(newMachine);
 			this->statesUi->setConfiguration(parser->getConfiguration());
 		}
 		catch (const StatesException& e)
@@ -241,11 +244,13 @@ void StateS::refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine)
 
 void StateS::undoStackCleanStateChangeEventHandler(bool clean)
 {
-	this->statesUi->setUnsavedFlag(!clean);
-
-	if (this->currentFilePath.length() != 0)
+	if (StateS::machine != nullptr)
 	{
-		this->statesUi->setSaveActionEnabled(!clean);
+		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
+		if (machineStatus->getCurrentFilePath().length() != 0)
+		{
+			machineStatus->setUnsavedFlag(!clean);
+		}
 	}
 }
 
@@ -295,40 +300,43 @@ void StateS::saveCurrentMachine(const QString& path)
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-	bool fileOk = false;
-
-	QFileInfo file(this->currentFilePath);
-	if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+	if (StateS::machine != nullptr)
 	{
-		fileOk = true;
-	}
-	else if ( (! file.exists()) && (file.absoluteDir().exists()) )
-	{
-		fileOk = true;
-	}
-
-	if (fileOk)
-	{
-		try
+		bool fileOk = false;
+		shared_ptr<MachineStatus> machineStatus = machine->getMachineStatus();
+		QFileInfo file(machineStatus->getCurrentFilePath());
+		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
 		{
-			shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
-
-			saveManager->writeMachineToFile(this->statesUi->getConfiguration(), this->currentFilePath); // Throws StatesException
-			this->statesUi->setSaveActionEnabled(false);
-			this->undoStack.setClean();
+			fileOk = true;
 		}
-		catch (const StatesException& e)
+		else if ( (! file.exists()) && (file.absoluteDir().exists()) )
 		{
-			if (e.getSourceClass() == "FsmSaveFileManager")
+			fileOk = true;
+		}
+
+		if (fileOk)
+		{
+			try
 			{
-				this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(StateS::machine);
+
+				saveManager->writeMachineToFile(this->statesUi->getConfiguration(), machineStatus->getCurrentFilePath()); // Throws StatesException
+				machineStatus->setUnsavedFlag(false);
+				this->undoStack.setClean();
 			}
-			if (e.getSourceClass() == "MachineSaveFileManager")
+			catch (const StatesException& e)
 			{
-				this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+				if (e.getSourceClass() == "FsmSaveFileManager")
+				{
+					this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+				}
+				if (e.getSourceClass() == "MachineSaveFileManager")
+				{
+					this->statesUi->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+				}
+				else
+					throw;
 			}
-			else
-				throw;
 		}
 	}
 }
@@ -352,28 +360,19 @@ void StateS::updateXmlRepresentation()
 
 void StateS::updateFilePath(const QString& newPath)
 {
-	this->currentFilePath = newPath;
-
-	// Update  UI
-
-	if ( (this->currentFilePath.size() != 0) && (this->undoStack.isClean() == false))
+	if (StateS::machine != nullptr)
 	{
-		this->statesUi->setSaveActionEnabled(true);
+		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
+		machineStatus->setCurrentFilePath(newPath);
 	}
-	else
-	{
-		this->statesUi->setSaveActionEnabled(false);
-	}
-
-	this->statesUi->setTitle(this->currentFilePath);
 }
 
 void StateS::setMachineDirty()
 {
-	this->statesUi->setUnsavedFlag(true);
-	if (this->currentFilePath.length() != 0)
+	if (StateS::machine != nullptr)
 	{
-		this->statesUi->setSaveActionEnabled(true);
+		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
+		machineStatus->setUnsavedFlag(true);
 	}
 }
 
@@ -386,55 +385,36 @@ void StateS::setMachineDirty()
 void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool maintainView)
 {
 	// Cut links with older machine
-	if (machine != nullptr)
+	if (StateS::machine != nullptr)
 	{
-		disconnect(machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
-		disconnect(machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
+		disconnect(StateS::machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
+		disconnect(StateS::machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
 	}
 
 	// Renew machine
+	StateS::machine = newMachine;
 	this->statesUi->setMachine(newMachine, maintainView);
-	machine = newMachine;
 
 	// Establish links with new machine
-	if (machine != nullptr)
+	if (StateS::machine != nullptr)
 	{
-		connect(machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
-		connect(machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
-
-		this->statesUi->setSaveAsActionEnabled(true);
-		this->statesUi->setExportActionsEnabled(true);
-	}
-	else
-	{
-		this->statesUi->setSaveAsActionEnabled(false);
-		this->statesUi->setExportActionsEnabled(false);
+		connect(StateS::machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
+		connect(StateS::machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
 	}
 }
 
 /**
  * @brief StateS::loadNewMachine loads a new machine: refreshes the
  * machine, sets the UI in the initial state for a new/loaded machine,
- * and sets a initial checkpoint on current state. The file path can be
- * provided if machine is loaded from a file.
+ * and sets a initial checkpoint on current state.
  * @param newMachine
- * @param title
  */
-void StateS::loadNewMachine(shared_ptr<Machine> newMachine, const QString& path)
+void StateS::loadNewMachine(shared_ptr<Machine> newMachine)
 {
 	// Refresh current machine
 	this->refreshMachine(newMachine, false);
 
-	// Update UI
-	this->statesUi->setUnsavedFlag(false);
-	this->statesUi->setUndoButtonEnabled(false);
-	this->statesUi->setRedoButtonEnabled(false);
-	this->statesUi->setSaveActionEnabled(false);
-
 	// Initialize time machine
 	this->undoStack.clear();
 	this->updateXmlRepresentation();
-
-	// Update file path
-	this->updateFilePath(path);
 }

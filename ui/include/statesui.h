@@ -36,22 +36,17 @@ class DisplayArea;
 class MachineComponent;
 class MachineConfiguration;
 class MainToolBar;
-class SceneWidget;
 
 
 /**
  * @brief The StatesUi class handles the main window.
  *
- * This window has tree areas:
- * - an action bar (on the left at startup, but can be moved at top or bottom),
- * - a central widget wichi is a slider made of:
- * -- The display area, holding notably the machine graphic representation,
- * -- The resources bar, holding tools to edit and use the machine.
+ * This window has three areas:
+ * - an action bar; technically belong to display area for display purpose but managed here,
+ * - The display area,
+ * - The resources bar.
  *
- * This object can receive orders to use switch to a different machine
- * edition, or to update the currently used save file (for display only).
- *
- * It can request some actions on the currently edited machine (save, load, new, ...)
+ * This object can request some actions on the currently edited machine (save, load, new, ...)
  */
 class StatesUi : public QMainWindow
 {
@@ -61,8 +56,6 @@ public:
 	explicit StatesUi();
 
 	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
-	void setTitle(const QString& title);
-	void setUnsavedFlag(bool unsaved);
 	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
 	shared_ptr<MachineConfiguration> getConfiguration() const;
 
@@ -72,11 +65,8 @@ public:
 	void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
 	void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
-	void setSaveAsActionEnabled       (bool enable);
-	void setSaveActionEnabled         (bool enable);
-	void setExportActionsEnabled      (bool enable);
-	void setUndoButtonEnabled         (bool enable);
-	void setRedoButtonEnabled         (bool enable);
+	void setUndoButtonEnabled(bool enable);
+	void setRedoButtonEnabled(bool enable);
 
 signals:
 	void newFsmRequestEvent();
@@ -105,6 +95,9 @@ private slots:
 	void editSelectedItem();
 	void renameSelectedItem();
 
+	void machineFilePathUpdated();
+	void machineUnsavedStateUpdated();
+
 private:
 	void updateTitle();
 	bool displayUnsavedConfirmation(const QString& cause);
@@ -112,14 +105,11 @@ private:
 private:
 	// Display area and resource bar
 	DisplayArea* displayArea = nullptr;
-	MainToolBar* toolbar     = nullptr;
-	SceneWidget* sceneWidget = nullptr;
 	ResourceBar* resourceBar = nullptr;
+	MainToolBar* toolbar     = nullptr;
 
 	// Current machine
 	weak_ptr<Machine> machine;
-	QString windowTitle = QString();
-	bool unsavedFlag = false;
 };
 
 #endif // STATESUI_H

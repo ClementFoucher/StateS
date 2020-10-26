@@ -147,6 +147,11 @@ GenericScene* SceneWidget::getScene() const
 	return dynamic_cast<GenericScene*>(this->scene());
 }
 
+void SceneWidget::clearSelection()
+{
+	this->getScene()->clearSelection();
+}
+
 qreal SceneWidget::getZoomLevel() const
 {
 	return this->transform().m11();

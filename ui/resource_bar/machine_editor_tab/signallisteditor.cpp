@@ -421,9 +421,12 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 				data.setValue((int)ContextAction::ResizeSignal);
 				actionToAdd->setData(data);
 
-				actionToAdd = menu->addAction(tr("Change signal value"));
-				data.setValue((int)ContextAction::ChangeSignalValue);
-				actionToAdd->setData(data);
+				if (this->editorType != Machine::signal_type::Output)
+				{
+					actionToAdd = menu->addAction(tr("Change signal value"));
+					data.setValue((int)ContextAction::ChangeSignalValue);
+					actionToAdd->setData(data);
+				}
 
 				menu->addSeparator();
 

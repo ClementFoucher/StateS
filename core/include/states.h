@@ -90,7 +90,7 @@ private slots:
 	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
 private:
-	void loadNewMachine(shared_ptr<Machine> newMachine, const QString& path = QString());
+	void loadNewMachine(shared_ptr<Machine> newMachine);
 	void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
 
 	void updateXmlRepresentation();
@@ -104,9 +104,7 @@ private:
 	static shared_ptr<Machine> machine;
 
 private:
-	shared_ptr<StatesUi> statesUi;
-
-	QString currentFilePath = QString();
+	shared_ptr<StatesUi> statesUi = nullptr;
 	QUndoStack undoStack;
 };
 

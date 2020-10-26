@@ -38,14 +38,18 @@ class SceneWidget;
 class SimulationWidget;
 class MainToolBar;
 class DrawingToolBar;
+class GenericScene;
+class MachineConfiguration;
+class MachineComponent;
 
 
 /**
  * @brief The DisplayArea class handles the central display.
  * Usually, this is just the machine graphic representation,
  * but in simulation mode, the timeline is also handled here.
- * DisplayArea ilso owns the tool bar to allow placing it near
- * the resoure bar.
+ * DisplayArea also owns a drawing tool bar.
+ * Finally, this class owns the main tool bar for display purpose,
+ * but this one is handled directly by the StatesUI object.
  */
 class DisplayArea : public QMainWindow
 {
@@ -54,11 +58,21 @@ class DisplayArea : public QMainWindow
 public:
 	explicit DisplayArea(QWidget* parent = nullptr);
 
-	void setMachine(shared_ptr<Machine> newMachine);
+	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
 
-	MainToolBar*    getMainToolBar()    const;
-	DrawingToolBar* getDrawingToolBar() const;
-	SceneWidget*    getSceneWidget()    const;
+	MainToolBar* getMainToolBar() const;
+	SceneWidget* getSceneWidget() const;
+
+	GenericScene* getScene() const;
+
+	void clearSelection();
+	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
+	shared_ptr<MachineConfiguration> getConfiguration() const;
+
+signals:
+	void itemSelectedEvent(shared_ptr<MachineComponent> component);
+	void editSelectedItemEvent();
+	void renameSelectedItemEvent();
 
 private slots:
 	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
@@ -71,7 +85,7 @@ private:
 
 private:
 	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
-	MainToolBar*      mainToolBar        = nullptr; // Persistant through object life
+	MainToolBar*      mainToolBar        = nullptr; // Persistant through object life; Managed in StatesUI class.
 	DrawingToolBar*   drawingToolBar     = nullptr;
 	SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
 	QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time

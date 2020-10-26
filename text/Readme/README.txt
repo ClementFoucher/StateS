@@ -1,6 +1,6 @@
 
 *******************
-* StateS v. 0.4.2 *
+* StateS v. 0.4.3 *
 *******************
 
 StateS is intended to be a simple yet effective Finite State Machines (FSMs) drawer.
@@ -35,7 +35,7 @@ If you wish for a light, dynamic, version, it means you probably already have Qt
 
 ** Linux **
 
-Install Qt from your distribution repositories using your package manager, or update to the latest version if already installed. At least Qt 5.9 is required.
+Install Qt from your distribution repositories using your package manager, or update to the latest version if already installed. At least Qt 5.15 is required.
 
 Make sure the StateS file is executable:
 From command line, cd to the folder containing the executable, and type "chmod +x ./<name of the file>".

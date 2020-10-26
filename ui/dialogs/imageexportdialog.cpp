@@ -30,7 +30,7 @@
 #include <QFileDialog>
 
 // StateS classes
-#include <checkboxhtml.h>
+#include "checkboxhtml.h"
 
 
 ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent) :

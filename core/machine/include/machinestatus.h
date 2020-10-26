@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,29 +16,35 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MACHINECONFIGURATION_H
-#define MACHINECONFIGURATION_H
+
+#ifndef MACHINESTATUS_H
+#define MACHINESTATUS_H
 
 // Parent class
 #include <QObject>
 
-// Qt classes
-#include <QPointF>
-
-
-class MachineConfiguration : public QObject
+class MachineStatus : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit MachineConfiguration(QObject* parent = nullptr);
+	explicit MachineStatus(const QString& filePath = QString(), QObject* parent = nullptr);
 
-public:
-	QPointF sceneTranslation;
-	QPointF viewCenter;
-	qreal   zoomLevel;
+	void setCurrentFilePath(const QString& newFilePath);
+	void setUnsavedFlag    (bool newUnsavedFlag);
+
+	QString getCurrentFilePath() const;
+	bool    getUnsavedFlag()     const;
+
+signals:
+	void currentFilePathChanged();
+	void unsavedFlagChanged();
+
+private:
+	QString currentFilePath;
+	bool    unsavedFlag;
 };
 
-#endif // MACHINECONFIGURATION_H
+#endif // MACHINESTATUS_H
