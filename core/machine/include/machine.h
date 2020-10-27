@@ -60,6 +60,7 @@ public:
 	enum class simulation_mode {editMode, simulateMode};
 
 public:
+	explicit Machine(shared_ptr<MachineStatus> machineStatus);
 	explicit Machine();
 	~Machine();
 

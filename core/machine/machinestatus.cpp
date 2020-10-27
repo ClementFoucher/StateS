@@ -19,22 +19,38 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "machinestatus.h"
 
-MachineStatus::MachineStatus(const QString& filePath, QObject* parent) :
-    QObject(parent)
+
+MachineStatus::MachineStatus()
 {
-	this->currentFilePath = filePath;
 	this->unsavedFlag     = false;
+	this->hasSaveFile     = false;
+	this->saveFilePath    = QFileInfo();
+	this->imageExportPath = QFileInfo();
+	this->vhdlExportPath  = QFileInfo();
 }
 
-void MachineStatus::setCurrentFilePath(const QString& newFilePath)
+MachineStatus::MachineStatus(shared_ptr<MachineStatus> fromObject) :
+    MachineStatus()
 {
-	if (newFilePath != this->currentFilePath)
-	{
-		this->currentFilePath = newFilePath;
-		emit currentFilePathChanged();
-	}
+	this->unsavedFlag     = fromObject->unsavedFlag;
+	this->hasSaveFile     = fromObject->hasSaveFile;
+	this->saveFilePath    = fromObject->saveFilePath;
+	this->imageExportPath = fromObject->imageExportPath;
+	this->vhdlExportPath  = fromObject->vhdlExportPath;
+}
+
+shared_ptr<MachineStatus> MachineStatus::clonePaths(shared_ptr<MachineStatus> fromObject)
+{
+	shared_ptr<MachineStatus> newStatus = shared_ptr<MachineStatus>(new MachineStatus());
+
+	newStatus->saveFilePath    = fromObject->saveFilePath;
+	newStatus->imageExportPath = fromObject->imageExportPath;
+	newStatus->vhdlExportPath  = fromObject->vhdlExportPath;
+
+	return newStatus;
 }
 
 void MachineStatus::setUnsavedFlag(bool newUnsavedFlag)
@@ -46,12 +62,71 @@ void MachineStatus::setUnsavedFlag(bool newUnsavedFlag)
 	}
 }
 
-QString MachineStatus::getCurrentFilePath() const
+void MachineStatus::setHasSaveFile(bool newHasSaveFile)
 {
-	return this->currentFilePath;
+	this->hasSaveFile = newHasSaveFile;
+}
+
+void MachineStatus::setSaveFilePath(const QString& newPath)
+{
+	QFileInfo newFile(newPath);
+	if (newFile != this->saveFilePath)
+	{
+		this->saveFilePath = newFile;
+		emit saveFilePathChanged();
+	}
+}
+
+void MachineStatus::setImageExportPath(const QString& newPath)
+{
+	this->imageExportPath = QFileInfo(newPath);
+}
+
+void MachineStatus::setVhdlExportPath(const QString& newPath)
+{
+	this->vhdlExportPath = QFileInfo(newPath);
 }
 
 bool MachineStatus::getUnsavedFlag() const
 {
 	return this->unsavedFlag;
+}
+
+bool MachineStatus::getHasSaveFile() const
+{
+	return this->hasSaveFile;
+}
+
+QString MachineStatus::getSaveFilePath() const
+{
+	return this->saveFilePath.path();
+}
+
+QString MachineStatus::getSaveFileFullPath() const
+{
+	return this->saveFilePath.filePath();
+}
+
+QString MachineStatus::getImageExportPath() const
+{
+	if (this->imageExportPath.path().isEmpty() == false)
+	{
+		return this->imageExportPath.path();
+	}
+	else
+	{
+		return this->saveFilePath.path();
+	}
+}
+
+QString MachineStatus::getVhdlExportPath() const
+{
+	if (this->vhdlExportPath.path().isEmpty() == false)
+	{
+		return this->vhdlExportPath.path();
+	}
+	else
+	{
+		return this->saveFilePath.path();
+	}
 }

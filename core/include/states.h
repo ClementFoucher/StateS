@@ -94,7 +94,6 @@ private:
 	void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
 
 	void updateXmlRepresentation();
-	void updateFilePath(const QString& newPath);
 
 	// UI
 	void setMachineDirty();

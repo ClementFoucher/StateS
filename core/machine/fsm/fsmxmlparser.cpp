@@ -32,13 +32,12 @@
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "fsmgraphictransition.h"
+#include "machinestatus.h"
 
 
 FsmXmlParser::FsmXmlParser(QObject* parent) :
     MachineXmlParser(parent)
 {
-	this->machine = shared_ptr<Fsm>(new Fsm());
-
 	this->currentGroup = group_e::none;
 	this->currentSubGroup = subgroup_e::none;
 	this->currentLevel = 0;
@@ -53,6 +52,7 @@ FsmXmlParser::FsmXmlParser(const QString& xmlString) :
 FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
     FsmXmlParser()
 {
+	this->file = file;
 	if (file->isOpen() == false)
 	{
 		file->open(QIODevice::ReadOnly);
@@ -68,6 +68,20 @@ FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
 
 void FsmXmlParser::buildMachineFromXml()
 {
+	if (this->status != nullptr)
+	{
+		if (this->fileName.isNull() == false)
+		{
+			this->status->setSaveFilePath(this->fileName);
+			this->status->setHasSaveFile(true);
+		}
+		this->machine = shared_ptr<Fsm>(new Fsm(this->status));
+	}
+	else
+	{
+		this->machine = shared_ptr<Fsm>(new Fsm());
+	}
+
 	while (this->xmlReader->atEnd() == false)
 	{
 		this->xmlReader->readNext();

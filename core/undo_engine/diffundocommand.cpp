@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -112,6 +112,7 @@ QList<Patch> DiffUndoCommand::getUndoPatch() const
 
 void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
-	shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildStringParser(newXmlCode);
+	shared_ptr<MachineXmlParser> parser = MachineXmlParser::buildStringParser(newXmlCode);
+	parser->doParse();
 	emit applyUndoRedo(parser->getMachine());
 }

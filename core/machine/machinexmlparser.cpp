@@ -568,11 +568,6 @@ shared_ptr<MachineXmlParser> MachineXmlParser::buildStringParser(const QString& 
 		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(xmlString));
 	}
 
-	if (machineParser != nullptr)
-	{
-		machineParser->buildMachineFromXml();
-	}
-
 	return machineParser;
 }
 
@@ -587,12 +582,17 @@ shared_ptr<MachineXmlParser> MachineXmlParser::buildFileParser(shared_ptr<QFile>
 		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(file));
 	}
 
-	if (machineParser != nullptr)
-	{
-		machineParser->buildMachineFromXml();
-	}
-
 	return machineParser;
+}
+
+void MachineXmlParser::doParse()
+{
+	this->buildMachineFromXml();
+}
+
+void MachineXmlParser::setMachineStatus(shared_ptr<MachineStatus> initialStatus)
+{
+	this->status = initialStatus;
 }
 
 shared_ptr<Machine> MachineXmlParser::getMachine()

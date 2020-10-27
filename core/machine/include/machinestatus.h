@@ -25,26 +25,47 @@
 // Parent class
 #include <QObject>
 
+// Qt classes
+#include <QFileInfo>
+
+// C++ classes
+#include <memory>
+using namespace std;
+
+
 class MachineStatus : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit MachineStatus(const QString& filePath = QString(), QObject* parent = nullptr);
+	explicit MachineStatus();
+	explicit MachineStatus(shared_ptr<MachineStatus> fromObject);
 
-	void setCurrentFilePath(const QString& newFilePath);
+	static shared_ptr<MachineStatus> clonePaths(shared_ptr<MachineStatus> fromObject);
+
 	void setUnsavedFlag    (bool newUnsavedFlag);
+	void setHasSaveFile    (bool newHasSaveFile);
+	void setSaveFilePath   (const QString& newPath);
+	void setImageExportPath(const QString& newPath);
+	void setVhdlExportPath (const QString& newPath);
 
-	QString getCurrentFilePath() const;
-	bool    getUnsavedFlag()     const;
+	bool    getUnsavedFlag()      const;
+	bool    getHasSaveFile()      const;
+	QString getSaveFilePath()     const;
+	QString getSaveFileFullPath() const;
+	QString getImageExportPath()  const;
+	QString getVhdlExportPath()   const;
 
 signals:
-	void currentFilePathChanged();
+	void saveFilePathChanged();
 	void unsavedFlagChanged();
 
 private:
-	QString currentFilePath;
-	bool    unsavedFlag;
+	QFileInfo saveFilePath;
+	QFileInfo imageExportPath;
+	QFileInfo vhdlExportPath;
+	bool      unsavedFlag;
+	bool      hasSaveFile;
 };
 
 #endif // MACHINESTATUS_H

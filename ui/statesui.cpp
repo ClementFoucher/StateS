@@ -120,8 +120,8 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	if (newMachine != nullptr)
 	{
 		shared_ptr<MachineStatus> machineStatus = newMachine->getMachineStatus();
-		connect(machineStatus.get(), &MachineStatus::currentFilePathChanged, this, &StatesUi::machineFilePathUpdated);
-		connect(machineStatus.get(), &MachineStatus::unsavedFlagChanged,     this, &StatesUi::machineUnsavedStateUpdated);
+		connect(machineStatus.get(), &MachineStatus::saveFilePathChanged, this, &StatesUi::machineFilePathUpdated);
+		connect(machineStatus.get(), &MachineStatus::unsavedFlagChanged,  this, &StatesUi::machineUnsavedStateUpdated);
 	}
 
 	// Update UI
@@ -194,7 +194,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 		if (l_machine != nullptr)
 		{
 			shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
-			if (machineStatus->getCurrentFilePath().isEmpty() == false)
+			if (machineStatus->getHasSaveFile() == true)
 			{
 				emit this->saveMachineInCurrentFileRequestEvent();
 				// Should make button blink for one second.
@@ -265,11 +265,13 @@ void StatesUi::beginExportImageProcedure()
 
 	if (l_machine != nullptr)
 	{
+		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
+
 		displayArea->clearSelection();
 
 		shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
-		unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, l_machine->getMachineStatus()->getCurrentFilePath()));
+		unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, machineStatus->getImageExportPath()));
 		exportOptions->setModal(true);
 
 		exportOptions->exec();
@@ -280,6 +282,8 @@ void StatesUi::beginExportImageProcedure()
 
 			QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
 			exporter->doExport(filePath, exportOptions->getImageFormat(), comment);
+
+			machineStatus->setImageExportPath(filePath);
 		}
 	}
 }
@@ -290,18 +294,24 @@ void StatesUi::beginExportVhdlProcedure()
 
 	if (l_machine != nullptr)
 	{
+		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
+
 		unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport(dynamic_pointer_cast<Fsm>(l_machine)));
 		shared_ptr<FsmVhdlExport::ExportCompatibility> compat = exporter->checkCompatibility();
 
-		unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), l_machine->getMachineStatus()->getCurrentFilePath(), !compat->isCompatible()));
+		unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), machineStatus->getVhdlExportPath(), !compat->isCompatible()));
 		exportOptions->setModal(true);
 
 		exportOptions->exec();
 
 		if (exportOptions->result() == QDialog::Accepted)
 		{
+			QString filePath = exportOptions->getFilePath();
+
 			exporter->setOptions(exportOptions->isResetPositive(), exportOptions->prefixIOs());
-			exporter->writeToFile(exportOptions->getFilePath());
+			exporter->writeToFile(filePath);
+
+			machineStatus->setVhdlExportPath(filePath);
 		}
 	}
 }
@@ -329,7 +339,7 @@ void StatesUi::machineFilePathUpdated()
 	if (l_machine != nullptr)
 	{
 		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
-		if (machineStatus->getCurrentFilePath().size() != 0)
+		if (machineStatus->getHasSaveFile() == true)
 		{
 			this->toolbar->setSaveActionEnabled(machineStatus->getUnsavedFlag());
 		}
@@ -344,7 +354,7 @@ void StatesUi::machineUnsavedStateUpdated()
 	if (l_machine != nullptr)
 	{
 		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
-		if (machineStatus->getCurrentFilePath().length() != 0)
+		if (machineStatus->getHasSaveFile() == true)
 		{
 			this->toolbar->setSaveActionEnabled(machineStatus->getUnsavedFlag());
 		}
@@ -357,14 +367,37 @@ void StatesUi::beginSaveAsProcedure()
 
 	if (l_machine != nullptr)
 	{
-		QString fileName = QFileDialog::getSaveFileName(this, tr("Save machine"), l_machine->getName() + ".SfsmS", "*.SfsmS");
+		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
 
-		if (! fileName.isEmpty())
+		// Try to build the best possible file name
+		// depending on current knowledge of paths
+		QString filePath;
+		if (machineStatus->getHasSaveFile() == true)
 		{
-			if (!fileName.endsWith(".SfsmS", Qt::CaseInsensitive))
-				fileName += ".SfsmS";
+			filePath = machineStatus->getSaveFileFullPath();
+		}
+		else
+		{
+			QString fileName = l_machine->getName() + ".SfsmS";
 
-			emit this->saveMachineRequestEvent(fileName);
+			if (machineStatus->getSaveFilePath().isEmpty() == false)
+			{
+				filePath = QFileInfo(machineStatus->getSaveFilePath() + "/" + fileName).filePath();
+			}
+			else
+			{
+				filePath += fileName;
+			}
+		}
+
+		QString finalFilePath = QFileDialog::getSaveFileName(this, tr("Save machine"), filePath, "*.SfsmS");
+
+		if (! finalFilePath.isEmpty())
+		{
+			if (!finalFilePath.endsWith(".SfsmS", Qt::CaseInsensitive))
+				finalFilePath += ".SfsmS";
+
+			emit this->saveMachineRequestEvent(finalFilePath);
 		}
 	}
 }
@@ -375,11 +408,19 @@ void StatesUi::beginLoadProcedure()
 
 	if (doLoad)
 	{
-		QString fileName = QFileDialog::getOpenFileName(this, tr("Load machine"), QString(), "*.SfsmS");
-
-		if (! fileName.isEmpty())
+		QString filePath;
+		shared_ptr<Machine> l_machine = this->machine.lock();
+		if (l_machine != nullptr)
 		{
-			emit loadMachineRequestEvent(fileName);
+			shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
+			filePath = machineStatus->getSaveFilePath();
+		}
+
+		QString finalFilePath = QFileDialog::getOpenFileName(this, tr("Load machine"), filePath, "*.SfsmS");
+
+		if (! finalFilePath.isEmpty())
+		{
+			emit loadMachineRequestEvent(finalFilePath);
 		}
 	}
 }
@@ -404,13 +445,13 @@ void StatesUi::updateTitle()
 	{
 		QString title;
 		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
-		if (machineStatus->getCurrentFilePath().isNull())
+		if (machineStatus->getHasSaveFile() == false)
 		{
 			title = "StateS — (" + tr("Unsaved machine") + ")";
 		}
 		else
 		{
-			title = "StateS — " + machineStatus->getCurrentFilePath();
+			title = "StateS — " + machineStatus->getSaveFileFullPath();
 		}
 
 		if (machineStatus->getUnsavedFlag() == true)

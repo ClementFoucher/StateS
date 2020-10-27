@@ -177,9 +177,19 @@ void StateS::redo()
  */
 void StateS::generateNewFsm()
 {
-	this->clearMachine();
+	shared_ptr<Machine> newMachine = nullptr;
 
-	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
+	if (StateS::machine != nullptr)
+	{
+		// If a machine is already existing, preserve paths
+		shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(machine->getMachineStatus());
+		newMachine = shared_ptr<Fsm>(new Fsm(machineStatus));
+	}
+	else
+	{
+		newMachine = shared_ptr<Fsm>(new Fsm());
+	}
+
 	this->loadNewMachine(newMachine);
 }
 
@@ -204,21 +214,28 @@ void StateS::loadMachine(const QString& path)
 
 	if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
 	{
-		this->clearMachine();
-
 		try
 		{
+			// Build file parser
 			shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildFileParser(shared_ptr<QFile>(new QFile(path)));
 
+			if (StateS::machine != nullptr)
+			{
+				// If a machine is already existing, preserve paths
+				shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(StateS::machine->getMachineStatus());
+				parser->setMachineStatus(machineStatus);
+			}
+
+			// Parse and check for warnings
+			parser->doParse();
 			QList<QString> warnings = parser->getWarnings();
 			if (!warnings.isEmpty())
 			{
 				this->statesUi->displayErrorMessage(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
 			}
 
-			shared_ptr<Machine> newMachine = parser->getMachine();
-			newMachine->getMachineStatus()->setCurrentFilePath(path);
-			this->loadNewMachine(newMachine);
+			// If we reached this point, there should have been no exception
+			this->loadNewMachine(parser->getMachine());
 			this->statesUi->setConfiguration(parser->getConfiguration());
 		}
 		catch (const StatesException& e)
@@ -247,10 +264,7 @@ void StateS::undoStackCleanStateChangeEventHandler(bool clean)
 	if (StateS::machine != nullptr)
 	{
 		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
-		if (machineStatus->getCurrentFilePath().length() != 0)
-		{
-			machineStatus->setUnsavedFlag(!clean);
-		}
+		machineStatus->setUnsavedFlag(!clean);
 	}
 }
 
@@ -273,22 +287,27 @@ void StateS::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
  */
 void StateS::saveCurrentMachine(const QString& path)
 {
-	bool fileOk = false;
+	if (StateS::machine != nullptr)
+	{
+		bool fileOk = false;
 
-	QFileInfo file(path);
-	if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
-	{
-		fileOk = true;
-	}
-	else if ( (! file.exists()) && (file.absoluteDir().exists()) )
-	{
-		fileOk = true;
-	}
+		QFileInfo file(path);
+		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
+		{
+			fileOk = true;
+		}
+		else if ( (! file.exists()) && (file.absoluteDir().exists()) )
+		{
+			fileOk = true;
+		}
 
-	if (fileOk)
-	{
-		this->updateFilePath(path);
-		this->saveCurrentMachineInCurrentFile();
+		if (fileOk)
+		{
+			shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
+			machineStatus->setSaveFilePath(path);
+			machineStatus->setHasSaveFile(true);
+			this->saveCurrentMachineInCurrentFile();
+		}
 	}
 }
 
@@ -304,7 +323,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 	{
 		bool fileOk = false;
 		shared_ptr<MachineStatus> machineStatus = machine->getMachineStatus();
-		QFileInfo file(machineStatus->getCurrentFilePath());
+		QFileInfo file = machineStatus->getSaveFileFullPath();
 		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
 		{
 			fileOk = true;
@@ -320,7 +339,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 			{
 				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(StateS::machine);
 
-				saveManager->writeMachineToFile(this->statesUi->getConfiguration(), machineStatus->getCurrentFilePath()); // Throws StatesException
+				saveManager->writeMachineToFile(this->statesUi->getConfiguration(), file.filePath()); // Throws StatesException
 				machineStatus->setUnsavedFlag(false);
 				this->undoStack.setClean();
 			}
@@ -355,15 +374,6 @@ void StateS::updateXmlRepresentation()
 		{
 			this->machineXmlRepresentation = saveManager->getMachineXml();
 		}
-	}
-}
-
-void StateS::updateFilePath(const QString& newPath)
-{
-	if (StateS::machine != nullptr)
-	{
-		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
-		machineStatus->setCurrentFilePath(newPath);
 	}
 }
 

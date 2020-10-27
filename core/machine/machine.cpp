@@ -35,13 +35,19 @@
 #include "machinestatus.h"
 
 
-Machine::Machine()
+Machine::Machine(shared_ptr<MachineStatus> machineStatus)
 {
-	this->machineStatus  = shared_ptr<MachineStatus> (new MachineStatus() );
+	this->machineStatus  = machineStatus;
 	this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
 	this->name = tr("Machine");
 
 	this->rebuildComponentVisualization();
+}
+
+Machine::Machine() :
+    Machine(shared_ptr<MachineStatus> (new MachineStatus()))
+{
+
 }
 
 Machine::~Machine()
