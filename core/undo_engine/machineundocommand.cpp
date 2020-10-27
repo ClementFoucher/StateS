@@ -23,9 +23,22 @@
 #include "machineundocommand.h"
 
 // StateS classes
-#include "states.h"
-#include "fsm.h"
+#include "machine.h"
+#include "diffundocommand.h"
 
+
+weak_ptr<Machine> MachineUndoCommand::machine;
+
+void MachineUndoCommand::setMachine(shared_ptr<Machine> machine, bool machineHasChanged)
+{
+	MachineUndoCommand::machine = machine;
+
+	// If machine has changed, its XML representation must be rebuilt
+	if (machineHasChanged == true)
+	{
+		DiffUndoCommand::updateXmlRepresentation();
+	}
+}
 
 MachineUndoCommand::MachineUndoCommand()
 {
@@ -37,26 +50,30 @@ MachineUndoCommand::MachineUndoCommand(const QString& previousName) :
 {
 	this->undoType = machineUndoRenameId;
 	this->previousName = previousName;
+
+	DiffUndoCommand::updateXmlRepresentation();
 }
 
 void MachineUndoCommand::undo()
 {
-	shared_ptr<Machine> machine = StateS::getCurrentMachine();
-	if (machine != nullptr)
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	if (l_machine != nullptr)
 	{
 		switch (this->undoType)
 		{
 		case undo_command_id::machineUndoRenameId:
 		{
-			machine->setInhibitEvents(true);
-			this->nextName = machine->getName();
-			machine->setName(this->previousName);
-			machine->setInhibitEvents(false);
+			l_machine->setInhibitEvents(true);
+			this->nextName = l_machine->getName();
+			l_machine->setName(this->previousName);
+			l_machine->setInhibitEvents(false);
 			break;
 		}
 		default:
 			break;
 		}
+
+		DiffUndoCommand::updateXmlRepresentation();
 	}
 }
 
@@ -64,17 +81,17 @@ void MachineUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		shared_ptr<Machine> machine = StateS::getCurrentMachine();
-		if (machine != nullptr)
+		shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+		if (l_machine != nullptr)
 		{
 			switch (this->undoType)
 			{
 			case undo_command_id::machineUndoRenameId:
 			{
-				machine->setInhibitEvents(true);
-				machine->setName(this->nextName);
+				l_machine->setInhibitEvents(true);
+				l_machine->setName(this->nextName);
 				this->nextName = QString();
-				machine->setInhibitEvents(false);
+				l_machine->setInhibitEvents(false);
 				break;
 			}
 			default:
@@ -87,6 +104,8 @@ void MachineUndoCommand::redo()
 		// Ignore initial redo automatically applied when pushed in the stack
 		this->firstRedoIgnored = true;
 	}
+
+	DiffUndoCommand::updateXmlRepresentation();
 }
 
 int MachineUndoCommand::id() const

@@ -33,22 +33,20 @@ using namespace std;
 #include <QUndoStack>
 
 // StateS classes
-#include "machineundocommand.h"
 class StatesUi;
 class Machine;
+class UndoRedoManager;
 
 
 /**
  * @brief The StateS class is the root object of this application:
- * it owns the UI and the current machine under edition.
+ * it owns the current machine under edition, the UI and the
+ * undo/redo manager.
  *
- * Only one StateS instance is allowed in the application, or
- * it could lead to unpredictible behavior when dealing with
- * static members.
+ * Its main purpose is to deal with the machine object:
+ * Changing references, building new, loading, saving, etc.
  *
- * It is the only one able to change the current machine.
- *
- * This class is also used statically for generic functions.
+ * This class also gives access to static generic functions.
  */
 class StateS : public QObject
 {
@@ -57,8 +55,6 @@ class StateS : public QObject
 public:
 	static QString getVersion();
 	static QString getCopyrightYears();
-	static shared_ptr<Machine> getCurrentMachine();
-	static QString getCurrentXmlCode();
 
 public:
 	explicit StateS(const QString& initialFilePath = QString());
@@ -66,45 +62,25 @@ public:
 	void run();
 
 private slots:
-	// New / load / save
-	void clearMachine();
+	// Handle signals from UI
 	void generateNewFsm();
+	void clearMachine();
 
 	void loadMachine(const QString& path);
 
 	void saveCurrentMachine(const QString& path);
 	void saveCurrentMachineInCurrentFile();
 
-	// Undo management
-	void computeDiffUndoCommand(MachineUndoCommand::undo_command_id commandId);
-	void addUndoCommand(MachineUndoCommand* undoCommand);
-
-	void undo();
-	void redo();
-
-	void refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine);
-
-	// UI updating
-	void undoStackCleanStateChangeEventHandler(bool clean);
-	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
-	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
+	// Handle signals from UndoRedoManager
+	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> machine);
 
 private:
-	void loadNewMachine(shared_ptr<Machine> newMachine);
-	void refreshMachine(shared_ptr<Machine> newMachine, bool maintainView);
-
-	void updateXmlRepresentation();
-
-	// UI
-	void setMachineDirty();
+	void refreshMachine(shared_ptr<Machine> newMachine, bool machineChanged);
 
 private:
-	static QString machineXmlRepresentation;
-	static shared_ptr<Machine> machine;
-
-private:
-	shared_ptr<StatesUi> statesUi = nullptr;
-	QUndoStack undoStack;
+	shared_ptr<Machine>         machine         = nullptr;
+	shared_ptr<StatesUi>        statesUi        = nullptr;
+	shared_ptr<UndoRedoManager> undoRedoManager = nullptr;
 };
 
 #endif // STATES_H

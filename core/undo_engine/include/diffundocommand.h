@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,7 +41,10 @@ class DiffUndoCommand : public MachineUndoCommand
 	Q_OBJECT
 
 public:
-	explicit DiffUndoCommand(const QString& previousXmlCode, undo_command_id commandId = machineGenericUndoId);
+	static void updateXmlRepresentation();
+
+public:
+	explicit DiffUndoCommand(undo_command_id commandId = machineGenericUndoId);
 
 	virtual void undo() override;
 	virtual void redo() override;
@@ -58,6 +61,9 @@ signals:
 
 private:
 	void applyPatch(const QString& newXmlCode);
+
+private:
+	static QString machineXmlRepresentation;
 
 private:
 	QList<Patch> undoPatch;

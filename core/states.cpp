@@ -31,23 +31,17 @@
 
 // StateS classes
 #include "statesui.h"
+#include "undoredomanager.h"
 #include "statesexception.h"
 #include "viewconfiguration.h"
 #include "fsm.h"
 #include "machinexmlwriter.h"
-#include "fsmxmlwriter.h"
 #include "machinexmlparser.h"
-#include "diffundocommand.h"
-#include "fsmundocommand.h"
 #include "machinestatus.h"
 
 
 ////
-// Static members
-
-shared_ptr<Machine> StateS::machine = nullptr;
-QString StateS::machineXmlRepresentation = QString();
-
+// Static functions for convenience
 
 QString StateS::getVersion()
 {
@@ -59,42 +53,28 @@ QString StateS::getCopyrightYears()
 	return STATES_YEARS;
 }
 
-shared_ptr<Machine> StateS::getCurrentMachine()
-{
-	return machine;
-}
-
-QString StateS::getCurrentXmlCode()
-{
-	return machineXmlRepresentation;
-}
-
-
 ////
 // Object members
 
 /**
- * @brief StateS::StateS is the main object, handling both the UI
- * and the master Machine object representing the currenly edited
- * machine. It is also responsible for the time machine mechanism.
- * @param initialFilePath
+ * @brief StateS::StateS Constructor to the main StateS object.
+ * Buiilds the interface and undo/redo manager.
+ * @param initialFilePath Parameter indicating that we have to
+ * load an initial machine from file.
  */
 StateS::StateS(const QString& initialFilePath)
 {
-	// Create interface
+	// Build interface
 	this->statesUi = unique_ptr<StatesUi>(new StatesUi());
-
 	connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
 	connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
 	connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadMachine);
 	connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,              this, &StateS::saveCurrentMachine);
 	connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent, this, &StateS::saveCurrentMachineInCurrentFile);
-	connect(this->statesUi.get(), &StatesUi::undoRequestEvent,                     this, &StateS::undo);
-	connect(this->statesUi.get(), &StatesUi::redoRequestEvent,                     this, &StateS::redo);
 
-	connect(&this->undoStack, &QUndoStack::cleanChanged,   this, &StateS::undoStackCleanStateChangeEventHandler);
-	connect(&this->undoStack, &QUndoStack::canUndoChanged, this, &StateS::undoActionAvailabilityChangeEventHandler);
-	connect(&this->undoStack, &QUndoStack::canRedoChanged, this, &StateS::redoActionAvailabilityChangeEventHandler);
+	// Build undo/redo manager
+	this->undoRedoManager = shared_ptr<UndoRedoManager>(new UndoRedoManager(this->statesUi));
+	connect(this->undoRedoManager.get(), &UndoRedoManager::freshMachineAvailableEvent, this, &StateS::freshMachineAvailableFromUndoRedo);
 
 	// Initialize machine
 	if (! initialFilePath.isEmpty())
@@ -107,68 +87,14 @@ StateS::StateS(const QString& initialFilePath)
 	}
 }
 
+/**
+ * @brief StateS::run is the function called in the event loop
+ * to display the UI.
+ */
 void StateS::run()
 {
 	// Display interface
 	this->statesUi->show();
-}
-
-/**
- * @brief StateS::machineChangedEventHandler notifies that
- * the machine have been changed using a diff.
- * This must be handled here because such an undo command
- * emits events that must be connected to a slot.
- * The updateXmlRepresentation has not to be called as we
- * update the XML representation as part of the process.
- */
-void StateS::computeDiffUndoCommand(MachineUndoCommand::undo_command_id commandId)
-{
-	QString previousXmlCode = this->machineXmlRepresentation;
-	shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
-	this->machineXmlRepresentation = saveManager->getMachineXml();
-
-	DiffUndoCommand* undoCommand = new DiffUndoCommand(previousXmlCode, commandId);
-	connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &StateS::refreshMachineFromDiffUndoRedo);
-
-	this->undoStack.push(undoCommand);
-	this->setMachineDirty();
-}
-
-/**
- * @brief StateS::machineUndoCommandHandler indicates that
- * the machine has changed and produced a specific undo command.
- * Specific undo commands are particularly monitored changes
- * which can have advanced behavior like undo merge capacity.
- * They don't rely on a diff but do specific changes to the machine.
- * @param undoCommand
- */
-void StateS::addUndoCommand(MachineUndoCommand* undoCommand)
-{
-	this->undoStack.push(undoCommand);
-	this->updateXmlRepresentation();
-	this->setMachineDirty();
-}
-
-/**
- * @brief StateS::undo gets the machine back to the
- * latest registered checkpoint.
- * This is the 'Undo' action.
- */
-void StateS::undo()
-{
-	this->undoStack.undo();
-	this->updateXmlRepresentation();
-}
-
-/**
- * @brief StateS::redo advances by one checkpoint
- * in the undo stack, coming back to the state before
- * the latest 'Undo' action.
- */
-void StateS::redo()
-{
-	this->undoStack.redo();
-	this->updateXmlRepresentation();
 }
 
 /**
@@ -179,7 +105,7 @@ void StateS::generateNewFsm()
 {
 	shared_ptr<Machine> newMachine = nullptr;
 
-	if (StateS::machine != nullptr)
+	if (this->machine != nullptr)
 	{
 		// If a machine is already existing, preserve paths
 		shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(machine->getMachineStatus());
@@ -190,23 +116,22 @@ void StateS::generateNewFsm()
 		newMachine = shared_ptr<Fsm>(new Fsm());
 	}
 
-	this->loadNewMachine(newMachine);
+	this->refreshMachine(newMachine, true);
 }
 
 /**
- * @brief StateS::clearMachine cleans the currently existing
- * machine.
+ * @brief StateS::clearMachine cleans the currently existing machine.
  * This is the 'Close' action.
  */
 void StateS::clearMachine()
 {
-	this->loadNewMachine(nullptr);
+	this->refreshMachine(nullptr, true);
 }
 
 /**
  * @brief StateS::loadMachine loads a machine from a saved file.
  * This is the 'Load' action.
- * @param path
+ * @param path Path of file to load from.
  */
 void StateS::loadMachine(const QString& path)
 {
@@ -219,10 +144,10 @@ void StateS::loadMachine(const QString& path)
 			// Build file parser
 			shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildFileParser(shared_ptr<QFile>(new QFile(path)));
 
-			if (StateS::machine != nullptr)
+			if (this->machine != nullptr)
 			{
 				// If a machine is already existing, preserve paths
-				shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(StateS::machine->getMachineStatus());
+				shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(this->machine->getMachineStatus());
 				parser->setMachineStatus(machineStatus);
 			}
 
@@ -235,7 +160,7 @@ void StateS::loadMachine(const QString& path)
 			}
 
 			// If we reached this point, there should have been no exception
-			this->loadNewMachine(parser->getMachine());
+			this->refreshMachine(parser->getMachine(), true);
 			this->statesUi->setViewConfiguration(parser->getViewConfiguration());
 		}
 		catch (const StatesException& e)
@@ -254,40 +179,15 @@ void StateS::loadMachine(const QString& path)
 	}
 }
 
-void StateS::refreshMachineFromDiffUndoRedo(shared_ptr<Machine> machine)
-{
-	this->refreshMachine(machine, true);
-}
-
-void StateS::undoStackCleanStateChangeEventHandler(bool clean)
-{
-	if (StateS::machine != nullptr)
-	{
-		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
-		machineStatus->setUnsavedFlag(!clean);
-	}
-}
-
-void StateS::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
-{
-	this->statesUi->setUndoButtonEnabled(undoAvailable);
-}
-
-void StateS::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
-{
-	this->statesUi->setRedoButtonEnabled(redoAvailable);
-}
-
 /**
  * @brief StateS::saveCurrentMachine saves the current machine to
  * a specified file.
  * This is the 'Save as' action.
- * @param path
- * @param configuration
+ * @param path Path of file to save to.
  */
 void StateS::saveCurrentMachine(const QString& path)
 {
-	if (StateS::machine != nullptr)
+	if (this->machine != nullptr)
 	{
 		bool fileOk = false;
 
@@ -303,7 +203,7 @@ void StateS::saveCurrentMachine(const QString& path)
 
 		if (fileOk)
 		{
-			shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
+			shared_ptr<MachineStatus> machineStatus = this->machine->getMachineStatus();
 			machineStatus->setSaveFilePath(path);
 			machineStatus->setHasSaveFile(true);
 			this->saveCurrentMachineInCurrentFile();
@@ -315,11 +215,10 @@ void StateS::saveCurrentMachine(const QString& path)
  * @brief StateS::saveCurrentMachineInCurrentFile saves the current machine to
  * currently registered save file.
  * This is the 'Save' action.
- * @param configuration
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-	if (StateS::machine != nullptr)
+	if (this->machine != nullptr)
 	{
 		bool fileOk = false;
 		shared_ptr<MachineStatus> machineStatus = machine->getMachineStatus();
@@ -337,11 +236,11 @@ void StateS::saveCurrentMachineInCurrentFile()
 		{
 			try
 			{
-				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(StateS::machine);
+				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(this->machine);
 
 				saveManager->writeMachineToFile(this->statesUi->getViewConfiguration(), file.filePath()); // Throws StatesException
 				machineStatus->setUnsavedFlag(false);
-				this->undoStack.setClean();
+				this->undoRedoManager->setClean();
 			}
 			catch (const StatesException& e)
 			{
@@ -361,72 +260,33 @@ void StateS::saveCurrentMachineInCurrentFile()
 }
 
 /**
- * @brief StateS::updateLatestXml computes the current machine XML
- * to make the current state the latest checkpoint.
+ * @brief StateS::freshMachineAvailableFromUndoRedo
+ * This function handles new machine emitted by
+ * undo/redo manager.
+ * @param machine New machine built by manager.
  */
-void StateS::updateXmlRepresentation()
+void StateS::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> machine)
 {
-	this->machineXmlRepresentation = QString();
-	if (machine != nullptr)
-	{
-		shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(machine);
-		if (saveManager != nullptr)
-		{
-			this->machineXmlRepresentation = saveManager->getMachineXml();
-		}
-	}
-}
-
-void StateS::setMachineDirty()
-{
-	if (StateS::machine != nullptr)
-	{
-		shared_ptr<MachineStatus> machineStatus = StateS::machine->getMachineStatus();
-		machineStatus->setUnsavedFlag(true);
-	}
+	this->refreshMachine(machine, false);
 }
 
 /**
  * @brief StateS::refreshMachine changes the currently referenced machine.
  * Can be used either to load a new machine or to load a checkpoint of
  * the current machine.
- * @param newMachine
+ * @param newMachine New machine to use.
+ * @param machineChanged Indicated wether the machine changed or if it
+ * is a simple refresh from an undo/redo action.
  */
-void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool maintainView)
+void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool machineChanged)
 {
-	// Cut links with older machine
-	if (StateS::machine != nullptr)
-	{
-		disconnect(StateS::machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
-		disconnect(StateS::machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
-	}
+	// Update references to machin in sub-classes
+	this->statesUi->setMachine(newMachine, !machineChanged);
+	this->undoRedoManager->setMachine(newMachine, machineChanged);
+	MachineUndoCommand::setMachine(newMachine, machineChanged);
 
-	// Renew machine:
-	// Update local machine AFTER setting it in sub-classes as they still
-	// need the old machine to clear it, and setting it here removes it.
-	this->statesUi->setMachine(newMachine, maintainView);
-	StateS::machine = newMachine;
-
-	// Establish links with new machine
-	if (StateS::machine != nullptr)
-	{
-		connect(StateS::machine.get(), &Machine::machineEditedWithoutUndoCommandGeneratedEvent, this, &StateS::computeDiffUndoCommand);
-		connect(StateS::machine.get(), &Machine::machineEditedWithUndoCommandGeneratedEvent,    this, &StateS::addUndoCommand);
-	}
-}
-
-/**
- * @brief StateS::loadNewMachine loads a new machine: refreshes the
- * machine, sets the UI in the initial state for a new/loaded machine,
- * and sets a initial checkpoint on current state.
- * @param newMachine
- */
-void StateS::loadNewMachine(shared_ptr<Machine> newMachine)
-{
-	// Refresh current machine
-	this->refreshMachine(newMachine, false);
-
-	// Initialize time machine
-	this->undoStack.clear();
-	this->updateXmlRepresentation();
+	// Update the local machine AFTER setting it in sub-classes as they still
+	// need the old machine to clear it, and the following line deletes the
+	// old object.
+	this->machine = newMachine;
 }

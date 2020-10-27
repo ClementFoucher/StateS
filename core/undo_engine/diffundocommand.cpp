@@ -23,25 +23,50 @@
 #include "diffundocommand.h"
 
 // StateS classes
-#include "states.h"
-#include "machinexmlparser.h"
 #include "machine.h"
-#include "machinestatus.h"
+#include "machinexmlparser.h"
+#include "machinexmlwriter.h"
 
 
-DiffUndoCommand::DiffUndoCommand(const QString& previousXmlCode, undo_command_id commandId)
+QString DiffUndoCommand::machineXmlRepresentation;
+
+void DiffUndoCommand::updateXmlRepresentation()
+{
+	DiffUndoCommand::machineXmlRepresentation = QString();
+
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+
+	if (l_machine != nullptr)
+	{
+		shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(l_machine);
+		if (saveManager != nullptr)
+		{
+			DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
+		}
+	}
+}
+
+DiffUndoCommand::DiffUndoCommand(undo_command_id commandId)
 {
 	undoType = commandId;
 
-	// Compute diff
-	diff_match_patch diffComputer = diff_match_patch();
-	this->undoPatch = diffComputer.patch_make(StateS::getCurrentXmlCode(), previousXmlCode);
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	if (l_machine != nullptr)
+	{
+		// Compute diff
+		QString previousXmlCode = DiffUndoCommand::machineXmlRepresentation;
+		shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(l_machine);
+		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
+
+		diff_match_patch diffComputer = diff_match_patch();
+		this->undoPatch = diffComputer.patch_make(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
+	}
 }
 
 void DiffUndoCommand::undo()
 {
 	diff_match_patch diffUnroller = diff_match_patch();
-	QString currentXmlCode = StateS::getCurrentXmlCode();
+	QString currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
 
 	QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(this->undoPatch, currentXmlCode);
 	QString previousXmlCode = result.first;
@@ -51,6 +76,8 @@ void DiffUndoCommand::undo()
 	this->redoPatch = diffComputer.patch_make(previousXmlCode, currentXmlCode);
 
 	this->applyPatch(previousXmlCode);
+
+	DiffUndoCommand::machineXmlRepresentation = previousXmlCode;
 }
 
 void DiffUndoCommand::redo()
@@ -58,14 +85,14 @@ void DiffUndoCommand::redo()
 	if (this->firstRedoIgnored == true)
 	{
 		diff_match_patch diffUnroller = diff_match_patch();
-		QString currentXmlCode = StateS::getCurrentXmlCode();
 
-		QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(this->redoPatch, currentXmlCode);
+		QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(this->redoPatch, DiffUndoCommand::machineXmlRepresentation);
 		QString nextXmlCode = result.first;
 
 		this->redoPatch.clear();
 
 		this->applyPatch(nextXmlCode);
+		DiffUndoCommand::machineXmlRepresentation = nextXmlCode;
 	}
 	else
 	{
@@ -88,7 +115,7 @@ bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
 		case undo_command_id::fsmUndoMoveConditionSliderId:
 		{
 			diff_match_patch diffComputer = diff_match_patch();
-			QString currentXmlCode = StateS::getCurrentXmlCode();
+			QString currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
 			QList<Patch> otherUndoPatch = otherCommand->getUndoPatch();
 
 			QString previousXmlCode = diffComputer.patch_apply(otherUndoPatch, currentXmlCode).first;
@@ -115,7 +142,13 @@ QList<Patch> DiffUndoCommand::getUndoPatch() const
 void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
 	shared_ptr<MachineXmlParser> parser = MachineXmlParser::buildStringParser(newXmlCode);
-	parser->setMachineStatus(StateS::getCurrentMachine()->getMachineStatus());
-	parser->doParse();
-	emit applyUndoRedo(parser->getMachine());
+
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+
+	if (l_machine != nullptr)
+	{
+		parser->setMachineStatus(l_machine->getMachineStatus());
+		parser->doParse();
+		emit applyUndoRedo(parser->getMachine());
+	}
 }

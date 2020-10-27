@@ -67,6 +67,7 @@ SOURCES += \
 	core/undo_engine/fsmundocommand.cpp \
 	core/undo_engine/diffundocommand.cpp \
 	core/undo_engine/machineundocommand.cpp \
+	core/undo_engine/undoredomanager.cpp \
 # UI
     ui/statesui.cpp \
 	ui/machinecomponentvisualizer.cpp \
@@ -173,6 +174,7 @@ HEADERS += \
 	core/undo_engine/include/fsmundocommand.h \
 	core/undo_engine/include/diffundocommand.h \
 	core/undo_engine/include/machineundocommand.h \
+	core/undo_engine/include/undoredomanager.h \
 # UI
     ui/include/statesui.h \
 	ui/include/editableequation.h \

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,10 +23,10 @@
 #include "include/fsmundocommand.h"
 
 // StateS classes
-#include "states.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmgraphicstate.h"
+#include "diffundocommand.h"
 
 
 FsmUndoCommand::FsmUndoCommand(shared_ptr<FsmState> state) :
@@ -40,7 +40,8 @@ FsmUndoCommand::FsmUndoCommand(shared_ptr<FsmState> state) :
 
 void FsmUndoCommand::undo()
 {
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(StateS::getCurrentMachine());
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(l_machine);
 
 	if (fsm != nullptr)
 	{
@@ -59,6 +60,8 @@ void FsmUndoCommand::undo()
 		default:
 			break;
 		}
+
+		DiffUndoCommand::updateXmlRepresentation();
 	}
 }
 
@@ -66,7 +69,8 @@ void FsmUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(StateS::getCurrentMachine());
+		shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(l_machine);
 
 		if (fsm != nullptr)
 		{
@@ -91,6 +95,8 @@ void FsmUndoCommand::redo()
 		// Ignore initial redo automatically applied when pushed in the stack
 		this->firstRedoIgnored = true;
 	}
+
+	DiffUndoCommand::updateXmlRepresentation();
 }
 
 bool FsmUndoCommand::mergeWith(const QUndoCommand* command)
