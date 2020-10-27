@@ -45,11 +45,13 @@ class MachineComponent;
 
 /**
  * @brief The DisplayArea class handles the central display.
- * Usually, this is just the machine graphic representation,
- * but in simulation mode, the timeline is also handled here.
- * DisplayArea also owns a drawing tool bar.
- * Finally, this class owns the main tool bar for display purpose,
- * but this one is handled directly by the StatesUI object.
+ * Usually, it just displays the editor area (which includes
+ * the machine graphic representation and its drawing tool bar),
+ * but in simulation mode, the timeline is also displayed here,
+ * and a tabbed widget is used to display both.
+ *
+ * This class also owns the main tool bar for display purpose,
+ * but this one is handled at the StatesUI object level.
  */
 class DisplayArea : public QMainWindow
 {
@@ -61,7 +63,6 @@ public:
 	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
 
 	MainToolBar* getMainToolBar() const;
-	SceneWidget* getSceneWidget() const;
 
 	GenericScene* getScene() const;
 
@@ -84,9 +85,11 @@ private:
 	void setCurrentDisplay(QWidget* newDisplay);
 
 private:
-	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
+	// Current display may be editor area or tabbed display depending on current mode
 	MainToolBar*      mainToolBar        = nullptr; // Persistant through object life; Managed in StatesUI class.
-	DrawingToolBar*   drawingToolBar     = nullptr;
+	QMainWindow*      editorArea         = nullptr; // Persistant through object life; Contains display area and drawing tool bar
+	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
+	DrawingToolBar*   drawingToolBar     = nullptr; // Created when display area is valid
 	SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
 	QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
 

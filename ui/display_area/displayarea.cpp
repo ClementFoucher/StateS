@@ -37,13 +37,20 @@ DisplayArea::DisplayArea(QWidget* parent) :
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);
 
+	// Build tool bar
 	this->mainToolBar = new MainToolBar(this);
 	this->mainToolBar->setMovable(true);
 	this->addToolBar(Qt::LeftToolBarArea, this->mainToolBar);
 
-	this->machineDisplayArea = new SceneWidget(this);
+	// Build editor area
+	this->editorArea = new QMainWindow();
+	this->editorArea->setWindowFlag(Qt::Widget);
+	this->editorArea->setContextMenuPolicy(Qt::NoContextMenu);
+	this->machineDisplayArea = new SceneWidget();
+	this->editorArea->setCentralWidget(this->machineDisplayArea);
 
-	this->setCurrentDisplay(this->machineDisplayArea);
+	// Display editor area
+	this->setCurrentDisplay(this->editorArea);
 
 	// Transmit events to upper level
 	connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);
@@ -72,12 +79,11 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
 
 		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
-
 		if (fsm != nullptr)
 		{
 			this->drawingToolBar = new FsmDrawingToolBar(machineBuilder);
 			this->drawingToolBar->setMovable(true);
-			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
+			this->editorArea->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
 		}
 	}
 
@@ -89,11 +95,6 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 MainToolBar* DisplayArea::getMainToolBar() const
 {
 	return this->mainToolBar;
-}
-
-SceneWidget* DisplayArea::getSceneWidget() const
-{
-	return this->machineDisplayArea;
 }
 
 GenericScene* DisplayArea::getScene() const
@@ -152,7 +153,7 @@ void DisplayArea::setTimelineDetachedState(bool detach)
 		if (detach)
 		{
 			// Must be done first to not delete display area along with tabs
-			this->setCurrentDisplay(this->machineDisplayArea);
+			this->setCurrentDisplay(this->editorArea);
 
 			// Detach timeline as an independent window
 			this->timeline->setParent(nullptr);
@@ -174,8 +175,8 @@ void DisplayArea::displayTabs()
 	{
 		this->tabbedDisplayArea = new QTabWidget();
 
-		this->tabbedDisplayArea->addTab(this->machineDisplayArea, tr("Machine"));
-		this->tabbedDisplayArea->addTab(this->timeline,           tr("Timeline"));
+		this->tabbedDisplayArea->addTab(this->editorArea, tr("Machine"));
+		this->tabbedDisplayArea->addTab(this->timeline,   tr("Timeline"));
 
 		this->setCurrentDisplay(this->tabbedDisplayArea);
 	}
@@ -184,7 +185,7 @@ void DisplayArea::displayTabs()
 void DisplayArea::resetDisplay()
 {
 	// Must be done first to not delete display area along with tabs
-	this->setCurrentDisplay(this->machineDisplayArea);
+	this->setCurrentDisplay(this->editorArea);
 
 	delete this->timeline;
 	delete this->tabbedDisplayArea;
