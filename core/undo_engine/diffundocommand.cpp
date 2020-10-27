@@ -25,6 +25,8 @@
 // StateS classes
 #include "states.h"
 #include "machinexmlparser.h"
+#include "machine.h"
+#include "machinestatus.h"
 
 
 DiffUndoCommand::DiffUndoCommand(const QString& previousXmlCode, undo_command_id commandId)
@@ -113,6 +115,7 @@ QList<Patch> DiffUndoCommand::getUndoPatch() const
 void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
 	shared_ptr<MachineXmlParser> parser = MachineXmlParser::buildStringParser(newXmlCode);
+	parser->setMachineStatus(StateS::getCurrentMachine()->getMachineStatus());
 	parser->doParse();
 	emit applyUndoRedo(parser->getMachine());
 }

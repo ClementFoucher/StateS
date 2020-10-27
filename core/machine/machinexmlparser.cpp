@@ -31,7 +31,7 @@
 #include "fsmxmlparser.h"
 #include "machine.h"
 #include "StateS_signal.h"
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 #include "actiononsignal.h"
 #include "machineactuatorcomponent.h"
 #include "equation.h"
@@ -40,7 +40,7 @@
 MachineXmlParser::MachineXmlParser(QObject* parent) :
     QObject(parent)
 {
-	this->configuration = shared_ptr<MachineConfiguration>(new MachineConfiguration());
+	this->viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
 }
 
 void MachineXmlParser::parseMachineName(const QString& fileName)
@@ -84,7 +84,7 @@ void MachineXmlParser::parseConfiguration()
 		float level = attributes.value("Value").toFloat(&ok);
 		if (ok == true)
 		{
-			this->configuration->zoomLevel = level;
+			this->viewConfiguration->zoomLevel = level;
 		}
 		else
 		{
@@ -109,7 +109,7 @@ void MachineXmlParser::parseConfiguration()
 
 		if (parseOk == true)
 		{
-			this->configuration->viewCenter = QPointF(x,y);
+			this->viewConfiguration->viewCenter = QPointF(x,y);
 		}
 		else
 		{
@@ -600,9 +600,9 @@ shared_ptr<Machine> MachineXmlParser::getMachine()
 	return this->machine;
 }
 
-shared_ptr<MachineConfiguration> MachineXmlParser::getConfiguration()
+shared_ptr<ViewConfiguration> MachineXmlParser::getViewConfiguration()
 {
-	return this->configuration;
+	return this->viewConfiguration;
 }
 
 QList<QString> MachineXmlParser::getWarnings()

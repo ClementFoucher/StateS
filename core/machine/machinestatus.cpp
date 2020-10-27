@@ -32,16 +32,6 @@ MachineStatus::MachineStatus()
 	this->vhdlExportPath  = QFileInfo();
 }
 
-MachineStatus::MachineStatus(shared_ptr<MachineStatus> fromObject) :
-    MachineStatus()
-{
-	this->unsavedFlag     = fromObject->unsavedFlag;
-	this->hasSaveFile     = fromObject->hasSaveFile;
-	this->saveFilePath    = fromObject->saveFilePath;
-	this->imageExportPath = fromObject->imageExportPath;
-	this->vhdlExportPath  = fromObject->vhdlExportPath;
-}
-
 shared_ptr<MachineStatus> MachineStatus::clonePaths(shared_ptr<MachineStatus> fromObject)
 {
 	shared_ptr<MachineStatus> newStatus = shared_ptr<MachineStatus>(new MachineStatus());

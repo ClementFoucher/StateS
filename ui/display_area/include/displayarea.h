@@ -39,7 +39,7 @@ class SimulationWidget;
 class MainToolBar;
 class DrawingToolBar;
 class GenericScene;
-class MachineConfiguration;
+class ViewConfiguration;
 class MachineComponent;
 
 
@@ -66,8 +66,8 @@ public:
 	GenericScene* getScene() const;
 
 	void clearSelection();
-	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
-	shared_ptr<MachineConfiguration> getConfiguration() const;
+	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
+	shared_ptr<ViewConfiguration> getViewConfiguration() const;
 
 signals:
 	void itemSelectedEvent(shared_ptr<MachineComponent> component);

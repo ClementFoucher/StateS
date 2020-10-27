@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ class QFile;
 
 // StateS classes
 class Machine;
-class MachineConfiguration;
+class ViewConfiguration;
 class Signal;
 class MachineActuatorComponent;
 
@@ -55,7 +55,7 @@ public: // Static
 public:
 	static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<Machine> machine);
 
-	virtual void writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
+	virtual void writeMachineToFile(shared_ptr<ViewConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
 	virtual QString getMachineXml() = 0;
 
 protected:
@@ -74,7 +74,7 @@ protected:
 protected:
 	shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;
-	shared_ptr<MachineConfiguration> configuration;
+	shared_ptr<ViewConfiguration> viewConfiguration;
 	shared_ptr<Machine> machine;
 
 private:

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@
 #include "fsmtransition.h"
 #include "statesexception.h"
 #include "fsmgraphictransition.h"
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 
 
 FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent) :
@@ -44,15 +44,15 @@ FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent) :
 
 QString FsmXmlWriter::getMachineXml()
 {
-	this->configuration = nullptr;
+	this->viewConfiguration = nullptr;
 	this->createSaveString();
 	this->writeFsmToStream();
 	return this->xmlString;
 }
 
-void FsmXmlWriter::writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath)
+void FsmXmlWriter::writeMachineToFile(shared_ptr<ViewConfiguration> viewConfiguration, const QString& filePath)
 {
-	this->configuration = configuration;
+	this->viewConfiguration = viewConfiguration;
 	this->createSaveFile(filePath);
 	this->writeFsmToStream();
 	this->finalizeSaveFile();
@@ -75,11 +75,11 @@ void FsmXmlWriter::writeFsmStates()
 		if (state->isInitial())
 			this->stream->writeAttribute("IsInitial", "true");
 
-		if (this->configuration != nullptr)
+		if (this->viewConfiguration != nullptr)
 		{
 			// Position => offseted so that scene top-left corner is in (0,0)
-			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + this->configuration->sceneTranslation.x()));
-			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + this->configuration->sceneTranslation.y()));
+			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + this->viewConfiguration->sceneTranslation.x()));
+			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + this->viewConfiguration->sceneTranslation.y()));
 		}
 		else
 		{

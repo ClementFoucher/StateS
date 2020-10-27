@@ -18,8 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MACHINECONFIGURATION_H
-#define MACHINECONFIGURATION_H
+#ifndef VIEWCONFIGURATION_H
+#define VIEWCONFIGURATION_H
 
 // Parent class
 #include <QObject>
@@ -28,12 +28,17 @@
 #include <QPointF>
 
 
-class MachineConfiguration : public QObject
+/**
+ * @brief The ViewConfiguration class is used as a
+ * temporary storage structure to transmit the view
+ * characteristics when saving or loading to/from a file.
+ */
+class ViewConfiguration : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit MachineConfiguration(QObject* parent = nullptr);
+	explicit ViewConfiguration(QObject* parent = nullptr);
 
 public:
 	QPointF sceneTranslation;
@@ -41,4 +46,4 @@ public:
 	qreal   zoomLevel;
 };
 
-#endif // MACHINECONFIGURATION_H
+#endif // VIEWCONFIGURATION_H

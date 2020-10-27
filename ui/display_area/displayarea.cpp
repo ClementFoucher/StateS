@@ -28,7 +28,7 @@
 #include "maintoolbar.h"
 #include "fsmdrawingtoolbar.h"
 #include "fsm.h"
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -106,7 +106,7 @@ void DisplayArea::clearSelection()
 	this->machineDisplayArea->clearSelection();
 }
 
-void DisplayArea::setConfiguration(shared_ptr<MachineConfiguration> configuration)
+void DisplayArea::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
 {
 	if (configuration != nullptr)
 	{
@@ -115,9 +115,9 @@ void DisplayArea::setConfiguration(shared_ptr<MachineConfiguration> configuratio
 	}
 }
 
-shared_ptr<MachineConfiguration> DisplayArea::getConfiguration() const
+shared_ptr<ViewConfiguration> DisplayArea::getViewConfiguration() const
 {
-	shared_ptr<MachineConfiguration> configuration(new MachineConfiguration());
+	shared_ptr<ViewConfiguration> configuration(new ViewConfiguration());
 
 	configuration->sceneTranslation = -(this->machineDisplayArea->getVisibleArea().topLeft());
 	configuration->zoomLevel        = this->machineDisplayArea->getZoomLevel();

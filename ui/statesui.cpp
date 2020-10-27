@@ -142,9 +142,9 @@ void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	this->toolbar->setSaveActionEnabled(false);
 }
 
-void StatesUi::setConfiguration(shared_ptr<MachineConfiguration> configuration)
+void StatesUi::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
 {
-	this->displayArea->setConfiguration(configuration);
+	this->displayArea->setViewConfiguration(configuration);
 }
 
 void StatesUi::beginNewMachineProcedure()
@@ -463,9 +463,9 @@ void StatesUi::updateTitle()
 	}
 }
 
-shared_ptr<MachineConfiguration> StatesUi::getConfiguration() const
+shared_ptr<ViewConfiguration> StatesUi::getViewConfiguration() const
 {
-	return this->displayArea->getConfiguration();
+	return this->displayArea->getViewConfiguration();
 }
 
 bool StatesUi::displayUnsavedConfirmation(const QString& cause)

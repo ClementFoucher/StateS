@@ -43,7 +43,6 @@ SOURCES += \
 	core/machine/machinebuilder.cpp \
 	core/machine/machineimageexporter.cpp \
 	core/machine/actiononsignal.cpp \
-	core/machine/machineconfiguration.cpp \
 	core/machine/machinexmlparser.cpp \
 	core/machine/machinexmlwriter.cpp \
 	core/machine/fsm/fsmcomponent.cpp \
@@ -112,6 +111,7 @@ SOURCES += \
 	ui/display_area/maintoolbar.cpp \
 	ui/display_area/drawingtoolbar.cpp \
 	ui/display_area/fsmdrawingtoolbar.cpp \
+	ui/display_area/viewconfiguration.cpp \
 	ui/display_area/scene/scenewidget.cpp \
 	ui/display_area/scene/genericscene.cpp \
 	ui/display_area/scene/blankscene.cpp \
@@ -148,7 +148,6 @@ HEADERS += \
 	core/machine/include/machinebuilder.h \
 	core/machine/include/machineimageexporter.h \
 	core/machine/include/actiononsignal.h \
-	core/machine/include/machineconfiguration.h \
 	core/machine/include/machinestatus.h \
 	core/machine/include/machinexmlparser.h \
 	core/machine/include/machinexmlwriter.h \
@@ -218,6 +217,7 @@ HEADERS += \
 	ui/display_area/include/maintoolbar.h \
 	ui/display_area/include/drawingtoolbar.h \
 	ui/display_area/include/fsmdrawingtoolbar.h \
+	ui/display_area/include/viewconfiguration.h \
 	ui/display_area/scene/include/genericscene.h \
 	ui/display_area/scene/include/graphicactuator.h \
 	ui/display_area/scene/include/blankscene.h \

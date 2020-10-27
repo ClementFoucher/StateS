@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 
 // StateS classes
 #include "statesexception.h"
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "signal.h"
@@ -69,17 +69,17 @@ void MachineXmlWriter::writeMachineCommonElements()
 
 void MachineXmlWriter::writeMachineConfiguration()
 {
-	if (this->configuration != nullptr)
+	if (this->viewConfiguration != nullptr)
 	{
 		this->stream->writeStartElement("Configuration");
 
 		this->stream->writeStartElement("Scale");
-		this->stream->writeAttribute("Value", QString::number(this->configuration->zoomLevel));
+		this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
 		this->stream->writeEndElement();
 
 		this->stream->writeStartElement("ViewCentralPoint");
-		this->stream->writeAttribute("X", QString::number(this->configuration->viewCenter.x() + this->configuration->sceneTranslation.x()));
-		this->stream->writeAttribute("Y", QString::number(this->configuration->viewCenter.y() + this->configuration->sceneTranslation.y()));
+		this->stream->writeAttribute("X", QString::number(this->viewConfiguration->viewCenter.x() + this->viewConfiguration->sceneTranslation.x()));
+		this->stream->writeAttribute("Y", QString::number(this->viewConfiguration->viewCenter.y() + this->viewConfiguration->sceneTranslation.y()));
 		this->stream->writeEndElement();
 
 		this->stream->writeEndElement();

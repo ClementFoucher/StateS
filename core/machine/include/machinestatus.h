@@ -39,7 +39,6 @@ class MachineStatus : public QObject
 
 public:
 	explicit MachineStatus();
-	explicit MachineStatus(shared_ptr<MachineStatus> fromObject);
 
 	static shared_ptr<MachineStatus> clonePaths(shared_ptr<MachineStatus> fromObject);
 

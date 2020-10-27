@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@ using namespace std;
 
 // StateS classes
 class Fsm;
-class MachineConfiguration;
+class ViewConfiguration;
 
 
 class FsmXmlWriter : public MachineXmlWriter
@@ -40,7 +40,7 @@ class FsmXmlWriter : public MachineXmlWriter
 public:
 	explicit FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent = nullptr);
 
-	void writeMachineToFile(shared_ptr<MachineConfiguration> configuration, const QString& filePath) override; // Throws StatesException
+	void writeMachineToFile(shared_ptr<ViewConfiguration> viewConfiguration, const QString& filePath) override; // Throws StatesException
 	QString getMachineXml() override;
 
 private:

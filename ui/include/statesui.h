@@ -34,7 +34,7 @@ class Machine;
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
-class MachineConfiguration;
+class ViewConfiguration;
 class MainToolBar;
 
 
@@ -56,8 +56,8 @@ public:
 	explicit StatesUi();
 
 	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
-	void setConfiguration(shared_ptr<MachineConfiguration> configuration);
-	shared_ptr<MachineConfiguration> getConfiguration() const;
+	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
+	shared_ptr<ViewConfiguration> getViewConfiguration() const;
 
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;

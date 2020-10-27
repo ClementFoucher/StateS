@@ -20,9 +20,10 @@
  */
 
 // Current file header
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 
-MachineConfiguration::MachineConfiguration(QObject* parent) :
+
+ViewConfiguration::ViewConfiguration(QObject* parent) :
     QObject(parent)
 {
 	this->zoomLevel = 1;

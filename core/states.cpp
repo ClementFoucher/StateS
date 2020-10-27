@@ -32,7 +32,7 @@
 // StateS classes
 #include "statesui.h"
 #include "statesexception.h"
-#include "machineconfiguration.h"
+#include "viewconfiguration.h"
 #include "fsm.h"
 #include "machinexmlwriter.h"
 #include "fsmxmlwriter.h"
@@ -236,7 +236,7 @@ void StateS::loadMachine(const QString& path)
 
 			// If we reached this point, there should have been no exception
 			this->loadNewMachine(parser->getMachine());
-			this->statesUi->setConfiguration(parser->getConfiguration());
+			this->statesUi->setViewConfiguration(parser->getViewConfiguration());
 		}
 		catch (const StatesException& e)
 		{
@@ -339,7 +339,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 			{
 				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(StateS::machine);
 
-				saveManager->writeMachineToFile(this->statesUi->getConfiguration(), file.filePath()); // Throws StatesException
+				saveManager->writeMachineToFile(this->statesUi->getViewConfiguration(), file.filePath()); // Throws StatesException
 				machineStatus->setUnsavedFlag(false);
 				this->undoStack.setClean();
 			}

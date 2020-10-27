@@ -35,7 +35,7 @@ class QXmlStreamReader;
 
 // StateS classes
 class Machine;
-class MachineConfiguration;
+class ViewConfiguration;
 class MachineActuatorComponent;
 class Signal;
 class Equation;
@@ -55,9 +55,9 @@ public:
 
 	void setMachineStatus(shared_ptr<MachineStatus> initialStatus);
 
-	shared_ptr<Machine>              getMachine();
-	shared_ptr<MachineConfiguration> getConfiguration();
-	QList<QString>                   getWarnings();
+	shared_ptr<Machine>           getMachine();
+	shared_ptr<ViewConfiguration> getViewConfiguration();
+	QList<QString>                getWarnings();
 
 protected:
 	explicit MachineXmlParser(QObject* parent = nullptr);
@@ -87,7 +87,7 @@ protected:
 	shared_ptr<QFile> file = nullptr; // Keep it just to maintain a reference to the file so that it is not destroyed
 
 private:
-	shared_ptr<MachineConfiguration> configuration;
+	shared_ptr<ViewConfiguration> viewConfiguration;
 	QStack<shared_ptr<Equation>> equationStack;
 	QStack<uint> operandRankStack;
 };
