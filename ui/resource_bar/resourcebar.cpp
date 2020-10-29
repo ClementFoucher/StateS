@@ -87,7 +87,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
 
 		this->insertTab(0, this->hintsTab,     tr("Hints"));
-		this->insertTab(1, this->machineTab,   tr("Signals"));
+		this->insertTab(1, this->machineTab,   tr("Machine"));
 		this->insertTab(2, new QWidget(),      tr("Editor"));
 		this->insertTab(3, this->simulatorTab, tr("Simulator"));
 		this->insertTab(4, this->verifierTab,  tr("Verifier"));
@@ -113,7 +113,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	else
 	{
 		this->insertTab(0, new QWidget(),  tr("Hints"));
-		this->insertTab(1, new QWidget(),  tr("Signals"));
+		this->insertTab(1, new QWidget(),  tr("Machine"));
 		this->insertTab(2, new QWidget(),  tr("Editor"));
 		this->insertTab(3, new QWidget(),  tr("Simulator"));
 		this->insertTab(4, new QWidget(),  tr("Verifier"));

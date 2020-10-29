@@ -1434,10 +1434,6 @@
         <translation>À propos</translation>
     </message>
     <message>
-        <source>Signals</source>
-        <translation>Signaux</translation>
-    </message>
-    <message>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -1452,6 +1448,10 @@
     <message>
         <source>Hints</source>
         <translation>Astuces</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
     </message>
 </context>
 <context>
