@@ -271,7 +271,7 @@ void StatesUi::beginExportImageProcedure()
 
 		shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
-		unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, machineStatus->getImageExportPath()));
+		unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, machineStatus->getImageExportPath(), this));
 		exportOptions->setModal(true);
 
 		exportOptions->exec();
@@ -299,7 +299,7 @@ void StatesUi::beginExportVhdlProcedure()
 		unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport(dynamic_pointer_cast<Fsm>(l_machine)));
 		shared_ptr<FsmVhdlExport::ExportCompatibility> compat = exporter->checkCompatibility();
 
-		unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), machineStatus->getVhdlExportPath(), !compat->isCompatible()));
+		unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(l_machine->getName(), machineStatus->getVhdlExportPath(), !compat->isCompatible(), this));
 		exportOptions->setModal(true);
 
 		exportOptions->exec();

@@ -50,7 +50,7 @@ private:
 
 	QString baseFileName;
 	QString searchPath;
-	QString filePath = QString();
+	QString filePath;
 };
 
 #endif // VHDLEXPORTDIALOG_H

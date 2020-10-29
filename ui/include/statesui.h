@@ -42,7 +42,7 @@ class MainToolBar;
  * @brief The StatesUi class handles the main window.
  *
  * This window has three areas:
- * - an action bar; technically belong to display area for display purpose but managed here,
+ * - an action bar; technically belongs to display area for display purpose but managed here,
  * - The display area,
  * - The resources bar.
  *
