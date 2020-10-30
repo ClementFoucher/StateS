@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -185,7 +185,7 @@ void FsmSimulator::clockEventHandler()
 
 			this->signalMapper = new QSignalMapper();
 
-			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mapped), this, &FsmSimulator::targetStateSelectionMadeEventHandler);
+			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &FsmSimulator::targetStateSelectionMadeEventHandler);
 
 			for (int i = 0 ; i < candidateTransitions.count() ; i++)
 			{

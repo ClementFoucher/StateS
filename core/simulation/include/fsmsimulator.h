@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -72,7 +72,7 @@ private:
 	weak_ptr<FsmTransition> latestTransitionCrossed;
 	QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
 
-	QWidget* targetStateSelector;
+	QWidget* targetStateSelector = nullptr;
 	QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
 
 };
