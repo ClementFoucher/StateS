@@ -65,7 +65,7 @@ void DisplayArea::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	if (oldMachine != nullptr)
 	{
 		disconnect(oldMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
-		this->drawingToolBar->deleteLater();
+		delete this->drawingToolBar;
 		this->drawingToolBar = nullptr;
 	}
 
