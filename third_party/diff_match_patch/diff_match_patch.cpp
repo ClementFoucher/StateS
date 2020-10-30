@@ -25,6 +25,8 @@
  *                                                                       *
  * - All occurences of .toAscii() calls have been replaced by .unicode() *
  *  as this call is deprecated in Qt.                                    *
+ * - Added parenthesis on line 1531 to remove warning.                   *
+ * - Replaced QString::SplitBehavior by Qt::SplitBehavior as deprecated. *
  *                                                                       *
  *************************************************************************
  *
@@ -1528,7 +1530,7 @@ int diff_match_patch::match_bitap(const QString &text, const QString &pattern,
         rd[j] = ((rd[j + 1] << 1) | 1) & charMatch;
       } else {
         // Subsequent passes: fuzzy match.
-        rd[j] = ((rd[j + 1] << 1) | 1) & charMatch
+        rd[j] = (((rd[j + 1] << 1) | 1) & charMatch)
             | (((last_rd[j + 1] | last_rd[j]) << 1) | 1)
             | last_rd[j + 1];
       }
@@ -2049,7 +2051,7 @@ QList<Patch> diff_match_patch::patch_fromText(const QString &textline) {
   if (textline.isEmpty()) {
     return patches;
   }
-  QStringList text = textline.split("\n", QString::SkipEmptyParts);
+  QStringList text = textline.split("\n", Qt::SkipEmptyParts);
   Patch patch;
   QRegExp patchHeader("^@@ -(\\d+),?(\\d*) \\+(\\d+),?(\\d*) @@$");
   char sign;
