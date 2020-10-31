@@ -192,24 +192,23 @@ QList<shared_ptr<FsmTransition>> Fsm::getTransitions() const
 	return this->transitions;
 }
 
-/**
- * @brief Fsm::setInitialState This function must ONLY
- * BE CALLED by the setInitial function of a FsmState.
- * @param name
- */
 void Fsm::setInitialState(shared_ptr<FsmState> newInitialState)
 {
-	this->setInhibitEvents(true);
-
 	shared_ptr<FsmState> previousInitialState = this->initialState.lock();
 
 	if (newInitialState != previousInitialState)
 	{
+		this->setInhibitEvents(true);
+
 		this->initialState = newInitialState;
 
 		if (previousInitialState != nullptr)
 		{
-			previousInitialState->notifyNotInitialAnyMore();
+			previousInitialState->notifyInitialStatusChanged();
+		}
+		if (newInitialState != nullptr)
+		{
+			newInitialState->notifyInitialStatusChanged();
 		}
 
 		this->setInhibitEvents(false);
@@ -217,6 +216,12 @@ void Fsm::setInitialState(shared_ptr<FsmState> newInitialState)
 	}
 }
 
+/**
+ * @brief Fsm::getInitialState
+ * @return Returns the initial state as a shared pointer.
+ * We can use a shared pointer here as states are owned by
+ * this object, so we are sure that the reference is not expired.
+ */
 shared_ptr<FsmState> Fsm::getInitialState() const
 {
 	return this->initialState.lock();

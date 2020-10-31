@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,54 +39,53 @@ class FsmGraphicState;
 
 class FsmState : public FsmComponent, public enable_shared_from_this<FsmState>
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit FsmState(shared_ptr<Fsm> parent, const QString& name, QPointF location);
-    ~FsmState();
+	explicit FsmState(shared_ptr<Fsm> parent, const QString& name, QPointF location);
+	~FsmState();
 
-    // Logic structure
-    void setName(const QString& value);
-    QString getName() const;
+	// Logic structure
+	void setName(const QString& value);
+	QString getName() const;
 
-    void addOutgoingTransition(shared_ptr<FsmTransition> transition);
-    void removeOutgoingTransition(shared_ptr<FsmTransition> transition);
-    const QList<shared_ptr<FsmTransition>> getOutgoingTransitions() const;
+	void addOutgoingTransition(shared_ptr<FsmTransition> transition);
+	void removeOutgoingTransition(shared_ptr<FsmTransition> transition);
+	const QList<shared_ptr<FsmTransition>> getOutgoingTransitions() const;
 
-    void addIncomingTransition(shared_ptr<FsmTransition> transition);
-    void removeIncomingTransition(shared_ptr<FsmTransition> transition);
-    const QList<shared_ptr<FsmTransition>> getIncomingTransitions() const;
+	void addIncomingTransition(shared_ptr<FsmTransition> transition);
+	void removeIncomingTransition(shared_ptr<FsmTransition> transition);
+	const QList<shared_ptr<FsmTransition>> getIncomingTransitions() const;
 
-    void setInitial();
-    bool isInitial() const;
-    void notifyNotInitialAnyMore();
+	bool isInitial() const;
+	void notifyInitialStatusChanged();
 
-    virtual uint getAllowedActionTypes() const override;
+	virtual uint getAllowedActionTypes() const override;
 
-    // Simuation status
-    void setActive(bool value);
-    bool getIsActive() const;
+	// Simuation status
+	void setActive(bool value);
+	bool getIsActive() const;
 
-    // Graphic management
-    FsmGraphicState* getGraphicRepresentation();
+	// Graphic management
+	FsmGraphicState* getGraphicRepresentation();
 
 signals:
-    void stateRenamedEvent();
-    void stateSimulatedStateChangedEvent();
-    void statePositionChangedEvent(shared_ptr<FsmState> me);
+	void stateRenamedEvent();
+	void stateSimulatedStateChangedEvent();
+	void statePositionChangedEvent(shared_ptr<FsmState> me);
 
 private slots:
-    void graphicRepresentationDeletedEventHandler();
-    void graphicRepresentationMovedEventHandler();
+	void graphicRepresentationDeletedEventHandler();
+	void graphicRepresentationMovedEventHandler();
 
 private:
-    QList<weak_ptr<FsmTransition>> inputTransitions;
-    QList<weak_ptr<FsmTransition>> outputTransitions;
+	QList<weak_ptr<FsmTransition>> inputTransitions;
+	QList<weak_ptr<FsmTransition>> outputTransitions;
 
-    FsmGraphicState* graphicRepresentation = nullptr;
-    QString name;
+	FsmGraphicState* graphicRepresentation = nullptr;
+	QString name;
 
-    bool isActive = false;
+	bool isActive = false;
 };
 
 #endif // FSMSTATE_H

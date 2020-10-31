@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -170,7 +170,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 						addState(logicState->getGraphicRepresentation());
 
 						// Set state initial
-						logicState->setInitial();
+						l_machine->setInitialState(logicState);
 
 						// Only one initial state in a FSM, switch to regular state tool
 						machineBuilder->setTool(MachineBuilder::tool::state);
@@ -691,7 +691,7 @@ void FsmScene::treatMenu(QAction* action)
 		else if (action->text() == tr("Add initial state"))
 		{
 			shared_ptr<FsmState> logicState = l_machine->addState(this->mousePos);
-			logicState->setInitial();
+			l_machine->setInitialState(logicState);
 
 			this->addState(logicState->getGraphicRepresentation());
 		}

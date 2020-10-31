@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -194,21 +194,7 @@ bool FsmState::isInitial() const
 	}
 }
 
-void FsmState::setInitial()
-{
-	shared_ptr<Fsm> owningFsm = this->getOwningFsm();
-	if (owningFsm != nullptr)
-	{
-		owningFsm->setInitialState(this->shared_from_this());
-
-		if (this->graphicRepresentation != nullptr)
-		{
-			this->graphicRepresentation->rebuildRepresentation();
-		}
-	}
-}
-
-void FsmState::notifyNotInitialAnyMore()
+void FsmState::notifyInitialStatusChanged()
 {
 	if (this->graphicRepresentation != nullptr)
 	{

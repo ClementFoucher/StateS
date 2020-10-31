@@ -348,7 +348,7 @@ void FsmXmlParser::parseState()
 
 		if (attributes.value("IsInitial").isNull() == false)
 		{
-			state->setInitial();
+			fsm->setInitialState(state);
 		}
 
 		this->currentActuator = state;

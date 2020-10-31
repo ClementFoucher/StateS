@@ -109,8 +109,11 @@ void FsmSimulator::resetEventHandler()
 
 		// ... then enable initial state which activate its actions
 		shared_ptr<FsmState> initialState = l_machine->getInitialState();
-		initialState->setActive(true);
-		this->currentState = initialState;
+		if (initialState != nullptr)
+		{
+			initialState->setActive(true);
+			this->currentState = initialState;
+		}
 	}
 }
 
