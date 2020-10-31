@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,7 +38,7 @@ class GenericScene : public QGraphicsScene
 	Q_OBJECT
 
 public:
-	explicit GenericScene(QObject* parent = nullptr);
+	explicit GenericScene();
 
 	virtual void setDisplaySize(const QSize& newSize) = 0;
 

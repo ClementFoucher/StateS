@@ -38,7 +38,7 @@ class ViewConfiguration : public QObject
 	Q_OBJECT
 
 public:
-	explicit ViewConfiguration(QObject* parent = nullptr);
+	explicit ViewConfiguration();
 
 public:
 	QPointF sceneTranslation;

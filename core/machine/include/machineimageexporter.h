@@ -102,12 +102,12 @@ private:
 	bool strictBorders;
 
 	// There objects handle rendenring on file. All must be persistent until export is over
-	shared_ptr<QPrinter>      printer   = nullptr;
-	shared_ptr<QSvgGenerator> generator = nullptr;
-	shared_ptr<QPixmap>       pixmap    = nullptr;
+	shared_ptr<QPrinter>      printer;
+	shared_ptr<QSvgGenerator> generator;
+	shared_ptr<QPixmap>       pixmap;
 
 	// Object we paint on
-	shared_ptr<QPainter> painter = nullptr;
+	shared_ptr<QPainter> painter;
 
 	// Printing areas
 	QRectF pageRect;

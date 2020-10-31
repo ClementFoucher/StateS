@@ -78,9 +78,9 @@ private:
 	void refreshMachine(shared_ptr<Machine> newMachine, bool machineChanged);
 
 private:
-	shared_ptr<Machine>         machine         = nullptr;
-	shared_ptr<StatesUi>        statesUi        = nullptr;
-	shared_ptr<UndoRedoManager> undoRedoManager = nullptr;
+	shared_ptr<Machine>         machine;
+	shared_ptr<StatesUi>        statesUi;
+	shared_ptr<UndoRedoManager> undoRedoManager;
 };
 
 #endif // STATES_H

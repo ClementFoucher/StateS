@@ -38,7 +38,7 @@ class FsmXmlWriter : public MachineXmlWriter
 	Q_OBJECT
 
 public:
-	explicit FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent = nullptr);
+	explicit FsmXmlWriter(shared_ptr<Fsm> fsm);
 
 	void writeMachineToFile(shared_ptr<ViewConfiguration> viewConfiguration, const QString& filePath) override; // Throws StatesException
 	QString getMachineXml() override;

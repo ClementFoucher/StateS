@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,8 +23,7 @@
 #include "viewconfiguration.h"
 
 
-ViewConfiguration::ViewConfiguration(QObject* parent) :
-    QObject(parent)
+ViewConfiguration::ViewConfiguration()
 {
 	this->zoomLevel = 1;
 	this->sceneTranslation = QPointF();

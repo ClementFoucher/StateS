@@ -50,7 +50,7 @@ public:
 	class Issue
 	{
 	public:
-		QString text = QString();
+		QString text;
 		severity type = severity::hint;
 		shared_ptr<TruthTable> proof;
 		QList<int> proofsHighlight;

@@ -41,7 +41,7 @@ class InputBitSelector : public QFrame
 	Q_OBJECT
 
 public:
-	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent = nullptr);
+	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
 
 protected slots:
 	void enterEvent(QEvent* event) override;

@@ -48,11 +48,11 @@ public:
 	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 protected:
-	void mousePressEvent(QMouseEvent* me) override;
-	void mouseMoveEvent(QMouseEvent* me) override;
-	void mouseReleaseEvent(QMouseEvent* me) override;
-	void mouseDoubleClickEvent(QMouseEvent* me) override;
-	void wheelEvent(QWheelEvent* event) override;
+	void mousePressEvent      (QMouseEvent* me)    override;
+	void mouseMoveEvent       (QMouseEvent* me)    override;
+	void mouseReleaseEvent    (QMouseEvent* me)    override;
+	void mouseDoubleClickEvent(QMouseEvent* me)    override;
+	void wheelEvent           (QWheelEvent* event) override;
 
 private slots:
 	void updateMachineVisualization();

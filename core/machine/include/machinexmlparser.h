@@ -60,7 +60,7 @@ public:
 	QList<QString>                getWarnings();
 
 protected:
-	explicit MachineXmlParser(QObject* parent = nullptr);
+	explicit MachineXmlParser();
 
 	void parseMachineName(const QString& fileName);
 	void parseConfiguration();
@@ -76,15 +76,15 @@ private:
 
 protected:
 	QList<QString> warnings;
-	shared_ptr<Machine> machine = nullptr;
-	shared_ptr<MachineStatus> status = nullptr;
+	shared_ptr<Machine> machine;
+	shared_ptr<MachineStatus> status;
 
 	shared_ptr<MachineActuatorComponent> currentActuator;
 	shared_ptr<Signal> rootLogicEquation;
 	shared_ptr<Signal> currentLogicEquation;
 
 	shared_ptr<QXmlStreamReader> xmlReader;
-	shared_ptr<QFile> file = nullptr; // Keep it just to maintain a reference to the file so that it is not destroyed
+	shared_ptr<QFile> file; // Keep it just to maintain a reference to the file so that it is not destroyed
 
 private:
 	shared_ptr<ViewConfiguration> viewConfiguration;

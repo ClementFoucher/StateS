@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,8 +23,8 @@
 #include "tablewidgetwithresizeevent.h"
 
 
-TableWidgetWithResizeEvent::TableWidgetWithResizeEvent(int rows, int columns) :
-    QTableWidget(rows, columns)
+TableWidgetWithResizeEvent::TableWidgetWithResizeEvent(int rows, int columns, QWidget* parent) :
+    QTableWidget(rows, columns, parent)
 {
 
 }

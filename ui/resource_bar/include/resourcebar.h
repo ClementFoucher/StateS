@@ -78,11 +78,11 @@ private:
 	weak_ptr<Machine> machine;
 	shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-	HintTab            * hintsTab     = nullptr;
-	MachineEditorTab   * machineTab   = nullptr;
-	ComponentEditorTab * editorTab    = nullptr;
-	SimulatorTab       * simulatorTab = nullptr;
-	VerifierTab        * verifierTab  = nullptr;
+	HintTab*            hintsTab     = nullptr;
+	MachineEditorTab*   machineTab   = nullptr;
+	ComponentEditorTab* editorTab    = nullptr;
+	SimulatorTab*       simulatorTab = nullptr;
+	VerifierTab*        verifierTab  = nullptr;
 };
 
 #endif // RESOURCEBAR_H

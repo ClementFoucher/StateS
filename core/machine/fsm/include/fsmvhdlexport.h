@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -77,7 +77,7 @@ private:
 	};
 
 public:
-	FsmVhdlExport(shared_ptr<Fsm> machine);
+	explicit FsmVhdlExport(shared_ptr<Fsm> machine);
 	void setOptions(bool resetLogicPositive, bool prefixSignals);
 
 	bool writeToFile(const QString& path);

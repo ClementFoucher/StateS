@@ -50,15 +50,15 @@ signals:
 	void redo                     ();
 
 private:
-	QAction* actionSaveAs        = nullptr;
-	QAction* actionSave          = nullptr;
-	QAction* actionLoad          = nullptr;
-	QAction* actionNewFsm        = nullptr;
-	//QAction* actionClear        = nullptr;
-	QAction* actionExportImage   = nullptr;
-	QAction* actionExportHdl     = nullptr;
-	QAction* actionUndo          = nullptr;
-	QAction* actionRedo          = nullptr;
+	QAction* actionSaveAs      = nullptr;
+	QAction* actionSave        = nullptr;
+	QAction* actionLoad        = nullptr;
+	QAction* actionNewFsm      = nullptr;
+	//QAction* actionClear       = nullptr;
+	QAction* actionExportImage = nullptr;
+	QAction* actionExportHdl   = nullptr;
+	QAction* actionUndo        = nullptr;
+	QAction* actionRedo        = nullptr;
 };
 
 #endif // MAINTOOLBAR_H

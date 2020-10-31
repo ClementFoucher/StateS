@@ -167,9 +167,9 @@ private:
 	// Local copy of visu => pointer because scene takes ownership
 	QGraphicsItem* componentVisu = nullptr;
 
-	shared_ptr<MachineBuilder> machineBuilder = nullptr;
+	shared_ptr<MachineBuilder> machineBuilder;
 	simulation_mode currentMode = simulation_mode::editMode;
-	shared_ptr<MachineStatus> machineStatus = nullptr;
+	shared_ptr<MachineStatus> machineStatus;
 
 	weak_ptr<MachineSimulator> simulator;
 

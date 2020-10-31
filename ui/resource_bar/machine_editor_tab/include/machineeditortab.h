@@ -60,8 +60,8 @@ private:
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 	weak_ptr<Machine>                    machine;
 
-	CollapsibleWidgetWithTitle* hintDisplay;
-	CollapsibleWidgetWithTitle* machineDisplay;
+	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	DynamicLineEdit* machineName = nullptr;
 };

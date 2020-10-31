@@ -78,7 +78,7 @@ private:
 
 	QSlider* conditionTextPositionSlider = nullptr;
 
-	QPushButton* buttonSetCondition   = nullptr;
+	QPushButton* buttonSetCondition = nullptr;
 
 	QPushButton*       buttonExpandTruthTable = nullptr;
 	TruthTableDisplay* truthTableDisplay      = nullptr;

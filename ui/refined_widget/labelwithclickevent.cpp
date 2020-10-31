@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,8 +26,8 @@
 #include <QMouseEvent>
 
 
-LabelWithClickEvent::LabelWithClickEvent(const QString &text) :
-    QLabel(text)
+LabelWithClickEvent::LabelWithClickEvent(const QString &text, QWidget* parent) :
+    QLabel(text, parent)
 {
 
 }

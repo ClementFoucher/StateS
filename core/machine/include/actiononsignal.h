@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -74,7 +74,7 @@ public:
 
 public:
 	explicit ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue = LogicValue::getNullValue(),
-	                        int rangeL = -1, int rangeR = -1, QObject* parent = nullptr);
+	                        int rangeL = -1, int rangeR = -1);
 
 	void setActionType (action_types newType); // Throws StatesException
 	void setActionValue(LogicValue newValue);  // Throws StatesException

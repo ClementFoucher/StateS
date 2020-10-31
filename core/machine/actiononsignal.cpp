@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,8 +30,7 @@
 #include "statesexception.h"
 
 
-ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue, int rangeL, int rangeR, QObject* parent) :
-    QObject(parent)
+ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
 	this->signal = signal;
 	connect(signal.get(), &Signal::signalResizedEvent, this, &ActionOnSignal::signalResizedEventHandler);

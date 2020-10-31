@@ -55,8 +55,7 @@ shared_ptr<MachineXmlWriter> MachineXmlWriter::buildMachineWriter(shared_ptr<Mac
 	return machineWriter;
 }
 
-MachineXmlWriter::MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent) :
-    QObject(parent)
+MachineXmlWriter::MachineXmlWriter(shared_ptr<Machine> machine)
 {
 	this->machine = machine;
 }

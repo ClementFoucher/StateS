@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,7 +52,7 @@ public:
 	void treatEndElement();
 
 private:
-	explicit FsmXmlParser(QObject* parent = nullptr);
+	explicit FsmXmlParser();
 
 	virtual void buildMachineFromXml() override;
 

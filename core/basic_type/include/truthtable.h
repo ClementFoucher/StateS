@@ -46,10 +46,10 @@ public:
 	explicit TruthTable(shared_ptr<Equation> equation);
 	explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
-	QVector<shared_ptr<Signal>>  getInputs() const; // Throws StatesException
-	QVector<QVector<LogicValue>> getInputTable() const;
-	QVector<QString>             getOutputsEquations() const;
-	QVector<QVector<LogicValue>> getOutputTable() const;
+	QVector<shared_ptr<Signal>>  getInputs()            const; // Throws StatesException
+	QVector<QVector<LogicValue>> getInputTable()        const;
+	QVector<QString>             getOutputsEquations()  const;
+	QVector<QVector<LogicValue>> getOutputTable()       const;
 	QVector<LogicValue>          getSingleOutputTable() const;
 
 	uint getInputCount()  const;
@@ -59,6 +59,7 @@ private:
 	QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
 	void buildTable(QVector<shared_ptr<Equation>> equations);
 
+private:
 	QVector<weak_ptr<Signal>>    inputSignalsTable;
 	QVector<QString>             outputEquationsTextsTable;
 	QVector<QVector<LogicValue>> inputValuesTable;

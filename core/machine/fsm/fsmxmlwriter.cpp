@@ -36,8 +36,8 @@
 #include "viewconfiguration.h"
 
 
-FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm, QObject* parent) :
-    MachineXmlWriter(fsm, parent)
+FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm) :
+    MachineXmlWriter(fsm)
 {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@ class LabelWithClickEvent : public QLabel
 	Q_OBJECT
 
 public:
-	LabelWithClickEvent(const QString& text);
+	explicit LabelWithClickEvent(const QString& text, QWidget* parent = nullptr);
 
 signals:
 	bool clicked(QMouseEvent* e);

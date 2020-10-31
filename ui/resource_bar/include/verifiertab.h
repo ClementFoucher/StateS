@@ -63,11 +63,11 @@ private:
 
 	bool checkVhdl = false;
 
-	QLabel                     * listTitle         = nullptr;
-	QListWidget                * list              = nullptr;
-	QPushButton                * buttonClear       = nullptr;
-	TruthTableDisplay          * truthTableDisplay = nullptr;
-	CollapsibleWidgetWithTitle * hintBox           = nullptr;
+	QLabel*                     listTitle         = nullptr;
+	QListWidget*                list              = nullptr;
+	QPushButton*                buttonClear       = nullptr;
+	TruthTableDisplay*          truthTableDisplay = nullptr;
+	CollapsibleWidgetWithTitle* hintBox           = nullptr;
 };
 
 #endif // VERIFIERTAB_H

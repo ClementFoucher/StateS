@@ -59,7 +59,7 @@ public:
 	virtual QString getMachineXml() = 0;
 
 protected:
-	explicit MachineXmlWriter(shared_ptr<Machine> machine, QObject* parent = nullptr);
+	explicit MachineXmlWriter(shared_ptr<Machine> machine);
 
 	void createSaveFile(const QString& filePath); // Throws StatesException
 	void createSaveString();

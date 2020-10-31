@@ -35,8 +35,7 @@
 #include "machinestatus.h"
 
 
-FsmXmlParser::FsmXmlParser(QObject* parent) :
-    MachineXmlParser(parent)
+FsmXmlParser::FsmXmlParser()
 {
 	this->currentGroup = group_e::none;
 	this->currentSubGroup = subgroup_e::none;

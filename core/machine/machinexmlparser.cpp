@@ -37,8 +37,7 @@
 #include "equation.h"
 
 
-MachineXmlParser::MachineXmlParser(QObject* parent) :
-    QObject(parent)
+MachineXmlParser::MachineXmlParser()
 {
 	this->viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
 }
