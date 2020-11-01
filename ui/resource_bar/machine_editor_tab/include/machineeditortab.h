@@ -49,7 +49,7 @@ public:
 	bool getVisuCollapsed();
 
 protected:
-	void showEvent(QShowEvent* e) override;
+	void showEvent      (QShowEvent*  e) override;
 	void mousePressEvent(QMouseEvent* e) override;
 
 private slots:

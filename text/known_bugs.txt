@@ -1,6 +1,6 @@
 
 ********************************
-* StateS v. 0.4.3 Known Issues *
+* StateS v. 0.4.4 Known Issues *
 ********************************
 
 
@@ -10,7 +10,6 @@
 - Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
 - Export to PDF has incorrect margins,
 - Modifying condition position on various transitions in a row constitutes a single edit, thus trigering undo will undo the changes on all edited transitions at once,
-- Undoing an "add initial state" action is split into "undoing set initial" then "undoing add state".
 
 
 ** VHDL export issues: **

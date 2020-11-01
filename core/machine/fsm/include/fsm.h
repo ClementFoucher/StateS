@@ -47,7 +47,7 @@ public:
 	~Fsm();
 
 	// States
-	shared_ptr<FsmState> addState(QPointF position, QString name = QString());
+	shared_ptr<FsmState> addState(QPointF position, bool isInitial = false, QString name = QString());
 	void removeState(shared_ptr<FsmState> state);
 	QList<shared_ptr<FsmState> > getStates() const;
 	shared_ptr<FsmState> getStateByName(const QString& name) const;

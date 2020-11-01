@@ -347,11 +347,15 @@ void FsmXmlParser::parseState()
 		}
 
 		shared_ptr<Fsm> fsm = this->getFsm();
-		shared_ptr<FsmState> state = fsm->addState(position, stateName);
+		shared_ptr<FsmState> state;
 
 		if (attributes.value("IsInitial").isNull() == false)
 		{
-			fsm->setInitialState(state);
+			state = fsm->addState(position, true, stateName);
+		}
+		else
+		{
+			state = fsm->addState(position, false, stateName);
 		}
 
 		this->currentActuator = state;

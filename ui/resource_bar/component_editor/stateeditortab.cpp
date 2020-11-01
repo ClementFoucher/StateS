@@ -52,7 +52,7 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
 
 	this->textStateName = new DynamicLineEdit(state->getName(), true);
 	connect(this->textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
-	connect(this->textStateName, &DynamicLineEdit::userCancelEvent, this, &StateEditorTab::updateContent);
+	connect(this->textStateName, &DynamicLineEdit::userCancelEvent,       this, &StateEditorTab::updateContent);
 	this->layout()->addWidget(this->textStateName);
 
 	ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"));

@@ -6,7 +6,7 @@
 
 ###
 # Update these
-VERSION = 0.4.3
+VERSION = 0.4.4
 DATE = 2014-2020
 # And remember to updates version in readme and other text files
 ###

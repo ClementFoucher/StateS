@@ -512,9 +512,10 @@ void SignalListEditor::beginAddSignal()
 
 		this->currentTableItem = this->currentSignalName;
 		this->signalsList->selectRow(this->currentTableItem->row());
+		this->setFocus(); // Prevent temporarily loosing focus when disabling buttons on mode switch
 		switchMode(mode::addingSignal);
 
-		connect(this->signalsList, &QTableWidget::itemClicked, this, &SignalListEditor::addingSignalSwitchField);
+		connect(this->signalsList, &QTableWidget::itemClicked,        this, &SignalListEditor::addingSignalSwitchField);
 		connect(this->signalsList, &QTableWidget::currentItemChanged, this, &SignalListEditor::addingSignalCurrentItemChanged);
 	}
 }

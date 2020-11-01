@@ -164,13 +164,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 					else if (currentTool == MachineBuilder::tool::initial_state)
 					{
 						// Create logic state
-						shared_ptr<FsmState> logicState = l_machine->addState(me->scenePos());
+						shared_ptr<FsmState> logicState = l_machine->addState(me->scenePos(), true);
 
 						// Create graphic state
 						addState(logicState->getGraphicRepresentation());
-
-						// Set state initial
-						l_machine->setInitialState(logicState);
 
 						// Only one initial state in a FSM, switch to regular state tool
 						machineBuilder->setTool(MachineBuilder::tool::state);
@@ -690,8 +687,7 @@ void FsmScene::treatMenu(QAction* action)
 		}
 		else if (action->text() == tr("Add initial state"))
 		{
-			shared_ptr<FsmState> logicState = l_machine->addState(this->mousePos);
-			l_machine->setInitialState(logicState);
+			shared_ptr<FsmState> logicState = l_machine->addState(this->mousePos, true);
 
 			this->addState(logicState->getGraphicRepresentation());
 		}

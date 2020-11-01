@@ -101,6 +101,10 @@ MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<Machi
 
 	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
 	layout->addWidget(this->machineDisplay);
+
+	//
+	// Set tab focus order to prevent machine name being edited by default
+	this->setTabOrder(signalsTabs, this->machineName);
 }
 
 void MachineEditorTab::setHintCollapsed(bool collapse)

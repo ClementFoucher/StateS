@@ -2,6 +2,7 @@
 * StateS v. 0.4 *
 *****************
 
+- 2020-11-01 - V 0.4.4 - Retain the latest folders used for image and VHDL export; corrected Machine tab title; corrected machine name triggering edition mode erroneously; adding an initial state does not generate two undo events any more; many internal code reorganization.
 - 2020-10-26 - V 0.4.3 - Corrected a crash and an incorrect behavior of the drawing tools toolbar. Rworked the UI classes hierarchy.
 - 2020-10-11 - V 0.4.2 - Moved drawing tools to a toolbar so that they remain available regardless of the current tab.
 - 2020-10-08 - V 0.4.1 - Corrected a crash when editing a transition condition.

@@ -56,7 +56,7 @@ QList<shared_ptr<FsmState> > Fsm::getStates() const
 	return this->states;
 }
 
-shared_ptr<FsmState> Fsm::addState(QPointF position, QString name)
+shared_ptr<FsmState> Fsm::addState(QPointF position, bool isInitial, QString name)
 {
 	this->setInhibitEvents(true);
 
@@ -65,6 +65,11 @@ shared_ptr<FsmState> Fsm::addState(QPointF position, QString name)
 	connect(state.get(), &FsmState::stateRenamedEvent,                      this, &Fsm::unmonitoredFsmComponentEditionEventHandler);
 	connect(state.get(), &FsmState::statePositionChangedEvent,              this, &Fsm::statePositionChangedEventHandler);
 	this->states.append(state);
+
+	if (isInitial)
+	{
+		this->setInitialState(state);
+	}
 
 	this->setInhibitEvents(false);
 	this->emitMachineEditedWithoutUndoCommand();
