@@ -89,13 +89,12 @@ SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWid
 // it will be edited dynamically with signal update
 void SignalTimeline::clockEventHandler()
 {
-	shared_ptr<Signal> signal = this->signal.lock();
-
-	if (signal != nullptr)
+	shared_ptr<Signal> l_signal = this->signal.lock();
+	if (l_signal != nullptr)
 	{
-		for (uint i = 0 ; i < signal->getSize() ; i++)
+		for (uint i = 0 ; i < l_signal->getSize() ; i++)
 		{
-			this->signalLineDisplay[i]->addPoint(signal->getCurrentValue()[i]);
+			this->signalLineDisplay[i]->addPoint(l_signal->getCurrentValue()[i]);
 		}
 	}
 }
@@ -103,26 +102,24 @@ void SignalTimeline::clockEventHandler()
 // Value is updated depending on actions on signal
 void SignalTimeline::updateCurrentValue()
 {
-	shared_ptr<Signal> signal = this->signal.lock();
-
-	if (signal != nullptr)
+	shared_ptr<Signal> l_signal = this->signal.lock();
+	if (l_signal != nullptr)
 	{
-		for (uint i = 0 ; i < signal->getSize() ; i++)
+		for (uint i = 0 ; i < l_signal->getSize() ; i++)
 		{
-			this->signalLineDisplay[i]->updateLastPoint(signal->getCurrentValue()[i]);
+			this->signalLineDisplay[i]->updateLastPoint(l_signal->getCurrentValue()[i]);
 		}
 	}
 }
 
 void SignalTimeline::resetEventHandler()
 {
-	shared_ptr<Signal> signal = this->signal.lock();
-
-	if (signal != nullptr)
+	shared_ptr<Signal> l_signal = this->signal.lock();
+	if (l_signal != nullptr)
 	{
-		for (uint i = 0 ; i < signal->getSize() ; i++)
+		for (uint i = 0 ; i < l_signal->getSize() ; i++)
 		{
-			this->signalLineDisplay[i]->reset(signal->getCurrentValue()[i]);
+			this->signalLineDisplay[i]->reset(l_signal->getCurrentValue()[i]);
 		}
 	}
 }

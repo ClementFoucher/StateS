@@ -1,0 +1,75 @@
+********************************************************************************
+* This file intends at gathering the code guidelines I apply to this software. *
+********************************************************************************
+
+-----------------
+- Include order -
+-----------------
+
+In headers, "include" are replaced by class declaration as much as possible.
+
+* Headers:
+  - Parent classes
+  - C++ classes
+  - Qt classes
+  - Third-party classes
+  - StateS classes
+* Sources:
+  - Current class header
+  - Qt classes
+  - Third-party classes
+  - StateS classes
+
+---------------------
+- Declaration order -
+---------------------
+
+In a class declaration, elements are declared in a specific order.
+All elements from this list must be separated by a new access modifier.
+
+- Static members
+- Enums
+- Local classes
+
+- Public functions
+- Signals
+- Protected slots
+- Protected functions
+- Private slots
+- Private functions
+- Private members
+
+-----------------
+- Signals/slots -
+-----------------
+
+All slots must be declared as private (may be protected), so that connection can only be done by the object itself.
+Exception is done for overriden slots from Qt API.
+
+As much as possible, a signal must be names xxxEvent and the slot xxxEventHandler or by the name of the action to be done.
+
+----------------
+- Constructors -
+----------------
+
+- All constructors must be set as "explicit", except if required otherwise for basic types
+- Constructors of classes inheriting QWidget must provide a "parent" parameter (defaulted to nullptr)
+- Constructors of classes inheriting from QObject does not need a "parent" parameter
+  - Exception: classes inheriting from QAbstractTableModel require it.
+
+------------
+- Pointers -
+------------
+
+Object are managed by smart pointers except for:
+- QWidget that have a parent which manage their life
+- QGraphicsItems, that belong to a scene
+- Objects passed using an overriden API function
+
+Members must use:
+- unique_ptr if local only
+- shared_ptr only in the object that is in charge of life manaement of the object
+  - exception can be made for objects that are ensured to have a lifetime equal the the application one
+- weak_ptr as soon as we use an object but are not in charge of its lifetime
+
+Parameerters must always use shared_ptr to ensure reference is maintained.

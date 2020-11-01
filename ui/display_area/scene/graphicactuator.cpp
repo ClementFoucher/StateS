@@ -67,7 +67,6 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 
 	// Check base reference
 	shared_ptr<MachineActuatorComponent> l_actuator = this->getLogicActuator();
-
 	if (l_actuator != nullptr)
 	{
 		// Begin build

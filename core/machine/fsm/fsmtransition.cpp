@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -70,6 +70,13 @@ void FsmTransition::graphicRepresentationDeletedEventHandler()
 	this->graphicRepresentation = nullptr;
 }
 
+/**
+ * @brief FsmTransition::getSource
+ * @return Locked source state :
+ * We can do that as we are sure that
+ * source state exists as when a state is
+ * removed, all attached transitions are removed.
+ */
 shared_ptr<FsmState> FsmTransition::getSource() const
 {
 	return this->source.lock();
@@ -80,6 +87,13 @@ void FsmTransition::setSource(shared_ptr<FsmState> newSource)
 	this->source = newSource;
 }
 
+/**
+ * @brief FsmTransition::getTarget
+ * @return Locked target state :
+ * We can do that as we are sure that
+ * source state exists as when a state is
+ * removed, all attached transitions are removed.
+ */
 shared_ptr<FsmState> FsmTransition::getTarget() const
 {
 	return this->target.lock();

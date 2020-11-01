@@ -328,7 +328,6 @@ QRectF FsmGraphicState::boundingRect() const
 void FsmGraphicState::treatMenu(QAction* action)
 {
 	shared_ptr<FsmState> l_logicState = this->getLogicState();
-
 	if (l_logicState != nullptr)
 	{
 		if (action->text() == tr("Edit"))
@@ -411,7 +410,6 @@ void FsmGraphicState::rebuildRepresentation()
 	this->selectionShape = nullptr;
 
 	shared_ptr<FsmState> l_logicState = this->getLogicState();
-
 	if (l_logicState != nullptr)
 	{
 		if (l_logicState->getIsActive())

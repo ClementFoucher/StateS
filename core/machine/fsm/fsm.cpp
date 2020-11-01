@@ -142,7 +142,6 @@ void Fsm::setSimulator(shared_ptr<MachineSimulator> simulator)
 void Fsm::forceStateActivation(shared_ptr<FsmState> stateToActivate)
 {
 	shared_ptr<FsmSimulator> simulator = dynamic_pointer_cast<FsmSimulator>(this->getSimulator());
-
 	if (simulator != nullptr)
 	{
 		simulator->forceStateActivation(stateToActivate);
@@ -251,19 +250,18 @@ void Fsm::redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<Fs
 {
 	this->setInhibitEvents(true);
 
-	if (newSource != transition->getSource())
-	{
-		shared_ptr<FsmState> oldSource = transition->getSource();
+	shared_ptr<FsmState> oldSource = transition->getSource();
+	shared_ptr<FsmState> oldTarget = transition->getTarget();
 
+	if (newSource != oldSource)
+	{
 		transition->setSource(newSource);
 		oldSource->removeOutgoingTransition(transition);
 		newSource->addOutgoingTransition(transition);
 	}
 
-	if (newTarget != transition->getTarget())
+	if (newTarget != oldTarget)
 	{
-		shared_ptr<FsmState> oldTarget = transition->getTarget();
-
 		transition->setTarget(newTarget);
 		oldTarget ->removeIncomingTransition(transition);
 		newTarget->addIncomingTransition(transition);

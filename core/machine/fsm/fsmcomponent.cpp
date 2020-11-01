@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,6 +36,14 @@ FsmComponent::FsmComponent(shared_ptr<Fsm> owningFsm) :
 
 }
 
+/**
+ * @brief FsmComponent::getOwningFsm
+ * @return Owning machine as a shared pointer.
+ * We can lock it as if the component still exists,
+ * the machine still exists and there should be no
+ * calls to getting owning machine concurrent with
+ * machine deletion.
+ */
 shared_ptr<Fsm> FsmComponent::getOwningFsm() const
 {
 	return dynamic_pointer_cast<Fsm>(this->getOwningMachine());

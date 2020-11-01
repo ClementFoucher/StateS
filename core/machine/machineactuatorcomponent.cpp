@@ -111,7 +111,6 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 	if (actionRank < (uint)this->actionList.count())
 	{
 		shared_ptr<Signal> signal = actionList.at(actionRank)->getSignalActedOn();
-
 		if (signal != nullptr)
 		{
 			disconnect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);

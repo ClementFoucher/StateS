@@ -137,10 +137,10 @@ void MachineComponentVisualizer::updateMachineVisualization()
 {
 	this->scene->clear();
 
-	shared_ptr<Machine> machine = this->machine.lock();
-	if (machine != nullptr)
+	shared_ptr<Machine> l_machine = this->machine.lock();
+	if (l_machine != nullptr)
 	{
-		QGraphicsItem* component = machine->getComponentVisualization();
+		QGraphicsItem* component = l_machine->getComponentVisualization();
 		this->scene->addItem(component);
 	}
 }

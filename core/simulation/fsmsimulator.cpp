@@ -119,7 +119,7 @@ void FsmSimulator::resetEventHandler()
 
 void FsmSimulator::clockEventHandler()
 {
-	shared_ptr<FsmState> currentState = this->currentState.lock();
+	shared_ptr<FsmState> l_currentState = this->currentState.lock();
 	shared_ptr<FsmTransition> latestTransitionCrossed = this->latestTransitionCrossed.lock();
 
 	//
@@ -132,12 +132,12 @@ void FsmSimulator::clockEventHandler()
 
 	//
 	// Then determine if a transition is to be crossed
-	if (currentState != nullptr)
+	if (l_currentState != nullptr)
 	{
 		//
 		// Look for potential transitions
 		QMap<uint, shared_ptr<FsmTransition>> candidateTransitions;
-		foreach(shared_ptr<FsmTransition> transition, currentState->getOutgoingTransitions())
+		foreach(shared_ptr<FsmTransition> transition, l_currentState->getOutgoingTransitions())
 		{
 			if (transition->getCondition() != nullptr)
 			{

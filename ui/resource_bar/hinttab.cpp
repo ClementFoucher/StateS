@@ -90,11 +90,10 @@ bool HintTab::getVisuCollapsed()
 void HintTab::showEvent(QShowEvent* e)
 {
 	// Ensure we get the view back
-	shared_ptr<MachineComponentVisualizer> machineComponentView = this->machineComponentView.lock();
-
-	if (machineComponentView != nullptr)
+	shared_ptr<MachineComponentVisualizer> l_machineComponentView = this->machineComponentView.lock();
+	if (l_machineComponentView != nullptr)
 	{
-		this->machineDisplay->setContent(tr("Component visualization"), machineComponentView.get());
+		this->machineDisplay->setContent(tr("Component visualization"), l_machineComponentView.get());
 	}
 
 	QWidget::showEvent(e);

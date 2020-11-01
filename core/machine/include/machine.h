@@ -100,6 +100,7 @@ public:
 	virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
 
 	// Undo/redo related
+
 	void setInhibitEvents(bool inhibit);
 	void beginAtomicEdit();
 	void endAtomicEdit();
@@ -109,7 +110,7 @@ public:
 	simulation_mode getCurrentSimulationMode() const;
 	shared_ptr<MachineSimulator> getSimulator() const;
 	shared_ptr<MachineBuilder> getMachineBuilder() const;
-	QGraphicsItem* getComponentVisualization();
+	QGraphicsItem* getComponentVisualization() const;
 
 	bool cleanSignalName(QString& nameToClean) const;
 	QString getUniqueSignalName(const QString& prefix) const;
@@ -142,8 +143,6 @@ private:
 
 	QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 
-	void rebuildComponentVisualization();
-
 protected:
 	bool isBeingDestroyed = false;
 
@@ -164,18 +163,14 @@ private:
 
 	QString name;
 
-	// Local copy of visu => pointer because scene takes ownership
-	QGraphicsItem* componentVisu = nullptr;
-
 	shared_ptr<MachineBuilder> machineBuilder;
 	simulation_mode currentMode = simulation_mode::editMode;
 	shared_ptr<MachineStatus> machineStatus;
 
 	weak_ptr<MachineSimulator> simulator;
 
-	bool atomicEditionOngoing       = false;
-	bool inhibitRepresentationEvent = false;
-	uint eventInhibitionLevel       = 0;
+	bool atomicEditionOngoing = false;
+	uint eventInhibitionLevel = 0;
 };
 
 #endif // MACHINE_H

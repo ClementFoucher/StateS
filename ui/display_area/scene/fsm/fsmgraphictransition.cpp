@@ -120,7 +120,6 @@ FsmGraphicTransition::~FsmGraphicTransition()
 	delete conditionText;
 
 	shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
-
 	if (l_logicTransition != nullptr)
 	{
 		disconnect(l_logicTransition.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,    this, &FsmGraphicTransition::updateText);
@@ -446,12 +445,11 @@ void FsmGraphicTransition::updateSelectionShapeDisplay()
 
 void FsmGraphicTransition::updateText()
 {
-	shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
-
 	//
 	// Condition
 
 	// Should also make background semi-transparent... (we could avoid color?)
+	shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
 	if (l_logicTransition != nullptr)
 	{
 		Machine::simulation_mode currentMode = l_logicTransition->getOwningFsm()->getCurrentSimulationMode();

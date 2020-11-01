@@ -165,16 +165,15 @@ void ConditionEditor::updateContent()
 
 	this->buttonExpandTruthTable->setEnabled(false);
 
-	shared_ptr<FsmTransition> transition = this->transition.lock();
-
-	if (transition != nullptr)
+	shared_ptr<FsmTransition> l_transition = this->transition.lock();
+	if (l_transition != nullptr)
 	{
-		if (transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100 != this->conditionTextPositionSlider->value())
-			this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
+		if (l_transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100 != this->conditionTextPositionSlider->value())
+			this->conditionTextPositionSlider->setValue(l_transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
 
-		if (transition->getCondition() != nullptr)
+		if (l_transition->getCondition() != nullptr)
 		{
-			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(transition->getCondition());
+			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(l_transition->getCondition());
 
 			if (equationOperand != nullptr)
 			{
@@ -182,12 +181,12 @@ void ConditionEditor::updateContent()
 			}
 			else
 			{
-				this->conditionText->setText(transition->getCondition()->getText());
+				this->conditionText->setText(l_transition->getCondition()->getText());
 			}
 
-			if (transition->getCondition()->getSize() == 1)
+			if (l_transition->getCondition()->getSize() == 1)
 			{
-				shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(transition->getCondition());
+				shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_transition->getCondition());
 
 				if (equationCondition != nullptr)
 				{
@@ -199,7 +198,7 @@ void ConditionEditor::updateContent()
 			}
 			else
 			{
-				if (transition->getCondition()->getSize() == 0)
+				if (l_transition->getCondition()->getSize() == 0)
 				{
 					this->conditionWarningText = new QLabel("<font color=red>" +
 					                                        tr("Warning: equation representing condition is not valid.") +
@@ -212,7 +211,7 @@ void ConditionEditor::updateContent()
 				else
 				{
 					this->conditionWarningText = new QLabel("<font color=red>" +
-					                                        tr("Warning: equation representing condition is size") + " " + QString::number(transition->getCondition()->getSize()) +
+					                                        tr("Warning: equation representing condition is size") + " " + QString::number(l_transition->getCondition()->getSize()) +
 					                                        "<br />" + tr("Conditions must be size one to allow being treated as booleans.") +
 					                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
 					                                        "</font>"
@@ -245,11 +244,9 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 void ConditionEditor::editCondition()
 {
 	shared_ptr<FsmTransition> l_transition = this->transition.lock();
-
 	if (l_transition != nullptr)
 	{
 		shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
-
 		if ( (owningMachine != nullptr) && (owningMachine->getReadableSignals().count() != 0) )
 		{
 			EquationEditor* eqEdit;
@@ -291,7 +288,6 @@ void ConditionEditor::treatMenuSetCondition(QAction* action)
 	if (l_transition != nullptr)
 	{
 		shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
-
 		if (owningMachine != nullptr)
 		{
 			foreach (shared_ptr<Signal> currentVariable, owningMachine->getReadableSignals())

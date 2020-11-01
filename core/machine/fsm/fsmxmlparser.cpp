@@ -81,6 +81,9 @@ void FsmXmlParser::buildMachineFromXml()
 		this->machine = shared_ptr<Fsm>(new Fsm());
 	}
 
+	// Do not generate events while being built
+	this->machine->setInhibitEvents(true);
+
 	while (this->xmlReader->atEnd() == false)
 	{
 		this->xmlReader->readNext();
@@ -410,5 +413,7 @@ void FsmXmlParser::parseTransition()
 
 shared_ptr<Fsm> FsmXmlParser::getFsm() const
 {
+	// Enable events before returning the machine
+	this->machine->setInhibitEvents(false);
 	return dynamic_pointer_cast<Fsm>(this->machine);
 }

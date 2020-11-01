@@ -40,8 +40,6 @@ Machine::Machine(shared_ptr<MachineStatus> machineStatus)
 	this->machineStatus  = machineStatus;
 	this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
 	this->name = tr("Machine");
-
-	this->rebuildComponentVisualization();
 }
 
 Machine::Machine() :
@@ -247,6 +245,10 @@ void Machine::emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand)
 	{
 		emit machineEditedWithUndoCommandGeneratedEvent(undoCommand);
 	}
+	else
+	{
+		delete undoCommand;
+	}
 }
 
 Machine::simulation_mode Machine::getCurrentSimulationMode() const
@@ -259,58 +261,13 @@ shared_ptr<MachineBuilder> Machine::getMachineBuilder() const
 	return this->machineBuilder;
 }
 
-/**
- * @brief Machine::getComponentVisualization
- * Object calling this function takes ownership of
- * visu. We need to rebuild it, but silently as this
- * is not an update, just a kind of copy.
- * @return
- */
-QGraphicsItem* Machine::getComponentVisualization()
-{
-	QGraphicsItem* currentVisu = this->componentVisu;
-	this->componentVisu = nullptr;
-
-	this->inhibitRepresentationEvent = true;
-	rebuildComponentVisualization();
-	this->inhibitRepresentationEvent = false;
-
-	return currentVisu;
-}
-
-bool Machine::setName(const QString& newName)
-{
-	QString correctedName = newName.trimmed();
-
-	if (correctedName.length() != 0)
-	{
-		QString oldName = this->name;
-		this->name = correctedName;
-		this->rebuildComponentVisualization();
-
-		emit machineNameChangedEvent(this->name);
-
-		MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
-		this->emitMachineEditedWithUndoCommand(undoCommand);
-
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void Machine::rebuildComponentVisualization()
+QGraphicsItem* Machine::getComponentVisualization() const
 {
 	// /!\ QGraphicsItemGroup bounding box seems not to be updated
 	// if item is added using its constructor's parent parameter
 
 	if (this->isBeingDestroyed == false)
 	{
-		delete this->componentVisu;
-		this->componentVisu = nullptr;
-
 		QGraphicsItemGroup* visu = new QGraphicsItemGroup();
 
 		//
@@ -476,12 +433,34 @@ void Machine::rebuildComponentVisualization()
 		//
 		// Done
 
-		this->componentVisu = visu;
+		return visu;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
 
-		if (this->inhibitRepresentationEvent == false)
-		{
-			emit componentVisualizationUpdatedEvent();
-		}
+bool Machine::setName(const QString& newName)
+{
+	QString correctedName = newName.trimmed();
+
+	if (correctedName.length() != 0)
+	{
+		QString oldName = this->name;
+		this->name = correctedName;
+
+		emit componentVisualizationUpdatedEvent();
+		emit machineNameChangedEvent(this->name);
+
+		MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
+		this->emitMachineEditedWithUndoCommand(undoCommand);
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -550,8 +529,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 			signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
 		}
 
-		this->rebuildComponentVisualization();
-
+		emit componentVisualizationUpdatedEvent();
 		emit inputListChangedEvent();
 
 		break;
@@ -559,8 +537,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
 
-		this->rebuildComponentVisualization();
-
+		emit componentVisualizationUpdatedEvent();
 		emit outputListChangedEvent();
 
 		break;
@@ -629,10 +606,11 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->inputs, &this->inputsRanks);
 
-		this->rebuildComponentVisualization();
-
 		if (this->isBeingDestroyed == false)
+		{
+			emit componentVisualizationUpdatedEvent();
 			emit inputListChangedEvent();
+		}
 
 		result = true;
 	}
@@ -640,10 +618,11 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->outputs, &this->outputsRanks);
 
-		this->rebuildComponentVisualization();
-
 		if (this->isBeingDestroyed == false)
+		{
+			emit componentVisualizationUpdatedEvent();
 			emit outputListChangedEvent();
+		}
 
 		result = true;
 	}
@@ -652,7 +631,9 @@ bool Machine::deleteSignal(const QString& name)
 		this->deleteSignalFromList(name, &this->localVariables, &this->localVariablesRanks);
 
 		if (this->isBeingDestroyed == false)
+		{
 			emit localVariableListChangedEvent();
+		}
 
 		result = true;
 	}
@@ -661,7 +642,9 @@ bool Machine::deleteSignal(const QString& name)
 		this->deleteSignalFromList(name, &this->constants, &this->constantsRanks);
 
 		if (this->isBeingDestroyed == false)
+		{
 			emit constantListChangedEvent();
+		}
 
 		result = true;
 	}
@@ -750,15 +733,15 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		if (inputs.contains(oldName))
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->inputs, &this->inputsRanks);
-			this->rebuildComponentVisualization();
 
+			emit componentVisualizationUpdatedEvent();
 			emit inputListChangedEvent();
 		}
 		else if (outputs.contains(oldName))
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->outputs, &this->outputsRanks);
-			this->rebuildComponentVisualization();
 
+			emit componentVisualizationUpdatedEvent();
 			emit outputListChangedEvent();
 		}
 		else if (localVariables.contains(oldName))
@@ -813,12 +796,12 @@ void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesEx
 
 		if (inputs.contains(name))
 		{
-			this->rebuildComponentVisualization();
+			emit componentVisualizationUpdatedEvent();
 			emit inputListChangedEvent();
 		}
 		else if (outputs.contains(name))
 		{
-			this->rebuildComponentVisualization();
+			emit componentVisualizationUpdatedEvent();
 			emit outputListChangedEvent();
 		}
 		else if (localVariables.contains(name))
@@ -890,15 +873,15 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
 		if (inputs.contains(name))
 		{
 			this->changeRankInList(name, newRank, &this->inputs, &this->inputsRanks);
-			this->rebuildComponentVisualization();
 
+			emit componentVisualizationUpdatedEvent();
 			emit inputListChangedEvent();
 		}
 		else if (outputs.contains(name))
 		{
 			this->changeRankInList(name, newRank, &this->outputs, &this->outputsRanks);
-			this->rebuildComponentVisualization();
 
+			emit componentVisualizationUpdatedEvent();
 			emit outputListChangedEvent();
 		}
 		else if (localVariables.contains(name))

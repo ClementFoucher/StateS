@@ -130,49 +130,45 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 
 void FsmDrawingToolBar::mouseToolRequestedEvent(bool)
 {
-	shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-
-	if (machineBuilder != nullptr)
+	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
+	if (l_machineBuilder != nullptr)
 	{
-		machineBuilder->setTool(MachineBuilder::tool::none);
+		l_machineBuilder->setTool(MachineBuilder::tool::none);
 	}
 }
 
 void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-
-	if (machineBuilder != nullptr)
+	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
+	if (l_machineBuilder != nullptr)
 	{
 		if (activated)
-			machineBuilder->setTool(MachineBuilder::tool::initial_state);
+			l_machineBuilder->setTool(MachineBuilder::tool::initial_state);
 		else
-			machineBuilder->setTool(MachineBuilder::tool::none);
+			l_machineBuilder->setTool(MachineBuilder::tool::none);
 	}
 }
 
 void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-
-	if (machineBuilder != nullptr)
+	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
+	if (l_machineBuilder != nullptr)
 	{
 		if (activated)
-			machineBuilder->setTool(MachineBuilder::tool::state);
+			l_machineBuilder->setTool(MachineBuilder::tool::state);
 		else
-			machineBuilder->setTool(MachineBuilder::tool::none);
+			l_machineBuilder->setTool(MachineBuilder::tool::none);
 	}
 }
 
 void FsmDrawingToolBar::transitionToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> machineBuilder = this->machineBuilder.lock();
-
-	if (machineBuilder != nullptr)
+	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
+	if (l_machineBuilder != nullptr)
 	{
 		if (activated)
-			machineBuilder->setTool(MachineBuilder::tool::transition);
+			l_machineBuilder->setTool(MachineBuilder::tool::transition);
 		else
-			machineBuilder->setTool(MachineBuilder::tool::none);
+			l_machineBuilder->setTool(MachineBuilder::tool::none);
 	}
 }

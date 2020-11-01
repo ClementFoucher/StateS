@@ -65,15 +65,14 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-	shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
-
-	if (signalToCommand != nullptr)
+	shared_ptr<Signal> l_signalToCommand = this->signalToCommand.lock();
+	if (l_signalToCommand != nullptr)
 	{
-		LogicValue signalValue = signalToCommand->getCurrentValue();
+		LogicValue signalValue = l_signalToCommand->getCurrentValue();
 
 		signalValue[this->bitNumber] = !signalValue[this->bitNumber];
 
-		signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
+		l_signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
 	}
 }
 
@@ -94,10 +93,9 @@ void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 
 void InputBitSelector::signalValueChangedEventHandler()
 {
-	shared_ptr<Signal> signalToCommand = this->signalToCommand.lock();
-
-	if (signalToCommand != nullptr)
+	shared_ptr<Signal> l_signalToCommand = this->signalToCommand.lock();
+	if (l_signalToCommand != nullptr)
 	{
-		this->bitValue->setText(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+		this->bitValue->setText(QString::number(l_signalToCommand->getCurrentValue()[this->bitNumber]));
 	}
 }

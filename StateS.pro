@@ -277,14 +277,15 @@ OTHER_FILES += \
 	text/Readme/README.txt \
 	text/Readme/Linux/README \
 	text/Readme/Windows/README.txt \
+	text/release_notes.txt \
+	text/upcoming_features.txt \
+	text/code_guidelines.txt \
 	LICENSE \
 	LICENSE.txt \
-	text/release_notes.txt \
 	core/basic_type/README.txt \
 	art/AUTHORS \
 	art/AUTHORS.txt \
-	TODO \
-	text/upcoming_features.txt
+	TODO
 
 RESOURCES += \
     art/art.qrc \
