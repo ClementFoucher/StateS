@@ -156,10 +156,10 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
 		if (actionRank >= 0)
 		{
-			shared_ptr<ActionOnSignal>  actionActedOn = l_actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
-
-			if (actionActedOn != nullptr)
+			try
 			{
+				shared_ptr<ActionOnSignal> actionActedOn = l_actuator->getAction(actionRank); // Throws StatesException
+
 				ContextMenu* menu = new ContextMenu();
 				menu->addTitle(tr("Action on signal") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
 
@@ -247,6 +247,11 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 				menu->popup(this->mapToGlobal(event->pos()));
 
 				connect(menu, &QMenu::triggered, this, &ActionEditor::treatContextMenuEventHandler);
+			}
+			catch (StatesException e)
+			{
+				if ( (e.getSourceClass() != "MachineActuatorComponent") || (e.getEnumValue() != MachineActuatorComponent::out_of_range) )
+					throw;
 			}
 		}
 	}
