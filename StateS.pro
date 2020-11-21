@@ -30,8 +30,8 @@ CONFIG += c++14
 QMAKE_LFLAGS += -no-pie
 
 SOURCES += \
-# Core
-    core/main.cpp \
+    # Core
+	core/main.cpp \
 	core/states.cpp \
 	core/statesxmlanalyzer.cpp \
 	core/basic_type/logicvalue.cpp \
@@ -68,11 +68,9 @@ SOURCES += \
 	core/undo_engine/diffundocommand.cpp \
 	core/undo_engine/machineundocommand.cpp \
 	core/undo_engine/undoredomanager.cpp \
-# UI
-    ui/statesui.cpp \
+	# UI
+	ui/statesui.cpp \
 	ui/machinecomponentvisualizer.cpp \
-	ui/rangeextractorwidget.cpp \
-	ui/editableequation.cpp \
 	ui/dialogs/imageexportdialog.cpp \
 	ui/dialogs/langselectiondialog.cpp \
 	ui/dialogs/vhdlexportdialog.cpp \
@@ -82,6 +80,8 @@ SOURCES += \
 	ui/equation_editor/graphicequation.cpp \
 	ui/equation_editor/equationmimedata.cpp \
 	ui/equation_editor/constantvaluesetter.cpp \
+	ui/equation_editor/editableequation.cpp \
+	ui/equation_editor/rangeextractorwidget.cpp \
 	ui/refined_widget/dynamiclineedit.cpp \
 	ui/refined_widget/contextmenu.cpp \
 	ui/refined_widget/dynamictableitemdelegate.cpp \
@@ -134,12 +134,12 @@ SOURCES += \
 	ui/resource_bar/component_editor/actiontypecombobox.cpp \
 	ui/resource_bar/component_editor/actiontablemodel.cpp \
 	ui/resource_bar/component_editor/actiontabledelegate.cpp \
-# Other
-    third_party/diff_match_patch/diff_match_patch.cpp
+	# Other
+	third_party/diff_match_patch/diff_match_patch.cpp
 
 HEADERS += \
-# Core
-    core/include/states.h \
+    # Core
+	core/include/states.h \
 	core/include/statesxmlanalyzer.h \
 	core/basic_type/include/logicvalue.h \
 	core/basic_type/include/truthtable.h \
@@ -175,10 +175,8 @@ HEADERS += \
 	core/undo_engine/include/diffundocommand.h \
 	core/undo_engine/include/machineundocommand.h \
 	core/undo_engine/include/undoredomanager.h \
-# UI
-    ui/include/statesui.h \
-	ui/include/editableequation.h \
-	ui/include/rangeextractorwidget.h \
+	# UI
+	ui/include/statesui.h \
 	ui/include/machinecomponentvisualizer.h \
 	ui/dialogs/include/vhdlexportdialog.h \
 	ui/dialogs/include/langselectiondialog.h \
@@ -189,6 +187,8 @@ HEADERS += \
 	ui/equation_editor/include/equationmimedata.h \
 	ui/equation_editor/include/constantvaluesetter.h \
 	ui/equation_editor/include/inverterbar.h \
+	ui/equation_editor/include/editableequation.h \
+	ui/equation_editor/include/rangeextractorwidget.h \
 	ui/refined_widget/include/dynamiclineedit.h \
 	ui/refined_widget/include/contextmenu.h \
 	ui/refined_widget/include/dynamictableitemdelegate.h \
@@ -241,8 +241,8 @@ HEADERS += \
 	ui/resource_bar/component_editor/include/actiontypecombobox.h \
 	ui/resource_bar/component_editor/include/actiontablemodel.h \
 	ui/resource_bar/component_editor/include/actiontabledelegate.h \
-# Other
-    third_party/diff_match_patch/diff_match_patch.h
+	# Other
+	third_party/diff_match_patch/diff_match_patch.h
 
 INCLUDEPATH += \
 # Core
