@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,7 +40,7 @@ InputsSelector::InputsSelector(QList<shared_ptr<Input> > inputList, QWidget *par
 
 	foreach (shared_ptr<Input> currentInput, inputList)
 	{
-		InputSignalSelector* currentSignalSelector = new InputSignalSelector(currentInput);
+		InputSignalSelector* currentSignalSelector = new InputSignalSelector(currentInput, this);
 		layout->addWidget(currentSignalSelector);
 	}
 }

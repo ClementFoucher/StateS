@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,25 +48,25 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
 
 	this->layout = new QGridLayout(this);
 
-	QLabel* conditionTitle = new QLabel(tr("Condition"));
+	QLabel* conditionTitle = new QLabel(tr("Condition"), this);
 	conditionTitle->setAlignment(Qt::AlignCenter);
 	this->layout->addWidget(conditionTitle, 0, 0, 1, 2);
 
-	this->conditionText = new QLabel("…");
+	this->conditionText = new QLabel("…", this);
 	this->layout->addWidget(this->conditionText, 1, 0, 1, 2);
 
-	this->buttonSetCondition = new QPushButton(tr("Set condition"));
+	this->buttonSetCondition = new QPushButton(tr("Set condition"), this);
 	connect(this->buttonSetCondition, &QAbstractButton::clicked, this, &ConditionEditor::editCondition);
 	this->layout->addWidget(this->buttonSetCondition, 3, 0, 1, 1);
 
-	QPushButton* buttonClearCondition = new QPushButton(tr("Clear condition"));
+	QPushButton* buttonClearCondition = new QPushButton(tr("Clear condition"), this);
 	connect(buttonClearCondition, &QAbstractButton::clicked, this, &ConditionEditor::clearCondition);
 	this->layout->addWidget(buttonClearCondition, 3, 1, 1, 1);
 
 	QHBoxLayout* positionLayout = new QHBoxLayout();
-	QLabel* positionLabel = new QLabel(tr("Condition position"));
+	QLabel* positionLabel = new QLabel(tr("Condition position"), this);
 	positionLayout->addWidget(positionLabel);
-	this->conditionTextPositionSlider = new QSlider(Qt::Horizontal);
+	this->conditionTextPositionSlider = new QSlider(Qt::Horizontal, this);
 	this->conditionTextPositionSlider->setMinimum(1);
 	this->conditionTextPositionSlider->setMaximum(99);
 	this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
@@ -74,7 +74,7 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
 	positionLayout->addWidget(this->conditionTextPositionSlider);
 	this->layout->addLayout(positionLayout, 4, 0, 1, 2);
 
-	this->buttonExpandTruthTable = new QPushButton(tr("Display truth table"));
+	this->buttonExpandTruthTable = new QPushButton(tr("Display truth table"), this);
 	connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
 	this->layout->addWidget(this->buttonExpandTruthTable, 5, 0, 1, 2);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATIONWIDGET_H
-#define SIMULATIONWIDGET_H
+#ifndef TIMELINEWIDGET_H
+#define TIMELINEWIDGET_H
 
 // Parent
 #include <QMainWindow>
@@ -40,12 +40,12 @@ class Clock;
 class SimulatorTab;
 
 
-class SimulationWidget : public QMainWindow
+class TimelineWidget : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	explicit SimulationWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit TimelineWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
 
 signals:
 	void detachTimelineEvent(bool detach);
@@ -71,4 +71,4 @@ private:
 	uint separatorPosition = 0;
 };
 
-#endif // SIMULATIONWIDGET_H
+#endif // TIMELINEWIDGET_H

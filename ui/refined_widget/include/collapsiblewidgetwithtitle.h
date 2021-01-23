@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,7 +38,8 @@ class CollapsibleWidgetWithTitle : public QFrame
 	Q_OBJECT
 
 public:
-	explicit CollapsibleWidgetWithTitle(const QString& title = QString(), QWidget* content = nullptr, QWidget* parent = nullptr);
+	explicit CollapsibleWidgetWithTitle(const QString& title, QWidget* content, QWidget* parent = nullptr);
+	explicit CollapsibleWidgetWithTitle(QWidget* parent = nullptr);
 
 	void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
 	void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);

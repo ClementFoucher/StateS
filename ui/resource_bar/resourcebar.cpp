@@ -38,8 +38,6 @@
 ResourceBar::ResourceBar(QWidget* parent) :
     QTabWidget(parent)
 {
-	connect(this, &QTabWidget::currentChanged, this, &ResourceBar::tabChanged);
-
 	this->setMachine(nullptr);
 }
 
@@ -51,9 +49,10 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 	bool signalsHintCollapsed = false;
 	bool signalsVisuCollapsed = false;
 
-	if (!this->machine.expired())
+	shared_ptr<Machine> oldMachine = this->machine.lock();
+	if (oldMachine != nullptr)
 	{
-		disconnect(this->machine.lock().get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
+		disconnect(oldMachine.get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
 		builderHintCollapsed = this->hintsTab->getHintCollapsed();
 		builderVisuCollapsed = this->hintsTab->getVisuCollapsed();
 		signalsHintCollapsed = this->machineTab->getHintCollapsed();
@@ -104,11 +103,6 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 			this->machineTab->setHintCollapsed(signalsHintCollapsed);
 			this->machineTab->setVisuCollapsed(signalsVisuCollapsed);
 		}
-
-		if (newMachine->getCurrentSimulationMode() == Machine::simulation_mode::simulateMode)
-		{
-			this->beginSimulation();
-		}
 	}
 	else
 	{
@@ -117,7 +111,7 @@ void ResourceBar::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
 		this->insertTab(2, new QWidget(),  tr("Editor"));
 		this->insertTab(3, new QWidget(),  tr("Simulator"));
 		this->insertTab(4, new QWidget(),  tr("Verifier"));
-//        this->insertTab(4, new QWidget(),  tr("Options"));
+//		this->insertTab(4, new QWidget(),  tr("Options"));
 		this->insertTab(5, new AboutTab(), tr("About"));
 
 		this->setTabEnabled(0, false);
@@ -216,53 +210,22 @@ void ResourceBar::clearSelection()
 
 void ResourceBar::machineModeChangedEventHandler(Machine::simulation_mode newMode)
 {
-	if (newMode == Machine::simulation_mode::simulateMode)
-	{
-		this->beginSimulation();
-	}
-	else
-	{
-		this->terminateSimulation();
-	}
-}
-
-void ResourceBar::beginSimulation()
-{
 	shared_ptr<Machine> l_machine = this->machine.lock();
-
 	if (l_machine != nullptr)
 	{
-		this->clearSelection();
-
-		this->setTabEnabled(0, false);
-		this->setTabEnabled(1, false);
-		this->setTabEnabled(4, false);
-	}
-}
-
-void ResourceBar::terminateSimulation()
-{
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
-	if (l_machine != nullptr)
-	{
-		this->setTabEnabled(0, true);
-		this->setTabEnabled(1, true);
-		this->setTabEnabled(4, true);
-	}
-}
-
-void ResourceBar::tabChanged(int)
-{
-	// Clear selected tool on tab change
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
-	if (l_machine != nullptr)
-	{
-		shared_ptr<MachineBuilder> builder = l_machine->getMachineBuilder();
-		if (builder->getTool() != MachineBuilder::tool::none)
+		if (newMode == Machine::simulation_mode::simulateMode)
 		{
-			builder->setTool(MachineBuilder::tool::none);
+			this->clearSelection();
+
+			this->setTabEnabled(0, false);
+			this->setTabEnabled(1, false);
+			this->setTabEnabled(4, false);
+		}
+		else
+		{
+			this->setTabEnabled(0, true);
+			this->setTabEnabled(1, true);
+			this->setTabEnabled(4, true);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,21 +41,21 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
 
 	this->setLayout(new QVBoxLayout());
 
-	QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>");
+	QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	this->layout()->addWidget(title);
 
-	QLabel* nameEditTitle = new QLabel(tr("State name"));
+	QLabel* nameEditTitle = new QLabel(tr("State name"), this);
 	nameEditTitle->setAlignment(Qt::AlignCenter);
 	nameEditTitle->setWordWrap(true);
 	this->layout()->addWidget(nameEditTitle);
 
-	this->textStateName = new DynamicLineEdit(state->getName(), true);
+	this->textStateName = new DynamicLineEdit(state->getName(), true, this);
 	connect(this->textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
 	connect(this->textStateName, &DynamicLineEdit::userCancelEvent,       this, &StateEditorTab::updateContent);
 	this->layout()->addWidget(this->textStateName);
 
-	ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"));
+	ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"), this);
 	this->layout()->addWidget(actionEditor);
 
 	updateContent();

@@ -32,8 +32,8 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
     QFrame(parent)
 {
 	this->layout         = new QGridLayout(this);
-	this->buttonCollapse = new QPushButton();
-	this->title          = new QLabel();
+	this->buttonCollapse = new QPushButton(this);
+	this->title          = new QLabel(this);
 
 	// Define style
 
@@ -56,6 +56,12 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
 	this->extend();
 }
 
+CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(QWidget* parent) :
+    CollapsibleWidgetWithTitle(QString(), nullptr, parent)
+{
+
+}
+
 void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* content, bool deletePreviousContent)
 {
 	if (this->content != nullptr)
@@ -76,8 +82,8 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* conte
 	if (this->content != nullptr)
 	{
 		// Make sure added content is in correct display state wrt. current button state
-		this->content->setVisible(this->buttonCollapse->isChecked());
 		this->layout->addWidget(this->content, 1, 0, 1, 4);
+		this->content->setVisible(this->buttonCollapse->isChecked());
 
 		this->buttonCollapse->setEnabled(true);
 

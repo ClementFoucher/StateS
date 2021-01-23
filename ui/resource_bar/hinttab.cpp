@@ -54,7 +54,7 @@ HintTab::HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisuali
 		//
 		// Hints
 
-		this->hintDisplay = new CollapsibleWidgetWithTitle();
+		this->hintDisplay = new CollapsibleWidgetWithTitle(this);
 		layout->addWidget(this->hintDisplay);
 
 		this->updateHint(MachineBuilder::tool::none);
@@ -62,7 +62,7 @@ HintTab::HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisuali
 		//
 		// Machine visualization
 
-		this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+		this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
 		layout->addWidget(this->machineDisplay);
 	}
 }

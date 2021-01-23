@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -1008,16 +1008,24 @@ void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* even
 {
 	if (this->currentMode == mode::standardMode)
 	{
-		ContextMenu* menu = new ContextMenu();
-		menu->addTitle(tr("Transition"));
+		shared_ptr<FsmTransition> l_logicTransition = this->getLogicTransition();
+		if (l_logicTransition != nullptr)
+		{
+			Machine::simulation_mode currentMode = l_logicTransition->getOwningFsm()->getCurrentSimulationMode();
+			if (currentMode == Machine::simulation_mode::editMode )
+			{
+				ContextMenu* menu = new ContextMenu();
+				menu->addTitle(tr("Transition"));
 
-		menu->addAction(tr("Change source"));
-		menu->addAction(tr("Change target"));
-		menu->addAction(tr("Edit"));
-		menu->addAction(tr("Delete"));
-		menu->popup(event->screenPos());
+				menu->addAction(tr("Change source"));
+				menu->addAction(tr("Change target"));
+				menu->addAction(tr("Edit"));
+				menu->addAction(tr("Delete"));
+				menu->popup(event->screenPos());
 
-		connect(menu, &QMenu::triggered, this, &FsmGraphicTransition::treatMenu);
+				connect(menu, &QMenu::triggered, this, &FsmGraphicTransition::treatMenu);
+			}
+		}
 	}
 }
 

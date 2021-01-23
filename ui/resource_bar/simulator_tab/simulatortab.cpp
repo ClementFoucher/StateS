@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -49,11 +49,11 @@ SimulatorTab::SimulatorTab(shared_ptr<Machine> machine, QWidget* parent) :
 	this->setLayout(new QVBoxLayout());
 	this->layout()->setAlignment(Qt::AlignTop);
 
-	QLabel* title = new QLabel("<b>" + tr("Simulator") + "</b>");
+	QLabel* title = new QLabel("<b>" + tr("Simulator") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	this->layout()->addWidget(title);
 
-	this->buttonTriggerSimulation = new QPushButton(tr("Start simulation"));
+	this->buttonTriggerSimulation = new QPushButton(tr("Start simulation"), this);
 	this->buttonTriggerSimulation->setCheckable(true);
 	connect(this->buttonTriggerSimulation, &QAbstractButton::clicked, this, &SimulatorTab::triggerSimulationMode);
 	this->layout()->addWidget(this->buttonTriggerSimulation);

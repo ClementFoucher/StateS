@@ -59,13 +59,13 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 
 	if (title.size() != 0)
 	{
-		QLabel* actionListTitle = new QLabel(title);
+		QLabel* actionListTitle = new QLabel(title, this);
 		actionListTitle->setAlignment(Qt::AlignCenter);
 		actionListTitle->setWordWrap(true);
 		layout->addWidget(actionListTitle, 0, 0, 1, 2);
 	}
 
-	this->actionTable = new QTableView();
+	this->actionTable = new QTableView(this);
 	ActionTableModel* tableModel = new ActionTableModel(actuator, this->actionTable);
 	this->actionTable->setModel(tableModel);
 	this->actionTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -75,10 +75,10 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 	connect(tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);
 	layout->addWidget(this->actionTable, 1, 0, 1, 42);
 
-	this->buttonMoveUp       = new QPushButton("↥");
-	this->buttonMoveDown     = new QPushButton("↧");
-	this->buttonAddAction    = new QPushButton(tr("Add action"));
-	this->buttonRemoveAction = new QPushButton(tr("Remove action"));
+	this->buttonMoveUp       = new QPushButton("↥",                 this);
+	this->buttonMoveDown     = new QPushButton("↧",                 this);
+	this->buttonAddAction    = new QPushButton(tr("Add action"),    this);
+	this->buttonRemoveAction = new QPushButton(tr("Remove action"), this);
 
 	connect(this->buttonMoveUp,       &QPushButton::clicked, this, &ActionEditor::moveSelectedActionsUp);
 	connect(this->buttonMoveDown,     &QPushButton::clicked, this, &ActionEditor::moveSelectedActionsDown);
@@ -91,7 +91,7 @@ ActionEditor::ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QStrin
 	layout->addWidget(this->buttonRemoveAction, 3, 22, 1, 20);
 
 
-	this->hintDisplay = new CollapsibleWidgetWithTitle();
+	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
 	QString hintTitle = tr("Hint:") + " " + tr("Editing actions");
 
 	QString hint;

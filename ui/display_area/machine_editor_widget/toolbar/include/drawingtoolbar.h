@@ -19,38 +19,41 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMDRAWINGTOOLBAR_H
-#define FSMDRAWINGTOOLBAR_H
+#ifndef DRAWINGTOOLBAR_H
+#define DRAWINGTOOLBAR_H
 
 // Parent class
-#include "drawingtoolbar.h"
+#include <QToolBar>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
+// For enums
+#include "machinebuilder.h"
 
-class FsmDrawingToolBar : public DrawingToolBar
+
+class DrawingToolBar : public QToolBar
 {
 	Q_OBJECT
 
 public:
-	explicit FsmDrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+
+	void setMachineBuilder(shared_ptr<MachineBuilder> newMachineBuilder);
+
+protected:
+	void beginAddActions();
+	void endAddActions();
+
+	virtual void resetTool() = 0;
 
 protected slots:
-	bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
+	virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
 
-private slots:
-	void mouseToolRequestedEvent(bool activated);
-	void initialStateToolRequestedEvent(bool activated);
-	void stateToolRequestedEvent(bool activated);
-	void transitionToolRequestedEvent(bool activated);
+protected:
+	weak_ptr<MachineBuilder> machineBuilder;
 
-private:
-	QAction* actionMouse           = nullptr;
-	QAction* actionAddInitialState = nullptr;
-	QAction* actionAddState        = nullptr;
-	QAction* actionAddTransition   = nullptr;
 };
 
-#endif // FSMDRAWINGTOOLBAR_H
+#endif // DRAWINGTOOLBAR_H

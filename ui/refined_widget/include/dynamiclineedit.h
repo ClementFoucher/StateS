@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,7 +38,8 @@ class DynamicLineEdit : public QLineEdit
 	Q_OBJECT
 
 public:
-	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator = nullptr, QWidget* parent = nullptr);
+	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);
+	explicit DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent = nullptr);
 
 	void markAsErroneous();
 	void resetView();

@@ -30,15 +30,15 @@
 #include "StateS_signal.h"
 #include "clock.h"
 #include "graphictimeline.h"
-#include "simulationwidget.h"
+#include "timelinewidget.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, SimulationWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
 	// If this parameter is not null, this is only for this connection
 	if (simulationWidget != nullptr)
-		connect(simulationWidget, &SimulationWidget::outputDelayChangedEvent, this, &SignalTimeline::updateDelayOutputOption);
+		connect(simulationWidget, &TimelineWidget::outputDelayChangedEvent, this, &SignalTimeline::updateDelayOutputOption);
 
 	this->signal = signal;
 

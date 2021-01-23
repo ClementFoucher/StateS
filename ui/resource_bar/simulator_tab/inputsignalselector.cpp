@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,7 +36,7 @@ InputSignalSelector::InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidg
 {
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
-	QLabel* signalName = new QLabel(relatedSignal->getName());
+	QLabel* signalName = new QLabel(relatedSignal->getName(), this);
 	globalLayout->addWidget(signalName);
 
 	QHBoxLayout* bitLayout = new QHBoxLayout();
@@ -44,7 +44,7 @@ InputSignalSelector::InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidg
 
 	for (int i = (int)relatedSignal->getSize()-1 ; i >= 0 ; i--)
 	{
-		InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i);
+		InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i, this);
 		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
 	}
 }

@@ -39,6 +39,9 @@ public:
 	void setUndoActionEnabled   (bool enable);
 	void setRedoActionEnabled   (bool enable);
 
+	bool getUndoActionEnabled() const;
+	bool getRedoActionEnabled() const;
+
 signals:
 	void saveAsRequestedEvent     ();
 	void saveRequestedEvent       ();

@@ -68,11 +68,6 @@ public:
 private slots:
 	void clearSelection();
 	void machineModeChangedEventHandler(Machine::simulation_mode newMode);
-	void tabChanged(int);
-
-private:
-	void beginSimulation();
-	void terminateSimulation();
 
 private:
 	weak_ptr<Machine> machine;

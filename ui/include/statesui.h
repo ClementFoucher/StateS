@@ -30,12 +30,14 @@
 using namespace std;
 
 // StateS classes
-class Machine;
+#include "machine.h"
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
 class ViewConfiguration;
 class MainToolBar;
+class MachineEditorWidget;
+class TimelineWidget;
 
 
 /**
@@ -55,7 +57,7 @@ class StatesUi : public QMainWindow
 public:
 	explicit StatesUi();
 
-	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
+	void setMachine(shared_ptr<Machine> newMachine, bool isSameMachine);
 	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
 	shared_ptr<ViewConfiguration> getViewConfiguration() const;
 
@@ -98,15 +100,21 @@ private slots:
 	void machineFilePathUpdated();
 	void machineUnsavedStateUpdated();
 
+	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
+	void setTimelineDetachedState(bool detach);
+
 private:
 	void updateTitle();
 	bool displayUnsavedConfirmation(const QString& cause);
 
 private:
-	// Display area and resource bar
+	// Top level widgets
 	DisplayArea* displayArea = nullptr;
 	ResourceBar* resourceBar = nullptr;
-	MainToolBar* toolbar     = nullptr;
+	// Widgets displayed in the display area
+	MainToolBar*         toolbar  = nullptr;
+	MachineEditorWidget* editor   = nullptr;
+	TimelineWidget*      timeline = nullptr;
 
 	// Current machine
 	weak_ptr<Machine> machine;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,15 +46,15 @@ VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setAlignment(Qt::AlignTop);
 
-	QLabel* title = new QLabel("<b>" + tr("Verifier tool") + "</b>");
+	QLabel* title = new QLabel("<b>" + tr("Verifier tool") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
-	QCheckBox* checkVhdlExport = new QCheckBox(tr("Check for VHDL export restrictions"));
+	QCheckBox* checkVhdlExport = new QCheckBox(tr("Check for VHDL export restrictions"), this);
 	connect(checkVhdlExport, &QCheckBox::clicked, this, &VerifierTab::setCheckVhdl);
 	layout->addWidget(checkVhdlExport);
 
-	QPushButton* buttonVerify = new QPushButton(tr("Check machine"));
+	QPushButton* buttonVerify = new QPushButton(tr("Check machine"), this);
 	connect(buttonVerify, &QPushButton::clicked, this, &VerifierTab::checkNow);
 	layout->addWidget(buttonVerify);
 }
@@ -67,20 +67,20 @@ void VerifierTab::checkNow()
 
 	if (issues.count() == 0)
 	{
-		this->listTitle = new QLabel(tr("No errors!"));
+		this->listTitle = new QLabel(tr("No errors!"), this);
 		this->listTitle->setAlignment(Qt::AlignCenter);
 		this->listTitle->setWordWrap(true);
 		this->layout()->addWidget(this->listTitle);
 	}
 	else
 	{
-		this->listTitle = new QLabel();
+		this->listTitle = new QLabel(this);
 		this->listTitle->setWordWrap(true);
 		this->listTitle->setText(tr("The following issues were found:"));
 		this->layout()->addWidget(this->listTitle);
 
 
-		this->list = new QListWidget();
+		this->list = new QListWidget(this);
 		connect(this->list, &QListWidget::itemDoubleClicked, this, &VerifierTab::proofRequested);
 		this->list->setWordWrap(true);
 		this->layout()->addWidget(this->list);
@@ -135,13 +135,13 @@ void VerifierTab::checkNow()
 		if (hasProofs)
 			hint += tr("Yellow highlighted issues can be double-clicked for more details on the error.");
 
-		this->hintBox = new CollapsibleWidgetWithTitle();
+		this->hintBox = new CollapsibleWidgetWithTitle(this);
 		this->layout()->addWidget(this->hintBox);
 
 		this->hintBox->setContent(tr("Hint"), hint, true);
 	}
 
-	this->buttonClear = new QPushButton(tr("Clear verification"));
+	this->buttonClear = new QPushButton(tr("Clear verification"), this);
 	this->layout()->addWidget(this->buttonClear);
 	connect(this->buttonClear, &QPushButton::clicked, this, &VerifierTab::clearDisplay);
 }
@@ -185,4 +185,3 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
 		this->hintBox->setContent(tr("Details on error"), text, true);
 	}
 }
-

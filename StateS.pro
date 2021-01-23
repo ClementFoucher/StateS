@@ -7,7 +7,7 @@
 ###
 # Update these
 VERSION = 0.4.4
-DATE = 2014-2020
+DATE = 2014-2021
 # And remember to updates version in readme and other text files
 ###
 
@@ -36,23 +36,24 @@ SOURCES += \
 	core/statesxmlanalyzer.cpp \
 	core/basic_type/logicvalue.cpp \
 	core/basic_type/truthtable.cpp \
-	core/machine/machine.cpp \
-	core/machine/machinestatus.cpp \
-	core/machine/machinecomponent.cpp \
-	core/machine/machineactuatorcomponent.cpp \
 	core/machine/machinebuilder.cpp \
-	core/machine/machineimageexporter.cpp \
-	core/machine/actiononsignal.cpp \
-	core/machine/machinexmlparser.cpp \
-	core/machine/machinexmlwriter.cpp \
-	core/machine/fsm/fsmcomponent.cpp \
-	core/machine/fsm/fsmvhdlexport.cpp \
-	core/machine/fsm/fsmverifier.cpp \
-	core/machine/fsm/fsm.cpp \
-	core/machine/fsm/fsmstate.cpp \
-	core/machine/fsm/fsmtransition.cpp \
-	core/machine/fsm/fsmxmlparser.cpp \
-	core/machine/fsm/fsmxmlwriter.cpp \
+	core/machine/logic/machine.cpp \
+	core/machine/logic/components/machinecomponent.cpp \
+	core/machine/logic/components/actiononsignal.cpp \
+	core/machine/logic/components/machineactuatorcomponent.cpp \
+	core/machine/logic/fsm/fsm.cpp \
+	core/machine/logic/fsm/fsmcomponent.cpp \
+	core/machine/logic/fsm/fsmstate.cpp \
+	core/machine/logic/fsm/fsmtransition.cpp \
+	core/machine/logic/fsm/fsmverifier.cpp \
+	core/machine/configuration/machinestatus.cpp \
+	core/machine/configuration/viewconfiguration.cpp \
+	core/machine/import_export/machineimageexporter.cpp \
+	core/machine/import_export/machinexmlparser.cpp \
+	core/machine/import_export/machinexmlwriter.cpp \
+	core/machine/import_export/fsm/fsmvhdlexport.cpp \
+	core/machine/import_export/fsm/fsmxmlparser.cpp \
+	core/machine/import_export/fsm/fsmxmlwriter.cpp \
 	core/signal/inout.cpp \
 	core/signal/input.cpp \
 	core/signal/io.cpp \
@@ -71,6 +72,11 @@ SOURCES += \
 	# UI
 	ui/statesui.cpp \
 	ui/machinecomponentvisualizer.cpp \
+	ui/graphic_machine/graphicactuator.cpp \
+	ui/graphic_machine/graphiccomponent.cpp \
+	ui/graphic_machine/fsm/fsmgraphicstate.cpp \
+	ui/graphic_machine/fsm/fsmgraphictransition.cpp \
+	ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.cpp \
 	ui/dialogs/imageexportdialog.cpp \
 	ui/dialogs/langselectiondialog.cpp \
 	ui/dialogs/vhdlexportdialog.cpp \
@@ -110,23 +116,18 @@ SOURCES += \
 	ui/resource_bar/simulator_tab/inputsignalselector.cpp \
 	ui/display_area/displayarea.cpp \
 	ui/display_area/maintoolbar.cpp \
-	ui/display_area/drawingtoolbar.cpp \
-	ui/display_area/fsmdrawingtoolbar.cpp \
-	ui/display_area/viewconfiguration.cpp \
-	ui/display_area/scene/scenewidget.cpp \
-	ui/display_area/scene/genericscene.cpp \
-	ui/display_area/scene/blankscene.cpp \
-	ui/display_area/scene/graphicactuator.cpp \
-	ui/display_area/scene/graphiccomponent.cpp \
-	ui/display_area/scene/fsm/fsmscene.cpp \
-	ui/display_area/scene/fsm/fsmgraphicstate.cpp \
-	ui/display_area/scene/fsm/fsmgraphictransition.cpp \
-	ui/display_area/scene/fsm/fsmgraphictransitionneighborhood.cpp \
-	ui/simulation/graphictimeline.cpp \
-	ui/simulation/graphicclocktimeline.cpp \
-	ui/simulation/clocktimeline.cpp \
-	ui/simulation/signaltimeline.cpp \
-	ui/simulation/simulationwidget.cpp \
+	ui/display_area/machine_editor_widget/scene/fsmscene.cpp \
+	ui/display_area/machine_editor_widget/machineeditorwidget.cpp \
+	ui/display_area/machine_editor_widget/scene/blankscene.cpp \
+	ui/display_area/machine_editor_widget/scene/genericscene.cpp \
+	ui/display_area/machine_editor_widget/scene/scenewidget.cpp \
+	ui/display_area/machine_editor_widget/toolbar/drawingtoolbar.cpp \
+	ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp \
+	ui/display_area/timeline_widget/timelinewidget.cpp \
+	ui/display_area/timeline_widget/clocktimeline.cpp \
+	ui/display_area/timeline_widget/graphicclocktimeline.cpp \
+	ui/display_area/timeline_widget/graphictimeline.cpp \
+	ui/display_area/timeline_widget/signaltimeline.cpp \
 	ui/static/svgimagegenerator.cpp \
 	ui/truth_table/truthtabledisplay.cpp \
 	ui/truth_table/truthtableinputtablemodel.cpp \
@@ -143,23 +144,24 @@ HEADERS += \
 	core/include/statesxmlanalyzer.h \
 	core/basic_type/include/logicvalue.h \
 	core/basic_type/include/truthtable.h \
-	core/machine/include/machine.h \
-	core/machine/include/machinecomponent.h \
-	core/machine/include/machineactuatorcomponent.h \
 	core/machine/include/machinebuilder.h \
-	core/machine/include/machineimageexporter.h \
-	core/machine/include/actiononsignal.h \
-	core/machine/include/machinestatus.h \
-	core/machine/include/machinexmlparser.h \
-	core/machine/include/machinexmlwriter.h \
-	core/machine/fsm/include/fsmcomponent.h \
-	core/machine/fsm/include/fsmvhdlexport.h \
-	core/machine/fsm/include/fsmverifier.h \
-	core/machine/fsm/include/fsm.h \
-	core/machine/fsm/include/fsmstate.h \
-	core/machine/fsm/include/fsmtransition.h \
-	core/machine/fsm/include/fsmxmlparser.h \
-	core/machine/fsm/include/fsmxmlwriter.h \
+	core/machine/logic/include/machine.h \
+	core/machine/logic/components/include/machinecomponent.h \
+	core/machine/logic/components/include/actiononsignal.h \
+	core/machine/logic/components/include/machineactuatorcomponent.h \
+	core/machine/logic/fsm/include/fsm.h \
+	core/machine/logic/fsm/include/fsmcomponent.h \
+	core/machine/logic/fsm/include/fsmstate.h \
+	core/machine/logic/fsm/include/fsmtransition.h \
+	core/machine/logic/fsm/include/fsmverifier.h \
+	core/machine/configuration/include/machinestatus.h \
+	core/machine/configuration/include/viewconfiguration.h \
+	core/machine/import_export/include/machineimageexporter.h \
+	core/machine/import_export/include/machinexmlparser.h \
+	core/machine/import_export/include/machinexmlwriter.h \
+	core/machine/import_export/fsm/include/fsmvhdlexport.h \
+	core/machine/import_export/fsm/include/fsmxmlparser.h \
+	core/machine/import_export/fsm/include/fsmxmlwriter.h \
 	core/signal/include/StateS_signal.h \
 	core/signal/include/inout.h \
 	core/signal/include/input.h \
@@ -178,6 +180,11 @@ HEADERS += \
 	# UI
 	ui/include/statesui.h \
 	ui/include/machinecomponentvisualizer.h \
+	ui/graphic_machine/fsm/include/fsmgraphicstate.h \
+	ui/graphic_machine/fsm/include/fsmgraphictransition.h \
+	ui/graphic_machine/fsm/include/fsmgraphictransitionneighborhood.h \
+	ui/graphic_machine/include/graphicactuator.h \
+	ui/graphic_machine/include/graphiccomponent.h \
 	ui/dialogs/include/vhdlexportdialog.h \
 	ui/dialogs/include/langselectiondialog.h \
 	ui/dialogs/include/errordisplaydialog.h \
@@ -209,6 +216,9 @@ HEADERS += \
 	ui/resource_bar/component_editor/include/rangeeditordialog.h \
 	ui/resource_bar/component_editor/include/actioneditor.h \
 	ui/resource_bar/component_editor/include/conditioneditor.h \
+	ui/resource_bar/component_editor/include/actiontypecombobox.h \
+	ui/resource_bar/component_editor/include/actiontablemodel.h \
+	ui/resource_bar/component_editor/include/actiontabledelegate.h \
 	ui/resource_bar/machine_editor_tab/include/machineeditortab.h \
 	ui/resource_bar/machine_editor_tab/include/signallisteditor.h \
 	ui/resource_bar/simulator_tab/include/simulatortab.h \
@@ -217,30 +227,22 @@ HEADERS += \
 	ui/resource_bar/simulator_tab/include/inputsselector.h \
 	ui/display_area/include/displayarea.h \
 	ui/display_area/include/maintoolbar.h \
-	ui/display_area/include/drawingtoolbar.h \
-	ui/display_area/include/fsmdrawingtoolbar.h \
-	ui/display_area/include/viewconfiguration.h \
-	ui/display_area/scene/include/genericscene.h \
-	ui/display_area/scene/include/graphicactuator.h \
-	ui/display_area/scene/include/blankscene.h \
-	ui/display_area/scene/include/graphiccomponent.h \
-	ui/display_area/scene/include/scenewidget.h \
-	ui/display_area/scene/fsm/include/fsmscene.h \
-	ui/display_area/scene/fsm/include/fsmgraphicstate.h \
-	ui/display_area/scene/fsm/include/fsmgraphictransition.h \
-	ui/display_area/scene/fsm/include/fsmgraphictransitionneighborhood.h \
-	ui/simulation/include/graphictimeline.h \
-	ui/simulation/include/graphicclocktimeline.h \
-	ui/simulation/include/clocktimeline.h \
-	ui/simulation/include/signaltimeline.h \
-	ui/simulation/include/simulationwidget.h \
+	ui/display_area/machine_editor_widget/include/machineeditorwidget.h \
+	ui/display_area/machine_editor_widget/scene/include/fsmscene.h \
+	ui/display_area/machine_editor_widget/scene/include/blankscene.h \
+	ui/display_area/machine_editor_widget/scene/include/genericscene.h \
+	ui/display_area/machine_editor_widget/scene/include/scenewidget.h \
+	ui/display_area/machine_editor_widget/toolbar/include/drawingtoolbar.h \
+	ui/display_area/machine_editor_widget/toolbar/include/fsmdrawingtoolbar.h \
+	ui/display_area/timeline_widget/include/timelinewidget.h \
+	ui/display_area/timeline_widget/include/clocktimeline.h \
+	ui/display_area/timeline_widget/include/graphicclocktimeline.h \
+	ui/display_area/timeline_widget/include/graphictimeline.h \
+	ui/display_area/timeline_widget/include/signaltimeline.h \
 	ui/static/include/svgimagegenerator.h \
 	ui/truth_table/include/truthtabledisplay.h \
 	ui/truth_table/include/truthtableinputtablemodel.h \
 	ui/truth_table/include/truthtableoutputtablemodel.h \
-	ui/resource_bar/component_editor/include/actiontypecombobox.h \
-	ui/resource_bar/component_editor/include/actiontablemodel.h \
-	ui/resource_bar/component_editor/include/actiontabledelegate.h \
 	# Other
 	third_party/diff_match_patch/diff_match_patch.h
 
@@ -249,7 +251,12 @@ INCLUDEPATH += \
     core/include \
 	core/basic_type/include \
 	core/machine/include \
-	core/machine/fsm/include \
+	core/machine/logic/include \
+	core/machine/logic/components/include \
+	core/machine/logic/fsm/include \
+	core/machine/configuration/include \
+	core/machine/import_export/include \
+	core/machine/import_export/fsm/include \
 	core/signal/include \
 	core/simulation/include \
 	core/exceptions/include \
@@ -258,8 +265,12 @@ INCLUDEPATH += \
     ui/include \
 	ui/dialogs/include \
 	ui/display_area/include \
-	ui/display_area/scene/include \
-	ui/display_area/scene/fsm/include \
+	ui/display_area/machine_editor_widget/include \
+	ui/display_area/machine_editor_widget/scene/include \
+	ui/display_area/machine_editor_widget/toolbar/include \
+	ui/display_area/timeline_widget/include \
+	ui/graphic_machine/include \
+	ui/graphic_machine/fsm/include \
 	ui/equation_editor/include \
 	ui/refined_widget/include \
 	ui/truth_table/include \
@@ -267,7 +278,6 @@ INCLUDEPATH += \
 	ui/resource_bar/machine_editor_tab/include \
 	ui/resource_bar/component_editor/include \
 	ui/resource_bar/simulator_tab/include \
-	ui/simulation/include \
 	ui/static/include \
 # Other
     third_party/diff_match_patch

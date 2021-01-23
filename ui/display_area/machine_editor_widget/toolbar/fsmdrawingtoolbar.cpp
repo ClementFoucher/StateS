@@ -74,6 +74,15 @@ FsmDrawingToolBar::FsmDrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, 
 	connect(this->actionAddTransition,   &QAction::triggered, this, &FsmDrawingToolBar::transitionToolRequestedEvent);
 }
 
+void FsmDrawingToolBar::resetTool()
+{
+	this->actionMouse->          setChecked(true);
+	this->actionAddInitialState->setChecked(false);
+	this->actionAddState->       setChecked(false);
+	this->actionAddTransition->  setChecked(false);
+	this->actionMouse->          setEnabled(false);
+}
+
 bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 {
 	bool result = false;
@@ -112,11 +121,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 
 	case MachineBuilder::tool::none:
 	case MachineBuilder::tool::quittingTool:
-		this->actionMouse->          setChecked(true);
-		this->actionAddInitialState->setChecked(false);
-		this->actionAddState->       setChecked(false);
-		this->actionAddTransition->  setChecked(false);
-		this->actionMouse->          setEnabled(false);
+		this->resetTool();
 
 		result =  true;
 		break;

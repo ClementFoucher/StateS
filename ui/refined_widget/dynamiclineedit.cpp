@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,6 +36,12 @@ DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QVali
 
 	if (validator != nullptr)
 		this->setValidator(validator);
+}
+
+DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent) :
+    DynamicLineEdit(content, selfManaged, nullptr, parent)
+{
+
 }
 
 void DynamicLineEdit::userValidatedEventHandler()

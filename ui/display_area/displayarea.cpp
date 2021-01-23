@@ -23,12 +23,9 @@
 #include "displayarea.h"
 
 // StateS classes
-#include "scenewidget.h"
-#include "simulationwidget.h"
 #include "maintoolbar.h"
-#include "fsmdrawingtoolbar.h"
-#include "fsm.h"
-#include "viewconfiguration.h"
+#include "machineeditorwidget.h"
+#include "timelinewidget.h"
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
@@ -36,171 +33,76 @@ DisplayArea::DisplayArea(QWidget* parent) :
 {
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);
-
-	// Build tool bar
-	this->mainToolBar = new MainToolBar(this);
-	this->mainToolBar->setMovable(true);
-	this->addToolBar(Qt::LeftToolBarArea, this->mainToolBar);
-
-	// Build editor area
-	this->editorArea = new QMainWindow();
-	this->editorArea->setWindowFlag(Qt::Widget);
-	this->editorArea->setContextMenuPolicy(Qt::NoContextMenu);
-	this->machineDisplayArea = new SceneWidget();
-	this->editorArea->setCentralWidget(this->machineDisplayArea);
-
-	// Display editor area
-	this->setCurrentDisplay(this->editorArea);
-
-	// Transmit events to upper level
-	connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &DisplayArea::itemSelectedEvent);
-	connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &DisplayArea::editSelectedItemEvent);
-	connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &DisplayArea::renameSelectedItemEvent);
 }
 
-void DisplayArea::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
+void DisplayArea::setToolBar(QToolBar* toolbar)
 {
-	// Clear
-	shared_ptr<Machine> oldMachine = this->machine.lock();
-	if (oldMachine != nullptr)
+	if (this->toolbar == nullptr)
 	{
-		disconnect(oldMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
-		delete this->drawingToolBar;
-		this->drawingToolBar = nullptr;
-	}
-
-	// Set
-	this->machine = newMachine;
-
-	if (newMachine != nullptr)
-	{
-		shared_ptr<MachineBuilder> machineBuilder = newMachine->getMachineBuilder();
-
-		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &DisplayArea::simulationModeToggledEventHandler);
-
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
-		if (fsm != nullptr)
-		{
-			this->drawingToolBar = new FsmDrawingToolBar(machineBuilder);
-			this->drawingToolBar->setMovable(true);
-			this->editorArea->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
-		}
-	}
-
-	this->resetDisplay();
-
-	this->machineDisplayArea->setMachine(newMachine, maintainView);
-}
-
-MainToolBar* DisplayArea::getMainToolBar() const
-{
-	return this->mainToolBar;
-}
-
-GenericScene* DisplayArea::getScene() const
-{
-	return this->machineDisplayArea->getScene();
-}
-
-void DisplayArea::clearSelection()
-{
-	this->machineDisplayArea->clearSelection();
-}
-
-void DisplayArea::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
-{
-	if (configuration != nullptr)
-	{
-		this->machineDisplayArea->setZoomLevel(configuration->zoomLevel);
-		this->machineDisplayArea->centerOn(configuration->viewCenter);
+		this->toolbar = toolbar;
+		this->toolbar->setMovable(true);
+		this->addToolBar(Qt::LeftToolBarArea, this->toolbar);
 	}
 }
 
-shared_ptr<ViewConfiguration> DisplayArea::getViewConfiguration() const
+void DisplayArea::addWidget(QWidget* widget, QString title)
 {
-	shared_ptr<ViewConfiguration> configuration(new ViewConfiguration());
+	int previousWidgetCount = this->widgets.count();
 
-	configuration->sceneTranslation = -(this->machineDisplayArea->getVisibleArea().topLeft());
-	configuration->zoomLevel        = this->machineDisplayArea->getZoomLevel();
-	configuration->viewCenter       = this->machineDisplayArea->getVisibleArea().center();
+	tuple<QString, QWidget*> t(title, widget);
+	this->widgets.append(t);
 
-	return configuration;
-}
-
-void DisplayArea::simulationModeToggledEventHandler(Machine::simulation_mode newMode)
-{
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
-	if ( (l_machine != nullptr) && (newMode == Machine::simulation_mode::simulateMode) )
+	if (previousWidgetCount == 0)
 	{
-		this->timeline = new SimulationWidget(l_machine);
-		connect(this->timeline, &SimulationWidget::detachTimelineEvent, this, &DisplayArea::setTimelineDetachedState);
+		// Only one widget: no tabs
+		this->setCentralWidget(widget);
+		widget->show();
+	}
+	else if (previousWidgetCount == 1)
+	{
+		// From 1 to more widgets: build tabs
+		this->tabWidget = new QTabWidget(this);
 
-		this->drawingToolBar->setEnabled(false);
+		this->tabWidget->addTab(get<1>(this->widgets[0]), get<0>(this->widgets[0]));
+		this->tabWidget->addTab(get<1>(this->widgets[1]), get<0>(this->widgets[1]));
 
-		this->displayTabs();
+		this->setCentralWidget(this->tabWidget);
 	}
 	else
 	{
-		this->resetDisplay();
+		// Tabs already existing: just add
+		this->tabWidget->addTab(widget, title);
 	}
 }
 
-void DisplayArea::setTimelineDetachedState(bool detach)
+void DisplayArea::removeWidget(QWidget* widget)
 {
-	if (this->timeline != nullptr)
+	for (tuple<QString, QWidget*> t : this->widgets)
 	{
-		if (detach)
+		QWidget* currentWidget = get<1>(t);
+		if (currentWidget == widget)
 		{
-			// Must be done first to not delete display area along with tabs
-			this->setCurrentDisplay(this->editorArea);
+			this->widgets.removeAll(t);
+			widget->setParent(nullptr);
 
-			// Detach timeline as an independent window
-			this->timeline->setParent(nullptr);
-			this->timeline->show();
+			int newWidgetCount = this->widgets.count();
 
-			delete this->tabbedDisplayArea;
-			this->tabbedDisplayArea = nullptr;
+			if (newWidgetCount == 1)
+			{
+				// Remove tabs
+				QWidget* soleWidget = get<1>(this->widgets.first());
+				this->setCentralWidget(soleWidget);
+				soleWidget->show();
+
+				delete this->tabWidget;
+				this->tabWidget = nullptr;
+			}
+			else if (newWidgetCount == 0)
+			{
+				this->setCentralWidget(nullptr);
+			}
+
+			break;
 		}
-		else
-		{
-			this->displayTabs();
-		}
 	}
-}
-
-void DisplayArea::displayTabs()
-{
-	if (this->timeline != nullptr)
-	{
-		this->tabbedDisplayArea = new QTabWidget();
-
-		this->tabbedDisplayArea->addTab(this->editorArea, tr("Machine"));
-		this->tabbedDisplayArea->addTab(this->timeline,   tr("Timeline"));
-
-		this->setCurrentDisplay(this->tabbedDisplayArea);
-	}
-}
-
-void DisplayArea::resetDisplay()
-{
-	// Must be done first to not delete display area along with tabs
-	this->setCurrentDisplay(this->editorArea);
-
-	delete this->timeline;
-	delete this->tabbedDisplayArea;
-
-	this->timeline           = nullptr;
-	this->tabbedDisplayArea  = nullptr;
-
-	if (this->drawingToolBar != nullptr)
-	{
-		this->drawingToolBar->setEnabled(true);
-	}
-}
-
-void DisplayArea::setCurrentDisplay(QWidget* newDisplay)
-{
-	this->setCentralWidget(newDisplay);
-	newDisplay->show();
 }

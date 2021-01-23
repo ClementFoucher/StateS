@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,10 +37,10 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
 {
 	QFormLayout* layout = new QFormLayout(this);
 
-	this->checkBox = new QCheckBox();
+	this->checkBox = new QCheckBox(this);
 	connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
 
-	this->label = new LabelWithClickEvent(text);
+	this->label = new LabelWithClickEvent(text, this);
 	connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::event);
 
 	this->label->setTextFormat(Qt::RichText);

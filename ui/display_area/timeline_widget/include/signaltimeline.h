@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2014-2016 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,40 +16,43 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DRAWINGTOOLBAR_H
-#define DRAWINGTOOLBAR_H
+#ifndef SIGNALTIMELINE_H
+#define SIGNALTIMELINE_H
 
-// Parent class
-#include <QToolBar>
+// Parent
+#include <QWidget>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
-// For enums
-#include "machinebuilder.h"
+// StateS classes
+class Signal;
+class Clock;
+class GraphicTimeLine;
+class TimelineWidget;
 
 
-class DrawingToolBar : public QToolBar
+class SignalTimeline : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit SignalTimeline(uint delay, TimelineWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
-protected:
-	void beginAddActions();
-	void endAddActions();
+private slots:
+	void clockEventHandler();
+	void resetEventHandler();
+	void updateCurrentValue();
+	void updateDelayOutputOption(uint delay);
 
-protected slots:
-	virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
+private:
+	weak_ptr<Signal> signal;
 
-protected:
-	weak_ptr<MachineBuilder> machineBuilder;
-
+	QList<GraphicTimeLine*> signalLineDisplay;
 };
 
-#endif // DRAWINGTOOLBAR_H
+#endif // SIGNALTIMELINE_H

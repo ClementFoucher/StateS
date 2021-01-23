@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,13 +37,13 @@ TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, Q
 {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
+	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
-	ConditionEditor* conditionEditor = new ConditionEditor(transition);
+	ConditionEditor* conditionEditor = new ConditionEditor(transition, this);
 	layout->addWidget(conditionEditor);
 
-	ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"));
+	ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"), this);
 	layout->addWidget(actionEditor);
 }

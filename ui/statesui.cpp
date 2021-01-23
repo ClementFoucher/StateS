@@ -44,6 +44,8 @@
 #include "fsm.h"
 #include "errordisplaydialog.h"
 #include "machinestatus.h"
+#include "machineeditorwidget.h"
+#include "timelinewidget.h"
 
 
 StatesUi::StatesUi() :
@@ -74,14 +76,19 @@ StatesUi::StatesUi() :
 	/***
 	 * Build window content
 	 ***/
-	QSplitter* splitter = new QSplitter();
+	QSplitter* splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Horizontal);
 	splitter->setChildrenCollapsible(false);
 	this->setCentralWidget(splitter);
 
 	this->displayArea = new DisplayArea(splitter);
 	this->resourceBar = new ResourceBar(splitter);
-	this->toolbar     = this->displayArea->getMainToolBar();
+
+	this->toolbar = new MainToolBar(this->displayArea);
+	this->displayArea->setToolBar(this->toolbar);
+
+	this->editor = new MachineEditorWidget(this->displayArea);
+	this->displayArea->addWidget(this->editor, tr("Machine"));
 
 	// Begin view with 2/3 scene - 1/3 resource bar
 	QList<int> widths;
@@ -104,47 +111,58 @@ StatesUi::StatesUi() :
 	connect(this->toolbar, &MainToolBar::redo,                      this, &StatesUi::redoRequestEvent);
 
 	// Display area
-	connect(this->displayArea, &DisplayArea::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
-	connect(this->displayArea, &DisplayArea::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
-	connect(this->displayArea, &DisplayArea::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
+	connect(this->editor, &MachineEditorWidget::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
+	connect(this->editor, &MachineEditorWidget::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
+	connect(this->editor, &MachineEditorWidget::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
 }
 
-void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
+void StatesUi::setMachine(shared_ptr<Machine> newMachine, bool isSameMachine)
 {
+	shared_ptr<Machine> oldMachine = this->machine.lock();
+	if (oldMachine != nullptr)
+	{
+		disconnect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &StatesUi::simulationModeToggledEventHandler);
+	}
+
 	// Update links to machine
 	this->machine = newMachine;
-	this->resourceBar->setMachine(newMachine, maintainView);
-	this->displayArea->setMachine(newMachine, maintainView);
+	this->resourceBar->setMachine(newMachine, isSameMachine);
+	this->editor->setMachine(newMachine, isSameMachine);
 
 	// Connect signals
 	if (newMachine != nullptr)
 	{
+		connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &StatesUi::simulationModeToggledEventHandler);
+
 		shared_ptr<MachineStatus> machineStatus = newMachine->getMachineStatus();
 		connect(machineStatus.get(), &MachineStatus::saveFilePathChanged, this, &StatesUi::machineFilePathUpdated);
 		connect(machineStatus.get(), &MachineStatus::unsavedFlagChanged,  this, &StatesUi::machineUnsavedStateUpdated);
 	}
 
 	// Update UI
-	this->updateTitle();
-	if (newMachine != nullptr)
+	if (isSameMachine == false)
 	{
-		this->toolbar->setSaveAsActionEnabled(true);
-		this->toolbar->setExportActionsEnabled(true);
-	}
-	else
-	{
-		this->toolbar->setSaveAsActionEnabled(false);
-		this->toolbar->setExportActionsEnabled(false);
-	}
+		this->updateTitle();
+		if (newMachine != nullptr)
+		{
+			this->toolbar->setSaveAsActionEnabled(true);
+			this->toolbar->setExportActionsEnabled(true);
+		}
+		else
+		{
+			this->toolbar->setSaveAsActionEnabled(false);
+			this->toolbar->setExportActionsEnabled(false);
+		}
 
-	this->toolbar->setUndoActionEnabled(false);
-	this->toolbar->setRedoActionEnabled(false);
-	this->toolbar->setSaveActionEnabled(false);
+		this->toolbar->setUndoActionEnabled(false);
+		this->toolbar->setRedoActionEnabled(false);
+		this->toolbar->setSaveActionEnabled(false);
+	}
 }
 
 void StatesUi::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
 {
-	this->displayArea->setViewConfiguration(configuration);
+	this->editor->setViewConfiguration(configuration);
 }
 
 void StatesUi::beginNewMachineProcedure()
@@ -211,17 +229,29 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) == 0) && (event->key() == Qt::Key_Z) )
 	{
-		emit this->undoRequestEvent();
+		shared_ptr<Machine> l_machine = this->machine.lock();
+		if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
+		{
+			emit this->undoRequestEvent();
+		}
 		transmitEvent = false;
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_Y) )
 	{
-		emit this->redoRequestEvent();
+		shared_ptr<Machine> l_machine = this->machine.lock();
+		if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
+		{
+			emit this->redoRequestEvent();
+		}
 		transmitEvent = false;
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) != 0) && (event->key() == Qt::Key_Z) )
 	{
-		emit this->redoRequestEvent();
+		shared_ptr<Machine> l_machine = this->machine.lock();
+		if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
+		{
+			emit this->redoRequestEvent();
+		}
 		transmitEvent = false;
 	}
 
@@ -267,9 +297,9 @@ void StatesUi::beginExportImageProcedure()
 	{
 		shared_ptr<MachineStatus> machineStatus = l_machine->getMachineStatus();
 
-		displayArea->clearSelection();
+		this->editor->clearSelection();
 
-		shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, displayArea->getScene(), this->resourceBar->getComponentVisualizationScene()));
+		shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(l_machine, this->editor->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
 		unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(l_machine->getName(), exporter, machineStatus->getImageExportPath(), this));
 		exportOptions->setModal(true);
@@ -357,6 +387,57 @@ void StatesUi::machineUnsavedStateUpdated()
 		if (machineStatus->getHasSaveFile() == true)
 		{
 			this->toolbar->setSaveActionEnabled(machineStatus->getUnsavedFlag());
+		}
+	}
+}
+
+void StatesUi::simulationModeToggledEventHandler(Machine::simulation_mode newMode)
+{
+	// TODO: moving states is allowed during simlulation, which can trigger undo availability.
+	// These should be obtained from the undo stack instead of just saved here.
+	static bool isUndoEnabled;
+	static bool isRedoEnabled;
+
+	shared_ptr<Machine> l_machine = this->machine.lock();
+	if ( (l_machine != nullptr) && (newMode == Machine::simulation_mode::simulateMode) )
+	{
+		this->timeline = new TimelineWidget(l_machine, this);
+		connect(this->timeline, &TimelineWidget::detachTimelineEvent, this, &StatesUi::setTimelineDetachedState);
+
+		this->displayArea->addWidget(this->timeline, tr("Timeline"));
+
+		isUndoEnabled = this->toolbar->getUndoActionEnabled();
+		isRedoEnabled = this->toolbar->getRedoActionEnabled();
+
+		this->toolbar->setUndoActionEnabled(false);
+		this->toolbar->setRedoActionEnabled(false);
+	}
+	else
+	{
+		if (this->timeline != nullptr)
+		{
+			this->displayArea->removeWidget(this->timeline);
+			delete this->timeline;
+			this->timeline = nullptr;
+		}
+
+		this->toolbar->setUndoActionEnabled(isUndoEnabled);
+		this->toolbar->setRedoActionEnabled(isRedoEnabled);
+	}
+}
+
+void StatesUi::setTimelineDetachedState(bool detach)
+{
+	if (this->timeline != nullptr)
+	{
+		if (detach)
+		{
+			this->displayArea->removeWidget(this->timeline);
+			this->timeline->show();
+		}
+		else
+		{
+			this->displayArea->addWidget(this->timeline, tr("Timeline"));
 		}
 	}
 }
@@ -465,7 +546,7 @@ void StatesUi::updateTitle()
 
 shared_ptr<ViewConfiguration> StatesUi::getViewConfiguration() const
 {
-	return this->displayArea->getViewConfiguration();
+	return this->editor->getViewConfiguration();
 }
 
 bool StatesUi::displayUnsavedConfirmation(const QString& cause)
@@ -542,10 +623,18 @@ void StatesUi::displayErrorMessage(const QString& errorTitle, const QString& err
 
 void StatesUi::setUndoButtonEnabled(bool enable)
 {
-	this->toolbar->setUndoActionEnabled(enable);
+	shared_ptr<Machine> l_machine = this->machine.lock();
+	if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
+	{
+		this->toolbar->setUndoActionEnabled(enable);
+	}
 }
 
 void StatesUi::setRedoButtonEnabled(bool enable)
 {
-	this->toolbar->setRedoActionEnabled(enable);
+	shared_ptr<Machine> l_machine = this->machine.lock();
+	if ( (l_machine != nullptr) && (l_machine->getCurrentSimulationMode() == Machine::simulation_mode::editMode) )
+	{
+		this->toolbar->setRedoActionEnabled(enable);
+	}
 }

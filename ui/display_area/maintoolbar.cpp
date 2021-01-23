@@ -138,3 +138,13 @@ void MainToolBar::setRedoActionEnabled(bool enable)
 {
 	this->actionRedo->setEnabled(enable);
 }
+
+bool MainToolBar::getUndoActionEnabled() const
+{
+	return this->actionUndo->isEnabled();
+}
+
+bool MainToolBar::getRedoActionEnabled() const
+{
+	return this->actionRedo->isEnabled();
+}

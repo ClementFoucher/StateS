@@ -35,7 +35,7 @@
 LineEditWithUpDownButtons::LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent) :
     QWidget(parent)
 {
-	QWidget* buttonWidget = new QWidget();
+	QWidget* buttonWidget = new QWidget(this);
 	buttonWidget->setMinimumSize(QSize(20, 40));
 
 	QPushButton* buttonUp   = new QPushButton("+", buttonWidget);
@@ -53,11 +53,11 @@ LineEditWithUpDownButtons::LineEditWithUpDownButtons(int min, int max, const QSt
 	int pos;
 	if (this->validator->validate(initialText, pos) != QValidator::State::Invalid)
 	{
-		this->lineEdit = new DynamicLineEdit(text, true);
+		this->lineEdit = new DynamicLineEdit(text, true, this);
 	}
 	else
 	{
-		this->lineEdit = new DynamicLineEdit(QString(), true);
+		this->lineEdit = new DynamicLineEdit(QString(), true, this);
 	}
 
 	this->lineEdit->setValidator(validator);

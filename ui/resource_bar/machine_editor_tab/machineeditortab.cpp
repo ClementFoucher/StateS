@@ -44,11 +44,11 @@ MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<Machi
 
 	//
 	// Machine name
-	QLabel* machineNameLabel = new QLabel("<b>" + tr("Machine name")  + "</b>");
+	QLabel* machineNameLabel = new QLabel("<b>" + tr("Machine name")  + "</b>", this);
 	machineNameLabel->setAlignment(Qt::AlignCenter);
 	layout->addWidget(machineNameLabel);
 
-	this->machineName = new DynamicLineEdit(machine->getName(), true);
+	this->machineName = new DynamicLineEdit(machine->getName(), true, this);
 
 	connect(this->machineName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
 	connect(this->machineName, &DynamicLineEdit::userCancelEvent,       this, &MachineEditorTab::updateContent);
@@ -60,14 +60,14 @@ MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<Machi
 	//
 	// Title
 
-	QLabel* title = new QLabel("<b>" + tr("Signal editor")  + "</b>");
+	QLabel* title = new QLabel("<b>" + tr("Signal editor")  + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
 	//
 	// Signals
 
-	QTabWidget* signalsTabs = new QTabWidget();
+	QTabWidget* signalsTabs = new QTabWidget(this);
 	layout->addWidget(signalsTabs);
 
 	signalsTabs->insertTab(0, new SignalListEditor(machine, Machine::signal_type::Input),         tr("Inputs"));
@@ -93,13 +93,13 @@ MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<Machi
 	hintText->setWordWrap(true);
 
 	QString hintTitle = tr("Hint:") + " " + tr("Signal editor");
-	this->hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText);
+	this->hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText, this);
 	layout->addWidget(this->hintDisplay);
 
 	//
 	// Machine visualization
 
-	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
 	layout->addWidget(this->machineDisplay);
 
 	//

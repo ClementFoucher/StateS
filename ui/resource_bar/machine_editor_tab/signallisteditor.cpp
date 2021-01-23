@@ -53,7 +53,7 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
 
 	if (editorType == Machine::signal_type::Input)
 	{
-		this->signalsList = new TableWidgetWithResizeEvent(0, 3);
+		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
 		headerTexts.append(tr("Input"));
 		headerTexts.append(tr("Initial value"));
@@ -64,7 +64,7 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
 	}
 	else if (editorType == Machine::signal_type::Output)
 	{
-		this->signalsList = new TableWidgetWithResizeEvent(0, 2);
+		this->signalsList = new TableWidgetWithResizeEvent(0, 2, this);
 
 		headerTexts.append(tr("Output"));
 
@@ -74,7 +74,7 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
 	}
 	else if (editorType == Machine::signal_type::LocalVariable)
 	{
-		this->signalsList = new TableWidgetWithResizeEvent(0, 3);
+		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
 		headerTexts.append(tr("Variable"));
 		headerTexts.append(tr("Initial value"));
@@ -85,7 +85,7 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
 	}
 	else if (editorType == Machine::signal_type::Constant)
 	{
-		this->signalsList = new TableWidgetWithResizeEvent(0, 3);
+		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
 		headerTexts.append(tr("Constant"));
 		headerTexts.append(tr("Value"));
@@ -117,10 +117,10 @@ SignalListEditor::SignalListEditor(shared_ptr<Machine> machine, Machine::signal_
 
 	this->buttonLayout = new QGridLayout();
 
-	this->buttonAdd    = new QPushButton(tr("Add"));
-	this->buttonRemove = new QPushButton(tr("Remove"));
-	this->buttonUp     = new QPushButton("↥");
-	this->buttonDown   = new QPushButton("↧");
+	this->buttonAdd    = new QPushButton(tr("Add"),    this);
+	this->buttonRemove = new QPushButton(tr("Remove"), this);
+	this->buttonUp     = new QPushButton("↥",          this);
+	this->buttonDown   = new QPushButton("↧",          this);
 
 	// Row 0 reserved for OK/Cancel buttons
 	// Row 1 for edition buttons

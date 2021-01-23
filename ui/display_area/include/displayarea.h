@@ -34,24 +34,17 @@ class QTabWidget;
 
 // StateS classes
 #include "machine.h"
-class SceneWidget;
-class SimulationWidget;
+class TimelineWidget;
 class MainToolBar;
-class DrawingToolBar;
-class GenericScene;
-class ViewConfiguration;
-class MachineComponent;
+class MachineEditorWidget;
 
 
 /**
  * @brief The DisplayArea class handles the central display.
- * Usually, it just displays the editor area (which includes
- * the machine graphic representation and its drawing tool bar),
- * but in simulation mode, the timeline is also displayed here,
- * and a tabbed widget is used to display both.
- *
- * This class also owns the main tool bar for display purpose,
- * but this one is handled at the StatesUI object level.
+ * Usually, it just displays the editor area, but more widgets
+ * can be added that will be displayed as tabs. E.g. when in
+ * simulation mode, the timeline is added as a tab.
+ * This class also owns the main tool bar for correct placement.
  */
 class DisplayArea : public QMainWindow
 {
@@ -60,40 +53,14 @@ class DisplayArea : public QMainWindow
 public:
 	explicit DisplayArea(QWidget* parent = nullptr);
 
-	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
-
-	MainToolBar* getMainToolBar() const;
-
-	GenericScene* getScene() const;
-
-	void clearSelection();
-	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
-	shared_ptr<ViewConfiguration> getViewConfiguration() const;
-
-signals:
-	void itemSelectedEvent(shared_ptr<MachineComponent> component);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-
-private slots:
-	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
-	void setTimelineDetachedState(bool detach);
+	void setToolBar  (QToolBar* toolbar);
+	void addWidget   (QWidget* widget, QString title);
+	void removeWidget(QWidget* widget);
 
 private:
-	void displayTabs();
-	void resetDisplay();
-	void setCurrentDisplay(QWidget* newDisplay);
-
-private:
-	// Current display may be editor area or tabbed display depending on current mode
-	MainToolBar*      mainToolBar        = nullptr; // Persistant through object life; Managed in StatesUI class.
-	QMainWindow*      editorArea         = nullptr; // Persistant through object life; Contains display area and drawing tool bar
-	SceneWidget*      machineDisplayArea = nullptr; // Persistant through object life
-	DrawingToolBar*   drawingToolBar     = nullptr; // Created when display area is valid
-	SimulationWidget* timeline           = nullptr; // Displayed in simulation mode, either as a tab or as an independant window
-	QTabWidget*       tabbedDisplayArea  = nullptr; // Used if containing both widgets at the same time
-
-	weak_ptr<Machine> machine;
+	QList<tuple<QString, QWidget*>> widgets;
+	QToolBar* toolbar = nullptr;
+	QTabWidget* tabWidget = nullptr;
 };
 
 #endif // DISPLAYAREA_H

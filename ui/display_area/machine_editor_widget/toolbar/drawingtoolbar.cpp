@@ -34,6 +34,23 @@ DrawingToolBar::DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidge
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
 }
 
+void DrawingToolBar::setMachineBuilder(shared_ptr<MachineBuilder> newMachineBuilder)
+{
+	shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
+	if (oldMachineBuilder != nullptr)
+	{
+		disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
+	}
+
+	this->machineBuilder = newMachineBuilder;
+	this->resetTool();
+
+	if (newMachineBuilder != nullptr)
+	{
+		connect(newMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
+	}
+}
+
 void DrawingToolBar::beginAddActions()
 {
 	QWidget* leftSpacer = new QWidget();

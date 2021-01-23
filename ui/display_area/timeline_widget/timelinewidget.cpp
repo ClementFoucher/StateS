@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "simulationwidget.h"
+#include "timelinewidget.h"
 
 // Qt classes
 #include <QAction>
@@ -44,7 +44,7 @@
 #include "svgimagegenerator.h"
 
 
-SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent) :
+TimelineWidget::TimelineWidget(shared_ptr<Machine> machine, QWidget* parent) :
     QMainWindow(parent)
 {
 	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
@@ -55,11 +55,11 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
 
 	QIcon exportPdfIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
 	QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
-	connect(action, &QAction::triggered, this, &SimulationWidget::exportToPDF);
+	connect(action, &QAction::triggered, this, &TimelineWidget::exportToPDF);
 
 	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
 	this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
-	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 
 	this->toolBar->addAction(action);
 	this->toolBar->addAction(this->actionDetach);
@@ -78,7 +78,7 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
 	shared_ptr<MachineSimulator> simulator = machine->getSimulator();
 	shared_ptr<Clock>            clock     = simulator->getClock();
 
-	connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &SimulationWidget::delayOutputOptionTriggered); // Relay option change event
+	connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &TimelineWidget::delayOutputOptionTriggered); // Relay option change event
 
 	QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
 	layout->setAlignment(Qt::AlignTop);
@@ -132,13 +132,13 @@ SimulationWidget::SimulationWidget(shared_ptr<Machine> machine, QWidget* parent)
 	}
 }
 
-void SimulationWidget::closeEvent(QCloseEvent* event)
+void TimelineWidget::closeEvent(QCloseEvent* event)
 {
 	event->ignore();
 	this->bindMe();
 }
 
-void SimulationWidget::mousePressEvent(QMouseEvent* event)
+void TimelineWidget::mousePressEvent(QMouseEvent* event)
 {
 	// TODO: handle only left button
 	this->separatorPosition = event->x();
@@ -147,7 +147,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent* event)
 	QWidget::mousePressEvent(event);
 }
 
-void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
+void TimelineWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	// This event is only called if we have clicked first
 	this->separatorPosition = event->x();
@@ -157,7 +157,7 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent* event)
 
 }
 
-void SimulationWidget::paintEvent(QPaintEvent*)
+void TimelineWidget::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 
@@ -165,7 +165,7 @@ void SimulationWidget::paintEvent(QPaintEvent*)
 
 }
 
-void SimulationWidget::exportToPDF()
+void TimelineWidget::exportToPDF()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Export time line to PDF"), QString(), "*.pdf");
 
@@ -196,9 +196,9 @@ void SimulationWidget::exportToPDF()
 	}
 }
 
-void SimulationWidget::setMeFree()
+void TimelineWidget::setMeFree()
 {
-	disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 
 	emit detachTimelineEvent(true);
 
@@ -207,12 +207,12 @@ void SimulationWidget::setMeFree()
 	QIcon attachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
 	this->actionDetach->setIcon(attachWindowIcon);
 
-	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
+	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
 }
 
-void SimulationWidget::bindMe()
+void TimelineWidget::bindMe()
 {
-	disconnect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::bindMe);
+	disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
 
 	emit detachTimelineEvent(false);
 
@@ -221,10 +221,10 @@ void SimulationWidget::bindMe()
 	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
 	this->actionDetach->setIcon(detachWindowIcon);
 
-	connect(this->actionDetach, &QAction::triggered, this, &SimulationWidget::setMeFree);
+	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 }
 
-void SimulationWidget::delayOutputOptionTriggered(bool activated)
+void TimelineWidget::delayOutputOptionTriggered(bool activated)
 {
 	if (activated)
 		emit outputDelayChangedEvent(1);

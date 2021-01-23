@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,9 +46,9 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget*
 	QLabel* title;
 
 	if (rangeR == -1)
-		title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>");
+		title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>", this);
 	else
-		title = new QLabel("<b>" + tr("Choose range") + "</b>");
+		title = new QLabel("<b>" + tr("Choose range") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
@@ -56,17 +56,17 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget*
 	this->equation->setRange(rangeL, rangeR);
 	this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 
-	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true);
+	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true, this);
 	layout->addWidget(graphicEquation);
 
 	QHBoxLayout* buttonsLayout = new QHBoxLayout();
 	layout->addLayout(buttonsLayout);
 
-	QPushButton* buttonOK = new QPushButton(tr("OK"));
+	QPushButton* buttonOK = new QPushButton(tr("OK"), this);
 	connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
 	buttonsLayout->addWidget(buttonOK);
 
-	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
+	QPushButton* buttonCancel = new QPushButton(tr("Cancel"), this);
 	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
 	buttonsLayout->addWidget(buttonCancel);
 }

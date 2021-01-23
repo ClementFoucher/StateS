@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2020 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,7 @@ InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitN
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 
-	this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]));
+	this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]), this);
 	this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + signalToCommand->getName());
 	layout->addWidget(this->bitValue);
 
