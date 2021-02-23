@@ -80,7 +80,7 @@ void StateSXmlAnalyzer::parse()
 
 		if (this->xmlReader->isStartElement())
 		{
-			if (this->xmlReader->name() == "FSM")
+			if (this->xmlReader->name() == QString("FSM"))
 			{
 				this->type = machineType::Fsm;
 				QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();

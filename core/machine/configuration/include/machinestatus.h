@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -56,8 +56,8 @@ public:
 	QString getVhdlExportPath()   const;
 
 signals:
-	void saveFilePathChanged();
-	void unsavedFlagChanged();
+	void saveFilePathChangedEvent();
+	void unsavedFlagChangedEvent();
 
 private:
 	QFileInfo saveFilePath;

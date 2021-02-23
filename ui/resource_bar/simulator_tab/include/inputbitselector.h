@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,7 +44,7 @@ public:
 	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
 
 protected slots:
-	void enterEvent(QEvent* event) override;
+	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
 	void mousePressEvent(QMouseEvent*) override;
 	void mouseMoveEvent(QMouseEvent*) override;

@@ -113,7 +113,7 @@ public:
 	computationFailureCause getComputationFailureCause() const;
 
 	nature getFunction() const;
-	void setFunction(const nature& newFunction);
+	void setFunction(nature newFunction);
 
 	bool isInverted() const;
 

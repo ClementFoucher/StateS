@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -92,7 +92,7 @@ QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) con
 				}
 			}
 		}
-		else if (role == Qt::BackgroundColorRole)
+		else if (role == Qt::BackgroundRole)
 		{
 			if (this->truthTable.expired() == false)
 			{

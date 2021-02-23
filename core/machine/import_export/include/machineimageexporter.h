@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -62,7 +62,7 @@ public:
 	void setMainSceneRatio(uint sceneRatio);
 	void setInfoPos(infoPos pos);
 
-	shared_ptr<QPixmap> renderPreview(const QSizeF& previewSize);
+	shared_ptr<QPixmap> renderPreview(QSizeF previewSize);
 	void doExport(const QString& path, imageFormat format, const QString& creator = QString()); // TODO: throw StatesException for file access
 
 private:

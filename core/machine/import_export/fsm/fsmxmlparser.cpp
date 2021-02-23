@@ -374,7 +374,7 @@ void FsmXmlParser::parseTransition()
 		// TODO: check if states exist
 		shared_ptr<FsmTransition> transition = fsm->addTransition(source, target);
 
-		QStringRef sliderPosString = attributes.value("SliderPos");
+		QString sliderPosString = attributes.value("SliderPos").toString();
 		qreal sliderPos;
 		if (!sliderPosString.isEmpty())
 		{

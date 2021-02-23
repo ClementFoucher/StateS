@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -544,7 +544,7 @@ bool GraphicEquation::cancelEdit()
 }
 
 // Triggered when mouse enters widget
-void GraphicEquation::enterEvent(QEvent*)
+void GraphicEquation::enterEvent(QEnterEvent*)
 {
 	GraphicEquation* parentEquation = this->parentEquation();
 
@@ -682,7 +682,6 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 				menu->addTitle(tr("Equation:") +  " <i>" + l_equation->getText() + "</i>");
 
 				QVariant data;
-				data.convert(QVariant::Int);
 				QAction* addedAction = nullptr;
 
 				if (complexEquation != nullptr)
@@ -808,8 +807,6 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 			menu->addSubTitle(tr("Dropped equation:") + " <i> " + droppedEquation->getText() + "</i>");
 
 			QVariant data;
-			data.convert(QVariant::Int);
-
 			QAction* a = new QAction(menu);
 			a->setText(tr("Replace existing equation by dropped equation"));
 			a->setToolTip(tr("New equation would be:") + " <i> " + droppedEquation->getText() + "</i>");
@@ -844,7 +841,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 			data.setValue((int)CommonAction::Cancel);
 			a->setData(data);
 
-			menu->popup(this->mapToGlobal(event->pos()));
+			menu->popup(this->mapToGlobal(event->position().toPoint()));
 
 			connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
 		}

@@ -25,7 +25,7 @@
 
 ViewConfiguration::ViewConfiguration()
 {
-	this->zoomLevel = 1;
+	this->zoomLevel        = 1;
 	this->sceneTranslation = QPointF();
 	this->viewCenter       = QPointF(0, 0);
 }

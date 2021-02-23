@@ -34,7 +34,7 @@ public:
 	explicit LabelWithClickEvent(const QString& text, QWidget* parent = nullptr);
 
 signals:
-	bool clicked(QMouseEvent* e);
+	bool clicked(QMouseEvent* e); // TODO: clean => signal with return value
 
 protected:
 	bool event(QEvent* e) override;

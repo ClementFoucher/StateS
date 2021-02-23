@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2021 sClément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -87,7 +87,7 @@ void MachineXmlParser::parseConfiguration()
 		}
 		else
 		{
-			this->warnings.append(tr("Warning.") + " " + tr("Unable to parse zoom level.") + tr("Found value was:") + " " + attributes.value("Value"));
+			this->warnings.append(tr("Warning.") + " " + tr("Unable to parse zoom level.") + tr("Found value was:") + " " + attributes.value("Value").toString());
 		}
 	}
 	else if (nodeName == "ViewCentralPoint")
@@ -112,7 +112,7 @@ void MachineXmlParser::parseConfiguration()
 		}
 		else
 		{
-			this->warnings.append(tr("Warning.") + " " + tr("Unable to parse view position.") + tr("Found values were:") + " (x=" + attributes.value("X") + ";y=" + attributes.value("Y") +")" );
+			this->warnings.append(tr("Warning.") + " " + tr("Unable to parse view position.") + tr("Found values were:") + " (x=" + attributes.value("X").toString() + ";y=" + attributes.value("Y").toString() +")" );
 		}
 	}
 	else
@@ -216,7 +216,7 @@ void MachineXmlParser::parseSignal()
 			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
 			{
 				this->warnings.append(tr("Error!") + " " + "Unable to extract initial value of signal " + signalName + ".");
-				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value") + "\".");
+				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value").toString() + "\".");
 				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
 			}
 			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::size_mismatch) )
@@ -238,7 +238,7 @@ void MachineXmlParser::parseAction()
 
 	if (nodeName == "Action")
 	{
-		QStringRef signalName = attributes.value("Name");
+		QString signalName = attributes.value("Name").toString();
 
 		shared_ptr<Signal> signal;
 		foreach (shared_ptr<Signal> var, this->machine->getWrittableSignals())
@@ -257,7 +257,7 @@ void MachineXmlParser::parseAction()
 		}
 
 		ActionOnSignal::action_types actionType;
-		QStringRef actionTypeText = attributes.value("Action_Type");
+		QString actionTypeText = attributes.value("Action_Type").toString();
 
 		if (actionTypeText == "Pulse")
 		{
@@ -305,14 +305,14 @@ void MachineXmlParser::parseAction()
 				throw;
 		}
 
-		QStringRef srangel = attributes.value("RangeL");
-		QStringRef sranger = attributes.value("RangeR");
-		QStringRef sactval = attributes.value("Action_Value");
+		QString srangel = attributes.value("RangeL").toString();
+		QString sranger = attributes.value("RangeR").toString();
+		QString sactval = attributes.value("Action_Value").toString();
 		// For compatibility with previous saves
 		if (srangel.isNull())
-			srangel = attributes.value("Param1");
+			srangel = attributes.value("Param1").toString();
 		if (sranger.isNull())
-			sranger = attributes.value("Param2");
+			sranger = attributes.value("Param2").toString();
 
 		int rangeL;
 		int rangeR;
@@ -353,7 +353,7 @@ void MachineXmlParser::parseAction()
 			LogicValue actionValue;
 			try
 			{
-				actionValue = LogicValue::fromString(sactval.toString()); // Throws StatesException
+				actionValue = LogicValue::fromString(sactval); // Throws StatesException
 			}
 			catch (const StatesException& e)
 			{
@@ -429,8 +429,8 @@ void MachineXmlParser::parseLogicEquation()
 		int rangeL = -1;
 		int rangeR = -1;
 		LogicValue constantValue;
-		QStringRef srangel;
-		QStringRef sranger;
+		QString srangel;
+		QString sranger;
 
 		bool ok;
 		int operandCount = attributes.value("OperandCount").toInt(&ok);
@@ -440,42 +440,43 @@ void MachineXmlParser::parseLogicEquation()
 			// TODO
 		}
 
-		if (attributes.value("Nature") == "not")
+		QString valueNature = attributes.value("Nature").toString();
+		if (valueNature == "not")
 			equationType = Equation::nature::notOp;
-		else if (attributes.value("Nature") == "and")
+		else if (valueNature == "and")
 			equationType = Equation::nature::andOp;
-		else if (attributes.value("Nature") == "or")
+		else if (valueNature == "or")
 			equationType = Equation::nature::orOp;
-		else if (attributes.value("Nature") == "xor")
+		else if (valueNature == "xor")
 			equationType = Equation::nature::xorOp;
-		else if (attributes.value("Nature") == "nand")
+		else if (valueNature == "nand")
 			equationType = Equation::nature::nandOp;
-		else if (attributes.value("Nature") == "nor")
+		else if (valueNature == "nor")
 			equationType = Equation::nature::norOp;
-		else if (attributes.value("Nature") == "xnor")
+		else if (valueNature == "xnor")
 			equationType = Equation::nature::xnorOp;
-		else if (attributes.value("Nature") == "equals")
+		else if (valueNature == "equals")
 			equationType = Equation::nature::equalOp;
-		else if (attributes.value("Nature") == "differs")
+		else if (valueNature == "differs")
 			equationType = Equation::nature::diffOp;
-		else if (attributes.value("Nature") == "concatenate")
+		else if (valueNature == "concatenate")
 			equationType = Equation::nature::concatOp;
-		else if (attributes.value("Nature") == "extract")
+		else if (valueNature == "extract")
 		{
 			equationType = Equation::nature::extractOp;
 
-			srangel = attributes.value("RangeL");
-			sranger = attributes.value("RangeR");
+			srangel = attributes.value("RangeL").toString();
+			sranger = attributes.value("RangeR").toString();
 			// For compatibility with previous saves
 			if (srangel.isNull())
-				srangel = attributes.value("Param1");
+				srangel = attributes.value("Param1").toString();
 			if (sranger.isNull())
-				sranger = attributes.value("Param2");
+				sranger = attributes.value("Param2").toString();
 
 			rangeL = srangel.toInt();
 			rangeR = sranger.toInt();
 		}
-		else if (attributes.value("Nature") == "constant")
+		else if (valueNature == "constant")
 		{
 			equationType = Equation::nature::constant;
 
@@ -507,7 +508,7 @@ void MachineXmlParser::parseLogicEquation()
 		else
 		{
 			this->warnings.append(tr("Unexpected equation nature encountered while parsing logic equation:"));
-			this->warnings.append("    " + tr("Equation nature was:") + " \"" + attributes.value("Nature") + "\".");
+			this->warnings.append("    " + tr("Equation nature was:") + " \"" + valueNature + "\".");
 			this->warnings.append("    " + tr("Token ignored. Will retry with other tokens if existing."));
 
 			return;

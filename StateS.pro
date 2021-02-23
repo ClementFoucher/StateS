@@ -18,6 +18,9 @@ QT += core \
 	  printsupport \
 	  svg
 
+# Only for diff-match-patch to use deprecated QRegExp... should seriously think about replacing this obsolete library
+QT += core5compat
+
 TARGET = StateS
 TEMPLATE = app
 
@@ -26,7 +29,7 @@ QMAKE_TARGET_COPYRIGHT = copyright $$DATE Clément Foucher
 DEFINES += STATES_VERSION=\\\"$$VERSION\\\"
 DEFINES += STATES_YEARS=\\\"$$DATE\\\"
 
-CONFIG += c++14
+CONFIG += c++17
 QMAKE_LFLAGS += -no-pie
 
 SOURCES += \

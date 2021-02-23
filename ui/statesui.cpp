@@ -24,7 +24,6 @@
 
 // Qt classes
 #include <QFileDialog>
-#include <QDesktopWidget>
 #include <QMessageBox>
 #include <QGuiApplication>
 #include <QSplitter>
@@ -57,8 +56,8 @@ StatesUi::StatesUi(shared_ptr<MachineManager> machineManager)
 	connect(machineManager.get(), &MachineManager::redoActionAvailabilityChangeEvent, this, &StatesUi::redoActionAvailabilityChangeEventHandler);
 
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-	connect(machineStatus.get(), &MachineStatus::saveFilePathChanged, this, &StatesUi::machineFilePathUpdated);
-	connect(machineStatus.get(), &MachineStatus::unsavedFlagChanged,  this, &StatesUi::machineUnsavedStateUpdated);
+	connect(machineStatus.get(), &MachineStatus::saveFilePathChangedEvent, this, &StatesUi::machineFilePathUpdated);
+	connect(machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent,  this, &StatesUi::machineUnsavedStateUpdated);
 
 	/***
 	 * Build window
@@ -602,7 +601,7 @@ void StatesUi::dragEnterEvent(QDragEnterEvent* event)
 void StatesUi::dropEvent(QDropEvent* event)
 {
 	const QMimeData* mimeData = event->mimeData();
-	QString fileName = mimeData->urls()[0].path();
+	QString fileName = mimeData->urls().at(0).path();
 
 	bool userConfirmed = this->displayUnsavedConfirmation(tr("Load file") + " " + fileName + tr("?") );
 

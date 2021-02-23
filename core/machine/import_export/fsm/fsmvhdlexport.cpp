@@ -385,7 +385,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  signal current_state : state_type;\n";
 	stream << "  signal next_state    : state_type;\n\n";
 
-	QList<shared_ptr<Input>> inputs = l_machine->getInputs();
+	//QList<shared_ptr<Input>> inputs = l_machine->getInputs();
 	QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
 	QList<shared_ptr<Signal>> constants = l_machine->getConstants();
 	QList<shared_ptr<FsmState>> states = l_machine->getStates();

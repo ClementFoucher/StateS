@@ -117,7 +117,7 @@ void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& curre
 		else
 		{
 			// Compute mouse pos wrt. scene
-			QPointF sceneMousePos = views()[0]->mapToScene(this->views()[0]->mapFromGlobal(QCursor::pos()));
+			QPointF sceneMousePos = views().at(0)->mapToScene(this->views().at(0)->mapFromGlobal(QCursor::pos()));
 			this->currentTransition = new FsmGraphicTransition(source, sceneMousePos);
 		}
 
@@ -533,7 +533,7 @@ void FsmScene::handleSelection()
 	// Set focus for context event
 	if (this->selectedItems().count() == 1)
 	{
-		this->selectedItems()[0]->setFocus();
+		this->selectedItems().at(0)->setFocus();
 	}
 	else
 	{
@@ -543,14 +543,14 @@ void FsmScene::handleSelection()
 	// Updates resource panel selected item
 	if (this->selectedItems().count() == 1)
 	{
-		FsmGraphicState* currentState = dynamic_cast< FsmGraphicState* >(this->selectedItems()[0]);
+		FsmGraphicState* currentState = dynamic_cast< FsmGraphicState* >(this->selectedItems().at(0));
 		if (currentState != nullptr)
 		{
 			emit itemSelectedEvent(currentState->getLogicState());
 		}
 		else
 		{
-			FsmGraphicTransition* currentTransition = dynamic_cast< FsmGraphicTransition* >(this->selectedItems()[0]);
+			FsmGraphicTransition* currentTransition = dynamic_cast< FsmGraphicTransition* >(this->selectedItems().at(0));
 			if (currentTransition!= nullptr)
 			{
 				emit itemSelectedEvent(currentTransition->getLogicTransition());

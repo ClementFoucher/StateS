@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,6 +25,7 @@
 // Qt classes
 #include <QPainter>
 #include <QPrinter>
+#include <QPageSize>
 #include <QSvgGenerator>
 #include <QGraphicsTextItem>
 
@@ -77,7 +78,7 @@ void MachineImageExporter::setInfoPos(MachineImageExporter::infoPos pos)
 	this->infoPosition = pos;
 }
 
-shared_ptr<QPixmap> MachineImageExporter::renderPreview(const QSizeF& previewSize)
+shared_ptr<QPixmap> MachineImageExporter::renderPreview(QSizeF previewSize)
 {
 	shared_ptr<QPixmap> generatedPixmap;
 
@@ -240,7 +241,7 @@ void MachineImageExporter::preparePdfPrinter(const QString& path, const QString&
 	this->printer = shared_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
 
 	this->printer->setOutputFormat(QPrinter::PdfFormat);
-	this->printer->setPageSize(QPrinter::A4);
+	this->printer->setPageSize(QPageSize(QPageSize::A4));
 	this->printer->setPageOrientation(QPageLayout::Landscape);
 
 	this->printer->setOutputFileName(path);

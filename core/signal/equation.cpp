@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -160,7 +160,7 @@ Equation::nature Equation::getFunction() const
 	return function;
 }
 
-void Equation::setFunction(const nature& newFunction)
+void Equation::setFunction(nature newFunction)
 {
 	switch(newFunction)
 	{
@@ -243,7 +243,7 @@ void Equation::setRange(int rangeL, int rangeR)
 shared_ptr<Signal> Equation::getOperand(uint i) const // Throws StatesException
 {
 	if (i < this->allowedOperandCount)
-		return this->getOperands()[i];
+		return this->getOperands().at(i);
 	else
 		throw StatesException("Equation", out_of_range_access, "Out of range operand access");
 }

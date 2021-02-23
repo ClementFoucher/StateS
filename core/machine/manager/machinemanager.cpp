@@ -32,7 +32,7 @@ MachineManager::MachineManager() :
 {
 	this->machineStatus = shared_ptr<MachineStatus>(new MachineStatus());
 
-	connect(this->machineStatus.get(), &MachineStatus::unsavedFlagChanged, this, &MachineManager::machineUnsavedFlagChangedEventHandler);
+	connect(this->machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent, this, &MachineManager::machineUnsavedFlagChangedEventHandler);
 }
 
 void MachineManager::build()

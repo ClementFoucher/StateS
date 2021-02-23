@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,10 +35,10 @@
 
 TruthTable::TruthTable(shared_ptr<Equation> equation)
 {
-	QList<shared_ptr<Equation>> equations;
+	QVector<shared_ptr<Equation>> equations;
 	equations.append(equation);
 
-	buildTable(equations.toVector());
+	buildTable(equations);
 }
 
 TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)

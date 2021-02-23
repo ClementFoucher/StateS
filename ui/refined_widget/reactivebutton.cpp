@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ ReactiveButton::ReactiveButton(const QString& text, QWidget* parent) :
 
 }
 
-void ReactiveButton::enterEvent(QEvent*)
+void ReactiveButton::enterEvent(QEnterEvent*)
 {
 	emit mouseEnterEvent();
 }

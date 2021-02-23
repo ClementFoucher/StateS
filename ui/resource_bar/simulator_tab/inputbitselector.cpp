@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,7 +48,7 @@ InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitN
 	connect(signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
-void InputBitSelector::enterEvent(QEvent* event)
+void InputBitSelector::enterEvent(QEnterEvent* event)
 {
 	this->setStyleSheet("InputBitSelector {border: 1px solid black; border-radius: 10px}");
 

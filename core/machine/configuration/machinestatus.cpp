@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,7 +48,7 @@ void MachineStatus::setUnsavedFlag(bool newUnsavedFlag)
 	if (newUnsavedFlag != this->unsavedFlag)
 	{
 		this->unsavedFlag = newUnsavedFlag;
-		emit unsavedFlagChanged();
+		emit unsavedFlagChangedEvent();
 	}
 }
 
@@ -63,7 +63,7 @@ void MachineStatus::setSaveFilePath(const QString& newPath)
 	if (newFile != this->saveFilePath)
 	{
 		this->saveFilePath = newFile;
-		emit saveFilePathChanged();
+		emit saveFilePathChangedEvent();
 	}
 }
 

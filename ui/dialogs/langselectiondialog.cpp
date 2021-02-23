@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,7 +40,7 @@ LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, Q
 	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
 
 	this->translator = shared_ptr<QTranslator>(new QTranslator());
-	this->translator->load(":/translations/french");
+	static_cast<void>(this->translator->load(":/translations/french")); // Discarding the result of this nodiscard function as we are absolutely sure it can be loaded
 
 	this->setWindowTitle("StateS");
 

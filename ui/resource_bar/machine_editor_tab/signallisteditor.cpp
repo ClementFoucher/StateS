@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -394,7 +394,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 				ContextMenu* menu = new ContextMenu();
 				menu->addTitle(tr("Action on signal") + " <i>" + currentSignal->getName() + "</i>");
 
-				QVariant data(QVariant::Int);
+				QVariant data;
 				QAction* actionToAdd = nullptr;
 
 				if (cellUnderMouse->row() != 0)
@@ -449,7 +449,6 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 			menu->addTitle(tr("Action on all selected signals"));
 
 			QVariant data;
-			data.convert(QVariant::Int);
 			QAction* actionToAdd = nullptr;
 
 			if (this->buttonUp->isEnabled())

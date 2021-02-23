@@ -56,10 +56,6 @@ qreal FsmGraphicState::getRadius()
 	return radius;
 }
 
-//
-// Class object definition
-//
-
 QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 {
 	QPixmap pixmap(QSize(size, size));
@@ -85,6 +81,10 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 
 	return pixmap;
 }
+
+//
+// Class object definition
+//
 
 FsmGraphicState::FsmGraphicState() :
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
@@ -406,7 +406,6 @@ void FsmGraphicState::rebuildRepresentation()
 {
 	// Clear all child items
 	qDeleteAll(this->childItems());
-	this->childItems().clear();
 	this->selectionShape = nullptr;
 
 	shared_ptr<FsmState> l_logicState = this->getLogicState();

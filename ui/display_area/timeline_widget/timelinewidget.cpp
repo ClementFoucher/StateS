@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -141,7 +141,7 @@ void TimelineWidget::closeEvent(QCloseEvent* event)
 void TimelineWidget::mousePressEvent(QMouseEvent* event)
 {
 	// TODO: handle only left button
-	this->separatorPosition = event->x();
+	this->separatorPosition = event->pos().x();
 	repaint();
 
 	QWidget::mousePressEvent(event);
@@ -150,7 +150,7 @@ void TimelineWidget::mousePressEvent(QMouseEvent* event)
 void TimelineWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	// This event is only called if we have clicked first
-	this->separatorPosition = event->x();
+	this->separatorPosition = event->pos().x();
 	repaint();
 
 	QWidget::mouseMoveEvent(event);
@@ -177,18 +177,18 @@ void TimelineWidget::exportToPDF()
 		QPrinter printer(QPrinter::HighResolution);
 		printer.setOutputFormat(QPrinter::PdfFormat);
 		printer.setOutputFileName(fileName);
-		printer.setPageSize(QPrinter::A4);
+		printer.setPageSize(QPageSize(QPageSize::A4));
 		printer.setPageOrientation(QPageLayout::Landscape);
 
 		QPainter painter(&printer);
 
 		// Thanks to Qt doc for this code:
 		painter.begin(&printer);
-		double xscale = printer.pageRect().width()/double(centralWidget()->width());
-		double yscale = printer.pageRect().height()/double(centralWidget()->height());
+		double xscale = printer.pageRect(QPrinter::Millimeter).width()/double(centralWidget()->width());
+		double yscale = printer.pageRect(QPrinter::Millimeter).height()/double(centralWidget()->height());
 		double scale = qMin(xscale, yscale);
-		painter.translate(printer.paperRect().x() + printer.pageRect().width()/2,
-		                  printer.paperRect().y() + printer.pageRect().height()/2);
+		painter.translate(printer.paperRect(QPrinter::Millimeter).x() + printer.pageRect(QPrinter::Millimeter).width()/2,
+		                  printer.paperRect(QPrinter::Millimeter).y() + printer.pageRect(QPrinter::Millimeter).height()/2);
 		painter.scale(scale, scale);
 		painter.translate(-width()/2, -height()/2);
 

@@ -26,8 +26,8 @@
 #include <QDebug>
 
 // StateS classes
-#include <fsmgraphicstate.h>
-#include <fsmgraphictransition.h>
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 #include "fsm.h"
 
 

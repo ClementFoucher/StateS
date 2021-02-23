@@ -22,6 +22,9 @@
 #ifndef DIFF_MATCH_PATCH_H
 #define DIFF_MATCH_PATCH_H
 
+#include <QString>
+#include <QRegExp>
+
 /*
  * Functions for diff, match and patch.
  * Computes the difference between two texts to create a patch.
@@ -89,7 +92,6 @@ class Diff {
   Diff(Operation _operation, const QString &_text);
   Diff();
   inline bool isNull() const;
-  QString toString() const;
   bool operator==(const Diff &d) const;
   bool operator!=(const Diff &d) const;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -164,7 +164,6 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 				menu->addTitle(tr("Action on signal") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
 
 				QVariant data;
-				data.convert(QVariant::Int);
 				QAction* actionToAdd = nullptr;
 
 				if (actionActedOn->isActionValueEditable())
@@ -564,7 +563,7 @@ void ActionEditor::restoreSelection()
 		selectionModel->clearSelection();
 
 		// First get locked references to previously selected actions
-		QList<shared_ptr<ActionOnSignal>> previousSelection;
+		QVector<shared_ptr<ActionOnSignal>> previousSelection;
 
 		foreach (weak_ptr<ActionOnSignal> weakAction, this->latestSelection)
 		{

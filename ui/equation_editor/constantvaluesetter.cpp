@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,7 +37,7 @@ ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* paren
     EditableEquation(parent)
 {
 	this->currentValue = initialValue;
-	this->setEdited(false);
+	ConstantValueSetter::setEdited(false);
 }
 
 bool ConstantValueSetter::validEdit()
