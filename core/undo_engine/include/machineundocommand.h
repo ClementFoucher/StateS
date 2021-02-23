@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@
 using namespace std;
 
 // StateS classes
-class Machine;
+class MachineManager;
 
 
 class MachineUndoCommand : public QObject, public QUndoCommand
@@ -53,7 +53,7 @@ public:
 		fsmUndoMoveConditionSliderId = 11,
 	};
 
-	static void setMachine(shared_ptr<Machine> machine, bool machineHasChanged);
+	static void setMachineManager(shared_ptr<MachineManager> machineManager);
 
 public:
 	explicit MachineUndoCommand();
@@ -64,8 +64,11 @@ public:
 
 	virtual int id() const override;
 
+private slots:
+	static void machineUpdatedEventHandler(bool machineHasChanged);
+
 protected:
-	static weak_ptr<Machine> machine;
+	static shared_ptr<MachineManager> machineManager;
 
 	undo_command_id undoType = undo_command_id::undefinedUndoId;
 	bool firstRedoIgnored;

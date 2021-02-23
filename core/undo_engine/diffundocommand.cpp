@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,6 +23,7 @@
 #include "diffundocommand.h"
 
 // StateS classes
+#include "machinemanager.h"
 #include "machine.h"
 #include "machinexmlparser.h"
 #include "machinexmlwriter.h"
@@ -34,7 +35,7 @@ void DiffUndoCommand::updateXmlRepresentation()
 {
 	DiffUndoCommand::machineXmlRepresentation = QString();
 
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 
 	if (l_machine != nullptr)
 	{
@@ -50,7 +51,7 @@ DiffUndoCommand::DiffUndoCommand(undo_command_id commandId)
 {
 	undoType = commandId;
 
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 	if (l_machine != nullptr)
 	{
 		// Compute diff
@@ -143,11 +144,10 @@ void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
 	shared_ptr<MachineXmlParser> parser = MachineXmlParser::buildStringParser(newXmlCode);
 
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 
 	if (l_machine != nullptr)
 	{
-		parser->setMachineStatus(l_machine->getMachineStatus());
 		parser->doParse();
 		emit applyUndoRedo(parser->getMachine());
 	}

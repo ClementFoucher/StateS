@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@ using namespace std;
 
 // StateS classes
 #include "machine.h"
+class MachineManager;
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
@@ -55,9 +56,8 @@ class StatesUi : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit StatesUi();
+	explicit StatesUi(shared_ptr<MachineManager> machineManager);
 
-	void setMachine(shared_ptr<Machine> newMachine, bool isSameMachine);
 	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
 	shared_ptr<ViewConfiguration> getViewConfiguration() const;
 
@@ -67,17 +67,12 @@ public:
 	void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
 	void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
-	void setUndoButtonEnabled(bool enable);
-	void setRedoButtonEnabled(bool enable);
-
 signals:
 	void newFsmRequestEvent();
 	void clearMachineRequestEvent();
 	void loadMachineRequestEvent(const QString& path);
 	void saveMachineRequestEvent(const QString& path);
 	void saveMachineInCurrentFileRequestEvent();
-	void undoRequestEvent();
-	void redoRequestEvent();
 
 protected:
 	void closeEvent     (QCloseEvent* event) override;
@@ -85,6 +80,8 @@ protected:
 	void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
+	void machineUpdatedEventHandler(bool isNewMachine);
+
 	void beginSaveAsProcedure();
 	void beginSaveProcedure();
 	void beginLoadProcedure();
@@ -92,6 +89,9 @@ private slots:
 	void beginClearMachineProcedure();
 	void beginExportImageProcedure();
 	void beginExportVhdlProcedure();
+
+	void undo();
+	void redo();
 
 	void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
 	void editSelectedItem();
@@ -103,11 +103,17 @@ private slots:
 	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
 	void setTimelineDetachedState(bool detach);
 
+	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
+	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
+
 private:
+	void resetUi();
 	void updateTitle();
 	bool displayUnsavedConfirmation(const QString& cause);
 
 private:
+	shared_ptr<MachineManager> machineManager;
+
 	// Top level widgets
 	DisplayArea* displayArea = nullptr;
 	ResourceBar* resourceBar = nullptr;
@@ -116,8 +122,6 @@ private:
 	MachineEditorWidget* editor   = nullptr;
 	TimelineWidget*      timeline = nullptr;
 
-	// Current machine
-	weak_ptr<Machine> machine;
 };
 
 #endif // STATESUI_H

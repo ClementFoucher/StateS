@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -121,6 +121,11 @@ void MainToolBar::setSaveAsActionEnabled(bool enable)
 void MainToolBar::setSaveActionEnabled(bool enable)
 {
 	this->actionSave->setEnabled(enable);
+}
+
+void MainToolBar::setNewFsmActionEnabled(bool enable)
+{
+	this->actionNewFsm->setEnabled(enable);
 }
 
 void MainToolBar::setExportActionsEnabled(bool enable)

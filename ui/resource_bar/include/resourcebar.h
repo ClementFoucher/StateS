@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,6 +34,7 @@ class QGraphicsScene;
 
 // StateS classes
 #include "machine.h"
+class MachineManager;
 class HintTab;
 class MachineEditorTab;
 class ComponentEditorTab;
@@ -55,9 +56,7 @@ class ResourceBar : public QTabWidget
 	Q_OBJECT
 
 public:
-	explicit ResourceBar(QWidget* parent = nullptr);
-
-	void setMachine(shared_ptr<Machine> newMachine, bool maintainView = false);
+	explicit ResourceBar(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
 
 	void setSelectedItem(shared_ptr<MachineComponent> item);
 	void editSelectedItem();
@@ -66,11 +65,17 @@ public:
 	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 private slots:
+	void machineUpdatedEventHandler(bool isNewMachine);
+
 	void clearSelection();
 	void machineModeChangedEventHandler(Machine::simulation_mode newMode);
 
 private:
-	weak_ptr<Machine> machine;
+	void build();
+
+private:
+	shared_ptr<MachineManager> machineManager;
+
 	shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
 	HintTab*            hintsTab     = nullptr;

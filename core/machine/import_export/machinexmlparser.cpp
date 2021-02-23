@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -587,11 +587,6 @@ shared_ptr<MachineXmlParser> MachineXmlParser::buildFileParser(shared_ptr<QFile>
 void MachineXmlParser::doParse()
 {
 	this->buildMachineFromXml();
-}
-
-void MachineXmlParser::setMachineStatus(shared_ptr<MachineStatus> initialStatus)
-{
-	this->status = initialStatus;
 }
 
 shared_ptr<Machine> MachineXmlParser::getMachine()

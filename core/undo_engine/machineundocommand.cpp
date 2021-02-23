@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,16 +23,21 @@
 #include "machineundocommand.h"
 
 // StateS classes
+#include "machinemanager.h"
 #include "machine.h"
 #include "diffundocommand.h"
 
 
-weak_ptr<Machine> MachineUndoCommand::machine;
+shared_ptr<MachineManager> MachineUndoCommand::machineManager;
 
-void MachineUndoCommand::setMachine(shared_ptr<Machine> machine, bool machineHasChanged)
+void MachineUndoCommand::setMachineManager(shared_ptr<MachineManager> machineManager)
 {
-	MachineUndoCommand::machine = machine;
+	MachineUndoCommand::machineManager = machineManager;
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, &MachineUndoCommand::machineUpdatedEventHandler);
+}
 
+void MachineUndoCommand::machineUpdatedEventHandler(bool machineHasChanged)
+{
 	// If machine has changed, its XML representation must be rebuilt
 	if (machineHasChanged == true)
 	{
@@ -56,7 +61,7 @@ MachineUndoCommand::MachineUndoCommand(const QString& previousName) :
 
 void MachineUndoCommand::undo()
 {
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 	if (l_machine != nullptr)
 	{
 		switch (this->undoType)
@@ -81,7 +86,7 @@ void MachineUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+		shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 		if (l_machine != nullptr)
 		{
 			switch (this->undoType)

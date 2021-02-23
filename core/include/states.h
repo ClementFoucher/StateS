@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,18 +33,16 @@ using namespace std;
 #include <QUndoStack>
 
 // StateS classes
+class MachineManager;
 class StatesUi;
-class Machine;
-class UndoRedoManager;
 
 
 /**
  * @brief The StateS class is the root object of this application:
- * it owns the current machine under edition, the UI and the
- * undo/redo manager.
+ * it builds the machine manager and the UI.
  *
- * Its main purpose is to deal with the machine object:
- * Changing references, building new, loading, saving, etc.
+ * Its main purpose is to deal with the machine changes:
+ * building new, loading, saving, etc.
  *
  * This class also gives access to static generic functions.
  */
@@ -58,6 +56,7 @@ public:
 
 public:
 	explicit StateS(const QString& initialFilePath = QString());
+	~StateS();
 
 	void run();
 
@@ -71,16 +70,10 @@ private slots:
 	void saveCurrentMachine(const QString& path);
 	void saveCurrentMachineInCurrentFile();
 
-	// Handle signals from UndoRedoManager
-	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> machine);
-
 private:
-	void refreshMachine(shared_ptr<Machine> newMachine, bool machineChanged);
-
-private:
-	shared_ptr<Machine>         machine;
-	shared_ptr<StatesUi>        statesUi;
-	shared_ptr<UndoRedoManager> undoRedoManager;
+	// These pointers can shared by objects that are persistent throughout the application life
+	shared_ptr<MachineManager> machineManager;
+	shared_ptr<StatesUi>       statesUi;
 };
 
 #endif // STATES_H

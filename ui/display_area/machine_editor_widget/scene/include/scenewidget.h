@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,7 +37,7 @@ class QLabel;
 #include "machinebuilder.h"
 
 // StateS classes
-class Machine;
+class MachineManager;
 class MachineComponent;
 class GenericScene;
 
@@ -60,9 +60,7 @@ private:
 	static double scaleFactor;
 
 public:
-	explicit SceneWidget(QWidget* parent = nullptr);
-
-	void setMachine(shared_ptr<Machine> newMachine, bool maintainView); // TODO: throw exception
+	explicit SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
 
 	GenericScene* getScene() const;
 
@@ -86,6 +84,8 @@ protected:
 	void wheelEvent           (QWheelEvent*)  override;
 
 private slots:
+	void machineUpdatedEventHandler(bool);
+
 	void toolChangedEventHandler(MachineBuilder::tool newTool);
 	void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
 
@@ -95,6 +95,8 @@ private slots:
 	void resetZoom();
 
 private:
+	void clearScene();
+	void buildScene();
 	void updateTool(MachineBuilder::tool newTool);
 	void updateMouseCursor(mouseCursor_e cursor);
 	void updateSceneMode(sceneMode_e newMode);
@@ -102,6 +104,8 @@ private:
 	void setZoomPanelVisible(bool visible);
 
 private:
+	shared_ptr<MachineManager> machineManager;
+
 	// Zoom panel
 	QLabel*      labelZoom     = nullptr;
 	QPushButton* buttonZoomIn  = nullptr;

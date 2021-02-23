@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,6 +33,7 @@
 #include <QLabel>
 
 // StateS classes
+#include "machinemanager.h"
 #include "fsmscene.h"
 #include "fsm.h"
 #include "fsmgraphicstate.h"
@@ -42,9 +43,12 @@
 
 double SceneWidget::scaleFactor = 1.15;
 
-SceneWidget::SceneWidget(QWidget* parent) :
+SceneWidget::SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* parent) :
     StatesGraphicsView(parent)
 {
+	this->machineManager = machineManager;
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &SceneWidget::machineUpdatedEventHandler);
+
 	this->labelZoom     = new QLabel(tr("Zoom"), this);
 	this->buttonZoomIn  = new QPushButton("+", this);
 	this->buttonNoZoom  = new QPushButton("⟳", this);
@@ -76,68 +80,53 @@ SceneWidget::SceneWidget(QWidget* parent) :
 	this->setScene(new BlankScene());
 }
 
-void SceneWidget::setMachine(shared_ptr<Machine> newMachine, bool maintainView)
+void SceneWidget::clearScene()
 {
-	QPointF center = this->getVisibleArea().center();
-
-	// Clear
 	GenericScene* oldScene = this->getScene();
 	if (oldScene != nullptr)
 	{
 		this->setScene(nullptr);
 		delete oldScene;
 	}
-	disconnect(this->machineBuilderChangedToolEventConnection);
-	disconnect(this->machineBuilderSingleUseToolSelectedConnection);
 
 	this->updateTool(MachineBuilder::tool::none);
 	this->updateSceneMode(sceneMode_e::noScene);
+}
 
-	// Initialize
+void SceneWidget::buildScene()
+{
+	GenericScene* newScene = nullptr;
+
+	shared_ptr<Machine> newMachine = this->machineManager->getMachine();
 	if (newMachine != nullptr)
 	{
-		GenericScene* newScene = nullptr;
-
 		shared_ptr<Fsm> newFsm = dynamic_pointer_cast<Fsm>(newMachine);
 
 		if (newFsm != nullptr)
 		{
-			newScene = new FsmScene(newFsm);
+			newScene = new FsmScene(this->machineManager);
 		}
 		else
 		{
 			qDebug() << "(SceneWidget:) Error! Trying to display unknown type of Machine.";
 		}
-
-		if (newScene != nullptr)
-		{
-			newScene->setDisplaySize(this->size());
-
-			connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
-			connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
-			connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
-
-			shared_ptr<MachineBuilder> machineBuiler = newMachine->getMachineBuilder();
-			this->machineBuilderChangedToolEventConnection      = connect(machineBuiler.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
-			this->machineBuilderSingleUseToolSelectedConnection = connect(machineBuiler.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
-
-			this->setScene(newScene);
-			if (maintainView == true)
-			{
-				this->centerOn(center);
-			}
-			else
-			{
-				this->setZoomLevel(1);
-				this->centerOn(QPointF(0, 0));
-			}
-			this->updateSceneMode(sceneMode_e::idle);
-		}
 	}
 
-	// If nothing where loaded, fall back in blank mode
-	if (this->sceneMode == sceneMode_e::noScene)
+	if (newScene != nullptr)
 	{
+		newScene->setDisplaySize(this->size());
+
+		connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
+		connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
+		connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
+
+		this->setScene(newScene);
+
+		this->updateSceneMode(sceneMode_e::idle);
+	}
+	else
+	{
+		this->sceneMode = sceneMode_e::noScene;
 		this->setScene(new BlankScene());
 	}
 }
@@ -374,6 +363,12 @@ void SceneWidget::zoomFit()
 void SceneWidget::resetZoom()
 {
 	this->setZoomLevel(1);
+}
+
+void SceneWidget::machineUpdatedEventHandler(bool)
+{
+	this->clearScene();
+	this->buildScene();
 }
 
 void SceneWidget::updateTool(MachineBuilder::tool newTool)

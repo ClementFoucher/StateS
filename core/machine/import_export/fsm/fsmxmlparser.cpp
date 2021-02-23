@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -67,19 +67,7 @@ FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
 
 void FsmXmlParser::buildMachineFromXml()
 {
-	if (this->status != nullptr)
-	{
-		if (this->fileName.isNull() == false)
-		{
-			this->status->setSaveFilePath(this->fileName);
-			this->status->setHasSaveFile(true);
-		}
-		this->machine = shared_ptr<Fsm>(new Fsm(this->status));
-	}
-	else
-	{
-		this->machine = shared_ptr<Fsm>(new Fsm());
-	}
+	this->machine = shared_ptr<Fsm>(new Fsm());
 
 	// Do not generate events while being built
 	this->machine->setInhibitEvents(true);

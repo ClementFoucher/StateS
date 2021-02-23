@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,21 +31,23 @@
 #include <QDebug>
 
 // StateS classes
+#include "machinemanager.h"
 #include "fsmgraphicstate.h"
 #include "fsmgraphictransition.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "contextmenu.h"
-#include "resourcebar.h"
-#include "machinebuilder.h"
 
 
-FsmScene::FsmScene(shared_ptr<Fsm> machine) :
+FsmScene::FsmScene(shared_ptr<MachineManager> machineManager) :
     GenericScene()
 {
-	this->machine   = machine;
+	this->machineManager = machineManager;
+
 	this->sceneMode = sceneMode_e::idle;
+
+	shared_ptr<Machine> machine = this->machineManager->getMachine();
 	shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
 
 	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
@@ -53,12 +55,18 @@ FsmScene::FsmScene(shared_ptr<Fsm> machine) :
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &FsmScene::changedToolEventHandler);
 	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &FsmScene::changedSingleUseToolEventHandler);
 
-	foreach(shared_ptr<FsmState> state, machine->getStates())
+	this->build();
+}
+
+void FsmScene::build()
+{
+	shared_ptr<Fsm> fsm = this->getFsm();
+	for (shared_ptr<FsmState> state : fsm->getStates())
 	{
 		this->addState(state->getGraphicRepresentation());
 	}
 
-	foreach(shared_ptr<FsmTransition> transition, machine->getTransitions())
+	for (shared_ptr<FsmTransition> transition : fsm->getTransitions())
 	{
 		this->addTransition(transition->getGraphicRepresentation());
 	}
@@ -94,7 +102,7 @@ FsmScene::~FsmScene()
 
 void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos)
 {
-	shared_ptr<Machine> l_machine = this->machine.lock();
+	shared_ptr<Machine> l_machine = this->getFsm();
 	if (l_machine != nullptr)
 	{
 		// Update mouse cursor and cancel pending drawings
@@ -136,7 +144,7 @@ void FsmScene::changedSingleUseToolEventHandler(MachineBuilder::singleUseTool)
 void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 {
 	bool transmitEvent = true;
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -332,7 +340,7 @@ void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
 {
 	bool transmitEvent = true;
 
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -399,7 +407,7 @@ void FsmScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* me)
 
 void FsmScene::keyPressEvent(QKeyEvent* event)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -488,7 +496,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* transition)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -505,7 +513,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(FsmGraphicTransition* tr
 
 void FsmScene::transitionCallsDynamicTargetEventHandler(FsmGraphicTransition* transition)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -583,7 +591,7 @@ void FsmScene::setDisplaySize(const QSize& newSize)
 
 void FsmScene::simulationModeChanged(Machine::simulation_mode newMode)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -674,7 +682,7 @@ void FsmScene::stateCallsRenameEventHandler(shared_ptr<FsmState> state)
 
 void FsmScene::treatMenu(QAction* action)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -743,7 +751,7 @@ void FsmScene::addTransition(FsmGraphicTransition* newTransition)
 
 void FsmScene::cancelDrawTransition()
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	shared_ptr<Fsm> l_machine = this->getFsm();
 
 	if (l_machine != nullptr)
 	{
@@ -762,4 +770,9 @@ void FsmScene::cancelDrawTransition()
 			this->sceneMode = sceneMode_e::idle;
 		}
 	}
+}
+
+shared_ptr<Fsm> FsmScene::getFsm() const
+{
+	return dynamic_pointer_cast<Fsm>(this->machineManager->getMachine());
 }

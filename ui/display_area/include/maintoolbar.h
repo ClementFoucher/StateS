@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,6 +35,7 @@ public:
 
 	void setSaveAsActionEnabled (bool enable);
 	void setSaveActionEnabled   (bool enable);
+	void setNewFsmActionEnabled (bool enable);
 	void setExportActionsEnabled(bool enable);
 	void setUndoActionEnabled   (bool enable);
 	void setRedoActionEnabled   (bool enable);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@ using namespace std;
 
 // StateS classes
 #include "machine.h"
+class MachineManager;
 class GenericScene;
 class ViewConfiguration;
 class SceneWidget;
@@ -43,9 +44,7 @@ class MachineEditorWidget : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MachineEditorWidget(QWidget* parent = nullptr);
-
-	void setMachine(shared_ptr<Machine> newMachine, bool maintainView);
+	explicit MachineEditorWidget(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
 
 	GenericScene* getScene() const;
 
@@ -60,13 +59,18 @@ signals:
 	void renameSelectedItemEvent();
 
 private slots:
+	void machineUpdatedEventHandler(bool isNewMachine);
+
 	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
 
 private:
+	void resetToolbar();
+
+private:
+	shared_ptr<MachineManager> machineManager;
+
 	SceneWidget*    machineDisplayArea = nullptr;
 	DrawingToolBar* drawingToolBar     = nullptr;
-
-	weak_ptr<Machine> machine;
 };
 
 #endif // MACHINEEDITORWIDGET_H

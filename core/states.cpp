@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,8 +30,8 @@
 #include <diff_match_patch.h>
 
 // StateS classes
+#include "machinemanager.h"
 #include "statesui.h"
-#include "undoredomanager.h"
 #include "statesexception.h"
 #include "viewconfiguration.h"
 #include "fsm.h"
@@ -64,17 +64,17 @@ QString StateS::getCopyrightYears()
  */
 StateS::StateS(const QString& initialFilePath)
 {
+	// Build machine manager
+	this->machineManager = shared_ptr<MachineManager>(new MachineManager());
+	this->machineManager->build();
+
 	// Build interface
-	this->statesUi = unique_ptr<StatesUi>(new StatesUi());
+	this->statesUi = unique_ptr<StatesUi>(new StatesUi(this->machineManager));
 	connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
 	connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
 	connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadMachine);
 	connect(this->statesUi.get(), &StatesUi::saveMachineRequestEvent,              this, &StateS::saveCurrentMachine);
 	connect(this->statesUi.get(), &StatesUi::saveMachineInCurrentFileRequestEvent, this, &StateS::saveCurrentMachineInCurrentFile);
-
-	// Build undo/redo manager
-	this->undoRedoManager = shared_ptr<UndoRedoManager>(new UndoRedoManager(this->statesUi));
-	connect(this->undoRedoManager.get(), &UndoRedoManager::freshMachineAvailableEvent, this, &StateS::freshMachineAvailableFromUndoRedo);
 
 	// Initialize machine
 	if (! initialFilePath.isEmpty())
@@ -88,6 +88,18 @@ StateS::StateS(const QString& initialFilePath)
 }
 
 /**
+ * @brief StateS::~StateS destructor
+ */
+StateS::~StateS()
+{
+	// Force cleaning order to handle dependencies between members
+	this->statesUi.reset();
+
+	this->machineManager->clear();
+	this->machineManager.reset();
+}
+
+/**
  * @brief StateS::run is the function called in the event loop
  * to display the UI.
  */
@@ -98,25 +110,14 @@ void StateS::run()
 }
 
 /**
- * @brief StateS::generateNewFsm replaces the existing machine with a newly created FSM.
- * This is the 'New' action.
+ * @brief StateS::generateNewFsm replaces the existing machine
+ * with a newly created FSM.
+ * This is the 'Clean' action.
  */
 void StateS::generateNewFsm()
 {
-	shared_ptr<Machine> newMachine = nullptr;
-
-	if (this->machine != nullptr)
-	{
-		// If a machine is already existing, preserve paths
-		shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(machine->getMachineStatus());
-		newMachine = shared_ptr<Fsm>(new Fsm(machineStatus));
-	}
-	else
-	{
-		newMachine = shared_ptr<Fsm>(new Fsm());
-	}
-
-	this->refreshMachine(newMachine, true);
+	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
+	this->machineManager->setMachine(newMachine);
 }
 
 /**
@@ -125,7 +126,7 @@ void StateS::generateNewFsm()
  */
 void StateS::clearMachine()
 {
-	this->refreshMachine(nullptr, true);
+	this->machineManager->setMachine(nullptr);
 }
 
 /**
@@ -144,13 +145,6 @@ void StateS::loadMachine(const QString& path)
 			// Build file parser
 			shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildFileParser(shared_ptr<QFile>(new QFile(path)));
 
-			if (this->machine != nullptr)
-			{
-				// If a machine is already existing, preserve paths
-				shared_ptr<MachineStatus> machineStatus = MachineStatus::clonePaths(this->machine->getMachineStatus());
-				parser->setMachineStatus(machineStatus);
-			}
-
 			// Parse and check for warnings
 			parser->doParse();
 			QList<QString> warnings = parser->getWarnings();
@@ -160,7 +154,12 @@ void StateS::loadMachine(const QString& path)
 			}
 
 			// If we reached this point, there should have been no exception
-			this->refreshMachine(parser->getMachine(), true);
+			this->machineManager->setMachine(parser->getMachine());
+
+			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+			machineStatus->setHasSaveFile(true);
+			machineStatus->setUnsavedFlag(false);
+
 			this->statesUi->setViewConfiguration(parser->getViewConfiguration());
 		}
 		catch (const StatesException& e)
@@ -180,14 +179,14 @@ void StateS::loadMachine(const QString& path)
 }
 
 /**
- * @brief StateS::saveCurrentMachine saves the current machine to
- * a specified file.
+ * @brief StateS::saveCurrentMachine saves the current
+ * machine to a specified file.
  * This is the 'Save as' action.
  * @param path Path of file to save to.
  */
 void StateS::saveCurrentMachine(const QString& path)
 {
-	if (this->machine != nullptr)
+	if (this->machineManager->getMachine() != nullptr)
 	{
 		bool fileOk = false;
 
@@ -203,7 +202,7 @@ void StateS::saveCurrentMachine(const QString& path)
 
 		if (fileOk)
 		{
-			shared_ptr<MachineStatus> machineStatus = this->machine->getMachineStatus();
+			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
 			machineStatus->setSaveFilePath(path);
 			machineStatus->setHasSaveFile(true);
 			this->saveCurrentMachineInCurrentFile();
@@ -212,17 +211,17 @@ void StateS::saveCurrentMachine(const QString& path)
 }
 
 /**
- * @brief StateS::saveCurrentMachineInCurrentFile saves the current machine to
- * currently registered save file.
+ * @brief StateS::saveCurrentMachineInCurrentFile saves the
+ * current machine to currently registered save file.
  * This is the 'Save' action.
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-	if (this->machine != nullptr)
+	if (this->machineManager->getMachine() != nullptr)
 	{
 		bool fileOk = false;
-		shared_ptr<MachineStatus> machineStatus = machine->getMachineStatus();
-		QFileInfo file = machineStatus->getSaveFileFullPath();
+		shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+		QFileInfo file = QFileInfo(machineStatus->getSaveFileFullPath());
 		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
 		{
 			fileOk = true;
@@ -236,11 +235,10 @@ void StateS::saveCurrentMachineInCurrentFile()
 		{
 			try
 			{
-				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(this->machine);
+				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(this->machineManager->getMachine());
 
 				saveManager->writeMachineToFile(this->statesUi->getViewConfiguration(), file.filePath()); // Throws StatesException
 				machineStatus->setUnsavedFlag(false);
-				this->undoRedoManager->setClean();
 			}
 			catch (const StatesException& e)
 			{
@@ -257,36 +255,4 @@ void StateS::saveCurrentMachineInCurrentFile()
 			}
 		}
 	}
-}
-
-/**
- * @brief StateS::freshMachineAvailableFromUndoRedo
- * This function handles new machine emitted by
- * undo/redo manager.
- * @param machine New machine built by manager.
- */
-void StateS::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> machine)
-{
-	this->refreshMachine(machine, false);
-}
-
-/**
- * @brief StateS::refreshMachine changes the currently referenced machine.
- * Can be used either to load a new machine or to load a checkpoint of
- * the current machine.
- * @param newMachine New machine to use.
- * @param machineChanged Indicated wether the machine changed or if it
- * is a simple refresh from an undo/redo action.
- */
-void StateS::refreshMachine(shared_ptr<Machine> newMachine, bool machineChanged)
-{
-	// Update references to machin in sub-classes
-	this->statesUi->setMachine(newMachine, !machineChanged);
-	this->undoRedoManager->setMachine(newMachine, machineChanged);
-	MachineUndoCommand::setMachine(newMachine, machineChanged);
-
-	// Update the local machine AFTER setting it in sub-classes as they still
-	// need the old machine to clear it, and the following line deletes the
-	// old object.
-	this->machine = newMachine;
 }

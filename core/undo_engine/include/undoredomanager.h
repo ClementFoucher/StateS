@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,8 +30,8 @@
 
 // Sates classes
 #include "machineundocommand.h"
+class MachineManager;
 class Machine;
-class StatesUi;
 
 
 class UndoRedoManager : public QObject
@@ -39,30 +39,34 @@ class UndoRedoManager : public QObject
 	Q_OBJECT
 
 public:
-	explicit UndoRedoManager(shared_ptr<StatesUi> ui);
+	explicit UndoRedoManager(shared_ptr<MachineManager> machineManager);
 
-	void setMachine(shared_ptr<Machine> newMachine, bool clearStack);
+	void undo();
+	void redo();
+
+	void clearStack();
 	void setClean();
 
 signals:
 	void freshMachineAvailableEvent(shared_ptr<Machine> machine);
 
+	void undoActionAvailabilityChangeEvent(bool undoAvailable);
+	void redoActionAvailabilityChangeEvent(bool redoAvailable);
+
 private slots:
-	void undo();
-	void redo();
+	void machineUpdatedEventHandler(bool isNewMachine);
 
 	void undoStackCleanStateChangeEventHandler(bool clean);
-	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
-	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
 private:
 	void addUndoCommand(MachineUndoCommand* undoCommand);
 	void buildDiffUndoCommand(MachineUndoCommand::undo_command_id commandId);
+	void setMachineUnsavedFlag(bool unsaved);
 
 private:
+	shared_ptr<MachineManager> machineManager;
+
 	QUndoStack undoStack;
-	weak_ptr<Machine>  machine;
-	weak_ptr<StatesUi> statesUi;
 };
 
 #endif // UNDOREDOMANAGER_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,6 +37,7 @@ class QAction;
 #include "machinebuilder.h"
 
 // StateS classes
+class MachineManager;
 class FsmGraphicTransition;
 class FsmGraphicState;
 class Fsm;
@@ -46,12 +47,8 @@ class FsmTransition;
 
 /**
  * @brief The FsmScene class is a FSM graphic representation.
- * It is deeply linked to the Fsm object, which must be provided
- * at creation, and can't be replaced.
- * The FsmScene class maintains a shared pointer to the Fsm, so
- * it can't loose the object.
- * This is one of the rare case where an object is not owned in a
- * single object, the others using weak pointers.
+ * It is deeply linked to the Fsm object, which can't be replaced:
+ * Object must be deleted and recreated if the machine changes.
  */
 class FsmScene : public GenericScene
 {
@@ -70,7 +67,7 @@ private:
 	};
 
 public:
-	explicit FsmScene(shared_ptr<Fsm> machine);
+	explicit FsmScene(shared_ptr<MachineManager> machineManager);
 	~FsmScene();
 
 	virtual void setDisplaySize(const QSize& newSize) override;
@@ -106,10 +103,14 @@ private:
 	FsmGraphicState* getStateAt(const QPointF& location) const;
 	FsmGraphicState* addState(FsmGraphicState* newState);
 	void addTransition(FsmGraphicTransition* newTransition);
+	void build();
+
 	void cancelDrawTransition();
 
+	shared_ptr<Fsm> getFsm() const;
+
 private:
-	weak_ptr<Fsm> machine;
+	shared_ptr<MachineManager> machineManager;
 
 	sceneMode_e sceneMode;
 	FsmGraphicTransition* currentTransition = nullptr;

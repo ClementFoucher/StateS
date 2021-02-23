@@ -8,7 +8,7 @@
 # Update these
 VERSION = 0.4.4
 DATE = 2014-2021
-# And remember to updates version in readme and other text files
+# And remember to update version in readme and other text files
 ###
 
 
@@ -37,6 +37,7 @@ SOURCES += \
 	core/basic_type/logicvalue.cpp \
 	core/basic_type/truthtable.cpp \
 	core/machine/machinebuilder.cpp \
+	core/machine/manager/machinemanager.cpp \
 	core/machine/logic/machine.cpp \
 	core/machine/logic/components/machinecomponent.cpp \
 	core/machine/logic/components/actiononsignal.cpp \
@@ -145,6 +146,7 @@ HEADERS += \
 	core/basic_type/include/logicvalue.h \
 	core/basic_type/include/truthtable.h \
 	core/machine/include/machinebuilder.h \
+	core/machine/manager/include/machinemanager.h \
 	core/machine/logic/include/machine.h \
 	core/machine/logic/components/include/machinecomponent.h \
 	core/machine/logic/components/include/actiononsignal.h \
@@ -254,6 +256,7 @@ INCLUDEPATH += \
 	core/machine/logic/include \
 	core/machine/logic/components/include \
 	core/machine/logic/fsm/include \
+	core/machine/manager/include \
 	core/machine/configuration/include \
 	core/machine/import_export/include \
 	core/machine/import_export/fsm/include \

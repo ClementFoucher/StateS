@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,12 +28,6 @@
 #include "fsmsimulator.h"
 #include "fsmundocommand.h"
 
-
-Fsm::Fsm(shared_ptr<MachineStatus> machineStatus) :
-    Machine(machineStatus)
-{
-
-}
 
 Fsm::Fsm() :
     Machine()

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,6 +23,7 @@
 #include "include/fsmundocommand.h"
 
 // StateS classes
+#include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmgraphicstate.h"
@@ -40,7 +41,7 @@ FsmUndoCommand::FsmUndoCommand(shared_ptr<FsmState> state) :
 
 void FsmUndoCommand::undo()
 {
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(l_machine);
 
 	if (fsm != nullptr)
@@ -69,7 +70,7 @@ void FsmUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		shared_ptr<Machine> l_machine = MachineUndoCommand::machine.lock();
+		shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
 		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(l_machine);
 
 		if (fsm != nullptr)

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,6 @@ class ViewConfiguration;
 class MachineActuatorComponent;
 class Signal;
 class Equation;
-class MachineStatus;
 
 
 class MachineXmlParser : public QObject
@@ -52,8 +51,6 @@ public:
 	static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
 
 	void doParse();
-
-	void setMachineStatus(shared_ptr<MachineStatus> initialStatus);
 
 	shared_ptr<Machine>           getMachine();
 	shared_ptr<ViewConfiguration> getViewConfiguration();
@@ -77,7 +74,6 @@ private:
 protected:
 	QList<QString> warnings;
 	shared_ptr<Machine> machine;
-	shared_ptr<MachineStatus> status;
 
 	shared_ptr<MachineActuatorComponent> currentActuator;
 	shared_ptr<Signal> rootLogicEquation;
