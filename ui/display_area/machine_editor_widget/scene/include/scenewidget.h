@@ -33,9 +33,6 @@ using namespace std;
 class QPushButton;
 class QLabel;
 
-// For enum
-#include "machinebuilder.h"
-
 // StateS classes
 class MachineManager;
 class MachineComponent;
@@ -53,9 +50,11 @@ class SceneWidget : public StatesGraphicsView
 {
 	Q_OBJECT
 
+public:
+	enum class mouseCursor_t { none, state, transition };
+
 private:
-	enum class sceneMode_e { noScene, idle, movingScene };
-	enum class mouseCursor_e { none, state, transition };
+	enum class sceneMode_t { noScene, idle, movingScene, withTool };
 
 	static double scaleFactor;
 
@@ -86,8 +85,7 @@ protected:
 private slots:
 	void machineUpdatedEventHandler(bool);
 
-	void toolChangedEventHandler(MachineBuilder::tool newTool);
-	void singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool);
+	void updateMouseCursor(mouseCursor_t cursor);
 
 	void zoomIn();
 	void zoomOut();
@@ -97,9 +95,7 @@ private slots:
 private:
 	void clearScene();
 	void buildScene();
-	void updateTool(MachineBuilder::tool newTool);
-	void updateMouseCursor(mouseCursor_e cursor);
-	void updateSceneMode(sceneMode_e newMode);
+	void updateSceneMode(sceneMode_t newMode);
 	void updateDragMode();
 	void setZoomPanelVisible(bool visible);
 
@@ -114,12 +110,9 @@ private:
 	QPushButton* buttonZoomFit = nullptr;
 
 	// Current state
-	sceneMode_e   sceneMode     = sceneMode_e::noScene;
-	mouseCursor_e currentCursor = mouseCursor_e::none;
-
-	// Connections
-	QMetaObject::Connection machineBuilderChangedToolEventConnection;
-	QMetaObject::Connection machineBuilderSingleUseToolSelectedConnection;
+	sceneMode_t   sceneMode         = sceneMode_t::noScene;
+	sceneMode_t   previousSceneMode = sceneMode_t::noScene;
+	mouseCursor_t currentCursor     = mouseCursor_t::none;
 };
 
 #endif // SCENEWIDGET_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,8 +35,6 @@ class BlankScene : public GenericScene
 
 public:
 	explicit BlankScene();
-
-	virtual void setDisplaySize(const QSize&) override;
 
 private:
 	QGraphicsTextItem* text = nullptr;

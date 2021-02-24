@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,6 +30,7 @@
 using namespace std;
 
 // StateS classes
+#include "scenewidget.h"
 class MachineComponent;
 
 
@@ -40,12 +41,19 @@ class GenericScene : public QGraphicsScene
 public:
 	explicit GenericScene();
 
-	virtual void setDisplaySize(const QSize& newSize) = 0;
+	void setDisplaySize(const QSize& newSize);
 
 signals:
 	void itemSelectedEvent(shared_ptr<MachineComponent> component);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
+	void updateCursorEvent(SceneWidget::mouseCursor_t newCursor);
+
+protected:
+	void updateSceneRect();
+
+private:
+	QSize displaySize;
 };
 
 #endif // GENERICSCENE_H

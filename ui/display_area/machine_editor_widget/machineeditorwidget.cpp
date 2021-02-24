@@ -117,7 +117,7 @@ void MachineEditorWidget::resetToolbar()
 		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
 		if (fsm != nullptr)
 		{
-			this->drawingToolBar = new FsmDrawingToolBar(newMachine->getMachineBuilder(), this);
+			this->drawingToolBar = new FsmDrawingToolBar(this->machineManager->getMachineBuilder(), this);
 			this->drawingToolBar->setMovable(true);
 			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
 		}

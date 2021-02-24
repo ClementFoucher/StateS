@@ -116,6 +116,10 @@ void StateS::run()
  */
 void StateS::generateNewFsm()
 {
+	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+	machineStatus->setHasSaveFile(false);
+	machineStatus->setUnsavedFlag(false);
+
 	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
 	this->machineManager->setMachine(newMachine);
 }
@@ -126,6 +130,10 @@ void StateS::generateNewFsm()
  */
 void StateS::clearMachine()
 {
+	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+	machineStatus->setHasSaveFile(false);
+	machineStatus->setUnsavedFlag(false);
+
 	this->machineManager->setMachine(nullptr);
 }
 
@@ -159,6 +167,7 @@ void StateS::loadMachine(const QString& path)
 			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
 			machineStatus->setHasSaveFile(true);
 			machineStatus->setUnsavedFlag(false);
+			machineStatus->setSaveFilePath(path);
 
 			this->statesUi->setViewConfiguration(parser->getViewConfiguration());
 		}
@@ -203,8 +212,8 @@ void StateS::saveCurrentMachine(const QString& path)
 		if (fileOk)
 		{
 			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
-			machineStatus->setSaveFilePath(path);
 			machineStatus->setHasSaveFile(true);
+			machineStatus->setSaveFilePath(path);
 			this->saveCurrentMachineInCurrentFile();
 		}
 	}

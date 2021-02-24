@@ -34,6 +34,7 @@ class Machine;
 class MachineStatus;
 class UndoRedoManager;
 class ViewConfiguration;
+class MachineBuilder;
 
 
 class MachineManager : public QObject, public enable_shared_from_this<MachineManager>
@@ -53,9 +54,9 @@ public:
 	void setViewConfiguration(shared_ptr<ViewConfiguration> viewConfiguration);
 
 	// Acessors
-	shared_ptr<Machine>              getMachine()              const;
-	shared_ptr<MachineStatus>        getMachineStatus()        const;
-
+	shared_ptr<Machine>        getMachine()        const;
+	shared_ptr<MachineStatus>  getMachineStatus()  const;
+	shared_ptr<MachineBuilder> getMachineBuilder() const;
 	// Actions
 	void undo();
 	void redo();
@@ -78,8 +79,9 @@ private:
 	void setMachineInternal(shared_ptr<Machine> newMachine, bool isNewMachine);
 
 private:
-	shared_ptr<Machine>              machine;
-	shared_ptr<MachineStatus>        machineStatus;
+	shared_ptr<Machine>        machine;
+	shared_ptr<MachineStatus>  machineStatus;
+	shared_ptr<MachineBuilder> machineBuilder;
 
 	// Temporary
 	shared_ptr<ViewConfiguration>    viewConfiguration;

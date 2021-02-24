@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -120,7 +120,6 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 		break;
 
 	case MachineBuilder::tool::none:
-	case MachineBuilder::tool::quittingTool:
 		this->resetTool();
 
 		result =  true;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,6 @@
 #include "machine.h"
 #include "fsmgraphictransition.h"
 #include "fsmstate.h"
-#include "fsmscene.h"
 #include "StateS_signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
@@ -348,7 +347,7 @@ void FsmGraphicState::treatMenu(QAction* action)
 		}
 		else if (action->text() == tr("Draw transition from this state"))
 		{
-			((FsmScene*)scene())->beginDrawTransition(this, QPointF());
+			emit beginDrawTransitionFromThisState(this);
 		}
 		else if (action->text() == tr("Set active"))
 		{

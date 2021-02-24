@@ -36,7 +36,6 @@ class QGraphicsItem;
 // StateS classes
 #include "logicvalue.h"
 #include "machineundocommand.h"
-class MachineBuilder;
 class Signal;
 class Input;
 class Output;
@@ -106,7 +105,6 @@ public:
 
 	simulation_mode getCurrentSimulationMode() const;
 	shared_ptr<MachineSimulator> getSimulator() const;
-	shared_ptr<MachineBuilder> getMachineBuilder() const;
 	QGraphicsItem* getComponentVisualization() const;
 
 	bool cleanSignalName(QString& nameToClean) const;
@@ -160,7 +158,6 @@ private:
 
 	QString name;
 
-	shared_ptr<MachineBuilder> machineBuilder;
 	simulation_mode currentMode = simulation_mode::editMode;
 
 	weak_ptr<MachineSimulator> simulator;

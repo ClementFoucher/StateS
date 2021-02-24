@@ -28,7 +28,6 @@
 // StateS classes
 #include "input.h"
 #include "output.h"
-#include "machinebuilder.h"
 #include "constant.h"
 #include "statesexception.h"
 #include "machineundocommand.h"
@@ -36,7 +35,6 @@
 
 Machine::Machine()
 {
-	this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
 	this->name = tr("Machine");
 }
 
@@ -241,11 +239,6 @@ void Machine::emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand)
 Machine::simulation_mode Machine::getCurrentSimulationMode() const
 {
 	return this->currentMode;
-}
-
-shared_ptr<MachineBuilder> Machine::getMachineBuilder() const
-{
-	return this->machineBuilder;
 }
 
 QGraphicsItem* Machine::getComponentVisualization() const

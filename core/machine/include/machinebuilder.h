@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,15 +32,13 @@ class MachineBuilder : public QObject
 
 public:
 	enum class tool {none,
-		             // Loosing tool is handled at mouse press, change mode is handled at mouse release.
-		             // Between these, we use a temporary tool (equivalent to none).
-		             quittingTool,
-		             state, transition, initial_state
+		             initial_state,
+		             state,
+		             transition
 	                };
 
 	enum class singleUseTool { none,
 		                       drawTransitionFromScene,
-		                       beginDrawTransitionFromTool,
 		                       editTransitionSource,
 		                       editTransitionTarget
 	                         };

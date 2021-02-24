@@ -89,8 +89,7 @@ void SceneWidget::clearScene()
 		delete oldScene;
 	}
 
-	this->updateTool(MachineBuilder::tool::none);
-	this->updateSceneMode(sceneMode_e::noScene);
+	this->updateSceneMode(sceneMode_t::noScene);
 }
 
 void SceneWidget::buildScene()
@@ -119,15 +118,15 @@ void SceneWidget::buildScene()
 		connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
 		connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
 		connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
+		connect(newScene, &GenericScene::updateCursorEvent,       this, &SceneWidget::updateMouseCursor);
 
 		this->setScene(newScene);
-
-		this->updateSceneMode(sceneMode_e::idle);
+		this->updateSceneMode(sceneMode_t::idle);
 	}
 	else
 	{
-		this->sceneMode = sceneMode_e::noScene;
 		this->setScene(new BlankScene());
+		this->updateSceneMode(sceneMode_t::noScene);
 	}
 }
 
@@ -156,28 +155,6 @@ void SceneWidget::setZoomLevel(qreal level)
 QRectF SceneWidget::getVisibleArea() const
 {
 	return this->mapToScene(this->rect()).boundingRect();
-}
-
-void SceneWidget::toolChangedEventHandler(MachineBuilder::tool newTool)
-{
-	this->updateTool(newTool);
-}
-
-void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::singleUseTool newTool)
-{
-	if ( (newTool == MachineBuilder::singleUseTool::drawTransitionFromScene) ||
-	     (newTool == MachineBuilder::singleUseTool::editTransitionSource) ||
-	     (newTool == MachineBuilder::singleUseTool::editTransitionTarget)
-	     )
-	{
-		// Use an "overlay" cursor: not saved, can be canceled.
-		this->updateMouseCursor(mouseCursor_e::transition);
-	}
-	else if (newTool == MachineBuilder::singleUseTool::none)
-	{
-		// When single-use tool is discarded, get back to currently used tool
-		this->updateMouseCursor(this->currentCursor);
-	}
 }
 
 void SceneWidget::resizeEvent(QResizeEvent* event)
@@ -226,9 +203,10 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
 {
 	bool transmitEvent = true;
 
-	if ( (this->sceneMode != sceneMode_e::noScene) && (me->button() == Qt::MiddleButton) )
+	if ( (this->sceneMode != sceneMode_t::noScene) && (me->button() == Qt::MiddleButton) )
 	{
-		this->updateSceneMode(sceneMode_e::movingScene);
+		this->previousSceneMode = this->sceneMode;
+		this->updateSceneMode(sceneMode_t::movingScene);
 		transmitEvent = false;
 	}
 
@@ -244,7 +222,7 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 
 	bool transmitEvent = true;
 
-	if (this->sceneMode == sceneMode_e::movingScene)
+	if (this->sceneMode == sceneMode_t::movingScene)
 	{
 		QScrollBar* hBar = horizontalScrollBar();
 		QScrollBar* vBar = verticalScrollBar();
@@ -267,9 +245,11 @@ void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 {
 	bool transmitEvent = true;
 
-	if (this->sceneMode == sceneMode_e::movingScene)
+	if (this->sceneMode == sceneMode_t::movingScene)
 	{
-		this->updateSceneMode(sceneMode_e::idle);
+		this->updateSceneMode(this->previousSceneMode);
+		this->previousSceneMode = sceneMode_t::idle;
+
 		transmitEvent = false;
 	}
 
@@ -283,7 +263,7 @@ void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
 {
 	bool transmitEvent = true;
 
-	if (this->sceneMode == sceneMode_e::movingScene)
+	if (this->sceneMode == sceneMode_t::movingScene)
 	{
 		transmitEvent = false;
 	}
@@ -298,7 +278,7 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 {
 	// In this function, never transmit event: we always handle it, even by doing nothing
 
-	if (this->sceneMode != sceneMode_e::noScene)
+	if (this->sceneMode != sceneMode_t::noScene)
 	{
 		if ( (event->modifiers() & Qt::ControlModifier) != 0)
 		{
@@ -340,7 +320,7 @@ void SceneWidget::zoomOut()
 
 void SceneWidget::zoomFit()
 {
-	QRectF idealView   = this->getScene()->itemsBoundingRect();
+	QRectF idealView = this->getScene()->itemsBoundingRect();
 
 	if (! idealView.isNull()) // Zoom fit is only relevant if scene contains elements
 	{
@@ -371,54 +351,36 @@ void SceneWidget::machineUpdatedEventHandler(bool)
 	this->buildScene();
 }
 
-void SceneWidget::updateTool(MachineBuilder::tool newTool)
-{
-	switch (newTool)
-	{
-	case MachineBuilder::tool::none:
-	case MachineBuilder::tool::quittingTool:
-		this->currentCursor = mouseCursor_e::none;
-		break;
-	case MachineBuilder::tool::state:
-	case MachineBuilder::tool::initial_state:
-		this->currentCursor = mouseCursor_e::state;
-		break;
-	case MachineBuilder::tool::transition:
-		this->currentCursor = mouseCursor_e::transition;
-		break;
-	}
-
-	this->updateMouseCursor(this->currentCursor);
-	this->updateDragMode();
-}
-
-void SceneWidget::updateMouseCursor(mouseCursor_e cursor)
+void SceneWidget::updateMouseCursor(mouseCursor_t cursor)
 {
 	QPixmap pixmap;
 	switch(cursor)
 	{
-	case mouseCursor_e::none:
+	case mouseCursor_t::none:
 		this->unsetCursor();
+		this->updateSceneMode(sceneMode_t::idle);
 		break;
-	case mouseCursor_e::state:
+	case mouseCursor_t::state:
 		pixmap = FsmGraphicState::getPixmap(32, false, true);
 		this->setCursor(QCursor(pixmap, 0, 0));
+		this->updateSceneMode(sceneMode_t::withTool);
 		break;
-	case mouseCursor_e::transition:
+	case mouseCursor_t::transition:
 		pixmap = FsmGraphicTransition::getPixmap(32);
 		this->setCursor(QCursor(pixmap, 0, 0));
+		this->updateSceneMode(sceneMode_t::withTool);
 		break;
 	}
 }
 
-void SceneWidget::updateSceneMode(sceneMode_e newMode)
+void SceneWidget::updateSceneMode(sceneMode_t newMode)
 {
 	if (newMode != this->sceneMode)
 	{
 		this->sceneMode = newMode;
 
 		// Update zoom buttons visibility
-		if (this->sceneMode == sceneMode_e::idle)
+		if ( (this->sceneMode == sceneMode_t::idle) || (this->sceneMode == sceneMode_t::withTool) )
 		{
 			this->setZoomPanelVisible(true);
 		}
@@ -435,13 +397,13 @@ void SceneWidget::updateDragMode()
 {
 	QGraphicsView::DragMode dragMode = QGraphicsView::NoDrag;
 
-	if ( (this->sceneMode == sceneMode_e::idle) && (this->currentCursor == mouseCursor_e::none) )
+	if (this->sceneMode == sceneMode_t::idle)
 	{
 		dragMode = QGraphicsView::RubberBandDrag;
 	}
-	else if (this->sceneMode == sceneMode_e::movingScene)
+	else if (this->sceneMode == sceneMode_t::movingScene)
 	{
-		dragMode = QGraphicsView::ScrollHandDrag; // Just for mouse icon, not using its properties
+		dragMode = QGraphicsView::ScrollHandDrag; // Just for mouse icon, not using its properties as it requires left mouse button pressed to work
 	}
 
 	this->setDragMode(dragMode);

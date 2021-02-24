@@ -30,6 +30,7 @@ using namespace std;
 #include "memory.h"
 
 // StateS classes
+class MachineManager;
 class CollapsibleWidgetWithTitle;
 class MachineComponentVisualizer;
 class DynamicLineEdit;
@@ -44,7 +45,7 @@ class HintTab : public QWidget
 	Q_OBJECT
 
 public:
-	explicit HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit HintTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
@@ -62,11 +63,12 @@ private:
 	void updateHint(MachineBuilder::tool newTool);
 
 private:
+	shared_ptr<MachineManager> machineManager;
+
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
-	weak_ptr<Machine>                    machine;
 };
 
 #endif // MACHINEBUILDERTAB_H

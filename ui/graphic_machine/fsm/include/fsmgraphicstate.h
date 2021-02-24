@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,6 +45,7 @@ class FsmGraphicState : public GraphicActuator, public QGraphicsEllipseItem
 	// Static
 public:
 	static QPixmap getPixmap(uint size, bool isInitial = false, bool addArrow = false);
+	static qreal getRadius();
 
 private:
 	const static qreal radius;
@@ -59,8 +60,6 @@ public:
 
 	void setLogicState(shared_ptr<FsmState> logicState);
 	shared_ptr<FsmState> getLogicState() const;
-
-	static qreal getRadius();
 
 	// Raised visibility (should be protected) to allow direct calls:
 	// Needed because an event can be manually transmitted to various items
@@ -77,6 +76,7 @@ signals:
 
 	void editStateCalledEvent(shared_ptr<FsmState> state);
 	void renameStateCalledEvent(shared_ptr<FsmState> state);
+	void beginDrawTransitionFromThisState(FsmGraphicState* state);
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;

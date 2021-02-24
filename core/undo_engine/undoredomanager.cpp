@@ -84,7 +84,7 @@ void UndoRedoManager::machineUpdatedEventHandler(bool isNewMachine)
 void UndoRedoManager::addUndoCommand(MachineUndoCommand* undoCommand)
 {
 	this->undoStack.push(undoCommand);
-	this->setMachineUnsavedFlag(false);
+	this->setMachineUnsavedFlag(true);
 }
 
 void UndoRedoManager::buildDiffUndoCommand(MachineUndoCommand::undo_command_id commandId)
@@ -93,7 +93,6 @@ void UndoRedoManager::buildDiffUndoCommand(MachineUndoCommand::undo_command_id c
 	connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &UndoRedoManager::freshMachineAvailableEvent);
 
 	this->undoStack.push(undoCommand);
-
 	this->setMachineUnsavedFlag(true);
 }
 

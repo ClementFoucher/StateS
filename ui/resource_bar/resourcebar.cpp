@@ -220,7 +220,7 @@ void ResourceBar::build()
 	{
 		this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
 
-		this->hintsTab     = new HintTab         (newMachine, this->machineComponentScene);
+		this->hintsTab     = new HintTab         (this->machineManager, this->machineComponentScene);
 		this->machineTab   = new MachineEditorTab(newMachine, this->machineComponentScene);
 		this->simulatorTab = new SimulatorTab    (newMachine);
 		this->verifierTab  = new VerifierTab     (newMachine);

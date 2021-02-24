@@ -25,6 +25,7 @@
 // StateS classes
 #include "machinestatus.h"
 #include "undoredomanager.h"
+#include "machinebuilder.h"
 
 
 MachineManager::MachineManager() :
@@ -73,6 +74,11 @@ shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
 	return this->machineStatus;
 }
 
+shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
+{
+	return this->machineBuilder;
+}
+
 void MachineManager::undo()
 {
 	if (this->undoRedoManager != nullptr)
@@ -119,6 +125,12 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, bool isN
 	// Update machine
 	this->machine.reset(); // TODO : Not sure why this has to be done first ??? If not, causes a crash when undo stack is not empty...
 	this->machine = newMachine;
+
+	this->machineBuilder.reset();
+	if (newMachine != nullptr)
+	{
+		this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
+	}
 
 	// Notify machine updated
 	emit this->machineUpdatedEvent(isNewMachine);

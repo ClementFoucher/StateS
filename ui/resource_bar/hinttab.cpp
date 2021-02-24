@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,24 +30,25 @@
 #include <QDebug>
 
 // StateS classes
+#include "machinemanager.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "dynamiclineedit.h"
 #include "fsm.h"
 
 
-HintTab::HintTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+HintTab::HintTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
-	this->machine              = machine;
+	this->machineManager       = machineManager;
 
-	if (machine != nullptr)
+	if (machineManager != nullptr)
 	{
 		QVBoxLayout* layout = new QVBoxLayout(this);
 		layout->setAlignment(Qt::AlignTop);
 
-		shared_ptr<MachineBuilder> machineBuilder = machine->getMachineBuilder();
+		shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 		connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &HintTab::toolChangedEventHandler);
 		connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &HintTab::singleUsetoolChangedEventHandler);
 
@@ -108,10 +109,10 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 {
 	if (tempTool == MachineBuilder::singleUseTool::none)
 	{
-		shared_ptr<Machine> l_machine = this->machine.lock();
+		shared_ptr<MachineBuilder> machineBuiler = this->machineManager->getMachineBuilder();
 
-		if (l_machine!= nullptr)
-			this->updateHint(l_machine->getMachineBuilder()->getTool());
+		if (machineBuiler != nullptr)
+			this->updateHint(machineBuiler->getTool());
 		else
 			this->updateHint(MachineBuilder::tool::none);
 	}
@@ -135,17 +136,6 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 			hint += "<br />";
 
 			break;
-		case MachineBuilder::singleUseTool::beginDrawTransitionFromTool:
-			title +=  tr("Drawing a transition");
-
-			hint += "<br />";
-			hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("on a state") + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
-			hint += "<br />";
-			hint += "<br />";
-			hint += tr("Release") + " <i>" + tr("left-click") + "</i> " + tr("anywhere else") + " " + tr("to cancel") + " " + tr("transition insertion") + ".";
-			hint += "<br />";
-
-			break;
 		case MachineBuilder::singleUseTool::editTransitionSource:
 			title +=  tr("Editing a transition");
 
@@ -153,7 +143,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 			hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the source") + " " + tr("of this transition") + ".";
 			hint += "<br />";
 			hint += "<br />";
-			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
+			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition edition") + ".";
 			hint += "<br />";
 
 			break;
@@ -164,7 +154,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 			hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("to make it") + " " + tr("the target") + " " + tr("of this transition") + ".";
 			hint += "<br />";
 			hint += "<br />";
-			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition editing") + ".";
+			hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to cancel") + " " + tr("transition edition") + ".";
 			hint += "<br />";
 
 			break;
@@ -186,7 +176,6 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 	switch(newTool)
 	{
 	case MachineBuilder::tool::none:
-	case MachineBuilder::tool::quittingTool:
 		title +=  tr("Navigation");
 
 		hint += "<br />";
@@ -247,7 +236,9 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 		title +=  tr("Drawing a transition");
 
 		hint += "<br />";
-		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a state")  + " " + tr("and maintain button") + " " + tr("to begin") + " " + tr("drawing a transition") + " "  + tr("from this state") + ".";
+		hint += tr("Use") + " <i>" + tr("left-click") + "</i> " + tr("on a first state")  + " " + tr("to begin") + " " + tr("drawing a transition") + " "  + tr("from this state") + ".";
+		hint += "<br />";
+		hint += tr("Then") + " <i>" + tr("left-click") + "</i> " + tr("on a second state")  + " " + tr("to make it") + " " + tr("the target of the transition") + ".";
 		hint += "<br />";
 		hint += "<br />";
 		hint += tr("Use") + " <i>" + tr("right-click") + "</i> " + tr("to unselect current tool") + ".";
