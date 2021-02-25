@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,8 +28,10 @@
 #include <QDir>
 
 // StateS classes
+#include "machinemanager.h"
 #include "statesexception.h"
 #include "viewconfiguration.h"
+#include "machinestatus.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "signal.h"
@@ -38,58 +40,60 @@
 #include "constant.h"
 #include "equation.h"
 #include "actiononsignal.h"
-#include "fsm.h"
-#include "fsmxmlwriter.h"
 
 
-shared_ptr<MachineXmlWriter> MachineXmlWriter::buildMachineWriter(shared_ptr<Machine> machine)
+void MachineXmlWriter::writeMachineToFile()
 {
-	shared_ptr<MachineXmlWriter> machineWriter;
-
-	shared_ptr<Fsm> machineAsFsm = dynamic_pointer_cast<Fsm>(machine);
-	if (machineAsFsm != nullptr)
-	{
-		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(dynamic_pointer_cast<Fsm>(machine)));
-	}
-
-	return machineWriter;
+	this->writingToFile = true;
+	this->createSaveFile();
+	this->writeMachineToStream();
+	this->finalizeSaveFile();
 }
 
-MachineXmlWriter::MachineXmlWriter(shared_ptr<Machine> machine)
+QString MachineXmlWriter::getMachineXml()
 {
-	this->machine = machine;
+	this->createSaveString();
+	this->writeMachineToStream();
+	return this->xmlString;
+}
+
+MachineXmlWriter::MachineXmlWriter(shared_ptr<MachineManager> machineManager)
+{
+	this->machineManager = machineManager;
 }
 
 void MachineXmlWriter::writeMachineCommonElements()
 {
-	this->writeMachineConfiguration();
+	if (this->writingToFile == true)
+	{
+		this->writeMachineConfiguration();
+	}
 	this->writeMachineSignals();
 }
 
 void MachineXmlWriter::writeMachineConfiguration()
 {
-	if (this->viewConfiguration != nullptr)
-	{
-		this->stream->writeStartElement("Configuration");
+	shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
 
-		this->stream->writeStartElement("Scale");
-		this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
-		this->stream->writeEndElement();
+	this->stream->writeStartElement("Configuration");
 
-		this->stream->writeStartElement("ViewCentralPoint");
-		this->stream->writeAttribute("X", QString::number(this->viewConfiguration->viewCenter.x() + this->viewConfiguration->sceneTranslation.x()));
-		this->stream->writeAttribute("Y", QString::number(this->viewConfiguration->viewCenter.y() + this->viewConfiguration->sceneTranslation.y()));
-		this->stream->writeEndElement();
+	this->stream->writeStartElement("Scale");
+	this->stream->writeAttribute("Value", QString::number(viewConfiguration->zoomLevel));
+	this->stream->writeEndElement();
 
-		this->stream->writeEndElement();
-	}
+	this->stream->writeStartElement("ViewCentralPoint");
+	this->stream->writeAttribute("X", QString::number(viewConfiguration->viewCenter.x() + viewConfiguration->sceneTranslation.x()));
+	this->stream->writeAttribute("Y", QString::number(viewConfiguration->viewCenter.y() + viewConfiguration->sceneTranslation.y()));
+	this->stream->writeEndElement();
+
+	this->stream->writeEndElement();
 }
 
 void MachineXmlWriter::writeMachineSignals()
 {
 	this->stream->writeStartElement("Signals");
 
-	foreach (shared_ptr<Signal> var, this->machine->getAllSignals())
+	foreach (shared_ptr<Signal> var, this->machineManager->getMachine()->getAllSignals())
 	{
 		// Type
 		if (dynamic_pointer_cast<Input>(var) != nullptr)
@@ -248,9 +252,10 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 	this->stream->writeEndElement(); // LogicEquation | LogicVariable
 }
 
-void MachineXmlWriter::createSaveFile(const QString& filePath) // Throws StatesException
+void MachineXmlWriter::createSaveFile() // Throws StatesException
 {
-	QFileInfo fileInfo(filePath);
+	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
 	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
 	{
 		throw StatesException("MachineSaveFileManager", unable_to_replace, "Unable to replace existing file");
@@ -260,7 +265,7 @@ void MachineXmlWriter::createSaveFile(const QString& filePath) // Throws StatesE
 		throw StatesException("MachineSaveFileManager", unkown_directory, "Directory doesn't exist");
 	}
 
-	this->file = unique_ptr<QFile>(new QFile(filePath));
+	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
 	bool fileOpened = file->open(QIODevice::WriteOnly);
 	if (fileOpened == false)
 	{

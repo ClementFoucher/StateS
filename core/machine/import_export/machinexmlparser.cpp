@@ -27,8 +27,6 @@
 
 // StateS classes
 #include "statesexception.h"
-#include "statesxmlanalyzer.h"
-#include "fsmxmlparser.h"
 #include "machine.h"
 #include "StateS_signal.h"
 #include "viewconfiguration.h"
@@ -555,34 +553,6 @@ void MachineXmlParser::treatEndOperand()
 	shared_ptr<Equation> parentEquation = this->equationStack.pop();
 	parentEquation->setOperand(this->operandRankStack.pop(), this->currentLogicEquation);
 	this->currentLogicEquation = parentEquation;
-}
-
-shared_ptr<MachineXmlParser> MachineXmlParser::buildStringParser(const QString& xmlString)
-{
-	shared_ptr<MachineXmlParser> machineParser;
-
-	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(xmlString));
-
-	if (analyzer->getMachineType() == StateSXmlAnalyzer::machineType::Fsm)
-	{
-		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(xmlString));
-	}
-
-	return machineParser;
-}
-
-shared_ptr<MachineXmlParser> MachineXmlParser::buildFileParser(shared_ptr<QFile> file)
-{
-	shared_ptr<MachineXmlParser> machineParser;
-
-	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(file));
-
-	if (analyzer->getMachineType() == StateSXmlAnalyzer::machineType::Fsm)
-	{
-		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(file));
-	}
-
-	return machineParser;
 }
 
 void MachineXmlParser::doParse()

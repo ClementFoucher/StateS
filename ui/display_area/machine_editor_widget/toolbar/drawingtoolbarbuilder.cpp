@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,26 +16,28 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERRORDISPLAYDIALOG_H
-#define ERRORDISPLAYDIALOG_H
+// Current class header
+#include "drawingtoolbarbuilder.h"
 
-// Parent
-#include <QDialog>
+// StateS classes
+#include "machinemanager.h"
+#include "drawingtoolbar.h"
+#include "fsmdrawingtoolbar.h"
+#include "fsm.h"
 
 
-class ErrorDisplayDialog : public QDialog
+DrawingToolBar* DrawingToolBarBuilder::buildDrawingToolBar(shared_ptr<MachineManager> machineManager)
 {
-	Q_OBJECT
+	DrawingToolBar* drawingToolBar = nullptr;
 
-public:
-	explicit ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent = nullptr);
-	explicit ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent = nullptr);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm != nullptr)
+	{
+		drawingToolBar = new FsmDrawingToolBar(machineManager->getMachineBuilder());
+	}
 
-private:
-	void build(const QString& errorTitle, const QList<QString>& errors);
-};
-
-#endif // ERRORDISPLAYDIALOG_H
+	return drawingToolBar;
+}

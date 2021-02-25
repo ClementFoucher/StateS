@@ -19,7 +19,6 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef GRAPHICEQUATION_H
 #define GRAPHICEQUATION_H
 

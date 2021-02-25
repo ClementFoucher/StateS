@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef MACHINEXMLWRITER_H
 #define MACHINEXMLWRITER_H
 
@@ -33,8 +34,7 @@ class QXmlStreamWriter;
 class QFile;
 
 // StateS classes
-class Machine;
-class ViewConfiguration;
+class MachineManager;
 class Signal;
 class MachineActuatorComponent;
 
@@ -43,7 +43,9 @@ class MachineXmlWriter : public QObject
 {
 	Q_OBJECT
 
-public: // Static
+// Static members
+
+public:
 
 	enum MachineaveFileManagerErrorEnum
 	{
@@ -52,16 +54,18 @@ public: // Static
 		unable_to_open    = 2
 	};
 
-public:
-	static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<Machine> machine);
+// Object members
 
-	virtual void writeMachineToFile(shared_ptr<ViewConfiguration> configuration, const QString& filePath) = 0; // Throws StatesException
-	virtual QString getMachineXml() = 0;
+public:
+	virtual void writeMachineToFile(); // Throws StatesException
+	virtual QString getMachineXml();
 
 protected:
-	explicit MachineXmlWriter(shared_ptr<Machine> machine);
+	explicit MachineXmlWriter(shared_ptr<MachineManager> machineManager);
 
-	void createSaveFile(const QString& filePath); // Throws StatesException
+	virtual void writeMachineToStream() = 0;
+
+	void createSaveFile(); // Throws StatesException
 	void createSaveString();
 	void finalizeSaveFile();
 
@@ -72,10 +76,12 @@ protected:
 	void writeLogicEquation(shared_ptr<Signal> equation);
 
 protected:
+	shared_ptr<MachineManager> machineManager;
+
 	shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;
-	shared_ptr<ViewConfiguration> viewConfiguration;
-	shared_ptr<Machine> machine;
+
+	bool writingToFile = false;
 
 private:
 	shared_ptr<QFile> file;

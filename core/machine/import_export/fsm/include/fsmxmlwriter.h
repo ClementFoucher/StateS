@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -18,10 +18,11 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef FSMXMLWRITER_H
 #define FSMXMLWRITER_H
 
-// Parent
+// Parent class
 #include "machinexmlwriter.h"
 
 // C++ classes
@@ -29,8 +30,7 @@
 using namespace std;
 
 // StateS classes
-class Fsm;
-class ViewConfiguration;
+class MachineManager;
 
 
 class FsmXmlWriter : public MachineXmlWriter
@@ -38,14 +38,12 @@ class FsmXmlWriter : public MachineXmlWriter
 	Q_OBJECT
 
 public:
-	explicit FsmXmlWriter(shared_ptr<Fsm> fsm);
+	explicit FsmXmlWriter(shared_ptr<MachineManager> machineManager);
 
-	void writeMachineToFile(shared_ptr<ViewConfiguration> viewConfiguration, const QString& filePath) override; // Throws StatesException
-	QString getMachineXml() override;
+protected:
+	virtual void writeMachineToStream() override;
 
 private:
-	void writeFsmToStream();
-
 	void writeFsmStates();
 	void writeFsmTransitions();
 };

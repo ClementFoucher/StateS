@@ -302,17 +302,6 @@
     </message>
 </context>
 <context>
-    <name>DisplayArea</name>
-    <message>
-        <source>Machine</source>
-        <translation>Machine</translation>
-    </message>
-    <message>
-        <source>Timeline</source>
-        <translation>Chronogramme</translation>
-    </message>
-</context>
-<context>
     <name>EquationEditor</name>
     <message>
         <source>Equation editor</source>
@@ -840,24 +829,12 @@
         <translation>l&apos;insertion de la transition</translation>
     </message>
     <message>
-        <source>Release</source>
-        <translation>Relâchez</translation>
-    </message>
-    <message>
-        <source>anywhere else</source>
-        <translation>n&apos;importe où ailleurs</translation>
-    </message>
-    <message>
         <source>Editing a transition</source>
         <translation>Éditer une transition</translation>
     </message>
     <message>
         <source>the source</source>
         <translation>la source</translation>
-    </message>
-    <message>
-        <source>transition editing</source>
-        <translation>l&apos;édition de la transition</translation>
     </message>
     <message>
         <source>Navigation</source>
@@ -976,10 +953,6 @@
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <source>and maintain button</source>
-        <translation>et maintenez le bouton</translation>
-    </message>
-    <message>
         <source>to begin</source>
         <translation>pour commencer</translation>
     </message>
@@ -990,6 +963,26 @@
     <message>
         <source>from this state</source>
         <translation>depuis cet état</translation>
+    </message>
+    <message>
+        <source>transition edition</source>
+        <translation>l&apos;édition de la transition</translation>
+    </message>
+    <message>
+        <source>on a first state</source>
+        <translation>sur un premier état</translation>
+    </message>
+    <message>
+        <source>Then</source>
+        <translation>Puis</translation>
+    </message>
+    <message>
+        <source>on a second state</source>
+        <translation>sur un second état</translation>
+    </message>
+    <message>
+        <source>the target of the transition</source>
+        <translation>la cible de la transition</translation>
     </message>
 </context>
 <context>
@@ -1561,49 +1554,6 @@
     </message>
 </context>
 <context>
-    <name>SimulationWidget</name>
-    <message>
-        <source>StateS timeline visualizer</source>
-        <translation>Visualiseur de chronogramme de StateS</translation>
-    </message>
-    <message>
-        <source>Tools</source>
-        <translation>Outils</translation>
-    </message>
-    <message>
-        <source>Export to PDF</source>
-        <translation>Exporter en PDF</translation>
-    </message>
-    <message>
-        <source>Detach as independant window</source>
-        <translation>Détacher en tant que fenêtre indépendante</translation>
-    </message>
-    <message>
-        <source>Clock</source>
-        <translation>Horloge</translation>
-    </message>
-    <message>
-        <source>Inputs</source>
-        <translation>Entrées</translation>
-    </message>
-    <message>
-        <source>Outputs</source>
-        <translation>Sorties</translation>
-    </message>
-    <message>
-        <source>Local variables</source>
-        <translation>Variables locales</translation>
-    </message>
-    <message>
-        <source>Export time line to PDF</source>
-        <translation>Exporter le chronogramme en PDF</translation>
-    </message>
-    <message>
-        <source>Attach to main window</source>
-        <translation>Attacher à la fenêtre principale</translation>
-    </message>
-</context>
-<context>
     <name>SimulatorTab</name>
     <message>
         <source>Simulator</source>
@@ -1737,6 +1687,57 @@
     <message>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
+    </message>
+    <message>
+        <source>Machine</source>
+        <translation>Machine</translation>
+    </message>
+    <message>
+        <source>Timeline</source>
+        <translation>Chronogramme</translation>
+    </message>
+</context>
+<context>
+    <name>TimelineWidget</name>
+    <message>
+        <source>StateS timeline visualizer</source>
+        <translation>Visualiseur de chronogramme de StateS</translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation>Outils</translation>
+    </message>
+    <message>
+        <source>Export to PDF</source>
+        <translation>Exporter en PDF</translation>
+    </message>
+    <message>
+        <source>Detach as independant window</source>
+        <translation>Détacher en tant que fenêtre indépendante</translation>
+    </message>
+    <message>
+        <source>Clock</source>
+        <translation>Horloge</translation>
+    </message>
+    <message>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
+    </message>
+    <message>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+    <message>
+        <source>Local variables</source>
+        <translation>Variables locales</translation>
+    </message>
+    <message>
+        <source>Export time line to PDF</source>
+        <translation>Exporter le chronogramme en PDF</translation>
+    </message>
+    <message>
+        <source>Attach to main window</source>
+        <translation>Attacher à la fenêtre principale</translation>
     </message>
 </context>
 <context>

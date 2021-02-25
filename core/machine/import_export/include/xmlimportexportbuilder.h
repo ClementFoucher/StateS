@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,35 +16,40 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWCONFIGURATION_H
-#define VIEWCONFIGURATION_H
+#ifndef XMLIMPORTEXPORTBUILDER_H
+#define XMLIMPORTEXPORTBUILDER_H
 
 // Parent class
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
-#include <QPointF>
+class QFile;
+
+// StateS classes
+class MachineManager;
+class MachineXmlWriter;
+class MachineXmlParser;
 
 
-/**
- * @brief The ViewConfiguration class is used as a
- * temporary storage structure to transmit the view
- * characteristics when saving or loading to/from a file.
- */
-class ViewConfiguration : public QObject
+class XmlImportExportBuilder : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit ViewConfiguration();
+	// Writer
+	static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<MachineManager> machineManager);
 
-public:
-	QPointF sceneTranslation;
-	QPointF viewCenter;
-	qreal   zoomLevel;
+	// Parser
+	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
+	static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
+
 };
 
-#endif // VIEWCONFIGURATION_H
+#endif // XMLIMPORTEXPORTBUILDER_H

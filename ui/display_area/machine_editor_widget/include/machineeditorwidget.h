@@ -33,7 +33,6 @@ using namespace std;
 #include "machine.h"
 class MachineManager;
 class GenericScene;
-class ViewConfiguration;
 class SceneWidget;
 class DrawingToolBar;
 class MachineComponent;
@@ -50,9 +49,6 @@ public:
 
 	void clearSelection();
 
-	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
-	shared_ptr<ViewConfiguration> getViewConfiguration() const;
-
 signals:
 	void itemSelectedEvent(shared_ptr<MachineComponent> component);
 	void editSelectedItemEvent();
@@ -62,9 +58,6 @@ private slots:
 	void machineUpdatedEventHandler(bool isNewMachine);
 
 	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
-
-private:
-	void resetToolbar();
 
 private:
 	shared_ptr<MachineManager> machineManager;

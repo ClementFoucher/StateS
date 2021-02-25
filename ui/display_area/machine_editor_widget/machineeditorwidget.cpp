@@ -26,10 +26,8 @@
 #include "machinemanager.h"
 #include "scenewidget.h"
 #include "drawingtoolbar.h"
-#include "fsmdrawingtoolbar.h"
+#include "drawingtoolbarbuilder.h"
 #include "machine.h"
-#include "fsm.h"
-#include "viewconfiguration.h"
 
 
 MachineEditorWidget::MachineEditorWidget(shared_ptr<MachineManager> machineManager, QWidget* parent) :
@@ -60,26 +58,6 @@ void MachineEditorWidget::clearSelection()
 	this->machineDisplayArea->clearSelection();
 }
 
-void MachineEditorWidget::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
-{
-	if (configuration != nullptr)
-	{
-		this->machineDisplayArea->setZoomLevel(configuration->zoomLevel);
-		this->machineDisplayArea->centerOn(configuration->viewCenter);
-	}
-}
-
-shared_ptr<ViewConfiguration> MachineEditorWidget::getViewConfiguration() const
-{
-	shared_ptr<ViewConfiguration> configuration(new ViewConfiguration());
-
-	configuration->sceneTranslation = -(this->machineDisplayArea->getVisibleArea().topLeft());
-	configuration->zoomLevel        = this->machineDisplayArea->getZoomLevel();
-	configuration->viewCenter       = this->machineDisplayArea->getVisibleArea().center();
-
-	return configuration;
-}
-
 void MachineEditorWidget::machineUpdatedEventHandler(bool isNewMachine)
 {
 	shared_ptr<Machine> newMachine = this->machineManager->getMachine();
@@ -90,7 +68,13 @@ void MachineEditorWidget::machineUpdatedEventHandler(bool isNewMachine)
 
 	if (isNewMachine == true)
 	{
-		this->resetToolbar();
+		delete this->drawingToolBar;
+		this->drawingToolBar = DrawingToolBarBuilder::buildDrawingToolBar(this->machineManager);
+		if (this->drawingToolBar != nullptr)
+		{
+			this->drawingToolBar->setMovable(true);
+			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
+		}
 	}
 }
 
@@ -103,23 +87,5 @@ void MachineEditorWidget::simulationModeToggledEventHandler(Machine::simulation_
 	else
 	{
 		this->drawingToolBar->setEnabled(true);
-	}
-}
-
-void MachineEditorWidget::resetToolbar()
-{
-	delete this->drawingToolBar;
-	this->drawingToolBar = nullptr;
-
-	shared_ptr<Machine> newMachine = this->machineManager->getMachine();
-	if (newMachine != nullptr)
-	{
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
-		if (fsm != nullptr)
-		{
-			this->drawingToolBar = new FsmDrawingToolBar(this->machineManager->getMachineBuilder(), this);
-			this->drawingToolBar->setMovable(true);
-			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
-		}
 	}
 }

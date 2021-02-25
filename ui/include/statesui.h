@@ -35,7 +35,6 @@ class MachineManager;
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
-class ViewConfiguration;
 class MainToolBar;
 class MachineEditorWidget;
 class TimelineWidget;
@@ -57,9 +56,6 @@ class StatesUi : public QMainWindow
 
 public:
 	explicit StatesUi(shared_ptr<MachineManager> machineManager);
-
-	void setViewConfiguration(shared_ptr<ViewConfiguration> configuration);
-	shared_ptr<ViewConfiguration> getViewConfiguration() const;
 
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;

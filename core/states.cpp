@@ -37,6 +37,7 @@
 #include "fsm.h"
 #include "machinexmlwriter.h"
 #include "machinexmlparser.h"
+#include "xmlimportexportbuilder.h"
 #include "machinestatus.h"
 
 
@@ -121,6 +122,8 @@ void StateS::generateNewFsm()
 	machineStatus->setUnsavedFlag(false);
 
 	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
+
+	this->machineManager->setViewConfiguration(shared_ptr<ViewConfiguration>(new ViewConfiguration()));
 	this->machineManager->setMachine(newMachine);
 }
 
@@ -134,6 +137,7 @@ void StateS::clearMachine()
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
+	this->machineManager->setViewConfiguration(nullptr);
 	this->machineManager->setMachine(nullptr);
 }
 
@@ -151,7 +155,7 @@ void StateS::loadMachine(const QString& path)
 		try
 		{
 			// Build file parser
-			shared_ptr<MachineXmlParser> parser =  MachineXmlParser::buildFileParser(shared_ptr<QFile>(new QFile(path)));
+			shared_ptr<MachineXmlParser> parser =  XmlImportExportBuilder::buildFileParser(shared_ptr<QFile>(new QFile(path)));
 
 			// Parse and check for warnings
 			parser->doParse();
@@ -162,14 +166,13 @@ void StateS::loadMachine(const QString& path)
 			}
 
 			// If we reached this point, there should have been no exception
+			this->machineManager->setViewConfiguration(parser->getViewConfiguration());
 			this->machineManager->setMachine(parser->getMachine());
 
 			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
 			machineStatus->setHasSaveFile(true);
 			machineStatus->setUnsavedFlag(false);
 			machineStatus->setSaveFilePath(path);
-
-			this->statesUi->setViewConfiguration(parser->getViewConfiguration());
 		}
 		catch (const StatesException& e)
 		{
@@ -244,9 +247,10 @@ void StateS::saveCurrentMachineInCurrentFile()
 		{
 			try
 			{
-				shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(this->machineManager->getMachine());
+				this->machineManager->updateViewConfiguration();
+				shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(this->machineManager);
+				saveManager->writeMachineToFile(); // Throws StatesException
 
-				saveManager->writeMachineToFile(this->statesUi->getViewConfiguration(), file.filePath()); // Throws StatesException
 				machineStatus->setUnsavedFlag(false);
 			}
 			catch (const StatesException& e)

@@ -64,10 +64,6 @@ public:
 	GenericScene* getScene() const;
 
 	void clearSelection();
-	QRectF getVisibleArea() const;
-
-	qreal getZoomLevel() const;
-	void  setZoomLevel(qreal level);
 
 signals:
 	void itemSelectedEvent(shared_ptr<MachineComponent> component);
@@ -83,7 +79,7 @@ protected:
 	void wheelEvent           (QWheelEvent*)  override;
 
 private slots:
-	void machineUpdatedEventHandler(bool);
+	void machineUpdatedEventHandler(bool isNewMachine);
 
 	void updateMouseCursor(mouseCursor_t cursor);
 
@@ -92,12 +88,17 @@ private slots:
 	void zoomFit();
 	void resetZoom();
 
+	void updateMachineView();
+
 private:
 	void clearScene();
 	void buildScene();
 	void updateSceneMode(sceneMode_t newMode);
 	void updateDragMode();
 	void setZoomPanelVisible(bool visible);
+	void setZoomLevel(qreal level);
+	qreal getZoomLevel() const;
+	QRectF getVisibleArea() const;
 
 private:
 	shared_ptr<MachineManager> machineManager;

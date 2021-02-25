@@ -79,6 +79,11 @@ shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
 	return this->machineBuilder;
 }
 
+shared_ptr<ViewConfiguration> MachineManager::getViewConfiguration() const
+{
+	return this->viewConfiguration;
+}
+
 void MachineManager::undo()
 {
 	if (this->undoRedoManager != nullptr)
@@ -93,6 +98,11 @@ void MachineManager::redo()
 	{
 		this->undoRedoManager->redo();
 	}
+}
+
+void MachineManager::updateViewConfiguration()
+{
+	emit machineViewUpdateRequestedEvent();
 }
 
 void MachineManager::addConnection(QMetaObject::Connection connection)

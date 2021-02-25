@@ -143,17 +143,14 @@ void StatesUi::resetUi()
 	this->toolbar->setSaveActionEnabled(false);
 }
 
-void StatesUi::setViewConfiguration(shared_ptr<ViewConfiguration> configuration)
-{
-	this->editor->setViewConfiguration(configuration);
-}
-
 void StatesUi::beginNewMachineProcedure()
 {
 	bool doNew = this->displayUnsavedConfirmation(tr("Clear current machine?"));
 
 	if (doNew)
+	{
 		emit newFsmRequestEvent();
+	}
 }
 
 void StatesUi::beginClearMachineProcedure()
@@ -161,7 +158,9 @@ void StatesUi::beginClearMachineProcedure()
 	bool doClear = this->displayUnsavedConfirmation(tr("Delete current machine?"));
 
 	if (doClear)
+	{
 		emit clearMachineRequestEvent();
+	}
 }
 
 void StatesUi::closeEvent(QCloseEvent* event)
@@ -547,11 +546,6 @@ void StatesUi::updateTitle()
 
 		this->setWindowTitle(title);
 	}
-}
-
-shared_ptr<ViewConfiguration> StatesUi::getViewConfiguration() const
-{
-	return this->editor->getViewConfiguration();
 }
 
 bool StatesUi::displayUnsavedConfirmation(const QString& cause)

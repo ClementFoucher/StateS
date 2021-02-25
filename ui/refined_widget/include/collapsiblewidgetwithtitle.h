@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLAPSIBLEWIDGETWITHTITLE_H_
-#define COLLAPSIBLEWIDGETWITHTITLE_H_
+#ifndef COLLAPSIBLEWIDGETWITHTITLE_H
+#define COLLAPSIBLEWIDGETWITHTITLE_H
 
 // Parent
 #include <QFrame>
@@ -61,4 +61,4 @@ private:
 
 };
 
-#endif // COLLAPSIBLEWIDGETWITHTITLE_H_
+#endif // COLLAPSIBLEWIDGETWITHTITLE_H

@@ -27,6 +27,7 @@
 #include "machine.h"
 #include "machinexmlparser.h"
 #include "machinexmlwriter.h"
+#include "xmlimportexportbuilder.h"
 
 
 QString DiffUndoCommand::machineXmlRepresentation;
@@ -35,15 +36,10 @@ void DiffUndoCommand::updateXmlRepresentation()
 {
 	DiffUndoCommand::machineXmlRepresentation = QString();
 
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
-
-	if (l_machine != nullptr)
+	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(MachineUndoCommand::machineManager);
+	if (saveManager != nullptr)
 	{
-		shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(l_machine);
-		if (saveManager != nullptr)
-		{
-			DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
-		}
+		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
 	}
 }
 
@@ -51,14 +47,14 @@ DiffUndoCommand::DiffUndoCommand(undo_command_id commandId)
 {
 	undoType = commandId;
 
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
-	if (l_machine != nullptr)
+	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(MachineUndoCommand::machineManager);
+	if (saveManager != nullptr)
 	{
-		// Compute diff
+		// Get code before and after change
 		QString previousXmlCode = DiffUndoCommand::machineXmlRepresentation;
-		shared_ptr<MachineXmlWriter> saveManager = MachineXmlWriter::buildMachineWriter(l_machine);
 		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
 
+		// Compute diff
 		diff_match_patch diffComputer = diff_match_patch();
 		this->undoPatch = diffComputer.patch_make(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
 	}
@@ -142,11 +138,8 @@ QList<Patch> DiffUndoCommand::getUndoPatch() const
 
 void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
-	shared_ptr<MachineXmlParser> parser = MachineXmlParser::buildStringParser(newXmlCode);
-
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
-
-	if (l_machine != nullptr)
+	shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildStringParser(newXmlCode);
+	if (parser != nullptr)
 	{
 		parser->doParse();
 		emit applyUndoRedo(parser->getMachine());

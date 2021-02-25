@@ -54,12 +54,15 @@ public:
 	void setViewConfiguration(shared_ptr<ViewConfiguration> viewConfiguration);
 
 	// Acessors
-	shared_ptr<Machine>        getMachine()        const;
-	shared_ptr<MachineStatus>  getMachineStatus()  const;
-	shared_ptr<MachineBuilder> getMachineBuilder() const;
+	shared_ptr<Machine>           getMachine()           const;
+	shared_ptr<MachineStatus>     getMachineStatus()     const;
+	shared_ptr<MachineBuilder>    getMachineBuilder()    const;
+	shared_ptr<ViewConfiguration> getViewConfiguration() const;
+
 	// Actions
 	void undo();
 	void redo();
+	void updateViewConfiguration();
 
 	// Other
 	void addConnection(QMetaObject::Connection connection);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,35 +16,30 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWCONFIGURATION_H
-#define VIEWCONFIGURATION_H
+#ifndef DRAWINGTOOLBARBUILDER_H
+#define DRAWINGTOOLBARBUILDER_H
 
 // Parent class
 #include <QObject>
 
-// Qt classes
-#include <QPointF>
+// C++ classes
+#include <memory>
+using namespace std;
+
+// StateS classes
+class MachineManager;
+class DrawingToolBar;
 
 
-/**
- * @brief The ViewConfiguration class is used as a
- * temporary storage structure to transmit the view
- * characteristics when saving or loading to/from a file.
- */
-class ViewConfiguration : public QObject
+class DrawingToolBarBuilder : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit ViewConfiguration();
-
-public:
-	QPointF sceneTranslation;
-	QPointF viewCenter;
-	qreal   zoomLevel;
+	static DrawingToolBar* buildDrawingToolBar(shared_ptr<MachineManager> machineManager);
 };
 
-#endif // VIEWCONFIGURATION_H
+#endif // DRAWINGTOOLBARBUILDER_H

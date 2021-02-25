@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,40 +27,24 @@
 
 // StateS classes
 #include "states.h"
+#include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmgraphicstate.h"
 #include "fsmtransition.h"
-#include "statesexception.h"
 #include "fsmgraphictransition.h"
 #include "viewconfiguration.h"
 
 
-FsmXmlWriter::FsmXmlWriter(shared_ptr<Fsm> fsm) :
-    MachineXmlWriter(fsm)
+FsmXmlWriter::FsmXmlWriter(shared_ptr<MachineManager> machineManager) :
+    MachineXmlWriter(machineManager)
 {
 
-}
-
-QString FsmXmlWriter::getMachineXml()
-{
-	this->viewConfiguration = nullptr;
-	this->createSaveString();
-	this->writeFsmToStream();
-	return this->xmlString;
-}
-
-void FsmXmlWriter::writeMachineToFile(shared_ptr<ViewConfiguration> viewConfiguration, const QString& filePath)
-{
-	this->viewConfiguration = viewConfiguration;
-	this->createSaveFile(filePath);
-	this->writeFsmToStream();
-	this->finalizeSaveFile();
 }
 
 void FsmXmlWriter::writeFsmStates()
 {
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machineManager->getMachine());
 
 	this->stream->writeStartElement("States");
 
@@ -73,13 +57,16 @@ void FsmXmlWriter::writeFsmStates()
 
 		// Initial
 		if (state->isInitial())
-			this->stream->writeAttribute("IsInitial", "true");
-
-		if (this->viewConfiguration != nullptr)
 		{
+			this->stream->writeAttribute("IsInitial", "true");
+		}
+
+		if (this->writingToFile == true)
+		{
+			shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
 			// Position => offseted so that scene top-left corner is in (0,0)
-			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + this->viewConfiguration->sceneTranslation.x()));
-			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + this->viewConfiguration->sceneTranslation.y()));
+			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + viewConfiguration->sceneTranslation.x()));
+			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + viewConfiguration->sceneTranslation.y()));
 		}
 		else
 		{
@@ -99,7 +86,7 @@ void FsmXmlWriter::writeFsmStates()
 
 void FsmXmlWriter::writeFsmTransitions()
 {
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machineManager->getMachine());
 
 	this->stream->writeStartElement("Transitions");
 
@@ -130,10 +117,10 @@ void FsmXmlWriter::writeFsmTransitions()
 	this->stream->writeEndElement();
 }
 
-void FsmXmlWriter::writeFsmToStream()
+void FsmXmlWriter::writeMachineToStream()
 {
 	this->stream->writeStartElement("FSM");
-	this->stream->writeAttribute("Name", this->machine->getName());
+	this->stream->writeAttribute("Name", this->machineManager->getMachine()->getName());
 	this->stream->writeAttribute("StateS_version", StateS::getVersion());
 
 	this->writeMachineCommonElements();

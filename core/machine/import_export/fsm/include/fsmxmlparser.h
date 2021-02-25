@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef FSMXMLPARSER_H
 #define FSMXMLPARSER_H
 

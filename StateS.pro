@@ -52,6 +52,7 @@ SOURCES += \
 	core/machine/logic/fsm/fsmverifier.cpp \
 	core/machine/configuration/machinestatus.cpp \
 	core/machine/configuration/viewconfiguration.cpp \
+	core/machine/import_export/xmlimportexportbuilder.cpp \
 	core/machine/import_export/machineimageexporter.cpp \
 	core/machine/import_export/machinexmlparser.cpp \
 	core/machine/import_export/machinexmlwriter.cpp \
@@ -127,6 +128,7 @@ SOURCES += \
 	ui/display_area/machine_editor_widget/scene/scenewidget.cpp \
 	ui/display_area/machine_editor_widget/toolbar/drawingtoolbar.cpp \
 	ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp \
+	ui/display_area/machine_editor_widget/toolbar/drawingtoolbarbuilder.cpp \
 	ui/display_area/timeline_widget/timelinewidget.cpp \
 	ui/display_area/timeline_widget/clocktimeline.cpp \
 	ui/display_area/timeline_widget/graphicclocktimeline.cpp \
@@ -161,6 +163,7 @@ HEADERS += \
 	core/machine/logic/fsm/include/fsmverifier.h \
 	core/machine/configuration/include/machinestatus.h \
 	core/machine/configuration/include/viewconfiguration.h \
+	core/machine/import_export/include/xmlimportexportbuilder.h \
 	core/machine/import_export/include/machineimageexporter.h \
 	core/machine/import_export/include/machinexmlparser.h \
 	core/machine/import_export/include/machinexmlwriter.h \
@@ -185,11 +188,11 @@ HEADERS += \
 	# UI
 	ui/include/statesui.h \
 	ui/include/machinecomponentvisualizer.h \
+	ui/graphic_machine/include/graphicactuator.h \
+	ui/graphic_machine/include/graphiccomponent.h \
 	ui/graphic_machine/fsm/include/fsmgraphicstate.h \
 	ui/graphic_machine/fsm/include/fsmgraphictransition.h \
 	ui/graphic_machine/fsm/include/fsmgraphictransitionneighborhood.h \
-	ui/graphic_machine/include/graphicactuator.h \
-	ui/graphic_machine/include/graphiccomponent.h \
 	ui/dialogs/include/vhdlexportdialog.h \
 	ui/dialogs/include/langselectiondialog.h \
 	ui/dialogs/include/errordisplaydialog.h \
@@ -239,6 +242,7 @@ HEADERS += \
 	ui/display_area/machine_editor_widget/scene/include/scenewidget.h \
 	ui/display_area/machine_editor_widget/toolbar/include/drawingtoolbar.h \
 	ui/display_area/machine_editor_widget/toolbar/include/fsmdrawingtoolbar.h \
+	ui/display_area/machine_editor_widget/toolbar/include/drawingtoolbarbuilder.h \
 	ui/display_area/timeline_widget/include/timelinewidget.h \
 	ui/display_area/timeline_widget/include/clocktimeline.h \
 	ui/display_area/timeline_widget/include/graphicclocktimeline.h \

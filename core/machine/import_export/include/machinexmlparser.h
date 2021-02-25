@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef MACHINEXMLPARSER_H
 #define MACHINEXMLPARSER_H
 
@@ -46,10 +47,6 @@ class MachineXmlParser : public QObject
 	Q_OBJECT
 
 public:
-	// Pseudo-constructors returning the correct inheriting class depending on the machine type.
-	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
-	static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
-
 	void doParse();
 
 	shared_ptr<Machine>           getMachine();
@@ -89,5 +86,3 @@ private:
 };
 
 #endif // MACHINEXMLPARSER_H
-
-

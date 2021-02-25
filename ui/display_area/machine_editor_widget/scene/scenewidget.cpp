@@ -39,6 +39,7 @@
 #include "fsmgraphicstate.h"
 #include "fsmgraphictransition.h"
 #include "blankscene.h"
+#include "viewconfiguration.h"
 
 
 double SceneWidget::scaleFactor = 1.15;
@@ -47,7 +48,8 @@ SceneWidget::SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* par
     StatesGraphicsView(parent)
 {
 	this->machineManager = machineManager;
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &SceneWidget::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,             this, &SceneWidget::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineViewUpdateRequestedEvent, this, &SceneWidget::updateMachineView);
 
 	this->labelZoom     = new QLabel(tr("Zoom"), this);
 	this->buttonZoomIn  = new QPushButton("+", this);
@@ -128,6 +130,17 @@ void SceneWidget::buildScene()
 		this->setScene(new BlankScene());
 		this->updateSceneMode(sceneMode_t::noScene);
 	}
+}
+
+void SceneWidget::updateMachineView()
+{
+	shared_ptr<ViewConfiguration> viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
+
+	viewConfiguration->viewCenter = this->getVisibleArea().center();
+	viewConfiguration->zoomLevel  = this->getZoomLevel();
+	viewConfiguration->sceneTranslation = -(this->getVisibleArea().topLeft());
+
+	this->machineManager->setViewConfiguration(viewConfiguration);
 }
 
 GenericScene* SceneWidget::getScene() const
@@ -345,10 +358,25 @@ void SceneWidget::resetZoom()
 	this->setZoomLevel(1);
 }
 
-void SceneWidget::machineUpdatedEventHandler(bool)
+void SceneWidget::machineUpdatedEventHandler(bool isNewMachine)
 {
 	this->clearScene();
 	this->buildScene();
+
+	if (isNewMachine == true)
+	{
+		shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
+		if (viewConfiguration != nullptr)
+		{
+			this->setZoomLevel(viewConfiguration->zoomLevel);
+			this->centerOn(viewConfiguration->viewCenter);
+		}
+		else
+		{
+			this->setZoomLevel(1);
+			this->centerOn(QPointF(0, 0));
+		}
+	}
 }
 
 void SceneWidget::updateMouseCursor(mouseCursor_t cursor)

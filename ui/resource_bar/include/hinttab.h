@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINEBUILDERTAB_H
-#define MACHINEBUILDERTAB_H
+#ifndef HINTTAB_H
+#define HINTTAB_H
 
 // Parent
 #include <QWidget>
@@ -71,5 +71,4 @@ private:
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 };
 
-#endif // MACHINEBUILDERTAB_H
-
+#endif // HINTTAB_H
