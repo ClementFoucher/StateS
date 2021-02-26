@@ -41,6 +41,7 @@ SOURCES += \
 	core/basic_type/truthtable.cpp \
 	core/machine/machinebuilder.cpp \
 	core/machine/manager/machinemanager.cpp \
+	core/machine/manager/machinestatus.cpp \
 	core/machine/logic/machine.cpp \
 	core/machine/logic/components/machinecomponent.cpp \
 	core/machine/logic/components/actiononsignal.cpp \
@@ -50,8 +51,6 @@ SOURCES += \
 	core/machine/logic/fsm/fsmstate.cpp \
 	core/machine/logic/fsm/fsmtransition.cpp \
 	core/machine/logic/fsm/fsmverifier.cpp \
-	core/machine/configuration/machinestatus.cpp \
-	core/machine/configuration/viewconfiguration.cpp \
 	core/machine/import_export/xmlimportexportbuilder.cpp \
 	core/machine/import_export/machineimageexporter.cpp \
 	core/machine/import_export/machinexmlparser.cpp \
@@ -79,6 +78,7 @@ SOURCES += \
 	ui/machinecomponentvisualizer.cpp \
 	ui/graphic_machine/graphicactuator.cpp \
 	ui/graphic_machine/graphiccomponent.cpp \
+	ui/graphic_machine/viewconfiguration.cpp \
 	ui/graphic_machine/fsm/fsmgraphicstate.cpp \
 	ui/graphic_machine/fsm/fsmgraphictransition.cpp \
 	ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.cpp \
@@ -152,6 +152,7 @@ HEADERS += \
 	core/basic_type/include/truthtable.h \
 	core/machine/include/machinebuilder.h \
 	core/machine/manager/include/machinemanager.h \
+	core/machine/manager/include/machinestatus.h \
 	core/machine/logic/include/machine.h \
 	core/machine/logic/components/include/machinecomponent.h \
 	core/machine/logic/components/include/actiononsignal.h \
@@ -161,8 +162,6 @@ HEADERS += \
 	core/machine/logic/fsm/include/fsmstate.h \
 	core/machine/logic/fsm/include/fsmtransition.h \
 	core/machine/logic/fsm/include/fsmverifier.h \
-	core/machine/configuration/include/machinestatus.h \
-	core/machine/configuration/include/viewconfiguration.h \
 	core/machine/import_export/include/xmlimportexportbuilder.h \
 	core/machine/import_export/include/machineimageexporter.h \
 	core/machine/import_export/include/machinexmlparser.h \
@@ -190,6 +189,7 @@ HEADERS += \
 	ui/include/machinecomponentvisualizer.h \
 	ui/graphic_machine/include/graphicactuator.h \
 	ui/graphic_machine/include/graphiccomponent.h \
+	ui/graphic_machine/include/viewconfiguration.h \
 	ui/graphic_machine/fsm/include/fsmgraphicstate.h \
 	ui/graphic_machine/fsm/include/fsmgraphictransition.h \
 	ui/graphic_machine/fsm/include/fsmgraphictransitionneighborhood.h \
@@ -264,7 +264,6 @@ INCLUDEPATH += \
 	core/machine/logic/components/include \
 	core/machine/logic/fsm/include \
 	core/machine/manager/include \
-	core/machine/configuration/include \
 	core/machine/import_export/include \
 	core/machine/import_export/fsm/include \
 	core/signal/include \

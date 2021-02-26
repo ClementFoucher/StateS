@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,16 +32,17 @@
 #include <QDebug>
 
 // StateS classes
+#include "machinemanager.h"
 #include "truthtabledisplay.h"
 #include "fsm.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "truthtable.h"
 
 
-VerifierTab::VerifierTab(shared_ptr<Machine> machine, QWidget* parent) :
+VerifierTab::VerifierTab(shared_ptr<MachineManager> machineManager, QWidget* parent) :
     QWidget(parent)
 {
-	this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(dynamic_pointer_cast<Fsm>(machine)));
+	this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(dynamic_pointer_cast<Fsm>(machineManager->getMachine())));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setAlignment(Qt::AlignTop);

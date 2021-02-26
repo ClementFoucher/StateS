@@ -221,9 +221,9 @@ void ResourceBar::build()
 		this->machineComponentScene = shared_ptr<MachineComponentVisualizer>(new MachineComponentVisualizer(newMachine));
 
 		this->hintsTab     = new HintTab         (this->machineManager, this->machineComponentScene);
-		this->machineTab   = new MachineEditorTab(newMachine, this->machineComponentScene);
-		this->simulatorTab = new SimulatorTab    (newMachine);
-		this->verifierTab  = new VerifierTab     (newMachine);
+		this->machineTab   = new MachineEditorTab(this->machineManager, this->machineComponentScene);
+		this->simulatorTab = new SimulatorTab    (this->machineManager);
+		this->verifierTab  = new VerifierTab     (this->machineManager);
 
 		this->machineManager->addConnection(connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler));
 

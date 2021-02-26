@@ -360,6 +360,8 @@ void SceneWidget::resetZoom()
 
 void SceneWidget::machineUpdatedEventHandler(bool isNewMachine)
 {
+	QPointF center = this->getVisibleArea().center();
+
 	this->clearScene();
 	this->buildScene();
 
@@ -376,6 +378,10 @@ void SceneWidget::machineUpdatedEventHandler(bool isNewMachine)
 			this->setZoomLevel(1);
 			this->centerOn(QPointF(0, 0));
 		}
+	}
+	else
+	{
+		this->centerOn(center);
 	}
 }
 

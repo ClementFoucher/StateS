@@ -47,11 +47,12 @@ FsmScene::FsmScene(shared_ptr<MachineManager> machineManager) :
 
 	this->sceneMode = sceneMode_t::idle;
 
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
-	connect(this,                 &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
-	connect(fsm.get(),            &Fsm::simulationModeChangedEvent,  this, &FsmScene::simulationModeChangeEventHandler);
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	machineManager->addConnection(connect(fsm.get(), &Fsm::simulationModeChangedEvent,  this, &FsmScene::simulationModeChangeEventHandler));
+
+	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmScene::toolChangeEventHandler);
 
 	this->build();

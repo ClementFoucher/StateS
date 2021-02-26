@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -54,10 +54,10 @@ int main(int argc, char* argv[])
 {
 
 	// Create application
-	shared_ptr<QApplication> app(new QApplication(argc, argv));
+	shared_ptr<QApplication> app = make_shared<QApplication>(argc, argv);
 
 	// Show language selection dialog and obtain translator from it
-	unique_ptr<LangSelectionDialog> languageSelectionWindow(new LangSelectionDialog(app));
+	unique_ptr<LangSelectionDialog> languageSelectionWindow = make_unique<LangSelectionDialog>(app);
 	languageSelectionWindow->setWindowFlags(Qt::Dialog | languageSelectionWindow->windowFlags());
 	languageSelectionWindow->setWindowTitle("StateS");
 	languageSelectionWindow->exec();
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 	unique_ptr<StateS> states;
 	try
 	{
-		states = unique_ptr<StateS>(new StateS(initialFilePath));
+		states = make_unique<StateS>(initialFilePath);
 		states->run();
 
 		// Event loop

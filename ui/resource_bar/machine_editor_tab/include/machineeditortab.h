@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class Machine;
+class MachineManager;
 class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
 class DynamicLineEdit;
@@ -41,7 +41,7 @@ class MachineEditorTab : public QWidget
 	Q_OBJECT
 
 public:
-	explicit MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit MachineEditorTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
@@ -57,8 +57,9 @@ private slots:
 	void updateContent();
 
 private:
+	shared_ptr<MachineManager> machineManager;
+
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
-	weak_ptr<Machine>                    machine;
 
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;

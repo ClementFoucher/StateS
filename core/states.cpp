@@ -66,11 +66,11 @@ QString StateS::getCopyrightYears()
 StateS::StateS(const QString& initialFilePath)
 {
 	// Build machine manager
-	this->machineManager = shared_ptr<MachineManager>(new MachineManager());
+	this->machineManager = make_shared<MachineManager>();
 	this->machineManager->build();
 
 	// Build interface
-	this->statesUi = unique_ptr<StatesUi>(new StatesUi(this->machineManager));
+	this->statesUi = make_shared<StatesUi>(this->machineManager);
 	connect(this->statesUi.get(), &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
 	connect(this->statesUi.get(), &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
 	connect(this->statesUi.get(), &StatesUi::loadMachineRequestEvent,              this, &StateS::loadMachine);

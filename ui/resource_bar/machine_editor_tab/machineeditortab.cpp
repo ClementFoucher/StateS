@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,19 +28,22 @@
 #include <QTabWidget>
 
 // StateS classes
+#include "machinemanager.h"
 #include "signallisteditor.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "dynamiclineedit.h"
 
 
-MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+MachineEditorTab::MachineEditorTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
+	this->machineManager       = machineManager;
 	this->machineComponentView = machineComponentView;
-	this->machine              = machine;
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	shared_ptr<Machine> machine = this->machineManager->getMachine();
 
 	//
 	// Machine name
@@ -53,7 +56,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<Machine> machine, shared_ptr<Machi
 	connect(this->machineName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
 	connect(this->machineName, &DynamicLineEdit::userCancelEvent,       this, &MachineEditorTab::updateContent);
 
-	connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineEditorTab::updateContent);
+	machineManager->addConnection(connect(machine.get(), &Machine::machineNameChangedEvent, this, &MachineEditorTab::updateContent));
 
 	layout->addWidget(this->machineName);
 
@@ -154,8 +157,7 @@ void MachineEditorTab::mousePressEvent(QMouseEvent* e)
 
 void MachineEditorTab::nameTextChangedEventHandler(const QString& name)
 {
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
+	shared_ptr<Machine> l_machine = this->machineManager->getMachine();
 	if (l_machine != nullptr)
 	{
 		if (name != l_machine->getName())
@@ -170,8 +172,7 @@ void MachineEditorTab::nameTextChangedEventHandler(const QString& name)
 
 void MachineEditorTab::updateContent()
 {
-	shared_ptr<Machine> l_machine = this->machine.lock();
-
+	shared_ptr<Machine> l_machine = this->machineManager->getMachine();
 	if (l_machine != nullptr)
 	{
 		this->machineName->setText(l_machine->getName());

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,11 +34,10 @@ class QPushButton;
 class QLineEdit;
 
 // StateS classes
+class MachineManager;
 class InputsSelector;
 class FsmSimulator;
-class Fsm;
-class CheckBoxHtml;
-class Machine;
+//class CheckBoxHtml;
 
 
 class SimulatorTab : public QWidget
@@ -46,7 +45,7 @@ class SimulatorTab : public QWidget
 	Q_OBJECT
 
 public:
-	explicit SimulatorTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit SimulatorTab(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
 	~SimulatorTab();
 
 private slots:
@@ -55,7 +54,8 @@ private slots:
 	void delayOptionToggleEventHandler(bool enabled);
 
 private:
-	weak_ptr<Fsm> machine;
+	shared_ptr<MachineManager> machineManager;
+
 	shared_ptr<FsmSimulator> simulator;
 
 	// QWidgets with parent

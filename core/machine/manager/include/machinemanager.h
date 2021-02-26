@@ -44,8 +44,6 @@ class MachineManager : public QObject, public enable_shared_from_this<MachineMan
 public:
 	explicit MachineManager();
 
-	// Required to handle UndoRedoManaer as there
-	// is a circular dependency between these two
 	void build();
 	void clear();
 
@@ -82,13 +80,15 @@ private:
 	void setMachineInternal(shared_ptr<Machine> newMachine, bool isNewMachine);
 
 private:
+	// Holders
 	shared_ptr<Machine>        machine;
 	shared_ptr<MachineStatus>  machineStatus;
 	shared_ptr<MachineBuilder> machineBuilder;
 
-	// Temporary
-	shared_ptr<ViewConfiguration>    viewConfiguration;
+	// Temporary holder
+	shared_ptr<ViewConfiguration> viewConfiguration;
 
+	// Internal
 	shared_ptr<UndoRedoManager> undoRedoManager;
 
 	QList<QMetaObject::Connection> connections;

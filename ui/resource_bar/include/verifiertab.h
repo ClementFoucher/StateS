@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,10 +37,8 @@ class QPushButton;
 
 // StateS classes
 #include "fsmverifier.h"
-class Fsm;
-class TruthTable;
+class MachineManager;
 class TruthTableDisplay;
-class Machine;
 class CollapsibleWidgetWithTitle;
 
 
@@ -49,7 +47,7 @@ class VerifierTab : public QWidget
 	Q_OBJECT
 
 public:
-	explicit VerifierTab(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit VerifierTab(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
 
 private slots:
 	void checkNow();
