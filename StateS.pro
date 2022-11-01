@@ -58,13 +58,11 @@ SOURCES += \
 	core/machine/import_export/fsm/fsmvhdlexport.cpp \
 	core/machine/import_export/fsm/fsmxmlparser.cpp \
 	core/machine/import_export/fsm/fsmxmlwriter.cpp \
-	core/signal/inout.cpp \
-	core/signal/input.cpp \
-	core/signal/io.cpp \
 	core/signal/signal.cpp \
-	core/signal/equation.cpp \
+	core/signal/input.cpp \
 	core/signal/output.cpp \
 	core/signal/constant.cpp \
+	core/signal/equation.cpp \
 	core/simulation/clock.cpp \
 	core/simulation/fsmsimulator.cpp \
 	core/simulation/machinesimulator.cpp \
@@ -170,9 +168,7 @@ HEADERS += \
 	core/machine/import_export/fsm/include/fsmxmlparser.h \
 	core/machine/import_export/fsm/include/fsmxmlwriter.h \
 	core/signal/include/StateS_signal.h \
-	core/signal/include/inout.h \
 	core/signal/include/input.h \
-	core/signal/include/io.h \
 	core/signal/include/output.h \
 	core/signal/include/constant.h \
 	core/signal/include/equation.h \

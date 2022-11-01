@@ -34,11 +34,8 @@
 #include "machine.h"
 #include "fsmgraphictransition.h"
 #include "fsmstate.h"
-#include "StateS_signal.h"
 #include "contextmenu.h"
 #include "fsm.h"
-#include "machinebuilder.h"
-#include "statesexception.h"
 
 
 //
@@ -246,9 +243,9 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
 
 		this->contextMenuEvent(contextEvent);
 	}
-	else if ( (event->key() == Qt::Key_Right) |
-	          (event->key() == Qt::Key_Left) |
-	          (event->key() == Qt::Key_Up) |
+	else if ( (event->key() == Qt::Key_Right) ||
+	          (event->key() == Qt::Key_Left)  ||
+	          (event->key() == Qt::Key_Up)    ||
 	          (event->key() == Qt::Key_Down)
 	        )
 	{

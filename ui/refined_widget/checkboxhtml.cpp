@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 #include "labelwithclickevent.h"
 
 
-CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool allowLink, QWidget* parent) :
+CheckBoxHtml::CheckBoxHtml(const QString& text, QWidget* parent) :
     QWidget(parent)
 {
 	QFormLayout* layout = new QFormLayout(this);
@@ -41,59 +41,22 @@ CheckBoxHtml::CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign, bool
 	connect(this->checkBox, &QCheckBox::toggled, this, &CheckBoxHtml::toggled);
 
 	this->label = new LabelWithClickEvent(text, this);
-	connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::event);
+	connect(this->label, &LabelWithClickEvent::clicked, this, &CheckBoxHtml::labelClicked);
 
 	this->label->setTextFormat(Qt::RichText);
-	if (allowLink)
-	{
-		this->label->setTextInteractionFlags(Qt::TextBrowserInteraction);
-		this->label->setOpenExternalLinks(true);
-	}
 
-	if (boxAlign == Qt::AlignmentFlag::AlignLeft)
-	{
-		layout->addRow(this->label, this->checkBox);
-	}
-	else
-	{
-		layout->addRow(this->label, this->checkBox);
-	}
+	layout->addRow(this->label, this->checkBox);
 }
 
-bool CheckBoxHtml::event(QEvent* e)
+void CheckBoxHtml::labelClicked(QMouseEvent* e)
 {
-	static bool doNotResend = false; // Used as we transmit event to a children: do not retransmit in a loop if it gives it back to its parent (this object)
-
-	if (doNotResend == false)
+	if (e->button() == Qt::MouseButton::LeftButton)
 	{
-		QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(e);
-
-		if ( (mouseEvent != nullptr) && (mouseEvent->button() == Qt::MouseButton::LeftButton) )
+		if (e->type() == QEvent::Type::MouseButtonRelease)
 		{
-			if ( (mouseEvent->type() == QEvent::Type::MouseButtonPress) ||
-			     (mouseEvent->type() == QEvent::Type::MouseButtonRelease) ||
-			     (mouseEvent->type() == QEvent::Type::MouseButtonDblClick) ||
-			     (mouseEvent->type() == QEvent::Type::MouseMove)
-			     )
-			{
-
-				// Fake an event on the checkbox so that it handles it
-				QMouseEvent newEvent(mouseEvent->type(),
-				                     QPointF(0,0),
-				                     mouseEvent->button(),
-				                     mouseEvent->buttons(),
-				                     mouseEvent->modifiers()
-				                     );
-
-				doNotResend = true;
-				bool res = QCoreApplication::sendEvent(this->checkBox, &newEvent);
-				doNotResend = false;
-				return res;
-			}
+			this->checkBox->toggle();
 		}
 	}
-
-	return QWidget::event(e);
 }
 
 void CheckBoxHtml::setText(QString newText)

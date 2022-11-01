@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,8 +44,11 @@ bool LabelWithClickEvent::event(QEvent *e)
 
 	if (mouseEvent != nullptr)
 	{
-		return clicked(mouseEvent);
+		emit clicked(mouseEvent);
+		e->accept();
+		return true;
 	}
-	else
-		return QLabel::event(e);
+
+	// Pass other events to parent class
+	return QLabel::event(e);
 }

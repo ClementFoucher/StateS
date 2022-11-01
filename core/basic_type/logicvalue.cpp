@@ -145,7 +145,7 @@ LogicValue LogicValue::operator&(const LogicValue& otherValue) const
 
 		for(int i = 0 ; i < this->size() ; i++)
 		{
-			result[i] = (*this)[i] & otherValue[i];
+			result[i] = (*this)[i] && otherValue[i];
 		}
 
 		return result;
@@ -162,7 +162,7 @@ LogicValue LogicValue::operator|(const LogicValue& otherValue) const
 
 		for(int i = 0 ; i < this->size() ; i++)
 		{
-			result[i] = (*this)[i] | otherValue[i];
+			result[i] = (*this)[i] || otherValue[i];
 		}
 
 		return result;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,17 +24,12 @@
 
 
 Output::Output(const QString& name) :
-    IO(name)
+    Signal(name)
 {
 }
 
 Output::Output(const QString& name, uint size) : // Throws StatesException
-    IO(name, size) // Throws StatesException: propagated
+    Signal(name, size) // Throws StatesException: propagated
 {
 
-}
-
-IO::direction Output::getDirection() const
-{
-	return IO::direction::output;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2021 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,18 +23,16 @@
 #define INPUT_H
 
 // Parent
-#include "io.h"
+#include "StateS_signal.h"
 
 
-class Input : public IO
+class Input : public Signal
 {
 	Q_OBJECT
 
 public:
 	explicit Input(const QString& name);
-	explicit Input(const QString& name, uint size); // Throws StatesException
-
-	IO::direction getDirection() const override;
+	explicit Input(const QString& name, uint size); // Throws StatesExceptions
 };
 
 #endif // INPUT_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,17 +41,17 @@ class CheckBoxHtml : public QWidget
 	Q_OBJECT
 
 public:
-	explicit CheckBoxHtml(const QString& text, Qt::AlignmentFlag boxAlign = Qt::AlignmentFlag::AlignRight, bool allowLink = false, QWidget* parent = nullptr);
+	explicit CheckBoxHtml(const QString& text, QWidget* parent = nullptr);
 
 	void setText(QString newText);
 	void setChecked(bool check);
 	bool isChecked();
 
 signals:
-	void toggled(bool checked = false);
+	void toggled(bool checked);
 
-protected:
-	bool event(QEvent* e) override;
+private:
+	void labelClicked(QMouseEvent* e);
 
 private:
 	LabelWithClickEvent* label    = nullptr;
