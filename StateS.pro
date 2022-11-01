@@ -288,8 +288,8 @@ INCLUDEPATH += \
     third_party/diff_match_patch
 
 OTHER_FILES += \
-    text/known_bugs.txt \
-	text/Readme/README.txt \
+    README.md \
+	text/known_bugs.txt \
 	text/Readme/Linux/README \
 	text/Readme/Windows/README.txt \
 	text/release_notes.txt \

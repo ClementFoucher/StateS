@@ -83,7 +83,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	licenseLabel->setOpenExternalLinks(true);
 	layout->addWidget(licenseLabel);
 
-	QLabel* artLicenseLabel = new QLabel(tr("See") + " <a href=\"https://sourceforge.net/p/states/code/ci/master/tree/art/AUTHORS.txt\">" + tr("credits for art used in StateS") + "</a>", this);
+	QLabel* artLicenseLabel = new QLabel(tr("See") + " <a href=\"https://raw.githubusercontent.com/ClementFoucher/StateS/main/art/AUTHORS.txt\">" + tr("credits for art used in StateS") + "</a>", this);
 	artLicenseLabel->setAlignment(Qt::AlignCenter);
 	artLicenseLabel->setWordWrap(true);
 	artLicenseLabel->setTextFormat(Qt::RichText);
@@ -121,7 +121,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	emailLabel->setOpenExternalLinks(true);
 	layout->addWidget(emailLabel);
 
-	QLabel* websiteLabel = new QLabel(tr("StateS web site:") + "<br /><a href=\"https://sourceforge.net/projects/states/\">https://sourceforge.net/projects/states/</a>", this);
+	QLabel* websiteLabel = new QLabel(tr("StateS web site:") + "<br /><a href=\"https://github.com/ClementFoucher/StateS\">https://github.com/ClementFoucher/StateS</a>", this);
 	websiteLabel->setAlignment(Qt::AlignCenter);
 	websiteLabel->setWordWrap(true);
 	websiteLabel->setTextFormat(Qt::RichText);
@@ -137,9 +137,9 @@ AboutTab::AboutTab(QWidget* parent) :
 	wikiLabel->setOpenExternalLinks(true);
 	layout->addWidget(wikiLabel);
 
-	QLabel* supportLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/tickets/\">" + tr("Found a bug?") + "</a><br />"
+	QLabel* supportLabel = new QLabel("<a href=\"https://github.com/ClementFoucher/StateS/issues\">" + tr("Found a bug?") + "</a><br />"
 	                                  + tr("(Please consult") + " "
-	                                  + "<a href=\"https://sourceforge.net/p/states/code/ci/master/tree/text/known_bugs.txt\">"+ tr("known bugs list")  + "</a><br />"
+	                                  + "<a href=\"https://raw.githubusercontent.com/ClementFoucher/StateS/main/text/known_bugs.txt\">"+ tr("known bugs list")  + "</a><br />"
 	                                  + " " + tr("before submitting a ticket)"),
 	                                  this);
 	supportLabel->setAlignment(Qt::AlignCenter);
@@ -149,7 +149,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	supportLabel->setOpenExternalLinks(true);
 	layout->addWidget(supportLabel);
 
-	QLabel* suggestionLabel = new QLabel("<a href=\"https://sourceforge.net/p/states/discussion/\">" + tr("Suggestion? Feature request?") + "</a>", this);
+	QLabel* suggestionLabel = new QLabel("<a href=\"https://github.com/ClementFoucher/StateS/issues\">" + tr("Suggestion? Feature request?") + "</a>", this);
 	suggestionLabel->setAlignment(Qt::AlignCenter);
 	suggestionLabel->setWordWrap(true);
 	suggestionLabel->setTextFormat(Qt::RichText);
