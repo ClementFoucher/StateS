@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -79,7 +79,15 @@ SceneWidget::SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* par
 	this->buttonNoZoom ->setVisible(false);
 
 	// Begin with an empty scene
-	this->setScene(new BlankScene());
+	shared_ptr<Machine> machine = this->machineManager->getMachine();
+	if (machine != nullptr)
+	{
+		this->buildScene(true);
+	}
+	else
+	{
+		this->setScene(new BlankScene());
+	}
 }
 
 void SceneWidget::clearScene()
@@ -94,7 +102,7 @@ void SceneWidget::clearScene()
 	this->updateSceneMode(sceneMode_t::noScene);
 }
 
-void SceneWidget::buildScene()
+void SceneWidget::buildScene(bool loadView)
 {
 	GenericScene* newScene = nullptr;
 
@@ -129,6 +137,21 @@ void SceneWidget::buildScene()
 	{
 		this->setScene(new BlankScene());
 		this->updateSceneMode(sceneMode_t::noScene);
+	}
+
+	if (loadView == true)
+	{
+		shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
+		if (viewConfiguration != nullptr)
+		{
+			this->setZoomLevel(viewConfiguration->zoomLevel);
+			this->centerOn(viewConfiguration->viewCenter);
+		}
+		else
+		{
+			this->setZoomLevel(1);
+			this->centerOn(QPointF(0, 0));
+		}
 	}
 }
 
@@ -363,24 +386,14 @@ void SceneWidget::machineUpdatedEventHandler(bool isNewMachine)
 	QPointF center = this->getVisibleArea().center();
 
 	this->clearScene();
-	this->buildScene();
 
 	if (isNewMachine == true)
 	{
-		shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
-		if (viewConfiguration != nullptr)
-		{
-			this->setZoomLevel(viewConfiguration->zoomLevel);
-			this->centerOn(viewConfiguration->viewCenter);
-		}
-		else
-		{
-			this->setZoomLevel(1);
-			this->centerOn(QPointF(0, 0));
-		}
+		this->buildScene(true);
 	}
 	else
 	{
+		this->buildScene(false);
 		this->centerOn(center);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,6 +46,19 @@ MachineEditorWidget::MachineEditorWidget(shared_ptr<MachineManager> machineManag
 	connect(this->machineDisplayArea, &SceneWidget::itemSelectedEvent,       this, &MachineEditorWidget::itemSelectedEvent);
 	connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &MachineEditorWidget::editSelectedItemEvent);
 	connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &MachineEditorWidget::renameSelectedItemEvent);
+
+	// Initialize display
+	shared_ptr<Machine> machine = this->machineManager->getMachine();
+	if (machine != nullptr)
+	{
+		this->machineManager->addConnection(connect(machine.get(), &Machine::simulationModeChangedEvent, this, &MachineEditorWidget::simulationModeToggledEventHandler));
+		this->drawingToolBar = DrawingToolBarBuilder::buildDrawingToolBar(this->machineManager);
+		if (this->drawingToolBar != nullptr)
+		{
+			this->drawingToolBar->setMovable(true);
+			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
+		}
+	}
 }
 
 GenericScene* MachineEditorWidget::getScene() const

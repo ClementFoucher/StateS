@@ -141,7 +141,7 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 
 		stateRadical += cleanNameForVhdl(state->getName());
 
-		// Check for ducplicates
+		// Check for duplicates
 		int occurence = 2;
 		QString stateName = stateRadical;
 		while (this->stateVhdlName.values().contains(stateName))
@@ -283,7 +283,7 @@ QString FsmVhdlExport::generateSignalVhdlName(const QString& prefix, const QStri
 
 	signalRadical += cleanNameForVhdl(name);
 
-	// Check for ducplicates
+	// Check for duplicates
 	int occurence = 2;
 	QString signalName = signalRadical;
 	while (this->signalVhdlName.values().contains(signalName))

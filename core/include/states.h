@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,19 +30,24 @@
 using namespace std;
 
 // Qt classes
-#include <QUndoStack>
+class QApplication;
+class QTranslator;
 
 // StateS classes
 class MachineManager;
 class StatesUi;
+class LangSelectionDialog;
 
 
 /**
- * @brief The StateS class is the root object of this application:
- * it builds the machine manager and the UI.
+ * @brief The StateS class is the root object of this application.
  *
- * Its main purpose is to deal with the machine changes:
- * building new, loading, saving, etc.
+ * At application launch, it builds the machine manager and handles
+ * the language selection dialog before building the UI.
+ *
+ * During application, its main purpose is to deal with the machine changes:
+ * building new, loading, saving, etc. It is also in charge of displaying
+ * errors related to file parsing.
  *
  * This class also gives access to static generic functions.
  */
@@ -55,13 +60,14 @@ public:
 	static QString getCopyrightYears();
 
 public:
-	explicit StateS(const QString& initialFilePath = QString());
+	explicit StateS(QApplication* app, const QString& initialFilePath = QString());
 	~StateS();
 
-	void run();
-
 private slots:
-	// Handle signals from UI
+	// Handle signal from language selection dialog
+	void languageSelected(QTranslator* translator);
+
+	// Handle signals from main UI
 	void generateNewFsm();
 	void clearMachine();
 
@@ -71,9 +77,18 @@ private slots:
 	void saveCurrentMachineInCurrentFile();
 
 private:
-	// These pointers can shared by objects that are persistent throughout the application life
+	void launchUi();
+	void displayErrorMessages(const QString& errorTitle, const QList<QString>& errorList);
+	void displayErrorMessage(const QString& errorTitle, const QString& error);
+
+private:
+	// Transient member: only used during initialization
+	LangSelectionDialog* languageSelectionWindow = nullptr;
+
+	// Pointers to objects persistent throughout the application life
+	QTranslator* translator = nullptr; // Translator will be nullptr if English is chosen
 	shared_ptr<MachineManager> machineManager;
-	shared_ptr<StatesUi>       statesUi;
+	StatesUi* statesUi = nullptr;
 };
 
 #endif // STATES_H

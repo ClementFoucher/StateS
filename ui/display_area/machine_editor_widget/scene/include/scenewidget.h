@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -92,7 +92,7 @@ private slots:
 
 private:
 	void clearScene();
-	void buildScene();
+	void buildScene(bool loadView);
 	void updateSceneMode(sceneMode_t newMode);
 	void updateDragMode();
 	void setZoomPanelVisible(bool visible);

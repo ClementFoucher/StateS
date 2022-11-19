@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,9 +23,9 @@
 #include "langselectiondialog.h"
 
 // Qt classes
-#include <QVBoxLayout>
 #include <QApplication>
 #include <QTranslator>
+#include <QVBoxLayout>
 #include <QLabel>
 
 // StateS classes
@@ -33,56 +33,73 @@
 #include "svgimagegenerator.h"
 
 
-LangSelectionDialog::LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent) :
-    QDialog(parent)
+LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* parent) :
+    QMainWindow(parent)
 {
+	// Buid members
 	this->application = application;
+
+	this->frenchTranslator = new QTranslator();
+	static_cast<void>(this->frenchTranslator->load(":/translations/french")); // Discarding the result of this nodiscard function as we are absolutely sure it can be loaded
+
+	// Build window
 	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
-
-	this->translator = shared_ptr<QTranslator>(new QTranslator());
-	static_cast<void>(this->translator->load(":/translations/french")); // Discarding the result of this nodiscard function as we are absolutely sure it can be loaded
-
 	this->setWindowTitle("StateS");
+	this->setAttribute(Qt::WA_DeleteOnClose);
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
+	QWidget* mainWidget = new QWidget(this);
+	QVBoxLayout* layout = new QVBoxLayout(mainWidget);
+	this->setCentralWidget(mainWidget);
 
-	this->title = new QLabel();
-	this->title->setAlignment(Qt::AlignCenter);
-	layout->addWidget(this->title);
+	this->mainLabel = new QLabel(this);
+	this->mainLabel->setAlignment(Qt::AlignCenter);
+	layout->addWidget(this->mainLabel);
 
-	ReactiveButton* buttonEnglish = new ReactiveButton("English");
+	ReactiveButton* buttonEnglish = new ReactiveButton("English", this);
 	connect(buttonEnglish, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setEnglish);
 	connect(buttonEnglish, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setEnglish);
-	connect(buttonEnglish, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
+	connect(buttonEnglish, &QAbstractButton::clicked,             this, &LangSelectionDialog::close);
 	layout->addWidget(buttonEnglish);
 
-	ReactiveButton* buttonFrench = new ReactiveButton("Français");
+	ReactiveButton* buttonFrench = new ReactiveButton("Français", this);
 	connect(buttonFrench, &ReactiveButton::mouseEnterEvent,      this, &LangSelectionDialog::setFrench);
 	connect(buttonFrench, &ReactiveButton::keyboardFocusInEvent, this, &LangSelectionDialog::setFrench);
-	connect(buttonFrench, &QAbstractButton::clicked,             this, &LangSelectionDialog::accept);
+	connect(buttonFrench, &QAbstractButton::clicked,             this, &LangSelectionDialog::close);
 	layout->addWidget(buttonFrench);
 
 	this->retranslateUi();
 }
 
-void LangSelectionDialog::retranslateUi()
+LangSelectionDialog::~LangSelectionDialog()
 {
-	this->title->setText("<b>" + tr("Choose your language") + "</b>");
+	// Only delete the translator if it isn't being used
+	if (this->activeTranslator == nullptr)
+	{
+		delete this->frenchTranslator;
+	}
+}
+
+void LangSelectionDialog::closeEvent(QCloseEvent* event)
+{
+	emit this->languageSelected(this->activeTranslator);
+	QMainWindow::closeEvent(event);
 }
 
 void LangSelectionDialog::setEnglish()
 {
-	this->application->removeTranslator(this->translator.get());
+	this->application->removeTranslator(this->frenchTranslator);
+	this->activeTranslator = nullptr;
 	this->retranslateUi();
 }
 
 void LangSelectionDialog::setFrench()
 {
-	this->application->installTranslator(this->translator.get());
+	this->application->installTranslator(this->frenchTranslator);
+	this->activeTranslator = this->frenchTranslator;
 	this->retranslateUi();
 }
 
-shared_ptr<QTranslator> LangSelectionDialog::getTranslator()
+void LangSelectionDialog::retranslateUi()
 {
-	return this->translator;
+	this->mainLabel->setText("<b>" + tr("Choose your language") + "</b>");
 }

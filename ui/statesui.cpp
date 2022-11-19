@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,11 +25,9 @@
 // Qt classes
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QGuiApplication>
 #include <QSplitter>
 #include <QKeyEvent>
 #include <QMimeData>
-#include <QScreen>
 
 // StateS classes
 #include "states.h"
@@ -42,7 +40,6 @@
 #include "fsmvhdlexport.h"
 #include "svgimagegenerator.h"
 #include "fsm.h"
-#include "errordisplaydialog.h"
 #include "machinestatus.h"
 #include "machineeditorwidget.h"
 #include "timelinewidget.h"
@@ -65,18 +62,6 @@ StatesUi::StatesUi(shared_ptr<MachineManager> machineManager)
 
 	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
 	this->updateTitle();
-
-	// Set main window size and position
-	QSize screenSize = QGuiApplication::primaryScreen()->size();
-
-	// Set the window to cover 85% of the screen
-	this->resize(screenSize - 15*screenSize/100);
-
-	// Center window
-	this->move(QPoint((screenSize.width()-this->width())/2,
-	                  (screenSize.height()-this->height())/2
-	                  )
-	           );
 
 	// Allow dropping on window
 	this->setAcceptDrops(true);
@@ -122,6 +107,14 @@ StatesUi::StatesUi(shared_ptr<MachineManager> machineManager)
 	connect(this->editor, &MachineEditorWidget::itemSelectedEvent,       this, &StatesUi::itemSelectedInSceneEventHandler);
 	connect(this->editor, &MachineEditorWidget::editSelectedItemEvent,   this, &StatesUi::editSelectedItem);
 	connect(this->editor, &MachineEditorWidget::renameSelectedItemEvent, this, &StatesUi::renameSelectedItem);
+
+	// Set initial UI state
+	shared_ptr<Machine> machine = this->machineManager->getMachine();
+	if (machine != nullptr)
+	{
+		this->machineManager->addConnection(connect(machine.get(), &Machine::simulationModeChangedEvent, this, &StatesUi::simulationModeToggledEventHandler));
+	}
+	this->resetUi();
 }
 
 void StatesUi::resetUi()
@@ -603,18 +596,4 @@ void StatesUi::dropEvent(QDropEvent* event)
 	{
 		emit loadMachineRequestEvent(fileName);
 	}
-}
-
-void StatesUi::displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList)
-{
-	unique_ptr<ErrorDisplayDialog> errorDialog = unique_ptr<ErrorDisplayDialog>(new ErrorDisplayDialog(errorTitle, errorList, this));
-	errorDialog->setModal(true);
-	errorDialog->exec();
-}
-
-void StatesUi::displayErrorMessage(const QString& errorTitle, const QString& error)
-{
-	unique_ptr<ErrorDisplayDialog> errorDialog = unique_ptr<ErrorDisplayDialog>(new ErrorDisplayDialog(errorTitle, error, this));
-	errorDialog->setModal(true);
-	errorDialog->exec();
 }

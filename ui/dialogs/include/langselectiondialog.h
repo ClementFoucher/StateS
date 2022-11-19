@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,29 +23,27 @@
 #define LANGSELECTIONDIALOG_H
 
 // Parent
-#include <QDialog>
-
-// C++ classes
-#include <memory>
-using namespace std;
+#include <QMainWindow>
 
 // Qt classes
 class QLabel;
 class QApplication;
 class QTranslator;
 
-// StateS classes
-class ReactiveButton;
 
-
-class LangSelectionDialog : public QDialog
+class LangSelectionDialog : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	explicit LangSelectionDialog(shared_ptr<QApplication> application, QWidget* parent = nullptr);
+	explicit LangSelectionDialog(QApplication* application, QWidget* parent = nullptr);
+	~LangSelectionDialog();
 
-	shared_ptr<QTranslator> getTranslator();
+signals:
+	void languageSelected(QTranslator* translator);
+
+protected:
+	void closeEvent(QCloseEvent* event) override;
 
 private slots:
 	void setEnglish();
@@ -54,11 +52,11 @@ private slots:
 private:
 	void retranslateUi();
 
-	shared_ptr<QTranslator>  translator;
-	shared_ptr<QApplication> application;
-
-	// Use pointer because this is a QWidget with a parent
-	QLabel* title = nullptr;
+private:
+	QTranslator*  frenchTranslator = nullptr;
+	QTranslator*  activeTranslator = nullptr;
+	QApplication* application      = nullptr;
+	QLabel*       mainLabel        = nullptr;
 };
 
 #endif // LANGSELECTIONDIALOG_H

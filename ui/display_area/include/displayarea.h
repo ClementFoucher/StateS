@@ -33,7 +33,6 @@ using namespace std;
 class QTabWidget;
 
 // StateS classes
-#include "machine.h"
 class TimelineWidget;
 class MainToolBar;
 class MachineEditorWidget;

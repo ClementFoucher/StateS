@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,13 +29,12 @@ using namespace std;
 #include <QDebug>
 
 // StateS classes
-#include "langselectiondialog.h"
 #include "states.h"
 #include "statesexception.h"
-#include "statesui.h"
 
+
+// Debug management (inactive for now)
 #define DEBUG_TO_FILE 0
-
 
 #if DEBUG_TO_FILE == 1
 
@@ -52,43 +51,29 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-
 	// Create application
-	shared_ptr<QApplication> app = make_shared<QApplication>(argc, argv);
-
-	// Show language selection dialog and obtain translator from it
-	unique_ptr<LangSelectionDialog> languageSelectionWindow = make_unique<LangSelectionDialog>(app);
-	languageSelectionWindow->setWindowFlags(Qt::Dialog | languageSelectionWindow->windowFlags());
-	languageSelectionWindow->setWindowTitle("StateS");
-	languageSelectionWindow->exec();
-
-	shared_ptr<QTranslator> translator = languageSelectionWindow->getTranslator();
-
-	// This wont be used again in application lifetime
-	// Clear associated resources
-	languageSelectionWindow.reset();
+	QApplication* app = new QApplication(argc, argv);
 
 	// Build StateS main object and begin execution
-	QString initialFilePath = QString();
-
-	if (argc >= 2)
-	{
-		initialFilePath = argv[1];
-	}
-
 	int res;
 	unique_ptr<StateS> states;
 	try
 	{
-		states = make_unique<StateS>(initialFilePath);
-		states->run();
+		if (argc >= 2)
+		{
+			states = make_unique<StateS>(app, argv[1]);
+		}
+		else
+		{
+			states = make_unique<StateS>(app);
+		}
 
-		// Event loop
+		// Start event loop
 		res = app->exec();
 	}
 	catch (const StatesException& e)
 	{
-		// TODO: check log + actualiser error text
+		// TODO: check log + actualize error text
 		qDebug() << "Error! " << e.what();
 		qDebug() << "Sorry for the inconvenience. Terminating StateS";
 #if DEBUG_TO_FILE == 1
@@ -135,8 +120,7 @@ int main(int argc, char* argv[])
 
 	// Clear everyting
 	states.reset();
-	translator.reset();
-	app.reset();
+	delete app;
 
 	// The end
 	return res;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,9 +59,6 @@ public:
 
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
-
-	void displayErrorMessage(const QString& errorTitle, const QList<QString>& errorList);
-	void displayErrorMessage(const QString& errorTitle, const QString& errorList);
 
 signals:
 	void newFsmRequestEvent();

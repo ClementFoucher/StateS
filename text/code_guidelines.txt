@@ -62,7 +62,7 @@ As much as possible, a signal must be names xxxEvent and the slot xxxEventHandle
 ------------
 
 Object are managed by smart pointers except for:
-- QWidget that have a parent which manage their life
+- QWidgets, which generally have a parent managing their life
 - QGraphicsItems, that belong to a scene
 - Objects passed using an overriden API function
 
