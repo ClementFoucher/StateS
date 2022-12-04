@@ -6,7 +6,7 @@
 - Include order -
 -----------------
 
-In headers, "include" are replaced by class declaration as much as possible.
+In headers, avoid includes when possible, prefering classes declarations.
 
 * Headers:
   - Parent classes
@@ -25,7 +25,7 @@ In headers, "include" are replaced by class declaration as much as possible.
 ---------------------
 
 In a class declaration, elements are declared in a specific order.
-All elements from this list must be separated by a new access modifier.
+All elements from this list are separated by an access modifier.
 
 - Static members
 - Enums
@@ -43,18 +43,18 @@ All elements from this list must be separated by a new access modifier.
 - Signals/slots -
 -----------------
 
-All slots must be declared as private (may be protected), so that connection can only be done by the object itself.
-Exception is done for overriden slots from Qt API.
+All slots must be declared as private (or protected when necessary), so that connection can only be done by the object itself.
+Exception for overriden slots from Qt API which must respect the base object declaration.
 
-As much as possible, a signal must be names xxxEvent and the slot xxxEventHandler or by the name of the action to be done.
+As much as possible, a signal must be named xxxEvent and slot xxxEventHandler or be named according to the action it triggers.
 
 ----------------
 - Constructors -
 ----------------
 
-- All constructors must be set as "explicit", except if required otherwise for basic types
-- Constructors of classes inheriting QWidget must provide a "parent" parameter (defaulted to nullptr)
-- Constructors of classes inheriting from QObject does not need a "parent" parameter
+- All constructors must be set as "explicit", except if required otherwise for basic types.
+- Constructors of classes inheriting QWidget must provide a "parent" parameter (defaulted to nullptr).
+- Constructors of classes inheriting from QObject does not need a "parent" parameter.
   - Exception: classes inheriting from QAbstractTableModel require it.
 
 ------------
@@ -62,14 +62,14 @@ As much as possible, a signal must be names xxxEvent and the slot xxxEventHandle
 ------------
 
 Object are managed by smart pointers except for:
-- QWidgets, which generally have a parent managing their life
-- QGraphicsItems, that belong to a scene
-- Objects passed using an overriden API function
+- QWidgets, which generally have a parent managing their life,
+- QGraphicsItems, that belong to a scene,
+- Objects passed using an overriden API function.
 
 Members must use:
-- unique_ptr if local only
-- shared_ptr only in the object that is in charge of life manaement of the object
-  - exception can be made for objects that are ensured to have a lifetime equal the the application one
-- weak_ptr as soon as we use an object but are not in charge of its lifetime
+- unique_ptr if local only,
+- shared_ptr only in the object that is in charge of life manaement of the object,
+  - exception can be made for objects that are ensured to have a lifetime equal the the application,
+- weak_ptr where an object is used in a class that is not in charge of its lifetime.
 
-Parameerters must always use shared_ptr to ensure reference is maintained.
+Parameters must always use shared_ptr to ensure reference is maintained.
