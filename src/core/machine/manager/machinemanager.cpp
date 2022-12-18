@@ -167,7 +167,7 @@ void MachineManager::updateViewConfiguration()
  * the machine when it changes to avoid event propagation
  * from an obsolete machine while replacing it.
  * In most cases, things would be OK without it as the machine
- * desctruction causes connections deletion, but this is a
+ * destruction causes connections deletion, but this is a
  * safety as sometime the complex signal web may be triggered
  * by object deletion. This ensures all connections are cut
  * before object is deleted to prevent it.

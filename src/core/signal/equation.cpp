@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -355,18 +355,16 @@ QString Equation::getText() const
 
 QString Equation::getColoredText(bool activeColored, bool errorColored) const
 {
-	QString errorTextBegin;
-	QString errorTextEnd;
+	QString text;
 
 	if ( (this->getSize() == 0) && (errorColored == true) )
 	{
-		errorTextBegin = "<font color=\"red\">";
-		errorTextEnd   = "</font>";
+		text += "<span style=\"color:red;\">";
 	}
-	QString text;
-
-
-	text += errorTextBegin;
+	else
+	{
+		text += "<span style=\"color:black;\">";
+	}
 
 	if (this->function == nature::constant)
 	{
@@ -455,7 +453,7 @@ QString Equation::getColoredText(bool activeColored, bool errorColored) const
 			text += " )";
 	}
 
-	text += errorTextEnd;
+	text += "</span>";
 
 	return text;
 }

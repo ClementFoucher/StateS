@@ -47,10 +47,12 @@ double SceneWidget::scaleFactor = 1.15;
 SceneWidget::SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* parent) :
     StatesGraphicsView(parent)
 {
+	// Set and connect Machine Manager
 	this->machineManager = machineManager;
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,             this, &SceneWidget::machineUpdatedEventHandler);
 	connect(machineManager.get(), &MachineManager::machineViewUpdateRequestedEvent, this, &SceneWidget::updateMachineView);
 
+	// Build buttons
 	this->labelZoom     = new QLabel(tr("Zoom"), this);
 	this->buttonZoomIn  = new QPushButton("+", this);
 	this->buttonNoZoom  = new QPushButton("⟳", this);
@@ -78,7 +80,7 @@ SceneWidget::SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* par
 	this->buttonZoomOut->setVisible(false);
 	this->buttonNoZoom ->setVisible(false);
 
-	// Begin with an empty scene
+	// Build scene
 	shared_ptr<Machine> machine = this->machineManager->getMachine();
 	if (machine != nullptr)
 	{

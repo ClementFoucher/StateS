@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INPUTVSIGNALSELECTOR_H
-#define INPUTVSIGNALSELECTOR_H
+#ifndef INPUTSIGNALSELECTOR_H
+#define INPUTSIGNALSELECTOR_H
 
 // Parent
 #include <QWidget>
@@ -41,4 +41,4 @@ public:
 	explicit InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget* parent = nullptr);
 };
 
-#endif // INPUTVSIGNALSELECTOR_H
+#endif // INPUTSIGNALSELECTOR_H

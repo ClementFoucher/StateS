@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -200,21 +200,21 @@ void ConditionEditor::updateContent()
 			{
 				if (l_transition->getCondition()->getSize() == 0)
 				{
-					this->conditionWarningText = new QLabel("<font color=red>" +
+					this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
 					                                        tr("Warning: equation representing condition is not valid.") +
 					                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
 					                                        "<br />" + tr("Edit condition and hover over errors for more information.") +
-					                                        "</font>"
+					                                        "</span>"
 					                                        );
 					this->conditionWarningText->setWordWrap(true);
 				}
 				else
 				{
-					this->conditionWarningText = new QLabel("<font color=red>" +
+					this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
 					                                        tr("Warning: equation representing condition is size") + " " + QString::number(l_transition->getCondition()->getSize()) +
 					                                        "<br />" + tr("Conditions must be size one to allow being treated as booleans.") +
 					                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
-					                                        "</font>"
+					                                        "</span>"
 					                                        );
 					this->conditionWarningText->setWordWrap(true);
 				}

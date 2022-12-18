@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -117,7 +117,7 @@ void FsmGraphicState::setLogicState(shared_ptr<FsmState> logicState)
 	{
 		this->setLogicActuator(logicState); // Throws StatesException - ignored as we checked nullness
 
-		connect(logicState.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,                this, &FsmGraphicState::componentUpdatedEventHandler);
+		connect(logicState.get(), &MachineComponent::componentNeedsGraphicUpdateEvent,    this, &FsmGraphicState::componentUpdatedEventHandler);
 		connect(logicState.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicState::componentUpdatedEventHandler);
 
 		shared_ptr<Fsm> machine = logicState->getOwningFsm();
@@ -412,7 +412,8 @@ void FsmGraphicState::rebuildRepresentation()
 		else
 			this->setBrush(inactiveBrush);
 
-		stateName = new QGraphicsTextItem(l_logicState->getName(), this);
+		stateName = new QGraphicsTextItem(this);
+		stateName->setHtml("<span style=\"color:black;\">" + l_logicState->getName() + "</span>");
 
 		stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
 

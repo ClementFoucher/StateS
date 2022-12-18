@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -276,11 +276,15 @@ QGraphicsItem* Machine::getComponentVisualization() const
 			qreal currentInputY = 0;
 			for(int i = 0 ; i < inputs.count() ; i++)
 			{
-				QGraphicsTextItem* text = new QGraphicsTextItem(inputs[i]->getText());//, inputsGroup);
-				inputsGroup->addToGroup(text);
-				text->setPos(0, currentInputY);
+				QGraphicsTextItem* textItem = new QGraphicsTextItem();
 
-				qreal currentLineY = currentInputY + text->boundingRect().height()/2;
+				QString text = "<span style=\"color:black;\">" + inputs[i]->getText() + "</span>";
+				textItem->setHtml(text);
+
+				inputsGroup->addToGroup(textItem);
+				textItem->setPos(0, currentInputY);
+
+				qreal currentLineY = currentInputY + textItem->boundingRect().height()/2;
 				inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth, currentLineY, 0, currentLineY));//, inputsGroup);
 
 				if (inputs[i]->getSize() > 1)
@@ -291,7 +295,7 @@ QGraphicsItem* Machine::getComponentVisualization() const
 					sizeText->setPos(-signalsLinesWidth/2 - sizeText->boundingRect().width(), currentLineY - sizeText->boundingRect().height());
 				}
 
-				currentInputY += text->boundingRect().height();
+				currentInputY += textItem->boundingRect().height();
 			}
 		}
 
@@ -312,11 +316,15 @@ QGraphicsItem* Machine::getComponentVisualization() const
 			qreal currentOutputY = 0;
 			for(int i = 0 ; i < outputs.count() ; i++)
 			{
-				QGraphicsTextItem* text = new QGraphicsTextItem(outputs[i]->getText()); //, outputsGroup);
-				outputsGroup->addToGroup(text);
-				text->setPos(-text->boundingRect().width(), currentOutputY);
+				QGraphicsTextItem* textItem = new QGraphicsTextItem();
 
-				qreal currentLineY = currentOutputY + text->boundingRect().height()/2;
+				QString text = "<span style=\"color:black;\">" + outputs[i]->getText() + "</span>";
+				textItem->setHtml(text);
+
+				outputsGroup->addToGroup(textItem);
+				textItem->setPos(-textItem->boundingRect().width(), currentOutputY);
+
+				qreal currentLineY = currentOutputY + textItem->boundingRect().height()/2;
 				outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, signalsLinesWidth, currentLineY));
 
 				if (outputs[i]->getSize() > 1)
@@ -327,7 +335,7 @@ QGraphicsItem* Machine::getComponentVisualization() const
 					sizeText->setPos(signalsLinesWidth/2, currentLineY - sizeText->boundingRect().height());
 				}
 
-				currentOutputY += text->boundingRect().height();
+				currentOutputY += textItem->boundingRect().height();
 			}
 		}
 
@@ -335,7 +343,7 @@ QGraphicsItem* Machine::getComponentVisualization() const
 		// Draw component name
 
 		QGraphicsTextItem* title = new QGraphicsTextItem();
-		title->setHtml("<b>" + this->name + "</b>");
+		title->setHtml("<span style=\"color:black; font-weight:bold;\">" + this->name + "</span>");
 
 		//
 		// Compute component size

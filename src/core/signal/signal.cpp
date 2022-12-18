@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -91,19 +91,19 @@ QString Signal::getColoredText(bool activeColored) const
 {
 	if (!activeColored)
 	{
-		return this->name;
+		return "<span style=\"color:black;\">" + this->name + "</span>";
 	}
 	else
 	{
 		if (this->getSize() == 1)
 		{
 			if (this->isTrue()) // Throws StatesException - Size checked - ignored
-				return "<font color=\"green\">" + this->name + "</font>";
+				return "<span style=\"color:green;\">" + this->name + "</span>";
 			else // (this->isFalse())
-				return "<font color=\"red\">"   + this->name + "</font>";
+				return "<span style=\"color:red;\">"   + this->name + "</span>";
 		}
 		else
-			return "<font color=\"blue\">"  + this->name + "</font>";
+			return "<span style=\"color:blue;\">"  + this->name + "</span>";
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,11 +42,11 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 
 	if (isIncompatible)
 	{
-		QLabel* warning = new QLabel("<font color=red>"
+		QLabel* warning = new QLabel("<span style=\"color:red;\">"
 		                             + tr("Warning! Experimental feature.") + "<br />"
 		                             + tr("Output generation has strong restrictions:") + "<br />"
 		                             + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
-		                             + tr("Please run machine verifier to identify affected signals.") + "</font>");
+		                             + tr("Please run machine verifier to identify affected signals.") + "</span>");
 		warning->setAlignment(Qt::AlignCenter);
 		layout->addWidget(warning);
 	}

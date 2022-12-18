@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2022 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,6 @@
 #include "machineactuatorcomponent.h"
 #include "StateS_signal.h"
 #include "machine.h"
-#include "statesexception.h"
 #include "actiononsignal.h"
 
 
@@ -102,6 +101,7 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 
 					if (rangeL != -1)
 					{
+						currentActionText += "<span style=\"color:black;\">";
 						currentActionText += "[";
 						currentActionText += QString::number(rangeL);
 
@@ -112,6 +112,7 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 						}
 
 						currentActionText += "]";
+						currentActionText += "</span>";
 					}
 				}
 
@@ -122,13 +123,17 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 				case ActionOnSignal::action_types::set:
 				case ActionOnSignal::action_types::reset:
 				case ActionOnSignal::action_types::assign:
+					currentActionText += "<span style=\"color:black;\">";
 					currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+					currentActionText += "</span>";
 					break;
 				case ActionOnSignal::action_types::activeOnState:
 				case ActionOnSignal::action_types::pulse:
 					if (currentAction->getActionSize() > 1)
 					{
+						currentActionText += "<span style=\"color:black;\">";
 						currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+						currentActionText += "</span>";
 					}
 				}
 
