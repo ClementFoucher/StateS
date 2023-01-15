@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,11 +30,16 @@ class InverterBar : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit InverterBar(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 protected:
-	void paintEvent(QPaintEvent*) override;
+	virtual void paintEvent(QPaintEvent*) override;
+
 };
 
 #endif // INVERTERBAR_H

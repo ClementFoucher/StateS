@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,6 +29,9 @@
 #include <memory>
 using namespace std;
 
+// States classes
+#include "statestypes.h"
+
 
 /**
  * @brief
@@ -57,63 +60,32 @@ class Equation : public Signal
 {
 	Q_OBJECT
 
-public: // Static
-
-	enum EquationErrorEnum{
-		resized_requested       = 0,
-		out_of_range_access     = 1,
-		set_value_requested     = 2,
-		reduced_operand_while_0 = 3,
-		change_operand_illegal  = 4
-	};
-
+	/////
+	// Static functions
 private:
 	static bool signalHasSize(shared_ptr<Signal> sig);
 
+	/////
+	// Constructors/destructors
 public:
-	// This enum is always treated using a switch in order to obtain a warning
-	// when adding a new member in all places it is used.
-	enum class nature{notOp,  // Not equations always have exactly one operand
-		              andOp,
-		              orOp,
-		              xorOp,
-		              nandOp,
-		              norOp,
-		              xnorOp,
-		              equalOp, // Equal equations always have exactly two operand and are size one
-		              diffOp,  // Diff  equations always have exactly two operand and are size one
-		              extractOp, // Extract equations always have exacly one operand
-		              concatOp,
-		              constant, // To allow dynamically creating constants (which are not machine signals)
-		              identity // For internal use only, exactly one operand
-	                 };
+	explicit Equation(EquationNature_t function, int allowedOperandCount = -1);
+	explicit Equation(EquationNature_t function, const QVector<shared_ptr<Signal>>& operandList);
 
-	enum class computationFailureCause{uncomputed,
-		                               nofail,
-		                               nullOperand,
-		                               incompleteOperand,
-		                               sizeMismatch,
-		                               missingParameter,
-		                               incorrectParameter,
-		                               notImplemented
-	                                  };
-
+	/////
+	// Object functions
 public:
-	explicit Equation(nature function, int allowedOperandCount = -1);
-	explicit Equation(nature function, const QVector<shared_ptr<Signal>>& operandList);
-
 	shared_ptr<Equation> clone() const;
 
-	uint getSize() const override;
-	void resize(uint) override; // Throws StatesException
+	virtual uint getSize() const override;
+	virtual void resize(uint)    override; // Throws StatesException
 
-	QString getText() const override;
+	virtual QString getText() const override;
 	QString getColoredText(bool activeColored, bool errorColored) const;
 
-	computationFailureCause getComputationFailureCause() const;
+	EquationComputationFailureCause_t getComputationFailureCause() const;
 
-	nature getFunction() const;
-	void setFunction(nature newFunction);
+	EquationNature_t getFunction() const;
+	void setFunction(EquationNature_t newFunction);
 
 	bool isInverted() const;
 
@@ -146,10 +118,12 @@ private:
 	void increaseOperandCountInternal();
 	void decreaseOperandCountInternal(); // Throws StatesException
 
+	/////
+	// Object variables
 private:
-	computationFailureCause failureCause = computationFailureCause::uncomputed;
+	EquationComputationFailureCause_t failureCause = EquationComputationFailureCause_t::uncomputed;
 
-	nature function;
+	EquationNature_t function;
 	// Different storage for different ownership (weak/shared)
 	QVector<weak_ptr<Signal>>     signalOperands;
 	QVector<shared_ptr<Equation>> equationOperands;

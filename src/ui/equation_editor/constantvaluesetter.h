@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,12 +37,17 @@ class ConstantValueSetter : public EditableEquation
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ConstantValueSetter(LogicValue initialValue, QWidget* parent = nullptr);
 
-	bool validEdit() override;
-	bool cancelEdit() override;
-	void setEdited(bool edited) override;
+	/////
+	// Object functions
+public:
+	virtual bool validEdit()            override;
+	virtual bool cancelEdit()           override;
+	virtual void setEdited(bool edited) override;
 
 signals:
 	void valueChanged(LogicValue newValue);
@@ -50,11 +55,14 @@ signals:
 private slots:
 	void newValueAvailable(const QString& newValue);
 
+	/////
+	// Object variables
 private:
 	LogicValue currentValue;
 
 	DynamicLineEdit* valueEditor = nullptr;
 	QLabel*          valueText   = nullptr;
+
 };
 
 #endif // CONSTANTVALUESETTER_H

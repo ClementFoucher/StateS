@@ -31,6 +31,7 @@
 // StateS classes
 #include "dynamiclineedit.h"
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
@@ -54,7 +55,7 @@ bool ConstantValueSetter::validEdit()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
 				qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
 				return false;
@@ -117,7 +118,7 @@ void ConstantValueSetter::newValueAvailable(const QString& newValue)
 	}
 	catch (const StatesException& e)
 	{
-		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 		{
 			qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,18 +30,20 @@ class Constant : public Signal
 {
 	Q_OBJECT
 
-public: // Static
-	enum ConstantErrorEnum{
-		change_current_requested = 0
-	};
-
+	/////
+	// Constructors/destructors
 public:
 	explicit Constant(const QString& name);
 	explicit Constant(const QString& name, uint size); // Throws StatesException
 
+	/////
+	// Object functions
+public:
+
 	virtual void setInitialValue(const LogicValue& newInitialValue)   override; // Throws StatesException
 	virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
 	virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
+
 };
 
 #endif // CONSTANT_H

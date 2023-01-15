@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,6 +30,8 @@ class Output : public Signal
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit Output(const QString& name);
 	explicit Output(const QString& name, uint size); // Throws StatesException

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,14 +33,21 @@ class AboutTab : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit AboutTab(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 private slots:
 	void iconClicked();
 
+	/////
+	// Object variables
 private:
 	QPushButton* icon = nullptr;
+
 };
 
 #endif // ABOUTTAB_H

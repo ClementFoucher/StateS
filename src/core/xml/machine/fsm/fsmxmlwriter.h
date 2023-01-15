@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,22 +30,29 @@
 using namespace std;
 
 // StateS classes
-class MachineManager;
+class ViewConfiguration;
+class Fsm;
+class GraphicAttributes;
 
 
 class FsmXmlWriter : public MachineXmlWriter
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmXmlWriter(shared_ptr<MachineManager> machineManager);
+	explicit FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration = nullptr);
 
+	/////
+	// Object functions
 protected:
 	virtual void writeMachineToStream() override;
 
 private:
-	void writeFsmStates();
-	void writeFsmTransitions();
+	void writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes);
+	void writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes);
+
 };
 
 #endif // FSMXMLWRITER_H

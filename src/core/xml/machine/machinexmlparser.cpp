@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 sClément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,18 +26,47 @@
 #include <QXmlStreamReader>
 
 // StateS classes
+#include "statestypes.h"
 #include "statesexception.h"
 #include "machine.h"
 #include "StateS_signal.h"
 #include "viewconfiguration.h"
+#include "graphicattributes.h"
 #include "actiononsignal.h"
 #include "machineactuatorcomponent.h"
 #include "equation.h"
+#include "exceptiontypes.h"
 
 
 MachineXmlParser::MachineXmlParser()
 {
+	this->graphicAttributes = shared_ptr<GraphicAttributes>(new GraphicAttributes());
 	this->viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
+}
+
+void MachineXmlParser::doParse()
+{
+	this->buildMachineFromXml();
+}
+
+shared_ptr<Machine> MachineXmlParser::getMachine()
+{
+	return this->machine;
+}
+
+shared_ptr<GraphicAttributes> MachineXmlParser::getGraphicMachineConfiguration()
+{
+	return this->graphicAttributes;
+}
+
+shared_ptr<ViewConfiguration> MachineXmlParser::getViewConfiguration()
+{
+	return this->viewConfiguration;
+}
+
+QList<QString> MachineXmlParser::getWarnings()
+{
+	return this->warnings;
 }
 
 void MachineXmlParser::parseMachineName(const QString& fileName)
@@ -139,19 +168,19 @@ void MachineXmlParser::parseSignal()
 	shared_ptr<Signal> signal;
 	if (nodeName == "Input")
 	{
-		signal = machine->addSignal(Machine::signal_type::Input, signalName);
+		signal = machine->addSignal(SignalType_t::Input, signalName);
 	}
 	else if (nodeName == "Output")
 	{
-		signal = machine->addSignal(Machine::signal_type::Output, signalName);
+		signal = machine->addSignal(SignalType_t::Output, signalName);
 	}
 	else if (nodeName == "Variable")
 	{
-		signal = machine->addSignal(Machine::signal_type::LocalVariable, signalName);
+		signal = machine->addSignal(SignalType_t::LocalVariable, signalName);
 	}
 	else if (nodeName == "Constant")
 	{
-		signal = machine->addSignal(Machine::signal_type::Constant, signalName);
+		signal = machine->addSignal(SignalType_t::Constant, signalName);
 	}
 	else
 	{
@@ -180,7 +209,7 @@ void MachineXmlParser::parseSignal()
 			}
 			catch (const StatesException& e)
 			{
-				if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::resized_to_0) )
+				if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::signal_resized_to_0) )
 				{
 					this->warnings.append(tr("Unable to resize signal") + " \"" + signalName + "\".");
 					this->warnings.append("    " + tr("Signal size ignored and defaulted to") + " \"1\".");
@@ -211,13 +240,13 @@ void MachineXmlParser::parseSignal()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
 				this->warnings.append(tr("Error!") + " " + "Unable to extract initial value of signal " + signalName + ".");
 				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value").toString() + "\".");
 				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
 			}
-			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::size_mismatch) )
+			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::size_mismatch) )
 			{
 				this->warnings.append("Error in initial value of signal " + signalName + ".");
 				this->warnings.append("    " + tr("The initial value size does not match signal size."));
@@ -254,28 +283,28 @@ void MachineXmlParser::parseAction()
 			return;
 		}
 
-		ActionOnSignal::action_types actionType;
+		ActionOnSignalType_t actionType;
 		QString actionTypeText = attributes.value("Action_Type").toString();
 
 		if (actionTypeText == "Pulse")
 		{
-			actionType = ActionOnSignal::action_types::pulse;
+			actionType = ActionOnSignalType_t::pulse;
 		}
 		else if (actionTypeText == "ActiveOnState")
 		{
-			actionType = ActionOnSignal::action_types::activeOnState;
+			actionType = ActionOnSignalType_t::activeOnState;
 		}
 		else if (actionTypeText == "Set")
 		{
-			actionType = ActionOnSignal::action_types::set;
+			actionType = ActionOnSignalType_t::set;
 		}
 		else if (actionTypeText == "Reset")
 		{
-			actionType = ActionOnSignal::action_types::reset;
+			actionType = ActionOnSignalType_t::reset;
 		}
 		else if (actionTypeText == "Assign")
 		{
-			actionType = ActionOnSignal::action_types::assign;
+			actionType = ActionOnSignalType_t::assign;
 		}
 		else
 		{
@@ -294,7 +323,7 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_type) )
+			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_type) )
 			{
 				this->warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
 				this->warnings.append("    " + tr("Default action type used instead."));
@@ -335,7 +364,7 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_range) )
+			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_range) )
 			{
 				this->warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
 				this->warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
@@ -355,7 +384,7 @@ void MachineXmlParser::parseAction()
 			}
 			catch (const StatesException& e)
 			{
-				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 				{
 					uint avsize;
 					if ( (rangeL != -1) && (rangeR == -1) )
@@ -384,7 +413,7 @@ void MachineXmlParser::parseAction()
 				}
 				catch (const StatesException& e)
 				{
-					if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_value) )
+					if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_value) )
 					{
 						this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
 						this->warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
@@ -423,7 +452,7 @@ void MachineXmlParser::parseLogicEquation()
 	}
 	else if (nodeName == "LogicEquation")
 	{
-		Equation::nature equationType;
+		EquationNature_t equationType;
 		int rangeL = -1;
 		int rangeR = -1;
 		LogicValue constantValue;
@@ -440,28 +469,28 @@ void MachineXmlParser::parseLogicEquation()
 
 		QString valueNature = attributes.value("Nature").toString();
 		if (valueNature == "not")
-			equationType = Equation::nature::notOp;
+			equationType = EquationNature_t::notOp;
 		else if (valueNature == "and")
-			equationType = Equation::nature::andOp;
+			equationType = EquationNature_t::andOp;
 		else if (valueNature == "or")
-			equationType = Equation::nature::orOp;
+			equationType = EquationNature_t::orOp;
 		else if (valueNature == "xor")
-			equationType = Equation::nature::xorOp;
+			equationType = EquationNature_t::xorOp;
 		else if (valueNature == "nand")
-			equationType = Equation::nature::nandOp;
+			equationType = EquationNature_t::nandOp;
 		else if (valueNature == "nor")
-			equationType = Equation::nature::norOp;
+			equationType = EquationNature_t::norOp;
 		else if (valueNature == "xnor")
-			equationType = Equation::nature::xnorOp;
+			equationType = EquationNature_t::xnorOp;
 		else if (valueNature == "equals")
-			equationType = Equation::nature::equalOp;
+			equationType = EquationNature_t::equalOp;
 		else if (valueNature == "differs")
-			equationType = Equation::nature::diffOp;
+			equationType = EquationNature_t::diffOp;
 		else if (valueNature == "concatenate")
-			equationType = Equation::nature::concatOp;
+			equationType = EquationNature_t::concatOp;
 		else if (valueNature == "extract")
 		{
-			equationType = Equation::nature::extractOp;
+			equationType = EquationNature_t::extractOp;
 
 			srangel = attributes.value("RangeL").toString();
 			sranger = attributes.value("RangeR").toString();
@@ -476,7 +505,7 @@ void MachineXmlParser::parseLogicEquation()
 		}
 		else if (valueNature == "constant")
 		{
-			equationType = Equation::nature::constant;
+			equationType = EquationNature_t::constant;
 
 			try
 			{
@@ -484,7 +513,7 @@ void MachineXmlParser::parseLogicEquation()
 			}
 			catch (const StatesException& e)
 			{
-				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 				{
 					uint constantsize;
 					if ( (rangeL != -1) && (rangeR == -1) )
@@ -522,11 +551,11 @@ void MachineXmlParser::parseLogicEquation()
 			newEquation = shared_ptr<Equation>(new Equation(equationType));
 		}
 
-		if (equationType == Equation::nature::constant)
+		if (equationType == EquationNature_t::constant)
 		{
 			newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
 		}
-		else if (equationType == Equation::nature::extractOp)
+		else if (equationType == EquationNature_t::extractOp)
 		{
 			newEquation->setRange(rangeL, rangeR);
 		}
@@ -553,24 +582,4 @@ void MachineXmlParser::treatEndOperand()
 	shared_ptr<Equation> parentEquation = this->equationStack.pop();
 	parentEquation->setOperand(this->operandRankStack.pop(), this->currentLogicEquation);
 	this->currentLogicEquation = parentEquation;
-}
-
-void MachineXmlParser::doParse()
-{
-	this->buildMachineFromXml();
-}
-
-shared_ptr<Machine> MachineXmlParser::getMachine()
-{
-	return this->machine;
-}
-
-shared_ptr<ViewConfiguration> MachineXmlParser::getViewConfiguration()
-{
-	return this->viewConfiguration;
-}
-
-QList<QString> MachineXmlParser::getWarnings()
-{
-	return this->warnings;
 }

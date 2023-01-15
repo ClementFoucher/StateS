@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,24 +31,41 @@ using namespace std;
 
 // StateS classes
 class Fsm;
+class FsmState;
 
 
 class FsmXmlParser : public MachineXmlParser
 {
 	Q_OBJECT
 
+	/////
+	// Type declarations
 private:
-	enum class group_e { none, configuration_group, signals_group, states_group, transitions_group };
-	enum class subgroup_e { none,
-		                    state, transition,
-		                    actions_group, action,
-		                    condition, logicVariable, logicEquation, operand
-	                      };
+	enum class Group_t
+	{
+		none,
+		configuration_group,
+		signals_group,
+		states_group,
+		transitions_group
+	};
+	enum class Subgroup_t
+	{
+		none,
+		state, transition,
+		actions_group, action,
+		condition, logicVariable, logicEquation, operand
+	};
 
+	/////
+	// Constructors/destructors
 public:
 	explicit FsmXmlParser(const QString& xmlString);
 	explicit FsmXmlParser(shared_ptr<QFile> file);
 
+	/////
+	// Object functions
+public:
 	void treatStartElement();
 	void treatEndElement();
 
@@ -60,16 +77,19 @@ private:
 	void parseState();
 	void parseTransition();
 
-	shared_ptr<Fsm> getFsm() const;
+	shared_ptr<FsmState> getStateByName(const QString& name) const;
 
+	/////
+	// Object variables
 private:
 	QString fileName;
 
 	// Remember position in file
-	group_e    currentGroup;
-	subgroup_e currentSubGroup;
+	Group_t    currentGroup;
+	Subgroup_t currentSubGroup;
 
 	int currentLevel;
+
 };
 
 #endif // FSMXMLPARSER_H

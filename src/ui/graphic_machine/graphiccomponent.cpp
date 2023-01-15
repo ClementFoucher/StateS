@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,30 +25,16 @@
 // Qt classes
 #include <QPen>
 
-// StateS classes
-#include "statesexception.h"
+
+const QPen GraphicComponent::selectionPen = QPen(QBrush(QColor(0, 0, 204, 200), Qt::SolidPattern), 1, Qt::DashLine);
 
 
-QPen GraphicComponent::selectionPen = QPen(QBrush(QColor(0, 0, 204, 200), Qt::SolidPattern), 1, Qt::DashLine);
-
-
-GraphicComponent::GraphicComponent()
+GraphicComponent::GraphicComponent(componentId_t logicComponentId)
 {
+	this->logicComponentId = logicComponentId;
 }
 
-void GraphicComponent::setLogicComponent(shared_ptr<MachineComponent> logicComponent) // Throws StatesException
+componentId_t GraphicComponent::getLogicComponentId() const
 {
-	if (this->logicComponent.expired())
-	{
-		this->logicComponent = logicComponent;
-	}
-	else
-	{
-		throw StatesException("GraphicComponent", reaffect_component, "Trying to reaffect base component: this is illegal as a graphic ocmponent should be built for a single logic component.");
-	}
-}
-
-shared_ptr<MachineComponent> GraphicComponent::getLogicComponent() const
-{
-	return this->logicComponent.lock();
+	return this->logicComponentId;
 }

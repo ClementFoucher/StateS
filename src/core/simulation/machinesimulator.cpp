@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,8 +22,41 @@
 // Current class header
 #include "machinesimulator.h"
 
+// StateS classes
+#include "clock.h"
+
+
 MachineSimulator::MachineSimulator()
 {
-
+	this->clock = shared_ptr<Clock>(new Clock());
 }
 
+shared_ptr<Clock> MachineSimulator::getClock() const
+{
+	return this->clock;
+}
+
+void MachineSimulator::reset()
+{
+	this->clock->reset();
+}
+
+void MachineSimulator::doStep()
+{
+	this->clock->nextStep();
+}
+
+void MachineSimulator::start(uint period)
+{
+	this->clock->start(period);
+}
+
+void MachineSimulator::suspend()
+{
+	this->clock->stop();
+}
+
+void MachineSimulator::enableOutputDelay(bool enable)
+{
+	emit outputDelayChangedEvent(enable);
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,22 +34,31 @@ class GraphicTimeLine : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
+	explicit GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void addPoint(bool state);
 	void updateLastPoint(bool state);
 	void reset(bool initialValue);
 	void chageEventDelay(uint eventDelay);
 
 protected:
-	void paintEvent(QPaintEvent*) override;
-
-	uint stepLength;
+	virtual void paintEvent(QPaintEvent*) override;
 
 private:
 	void removeLastPoint();
 
+	/////
+	// Object variables
+protected:
+	uint stepLength;
+
+private:
 	QPolygon timeLinePoly;
 	QVector<bool> points;
 	uint pointsPerCycle;

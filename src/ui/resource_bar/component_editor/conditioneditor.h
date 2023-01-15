@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,21 +36,25 @@ class QGridLayout;
 class QSlider;
 
 // StateS classes
-class Signal;
+#include "statestypes.h"
 class TruthTable;
 class TruthTableDisplay;
-class FsmTransition;
 
 
 class ConditionEditor : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
+	explicit ConditionEditor(componentId_t transitionId, QWidget* parent = nullptr);
 	~ConditionEditor();
 
-	void updateTransition(shared_ptr<FsmTransition> newTransition);
+	/////
+	// Object functions
+public:
+	void updateTransition(componentId_t newTransitionId);
 
 private slots:
 	void editCondition();
@@ -67,7 +71,10 @@ private:
 	void collapseTruthTable();
 	bool isTruthTableDisplayed();
 
-	weak_ptr<FsmTransition> transition;
+	/////
+	// Object variables
+private:
+	componentId_t transitionId = 0;
 	shared_ptr<TruthTable> truthTable;
 
 	// QWidgets with parent
@@ -82,6 +89,7 @@ private:
 
 	QPushButton*       buttonExpandTruthTable = nullptr;
 	TruthTableDisplay* truthTableDisplay      = nullptr;
+
 };
 
 #endif // CONDITIONEDITOR_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,49 +30,89 @@
 #include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"
-#include "fsmgraphicstate.h"
 #include "fsmtransition.h"
-#include "fsmgraphictransition.h"
 #include "viewconfiguration.h"
+#include "graphicmachine.h"
+#include "graphicattributes.h"
 
 
-FsmXmlWriter::FsmXmlWriter(shared_ptr<MachineManager> machineManager) :
-    MachineXmlWriter(machineManager)
+FsmXmlWriter::FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration) :
+    MachineXmlWriter(mode, viewConfiguration)
 {
 
 }
 
-void FsmXmlWriter::writeFsmStates()
+void FsmXmlWriter::writeMachineToStream()
 {
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machineManager->getMachine());
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
 
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
+
+	auto fsmGraphicAttributes = graphicMachine->getGraphicAttributes();
+	if (fsmGraphicAttributes == nullptr) return;
+
+	this->stream->writeStartElement("FSM");
+	this->stream->writeAttribute("Name", fsm->getName());
+	this->stream->writeAttribute("StateS_version", StateS::getVersion());
+
+	this->writeMachineCommonElements();
+	this->writeFsmStates(fsm, fsmGraphicAttributes);
+	this->writeFsmTransitions(fsm, fsmGraphicAttributes);
+
+	this->stream->writeEndElement(); // End FSM element
+}
+
+void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes)
+{
 	this->stream->writeStartElement("States");
 
-	foreach (shared_ptr<FsmState> state, fsm->getStates())
+	foreach (auto stateId, fsm->getAllStatesIds())
 	{
+		auto state = fsm->getState(stateId);
 		this->stream->writeStartElement("State");
 
 		// Name
 		this->stream->writeAttribute("Name", state->getName());
 
 		// Initial
-		if (state->isInitial())
+		if (stateId == fsm->getInitialStateId())
 		{
 			this->stream->writeAttribute("IsInitial", "true");
 		}
 
-		if (this->writingToFile == true)
+		auto graphicComponentAttributes = fsmGraphicAttributes->getAttributes(stateId);
+		QString x;
+		QString y;
+		for (auto &property : graphicComponentAttributes)
 		{
-			shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
-			// Position => offseted so that scene top-left corner is in (0,0)
-			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x() + viewConfiguration->sceneTranslation.x()));
-			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y() + viewConfiguration->sceneTranslation.y()));
+			if (property.first == "X")
+			{
+				x = property.second;
+			}
+			else if (property.first == "Y")
+			{
+				y = property.second;
+			}
 		}
-		else
+
+		if ( (this->mode == MachineXmlWriterMode_t::writeToFile) && (this->viewConfiguration != nullptr) ) // Full save to file
+		{
+			// Position => offseted so that scene top-left corner is in (0,0)
+			this->stream->writeAttribute("X", QString::number(x.toDouble() + this->viewConfiguration->sceneTranslation.x()));
+			this->stream->writeAttribute("Y", QString::number(y.toDouble() + this->viewConfiguration->sceneTranslation.y()));
+		}
+		else // Light save for undo
 		{
 			// Position
-			this->stream->writeAttribute("X", QString::number(state->getGraphicRepresentation()->scenePos().x()));
-			this->stream->writeAttribute("Y", QString::number(state->getGraphicRepresentation()->scenePos().y()));
+			this->stream->writeAttribute("X", x);
+			this->stream->writeAttribute("Y", y);
+		}
+
+		if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+		{
+			this->stream->writeAttribute("Id", QString::number(stateId));
 		}
 
 		// Actions
@@ -84,21 +124,38 @@ void FsmXmlWriter::writeFsmStates()
 	this->stream->writeEndElement();
 }
 
-void FsmXmlWriter::writeFsmTransitions()
+void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes)
 {
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machineManager->getMachine());
-
 	this->stream->writeStartElement("Transitions");
 
-	foreach (shared_ptr<FsmTransition> transition, fsm->getTransitions())
+	foreach (auto transitionId, fsm->getAllTransitionsIds())
 	{
+		auto transition = fsm->getTransition(transitionId);
+
 		this->stream->writeStartElement("Transition");
 
-		this->stream->writeAttribute("Source", transition->getSource()->getName());
-		this->stream->writeAttribute("Target", transition->getTarget()->getName());
+		auto sourceState = fsm->getState(transition->getSourceStateId());
+		auto targetState = fsm->getState(transition->getTargetStateId());
 
-		int sliderPosition = transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100;
-		this->stream->writeAttribute("SliderPos", QString::number(sliderPosition));
+		this->stream->writeAttribute("Source", sourceState->getName());
+		this->stream->writeAttribute("Target", targetState->getName());
+
+		auto graphicComponentAttributes = fsmGraphicAttributes->getAttributes(transitionId);
+		QString sliderPosition;
+		for (auto &property : graphicComponentAttributes)
+		{
+			if (property.first == "SliderPos")
+			{
+				sliderPosition = property.second;
+			}
+		}
+
+		this->stream->writeAttribute("SliderPos", sliderPosition);
+
+		if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+		{
+			this->stream->writeAttribute("Id", QString::number(transitionId));
+		}
 
 		// Deal with equations
 		if (transition->getCondition() != nullptr)
@@ -115,17 +172,4 @@ void FsmXmlWriter::writeFsmTransitions()
 	}
 
 	this->stream->writeEndElement();
-}
-
-void FsmXmlWriter::writeMachineToStream()
-{
-	this->stream->writeStartElement("FSM");
-	this->stream->writeAttribute("Name", this->machineManager->getMachine()->getName());
-	this->stream->writeAttribute("StateS_version", StateS::getVersion());
-
-	this->writeMachineCommonElements();
-	this->writeFsmStates();
-	this->writeFsmTransitions();
-
-	this->stream->writeEndElement(); // End FSM element
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2020 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,11 +26,13 @@
 #include <QDebug>
 
 // StateS classes
+#include "statestypes.h"
 #include "StateS_signal.h"
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
-ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue, int rangeL, int rangeR)
+ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
 	this->signal = signal;
 	connect(signal.get(), &Signal::signalResizedEvent, this, &ActionOnSignal::signalResizedEventHandler);
@@ -58,9 +60,9 @@ ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, action_types actionTyp
 	////
 	// Affect action type
 
-	if ( (this->getActionSize() == 1) && (actionType == action_types::assign) )
+	if ( (this->getActionSize() == 1) && (actionType == ActionOnSignalType_t::assign) )
 	{
-		this->actionType = action_types::set;
+		this->actionType = ActionOnSignalType_t::set;
 
 		qDebug() << "(ActionOnSignal:) Warning! The action type requested is illegal for 1-bit actions.";
 		qDebug() << "(ActionOnSignal:) Action type defaulted to 'set'";
@@ -99,14 +101,14 @@ ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, action_types actionTyp
 	}
 }
 
-void ActionOnSignal::setActionType(action_types newType) // Throws StatesException
+void ActionOnSignal::setActionType(ActionOnSignalType_t newType) // Throws StatesException
 {
 	shared_ptr<Signal> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
-		if ( (this->getActionSize() == 1) && (newType == action_types::assign) )
+		if ( (this->getActionSize() == 1) && (newType == ActionOnSignalType_t::assign) )
 		{
-			throw StatesException("ActionOnSignal", illegal_type, "Type can't be applied to this signal");
+			throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_type, "Type can't be applied to this signal");
 		}
 
 		// Changing type impacts affected value:
@@ -115,23 +117,23 @@ void ActionOnSignal::setActionType(action_types newType) // Throws StatesExcepti
 		{
 			switch (newType)
 			{
-			case action_types::reset:
-			case action_types::set:
+			case ActionOnSignalType_t::reset:
+			case ActionOnSignalType_t::set:
 				// Switch to implicit
 				this->actionValue = LogicValue::getNullValue();
 				break;
-			case action_types::activeOnState:
-			case action_types::pulse:
-			case action_types::assign:
+			case ActionOnSignalType_t::activeOnState:
+			case ActionOnSignalType_t::pulse:
+			case ActionOnSignalType_t::assign:
 
 				// Check if previous action type had implicit value
 				// and switch to explicit if necessary, preserving
 				// previous action value.
-				if (this->actionType == action_types::reset)
+				if (this->actionType == ActionOnSignalType_t::reset)
 				{
 					this->actionValue = LogicValue::getValue0(this->getActionSize());
 				}
-				else if (this->actionType == action_types::set)
+				else if (this->actionType == ActionOnSignalType_t::set)
 				{
 					this->actionValue = LogicValue::getValue1(this->getActionSize());
 				}
@@ -168,12 +170,12 @@ void ActionOnSignal::setActionValue(LogicValue newValue) // Throws StatesExcepti
 			}
 			else
 			{
-				throw StatesException("ActionOnSignal", illegal_value, "Requested action value doesn't match action size");
+				throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_value, "Requested action value doesn't match action size");
 			}
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", action_value_is_read_only, "Can't affect action value as value is implicit for this action");
+			throw StatesException("ActionOnSignal", ActionOnSignalError_t::action_value_is_read_only, "Can't affect action value as value is implicit for this action");
 		}
 	}
 }
@@ -219,7 +221,7 @@ void ActionOnSignal::setActionRange(int newRangeL, int newRangeR, LogicValue new
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", illegal_range, "Requested range does not fit signal size");
+			throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_range, "Requested range does not fit signal size");
 		}
 	}
 }
@@ -229,7 +231,7 @@ shared_ptr<Signal> ActionOnSignal::getSignalActedOn() const
 	return this->signal.lock();
 }
 
-ActionOnSignal::action_types ActionOnSignal::getActionType() const
+ActionOnSignalType_t ActionOnSignal::getActionType() const
 {
 	return this->actionType;
 }
@@ -250,19 +252,19 @@ LogicValue ActionOnSignal::getActionValue() const
 			// Implicit values
 			switch (this->actionType)
 			{
-			case action_types::reset:
+			case ActionOnSignalType_t::reset:
 				publicActionValue = LogicValue::getValue0(this->getActionSize());
 				break;
-			case action_types::set:
+			case ActionOnSignalType_t::set:
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case action_types::activeOnState: // May be implicit on one-bit signals
+			case ActionOnSignalType_t::activeOnState: // May be implicit on one-bit signals
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case action_types::pulse: // May be implicit on one-bit signals
+			case ActionOnSignalType_t::pulse: // May be implicit on one-bit signals
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case action_types::assign:
+			case ActionOnSignalType_t::assign:
 				// Should not happen: only explicit values here
 				break;
 			}
@@ -313,8 +315,8 @@ bool ActionOnSignal::isActionValueEditable() const
 	}
 	else
 	{
-		if ( (this->actionType == action_types::set) ||
-		     (this->actionType == action_types::reset) )
+		if ( (this->actionType == ActionOnSignalType_t::set) ||
+		     (this->actionType == ActionOnSignalType_t::reset) )
 			return false;
 		else
 			return true;
@@ -331,13 +333,13 @@ void ActionOnSignal::beginAction()
 
 		switch (this->actionType)
 		{
-		case action_types::pulse:
-		case action_types::activeOnState:
+		case ActionOnSignalType_t::pulse:
+		case ActionOnSignalType_t::activeOnState:
 			this->isActionActing = true;
 			break;
-		case action_types::reset:
-		case action_types::set:
-		case action_types::assign:
+		case ActionOnSignalType_t::reset:
+		case ActionOnSignalType_t::set:
+		case ActionOnSignalType_t::assign:
 			// Do not register, action is maintained
 			break;
 		}
@@ -373,8 +375,8 @@ void ActionOnSignal::signalResizedEventHandler()
 				// Switch to implicit value whatever the signal size was
 				this->actionValue = LogicValue::getNullValue();
 
-				if (this->actionType == action_types::assign) // Assign is illegal for single bit signals
-					this->actionType = action_types::set;
+				if (this->actionType == ActionOnSignalType_t::assign) // Assign is illegal for single bit signals
+					this->actionType = ActionOnSignalType_t::set;
 			}
 			else // We are now acting on a vector signal
 			{
@@ -425,7 +427,7 @@ void ActionOnSignal::signalResizedEventHandler()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValue::LogicValueErrorEnum::unsupported_char) )
+			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
 				qDebug() << "(ActionOnSignal:) Error! Unable to resize action value. Action is probably broken now.";
 			}

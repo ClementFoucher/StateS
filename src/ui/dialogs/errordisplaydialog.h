@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,12 +30,17 @@ class ErrorDisplayDialog : public QDialog
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent = nullptr);
 	explicit ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 private:
 	void build(const QString& errorTitle, const QList<QString>& errors);
+
 };
 
 #endif // ERRORDISPLAYDIALOG_H

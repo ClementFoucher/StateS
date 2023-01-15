@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,14 +29,14 @@
 #include "fsm.h"
 
 
-DrawingToolBar* DrawingToolBarBuilder::buildDrawingToolBar(shared_ptr<MachineManager> machineManager)
+DrawingToolBar* DrawingToolBarBuilder::buildDrawingToolBar()
 {
 	DrawingToolBar* drawingToolBar = nullptr;
 
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		drawingToolBar = new FsmDrawingToolBar(machineManager->getMachineBuilder());
+		drawingToolBar = new FsmDrawingToolBar();
 	}
 
 	return drawingToolBar;

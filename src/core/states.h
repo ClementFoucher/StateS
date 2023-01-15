@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,16 +25,11 @@
 // Parent
 #include <QObject>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QApplication;
 class QTranslator;
 
 // StateS classes
-class MachineManager;
 class StatesUi;
 class LangSelectionDialog;
 
@@ -42,27 +37,34 @@ class LangSelectionDialog;
 /**
  * @brief The StateS class is the root object of this application.
  *
- * At application launch, it builds the machine manager and handles
+ * At application launch, it builds builds and displays
  * the language selection dialog before building the UI.
  *
- * During application, its main purpose is to deal with the machine changes:
- * building new, loading, saving, etc. It is also in charge of displaying
- * errors related to file parsing.
+ * During application run, it is in charge of machine replacements
+ * (clear, new) and save files (load, save).
+ * It is also in charge of displaying errors related to file parsing.
  *
- * This class also gives access to static generic functions.
+ * This class also gives access to static functions providing
+ * information about application version.
  */
 class StateS : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Static functions
 public:
 	static QString getVersion();
 	static QString getCopyrightYears();
 
+	/////
+	// Constructors/destructors
 public:
 	explicit StateS(QApplication* app, const QString& initialFilePath = QString());
 	~StateS();
 
+	/////
+	// Object functions
 private slots:
 	// Handle signal from language selection dialog
 	void languageSelected(QTranslator* translator);
@@ -81,14 +83,16 @@ private:
 	void displayErrorMessages(const QString& errorTitle, const QList<QString>& errorList);
 	void displayErrorMessage(const QString& errorTitle, const QString& error);
 
+	/////
+	// Object variables
 private:
 	// Transient member: only used during initialization
 	LangSelectionDialog* languageSelectionWindow = nullptr;
 
 	// Pointers to objects persistent throughout the application life
 	QTranslator* translator = nullptr; // Translator will be nullptr if English is chosen
-	shared_ptr<MachineManager> machineManager;
 	StatesUi* statesUi = nullptr;
+
 };
 
 #endif // STATES_H

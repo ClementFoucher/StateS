@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,19 +31,18 @@
 #include <QKeyEvent>
 
 // StateS classes
+#include "machinemanager.h"
 #include "machine.h"
 #include "equation.h"
 #include "graphicequation.h"
 #include "input.h"
-#include "svgimagegenerator.h"
+#include "pixmapgenerator.h"
 
 
-EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent) :
+EquationEditor::EquationEditor(shared_ptr<Signal> initialEquation, QWidget* parent) :
     QDialog(parent)
 {
-	this->machine = machine;
-
-	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle(tr("StateS equation editor"));
 
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
@@ -60,10 +59,13 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 	resourcesTitle->setAlignment(Qt::AlignCenter);
 	mainLayout->addWidget(resourcesTitle);
 
+	// Signals
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
 	QWidget* resourcesWidget = new QWidget();
 	QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
 
-	// Signals
 	if (machine->getInputs().count() != 0)
 	{
 		QVBoxLayout* inputListLayout = new QVBoxLayout();
@@ -106,7 +108,7 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 	constantsTitle->setAlignment(Qt::AlignCenter);
 	constantListLayout->addWidget(constantsTitle);
 
-	constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::constant)), true));
+	constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::constant)), true));
 
 	foreach (shared_ptr<Signal> constant, machine->getConstants())
 	{
@@ -122,25 +124,25 @@ EquationEditor::EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> i
 	operatorsTitle->setAlignment(Qt::AlignCenter);
 	operatorListLayout->addWidget(operatorsTitle, 0, 0, 1, 2);
 
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::notOp     )), true), 1, 0, 1, 2);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::concatOp  )), true), 2, 0, 1, 2);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::notOp     )), true), 1, 0, 1, 2);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::concatOp  )), true), 2, 0, 1, 2);
 
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::equalOp   )), true), 3, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::diffOp    )), true), 3, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::equalOp   )), true), 3, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::diffOp    )), true), 3, 1, 1, 1);
 
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::andOp,   2)), true), 4, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::orOp,    2)), true), 5, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::xorOp,   2)), true), 6, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::nandOp,  2)), true), 7, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::norOp,   2)), true), 8, 0, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::xnorOp,  2)), true), 9, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::andOp,   2)), true), 4, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::orOp,    2)), true), 5, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::xorOp,   2)), true), 6, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::nandOp,  2)), true), 7, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::norOp,   2)), true), 8, 0, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::xnorOp,  2)), true), 9, 0, 1, 1);
 
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::andOp,   3)), true), 4, 1, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::orOp,    3)), true), 5, 1, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::xorOp,   3)), true), 6, 1, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::nandOp,  3)), true), 7, 1, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::norOp,   3)), true), 8, 1, 1, 1);
-	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(Equation::nature::xnorOp,  3)), true), 9, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::andOp,   3)), true), 4, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::orOp,    3)), true), 5, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::xorOp,   3)), true), 6, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::nandOp,  3)), true), 7, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::norOp,   3)), true), 8, 1, 1, 1);
+	operatorListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::xnorOp,  3)), true), 9, 1, 1, 1);
 
 	// Add resources in a scroll area
 	QScrollArea* scrollArea = new QScrollArea();
@@ -215,7 +217,9 @@ void EquationEditor::keyPressEvent(QKeyEvent* event)
 	}
 
 	if (transmitEvent)
+	{
 		QDialog::keyPressEvent(event);
+	}
 }
 
 void EquationEditor::mousePressEvent(QMouseEvent* event)

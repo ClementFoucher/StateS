@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,60 +22,24 @@
 // Current class header
 #include "fsmstate.h"
 
-// StateS classes
-#include "fsm.h"
-#include "fsmgraphicstate.h"
 
-
-FsmState::FsmState(shared_ptr<Fsm> parent, const QString& name, QPointF location) :
-    FsmComponent(parent)
+FsmState::FsmState(const QString& name) :
+    FsmComponent()
 {
 	this->name = name;
-
-	this->graphicRepresentation = new FsmGraphicState();
-	this->graphicRepresentation->setPos(location);
-
-	connect(this->graphicRepresentation, &FsmGraphicState::stateMovedEvent, this, &FsmState::graphicRepresentationMovedEventHandler);
-	connect(this->graphicRepresentation, &QObject::destroyed,               this, &FsmState::graphicRepresentationDeletedEventHandler);
-
-	// Propagates local events to the more general events
-	connect(this, &FsmState::stateRenamedEvent,               this, &MachineComponent::componentNeedsGraphicUpdateEvent);
-	connect(this, &FsmState::stateSimulatedStateChangedEvent, this, &MachineComponent::componentSimulatedStateChangedEvent);
 }
 
-FsmState::~FsmState()
+FsmState::FsmState(componentId_t id, const QString& name) :
+    FsmComponent(id)
 {
-	delete this->graphicRepresentation;
+	this->name = name;
 }
 
-FsmGraphicState* FsmState::getGraphicRepresentation()
+void FsmState::setName(const QString& newName)
 {
-	if (this->graphicRepresentation != nullptr)
-	{
-		this->graphicRepresentation->setLogicState(this->shared_from_this());
-	}
-	return this->graphicRepresentation;
-}
-
-uint FsmState::getAllowedActionTypes() const
-{
-	return (activeOnState | set | reset | assign);
-}
-
-/**
- * @brief FsmState::graphicRepresentationDeleted
- * As graphic state is handled by a scene, it can
- * be destroyed at any time. Clear obsolete reference
- * if so to avoid errors, notably at object deletion.
- */
-void FsmState::graphicRepresentationDeletedEventHandler()
-{
-	this->graphicRepresentation = nullptr;
-}
-
-void FsmState::graphicRepresentationMovedEventHandler()
-{
-	emit statePositionChangedEvent(this->shared_from_this());
+	this->name = newName;
+	emit this->stateRenamedEvent();
+	emit this->componentNeedsGraphicUpdateEvent(this->id);
 }
 
 QString FsmState::getName() const
@@ -83,85 +47,43 @@ QString FsmState::getName() const
 	return this->name;
 }
 
-void FsmState::setName(const QString& newName)
+void FsmState::addOutgoingTransitionId(componentId_t transitionId)
 {
-	this->name = newName;
-	emit stateRenamedEvent();
+	this->outputTransitionsIds.append(transitionId);
 }
 
-void FsmState::addOutgoingTransition(shared_ptr<FsmTransition> transition)
+void FsmState::removeOutgoingTransitionId(componentId_t transitionId)
 {
-	this->outputTransitions.append(transition);
+	this->outputTransitionsIds.removeAll(transitionId);
 }
 
-void FsmState::removeOutgoingTransition(shared_ptr<FsmTransition> transition)
+const QList<componentId_t> FsmState::getOutgoingTransitionsIds() const
 {
-	QList<weak_ptr<FsmTransition>> newList;
-	foreach(weak_ptr<FsmTransition> oldTransition, this->outputTransitions)
-	{
-		shared_ptr<FsmTransition> l_oldTransition = oldTransition.lock();
-
-		// Keep all transitions except the one being removed
-		if (l_oldTransition != transition)
-		{
-			newList.append(oldTransition);
-		}
-	}
-	this->outputTransitions = newList;
+	return this->outputTransitionsIds;
 }
 
-const QList<shared_ptr<FsmTransition>> FsmState::getOutgoingTransitions() const
+void FsmState::addIncomingTransitionId(componentId_t transitionId)
 {
-	QList<shared_ptr<FsmTransition>> transitions;
-	foreach(weak_ptr<FsmTransition> transition, this->outputTransitions)
-	{
-		shared_ptr<FsmTransition> l_transition = transition.lock();
-		if (l_transition != nullptr)
-		{
-			transitions.append(l_transition);
-		}
-	}
-	return transitions;
+	this->inputTransitionsIds.append(transitionId);
 }
 
-void FsmState::addIncomingTransition(shared_ptr<FsmTransition> transition)
+void FsmState::removeIncomingTransitionId(componentId_t transitionId)
 {
-	this->inputTransitions.append(transition);
+	this->inputTransitionsIds.removeAll(transitionId);
 }
 
-void FsmState::removeIncomingTransition(shared_ptr<FsmTransition> transition)
+const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
 {
-	QList<weak_ptr<FsmTransition>> newList;
-	foreach(weak_ptr<FsmTransition> oldTransition, this->inputTransitions)
-	{
-		shared_ptr<FsmTransition> l_oldTransition = oldTransition.lock();
-
-		// Keep all transitions except the one being removed
-		if (l_oldTransition != transition)
-		{
-			newList.append(oldTransition);
-		}
-	}
-	this->inputTransitions = newList;
+	return this->inputTransitionsIds;
 }
 
-const QList<shared_ptr<FsmTransition>> FsmState::getIncomingTransitions() const
+uint FsmState::getAllowedActionTypes() const
 {
-	QList<shared_ptr<FsmTransition>> transitions;
-	foreach(weak_ptr<FsmTransition> transition, this->inputTransitions)
-	{
-		shared_ptr<FsmTransition> l_transition = transition.lock();
-		if (l_transition != nullptr)
-		{
-			transitions.append(l_transition);
-		}
-	}
-	return transitions;
-}
-
-bool FsmState::getIsActive() const
-{
-	return this->isActive;
+	return ((uint)actuatorAllowedActionType_t::activeOnState |
+	        (uint)actuatorAllowedActionType_t::set           |
+	        (uint)actuatorAllowedActionType_t::reset         |
+	        (uint)actuatorAllowedActionType_t::assign
+	       );
 }
 
 void FsmState::setActive(bool value)
@@ -178,26 +100,10 @@ void FsmState::setActive(bool value)
 		this->deactivateActions();
 	}
 
-	emit stateSimulatedStateChangedEvent();
+	emit this->componentSimulatedStateChangedEvent();
 }
 
-bool FsmState::isInitial() const
+bool FsmState::getIsActive() const
 {
-	shared_ptr<Fsm> owningFsm = this->getOwningFsm();
-	if (owningFsm != nullptr)
-	{
-		return (owningFsm->getInitialState().get() == this);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void FsmState::notifyInitialStatusChanged()
-{
-	if (this->graphicRepresentation != nullptr)
-	{
-		this->graphicRepresentation->rebuildRepresentation();
-	}
+	return this->isActive;
 }

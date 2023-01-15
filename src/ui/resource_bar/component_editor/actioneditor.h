@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,7 @@ class QTableView;
 class QItemSelection;
 
 // StateS Classes
-class MachineActuatorComponent;
+#include "statestypes.h"
 class CollapsibleWidgetWithTitle;
 class ActionOnSignal;
 
@@ -52,6 +52,8 @@ class ActionEditor : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Type declarations
 private:
 	enum ContextAction
 	{
@@ -66,9 +68,13 @@ private:
 		MoveDown           = 8
 	};
 
+	/////
+	// Constructors/destructors
 public:
-	explicit ActionEditor(shared_ptr<MachineActuatorComponent> actuator, QString title = QString(), QWidget* parent = nullptr);
+	explicit ActionEditor(componentId_t actuatorId, QString title, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 protected:
 	virtual void keyPressEvent   (QKeyEvent* e)             override;
 	virtual void keyReleaseEvent (QKeyEvent* e)             override;
@@ -80,8 +86,8 @@ private slots:
 	void displayAddActionMenu() const;
 	void removeSelectedActions();
 
-	void treatAddActionMenuEventHandler(QAction* action);
-	void treatContextMenuEventHandler  (QAction* action);
+	void processAddActionMenuEventHandler(QAction* action);
+	void processContextMenuEventHandler  (QAction* action);
 
 	void moveSelectedActionsUp();
 	void moveSelectedActionsDown();
@@ -95,8 +101,10 @@ private:
 	void sortSelectionList();
 	void restoreSelection();
 
+	/////
+	// Object variables
 private:
-	weak_ptr<MachineActuatorComponent> actuator;
+	componentId_t actuatorId;
 
 	QTableView*                 actionTable        = nullptr;
 	QPushButton*                buttonAddAction    = nullptr;
@@ -106,6 +114,7 @@ private:
 	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
 
 	QList<weak_ptr<ActionOnSignal>> latestSelection;
+
 };
 
 #endif // ACTIONEDITOR_H

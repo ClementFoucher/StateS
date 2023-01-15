@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,14 +31,13 @@
 #include <QScrollBar>
 
 // StateS classes
-#include "machine.h"
+#include "machinemanager.h"
+#include "graphicmachine.h"
 
 
-MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent) :
+MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
     StatesGraphicsView(parent)
 {
-	this->machine = machine;
-
 	this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
 
 	this->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -46,7 +45,9 @@ MachineComponentVisualizer::MachineComponentVisualizer(shared_ptr<Machine> machi
 
 	this->updateMachineVisualization();
 
-	connect(machine.get(), &Machine::componentVisualizationUpdatedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineNameChangedEvent,       this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineInputListChangedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineOutputListChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
 shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const
@@ -137,11 +138,9 @@ void MachineComponentVisualizer::updateMachineVisualization()
 {
 	this->scene->clear();
 
-	shared_ptr<Machine> l_machine = this->machine.lock();
-	if (l_machine != nullptr)
-	{
-		QGraphicsItem* component = l_machine->getComponentVisualization();
-		this->scene->addItem(component);
-	}
-}
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
 
+	QGraphicsItem* component = graphicMachine->getComponentVisualization();
+	this->scene->addItem(component);
+}

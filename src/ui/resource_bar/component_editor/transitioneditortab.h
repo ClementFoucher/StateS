@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,20 +25,19 @@
 // Parent
 #include "componenteditortab.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class FsmTransition;
+#include "statestypes.h"
 
 
 class TransitionEditorTab : public ComponentEditorTab
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent = nullptr);
+	explicit TransitionEditorTab(componentId_t transitionId, QWidget* parent = nullptr);
+
 };
 
 #endif // TRANSITIONEDITORTAB_H

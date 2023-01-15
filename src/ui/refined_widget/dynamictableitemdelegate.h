@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,6 @@
 using namespace std;
 
 // Qt classes
-class QTableWidgetItem;
 class QValidator;
 
 // StateS classes
@@ -41,18 +40,25 @@ class DynamicTableItemDelegate  : public QItemDelegate
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	DynamicTableItemDelegate(QObject* parent = nullptr);
 
-	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+	/////
+	// Object functions
+public:
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-	void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+	virtual void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 
 	// This function takes ownership of the validator
 	void setValidator(shared_ptr<QValidator> validator);
 
 	DynamicLineEdit* getCurentEditor() const;
 
+	/////
+	// Object variables
 private:
 	shared_ptr<QValidator> validator;
 

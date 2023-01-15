@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,25 +26,27 @@
 #include <QGraphicsView>
 
 // StateS classes
-#include "statesui.h"
+class StatesUi;
+
 
 /**
- * @brief The StatesGraphicsView class adds drag-n-drop allowance
- * to allow dropping files on the whole UI.
+ * @brief The StatesGraphicsView class ignores drag and drop
+ * events so that they can be caught by the StatesUI object.
  */
 class StatesGraphicsView : public QGraphicsView
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit StatesGraphicsView(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 protected:
-	void dragEnterEvent(QDragEnterEvent* event) override;
-	void dropEvent     (QDropEvent* event)      override;
-
-private:
-	StatesUi* getMainWindow();
+	virtual void dragEnterEvent(QDragEnterEvent* event) override;
+	virtual void dropEvent     (QDropEvent* event)      override;
 
 };
 

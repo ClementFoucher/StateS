@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,11 +32,25 @@
 const QString ContextMenu::errorStyle("background-color: lightgrey; border: 3px solid red; color: red");
 const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px double");
 
+
+ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)
+{
+	ContextMenu* newMenu = new ContextMenu(parent);
+	newMenu->setStyleSheet("");
+
+	newMenu->addAction(text);
+
+	newMenu[0].setStyleSheet(errorStyle);
+
+	return newMenu;
+}
+
 ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)
 {
 	connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
 	this->setStyleSheet( QString( "border: 1px solid"));
+	this->setToolTipsVisible(true);
 }
 
 void ContextMenu::addTitle(const QString& titleText)
@@ -66,40 +80,4 @@ void ContextMenu::addSubTitle(const QString& titleText)
 void ContextMenu::setListStyle()
 {
 	this->setStyleSheet(listStyle);
-}
-
-// Code found in Qt FAQ to add tool tip support to menus...
-// Why not default?
-bool ContextMenu::event(QEvent* e)
-{
-	if (this->activeAction() != nullptr)
-	{
-		if (this->activeAction()->toolTip().isEmpty())
-		{
-			const QHelpEvent* helpEvent = dynamic_cast <QHelpEvent*>(e);
-
-			if ( (helpEvent != nullptr) && (helpEvent->type() == QEvent::ToolTip) )
-			{
-				QToolTip::showText(helpEvent->globalPos(), activeAction()->toolTip());
-			}
-			else
-			{
-				QToolTip::hideText();
-			}
-		}
-	}
-
-	return QMenu::event(e);
-}
-
-ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)
-{
-	ContextMenu* newMenu = new ContextMenu(parent);
-	newMenu->setStyleSheet("");
-
-	newMenu->addAction(text);
-
-	newMenu[0].setStyleSheet(errorStyle);
-
-	return newMenu;
 }

@@ -52,7 +52,7 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget*
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
-	this->equation = shared_ptr<Equation>(new Equation(Equation::nature::extractOp, 1));
+	this->equation = shared_ptr<Equation>(new Equation(EquationNature_t::extractOp, 1));
 	this->equation->setRange(rangeL, rangeR);
 	this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 

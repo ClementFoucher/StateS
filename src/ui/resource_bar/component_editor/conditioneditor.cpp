@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,12 +38,28 @@
 #include "equationeditor.h"
 #include "contextmenu.h"
 #include "fsmgraphictransition.h"
+#include "machinemanager.h"
+#include "graphicmachine.h"
+#include "fsmundocommand.h"
 
 
-ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* parent) :
+ConditionEditor::ConditionEditor(componentId_t transitionId, QWidget* parent) :
     QWidget(parent)
 {
-	this->transition = transition;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
+
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(transitionId));
+	if (transition == nullptr) return;
+
+	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	if (graphicTransition == nullptr) return;
+
+
+	this->transitionId = transitionId;
 	connect(transition.get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
 
 	this->layout = new QGridLayout(this);
@@ -69,7 +85,7 @@ ConditionEditor::ConditionEditor(shared_ptr<FsmTransition> transition, QWidget* 
 	this->conditionTextPositionSlider = new QSlider(Qt::Horizontal, this);
 	this->conditionTextPositionSlider->setMinimum(1);
 	this->conditionTextPositionSlider->setMaximum(99);
-	this->conditionTextPositionSlider->setValue(transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
+	this->conditionTextPositionSlider->setValue(graphicTransition->getConditionLineSliderPosition()*100);
 	connect(this->conditionTextPositionSlider, &QSlider::valueChanged, this, &ConditionEditor::conditionTextPositionSliderChanged);
 	positionLayout->addWidget(this->conditionTextPositionSlider);
 	this->layout->addLayout(positionLayout, 4, 0, 1, 2);
@@ -86,68 +102,89 @@ ConditionEditor::~ConditionEditor()
 	delete truthTableDisplay; // In case not shown
 }
 
-void ConditionEditor::updateTransition(shared_ptr<FsmTransition> newTransition)
+void ConditionEditor::updateTransition(componentId_t newTransitionId)
 {
-	if (! this->transition.expired())
-		disconnect(this->transition.lock().get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
-	this->transition = newTransition;
+	auto oldTransition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+
+	if (oldTransition != nullptr)
+	{
+		disconnect(oldTransition.get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
+	}
+
+	auto newTransition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(newTransitionId));
+	if (newTransition == nullptr) return;
+
+	this->transitionId = newTransitionId;
 	connect(newTransition.get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
 
 	this->updateContent();
 }
 
-void ConditionEditor::expandTruthTable()
+void ConditionEditor::editCondition()
 {
-	if (!this->isTruthTableDisplayed())
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+	if (transition == nullptr) return;
+
+
+	if (machine->getReadableSignals().count() != 0)
 	{
-		disconnect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
+		EquationEditor* eqEdit = new EquationEditor(transition->getCondition());
 
-		if (this->truthTableDisplay != nullptr)
+		int result = eqEdit->exec();
+
+		if (result == QDialog::DialogCode::Accepted)
 		{
-			this->truthTableDisplay->setVisible(true);
-		}
-		else
-		{
-			if (! this->transition.expired())
-			{
-				shared_ptr<Equation> equation = dynamic_pointer_cast<Equation>(this->transition.lock()->getCondition());
+			shared_ptr<Signal> tmp = eqEdit->getResultEquation();
 
-				if (equation != nullptr)
-				{
-					this->truthTable = shared_ptr<TruthTable>(new TruthTable(equation));
-
-					this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
-					this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
-				}
-				else
-				{
-					// TODO
-				}
-			}
+			transition->setCondition(tmp);
+			machineManager->notifyMachineEdited();
 		}
 
-		this->buttonExpandTruthTable->setText(tr("Collapse truth table"));
-
-		connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::collapseTruthTable);
+		delete eqEdit;
+	}
+	else
+	{
+		ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
+		menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
 	}
 }
 
-void ConditionEditor::collapseTruthTable()
+void ConditionEditor::clearCondition()
 {
-	disconnect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::collapseTruthTable);
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
-	this->buttonExpandTruthTable->setText(tr("Display truth table"));
-	this->truthTableDisplay->setVisible(false);
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+	if (transition == nullptr) return;
 
-	connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
+
+	transition->clearCondition();
+	machineManager->notifyMachineEdited();
 }
 
-bool ConditionEditor::isTruthTableDisplayed()
+void ConditionEditor::treatMenuSetCondition(QAction* action)
 {
-	if ( (this->truthTableDisplay != nullptr) && (this->truthTableDisplay->isVisible()) )
-		 return true;
-	else return false;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+	if (transition == nullptr) return;
+
+
+	foreach (shared_ptr<Signal> currentVariable, machine->getReadableSignals())
+	{
+		if (currentVariable->getName() == action->text())
+		{
+			transition->setCondition(currentVariable);
+			break;
+		}
+	}
 }
 
 void ConditionEditor::updateContent()
@@ -165,139 +202,154 @@ void ConditionEditor::updateContent()
 
 	this->buttonExpandTruthTable->setEnabled(false);
 
-	shared_ptr<FsmTransition> l_transition = this->transition.lock();
-	if (l_transition != nullptr)
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
+
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+	if (transition == nullptr) return;
+
+	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	if (graphicTransition == nullptr) return;
+
+
+	int sliderPosition = graphicTransition->getConditionLineSliderPosition()*100;
+	if (sliderPosition != this->conditionTextPositionSlider->value())
 	{
-		if (l_transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100 != this->conditionTextPositionSlider->value())
-			this->conditionTextPositionSlider->setValue(l_transition->getGraphicRepresentation()->getConditionLineSliderPosition()*100);
+		this->conditionTextPositionSlider->setValue(sliderPosition);
+	}
 
-		if (l_transition->getCondition() != nullptr)
+	if (transition->getCondition() != nullptr)
+	{
+		shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(transition->getCondition());
+
+		if (equationOperand != nullptr)
 		{
-			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(l_transition->getCondition());
+			this->conditionText->setText(equationOperand->getColoredText(false, true));
+		}
+		else
+		{
+			this->conditionText->setText(transition->getCondition()->getText());
+		}
 
-			if (equationOperand != nullptr)
+		if (transition->getCondition()->getSize() == 1)
+		{
+			shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(transition->getCondition());
+
+			if (equationCondition != nullptr)
 			{
-				this->conditionText->setText(equationOperand->getColoredText(false, true));
-			}
-			else
-			{
-				this->conditionText->setText(l_transition->getCondition()->getText());
-			}
+				this->buttonExpandTruthTable->setEnabled(true);
 
-			if (l_transition->getCondition()->getSize() == 1)
-			{
-				shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_transition->getCondition());
-
-				if (equationCondition != nullptr)
-				{
-					this->buttonExpandTruthTable->setEnabled(true);
-
-					if (truthTableDisplayed)
-						this->expandTruthTable();
-				}
-			}
-			else
-			{
-				if (l_transition->getCondition()->getSize() == 0)
-				{
-					this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
-					                                        tr("Warning: equation representing condition is not valid.") +
-					                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
-					                                        "<br />" + tr("Edit condition and hover over errors for more information.") +
-					                                        "</span>"
-					                                        );
-					this->conditionWarningText->setWordWrap(true);
-				}
-				else
-				{
-					this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
-					                                        tr("Warning: equation representing condition is size") + " " + QString::number(l_transition->getCondition()->getSize()) +
-					                                        "<br />" + tr("Conditions must be size one to allow being treated as booleans.") +
-					                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
-					                                        "</span>"
-					                                        );
-					this->conditionWarningText->setWordWrap(true);
-				}
-
-				this->conditionWarningText->setAlignment(Qt::AlignCenter);
-				this->layout->addWidget(conditionWarningText, 2, 0, 1, 2);
+				if (truthTableDisplayed)
+					this->expandTruthTable();
 			}
 		}
 		else
 		{
-			this->conditionText->setText("1");
+			if (transition->getCondition()->getSize() == 0)
+			{
+				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
+				                                        tr("Warning: equation representing condition is not valid.") +
+				                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
+				                                        "<br />" + tr("Edit condition and hover over errors for more information.") +
+				                                        "</span>"
+				                                        );
+				this->conditionWarningText->setWordWrap(true);
+			}
+			else
+			{
+				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
+				                                        tr("Warning: equation representing condition is size") + " " + QString::number(transition->getCondition()->getSize()) +
+				                                        "<br />" + tr("Conditions must be size one to allow being treated as booleans.") +
+				                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
+				                                        "</span>"
+				                                        );
+				this->conditionWarningText->setWordWrap(true);
+			}
+
+			this->conditionWarningText->setAlignment(Qt::AlignCenter);
+			this->layout->addWidget(conditionWarningText, 2, 0, 1, 2);
 		}
+	}
+	else
+	{
+		this->conditionText->setText("1");
 	}
 }
 
 void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 {
-	shared_ptr<FsmTransition> l_transition = this->transition.lock();
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
 
-	if (l_transition != nullptr)
-	{
-		qreal realValue = ((qreal)newValue)/100;
-		l_transition->getGraphicRepresentation()->setConditionLineSliderPosition(realValue);
-	}
+	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	if (graphicTransition == nullptr) return;
+
+
+	qreal realValue = ((qreal)newValue)/100;
+	graphicTransition->setConditionLineSliderPosition(realValue);
+
+	FsmUndoCommand* undoCommand = new FsmUndoCommand(UndoCommandId_t::fsmUndoTransitionConditionSliderPositionChangeId, graphicTransition->getLogicComponentId());
+	machineManager->notifyMachineEdited(undoCommand);
 }
 
-void ConditionEditor::editCondition()
+void ConditionEditor::expandTruthTable()
 {
-	shared_ptr<FsmTransition> l_transition = this->transition.lock();
-	if (l_transition != nullptr)
-	{
-		shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
-		if ( (owningMachine != nullptr) && (owningMachine->getReadableSignals().count() != 0) )
-		{
-			EquationEditor* eqEdit;
+	if (this->isTruthTableDisplayed() == true) return;
 
-			if (!(l_transition->getCondition() == nullptr))
-				eqEdit = new EquationEditor(owningMachine, l_transition->getCondition());
+
+	disconnect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
+
+	if (this->truthTableDisplay != nullptr)
+	{
+		this->truthTableDisplay->setVisible(true);
+	}
+	else
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return;
+
+		auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+		if (transition != nullptr)
+		{
+			shared_ptr<Equation> equation = dynamic_pointer_cast<Equation>(transition->getCondition());
+
+			if (equation != nullptr)
+			{
+				this->truthTable = shared_ptr<TruthTable>(new TruthTable(equation));
+
+				this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
+				this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
+			}
 			else
-				eqEdit = new EquationEditor(owningMachine, nullptr);
-
-			int result = eqEdit->exec();
-
-			if (result == QDialog::DialogCode::Accepted)
 			{
-				shared_ptr<Signal> tmp = eqEdit->getResultEquation();
-
-				l_transition->setCondition(tmp);
-			}
-
-			delete eqEdit;
-		}
-		else
-		{
-			ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
-			menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
-		}
-	}
-}
-
-void ConditionEditor::clearCondition()
-{
-	if (! this->transition.expired())
-		this->transition.lock()->clearCondition();
-}
-
-void ConditionEditor::treatMenuSetCondition(QAction* action)
-{
-	shared_ptr<FsmTransition> l_transition = this->transition.lock();
-
-	if (l_transition != nullptr)
-	{
-		shared_ptr<Machine> owningMachine = l_transition->getOwningMachine();
-		if (owningMachine != nullptr)
-		{
-			foreach (shared_ptr<Signal> currentVariable, owningMachine->getReadableSignals())
-			{
-				if (currentVariable->getName() == action->text())
-				{
-					l_transition->setCondition(currentVariable);
-					break;
-				}
+				// TODO
 			}
 		}
 	}
+
+	this->buttonExpandTruthTable->setText(tr("Collapse truth table"));
+
+	connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::collapseTruthTable);
+
+}
+
+void ConditionEditor::collapseTruthTable()
+{
+	disconnect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::collapseTruthTable);
+
+	this->buttonExpandTruthTable->setText(tr("Display truth table"));
+	this->truthTableDisplay->setVisible(false);
+
+	connect(this->buttonExpandTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
+}
+
+bool ConditionEditor::isTruthTableDisplayed()
+{
+	if ( (this->truthTableDisplay != nullptr) && (this->truthTableDisplay->isVisible()) )
+		 return true;
+	else return false;
 }

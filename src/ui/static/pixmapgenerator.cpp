@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,15 +20,19 @@
  */
 
 // Current class header
-#include "svgimagegenerator.h"
+#include "pixmapgenerator.h"
 
 // Qt classes
 #include <QSvgRenderer>
 #include <QPixmap>
 #include <QPainter>
 
+// StateS classes
+#include "fsmgraphicstate.h"
+#include "fsmgraphictransition.h"
 
-QPixmap SvgImageGenerator::getPixmapFromSvg(const QString& path)
+
+QPixmap PixmapGenerator::getPixmapFromSvg(const QString& path)
 {
 	QSvgRenderer svgRenderer(path);
 	QPixmap pixmap(svgRenderer.defaultSize());
@@ -37,4 +41,19 @@ QPixmap SvgImageGenerator::getPixmapFromSvg(const QString& path)
 	svgRenderer.render(&painter);
 
 	return pixmap;
+}
+
+QPixmap PixmapGenerator::getStatesWindowIcon()
+{
+	return PixmapGenerator::getPixmapFromSvg(QString(":/icons/StateS"));
+}
+
+QPixmap PixmapGenerator::getFsmStateCursor()
+{
+	return FsmGraphicState::getPixmap(32, false, true);
+}
+
+QPixmap PixmapGenerator::getFsmTransitionCursor()
+{
+	return FsmGraphicTransition::getPixmap(32);
 }

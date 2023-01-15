@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,41 +31,36 @@
 
 // StateS classes
 #include "machinemanager.h"
+#include "machinebuilder.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
-#include "dynamiclineedit.h"
-#include "fsm.h"
 
 
-HintTab::HintTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
     QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
-	this->machineManager       = machineManager;
 
-	if (machineManager != nullptr)
-	{
-		QVBoxLayout* layout = new QVBoxLayout(this);
-		layout->setAlignment(Qt::AlignTop);
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignTop);
 
-		shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
-		connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &HintTab::toolChangedEventHandler);
-		connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &HintTab::singleUsetoolChangedEventHandler);
+	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &HintTab::toolChangedEventHandler);
+	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &HintTab::singleUsetoolChangedEventHandler);
 
-		//
-		// Hints
+	//
+	// Hints
 
-		this->hintDisplay = new CollapsibleWidgetWithTitle(this);
-		layout->addWidget(this->hintDisplay);
+	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
+	layout->addWidget(this->hintDisplay);
 
-		this->updateHint(MachineBuilder::tool::none);
+	this->updateHint(MachineBuilderTool_t::none);
 
-		//
-		// Machine visualization
+	//
+	// Machine visualization
 
-		this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
-		layout->addWidget(this->machineDisplay);
-	}
+	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
+	layout->addWidget(this->machineDisplay);
 }
 
 void HintTab::setHintCollapsed(bool collapse)
@@ -100,21 +95,21 @@ void HintTab::showEvent(QShowEvent* e)
 	QWidget::showEvent(e);
 }
 
-void HintTab::toolChangedEventHandler(MachineBuilder::tool newTool)
+void HintTab::toolChangedEventHandler(MachineBuilderTool_t newTool)
 {
 	this->updateHint(newTool);
 }
 
-void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool)
+void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tempTool)
 {
-	if (tempTool == MachineBuilder::singleUseTool::none)
+	if (tempTool == MachineBuilderSingleUseTool_t::none)
 	{
-		shared_ptr<MachineBuilder> machineBuiler = this->machineManager->getMachineBuilder();
+		shared_ptr<MachineBuilder> machineBuiler = machineManager->getMachineBuilder();
 
 		if (machineBuiler != nullptr)
 			this->updateHint(machineBuiler->getTool());
 		else
-			this->updateHint(MachineBuilder::tool::none);
+			this->updateHint(MachineBuilderTool_t::none);
 	}
 	else
 	{
@@ -125,7 +120,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 
 		switch(tempTool)
 		{
-		case MachineBuilder::singleUseTool::drawTransitionFromScene:
+		case MachineBuilderSingleUseTool_t::drawTransitionFromScene:
 			title +=  tr("Drawing a transition");
 
 			hint += "<br />";
@@ -136,7 +131,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 			hint += "<br />";
 
 			break;
-		case MachineBuilder::singleUseTool::editTransitionSource:
+		case MachineBuilderSingleUseTool_t::editTransitionSource:
 			title +=  tr("Editing a transition");
 
 			hint += "<br />";
@@ -147,7 +142,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 			hint += "<br />";
 
 			break;
-		case MachineBuilder::singleUseTool::editTransitionTarget:
+		case MachineBuilderSingleUseTool_t::editTransitionTarget:
 			title +=  tr("Editing a transition");
 
 			hint += "<br />";
@@ -166,7 +161,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tem
 	}
 }
 
-void HintTab::updateHint(MachineBuilder::tool newTool)
+void HintTab::updateHint(MachineBuilderTool_t newTool)
 {
 	QString title;
 	QString hint;
@@ -175,7 +170,7 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 
 	switch(newTool)
 	{
-	case MachineBuilder::tool::none:
+	case MachineBuilderTool_t::none:
 		title +=  tr("Navigation");
 
 		hint += "<br />";
@@ -208,7 +203,7 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 		hint += tr("Verify tab provide tools for machine correctness verification");
 
 		break;
-	case MachineBuilder::tool::initial_state:
+	case MachineBuilderTool_t::initial_state:
 		title +=  tr("Adding an initial state");
 
 		hint += "<br />";
@@ -221,7 +216,7 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 		hint += "<br />";
 
 		break;
-	case MachineBuilder::tool::state:
+	case MachineBuilderTool_t::state:
 		title +=  tr("Adding a state");
 
 		hint += "<br />";
@@ -232,7 +227,7 @@ void HintTab::updateHint(MachineBuilder::tool newTool)
 		hint += "<br />";
 
 		break;
-	case MachineBuilder::tool::transition:
+	case MachineBuilderTool_t::transition:
 		title +=  tr("Drawing a transition");
 
 		hint += "<br />";

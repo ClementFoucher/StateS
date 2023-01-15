@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,16 +22,13 @@
 // Current class header
 #include "fsmvhdlexport.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QDate>
 #include <QFile>
 #include <QTextStream>
 
 // StateS classes
+#include "machinemanager.h"
 #include "states.h"
 #include "fsm.h"
 #include "fsmstate.h"
@@ -42,9 +39,9 @@ using namespace std;
 #include "actiononsignal.h"
 
 
-FsmVhdlExport::FsmVhdlExport(shared_ptr<Fsm> machine)
+FsmVhdlExport::FsmVhdlExport()
 {
-	this->machine = machine;
+
 }
 
 void FsmVhdlExport::setOptions(bool resetLogicPositive, bool prefixSignals)
@@ -55,78 +52,68 @@ void FsmVhdlExport::setOptions(bool resetLogicPositive, bool prefixSignals)
 
 bool FsmVhdlExport::writeToFile(const QString& path)
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return false;
 
-	if (l_machine != nullptr)
-	{
-		QFile* file = new QFile(path);
-		file->open(QIODevice::WriteOnly);
+	QFile* file = new QFile(path);
+	file->open(QIODevice::WriteOnly);
 
-		QTextStream stream(file);
+	QTextStream stream(file);
 
-		this->generateVhdlCharacteristics(l_machine);
+	this->generateVhdlCharacteristics(fsm);
 
-		this->writeHeader(stream);
-		this->writeEntity(stream, l_machine);
-		this->writeArchitecture(stream, l_machine);
+	this->writeHeader(stream);
+	this->writeEntity(stream, fsm);
+	this->writeArchitecture(stream, fsm);
 
-		file->close();
-		delete file;
+	file->close();
+	delete file;
 
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility()
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return nullptr;
 
-	if (l_machine != nullptr)
+	shared_ptr<ExportCompatibility> compatibility(new ExportCompatibility());
+	WrittableSignalCharacteristics_t charac;
+
+	foreach (shared_ptr<Output> output, fsm->getOutputs())
 	{
-		shared_ptr<ExportCompatibility> compatibility(new ExportCompatibility());
-		WrittableSignalCharacteristics charac;
+		charac = this->determineWrittableSignalCharacteristics(fsm, output, false);
 
-		foreach (shared_ptr<Output> output, l_machine->getOutputs())
-		{
-			charac = this->determineWrittableSignalCharacteristics(l_machine, output, false);
+		if (charac.isKeepValue && charac.isTempValue)
+			compatibility->bothTempAndKeepValue.append(output);
 
-			if (charac.isKeepValue && charac.isTempValue)
-				compatibility->bothTempAndKeepValue.append(output);
+		if (charac.isMoore && charac.isMealy)
+			compatibility->bothMooreAndMealy.append(output);
 
-			if (charac.isMoore && charac.isMealy)
-				compatibility->bothMooreAndMealy.append(output);
+		if (charac.isRangeAdressed)
+			compatibility->rangeAdressed.append(output);
 
-			if (charac.isRangeAdressed)
-				compatibility->rangeAdressed.append(output);
-
-			if (charac.isMealy && charac.isKeepValue)
-				compatibility->mealyWithKeep.append(output);
-		}
-		foreach (shared_ptr<Signal> variable, l_machine->getLocalVariables())
-		{
-			charac = this->determineWrittableSignalCharacteristics(l_machine, variable, false);
-
-			if (charac.isKeepValue && charac.isTempValue)
-				compatibility->bothTempAndKeepValue.append(variable);
-
-			if (charac.isMoore && charac.isMealy)
-				compatibility->bothMooreAndMealy.append(variable);
-
-			if (charac.isRangeAdressed)
-				compatibility->rangeAdressed.append(variable);
-
-			if (charac.isMealy && charac.isKeepValue)
-				compatibility->mealyWithKeep.append(variable);
-		}
-
-		return compatibility;
+		if (charac.isMealy && charac.isKeepValue)
+			compatibility->mealyWithKeep.append(output);
 	}
-	else
-		return nullptr;
+	foreach (shared_ptr<Signal> variable, fsm->getLocalVariables())
+	{
+		charac = this->determineWrittableSignalCharacteristics(fsm, variable, false);
+
+		if (charac.isKeepValue && charac.isTempValue)
+			compatibility->bothTempAndKeepValue.append(variable);
+
+		if (charac.isMoore && charac.isMealy)
+			compatibility->bothMooreAndMealy.append(variable);
+
+		if (charac.isRangeAdressed)
+			compatibility->rangeAdressed.append(variable);
+
+		if (charac.isMealy && charac.isKeepValue)
+			compatibility->mealyWithKeep.append(variable);
+	}
+
+	return compatibility;
 }
 
 void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
@@ -135,8 +122,10 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 	this->machineVhdlName = this->cleanNameForVhdl(l_machine->getName());
 
 	// States
-	foreach(shared_ptr<FsmState> state, l_machine->getStates())
+	foreach(auto stateId, l_machine->getAllStatesIds())
 	{
+		auto state = l_machine->getState(stateId);
+
 		QString stateRadical = "S_";
 
 		stateRadical += cleanNameForVhdl(state->getName());
@@ -144,13 +133,14 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 		// Check for duplicates
 		int occurence = 2;
 		QString stateName = stateRadical;
-		while (this->stateVhdlName.values().contains(stateName))
+		auto statesNames = this->stateVhdlName.values();
+		while (statesNames.contains(stateName))
 		{
 			stateName = stateRadical + QString::number(occurence);
 			occurence++;
 		}
 
-		this->stateVhdlName[state] = stateName;
+		this->stateVhdlName[stateId] = stateName;
 	}
 
 	// Signals
@@ -180,31 +170,33 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 	}
 }
 
-FsmVhdlExport::WrittableSignalCharacteristics FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults)
+FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults)
 {
-	WrittableSignalCharacteristics characteristics;
+	WrittableSignalCharacteristics_t characteristics;
 
 	bool doNotGenerate = !storeResults;
 
-	foreach(shared_ptr<FsmState> state, l_machine->getStates())
+	foreach(auto stateId, l_machine->getAllStatesIds())
 	{
+		auto state = l_machine->getState(stateId);
+
 		foreach (shared_ptr<ActionOnSignal> action, state->getActions())
 		{
 			if (action->getSignalActedOn() == signal)
 			{
 				characteristics.isMoore = true;
 
-				ActionOnSignal::action_types actionType = action->getActionType();
+				ActionOnSignalType_t actionType = action->getActionType();
 
 				switch (actionType)
 				{
-				case ActionOnSignal::action_types::assign:
-				case ActionOnSignal::action_types::set:
-				case ActionOnSignal::action_types::reset:
+				case ActionOnSignalType_t::assign:
+				case ActionOnSignalType_t::set:
+				case ActionOnSignalType_t::reset:
 					characteristics.isKeepValue = true;
 					break;
-				case ActionOnSignal::action_types::activeOnState:
-				case ActionOnSignal::action_types::pulse:
+				case ActionOnSignalType_t::activeOnState:
+				case ActionOnSignalType_t::pulse:
 					characteristics.isTempValue = true;
 					break;
 				}
@@ -217,25 +209,27 @@ FsmVhdlExport::WrittableSignalCharacteristics FsmVhdlExport::determineWrittableS
 		}
 	}
 
-	foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
+	foreach(auto transitionId, l_machine->getAllTransitionsIds())
 	{
+		auto transition = l_machine->getTransition(transitionId);
+
 		foreach (shared_ptr<ActionOnSignal> action, transition->getActions())
 		{
 			if (action->getSignalActedOn() == signal)
 			{
 				characteristics.isMealy = true;
 
-				ActionOnSignal::action_types actionType = action->getActionType();
+				ActionOnSignalType_t actionType = action->getActionType();
 
 				switch (actionType)
 				{
-				case ActionOnSignal::action_types::assign:
-				case ActionOnSignal::action_types::set:
-				case ActionOnSignal::action_types::reset:
+				case ActionOnSignalType_t::assign:
+				case ActionOnSignalType_t::set:
+				case ActionOnSignalType_t::reset:
 					characteristics.isKeepValue = true;
 					break;
-				case ActionOnSignal::action_types::activeOnState:
-				case ActionOnSignal::action_types::pulse:
+				case ActionOnSignalType_t::activeOnState:
+				case ActionOnSignalType_t::pulse:
 					characteristics.isTempValue = true;
 					break;
 				}
@@ -388,7 +382,6 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 	//QList<shared_ptr<Input>> inputs = l_machine->getInputs();
 	QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
 	QList<shared_ptr<Signal>> constants = l_machine->getConstants();
-	QList<shared_ptr<FsmState>> states = l_machine->getStates();
 
 	foreach(shared_ptr<Signal> localVar, localVars)
 	{
@@ -439,21 +432,26 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 	stream << "    case current_state is\n";
 
-	foreach(shared_ptr<FsmState> state, states)
+	auto statesIds = l_machine->getAllStatesIds();
+	foreach(auto stateId, statesIds)
 	{
+		auto state = l_machine->getState(stateId);
+
 		stream << "    when ";
-		stream << this->stateVhdlName[state];
+		stream << this->stateVhdlName[stateId];
 		stream << " =>\n";
 
-		QList<shared_ptr<FsmTransition>> transitions = state->getOutgoingTransitions();
-		foreach (shared_ptr<FsmTransition> transition, transitions)
+		auto transitionsIds = state->getOutgoingTransitionsIds();
+		foreach (auto transitionId, transitionsIds)
 		{
 			stream << "      ";
 
-			if (transition != transitions.first())
+			if (transitionId != transitionsIds.first())
 				stream << "els";
 
 			stream << "if ";
+
+			auto transition = l_machine->getTransition(transitionId);
 
 			shared_ptr<Signal> condition = transition->getCondition();
 			stream << generateEquationText(condition, l_machine);
@@ -463,7 +461,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 				stream << " = '1'";
 
 			stream << " then\n";
-			stream << "        next_state <= " << this->stateVhdlName[transition->getTarget()] << ";\n";
+			stream << "        next_state <= " << this->stateVhdlName[transition->getTargetStateId()] << ";\n";
 		}
 
 		stream << "      end if;\n";
@@ -479,7 +477,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  update_state : process(clock, reset)\n";
 	stream << "  begin\n";
 	stream << "    if reset='" << (resetLogicPositive?"1":"0") << "' then\n";
-	stream << "      current_state <= " << this->stateVhdlName[l_machine->getInitialState()] << ";\n";
+	stream << "      current_state <= " << this->stateVhdlName[l_machine->getInitialStateId()] << ";\n";
 	stream << "    elsif rising_edge(clock) then\n";
 	stream << "      current_state <= next_state;\n";
 	stream << "    end if;\n";
@@ -515,10 +513,12 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 	stream << "    case current_state is\n";
 
-	foreach(shared_ptr<FsmState> state, l_machine->getStates())
+	foreach(auto stateId, l_machine->getAllStatesIds())
 	{
+		auto state = l_machine->getState(stateId);
+
 		stream << "    when ";
-		stream << this->stateVhdlName[state];
+		stream << this->stateVhdlName[stateId];
 		stream << " =>\n";
 
 		int writtenActions = 0;
@@ -553,8 +553,10 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 		{
 			QList<shared_ptr<FsmTransition>> transitions;
 
-			foreach(shared_ptr<FsmTransition> transition, l_machine->getTransitions())
+			foreach(auto transitionId, l_machine->getAllTransitionsIds())
 			{
+				auto transition = l_machine->getTransition(transitionId);
+
 				foreach (shared_ptr<ActionOnSignal> action, transition->getActions())
 				{
 					if (action->getSignalActedOn() == signal)
@@ -581,7 +583,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 							else
 								stream << "'1'";
 
-							stream << " when (current_state = " << this->stateVhdlName[transition->getSource()] << ")";
+							stream << " when (current_state = " << this->stateVhdlName[transition->getSourceStateId()] << ")";
 							stream << " and " << this->generateEquationText(transition->getCondition(), l_machine);
 							stream << " else\n    ";
 						}
@@ -639,21 +641,21 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	stream << this->signalVhdlName[signal];
 	stream << " <= ";
 
-	ActionOnSignal::action_types type = action->getActionType();
+	ActionOnSignalType_t type = action->getActionType();
 
 	if (signal->getSize() == 1)
 	{
 		switch(type)
 		{
-		case ActionOnSignal::action_types::activeOnState:
-		case ActionOnSignal::action_types::pulse:
-		case ActionOnSignal::action_types::set:
+		case ActionOnSignalType_t::activeOnState:
+		case ActionOnSignalType_t::pulse:
+		case ActionOnSignalType_t::set:
 			stream << "'1'";
 			break;
-		case ActionOnSignal::action_types::reset:
+		case ActionOnSignalType_t::reset:
 			stream << "'0'";
 			break;
-		case ActionOnSignal::action_types::assign:
+		case ActionOnSignalType_t::assign:
 			// Impossible case
 			break;
 		}
@@ -662,17 +664,17 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	{
 		switch(type)
 		{
-		case ActionOnSignal::action_types::activeOnState:
-		case ActionOnSignal::action_types::pulse:
+		case ActionOnSignalType_t::activeOnState:
+		case ActionOnSignalType_t::pulse:
 			stream << "\"" <<  action->getActionValue().toString() << "\"";
 			break;
-		case ActionOnSignal::action_types::set:
+		case ActionOnSignalType_t::set:
 			stream << "\"" << LogicValue::getValue1(signal->getSize()).toString() << "\"";
 			break;
-		case ActionOnSignal::action_types::reset:
+		case ActionOnSignalType_t::reset:
 			stream << "\"" << LogicValue::getValue0(signal->getSize()).toString() << "\"";
 			break;
-		case ActionOnSignal::action_types::assign:
+		case ActionOnSignalType_t::assign:
 			stream << "\"" << action->getActionValue().toString() << "\"";
 			break;
 
@@ -690,14 +692,14 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 
 	if (complexEquation != nullptr)
 	{
-		Equation::nature function = complexEquation->getFunction();
+		EquationNature_t function = complexEquation->getFunction();
 
 		// Prefix
-		if (function == Equation::nature::constant)
+		if (function == EquationNature_t::constant)
 		{
 			text += "\"" + complexEquation->getCurrentValue().toString() + "\"";
 		}
-		else if (function == Equation::nature::extractOp)
+		else if (function == EquationNature_t::extractOp)
 		{
 			int rangeL = complexEquation->getRangeL();
 			int rangeR = complexEquation->getRangeR();
@@ -715,7 +717,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 
 			text += ")";
 		}
-		else if (function == Equation::nature::notOp)
+		else if (function == EquationNature_t::notOp)
 		{
 			text += "not ";
 			text += generateEquationText(complexEquation->getOperand(0), l_machine); // Throws StatesException - Not op always has operand 0, even if nullptr - ignored
@@ -734,37 +736,37 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 				{
 					switch(function)
 					{
-					case Equation::nature::andOp:
+					case EquationNature_t::andOp:
 						text += " and ";
 						break;
-					case Equation::nature::orOp:
+					case EquationNature_t::orOp:
 						text += " or ";
 						break;
-					case Equation::nature::xorOp:
+					case EquationNature_t::xorOp:
 						text += " xor ";
 						break;
-					case Equation::nature::nandOp:
+					case EquationNature_t::nandOp:
 						text += " nand ";
 						break;
-					case Equation::nature::norOp:
+					case EquationNature_t::norOp:
 						text += " nor ";
 						break;
-					case Equation::nature::xnorOp:
+					case EquationNature_t::xnorOp:
 						text += " xnor ";
 						break;
-					case Equation::nature::equalOp:
+					case EquationNature_t::equalOp:
 						text += " = ";
 						break;
-					case Equation::nature::diffOp:
+					case EquationNature_t::diffOp:
 						text += " /= ";
 						break;
-					case Equation::nature::concatOp:
+					case EquationNature_t::concatOp:
 						text += "&";
 						break;
-					case Equation::nature::extractOp:
-					case Equation::nature::notOp:
-					case Equation::nature::constant:
-					case Equation::nature::identity:
+					case EquationNature_t::extractOp:
+					case EquationNature_t::notOp:
+					case EquationNature_t::constant:
+					case EquationNature_t::identity:
 						break;
 					}
 				}

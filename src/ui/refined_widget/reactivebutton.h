@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,10 +30,14 @@ class ReactiveButton : public QPushButton
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ReactiveButton(QWidget* parent = nullptr);
 	explicit ReactiveButton(const QString& text, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 signals:
 	void mouseEnterEvent();
 	void mouseLeaveEvent();
@@ -41,10 +45,10 @@ signals:
 	void keyboardFocusOutEvent();
 
 protected:
-	void enterEvent(QEnterEvent*) override;
-	void leaveEvent(QEvent*) override;
-	void focusInEvent (QFocusEvent*) override;
-	void focusOutEvent(QFocusEvent*) override;
+	virtual void enterEvent   (QEnterEvent*) override;
+	virtual void leaveEvent   (QEvent*)      override;
+	virtual void focusInEvent (QFocusEvent*) override;
+	virtual void focusOutEvent(QFocusEvent*) override;
 
 };
 

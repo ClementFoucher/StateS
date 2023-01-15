@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,30 +34,30 @@
 #include <QScrollArea>
 
 // StateS classes
+#include "machinemanager.h"
 #include "machine.h"
 #include "signaltimeline.h"
 #include "clocktimeline.h"
 #include "input.h"
 #include "output.h"
-#include "simulatortab.h"
 #include "machinesimulator.h"
-#include "svgimagegenerator.h"
+#include "pixmapgenerator.h"
 
 
-TimelineWidget::TimelineWidget(shared_ptr<Machine> machine, QWidget* parent) :
+TimelineWidget::TimelineWidget(QWidget* parent) :
     QMainWindow(parent)
 {
-	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle(tr("StateS timeline visualizer"));
 
 	this->toolBar = this->addToolBar(tr("Tools"));
 	this->toolBar->setIconSize(QSize(64, 64));
 
-	QIcon exportPdfIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
+	QIcon exportPdfIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
 	QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
 	connect(action, &QAction::triggered, this, &TimelineWidget::exportToPDF);
 
-	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	QIcon detachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
 	this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 
@@ -75,7 +75,7 @@ TimelineWidget::TimelineWidget(shared_ptr<Machine> machine, QWidget* parent) :
 
 	this->setCentralWidget(scrollArea);
 
-	shared_ptr<MachineSimulator> simulator = machine->getSimulator();
+	shared_ptr<MachineSimulator> simulator = machineManager->getMachineSimulator();
 	shared_ptr<Clock>            clock     = simulator->getClock();
 
 	connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &TimelineWidget::delayOutputOptionTriggered); // Relay option change event
@@ -88,6 +88,9 @@ TimelineWidget::TimelineWidget(shared_ptr<Machine> machine, QWidget* parent) :
 
 	layout->addWidget(titleClock);
 	layout->addWidget(new ClockTimeLine(clock));
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
 	if (machine->getInputs().count() != 0)
 	{
@@ -204,7 +207,7 @@ void TimelineWidget::setMeFree()
 
 	this->actionDetach->setText(tr("Attach to main window"));
 
-	QIcon attachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+	QIcon attachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
 	this->actionDetach->setIcon(attachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
@@ -218,7 +221,7 @@ void TimelineWidget::bindMe()
 
 	this->actionDetach->setText(tr("Detach as independant window"));
 
-	QIcon detachWindowIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	QIcon detachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
 	this->actionDetach->setIcon(detachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);

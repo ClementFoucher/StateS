@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,20 +23,32 @@
 #include "machinecomponent.h"
 
 
-MachineComponent::MachineComponent(shared_ptr<Machine> owningMachine)
+componentId_t MachineComponent::getUniqueId()
 {
-	this->owningMachine = owningMachine;
+	static componentId_t currentId = 0L;
+
+	// ID O will be reserved for special use,
+	// increment before assigning ID.
+	currentId++;
+	return currentId;
 }
 
-/**
- * @brief MachineComponent::getOwningMachine
- * @return Owning machine as a shared pointer.
- * We can lock it as if the component still exists,
- * the machine still exists and there should be no
- * calls to getting owning machine concurrent with
- * machine deletion.
- */
-shared_ptr<Machine> MachineComponent::getOwningMachine() const
+MachineComponent::MachineComponent()
 {
-	return this->owningMachine.lock();
+	this->id = MachineComponent::getUniqueId();
+}
+
+MachineComponent::MachineComponent(componentId_t id)
+{
+	this->id = id;
+}
+
+void MachineComponent::setId(componentId_t id)
+{
+	this->id = id;
+}
+
+componentId_t MachineComponent::getId() const
+{
+	return this->id;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,18 +37,26 @@ class TruthTableInputTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
 
-	virtual int columnCount(const QModelIndex& parent) const                              override;
-	virtual int rowCount(const QModelIndex& parent) const                                 override;
-	virtual QVariant data(const QModelIndex& index, int role) const                       override;
+	/////
+	// Object functions
+public:
+	virtual int columnCount(const QModelIndex& parent)                              const override;
+	virtual int rowCount(const QModelIndex& parent)                                 const override;
+	virtual QVariant data(const QModelIndex& index, int role)                       const override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-	virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
+	virtual Qt::ItemFlags flags(const QModelIndex& index)                           const override;
 
+	/////
+	// Object variables
 private:
 	weak_ptr<TruthTable> truthTable;
 	QList<int> highlights;
+
 };
 
 #endif // TRUTHTABLEINPUTTABLEMODEL_H

@@ -22,10 +22,8 @@
 // Current class header
 #include "displayarea.h"
 
-// StateS classes
-#include "maintoolbar.h"
-#include "machineeditorwidget.h"
-#include "timelinewidget.h"
+// Qt classes
+#include <QToolBar>
 
 
 DisplayArea::DisplayArea(QWidget* parent) :

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 
 // StateS classes
 #include "reactivebutton.h"
-#include "svgimagegenerator.h"
+#include "pixmapgenerator.h"
 
 
 LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* parent) :
@@ -43,7 +43,7 @@ LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* par
 	static_cast<void>(this->frenchTranslator->load(QLocale::French, ":/translations/french")); // Discarding the result of this nodiscard function as it is an embedded resource thus we are absolutely sure it can be loaded
 
 	// Build window
-	this->setWindowIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle("StateS");
 	this->setAttribute(Qt::WA_DeleteOnClose);
 

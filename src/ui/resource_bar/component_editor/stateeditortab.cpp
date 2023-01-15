@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,16 +27,25 @@
 #include <QVBoxLayout>
 
 // StateS classes
+#include "machinemanager.h"
 #include "fsmstate.h"
 #include "dynamiclineedit.h"
 #include "actioneditor.h"
 #include "fsm.h"
+#include "fsmundocommand.h"
 
 
-StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
+StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
     ComponentEditorTab(parent)
 {
-	this->state = state;
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto state = fsm->getState(stateId);
+	if (state == nullptr) return;
+
+
+	this->stateId = stateId;
 	connect(state.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
 	this->setLayout(new QVBoxLayout());
@@ -55,7 +64,7 @@ StateEditorTab::StateEditorTab(shared_ptr<FsmState> state, QWidget* parent) :
 	connect(this->textStateName, &DynamicLineEdit::userCancelEvent,       this, &StateEditorTab::updateContent);
 	this->layout()->addWidget(this->textStateName);
 
-	ActionEditor* actionEditor = new ActionEditor(state, tr("Actions triggered at state activation:"), this);
+	ActionEditor* actionEditor = new ActionEditor(stateId, tr("Actions triggered at state activation:"), this);
 	this->layout()->addWidget(actionEditor);
 
 	updateContent();
@@ -83,28 +92,51 @@ void StateEditorTab::updateContent()
 {
 	this->textStateName->resetView();
 
-	shared_ptr<FsmState> l_state = this->state.lock();
-
-	if (l_state != nullptr)
-		this->textStateName->setText(l_state->getName());
-	else
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr)
+	{
 		this->textStateName->setEnabled(false);
+		return;
+	}
+
+	auto state = fsm->getState(this->stateId);
+	if (state == nullptr)
+	{
+		this->textStateName->setEnabled(false);
+		return;
+	}
+
+	this->textStateName->setText(state->getName());
 }
 
 void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 {
-	shared_ptr<FsmState> l_state = this->state.lock();
-
-	if (l_state != nullptr)
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr)
 	{
-		if (name != l_state->getName()) // Must be checked because setting focus triggers this event
-		{
-			if ( !(l_state->getOwningFsm()->renameState(l_state, name)) )
-			{
-				this->textStateName->markAsErroneous();
-			}
-		}
+		this->textStateName->setEnabled(false);
+		return;
+	}
+
+	auto state = fsm->getState(this->stateId);
+	if (state == nullptr)
+	{
+		this->textStateName->setEnabled(false);
+		return;
+	}
+
+
+	if (name == state->getName()) return; // Must be checked because setting focus triggers this event
+
+	QString previousName = state->getName();
+	bool result = fsm->renameState(state->getId(), name);
+	if (result == true)
+	{
+		auto undoCommand = new FsmUndoCommand(state->getId(), previousName);
+		machineManager->notifyMachineEdited(undoCommand);
 	}
 	else
-		this->textStateName->setEnabled(false);
+	{
+		this->textStateName->markAsErroneous();
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,35 +20,18 @@
  */
 
 // Current class header
+#include "machinemanager.h"
+#include "machinebuilder.h"
 #include "drawingtoolbar.h"
 
 
-DrawingToolBar::DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
+DrawingToolBar::DrawingToolBar(QWidget* parent) :
     QToolBar(parent)
 {
-	this->machineBuilder = machineBuilder;
-
 	this->setIconSize(QSize(16, 16));
 	this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
-}
-
-void DrawingToolBar::setMachineBuilder(shared_ptr<MachineBuilder> newMachineBuilder)
-{
-	shared_ptr<MachineBuilder> oldMachineBuilder = this->machineBuilder.lock();
-	if (oldMachineBuilder != nullptr)
-	{
-		disconnect(oldMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
-	}
-
-	this->machineBuilder = newMachineBuilder;
-	this->resetTool();
-
-	if (newMachineBuilder != nullptr)
-	{
-		connect(newMachineBuilder.get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
-	}
+	connect(machineManager->getMachineBuilder().get(), &MachineBuilder::changedToolEvent, this, &DrawingToolBar::toolChangedEventHandler);
 }
 
 void DrawingToolBar::beginAddActions()

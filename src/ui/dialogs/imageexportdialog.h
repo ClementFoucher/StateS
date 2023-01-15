@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,13 +25,18 @@
 // Parent
 #include <QDialog>
 
+// C++ classes
+#include <exception>
+using namespace std;
+
 // Qt classes
 class QComboBox;
 class QLabel;
 class QSlider;
 
 // StateS classes
-#include "machineimageexporter.h"
+#include "statestypes.h"
+class MachineImageExporter;
 class CheckBoxHtml;
 
 
@@ -39,14 +44,21 @@ class ImageExportDialog : public QDialog
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent = nullptr);
 
-	MachineImageExporter::imageFormat getImageFormat();
+	/////
+	// Object functions
+public slots:
+	virtual void accept() override;
+
+public:
+	ImageFormat_t getImageFormat();
 	QString getFilePath();
 
-protected:
-	virtual void accept() override;
+protected slots:
 	virtual void resizeEvent(QResizeEvent*) override;
 
 private slots:
@@ -60,6 +72,8 @@ private slots:
 private:
 	void updatePreview();
 
+	/////
+	// Object variables
 private:
 	QComboBox*    imageFormatSelectionBox  = nullptr;
 	CheckBoxHtml* includeComponentCheckBox = nullptr;
@@ -76,6 +90,7 @@ private:
 	QString baseFileName;
 	QString searchPath;
 	QString filePath;
+
 };
 
 #endif // IMAGEEXPORTDIALOG_H

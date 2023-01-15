@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,48 +27,49 @@
 
 // C++ classes
 using namespace std;
-#include "memory.h"
+#include <memory.h>
 
 // StateS classes
-class MachineManager;
+#include "statestypes.h"
 class CollapsibleWidgetWithTitle;
 class MachineComponentVisualizer;
-class DynamicLineEdit;
-
-// To access enums
-#include "machinebuilder.h"
-#include "machine.h"
 
 
 class HintTab : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit HintTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
 	bool getHintCollapsed();
 	bool getVisuCollapsed();
 
 protected:
-	void showEvent(QShowEvent* e)  override;
+	virtual void showEvent(QShowEvent* e) override;
 
 private slots:
-	void toolChangedEventHandler(MachineBuilder::tool newTool);
-	void singleUsetoolChangedEventHandler(MachineBuilder::singleUseTool tempTool);
+	void toolChangedEventHandler(MachineBuilderTool_t newTool);
+	void singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tempTool);
 
 private:
-	void updateHint(MachineBuilder::tool newTool);
+	void updateHint(MachineBuilderTool_t newTool);
 
+	/////
+	// Object variables
 private:
-	shared_ptr<MachineManager> machineManager;
-
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
+
 };
 
 #endif // HINTTAB_H

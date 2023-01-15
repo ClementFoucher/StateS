@@ -27,17 +27,38 @@ In headers, avoid includes when possible, prefering classes declarations.
 In a class declaration, elements are declared in a specific order.
 All elements from this list are separated by an access modifier.
 
-- Static members
-- Enums
-- Local classes
+- Type declarations
+  - Public
+  - Protected
+  - Private
 
-- Public functions
-- Signals
-- Protected slots
-- Protected functions
-- Private slots
-- Private functions
-- Private members
+- Static functions
+  - Public
+  - Protected
+  - Private
+
+- Static members
+  - Public
+  - Protected
+  - Private
+
+- Constructors
+  - Public
+  - Protected
+  - Private
+
+- Object functions
+  - Public slots
+  - Public functions
+  - Signals
+  - Protected slots
+  - Protected functions
+  - Private slots
+  - Private functions
+
+- Object members
+  - Protected
+  - Private
 
 -----------------
 - Signals/slots -
@@ -66,10 +87,8 @@ Object are managed by smart pointers except for:
 - QGraphicsItems, that belong to a scene,
 - Objects passed using an overriden API function.
 
-Members must use:
+Objects must store references to other objects as:
 - unique_ptr if local only,
-- shared_ptr only in the object that is in charge of life manaement of the object,
-  - exception can be made for objects that are ensured to have a lifetime equal the the application,
-- weak_ptr where an object is used in a class that is not in charge of its lifetime.
-
-Parameters must always use shared_ptr to ensure reference is maintained.
+- shared_ptr in the object that is in charge of life manaement of the referred object,
+- ID only for all non owning objects
+  - Exception can be made for objects that are executed at once then dismissed, such as parser or exporter, these can store a shared_ptr for their lifetime.

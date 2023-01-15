@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,29 +22,15 @@
 // Current class header
 #include "fsmcomponent.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
 
-// StateS classes
-#include "fsm.h"
-
-
-FsmComponent::FsmComponent(shared_ptr<Fsm> owningFsm) :
-    MachineActuatorComponent(dynamic_pointer_cast<Machine>(owningFsm))
+FsmComponent::FsmComponent() :
+    MachineActuatorComponent()
 {
 
 }
 
-/**
- * @brief FsmComponent::getOwningFsm
- * @return Owning machine as a shared pointer.
- * We can lock it as if the component still exists,
- * the machine still exists and there should be no
- * calls to getting owning machine concurrent with
- * machine deletion.
- */
-shared_ptr<Fsm> FsmComponent::getOwningFsm() const
+FsmComponent::FsmComponent(componentId_t id) :
+    MachineActuatorComponent(id)
 {
-	return dynamic_pointer_cast<Fsm>(this->getOwningMachine());
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,22 +29,27 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "statesexception.h"
+#include "machine.h"
 #include "viewconfiguration.h"
 #include "machinestatus.h"
-#include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "signal.h"
 #include "input.h"
 #include "output.h"
 #include "constant.h"
 #include "equation.h"
 #include "actiononsignal.h"
+#include "statesexception.h"
+#include "exceptiontypes.h"
 
+
+MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
+{
+	this->mode = mode;
+	this->viewConfiguration = viewConfiguration;
+}
 
 void MachineXmlWriter::writeMachineToFile()
 {
-	this->writingToFile = true;
 	this->createSaveFile();
 	this->writeMachineToStream();
 	this->finalizeSaveFile();
@@ -57,14 +62,47 @@ QString MachineXmlWriter::getMachineXml()
 	return this->xmlString;
 }
 
-MachineXmlWriter::MachineXmlWriter(shared_ptr<MachineManager> machineManager)
+void MachineXmlWriter::createSaveFile() // Throws StatesException
 {
-	this->machineManager = machineManager;
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
+	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
+	{
+		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unable_to_replace, "Unable to replace existing file");
+	}
+	else if ( !fileInfo.absoluteDir().exists() )
+	{
+		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unkown_directory, "Directory doesn't exist");
+	}
+
+	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
+	bool fileOpened = file->open(QIODevice::WriteOnly);
+	if (fileOpened == false)
+	{
+		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unable_to_open, "Unable to open file");
+	}
+
+	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(this->file.get()));
+
+	this->stream->setAutoFormatting(true);
+	this->stream->writeStartDocument();
+}
+
+void MachineXmlWriter::createSaveString()
+{
+	this->xmlString = QString();
+	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(&this->xmlString));
+}
+
+void MachineXmlWriter::finalizeSaveFile()
+{
+	this->file->close();
+	this->file = nullptr;
 }
 
 void MachineXmlWriter::writeMachineCommonElements()
 {
-	if (this->writingToFile == true)
+	if (this->mode == MachineXmlWriterMode_t::writeToFile)
 	{
 		this->writeMachineConfiguration();
 	}
@@ -73,17 +111,17 @@ void MachineXmlWriter::writeMachineCommonElements()
 
 void MachineXmlWriter::writeMachineConfiguration()
 {
-	shared_ptr<ViewConfiguration> viewConfiguration = this->machineManager->getViewConfiguration();
+	if (this->viewConfiguration == nullptr) return;
 
 	this->stream->writeStartElement("Configuration");
 
 	this->stream->writeStartElement("Scale");
-	this->stream->writeAttribute("Value", QString::number(viewConfiguration->zoomLevel));
+	this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
 	this->stream->writeEndElement();
 
 	this->stream->writeStartElement("ViewCentralPoint");
-	this->stream->writeAttribute("X", QString::number(viewConfiguration->viewCenter.x() + viewConfiguration->sceneTranslation.x()));
-	this->stream->writeAttribute("Y", QString::number(viewConfiguration->viewCenter.y() + viewConfiguration->sceneTranslation.y()));
+	this->stream->writeAttribute("X", QString::number(this->viewConfiguration->viewCenter.x() + this->viewConfiguration->sceneTranslation.x()));
+	this->stream->writeAttribute("Y", QString::number(this->viewConfiguration->viewCenter.y() + this->viewConfiguration->sceneTranslation.y()));
 	this->stream->writeEndElement();
 
 	this->stream->writeEndElement();
@@ -93,7 +131,10 @@ void MachineXmlWriter::writeMachineSignals()
 {
 	this->stream->writeStartElement("Signals");
 
-	foreach (shared_ptr<Signal> var, this->machineManager->getMachine()->getAllSignals())
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	foreach (shared_ptr<Signal> var, machine->getAllSignals())
 	{
 		// Type
 		if (dynamic_pointer_cast<Input>(var) != nullptr)
@@ -141,19 +182,19 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 
 			switch(action->getActionType())
 			{
-			case ActionOnSignal::action_types::activeOnState:
+			case ActionOnSignalType_t::activeOnState:
 				this->stream->writeAttribute("Action_Type", "ActiveOnState");
 				break;
-			case ActionOnSignal::action_types::pulse:
+			case ActionOnSignalType_t::pulse:
 				this->stream->writeAttribute("Action_Type", "Pulse");
 				break;
-			case ActionOnSignal::action_types::set:
+			case ActionOnSignalType_t::set:
 				this->stream->writeAttribute("Action_Type", "Set");
 				break;
-			case ActionOnSignal::action_types::reset:
+			case ActionOnSignalType_t::reset:
 				this->stream->writeAttribute("Action_Type", "Reset");
 				break;
-			case ActionOnSignal::action_types::assign:
+			case ActionOnSignalType_t::assign:
 				this->stream->writeAttribute("Action_Type", "Assign");
 				break;
 			}
@@ -180,53 +221,53 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 		this->stream->writeStartElement("LogicEquation");
 		switch (complexEquation->getFunction())
 		{
-		case Equation::nature::andOp:
+		case EquationNature_t::andOp:
 			this->stream->writeAttribute("Nature", "and");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::nandOp:
+		case EquationNature_t::nandOp:
 			this->stream->writeAttribute("Nature", "nand");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::norOp:
+		case EquationNature_t::norOp:
 			this->stream->writeAttribute("Nature", "nor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::notOp:
+		case EquationNature_t::notOp:
 			this->stream->writeAttribute("Nature", "not");
 			break;
-		case Equation::nature::orOp:
+		case EquationNature_t::orOp:
 			this->stream->writeAttribute("Nature", "or");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::xnorOp:
+		case EquationNature_t::xnorOp:
 			this->stream->writeAttribute("Nature", "xnor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::xorOp:
+		case EquationNature_t::xorOp:
 			this->stream->writeAttribute("Nature", "xor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::equalOp:
+		case EquationNature_t::equalOp:
 			this->stream->writeAttribute("Nature", "equals");
 			break;
-		case Equation::nature::diffOp:
+		case EquationNature_t::diffOp:
 			this->stream->writeAttribute("Nature", "differs");
 			break;
-		case Equation::nature::extractOp:
+		case EquationNature_t::extractOp:
 			this->stream->writeAttribute("Nature", "extract");
 			this->stream->writeAttribute("RangeL", QString::number(complexEquation->getRangeL()));
 			this->stream->writeAttribute("RangeR", QString::number(complexEquation->getRangeR()));
 			break;
-		case Equation::nature::concatOp:
+		case EquationNature_t::concatOp:
 			this->stream->writeAttribute("Nature", "concatenate");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case Equation::nature::constant:
+		case EquationNature_t::constant:
 			this->stream->writeAttribute("Nature", "constant");
 			this->stream->writeAttribute("Value", complexEquation->getCurrentValue().toString());
 			break;
-		case Equation::nature::identity:
+		case EquationNature_t::identity:
 			// Should not happen
 			break;
 		}
@@ -250,42 +291,4 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 	}
 
 	this->stream->writeEndElement(); // LogicEquation | LogicVariable
-}
-
-void MachineXmlWriter::createSaveFile() // Throws StatesException
-{
-	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
-	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
-	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
-	{
-		throw StatesException("MachineSaveFileManager", unable_to_replace, "Unable to replace existing file");
-	}
-	else if ( !fileInfo.absoluteDir().exists() )
-	{
-		throw StatesException("MachineSaveFileManager", unkown_directory, "Directory doesn't exist");
-	}
-
-	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
-	bool fileOpened = file->open(QIODevice::WriteOnly);
-	if (fileOpened == false)
-	{
-		throw StatesException("MachineSaveFileManager", unable_to_open, "Unable to open file");
-	}
-
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(this->file.get()));
-
-	this->stream->setAutoFormatting(true);
-	this->stream->writeStartDocument();
-}
-
-void MachineXmlWriter::createSaveString()
-{
-	this->xmlString = QString();
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(&this->xmlString));
-}
-
-void MachineXmlWriter::finalizeSaveFile()
-{
-	this->file->close();
-	this->file = nullptr;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,13 +38,18 @@ class ViewConfiguration : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ViewConfiguration();
 
+	/////
+	// Object variables
 public:
 	QPointF sceneTranslation;
 	QPointF viewCenter;
 	qreal   zoomLevel;
+
 };
 
 #endif // VIEWCONFIGURATION_H

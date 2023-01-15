@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,6 +37,7 @@ class QXmlStreamReader;
 // StateS classes
 class Machine;
 class ViewConfiguration;
+class GraphicAttributes;
 class MachineActuatorComponent;
 class Signal;
 class Equation;
@@ -46,15 +47,22 @@ class MachineXmlParser : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
+protected:
+	explicit MachineXmlParser();
+
+	/////
+	// Object functions
 public:
 	void doParse();
 
 	shared_ptr<Machine>           getMachine();
+	shared_ptr<GraphicAttributes> getGraphicMachineConfiguration();
 	shared_ptr<ViewConfiguration> getViewConfiguration();
 	QList<QString>                getWarnings();
 
 protected:
-	explicit MachineXmlParser();
 
 	void parseMachineName(const QString& fileName);
 	void parseConfiguration();
@@ -68,7 +76,11 @@ protected:
 private:
 	virtual void buildMachineFromXml() = 0;
 
+	/////
+	// Object variables
 protected:
+	shared_ptr<GraphicAttributes> graphicAttributes;
+
 	QList<QString> warnings;
 	shared_ptr<Machine> machine;
 
@@ -83,6 +95,7 @@ private:
 	shared_ptr<ViewConfiguration> viewConfiguration;
 	QStack<shared_ptr<Equation>> equationStack;
 	QStack<uint> operandRankStack;
+
 };
 
 #endif // MACHINEXMLPARSER_H

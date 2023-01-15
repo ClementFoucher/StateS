@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,30 +26,33 @@
 #include <QMenu>
 
 
-/**
- * @brief The ContextMenu class
- * This class muse be used only using standard pointers,
- * as deletion is automatic on component hide.
- */
 class ContextMenu : public QMenu
 {
 	Q_OBJECT
 
+	/////
+	// Static functions
 public:
 	static ContextMenu* createErrorMenu(const QString& text, QWidget* parent = nullptr);
 
+	/////
+	// Static variables
+public:
 	static const QString errorStyle;
 	static const QString listStyle;
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ContextMenu(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void addTitle(const QString& titleText);
 	void addSubTitle(const QString& titleText);
 	void setListStyle();
 
-public:
-	bool event(QEvent* e) override;
 };
 
 #endif // CONTEXTMENU_H

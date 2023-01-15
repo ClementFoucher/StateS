@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,13 +25,20 @@
 // Parent
 #include <QWidget>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 
 class ComponentEditorTab : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ComponentEditorTab(QWidget* parent = nullptr);
+
 };
 
 #endif // COMPONENTEDITORTAB_H

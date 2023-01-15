@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,14 +31,13 @@
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "fsmgraphictransition.h"
-#include "machinestatus.h"
+#include "graphicattributes.h"
 
 
 FsmXmlParser::FsmXmlParser()
 {
-	this->currentGroup = group_e::none;
-	this->currentSubGroup = subgroup_e::none;
+	this->currentGroup = Group_t::none;
+	this->currentSubGroup = Subgroup_t::none;
 	this->currentLevel = 0;
 }
 
@@ -65,28 +64,6 @@ FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
 	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
 }
 
-void FsmXmlParser::buildMachineFromXml()
-{
-	this->machine = shared_ptr<Fsm>(new Fsm());
-
-	// Do not generate events while being built
-	this->machine->setInhibitEvents(true);
-
-	while (this->xmlReader->atEnd() == false)
-	{
-		this->xmlReader->readNext();
-
-		if (this->xmlReader->isStartElement())
-		{
-			this->treatStartElement();
-		}
-		else if (this->xmlReader->isEndElement())
-		{
-			this->treatEndElement();
-		}
-	}
-}
-
 void FsmXmlParser::treatStartElement()
 {
 	this->currentLevel++;
@@ -102,19 +79,19 @@ void FsmXmlParser::treatStartElement()
 	{
 		if (nodeName == "Configuration")
 		{
-			this->currentGroup = group_e::configuration_group;
+			this->currentGroup = Group_t::configuration_group;
 		}
 		else if (nodeName == "Signals")
 		{
-			this->currentGroup = group_e::signals_group;
+			this->currentGroup = Group_t::signals_group;
 		}
 		else if (nodeName == "States")
 		{
-			this->currentGroup = group_e::states_group;
+			this->currentGroup = Group_t::states_group;
 		}
 		else if (nodeName == "Transitions")
 		{
-			this->currentGroup = group_e::transitions_group;
+			this->currentGroup = Group_t::transitions_group;
 		}
 		else
 		{
@@ -125,21 +102,21 @@ void FsmXmlParser::treatStartElement()
 	{
 		switch (this->currentGroup)
 		{
-		case group_e::configuration_group:
+		case Group_t::configuration_group:
 			this->parseConfiguration();
 			break;
-		case group_e::signals_group:
+		case Group_t::signals_group:
 			this->parseSignal();
 			break;
-		case group_e::states_group:
-			this->currentSubGroup = subgroup_e::state;
+		case Group_t::states_group:
+			this->currentSubGroup = Subgroup_t::state;
 			this->parseState();
 			break;
-		case group_e::transitions_group:
-			this->currentSubGroup = subgroup_e::transition;
+		case Group_t::transitions_group:
+			this->currentSubGroup = Subgroup_t::transition;
 			this->parseTransition();
 			break;
-		case group_e::none:
+		case Group_t::none:
 			this->warnings.append("    "  + tr("Ignored node") + " " + nodeName);
 			break;
 		}
@@ -148,10 +125,10 @@ void FsmXmlParser::treatStartElement()
 	{
 		switch (this->currentSubGroup)
 		{
-		case subgroup_e::state:
+		case Subgroup_t::state:
 			if (nodeName == "Actions")
 			{
-				this->currentSubGroup = subgroup_e::actions_group;
+				this->currentSubGroup = Subgroup_t::actions_group;
 			}
 			else
 			{
@@ -159,14 +136,14 @@ void FsmXmlParser::treatStartElement()
 				this->warnings.append("    " + tr("Expected") + " \"Actions\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case subgroup_e::transition:
+		case Subgroup_t::transition:
 			if (nodeName == "Actions")
 			{
-				this->currentSubGroup = subgroup_e::actions_group;
+				this->currentSubGroup = Subgroup_t::actions_group;
 			}
 			else if (nodeName == "Condition")
 			{
-				this->currentSubGroup = subgroup_e::condition;
+				this->currentSubGroup = Subgroup_t::condition;
 			}
 			else
 			{
@@ -174,10 +151,10 @@ void FsmXmlParser::treatStartElement()
 				this->warnings.append("    " + tr("Expected") + " \"Actions\" or \"Condition\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case subgroup_e::actions_group:
+		case Subgroup_t::actions_group:
 			if (nodeName == "Action")
 			{
-				this->currentSubGroup = subgroup_e::action;
+				this->currentSubGroup = Subgroup_t::action;
 				this->parseAction();
 			}
 			else
@@ -186,16 +163,16 @@ void FsmXmlParser::treatStartElement()
 				this->warnings.append("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case subgroup_e::condition:
-		case subgroup_e::operand:
+		case Subgroup_t::condition:
+		case Subgroup_t::operand:
 			if (nodeName == "LogicVariable")
 			{
-				this->currentSubGroup = subgroup_e::logicVariable;
+				this->currentSubGroup = Subgroup_t::logicVariable;
 				this->parseLogicEquation();
 			}
 			else if (nodeName == "LogicEquation")
 			{
-				this->currentSubGroup = subgroup_e::logicEquation;
+				this->currentSubGroup = Subgroup_t::logicEquation;
 				this->parseLogicEquation();
 			}
 			else
@@ -204,7 +181,7 @@ void FsmXmlParser::treatStartElement()
 				this->warnings.append("    " + tr("Expected") + " \"LogicVariable\" or \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case subgroup_e::logicEquation:
+		case Subgroup_t::logicEquation:
 			if (nodeName == "Operand")
 			{
 				bool ok;
@@ -226,13 +203,13 @@ void FsmXmlParser::treatStartElement()
 				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"LogicEquation\"" + tr("node."));
 				this->warnings.append("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + nodeName + "\".");
 			}
-			this->currentSubGroup = subgroup_e::operand;
+			this->currentSubGroup = Subgroup_t::operand;
 			break;
-		case subgroup_e::action:
-		case subgroup_e::logicVariable:
+		case Subgroup_t::action:
+		case Subgroup_t::logicVariable:
 			// Nothing to do: these nodes does not have children
 			break;
-		case subgroup_e::none:
+		case Subgroup_t::none:
 			this->warnings.append("    "  + tr("Ignored node") + " " + nodeName);
 			break;
 		}
@@ -246,54 +223,72 @@ void FsmXmlParser::treatEndElement()
 	shared_ptr<FsmTransition> transition;
 	switch (this->currentSubGroup)
 	{
-	case subgroup_e::action:
-		this->currentSubGroup = subgroup_e::actions_group;
+	case Subgroup_t::action:
+		this->currentSubGroup = Subgroup_t::actions_group;
 		break;
-	case subgroup_e::actions_group:
-		if (this->currentGroup == group_e::states_group)
+	case Subgroup_t::actions_group:
+		if (this->currentGroup == Group_t::states_group)
 		{
-			this->currentSubGroup = subgroup_e::state;
+			this->currentSubGroup = Subgroup_t::state;
 		}
-		else if (this->currentGroup == group_e::transitions_group)
+		else if (this->currentGroup == Group_t::transitions_group)
 		{
-			this->currentSubGroup = subgroup_e::transition;
+			this->currentSubGroup = Subgroup_t::transition;
 		}
 		break;
-	case subgroup_e::condition:
-		this->currentSubGroup = subgroup_e::transition;
+	case Subgroup_t::condition:
+		this->currentSubGroup = Subgroup_t::transition;
 		transition = dynamic_pointer_cast<FsmTransition>(this->currentActuator);
 		transition->setCondition(this->rootLogicEquation);
 		this->rootLogicEquation = nullptr;
 		break;
-	case subgroup_e::state:
-	case subgroup_e::transition:
+	case Subgroup_t::state:
+	case Subgroup_t::transition:
 		this->currentActuator = nullptr;
-		this->currentSubGroup = subgroup_e::none;
+		this->currentSubGroup = Subgroup_t::none;
 		break;
-	case subgroup_e::logicEquation:
-	case subgroup_e::logicVariable:
+	case Subgroup_t::logicEquation:
+	case Subgroup_t::logicVariable:
 		if (this->currentLevel == 4)
 		{
-			this->currentSubGroup = subgroup_e::condition;
+			this->currentSubGroup = Subgroup_t::condition;
 		}
 		else
 		{
-			this->currentSubGroup = subgroup_e::operand;
+			this->currentSubGroup = Subgroup_t::operand;
 		}
 		break;
-	case subgroup_e::operand:
-		this->currentSubGroup = subgroup_e::logicEquation;
+	case Subgroup_t::operand:
+		this->currentSubGroup = Subgroup_t::logicEquation;
 		this->treatEndOperand();
 		break;
-	case subgroup_e::none:
+	case Subgroup_t::none:
 		if (this->currentLevel == 1)
 		{
-			this->currentGroup = group_e::none;
+			this->currentGroup = Group_t::none;
 		}
 		break;
 	}
 }
 
+void FsmXmlParser::buildMachineFromXml()
+{
+	this->machine = shared_ptr<Fsm>(new Fsm());
+
+	while (this->xmlReader->atEnd() == false)
+	{
+		this->xmlReader->readNext();
+
+		if (this->xmlReader->isStartElement())
+		{
+			this->treatStartElement();
+		}
+		else if (this->xmlReader->isEndElement())
+		{
+			this->treatEndElement();
+		}
+	}
+}
 
 void FsmXmlParser::parseState()
 {
@@ -302,6 +297,7 @@ void FsmXmlParser::parseState()
 
 	if (nodeName == "State")
 	{
+		// Get state name
 		QString stateName = attributes.value("Name").toString();
 
 		if (stateName.isNull())
@@ -311,39 +307,56 @@ void FsmXmlParser::parseState()
 			return;
 		}
 
+		// Get initial status (true if IsInitial property exists)
+		bool isInitial = attributes.value("IsInitial").isNull() ? false : true;
+
+		// Get ID if it is defined
 		bool ok;
-		bool positionOk = true;
-		qreal x = attributes.value("X").toDouble(&ok);
+		componentId_t extractedId = attributes.value("Id").toULong(&ok);
 		if (ok == false)
 		{
-			positionOk = false;
+			extractedId = 0;
 		}
-		qreal y = attributes.value("Y").toDouble(&ok);
-		if (ok == false)
+
+		// Build state
+		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+		componentId_t stateId;
+		if (extractedId != 0)
+		{
+			stateId = fsm->addState(isInitial, stateName, extractedId);
+		}
+		else
+		{
+			stateId = fsm->addState(isInitial, stateName);
+		}
+		auto state = fsm->getState(stateId);
+
+		// Get position
+		bool positionOk = true;
+
+		qreal x = attributes.value("X").toDouble(&ok);
+		if (ok == true)
+		{
+			this->graphicAttributes->addAttribute(stateId, attribute_t("X", QString::number(x)));
+		}
+		else
 		{
 			positionOk = false;
 		}
 
-		QPointF position;
-		if (positionOk == true)
+		qreal y = attributes.value("Y").toDouble(&ok);
+		if (ok == true)
 		{
-			position = QPointF(x, y);
+			this->graphicAttributes->addAttribute(stateId, attribute_t("Y", QString::number(y)));
 		}
 		else
+		{
+			positionOk = false;
+		}
+
+		if (positionOk == false)
 		{
 			this->warnings.append(tr("Warning!") + " " + tr("Unable to extract state position for state ") + stateName);
-		}
-
-		shared_ptr<Fsm> fsm = this->getFsm();
-		shared_ptr<FsmState> state;
-
-		if (attributes.value("IsInitial").isNull() == false)
-		{
-			state = fsm->addState(position, true, stateName);
-		}
-		else
-		{
-			state = fsm->addState(position, false, stateName);
 		}
 
 		this->currentActuator = state;
@@ -366,14 +379,31 @@ void FsmXmlParser::parseTransition()
 		QString sourceName = attributes.value("Source").toString();
 		QString targetName = attributes.value("Target").toString();
 
-		shared_ptr<Fsm> fsm = this->getFsm();
-
-		shared_ptr<FsmState> source = fsm->getStateByName(sourceName);
-		shared_ptr<FsmState> target = fsm->getStateByName(targetName);
-
 		// TODO: check if states exist
-		shared_ptr<FsmTransition> transition = fsm->addTransition(source, target);
+		shared_ptr<FsmState> source = this->getStateByName(sourceName);
+		shared_ptr<FsmState> target = this->getStateByName(targetName);
 
+		// Get ID if it is defined
+		bool ok;
+		componentId_t extractedId = attributes.value("Id").toULong(&ok);
+		if (ok == false)
+		{
+			extractedId = 0;
+		}
+
+		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+		componentId_t transitionId;
+		if (extractedId != 0)
+		{
+			transitionId = fsm->addTransition(source->getId(), target->getId(), extractedId);
+		}
+		else
+		{
+			transitionId = fsm->addTransition(source->getId(), target->getId());
+		}
+		auto transition = fsm->getTransition(transitionId);
+
+		// Get slider position
 		QString sliderPosString = attributes.value("SliderPos").toString();
 		qreal sliderPos;
 		if (!sliderPosString.isEmpty())
@@ -381,17 +411,15 @@ void FsmXmlParser::parseTransition()
 			bool ok;
 			sliderPos = sliderPosString.toFloat(&ok)/100;
 
-			if (ok == false)
+			if (ok == true)
 			{
-				sliderPos = 0.5;
-				// TODO: warning
+				this->graphicAttributes->addAttribute(transitionId, attribute_t("SliderPos", QString::number(sliderPos)));
+			}
+			else
+			{
+				this->warnings.append(tr("Warning!") + " " + tr("Unable to extract slider position for a transition"));
 			}
 		}
-		else
-		{
-			sliderPos = 0.5;
-		}
-		transition->getGraphicRepresentation()->setConditionLineSliderPosition(sliderPos);
 
 		this->currentActuator = transition;
 	}
@@ -403,9 +431,20 @@ void FsmXmlParser::parseTransition()
 	}
 }
 
-shared_ptr<Fsm> FsmXmlParser::getFsm() const
+shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const
 {
-	// Enable events before returning the machine
-	this->machine->setInhibitEvents(false);
-	return dynamic_pointer_cast<Fsm>(this->machine);
+	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+
+	shared_ptr<FsmState> ret = nullptr;
+	foreach(auto stateId, fsm->getAllStatesIds())
+	{
+		auto state = fsm->getState(stateId);
+		if (state->getName() == name)
+		{
+			ret = state;
+			break;
+		}
+	}
+
+	return ret;
 }

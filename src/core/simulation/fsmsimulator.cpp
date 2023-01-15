@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,6 +29,7 @@
 #include <QPushButton>
 
 // StateS classes
+#include "machinemanager.h"
 #include "clock.h"
 #include "fsm.h"
 #include "fsmstate.h"
@@ -36,84 +37,75 @@
 #include "output.h"
 #include "fsmtransition.h"
 #include "statesexception.h"
-#include "truthtable.h"
+#include "exceptiontypes.h"
 
 
-FsmSimulator::FsmSimulator(shared_ptr<Fsm> machine) :
+FsmSimulator::FsmSimulator() :
     MachineSimulator()
 {
-	this->clock = shared_ptr<Clock>(new Clock());
 	connect(this->clock.get(), &Clock::clockEvent,      this, &FsmSimulator::clockEventHandler);
 	connect(this->clock.get(), &Clock::resetLogicEvent, this, &FsmSimulator::resetEventHandler);
-
-	this->machine = machine;
 
 	this->reset();
 }
 
-void FsmSimulator::enableOutputDelay(bool enable)
+void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 {
-	emit outputDelayChangedEvent(enable);
+	delete this->targetStateSelector;
+	this->targetStateSelector = nullptr;
+
+	this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
+	this->signalMapper = nullptr;
+
+	this->activateTransition(this->potentialTransitions[i]);
+
+	this->potentialTransitions.clear();
 }
 
-shared_ptr<Clock> FsmSimulator::getClock() const
+void FsmSimulator::forceStateActivation(shared_ptr<FsmState> stateToActivate)
 {
-	return this->clock;
-}
+	shared_ptr<FsmState> l_state = this->currentState.lock();
+	if (l_state != nullptr)
+	{
+		l_state->setActive(false);
+	}
 
-void FsmSimulator::reset()
-{
-	this->clock->reset();
-}
-
-void FsmSimulator::doStep()
-{
-	this->clock->nextStep();
-}
-
-void FsmSimulator::start(uint period)
-{
-	this->clock->start(period);
-}
-
-void FsmSimulator::suspend()
-{
-	this->clock->stop();
+	this->currentState = stateToActivate;
+	stateToActivate->setActive(true);
 }
 
 void FsmSimulator::resetEventHandler()
 {
-	shared_ptr<Fsm> l_machine = this->machine.lock();
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
 
-	if (l_machine != nullptr)
+	this->latestTransitionCrossed.reset();
+
+	// Disable any active state
+	foreach(auto stateId, fsm->getAllStatesIds())
 	{
-		this->latestTransitionCrossed.reset();
+		auto state = fsm->getState(stateId);
+		state->setActive(false);
+	}
 
-		// Disable any active state
-		foreach(shared_ptr<FsmState> state, l_machine->getStates())
-		{
-			state->setActive(false);
-		}
+	// Reset inputs and variables to their initial value
+	foreach(shared_ptr<Signal> sig, fsm->getReadableVariableSignals())
+	{
+		sig->reinitialize();
+	}
 
-		// Reset inputs and variables to their initial value
-		foreach(shared_ptr<Signal> sig, l_machine->getReadableVariableSignals())
-		{
-			sig->reinitialize();
-		}
+	// Then compute outputs: first resel all of them...
+	foreach(shared_ptr<Output> sig, fsm->getOutputs())
+	{
+		sig->resetValue();
+	}
 
-		// Then compute outputs: first resel all of them...
-		foreach(shared_ptr<Output> sig, l_machine->getOutputs())
-		{
-			sig->resetValue();
-		}
-
-		// ... then enable initial state which activate its actions
-		shared_ptr<FsmState> initialState = l_machine->getInitialState();
-		if (initialState != nullptr)
-		{
-			initialState->setActive(true);
-			this->currentState = initialState;
-		}
+	// ... then enable initial state which activate its actions
+	shared_ptr<FsmState> initialState = fsm->getState(fsm->getInitialStateId());
+	if (initialState != nullptr)
+	{
+		initialState->setActive(true);
+		this->currentState = initialState;
 	}
 }
 
@@ -134,11 +126,17 @@ void FsmSimulator::clockEventHandler()
 	// Then determine if a transition is to be crossed
 	if (l_currentState != nullptr)
 	{
+		auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+		if (fsm == nullptr) return;
+
 		//
 		// Look for potential transitions
 		QMap<uint, shared_ptr<FsmTransition>> candidateTransitions;
-		foreach(shared_ptr<FsmTransition> transition, l_currentState->getOutgoingTransitions())
+		foreach(auto transitionId, l_currentState->getOutgoingTransitionsIds())
 		{
+			auto transition = fsm->getTransition(transitionId);
+			if (transition == nullptr) continue;
+
 			if (transition->getCondition() != nullptr)
 			{
 				try
@@ -150,7 +148,7 @@ void FsmSimulator::clockEventHandler()
 				}
 				catch (const StatesException& e)
 				{
-					if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == Signal::SignalErrorEnum::signal_is_not_bool) )
+					if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::signal_is_not_bool) )
 					{
 						// Transition condition is incorrect, considered false: nothing to do
 					}
@@ -190,16 +188,21 @@ void FsmSimulator::clockEventHandler()
 
 			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &FsmSimulator::targetStateSelectionMadeEventHandler);
 
-			for (int i = 0 ; i < candidateTransitions.count() ; i++)
+			auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+			if (fsm != nullptr)
 			{
-				QPushButton* button = new QPushButton(candidateTransitions[i]->getTarget()->getName());
+				for (int i = 0 ; i < candidateTransitions.count() ; i++)
+				{
+					auto targetState = fsm->getState(candidateTransitions[i]->getTargetStateId());
+					QPushButton* button = new QPushButton(targetState->getName());
 
-				this->signalMapper->setMapping(button, i);
+					this->signalMapper->setMapping(button, i);
 
-				connect(button, &QPushButton::clicked, this->signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-				connect(button, &QPushButton::clicked, this->targetStateSelector, &QWidget::close);
+					connect(button, &QPushButton::clicked, this->signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+					connect(button, &QPushButton::clicked, this->targetStateSelector, &QWidget::close);
 
-				choiceWindowLayout->addWidget(button);
+					choiceWindowLayout->addWidget(button);
+				}
 			}
 
 			this->potentialTransitions = candidateTransitions;
@@ -207,32 +210,6 @@ void FsmSimulator::clockEventHandler()
 		}
 	}
 }
-
-void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
-{
-	delete this->targetStateSelector;
-	this->targetStateSelector = nullptr;
-
-	this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
-	this->signalMapper = nullptr;
-
-	this->activateTransition(this->potentialTransitions[i]);
-
-	this->potentialTransitions.clear();
-}
-
-void FsmSimulator::forceStateActivation(shared_ptr<FsmState> stateToActivate)
-{
-	shared_ptr<FsmState> l_state = this->currentState.lock();
-	if (l_state != nullptr)
-	{
-		l_state->setActive(false);
-	}
-
-	this->currentState = stateToActivate;
-	stateToActivate->setActive(true);
-}
-
 
 void FsmSimulator::activateTransition(shared_ptr<FsmTransition> transition)
 {
@@ -245,7 +222,10 @@ void FsmSimulator::activateTransition(shared_ptr<FsmTransition> transition)
 	transition->activateActions();
 	this->latestTransitionCrossed = transition;
 
-	shared_ptr<FsmState> newState = transition->getTarget();
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto newState = fsm->getState(transition->getTargetStateId());
 	if (newState != nullptr)
 	{
 		newState->setActive(true);

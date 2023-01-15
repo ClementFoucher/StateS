@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,23 +25,21 @@
 // Parent class
 #include <QToolBar>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// For enums
-#include "machinebuilder.h"
+// StateS classes
+#include "statestypes.h"
 
 
 class DrawingToolBar : public QToolBar
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit DrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit DrawingToolBar(QWidget* parent = nullptr);
 
-	void setMachineBuilder(shared_ptr<MachineBuilder> newMachineBuilder);
-
+	/////
+	// Object functions
 protected:
 	void beginAddActions();
 	void endAddActions();
@@ -49,10 +47,7 @@ protected:
 	virtual void resetTool() = 0;
 
 protected slots:
-	virtual bool toolChangedEventHandler(MachineBuilder::tool newTool) = 0;
-
-protected:
-	weak_ptr<MachineBuilder> machineBuilder;
+	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) = 0;
 
 };
 

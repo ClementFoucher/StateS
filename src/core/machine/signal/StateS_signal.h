@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,30 +29,25 @@
 #include <memory>
 using namespace std;
 
-// StateS basic types
+// StateS classes
 #include "logicvalue.h"
 
 
-class Signal : public QObject, public enable_shared_from_this<Signal>
+class Signal : public QObject
 {
 	Q_OBJECT
 
-public: // Static
-
-	enum SignalErrorEnum{
-		building_zero_sized = 0,
-		resized_to_0        = 1,
-		size_mismatch       = 2,
-		signal_is_not_bool  = 3,
-		value_is_read_only  = 4
-	};
-
+	/////
+	// Constructors/destructors
 public:
 	explicit Signal(const QString& name, uint size); // Throws StatesException
 	explicit Signal(const QString& name);
 
 	~Signal();
 
+	/////
+	// Object functions
+public:
 	QString getName() const;
 	void setName(const QString& value); // TODO: check signal name here and throw StatesException
 
@@ -91,14 +86,16 @@ signals:
 	// Deletion event
 	void signalDeletedEvent();
 
+	/////
+	// Object variables
+protected:
+	// Simulation
+	LogicValue currentValue;
+
 private:
-	// Static
 	QString name;
 	LogicValue initialValue;
 
-protected:
-	// Dynamic
-	LogicValue currentValue;
 };
 
 #endif // SIGNAL_H

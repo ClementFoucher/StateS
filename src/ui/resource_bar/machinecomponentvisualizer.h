@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,38 +34,41 @@ class QGraphicsScene;
 class QGraphicsView;
 class QMouseEvent;
 
-// StateS classes
-class Machine;
-
 
 class MachineComponentVisualizer : public StatesGraphicsView
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit MachineComponentVisualizer(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit MachineComponentVisualizer(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 protected:
-	void mousePressEvent      (QMouseEvent* me)    override;
-	void mouseMoveEvent       (QMouseEvent* me)    override;
-	void mouseReleaseEvent    (QMouseEvent* me)    override;
-	void mouseDoubleClickEvent(QMouseEvent* me)    override;
-	void wheelEvent           (QWheelEvent* event) override;
+	virtual void mousePressEvent      (QMouseEvent* me)    override;
+	virtual void mouseMoveEvent       (QMouseEvent* me)    override;
+	virtual void mouseReleaseEvent    (QMouseEvent* me)    override;
+	virtual void mouseDoubleClickEvent(QMouseEvent* me)    override;
+	virtual void wheelEvent           (QWheelEvent* event) override;
 
 private slots:
 	void updateMachineVisualization();
 
+	/////
+	// Object variables
 private:
-	weak_ptr<Machine> machine;
-
 	shared_ptr<QGraphicsScene> scene;
 
 	// Qwidget with parent
 	QGraphicsView* view = nullptr;
 
 	bool isMoving = false;
+
 };
 
 #endif // MACHINECOMPONENTVISUALIZER_H

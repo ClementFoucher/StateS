@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,9 +37,14 @@ class MachineStatus : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit MachineStatus();
 
+	/////
+	// Object functions
+public:
 	static shared_ptr<MachineStatus> clonePaths(shared_ptr<MachineStatus> fromObject);
 
 	void setUnsavedFlag    (bool newUnsavedFlag);
@@ -59,6 +64,8 @@ signals:
 	void saveFilePathChangedEvent();
 	void unsavedFlagChangedEvent();
 
+	/////
+	// Object variables
 private:
 	QFileInfo saveFilePath;
 	QFileInfo imageExportPath;

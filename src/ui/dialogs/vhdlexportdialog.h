@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,24 +33,31 @@ class VhdlExportDialog : public QDialog
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public slots:
+	virtual void accept() override;
+
+public:
 	bool isResetPositive();
 	bool prefixIOs();
 	QString getFilePath();
 
-protected:
-	void accept() override;
-
+	/////
+	// Object variables
 private:
-	// Use pointers because these are QWidgets with a parent
 	QComboBox* resetLogicSelectionBox = nullptr;
 	QComboBox* addPrefixSelectionBox  = nullptr;
 
 	QString baseFileName;
 	QString searchPath;
 	QString filePath;
+
 };
 
 #endif // VHDLEXPORTDIALOG_H

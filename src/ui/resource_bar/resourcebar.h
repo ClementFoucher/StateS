@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,16 +33,8 @@ using namespace std;
 class QGraphicsScene;
 
 // StateS classes
-#include "machine.h"
-class MachineManager;
-class HintTab;
-class MachineEditorTab;
-class ComponentEditorTab;
-class SimulatorTab;
-class VerifierTab;
-class AboutTab;
+#include "statestypes.h"
 class MachineComponentVisualizer;
-class MachineComponent;
 
 
 /**
@@ -55,34 +47,47 @@ class ResourceBar : public QTabWidget
 {
 	Q_OBJECT
 
-public:
-	explicit ResourceBar(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
+	/////
+	// Type declarations
+private:
+	enum TabIndex_t : int
+	{
+		hintTabIndex            = 0,
+		machineEditorTabIndex   = 1,
+		componentEditorTabIndex = 2,
+		simulatorTabIndex       = 3,
+		verifierTabIndex        = 4,
+		aboutTabIndex           = 5
+	};
 
-	void setSelectedItem(shared_ptr<MachineComponent> item);
+	/////
+	// Constructors/destructors
+public:
+	explicit ResourceBar(QWidget* parent = nullptr);
+
+	/////
+	// Object functions
+public:
+	void setSelectedItem(componentId_t componentId);
 	void editSelectedItem();
 	void renameSelectedItem();
 
 	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
 
 private slots:
-	void machineUpdatedEventHandler(bool isNewMachine);
+	void machineReplacedEventHandler();
 
 	void clearSelection();
-	void machineModeChangedEventHandler(Machine::simulation_mode newMode);
+	void machineModeChangedEventHandler(SimulationMode_t newMode);
 
 private:
 	void build();
 
+	/////
+	// Object variables
 private:
-	shared_ptr<MachineManager> machineManager;
-
 	shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
-	HintTab*            hintsTab     = nullptr;
-	MachineEditorTab*   machineTab   = nullptr;
-	ComponentEditorTab* editorTab    = nullptr;
-	SimulatorTab*       simulatorTab = nullptr;
-	VerifierTab*        verifierTab  = nullptr;
 };
 
 #endif // RESOURCEBAR_H

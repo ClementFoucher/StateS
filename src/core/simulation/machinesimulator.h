@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,14 +37,31 @@ class MachineSimulator : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit MachineSimulator();
 
-	virtual void enableOutputDelay(bool enable) = 0;
-	virtual shared_ptr<Clock> getClock() const = 0;
+	/////
+	// Object functions
+public:
+	shared_ptr<Clock> getClock() const;
+
+	void reset();
+	void doStep();
+	void start(uint period);
+	void suspend();
+
+	void enableOutputDelay(bool enable);
 
 signals:
 	void outputDelayChangedEvent(bool enable);
+
+	/////
+	// Object variables
+protected:
+	shared_ptr<Clock> clock;
+
 };
 
 #endif // MACHINESIMULATOR_H

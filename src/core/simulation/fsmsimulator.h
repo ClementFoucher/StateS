@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,6 @@ class QWidget;
 class QSignalMapper;
 
 // StateS classes
-class Fsm;
 class FsmState;
 class FsmTransition;
 
@@ -44,30 +43,27 @@ class FsmSimulator : public MachineSimulator
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmSimulator(shared_ptr<Fsm> machine);
+	explicit FsmSimulator();
 
-	void enableOutputDelay(bool enable) override;
-	shared_ptr<Clock> getClock() const override;
-
-	void reset();
-	void doStep();
-	void start(uint period);
-	void suspend();
+	/////
+	// Object functions
+public:
 	void targetStateSelectionMadeEventHandler(int i);
 	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private slots:
-	void clockEventHandler();
 	void resetEventHandler();
+	void clockEventHandler();
 
 private:
 	void activateTransition(shared_ptr<FsmTransition> transition);
 
+	/////
+	// Object variables
 private:
-	shared_ptr<Clock> clock;
-	weak_ptr<Fsm> machine;
-
 	weak_ptr<FsmState> currentState;
 	weak_ptr<FsmTransition> latestTransitionCrossed;
 	QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;

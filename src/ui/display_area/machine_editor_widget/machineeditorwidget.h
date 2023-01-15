@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,40 +30,50 @@
 using namespace std;
 
 // StateS classes
-#include "machine.h"
-class MachineManager;
+#include "statestypes.h"
 class GenericScene;
 class SceneWidget;
 class DrawingToolBar;
-class MachineComponent;
+class ViewConfiguration;
 
 
 class MachineEditorWidget : public QMainWindow
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit MachineEditorWidget(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
+	explicit MachineEditorWidget(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	GenericScene* getScene() const;
+	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
+	shared_ptr<ViewConfiguration> getView() const;
 
 	void clearSelection();
 
 signals:
-	void itemSelectedEvent(shared_ptr<MachineComponent> component);
+	void itemSelectedEvent(componentId_t componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 
 private slots:
-	void machineUpdatedEventHandler(bool isNewMachine);
+	void machineReplacedEventHandler();
 
-	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
+	void simulationModeToggledEventHandler(SimulationMode_t newMode);
 
 private:
-	shared_ptr<MachineManager> machineManager;
+	void buildToolbar();
 
+	/////
+	// Object variables
+private:
 	SceneWidget*    machineDisplayArea = nullptr;
 	DrawingToolBar* drawingToolBar     = nullptr;
+
 };
 
 #endif // MACHINEEDITORWIDGET_H

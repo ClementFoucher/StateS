@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,12 +25,8 @@
 // Parent class
 #include <QAbstractTableModel>
 
-// C++ classes
-using namespace std;
-#include <memory>
-
 // StateS classes
-class MachineActuatorComponent;
+#include "statestypes.h"
 
 
 /**
@@ -52,21 +48,29 @@ class ActionTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit ActionTableModel(shared_ptr<MachineActuatorComponent> actuator, QObject* parent = nullptr);
+	explicit ActionTableModel(componentId_t actuatorId, QObject* parent = nullptr);
 
-	virtual int columnCount(const QModelIndex& parent) const                              override;
-	virtual int rowCount(const QModelIndex& parent) const                                 override;
-	virtual QVariant data(const QModelIndex& index, int role) const                       override;
+	/////
+	// Object functions
+public:
+	virtual int columnCount(const QModelIndex& parent)                              const override;
+	virtual int rowCount(const QModelIndex& parent)                                 const override;
+	virtual QVariant data(const QModelIndex& index, int role)                       const override;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-	virtual Qt::ItemFlags flags(const QModelIndex& index) const                           override;
+	virtual Qt::ItemFlags flags(const QModelIndex& index)                           const override;
 
 private slots:
 	void refreshList();
 
+	/////
+	// Object variables
 private:
-	weak_ptr<MachineActuatorComponent> actuator;
+	componentId_t actuatorId = 0;
+
 };
 
 #endif // ACTIONTABLEMODEL_H

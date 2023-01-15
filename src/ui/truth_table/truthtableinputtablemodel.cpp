@@ -29,6 +29,7 @@
 #include "truthtable.h"
 #include "StateS_signal.h"
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 TruthTableInputTableModel::TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
@@ -134,7 +135,7 @@ QVariant TruthTableInputTableModel::headerData(int section, Qt::Orientation orie
 					}
 					catch (const StatesException& e)
 					{
-						if ( (e.getSourceClass() == "TruthTable") && (e.getEnumValue() == TruthTable::TruthTableErrorEnum::reference_expired) )
+						if ( (e.getSourceClass() == "TruthTable") && (e.getEnumValue() == TruthTableError_t::reference_expired) )
 						{
 							// Truth table is no longer valid: we should invalidate model
 							//this->truthTable.reset();

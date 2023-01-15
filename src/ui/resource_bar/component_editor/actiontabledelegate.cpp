@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2020 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,37 +22,48 @@
 // Current class header
 #include "actiontabledelegate.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QRegularExpressionValidator>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "dynamiclineedit.h"
 #include "actiononsignal.h"
 
 
-ActionTableDelegate::ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget *parent) :
+ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget *parent) :
     QStyledItemDelegate(parent)
 {
-	this->actuator = actuator;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	if (actuator == nullptr) return;
+
+
+	this->actuatorId = actuatorId;
 }
 
 QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
 {
-	QWidget* editor = nullptr;
+	// Editor only applies to colummn 2
+	if (index.column() != 2) return nullptr;
 
-	if(index.column() == 2)
-	{
-		shared_ptr<MachineActuatorComponent> l_actuator = this->actuator.lock();
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return nullptr;
 
-		if (l_actuator != nullptr)
-		{
-			shared_ptr<ActionOnSignal> action = l_actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
-			QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
+	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	if (actuator == nullptr) return nullptr;
 
-			editor = new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);
-		}
-	}
 
-	return editor;
+	shared_ptr<ActionOnSignal> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
+	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
+
+	return new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);
 }

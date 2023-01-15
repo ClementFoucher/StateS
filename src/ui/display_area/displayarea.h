@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,11 +32,6 @@ using namespace std;
 // Qt classes
 class QTabWidget;
 
-// StateS classes
-class TimelineWidget;
-class MainToolBar;
-class MachineEditorWidget;
-
 
 /**
  * @brief The DisplayArea class handles the central display.
@@ -49,17 +44,25 @@ class DisplayArea : public QMainWindow
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit DisplayArea(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setToolBar  (QToolBar* toolbar);
 	void addWidget   (QWidget* widget, QString title);
 	void removeWidget(QWidget* widget);
 
+	/////
+	// Object variables
 private:
 	QList<tuple<QString, QWidget*>> widgets;
 	QToolBar* toolbar = nullptr;
 	QTabWidget* tabWidget = nullptr;
+
 };
 
 #endif // DISPLAYAREA_H

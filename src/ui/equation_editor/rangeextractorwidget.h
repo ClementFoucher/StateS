@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,28 +41,35 @@ class RangeExtractorWidget : public EditableEquation
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent = nullptr);
 
-	bool validEdit() override;
-	bool cancelEdit() override;
-	void setEdited(bool edited) override;
+	/////
+	// Object functions
+public:
+	virtual bool validEdit()            override;
+	virtual bool cancelEdit()           override;
+	virtual void setEdited(bool edited) override;
 
 signals:
 	void rangeLChanged(int newValue);
 	void rangeRChanged(int newValue);
 
 protected:
-	void mousePressEvent      (QMouseEvent* event) override;
-	void mouseDoubleClickEvent(QMouseEvent* event) override;
-	void mouseMoveEvent       (QMouseEvent* event) override;
-	void mouseReleaseEvent    (QMouseEvent* event) override;
-	void wheelEvent           (QWheelEvent* event) override;
+	virtual void mousePressEvent      (QMouseEvent* event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
+	virtual void mouseMoveEvent       (QMouseEvent* event) override;
+	virtual void mouseReleaseEvent    (QMouseEvent* event) override;
+	virtual void wheelEvent           (QWheelEvent* event) override;
 
 private:
 	void update();
 	void reset();
 
+	/////
+	// Object variables
 private:
 	weak_ptr<Equation> equation;
 
@@ -75,6 +82,7 @@ private:
 	bool editMode = false;
 
 	bool inMouseEvent = false;
+
 };
 
 #endif // RANGEEXTRACTORWIDGET_H

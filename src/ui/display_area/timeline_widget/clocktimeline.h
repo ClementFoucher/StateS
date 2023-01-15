@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,8 +37,11 @@ class ClockTimeLine : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
+
 };
 
 #endif // CLOCKTIMELINE_H

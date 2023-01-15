@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,11 +24,13 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "machine.h"
 #include "machinexmlparser.h"
 #include "machinexmlwriter.h"
 #include "xmlimportexportbuilder.h"
 
+
+/////
+// Static
 
 QString DiffUndoCommand::machineXmlRepresentation;
 
@@ -36,18 +38,22 @@ void DiffUndoCommand::updateXmlRepresentation()
 {
 	DiffUndoCommand::machineXmlRepresentation = QString();
 
-	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(MachineUndoCommand::machineManager);
+	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
 	if (saveManager != nullptr)
 	{
 		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
 	}
 }
 
-DiffUndoCommand::DiffUndoCommand(undo_command_id commandId)
-{
-	undoType = commandId;
 
-	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(MachineUndoCommand::machineManager);
+/////
+// Object
+
+DiffUndoCommand::DiffUndoCommand()
+{
+	this->undoType = UndoCommandId_t::machineGenericUndoId;
+
+	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
 	if (saveManager != nullptr)
 	{
 		// Get code before and after change
@@ -98,50 +104,12 @@ void DiffUndoCommand::redo()
 	}
 }
 
-bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
-{
-	// FIXME: as there is no transition reference available,
-	// moving slider on various transition in a row is also merged.
-
-	const DiffUndoCommand* otherCommand = dynamic_cast<const DiffUndoCommand*>(command);
-	bool mergeAccepted = false;
-	if (otherCommand != nullptr)
-	{
-		switch (this->undoType)
-		{
-		case undo_command_id::fsmUndoMoveConditionSliderId:
-		{
-			diff_match_patch diffComputer = diff_match_patch();
-			QString currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
-			QList<Patch> otherUndoPatch = otherCommand->getUndoPatch();
-
-			QString previousXmlCode = diffComputer.patch_apply(otherUndoPatch, currentXmlCode).first;
-			QString previousPreviousXmlCode = diffComputer.patch_apply(this->undoPatch, previousXmlCode).first;
-
-			this->undoPatch = diffComputer.patch_make(currentXmlCode, previousPreviousXmlCode);
-
-			mergeAccepted = true;
-			break;
-		}
-		default:
-			break;
-		}
-	}
-
-	return mergeAccepted;
-}
-
-QList<Patch> DiffUndoCommand::getUndoPatch() const
-{
-	return this->undoPatch;
-}
-
 void DiffUndoCommand::applyPatch(const QString& newXmlCode)
 {
 	shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildStringParser(newXmlCode);
 	if (parser != nullptr)
 	{
 		parser->doParse();
-		emit applyUndoRedo(parser->getMachine());
+		emit applyUndoRedo(parser->getMachine(), parser->getGraphicMachineConfiguration());
 	}
 }

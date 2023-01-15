@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@
 
 // StateS classes
 #include "checkboxhtml.h"
+#include "machineimageexporter.h"
 
 
 ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent) :
@@ -113,16 +114,16 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<Mac
 	buttonsLayout->addWidget(buttonCancel);
 }
 
-MachineImageExporter::imageFormat ImageExportDialog::getImageFormat()
+ImageFormat_t ImageExportDialog::getImageFormat()
 {
 	if (this->imageFormatSelectionBox->currentText() == "Pdf")
-		return MachineImageExporter::imageFormat::pdf;
+		return ImageFormat_t::pdf;
 	else if (this->imageFormatSelectionBox->currentText() == "Svg")
-		return MachineImageExporter::imageFormat::svg;
+		return ImageFormat_t::svg;
 	else if (this->imageFormatSelectionBox->currentText() == "Png")
-		return MachineImageExporter::imageFormat::png;
+		return ImageFormat_t::png;
 	else // if (this->imageFormatSelectionBox->currentText() == "Jpeg")
-		return MachineImageExporter::imageFormat::jpg;
+		return ImageFormat_t::jpg;
 }
 
 QString ImageExportDialog::getFilePath()
@@ -132,7 +133,7 @@ QString ImageExportDialog::getFilePath()
 
 void ImageExportDialog::accept()
 {
-	MachineImageExporter::imageFormat format = this->getImageFormat();
+	ImageFormat_t format = this->getImageFormat();
 
 	QString defaultFilePath;
 
@@ -148,25 +149,25 @@ void ImageExportDialog::accept()
 
 	switch(format)
 	{
-	case MachineImageExporter::imageFormat::pdf:
+	case ImageFormat_t::pdf:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Pdf"), defaultFilePath + ".pdf", "*.pdf");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".pdf", Qt::CaseInsensitive)) )
 			this->filePath += ".pdf";
 		break;
-	case MachineImageExporter::imageFormat::svg:
+	case ImageFormat_t::svg:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Svg"), defaultFilePath + ".svg", "*.svg");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".svg", Qt::CaseInsensitive)) )
 			this->filePath += ".svg";
 		break;
-	case MachineImageExporter::imageFormat::png:
+	case ImageFormat_t::png:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Png"), defaultFilePath + ".png", "*.png");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".png", Qt::CaseInsensitive)) )
 			this->filePath += ".png";
 		break;
-	case MachineImageExporter::imageFormat::jpg:
+	case ImageFormat_t::jpg:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), defaultFilePath + ".jpg", "*.jpg");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".jpg", Qt::CaseInsensitive)) )
@@ -204,7 +205,7 @@ void ImageExportDialog::includeVariablesCheckBoxChanged(bool b)
 
 void ImageExportDialog::infoToTheRightCheckBoxChanged(bool b)
 {
-	this->previewManager->setInfoPos(b ? MachineImageExporter::infoPos::right : MachineImageExporter::infoPos::left);
+	this->previewManager->setInfoPos(b ? LeftRight_t::right : LeftRight_t::left);
 	this->updatePreview();
 }
 
@@ -225,4 +226,3 @@ void ImageExportDialog::updatePreview()
 	this->previewPixmap = this->previewManager->renderPreview(QSizeF(this->previewWidget->width(), this->previewWidget->height()));
 	this->previewWidget->setPixmap(*this->previewPixmap.get());
 }
-

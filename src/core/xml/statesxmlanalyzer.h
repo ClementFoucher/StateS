@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,33 +33,42 @@ using namespace std;
 class QXmlStreamReader;
 class QFile;
 
+// StateS classes
+#include "statestypes.h"
+
 
 class StateSXmlAnalyzer : public QObject
 {
 	Q_OBJECT
 
-public:
-	enum class machineType { None, Fsm };
-
+	/////
+	// Constructors/destructors
 public:
 	explicit StateSXmlAnalyzer(shared_ptr<QFile> file);
 	explicit StateSXmlAnalyzer(const QString& xmlSource);
 
-	machineType getMachineType();
-	QString     getStateSVersion();
-	bool        getXmlIsCorrect();
-
 private:
 	explicit StateSXmlAnalyzer();
 
+	/////
+	// Object functions
+public:
+	MachineType_t getMachineType();
+	QString       getStateSVersion();
+	bool          getXmlIsCorrect();
+
+private:
 	void parse();
 
+	/////
+	// Object variables
 private:
 	shared_ptr<QXmlStreamReader> xmlReader;
 
-	machineType type;
-	QString     version;
-	bool        xmlIsCorrect;
+	MachineType_t type;
+	QString       version;
+	bool          xmlIsCorrect;
+
 };
 
 #endif // STATESXMLANALYZER_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,37 +25,43 @@
 // Parent class
 #include "machineundocommand.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QPointF>
 
 // StateS classes
-class FsmState;
+#include "statestypes.h"
 
 
 class FsmUndoCommand : public MachineUndoCommand
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmUndoCommand(shared_ptr<FsmState> state);
+	explicit FsmUndoCommand(UndoCommandId_t undoType, componentId_t componentId);
+	explicit FsmUndoCommand(componentId_t componentId, const QString& previousStateName);
 
+	/////
+	// Object functions
+public:
 	virtual void undo() override;
 	virtual void redo() override;
 
 	virtual bool mergeWith(const QUndoCommand* command) override;
 
-	QString getComponentRef() const;
-	QPointF getNextPosition() const;
-
+	/////
+	// Object variables
 private:
-	QString componentRef;
+	componentId_t componentId;
 
-	QPointF previousPosition;
-	QPointF nextPosition;
+	QPointF previousStatePosition;
+	QPointF nextStatePosition;
+	qreal   previousTransitionSliderPosition;
+	qreal   nextTransitionSliderPosition;
+	QString previousStateName;
+	QString nextStateName;
+
 };
 
 #endif // FSMUNDOCOMMAND_H

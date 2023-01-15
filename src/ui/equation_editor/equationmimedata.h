@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,14 +33,21 @@ class EquationMimeData : public QMimeData
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit EquationMimeData(GraphicEquation* equation);
 
+	/////
+	// Object functions
+public:
 	GraphicEquation* getEquation() const;
 
+	/////
+	// Object variables
 private:
-	// Use pointer because this is a QWidget with a parent
 	GraphicEquation* equation = nullptr;
+
 };
 
 #endif // EQUATIONMIMEDATA_H

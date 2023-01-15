@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,23 +27,31 @@
 #include <QLabel>
 
 // StateS classes
+#include "machinemanager.h"
+#include "fsm.h"
 #include "actioneditor.h"
 #include "conditioneditor.h"
-#include "fsmtransition.h"
 
 
-TransitionEditorTab::TransitionEditorTab(shared_ptr<FsmTransition> transition, QWidget* parent) :
+TransitionEditorTab::TransitionEditorTab(componentId_t transitionId, QWidget* parent) :
     ComponentEditorTab(parent)
 {
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto transition = fsm->getTransition(transitionId);
+	if (transition == nullptr) return;
+
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
-	ConditionEditor* conditionEditor = new ConditionEditor(transition, this);
+	ConditionEditor* conditionEditor = new ConditionEditor(transitionId, this);
 	layout->addWidget(conditionEditor);
 
-	ActionEditor* actionEditor = new ActionEditor(transition, tr("Actions triggered when transition is crossed:"), this);
+	ActionEditor* actionEditor = new ActionEditor(transitionId, tr("Actions triggered when transition is crossed:"), this);
 	layout->addWidget(actionEditor);
 }

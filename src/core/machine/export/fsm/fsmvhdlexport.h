@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,14 +32,17 @@ class QString;
 class QTextStream;
 
 // StateS classes
+#include "statestypes.h"
 class Fsm;
 class Signal;
-class FsmState;
 class ActionOnSignal;
 
 
 class FsmVhdlExport
 {
+
+	/////
+	// Type declarations
 public:
 	class ExportCompatibility
 	{
@@ -67,7 +70,7 @@ public:
 	};
 
 private:
-	struct WrittableSignalCharacteristics
+	struct WrittableSignalCharacteristics_t
 	{
 		bool isMoore         = false;
 		bool isMealy         = false;
@@ -76,17 +79,22 @@ private:
 		bool isRangeAdressed = false;
 	};
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmVhdlExport(shared_ptr<Fsm> machine);
+	explicit FsmVhdlExport();
+
+	/////
+	// Object functions
+public:
 	void setOptions(bool resetLogicPositive, bool prefixSignals);
 
 	bool writeToFile(const QString& path);
 	shared_ptr<ExportCompatibility> checkCompatibility();
 
-
 private:
 	void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-	WrittableSignalCharacteristics determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
+	WrittableSignalCharacteristics_t determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
 	QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
 	QString cleanNameForVhdl(const QString& name) const;
 
@@ -101,13 +109,14 @@ private:
 
 	QString generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const;
 
+	/////
+	// Object variables
 private:
-	weak_ptr<Fsm> machine;
 	bool resetLogicPositive;
 	bool prefixSignals;
 
 	QMap<shared_ptr<Signal>, QString> signalVhdlName;
-	QMap<shared_ptr<FsmState>, QString> stateVhdlName;
+	QMap<componentId_t, QString> stateVhdlName;
 	QString machineVhdlName;
 
 	// The following is used to determine how a writtable signal should be affected value.
@@ -128,6 +137,7 @@ private:
 
 	// TODO: Range adresssed signals are currently ignored.
 	//QList<shared_ptr<Signal>> rangeAdressedSignals;
+
 };
 
 #endif // FSMVHDLEXPORT_H

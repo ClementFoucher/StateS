@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,17 +30,21 @@ class QWidget;
 class QPushButton;
 class QLabel;
 class QGridLayout;
-class QResizeEvent;
 
 
 class CollapsibleWidgetWithTitle : public QFrame
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit CollapsibleWidgetWithTitle(const QString& title, QWidget* content, QWidget* parent = nullptr);
 	explicit CollapsibleWidgetWithTitle(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
 	void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
 
@@ -51,13 +55,16 @@ private slots:
 	void buttonCollapseToggledEventHander(bool buttonPushed);
 
 private:
+	void collapse();
+	void extend();
+
+	/////
+	// Object variables
+private:
 	QGridLayout* layout         = nullptr;
 	QPushButton* buttonCollapse = nullptr;
 	QLabel*      title          = nullptr;
 	QWidget*     content        = nullptr;
-
-	void collapse();
-	void extend();
 
 };
 

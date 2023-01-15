@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,7 +25,7 @@
 // Parent
 #include "genericscene.h"
 
-// Qt calsses
+// Qt classes
 class QGraphicsTextItem;
 
 
@@ -33,12 +33,17 @@ class BlankScene : public GenericScene
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit BlankScene();
 
+	/////
+	// Object variables
 private:
 	QGraphicsTextItem* text = nullptr;
 	QFont defaultFont;
+
 };
 
 #endif // BLANKSCENE_H

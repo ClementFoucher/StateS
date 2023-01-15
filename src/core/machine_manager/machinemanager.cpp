@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,6 +26,18 @@
 #include "machinestatus.h"
 #include "undoredomanager.h"
 #include "machinebuilder.h"
+#include "graphicmachine.h"
+#include "graphicattributes.h"
+#include "graphiccomponent.h"
+#include "fsm.h"
+#include "graphicfsm.h"
+#include "fsmsimulator.h"
+#include "machineundocommand.h"
+
+
+/////
+// Public global object
+unique_ptr<MachineManager> machineManager = make_unique<MachineManager>();
 
 
 /*
@@ -35,55 +47,34 @@
 MachineManager::MachineManager() :
     QObject()
 {
-	this->machineStatus = shared_ptr<MachineStatus>(new MachineStatus());
+	this->machineStatus   = make_shared<MachineStatus>();
+	this->undoRedoManager = make_unique<UndoRedoManager>();
 
 	connect(this->machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent, this, &MachineManager::machineUnsavedFlagChangedEventHandler);
-}
-
-/**
- * @brief MachineManager::build
- * Finishes building objects that couldn't be built within
- * the constructor as they require a shared pointer to this.
- * Must be called immediately after the constructor.
- */
-void MachineManager::build()
-{
-	MachineUndoCommand::setMachineManager(this->shared_from_this());
-
-	this->undoRedoManager = make_shared<UndoRedoManager>(this->shared_from_this());
 
 	connect(this->undoRedoManager.get(), &UndoRedoManager::freshMachineAvailableEvent,        this, &MachineManager::freshMachineAvailableFromUndoRedo);
-	connect(this->undoRedoManager.get(), &UndoRedoManager::undoActionAvailabilityChangeEvent, this, &MachineManager::undoActionAvailabilityChangeEvent);
-	connect(this->undoRedoManager.get(), &UndoRedoManager::redoActionAvailabilityChangeEvent, this, &MachineManager::redoActionAvailabilityChangeEvent);
-}
-
-/**
- * @brief MachineManager::clear
- * Clears objects that have a shared pointer to this,
- * as simply reseting the smart pointer to this would
- * not clear all references.
- * This must be called before deleting the main smart
- * pointer to this.
- */
-void MachineManager::clear()
-{
-	// Clear objects that contains a shared_ptr to this
-	this->undoRedoManager.reset();
-	MachineUndoCommand::setMachineManager(nullptr);
+	connect(this->undoRedoManager.get(), &UndoRedoManager::undoActionAvailabilityChangeEvent, this, &MachineManager::undoActionAvailabilityChangedEvent);
+	connect(this->undoRedoManager.get(), &UndoRedoManager::redoActionAvailabilityChangeEvent, this, &MachineManager::redoActionAvailabilityChangedEvent);
 }
 
 /*
  * Setters
  */
 
-void MachineManager::setMachine(shared_ptr<Machine> newMachine)
+void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
-	this->setMachineInternal(newMachine, true);
-}
+	this->setMachineInternal(newMachine, newGraphicAttributes);
 
-void MachineManager::setViewConfiguration(shared_ptr<ViewConfiguration> viewConfiguration)
-{
-	this->viewConfiguration = viewConfiguration;
+	// Build machine builder
+	this->machineBuilder.reset();
+	if (newMachine != nullptr)
+	{
+		this->machineBuilder = make_shared<MachineBuilder>();
+	}
+
+	// Notify machine updated
+	this->undoRedoManager->notifyMachineReplaced();
+	emit this->machineReplacedEvent();
 }
 
 /*
@@ -104,7 +95,7 @@ shared_ptr<Machine> MachineManager::getMachine() const
  * @brief MachineManager::getMachineStatus
  * @return The current machine status.
  * Is never null. However, content may be irrelevent if
- * current machiene is null.
+ * current machine is null.
  */
 shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
 {
@@ -121,17 +112,14 @@ shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
 	return this->machineBuilder;
 }
 
-/**
- * @brief MachineManager::getViewConfiguration
- * @return The view configuration.
- * This object is only temporary: it is set only when dealing with save files:
- * - When saving, it is set by the scene widget and used by the XML writer
- * - When loading, it is set by the XML parser and used by the scene widget.
- * In any other context, this object content is irrelevant, and may even be null.
- */
-shared_ptr<ViewConfiguration> MachineManager::getViewConfiguration() const
+shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
 {
-	return this->viewConfiguration;
+	return this->graphicMachine;
+}
+
+shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
+{
+	return this->machineSimulator;
 }
 
 /*
@@ -154,37 +142,79 @@ void MachineManager::redo()
 	}
 }
 
-void MachineManager::updateViewConfiguration()
+void MachineManager::notifyMachineEdited(MachineUndoCommand* undoCommand)
 {
-	emit machineViewUpdateRequestedEvent();
+	if (this->undoRedoMode == false)
+	{
+		if (undoCommand != nullptr)
+		{
+			this->undoRedoManager->addUndoCommand(undoCommand);
+		}
+		else
+		{
+			this->undoRedoManager->buildAndAddDiffUndoCommand();
+		}
+	}
+	else
+	{
+		delete undoCommand;
+	}
 }
 
-/**
- * @brief MachineManager::addConnection
- * This function is used by objects to indicate they have
- * a connection with the machine.
- * This allows the machine manager to cut all connections to
- * the machine when it changes to avoid event propagation
- * from an obsolete machine while replacing it.
- * In most cases, things would be OK without it as the machine
- * destruction causes connections deletion, but this is a
- * safety as sometime the complex signal web may be triggered
- * by object deletion. This ensures all connections are cut
- * before object is deleted to prevent it.
- * @param connection
- */
-void MachineManager::addConnection(QMetaObject::Connection connection)
+void MachineManager::setUndoRedoMode(bool undoRedoMode)
 {
-	this->connections.append(connection);
+	this->undoRedoMode = undoRedoMode;
 }
+
+void MachineManager::setSimulationMode(SimulationMode_t newMode)
+{
+	bool changeOk = true;
+
+	if (newMode == SimulationMode_t::editMode)
+	{
+		this->machineSimulator.reset();
+	}
+	else
+	{
+		// Build simulator
+		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
+		if (fsm != nullptr)
+		{
+			this->machineSimulator = make_shared<FsmSimulator>();
+		}
+		else
+		{
+			changeOk = false;
+		}
+	}
+
+	if (changeOk == true)
+	{
+		this->currentSimulationMode = newMode;
+		emit this->simulationModeChangedEvent(newMode);
+	}
+}
+
+SimulationMode_t MachineManager::getCurrentSimulationMode() const
+{
+	return this->currentSimulationMode;
+}
+
+
 
 /*
  * Slots
  */
 
-void MachineManager::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine)
+void MachineManager::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes)
 {
-	this->setMachineInternal(updatedMachine, false);
+	this->setMachineInternal(updatedMachine, updatedGraphicAttributes);
+
+	// Clear tool if there was one currently in use
+	this->machineBuilder->setTool(MachineBuilderTool_t::none);
+
+	// Notify machine updated
+	emit this->machineUpdatedEvent();
 }
 
 void MachineManager::machineUnsavedFlagChangedEventHandler()
@@ -195,29 +225,62 @@ void MachineManager::machineUnsavedFlagChangedEventHandler()
 	}
 }
 
+void MachineManager::logicComponentDeletedEventHandler(componentId_t componentId)
+{
+	if (this->graphicMachine == nullptr) return;
+
+	this->graphicMachine->removeGraphicComponent(componentId);
+}
+
+void MachineManager::graphicComponentNeedsRefreshEventHandler(componentId_t componentId)
+{
+	auto graphicComponent = this->graphicMachine->getGraphicComponent(componentId);
+	if (graphicComponent == nullptr) return;
+
+	graphicComponent->refreshDisplay();
+}
+
 /*
  * Private
  */
 
-void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, bool isNewMachine)
+void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
-	// Cut links with old machine
-	for (QMetaObject::Connection connection : this->connections)
+	// Clear old machine connections so that its destruction will be silent
+	this->graphicMachine.reset();
+	if (this->machine != nullptr)
 	{
-		disconnect(connection);
+		// Event propagation
+		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
+		// Event handling
+		disconnect(this->machine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
+		disconnect(this->machine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
 	}
-	this->connections.clear();
 
 	// Update machine
-	this->machine.reset(); // TODO : Not sure why this has to be done first ??? If not, causes a crash when undo stack is not empty...
 	this->machine = newMachine;
 
-	this->machineBuilder.reset();
-	if (newMachine != nullptr)
+	// Build graphic machine
+	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
+	if (fsm != nullptr)
 	{
-		this->machineBuilder = shared_ptr<MachineBuilder>(new MachineBuilder());
+		this->graphicMachine = make_shared<GraphicFsm>();
+		this->graphicMachine->build(newGraphicAttributes);
 	}
 
-	// Notify machine updated
-	emit this->machineUpdatedEvent(isNewMachine);
+	// Connect new machine
+
+	// Event propagation
+	connect(newMachine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
+	connect(newMachine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
+	connect(newMachine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
+	connect(newMachine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
+	connect(newMachine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
+	// Event handling
+	connect(newMachine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
+	connect(newMachine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
 }

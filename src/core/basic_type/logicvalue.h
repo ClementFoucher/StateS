@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,24 +28,25 @@
 
 class LogicValue : private QVector<bool>
 {
-public: // Static
 
-	enum LogicValueErrorEnum{
-		unsupported_char = 0,
-		resized_to_0     = 1,
-		outside_range    = 2
-	};
-
+	/////
+	// Static functions
+public:
 	static LogicValue getValue0(uint size);
 	static LogicValue getValue1(uint size);
 	static LogicValue getNullValue();
 	static LogicValue fromString(const QString& textValue); // Throws StatesException
 
+	/////
+	// Constructors/destructors
 public:
 	explicit LogicValue();
 	LogicValue(const LogicValue& stateToCopy);
 	explicit LogicValue(uint bitCount, bool initialValue = false);
 
+	/////
+	// Object functions
+public:
 	void resize(uint newSize); // Throws StatesException
 	uint getSize() const;
 
@@ -74,6 +75,7 @@ public:
 
 	bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
 	bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
+
 };
 
 #endif // LOGICVALUE_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,33 +37,31 @@ class QPrinter;
 class QSvgGenerator;
 
 // StateS classes
+#include "statestypes.h"
 class GenericScene;
-class Machine;
 
 
 class MachineImageExporter : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	enum class imageFormat{pdf, svg, png, jpg};
-	enum class infoPos{left, right};
+	explicit MachineImageExporter(GenericScene* scene, shared_ptr<QGraphicsScene> component);
 
-private:
-	const qreal spacer = 50;
-
+	/////
+	// Object functions
 public:
-	explicit MachineImageExporter(shared_ptr<Machine> machine, GenericScene* scene, shared_ptr<QGraphicsScene> component);
-
 	void setDisplayComponent(bool doDisplay);
 	void setDisplayConstants(bool doDisplay);
 	void setDisplayVariables(bool doDisplay);
 	void setDisplayBorder(bool doDisplay);
 	void setMainSceneRatio(uint sceneRatio);
-	void setInfoPos(infoPos pos);
+	void setInfoPos(LeftRight_t pos);
 
 	shared_ptr<QPixmap> renderPreview(QSizeF previewSize);
-	void doExport(const QString& path, imageFormat format, const QString& creator = QString()); // TODO: throw StatesException for file access
+	void doExport(const QString& path, ImageFormat_t format, const QString& creator = QString()); // TODO: throw StatesException for file access
 
 private:
 	void generatePrintingRects();
@@ -85,9 +83,12 @@ private:
 
 	void freeRenderingResources();
 
+	/////
+	// Object variables
 private:
+	const qreal spacer = 50;
+
 	// Required elements
-	weak_ptr<Machine> machine;
 	GenericScene* scene;
 	weak_ptr<QGraphicsScene> component;
 	shared_ptr<QGraphicsScene> border;
@@ -98,10 +99,10 @@ private:
 	bool includeConstant;
 	bool includeVariables;
 	bool addBorder;
-	infoPos infoPosition = infoPos::left;
+	LeftRight_t infoPosition = LeftRight_t::left;
 	bool strictBorders;
 
-	// There objects handle rendenring on file. All must be persistent until export is over
+	// There objects handle rendering on file. All must be persistent until export is over
 	shared_ptr<QPrinter>      printer;
 	shared_ptr<QSvgGenerator> generator;
 	shared_ptr<QPixmap>       pixmap;
@@ -116,6 +117,7 @@ private:
 	QRectF componentPrintingRect;
 	QRectF constantsPrintingRect;
 	QRectF variablesPrintingRect;
+
 };
 
 #endif // MACHINEIMAGEEXPORTER_H

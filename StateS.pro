@@ -73,11 +73,14 @@ SOURCES += \
 	src/core/xml/machine/fsm/fsmxmlwriter.cpp \
 	# UI
 	src/ui/statesui.cpp \
+	src/ui/graphic_machine/graphicmachine.cpp \
+	src/ui/graphic_machine/graphicattributes.cpp \
 	src/ui/graphic_machine/graphicactuator.cpp \
 	src/ui/graphic_machine/graphiccomponent.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphicstate.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphictransition.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.cpp \
+	src/ui/graphic_machine/fsm/graphicfsm.cpp \
 	src/ui/dialogs/imageexportdialog.cpp \
 	src/ui/dialogs/langselectiondialog.cpp \
 	src/ui/dialogs/vhdlexportdialog.cpp \
@@ -132,19 +135,21 @@ SOURCES += \
 	src/ui/display_area/timeline_widget/graphicclocktimeline.cpp \
 	src/ui/display_area/timeline_widget/graphictimeline.cpp \
 	src/ui/display_area/timeline_widget/signaltimeline.cpp \
-	src/ui/static/svgimagegenerator.cpp \
+	src/ui/static/pixmapgenerator.cpp \
 	src/ui/truth_table/truthtabledisplay.cpp \
 	src/ui/truth_table/truthtableinputtablemodel.cpp \
 	src/ui/truth_table/truthtableoutputtablemodel.cpp \
 	src/ui/resource_bar/component_editor/actiontypecombobox.cpp \
 	src/ui/resource_bar/component_editor/actiontablemodel.cpp \
 	src/ui/resource_bar/component_editor/actiontabledelegate.cpp \
-	# Other
+	# Third party
 	src/third_party/diff_match_patch/diff_match_patch.cpp
 
 HEADERS += \
     # Core
+	src/core/exceptiontypes.h \
 	src/core/states.h \
+	src/core/statestypes.h \
 	src/core/basic_type/logicvalue.h \
 	src/core/basic_type/truthtable.h \
 	src/core/machine_manager/machinebuilder.h \
@@ -182,11 +187,14 @@ HEADERS += \
 	src/core/xml/machine/fsm/fsmxmlwriter.h \
 	# UI
 	src/ui/statesui.h \
+	src/ui/graphic_machine/graphicmachine.h \
+	src/ui/graphic_machine/graphicattributes.h \
 	src/ui/graphic_machine/graphicactuator.h \
 	src/ui/graphic_machine/graphiccomponent.h \
 	src/ui/graphic_machine/fsm/fsmgraphicstate.h \
 	src/ui/graphic_machine/fsm/fsmgraphictransition.h \
 	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.h \
+	src/ui/graphic_machine/fsm/graphicfsm.h \
 	src/ui/dialogs/vhdlexportdialog.h \
 	src/ui/dialogs/langselectiondialog.h \
 	src/ui/dialogs/errordisplaydialog.h \
@@ -244,11 +252,11 @@ HEADERS += \
 	src/ui/display_area/timeline_widget/graphicclocktimeline.h \
 	src/ui/display_area/timeline_widget/graphictimeline.h \
 	src/ui/display_area/timeline_widget/signaltimeline.h \
-	src/ui/static/svgimagegenerator.h \
+	src/ui/static/pixmapgenerator.h \
 	src/ui/truth_table/truthtabledisplay.h \
 	src/ui/truth_table/truthtableinputtablemodel.h \
 	src/ui/truth_table/truthtableoutputtablemodel.h \
-	# Other
+	# Third party
 	src/third_party/diff_match_patch/diff_match_patch.h
 
 INCLUDEPATH += \
@@ -287,7 +295,7 @@ INCLUDEPATH += \
 	src/ui/resource_bar/component_editor \
 	src/ui/resource_bar/simulator_tab \
 	src/ui/static \
-	# Other
+	# Third party
 	src/third_party/diff_match_patch
 
 OTHER_FILES += \

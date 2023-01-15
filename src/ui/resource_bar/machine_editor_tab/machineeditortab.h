@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS classes
-class MachineManager;
 class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
 class DynamicLineEdit;
@@ -40,31 +39,37 @@ class MachineEditorTab : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit MachineEditorTab(shared_ptr<MachineManager> machineManager, shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setHintCollapsed(bool collapse);
 	void setVisuCollapsed(bool collapse);
 	bool getHintCollapsed();
 	bool getVisuCollapsed();
 
 protected:
-	void showEvent      (QShowEvent*  e) override;
-	void mousePressEvent(QMouseEvent* e) override;
+	virtual void showEvent      (QShowEvent*  e) override;
+	virtual void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-	void nameTextChangedEventHandler(const QString& name);
-	void updateContent();
+	void nameTextChangedEventHandler(const QString& newName);
+	void updateMachineName();
 
+	/////
+	// Object variables
 private:
-	shared_ptr<MachineManager> machineManager;
-
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	DynamicLineEdit* machineName = nullptr;
+
 };
 
 #endif // MACHINEEDITORTAB_H

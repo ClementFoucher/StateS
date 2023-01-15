@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,40 +34,49 @@ using namespace std;
 
 // StateS classes
 class Machine;
+class GraphicAttributes;
 
 
 class DiffUndoCommand : public MachineUndoCommand
 {
 	Q_OBJECT
 
+	/////
+	// Static functions
 public:
 	static void updateXmlRepresentation();
 
-public:
-	explicit DiffUndoCommand(undo_command_id commandId = machineGenericUndoId);
+	/////
+	// Static variables
+private:
+	static QString machineXmlRepresentation;
 
+	/////
+	// Constructors/destructors
+public:
+	explicit DiffUndoCommand();
+
+	/////
+	// Object functions
+public:
 	virtual void undo() override;
 	virtual void redo() override;
 
-	virtual bool mergeWith(const QUndoCommand* command) override;
-
-	QList<Patch> getUndoPatch() const;
-
 signals:
-	// As the generic undo command reloads a complete machine,
-	// this signal is used to communicate with the main StateS
+	// As applying a diff undo command reloads a complete machine,
+	// this signal is used to communicate with the main Machine Manager
 	// object which monitors it, applying a machine refresh.
-	void applyUndoRedo(shared_ptr<Machine> machine);
+	void applyUndoRedo(shared_ptr<Machine> machine, shared_ptr<GraphicAttributes> machineConfiguration);
 
 private:
 	void applyPatch(const QString& newXmlCode);
 
-private:
-	static QString machineXmlRepresentation;
-
+	/////
+	// Object variables
 private:
 	QList<Patch> undoPatch;
 	QList<Patch> redoPatch;
+
 };
 
 #endif // DIFFUNDOCOMMAND_H

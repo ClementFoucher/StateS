@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,28 +34,27 @@ class QWidget;
 class QToolBar;
 class QAction;
 
-// StateS classes
-class Machine;
-class Clock;
-class SimulatorTab;
-
 
 class TimelineWidget : public QMainWindow
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit TimelineWidget(shared_ptr<Machine> machine, QWidget* parent = nullptr);
+	explicit TimelineWidget(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 signals:
 	void detachTimelineEvent(bool detach);
 	void outputDelayChangedEvent(uint newDelay);
 
 protected:
-	void closeEvent     (QCloseEvent*) override;
-	void mousePressEvent(QMouseEvent*) override;
-	void mouseMoveEvent (QMouseEvent*) override;
-	void paintEvent     (QPaintEvent*) override;
+	virtual void closeEvent     (QCloseEvent*) override;
+	virtual void mousePressEvent(QMouseEvent*) override;
+	virtual void mouseMoveEvent (QMouseEvent*) override;
+	virtual void paintEvent     (QPaintEvent*) override;
 
 private slots:
 	void exportToPDF();
@@ -63,12 +62,15 @@ private slots:
 	void bindMe();
 	void delayOutputOptionTriggered(bool activated);
 
+	/////
+	// Object variables
 private:
 	QAction* actionDetach = nullptr;
 
 	QToolBar* toolBar = nullptr;
 
 	uint separatorPosition = 0;
+
 };
 
 #endif // TIMELINEWIDGET_H

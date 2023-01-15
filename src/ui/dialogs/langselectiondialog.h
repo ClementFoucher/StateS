@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,15 +35,19 @@ class LangSelectionDialog : public QMainWindow
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit LangSelectionDialog(QApplication* application, QWidget* parent = nullptr);
 	~LangSelectionDialog();
 
+	/////
+	// Object functions
 signals:
 	void languageSelected(QTranslator* translator);
 
 protected:
-	void closeEvent(QCloseEvent* event) override;
+	virtual void closeEvent(QCloseEvent* event) override;
 
 private slots:
 	void setEnglish();
@@ -52,11 +56,14 @@ private slots:
 private:
 	void retranslateUi();
 
+	/////
+	// Object variables
 private:
 	QTranslator*  frenchTranslator = nullptr;
 	QTranslator*  activeTranslator = nullptr;
 	QApplication* application      = nullptr;
 	QLabel*       mainLabel        = nullptr;
+
 };
 
 #endif // LANGSELECTIONDIALOG_H

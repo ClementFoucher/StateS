@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,6 +22,9 @@
 // Current class header
 #include "statesgraphicsview.h"
 
+// Qt classes
+#include "QDragEnterEvent"
+
 
 StatesGraphicsView::StatesGraphicsView(QWidget* parent) :
     QGraphicsView(parent)
@@ -32,36 +35,10 @@ StatesGraphicsView::StatesGraphicsView(QWidget* parent) :
 
 void StatesGraphicsView::dragEnterEvent(QDragEnterEvent* event)
 {
-	// Search for main window and redirect call
-	StatesUi* mainWindow = this->getMainWindow();
-
-	if (mainWindow != nullptr)
-		mainWindow->dragEnterEvent(event);
+	event->ignore();
 }
 
 void StatesGraphicsView::dropEvent(QDropEvent* event)
 {
-	// Search for main window and redirect call
-	StatesUi* mainWindow = this->getMainWindow();
-
-	if (mainWindow != nullptr)
-		mainWindow->dropEvent(event);
-}
-
-StatesUi* StatesGraphicsView::getMainWindow()
-{
-	QObject* parent = this->parent();
-	StatesUi* mainWindow = static_cast<StatesUi*>(parent);
-
-	while (mainWindow == nullptr)
-	{
-		// Check this first in case the widget doesn't have any parent
-		if (parent == nullptr)
-			break;
-
-		parent = parent->parent();
-		mainWindow = static_cast<StatesUi*>(parent);
-	}
-
-	return mainWindow;
+	event->ignore();
 }

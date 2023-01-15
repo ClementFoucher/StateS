@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,52 +32,62 @@ using namespace std;
 // StateS classes
 class FsmState;
 class FsmTransition;
-class FsmSimulator;
-class FsmUndoCommand;
-class FsmGraphicTransition;
 
 
-class Fsm : public Machine, public enable_shared_from_this<Fsm>
+class Fsm : public Machine
 {
 	Q_OBJECT
-
+	/////
+	// Constructors/destructors
 public:
 	explicit Fsm();
-	~Fsm();
 
-	// States
-	shared_ptr<FsmState> addState(QPointF position, bool isInitial = false, QString name = QString());
-	void removeState(shared_ptr<FsmState> state);
-	QList<shared_ptr<FsmState> > getStates() const;
-	shared_ptr<FsmState> getStateByName(const QString& name) const;
-	bool renameState(shared_ptr<FsmState> state, QString newName);
+	/////
+	// Object functions
+public:
 
-	// Initial state
-	void setInitialState(shared_ptr<FsmState> newInitialState);
-	shared_ptr<FsmState> getInitialState() const;
+	// Components accessors and mutators
 
-	// Transitions
-	shared_ptr<FsmTransition> addTransition(shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
-	void removeTransition(shared_ptr<FsmTransition> transition);
-	QList<shared_ptr<FsmTransition>> getTransitions() const;
-	void redirectTransition(shared_ptr<FsmTransition> transition, shared_ptr<FsmState> newSource, shared_ptr<FsmState> newTarget);
+	componentId_t addState     (bool isInitial = false, QString name = QString(), componentId_t id = 0);
+	componentId_t addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id = 0);
+
+	void removeState     (componentId_t stateId);
+	void removeTransition(componentId_t transitionId);
+
+	shared_ptr<FsmState>      getState     (componentId_t stateId)      const;
+	shared_ptr<FsmTransition> getTransition(componentId_t transitionId) const;
+
+	QList<componentId_t> getAllStatesIds()      const;
+	QList<componentId_t> getAllTransitionsIds() const;
+
+	// Components edition functions
+
+	bool renameState(componentId_t stateId, const QString& newName);
+
+	void redirectTransition(componentId_t transitionId, componentId_t newSourceStateId, componentId_t newTargetStateId);
+
+	// Initial state managemment
+
+	void setInitialState(componentId_t stateId);
+	componentId_t getInitialStateId() const;
 
 	// Simulation
-	void setSimulator(shared_ptr<MachineSimulator> simulator) override;
-	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
-private slots:
-	void unmonitoredFsmComponentEditionEventHandler();
-	void statePositionChangedEventHandler(shared_ptr<FsmState> originator);
-	void transitionSliderPositionChangedEventHandler();
+	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
 
 private:
 	QString getUniqueStateName(QString nameProposal);
 
+	/////
+	// Object variables
 private:
-	QList<shared_ptr<FsmState>> states;
-	QList<shared_ptr<FsmTransition>> transitions;
-	weak_ptr<FsmState> initialState;
+	//FSM characteristic
+	componentId_t initialStateId;
+
+	// Maintain lists of states and transitions to allow fast access
+	QList<componentId_t> states;
+	QList<componentId_t> transitions;
+
 };
 
 #endif // FSM_H

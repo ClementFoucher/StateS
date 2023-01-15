@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,60 +25,38 @@
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "diffundocommand.h"
 
-
-shared_ptr<MachineManager> MachineUndoCommand::machineManager;
-
-void MachineUndoCommand::setMachineManager(shared_ptr<MachineManager> machineManager)
-{
-	MachineUndoCommand::machineManager = machineManager;
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, &MachineUndoCommand::machineUpdatedEventHandler);
-}
-
-void MachineUndoCommand::machineUpdatedEventHandler(bool machineHasChanged)
-{
-	// If machine has changed, its XML representation must be rebuilt
-	if (machineHasChanged == true)
-	{
-		DiffUndoCommand::updateXmlRepresentation();
-	}
-}
 
 MachineUndoCommand::MachineUndoCommand()
 {
-	this->firstRedoIgnored = false;
+
 }
 
-MachineUndoCommand::MachineUndoCommand(const QString& previousName) :
-    MachineUndoCommand()
+MachineUndoCommand::MachineUndoCommand(const QString& previousName)
 {
-	this->undoType = machineUndoRenameId;
+	this->undoType = UndoCommandId_t::machineUndoRenameId;
 	this->previousName = previousName;
-
-	DiffUndoCommand::updateXmlRepresentation();
 }
 
 void MachineUndoCommand::undo()
 {
-	shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
-	if (l_machine != nullptr)
-	{
-		switch (this->undoType)
-		{
-		case undo_command_id::machineUndoRenameId:
-		{
-			l_machine->setInhibitEvents(true);
-			this->nextName = l_machine->getName();
-			l_machine->setName(this->previousName);
-			l_machine->setInhibitEvents(false);
-			break;
-		}
-		default:
-			break;
-		}
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
-		DiffUndoCommand::updateXmlRepresentation();
+	switch (this->undoType)
+	{
+	case UndoCommandId_t::machineUndoRenameId:
+	{
+		this->nextName = machine->getName();
+
+		machineManager->setUndoRedoMode(true);
+		machine->setName(this->previousName);
+		machineManager->setUndoRedoMode(false);
+
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -86,17 +64,19 @@ void MachineUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		shared_ptr<Machine> l_machine = MachineUndoCommand::machineManager->getMachine();
-		if (l_machine != nullptr)
+		auto machine = machineManager->getMachine();
+		if (machine != nullptr)
 		{
 			switch (this->undoType)
 			{
-			case undo_command_id::machineUndoRenameId:
+			case UndoCommandId_t::machineUndoRenameId:
 			{
-				l_machine->setInhibitEvents(true);
-				l_machine->setName(this->nextName);
 				this->nextName = QString();
-				l_machine->setInhibitEvents(false);
+
+				machineManager->setUndoRedoMode(true);
+				machine->setName(this->nextName);
+				machineManager->setUndoRedoMode(false);
+
 				break;
 			}
 			default:
@@ -109,11 +89,9 @@ void MachineUndoCommand::redo()
 		// Ignore initial redo automatically applied when pushed in the stack
 		this->firstRedoIgnored = true;
 	}
-
-	DiffUndoCommand::updateXmlRepresentation();
 }
 
 int MachineUndoCommand::id() const
 {
-	return this->undoType;
+	return (int)this->undoType;
 }

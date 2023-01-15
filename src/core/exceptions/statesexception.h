@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,18 +33,26 @@ using namespace std;
 class StatesException : exception
 {
 
+	/////
+	// Constructors/destructors
+public:
+	explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
+
+	/////
+	// Object functions
+public:
+	QString getSourceClass() const;
+	uint    getEnumValue()   const;
+
+	virtual const char* what() const noexcept override;
+
+	/////
+	// Object variables
 private:
 	QString sourceClass;
 	uint    errorEnumValue;
 	string  errorText;
 
-public:
-	explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
-
-	QString getSourceClass() const;
-	uint    getEnumValue() const;
-
-	virtual const char* what() const noexcept override;
 };
 
 #endif // STATESEXCEPTION_H

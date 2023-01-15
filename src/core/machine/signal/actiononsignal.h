@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2020 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,6 +30,7 @@
 using namespace std;
 
 // StateS classes
+#include "statestypes.h"
 #include "logicvalue.h"
 class Signal;
 
@@ -61,33 +62,26 @@ class ActionOnSignal : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	enum ActionOnSignalErrorEnum
-	{
-		illegal_type              = 0,
-		illegal_value             = 1,
-		illegal_range             = 2,
-		action_value_is_read_only = 3
-	};
-
-public:
-	enum class action_types { activeOnState, pulse, set, reset, assign };
-
-public:
-	explicit ActionOnSignal(shared_ptr<Signal> signal, action_types actionType, LogicValue actionValue = LogicValue::getNullValue(),
+	explicit ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
 	                        int rangeL = -1, int rangeR = -1);
 
-	void setActionType (action_types newType); // Throws StatesException
+	/////
+	// Object functions
+public:
+	void setActionType (ActionOnSignalType_t newType); // Throws StatesException
 	void setActionValue(LogicValue newValue);  // Throws StatesException
 	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
 
-	shared_ptr<Signal> getSignalActedOn()      const;
-	action_types       getActionType()         const;
-	LogicValue         getActionValue()        const;
-	int                getActionRangeL()       const;
-	int                getActionRangeR()       const;
-	uint               getActionSize()         const;
-	bool               isActionValueEditable() const;
+	shared_ptr<Signal>   getSignalActedOn()      const;
+	ActionOnSignalType_t getActionType()         const;
+	LogicValue           getActionValue()        const;
+	int                  getActionRangeL()       const;
+	int                  getActionRangeR()       const;
+	uint                 getActionSize()         const;
+	bool                 isActionValueEditable() const;
 
 	void beginAction();
 	void endAction();
@@ -101,13 +95,15 @@ private slots:
 private:
 	bool checkIfRangeFitsSignal(int rangeL, int rangeR) const;
 
+	/////
+	// Object variables
 private:
 	weak_ptr<Signal> signal;
 
-	action_types actionType;
-	LogicValue   actionValue;
-	int          rangeL;
-	int          rangeR;
+	ActionOnSignalType_t actionType;
+	LogicValue           actionValue;
+	int                  rangeL;
+	int                  rangeR;
 
 	bool isActionActing = false;
 

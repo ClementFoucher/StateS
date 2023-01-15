@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,15 +22,13 @@
 // Current class header
 #include "machine.h"
 
-// Qt classes
-#include <QGraphicsItem>
-
 // StateS classes
 #include "input.h"
 #include "output.h"
 #include "constant.h"
+#include "machinecomponent.h"
 #include "statesexception.h"
-#include "machineundocommand.h"
+#include "exceptiontypes.h"
 
 
 Machine::Machine()
@@ -40,9 +38,10 @@ Machine::Machine()
 
 Machine::~Machine()
 {
-	this->isBeingDestroyed = true;
-
 	// Force cleaning order
+
+	this->components.clear();
+
 	this->inputsRanks.clear();
 	this->outputsRanks.clear();
 	this->localVariablesRanks.clear();
@@ -210,239 +209,15 @@ QList<shared_ptr<Signal> > Machine::getAllSignals() const
 	return allSignals;
 }
 
-void Machine::setSimulationMode(Machine::simulation_mode newMode)
-{
-	this->currentMode = newMode;
-	emit simulationModeChangedEvent(newMode);
-}
-
-void Machine::emitMachineEditedWithoutUndoCommand(MachineUndoCommand::undo_command_id commandId)
-{
-	if ( (this->isBeingDestroyed == false) && (this->eventInhibitionLevel == 0) && (this->atomicEditionOngoing == false) )
-	{
-		emit machineEditedWithoutUndoCommandGeneratedEvent(commandId);
-	}
-}
-
-void Machine::emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand)
-{
-	if ( (this->isBeingDestroyed == false) && (this->eventInhibitionLevel == 0) )
-	{
-		emit machineEditedWithUndoCommandGeneratedEvent(undoCommand);
-	}
-	else
-	{
-		delete undoCommand;
-	}
-}
-
-Machine::simulation_mode Machine::getCurrentSimulationMode() const
-{
-	return this->currentMode;
-}
-
-QGraphicsItem* Machine::getComponentVisualization() const
-{
-	// /!\ QGraphicsItemGroup bounding box seems not to be updated
-	// if item is added using its constructor's parent parameter
-
-	if (this->isBeingDestroyed == false)
-	{
-		QGraphicsItemGroup* visu = new QGraphicsItemGroup();
-
-		//
-		// Main sizes
-
-		qreal signalsLinesWidth = 20;
-		qreal horizontalSignalsNamesSpacer = 50;
-		qreal verticalElementsSpacer = 5;
-		qreal busesLineHeight = 10;
-		qreal busesLineWidth = 5;
-
-
-		//
-		// Draw inputs
-
-		QGraphicsItemGroup* inputsGroup = new QGraphicsItemGroup();
-
-		{
-			// Items position wrt. subgroup:
-			// All items @ Y = 0, and rising
-			// Signals names @ X > 0
-			// Lines @ X < 0
-
-			QList<shared_ptr<Input>> inputs = this->getInputs();
-
-			qreal currentInputY = 0;
-			for(int i = 0 ; i < inputs.count() ; i++)
-			{
-				QGraphicsTextItem* textItem = new QGraphicsTextItem();
-
-				QString text = "<span style=\"color:black;\">" + inputs[i]->getText() + "</span>";
-				textItem->setHtml(text);
-
-				inputsGroup->addToGroup(textItem);
-				textItem->setPos(0, currentInputY);
-
-				qreal currentLineY = currentInputY + textItem->boundingRect().height()/2;
-				inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth, currentLineY, 0, currentLineY));//, inputsGroup);
-
-				if (inputs[i]->getSize() > 1)
-				{
-					inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-					QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(inputs[i]->getSize()));
-					inputsGroup->addToGroup(sizeText);
-					sizeText->setPos(-signalsLinesWidth/2 - sizeText->boundingRect().width(), currentLineY - sizeText->boundingRect().height());
-				}
-
-				currentInputY += textItem->boundingRect().height();
-			}
-		}
-
-
-		//
-		// Draw outputs
-
-		QGraphicsItemGroup* outputsGroup = new QGraphicsItemGroup();
-
-		{
-			// Items position wrt. subgroup:
-			// All items @ Y = 0, and rising
-			// Signals names @ X < 0
-			// Lines @ X > 0
-
-			QList<shared_ptr<Output>> outputs = this->getOutputs();
-
-			qreal currentOutputY = 0;
-			for(int i = 0 ; i < outputs.count() ; i++)
-			{
-				QGraphicsTextItem* textItem = new QGraphicsTextItem();
-
-				QString text = "<span style=\"color:black;\">" + outputs[i]->getText() + "</span>";
-				textItem->setHtml(text);
-
-				outputsGroup->addToGroup(textItem);
-				textItem->setPos(-textItem->boundingRect().width(), currentOutputY);
-
-				qreal currentLineY = currentOutputY + textItem->boundingRect().height()/2;
-				outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, signalsLinesWidth, currentLineY));
-
-				if (outputs[i]->getSize() > 1)
-				{
-					outputsGroup->addToGroup(new QGraphicsLineItem(signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-					QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(outputs[i]->getSize()));
-					outputsGroup->addToGroup(sizeText);
-					sizeText->setPos(signalsLinesWidth/2, currentLineY - sizeText->boundingRect().height());
-				}
-
-				currentOutputY += textItem->boundingRect().height();
-			}
-		}
-
-		//
-		// Draw component name
-
-		QGraphicsTextItem* title = new QGraphicsTextItem();
-		title->setHtml("<span style=\"color:black; font-weight:bold;\">" + this->name + "</span>");
-
-		//
-		// Compute component size
-
-		qreal componentWidth;
-		qreal componentHeight;
-
-		{
-			// Width
-
-			qreal inputsNamesWidth = inputsGroup->boundingRect().width() - signalsLinesWidth;
-			qreal outputsNamesWidth = outputsGroup->boundingRect().width() - signalsLinesWidth;
-
-			componentWidth = inputsNamesWidth + horizontalSignalsNamesSpacer + outputsNamesWidth;
-
-			if (componentWidth <= title->boundingRect().width() + horizontalSignalsNamesSpacer)
-			{
-				componentWidth = title->boundingRect().width() + horizontalSignalsNamesSpacer;
-			}
-
-			// Height
-
-			qreal maxSignalsHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
-
-			componentHeight =
-			        verticalElementsSpacer +
-			        title->boundingRect().height() +
-			        verticalElementsSpacer +
-			        maxSignalsHeight +
-			        verticalElementsSpacer;
-
-		}
-
-		//
-		// Draw component border
-
-		QGraphicsPolygonItem* border = nullptr;
-
-		{
-			QPolygonF borderPolygon;
-			borderPolygon.append(QPoint(0,              0));
-			borderPolygon.append(QPoint(componentWidth, 0));
-			borderPolygon.append(QPoint(componentWidth, componentHeight));
-			borderPolygon.append(QPoint(0,              componentHeight));
-
-			border = new QGraphicsPolygonItem(borderPolygon);
-		}
-
-		//
-		// Place components in main group
-
-		{
-			// Items position wrt. main group:
-			// Component top left corner @ (0; 0)
-
-			visu->addToGroup(border);
-			visu->addToGroup(title);
-			visu->addToGroup(inputsGroup);
-			visu->addToGroup(outputsGroup);
-
-			border->setPos(0, 0);
-
-			title->setPos( (componentWidth-title->boundingRect().width())/2, verticalElementsSpacer);
-
-			qreal verticalSignalsNameOffset = title->boundingRect().bottom() + verticalElementsSpacer;
-
-			qreal inoutsDeltaHeight = inputsGroup->boundingRect().height() - outputsGroup->boundingRect().height();
-			qreal additionalInputsOffet  = (inoutsDeltaHeight > 0 ? 0 : -inoutsDeltaHeight/2);
-			qreal additionalOutputsOffet = (inoutsDeltaHeight < 0 ? 0 : inoutsDeltaHeight/2);
-
-			inputsGroup-> setPos(0,              verticalSignalsNameOffset + additionalInputsOffet);
-			outputsGroup->setPos(componentWidth, verticalSignalsNameOffset + additionalOutputsOffet);
-		}
-
-		//
-		// Done
-
-		return visu;
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
 bool Machine::setName(const QString& newName)
 {
 	QString correctedName = newName.trimmed();
 
 	if (correctedName.length() != 0)
 	{
-		QString oldName = this->name;
 		this->name = correctedName;
 
-		emit componentVisualizationUpdatedEvent();
-		emit machineNameChangedEvent(this->name);
-
-		MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
-		this->emitMachineEditedWithUndoCommand(undoCommand);
+		emit this->machineNameChangedEvent();
 
 		return true;
 	}
@@ -452,22 +227,22 @@ bool Machine::setName(const QString& newName)
 	}
 }
 
-shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, const LogicValue& value)
+shared_ptr<Signal> Machine::addSignal(SignalType_t type, const QString& name, const LogicValue& value)
 {
 	uint rank;
 
 	switch(type)
 	{
-	case signal_type::Input:
+	case SignalType_t::Input:
 		rank = this->inputs.count();
 		break;
-	case signal_type::Output:
+	case SignalType_t::Output:
 		rank = this->outputs.count();
 		break;
-	case signal_type::LocalVariable:
+	case SignalType_t::LocalVariable:
 		rank = this->localVariables.count();
 		break;
-	case signal_type::Constant:
+	case SignalType_t::Constant:
 		rank = this->constants.count();
 		break;
 	default:
@@ -477,9 +252,9 @@ shared_ptr<Signal> Machine::addSignal(signal_type type, const QString& name, con
 	return this->addSignalAtRank(type, name, rank, value);
 }
 
-shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value)
+shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& name, uint rank, const LogicValue& value)
 {
-	this->setInhibitEvents(true);
+	//this->setInhibitEvents(true);
 
 	// First check if name doesn't already exist
 	foreach (shared_ptr<Signal> signal, getAllSignals())
@@ -508,7 +283,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 	shared_ptr<Signal> signal;
 	switch(type)
 	{
-	case signal_type::Input:
+	case SignalType_t::Input:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
 
@@ -517,19 +292,17 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 			signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
 		}
 
-		emit componentVisualizationUpdatedEvent();
-		emit inputListChangedEvent();
+		emit this->machineInputListChangedEvent();
 
 		break;
-	case signal_type::Output:
+	case SignalType_t::Output:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
 
-		emit componentVisualizationUpdatedEvent();
-		emit outputListChangedEvent();
+		emit this->machineOutputListChangedEvent();
 
 		break;
-	case signal_type::LocalVariable:
+	case SignalType_t::LocalVariable:
 		signal = shared_ptr<Signal>(new Signal(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
 
@@ -538,10 +311,10 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 			signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
 		}
 
-		emit localVariableListChangedEvent();
+		emit this->machineLocalVariableListChangedEvent();
 
 		break;
-	case signal_type::Constant:
+	case SignalType_t::Constant:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
 
@@ -550,16 +323,16 @@ shared_ptr<Signal> Machine::addSignalAtRank(signal_type type, const QString& nam
 			signal->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
 		}
 
-		emit constantListChangedEvent();
+		emit this->machineConstantListChangedEvent();
 
 		break;
 	}
 
-	if (signal != nullptr)
+	/*if (signal != nullptr)
 	{
-		this->setInhibitEvents(false);
-		this->emitMachineEditedWithoutUndoCommand();
-	}
+		//this->setInhibitEvents(false);
+		//this->emitMachineEditedWithoutUndoCommand();
+	}*/
 
 	return signal;
 }
@@ -586,7 +359,7 @@ void Machine::addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QStrin
 
 bool Machine::deleteSignal(const QString& name)
 {
-	this->setInhibitEvents(true);
+	//this->setInhibitEvents(true);
 
 	bool result;
 
@@ -594,11 +367,7 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->inputs, &this->inputsRanks);
 
-		if (this->isBeingDestroyed == false)
-		{
-			emit componentVisualizationUpdatedEvent();
-			emit inputListChangedEvent();
-		}
+		emit this->machineInputListChangedEvent();
 
 		result = true;
 	}
@@ -606,11 +375,7 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->outputs, &this->outputsRanks);
 
-		if (this->isBeingDestroyed == false)
-		{
-			emit componentVisualizationUpdatedEvent();
-			emit outputListChangedEvent();
-		}
+		emit this->machineOutputListChangedEvent();
 
 		result = true;
 	}
@@ -618,10 +383,7 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->localVariables, &this->localVariablesRanks);
 
-		if (this->isBeingDestroyed == false)
-		{
-			emit localVariableListChangedEvent();
-		}
+		emit this->machineLocalVariableListChangedEvent();
 
 		result = true;
 	}
@@ -629,21 +391,18 @@ bool Machine::deleteSignal(const QString& name)
 	{
 		this->deleteSignalFromList(name, &this->constants, &this->constantsRanks);
 
-		if (this->isBeingDestroyed == false)
-		{
-			emit constantListChangedEvent();
-		}
+		emit this->machineConstantListChangedEvent();
 
 		result = true;
 	}
 	else
 		result = false;
 
-	if (result == true)
+	/*if (result == true)
 	{
 		this->setInhibitEvents(false);
 		this->emitMachineEditedWithoutUndoCommand();
-	}
+	}*/
 
 	return result;
 }
@@ -677,7 +436,7 @@ bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_pt
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
-	this->setInhibitEvents(true);
+	//this->setInhibitEvents(true);
 
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
@@ -694,19 +453,19 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		// A little bit heavy
 		if (inputs.contains(oldName))
 		{
-			emit inputListChangedEvent();
+			emit this->machineInputListChangedEvent();
 		}
 		else if (outputs.contains(oldName))
 		{
-			emit outputListChangedEvent();
+			emit this->machineOutputListChangedEvent();
 		}
 		else if (localVariables.contains(oldName))
 		{
-			emit localVariableListChangedEvent();
+			emit this->machineLocalVariableListChangedEvent();
 		}
 		else if (constants.contains(oldName))
 		{
-			emit constantListChangedEvent();
+			emit this->machineConstantListChangedEvent();
 		}
 
 		return true;
@@ -722,33 +481,31 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->inputs, &this->inputsRanks);
 
-			emit componentVisualizationUpdatedEvent();
-			emit inputListChangedEvent();
+			emit this->machineInputListChangedEvent();
 		}
 		else if (outputs.contains(oldName))
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->outputs, &this->outputsRanks);
 
-			emit componentVisualizationUpdatedEvent();
-			emit outputListChangedEvent();
+			emit this->machineOutputListChangedEvent();
 		}
 		else if (localVariables.contains(oldName))
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->localVariables, &this->localVariablesRanks);
 
-			emit localVariableListChangedEvent();
+			emit this->machineLocalVariableListChangedEvent();
 		}
 		else if (constants.contains(oldName))
 		{
 			this->renameSignalInList(oldName, correctedNewName, &this->constants, &this->constantsRanks);
 
-			emit constantListChangedEvent();
+			emit this->machineConstantListChangedEvent();
 		}
 		else // Should not happen as we checked all lists
 			return false;
 
-		this->setInhibitEvents(false);
-		this->emitMachineEditedWithoutUndoCommand();
+		//this->setInhibitEvents(false);
+		//this->emitMachineEditedWithoutUndoCommand();
 		return true;
 	}
 }
@@ -772,84 +529,80 @@ bool Machine::renameSignalInList(const QString& oldName, const QString& newName,
 
 void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesException
 {
-	this->setInhibitEvents(true);
+	//this->setInhibitEvents(true);
 
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
-		throw StatesException("Machine", unknown_signal, "Trying to change initial value of unknown signal");
+		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
 	else
 	{
 		allSignals[name]->resize(newSize); // Throws StatesException - propagated
 
 		if (inputs.contains(name))
 		{
-			emit componentVisualizationUpdatedEvent();
-			emit inputListChangedEvent();
+			emit this->machineInputListChangedEvent();
 		}
 		else if (outputs.contains(name))
 		{
-			emit componentVisualizationUpdatedEvent();
-			emit outputListChangedEvent();
+			emit this->machineOutputListChangedEvent();
 		}
 		else if (localVariables.contains(name))
 		{
-			emit localVariableListChangedEvent();
+			emit this->machineLocalVariableListChangedEvent();
 		}
 		else if (constants.contains(name))
 		{
-			emit constantListChangedEvent();
+			emit this->machineConstantListChangedEvent();
 		}
 		else // Should not happen as we checked all lists
 		{
-			throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
+			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
 		}
 
-		this->setInhibitEvents(false);
-		this->emitMachineEditedWithoutUndoCommand();
+		//this->setInhibitEvents(false);
+		//this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 
 void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
 {
-	this->setInhibitEvents(true);
+	//this->setInhibitEvents(true);
 
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
-		throw StatesException("Machine", unknown_signal, "Trying to change initial value of unknown signal");
+		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
 	else
 	{
 		allSignals[name]->setInitialValue(newValue);// Throws StatesException - propagated
 
 		if (inputs.contains(name))
 		{
-			emit inputListChangedEvent();
+			emit this->machineInputListChangedEvent();
 		}
 		else if (outputs.contains(name))
 		{
-			emit outputListChangedEvent();
+			emit this->machineOutputListChangedEvent();
 		}
 		else if (localVariables.contains(name))
 		{
-			emit localVariableListChangedEvent();
+			emit this->machineLocalVariableListChangedEvent();
 		}
 		else if (constants.contains(name))
 		{
-			emit constantListChangedEvent();
+			emit this->machineConstantListChangedEvent();
 		}
 		else // Should not happen as we checked all lists
-			throw StatesException("Machine", impossible_error, "Unable to emit listChangedEvent");
+			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
 
-		this->setInhibitEvents(false);
-		this->emitMachineEditedWithoutUndoCommand();
+		//this->setInhibitEvents(false);
+		//this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 
 bool Machine::changeSignalRank(const QString& name, uint newRank)
 {
-	this->setInhibitEvents(true);
-
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
@@ -862,53 +615,31 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
 		{
 			this->changeRankInList(name, newRank, &this->inputs, &this->inputsRanks);
 
-			emit componentVisualizationUpdatedEvent();
-			emit inputListChangedEvent();
+			emit this->machineInputListChangedEvent();
 		}
 		else if (outputs.contains(name))
 		{
 			this->changeRankInList(name, newRank, &this->outputs, &this->outputsRanks);
 
-			emit componentVisualizationUpdatedEvent();
-			emit outputListChangedEvent();
+			emit this->machineOutputListChangedEvent();
 		}
 		else if (localVariables.contains(name))
 		{
 			this->changeRankInList(name, newRank, &this->localVariables, &this->localVariablesRanks);
 
-			emit localVariableListChangedEvent();
+			emit this->machineLocalVariableListChangedEvent();
 		}
 		else if (constants.contains(name))
 		{
 			this->changeRankInList(name, newRank, &this->constants, &this->constantsRanks);
 
-			emit constantListChangedEvent();
+			emit this->machineConstantListChangedEvent();
 		}
 		else // Should not happen as we checked all lists
 			return false;
 
-		this->setInhibitEvents(false);
 		return true;
 	}
-}
-
-void Machine::setSimulator(shared_ptr<MachineSimulator> simulator)
-{
-	this->simulator = simulator;
-
-	if (simulator != nullptr)
-	{
-		this->setSimulationMode(Machine::simulation_mode::simulateMode);
-	}
-	else
-	{
-		this->setSimulationMode(Machine::simulation_mode::editMode);
-	}
-}
-
-shared_ptr<MachineSimulator> Machine::getSimulator() const
-{
-	return this->simulator.lock();
 }
 
 bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
@@ -1025,29 +756,29 @@ QString Machine::getUniqueSignalName(const QString& prefix) const
 	return currentName;
 }
 
-void Machine::setInhibitEvents(bool inhibit)
+void Machine::registerComponent(shared_ptr<MachineComponent> newComponent)
 {
-	if (inhibit == true)
-	{
-		this->eventInhibitionLevel++;
-	}
-	else if (this->eventInhibitionLevel != 0)
-	{
-		this->eventInhibitionLevel--;
-	}
+	this->components[newComponent->getId()] = newComponent;
+
+	connect(newComponent.get(), &MachineComponent::componentNeedsGraphicUpdateEvent, this, &Machine::graphicComponentNeedsRefreshEvent);
 }
 
-void Machine::beginAtomicEdit()
+void Machine::removeComponent(componentId_t componentId)
 {
-	this->atomicEditionOngoing = true;
+	this->components.remove(componentId);
+
+	emit this->componentDeletedEvent(componentId);
 }
 
-void Machine::endAtomicEdit()
+shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) const
 {
-	if (this->atomicEditionOngoing == true)
+	if (this->components.contains(componentId))
 	{
-		this->atomicEditionOngoing = false;
-		this->emitMachineEditedWithoutUndoCommand();
+		return this->components[componentId];
+	}
+	else
+	{
+		return nullptr;
 	}
 }
 

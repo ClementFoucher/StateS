@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,48 +25,56 @@
 // Parent
 #include <QObject>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QUndoStack>
 
 // Sates classes
-#include "machineundocommand.h"
-class MachineManager;
 class Machine;
+class GraphicAttributes;
+class MachineUndoCommand;
 
 
 class UndoRedoManager : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit UndoRedoManager(shared_ptr<MachineManager> machineManager);
+	explicit UndoRedoManager();
 
+	/////
+	// Object functions
+public:
 	void undo();
 	void redo();
 
 	void clearStack();
 	void setClean();
 
+	void addUndoCommand(MachineUndoCommand* undoCommand);
+	void buildAndAddDiffUndoCommand();
+
+	void notifyMachineReplaced();
+
 signals:
-	void freshMachineAvailableEvent(shared_ptr<Machine> machine);
+	void freshMachineAvailableEvent(shared_ptr<Machine> machine, shared_ptr<GraphicAttributes> machineConfiguration);
 
 	void undoActionAvailabilityChangeEvent(bool undoAvailable);
 	void redoActionAvailabilityChangeEvent(bool redoAvailable);
 
 private slots:
-	void machineUpdatedEventHandler(bool isNewMachine);
-
 	void undoStackCleanStateChangeEventHandler(bool clean);
 
+	/////
+	// Object variables
 private:
-	void addUndoCommand(MachineUndoCommand* undoCommand);
-	void buildDiffUndoCommand(MachineUndoCommand::undo_command_id commandId);
-	void setMachineUnsavedFlag(bool unsaved);
-
-private:
-	shared_ptr<MachineManager> machineManager;
-
 	QUndoStack undoStack;
+
 };
 
 #endif // UNDOREDOMANAGER_H

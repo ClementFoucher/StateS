@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,14 +44,21 @@ class ActionTypeComboBox : public QComboBox
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 private slots:
-	void treatIndexChanged(int index);
+	void processIndexChanged(int index);
 
+	/////
+	// Object variables
 private:
 	weak_ptr<ActionOnSignal> action;
+
 };
 
 #endif // ACTIONTYPECOMBOBOX_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,36 +25,34 @@
 // Parent
 #include <QObject>
 
+// StateS classes
+#include "statestypes.h"
+
 
 class MachineBuilder : public QObject
 {
 	Q_OBJECT
 
-public:
-	enum class tool {none,
-		             initial_state,
-		             state,
-		             transition
-	                };
-
-	enum class singleUseTool { none,
-		                       drawTransitionFromScene,
-		                       editTransitionSource,
-		                       editTransitionTarget
-	                         };
+	/////
+	// Constructors/destructors
 public:
 	explicit MachineBuilder();
 
-	tool getTool() const;
-	void setTool(tool newTool);
-	void setSingleUseTool(singleUseTool t);
+	/////
+	// Object functions
+public:
+	MachineBuilderTool_t getTool() const;
+	void setTool(MachineBuilderTool_t newTool);
+	void setSingleUseTool(MachineBuilderSingleUseTool_t t);
 
 signals:
-	void changedToolEvent(tool t);
-	void singleUseToolSelected(singleUseTool t);
+	void changedToolEvent(MachineBuilderTool_t t);
+	void singleUseToolSelected(MachineBuilderSingleUseTool_t t);
 
+	/////
+	// Object variables
 private:
-	tool currentTool = tool::none;
+	MachineBuilderTool_t currentTool = MachineBuilderTool_t::none;
 
 };
 

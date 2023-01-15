@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,68 +30,125 @@
 using namespace std;
 
 // StateS classes
+#include "statestypes.h"
+#include "undoredomanager.h"
 class Machine;
 class MachineStatus;
-class UndoRedoManager;
-class ViewConfiguration;
 class MachineBuilder;
+class GraphicMachine;
+class MachineSimulator;
+class GraphicAttributes;
+class MachineUndoCommand;
 
 
-class MachineManager : public QObject, public enable_shared_from_this<MachineManager>
+/**
+ * @brief The MachineManager class is in charge of
+ * handling the current machine.
+ *
+ * Its purposes are:
+ * - handling undo and redo.
+ * - building the graphic machine associated to the logic machine.
+ * - acting as a relay for the machine signals. This allows
+ *   other classes to connect to manager instead of machine
+ *   and avoid the necessity for reconnecting all signas
+ *   when machine is changed.
+ * - stores and makes available the current machine status.
+ */
+class MachineManager : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit MachineManager();
 
-	void build();
-	void clear();
+	/////
+	// Object functions
+public:
 
 	// Mutators
-	void setMachine(shared_ptr<Machine> newMachine);
-	void setViewConfiguration(shared_ptr<ViewConfiguration> viewConfiguration);
+	void setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
 
 	// Acessors
-	shared_ptr<Machine>           getMachine()           const;
-	shared_ptr<MachineStatus>     getMachineStatus()     const;
-	shared_ptr<MachineBuilder>    getMachineBuilder()    const;
-	shared_ptr<ViewConfiguration> getViewConfiguration() const;
+	shared_ptr<Machine>          getMachine()          const;
+	shared_ptr<MachineStatus>    getMachineStatus()    const;
+	shared_ptr<MachineBuilder>   getMachineBuilder()   const;
+	shared_ptr<GraphicMachine>   getGraphicMachine()   const;
+	shared_ptr<MachineSimulator> getMachineSimulator() const;
 
-	// Actions
+	// Undo/redo
 	void undo();
 	void redo();
-	void updateViewConfiguration();
+	void notifyMachineEdited(MachineUndoCommand* undoCommand = nullptr);
+	void setUndoRedoMode(bool undoRedoMode);
 
-	// Other
-	void addConnection(QMetaObject::Connection connection);
+	// Simulation
+	void setSimulationMode(SimulationMode_t newMode);
+	SimulationMode_t getCurrentSimulationMode() const;
 
 signals:
-	void machineUpdatedEvent(bool isNewMachine);
-	void machineViewUpdateRequestedEvent();
+	/////
+	// Machine manager events
 
-	void undoActionAvailabilityChangeEvent(bool undoAvailable);
-	void redoActionAvailabilityChangeEvent(bool redoAvailable);
+	// Indicates the machine under edit has been replaced by a new one
+	void machineReplacedEvent();
+
+	// Indicates the machine under edit has been updated due to diff undo or redo action,
+	// so the new structure is potentially dramatically different from the previous one.
+	// Notably, graphic machine is replaced so all components depending on it should be rebuilt.
+	void machineUpdatedEvent();
+
+	void simulationModeChangedEvent(SimulationMode_t newMode);
+
+	/////
+	// Undo/redo manager events propagated by the manager
+
+	void undoActionAvailabilityChangedEvent(bool undoAvailable);
+	void redoActionAvailabilityChangedEvent(bool redoAvailable);
+
+	/////
+	// Machine events propagated by the manager so that connections can be rerouted in one place when machine changes
+
+	void machineNameChangedEvent();
+	void machineInputListChangedEvent();
+	void machineOutputListChangedEvent();
+	void machineLocalVariableListChangedEvent();
+	void machineConstantListChangedEvent();
 
 private slots:
-	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine);
+	// Undo/redo
+	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes);
 	void machineUnsavedFlagChangedEventHandler();
 
-private:
-	void setMachineInternal(shared_ptr<Machine> newMachine, bool isNewMachine);
+	void logicComponentDeletedEventHandler(componentId_t componentId);
+	void graphicComponentNeedsRefreshEventHandler(componentId_t componentId);
 
+private:
+	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
+
+	/////
+	// Object variables
 private:
 	// Holders
-	shared_ptr<Machine>        machine;
-	shared_ptr<MachineStatus>  machineStatus;
-	shared_ptr<MachineBuilder> machineBuilder;
-
-	// Temporary holder
-	shared_ptr<ViewConfiguration> viewConfiguration;
+	shared_ptr<Machine>          machine;
+	shared_ptr<MachineStatus>    machineStatus;
+	shared_ptr<MachineBuilder>   machineBuilder;
+	shared_ptr<GraphicMachine>   graphicMachine;
+	shared_ptr<MachineSimulator> machineSimulator;
 
 	// Internal
-	shared_ptr<UndoRedoManager> undoRedoManager;
+	unique_ptr<UndoRedoManager> undoRedoManager;
+	bool undoRedoMode = false;
+	SimulationMode_t currentSimulationMode = SimulationMode_t::editMode;
 
-	QList<QMetaObject::Connection> connections;
 };
+
+
+/////
+// Public global object: most classes need access
+// to machine manager, so make it a global object
+extern unique_ptr<MachineManager> machineManager;
+
 
 #endif // MACHINEMANAGER_H

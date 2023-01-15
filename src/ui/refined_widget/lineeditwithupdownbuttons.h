@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,9 +36,14 @@ class LineEditWithUpDownButtons : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void updateContent(int min, int max, const QString& text);
 	void edit();
 
@@ -46,7 +51,7 @@ signals:
 	void valueChanged(int newValue);
 
 protected:
-	void wheelEvent(QWheelEvent* event) override;
+	virtual void wheelEvent(QWheelEvent* event) override;
 
 private slots:
 	void up();
@@ -54,6 +59,8 @@ private slots:
 
 	void textUpdatedByUsedEventHandler(const QString& newText);
 
+	/////
+	// Object variables
 private:
 	DynamicLineEdit* lineEdit  = nullptr;
 	QIntValidator*   validator = nullptr;

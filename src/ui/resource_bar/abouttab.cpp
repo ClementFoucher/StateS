@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 
 // StateS classes
 #include "states.h"
-#include "svgimagegenerator.h"
+#include "pixmapgenerator.h"
 
 
 AboutTab::AboutTab(QWidget* parent) :
@@ -44,7 +44,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	// Header
 
 	this->icon = new QPushButton(this);
-	this->icon->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"))));
+	this->icon->setIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->icon->setIconSize(QSize(100,100));
 	this->icon->setCheckable(true);
 	this->icon->setStyleSheet("border:0px");
@@ -162,7 +162,7 @@ AboutTab::AboutTab(QWidget* parent) :
 
 void AboutTab::iconClicked()
 {
-	QPixmap pixmap = SvgImageGenerator::getPixmapFromSvg(QString(":/icons/StateS"));
+	QPixmap pixmap = PixmapGenerator::getStatesWindowIcon();
 	QIcon newIcon;
 
 	if (this->icon->isChecked())

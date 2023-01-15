@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,13 +31,8 @@ using namespace std;
 
 // Qt classes
 class QWidget;
-class QHBoxLayout;
-class QVBoxLayout;
-class QGridLayout;
-class QPushButton;
 
 // StateS classes
-class Machine;
 class GraphicEquation;
 class Signal;
 
@@ -46,20 +41,25 @@ class EquationEditor : public QDialog
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit EquationEditor(shared_ptr<Machine> machine, shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditor(shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	shared_ptr<Signal> getResultEquation() const;
 
 protected:
-	void keyPressEvent  (QKeyEvent* event)   override;
-	void mousePressEvent(QMouseEvent* event) override;
+	virtual void keyPressEvent  (QKeyEvent* event)   override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
 
+	/////
+	// Object variables
 private:
-	weak_ptr<Machine> machine;
-
-	// Use pointer because this is a QWidget with a parent
 	GraphicEquation* equationDisplay = nullptr;
+
 };
 
 #endif // EQUATIONEDITOR_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,9 +37,14 @@ class Clock : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit Clock();
 
+	/////
+	// Object functions
+public:
 	void start(uint intervalms);
 	void stop();
 	void reset();
@@ -54,8 +59,11 @@ signals:
 	void resetLogicEvent();
 	void resetGraphicEvent();
 
+	/////
+	// Object variables
 private:
 	shared_ptr<QTimer> timer;
+
 };
 
 #endif // CLOCK_H

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,18 +25,17 @@
 // Parent
 #include "machineactuatorcomponent.h"
 
-// StateS classes
-class Fsm;
-
 
 class FsmComponent : public MachineActuatorComponent
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmComponent(shared_ptr<Fsm> owningFsm);
+	explicit FsmComponent();
+	explicit FsmComponent(componentId_t id);
 
-	shared_ptr<Fsm> getOwningFsm() const;
 };
 
 #endif // FSMCOMPONENT_H

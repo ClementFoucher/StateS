@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,26 +40,33 @@ class InputBitSelector : public QFrame
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
 
-protected slots:
-	void enterEvent(QEnterEvent* event) override;
-	void leaveEvent(QEvent* event) override;
-	void mousePressEvent(QMouseEvent*) override;
-	void mouseMoveEvent(QMouseEvent*) override;
-	void mouseReleaseEvent(QMouseEvent*) override;
-	void mouseDoubleClickEvent(QMouseEvent*) override;
+	/////
+	// Object functions
+protected:
+	virtual void enterEvent           (QEnterEvent* event) override;
+	virtual void leaveEvent           (QEvent* event)      override;
+	virtual void mousePressEvent      (QMouseEvent*)       override;
+	virtual void mouseMoveEvent       (QMouseEvent*)       override;
+	virtual void mouseReleaseEvent    (QMouseEvent*)       override;
+	virtual void mouseDoubleClickEvent(QMouseEvent*)       override;
 
 private slots:
 	void signalValueChangedEventHandler();
 
+	/////
+	// Object variables
 private:
 	weak_ptr<Signal> signalToCommand;
 	uint bitNumber = 0;
 
 	// QWidget with parent
 	QLabel* bitValue = nullptr;
+
 };
 
 #endif // INPUTBITSELECTOR_H

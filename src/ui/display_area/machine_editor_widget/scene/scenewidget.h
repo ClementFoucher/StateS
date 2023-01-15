@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,9 +34,9 @@ class QPushButton;
 class QLabel;
 
 // StateS classes
-class MachineManager;
-class MachineComponent;
+#include "statestypes.h"
 class GenericScene;
+class ViewConfiguration;
 
 
 /**
@@ -50,59 +50,66 @@ class SceneWidget : public StatesGraphicsView
 {
 	Q_OBJECT
 
-public:
-	enum class mouseCursor_t { none, state, transition };
-
+	/////
+	// Type declarations
 private:
-	enum class sceneMode_t { noScene, idle, movingScene, withTool };
+	enum class SceneMode_t { noScene, idle, movingScene, withTool };
 
+	/////
+	// Static variables
+private:
 	static double scaleFactor;
 
+	/////
+	// Constructors/destructors
 public:
-	explicit SceneWidget(shared_ptr<MachineManager> machineManager, QWidget* parent = nullptr);
+	explicit SceneWidget(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	GenericScene* getScene() const;
 
+	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
+	shared_ptr<ViewConfiguration> getView() const;
 	void clearSelection();
 
 signals:
-	void itemSelectedEvent(shared_ptr<MachineComponent> component);
+	void itemSelectedEvent(componentId_t componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 
 protected:
-	void mousePressEvent      (QMouseEvent*)  override;
-	void mouseMoveEvent       (QMouseEvent*)  override;
-	void mouseReleaseEvent    (QMouseEvent*)  override;
-	void mouseDoubleClickEvent(QMouseEvent*)  override;
-	void resizeEvent          (QResizeEvent*) override;
-	void wheelEvent           (QWheelEvent*)  override;
+	virtual void mousePressEvent      (QMouseEvent*)  override;
+	virtual void mouseMoveEvent       (QMouseEvent*)  override;
+	virtual void mouseReleaseEvent    (QMouseEvent*)  override;
+	virtual void mouseDoubleClickEvent(QMouseEvent*)  override;
+	virtual void wheelEvent           (QWheelEvent*)  override;
+	virtual void resizeEvent          (QResizeEvent*) override;
 
 private slots:
-	void machineUpdatedEventHandler(bool isNewMachine);
+	void machineReplacedEventHandler();
 
-	void updateMouseCursor(mouseCursor_t cursor);
+	void updateMouseCursor(MouseCursor_t cursor);
 
 	void zoomIn();
 	void zoomOut();
 	void zoomFit();
 	void resetZoom();
 
-	void updateMachineView();
-
 private:
 	void clearScene();
-	void buildScene(bool loadView);
-	void updateSceneMode(sceneMode_t newMode);
+	void buildScene();
+	void updateSceneMode(SceneMode_t newMode);
 	void updateDragMode();
 	void setZoomPanelVisible(bool visible);
 	void setZoomLevel(qreal level);
 	qreal getZoomLevel() const;
 	QRectF getVisibleArea() const;
 
+	/////
+	// Object variables
 private:
-	shared_ptr<MachineManager> machineManager;
-
 	// Zoom panel
 	QLabel*      labelZoom     = nullptr;
 	QPushButton* buttonZoomIn  = nullptr;
@@ -111,9 +118,10 @@ private:
 	QPushButton* buttonZoomFit = nullptr;
 
 	// Current state
-	sceneMode_t   sceneMode         = sceneMode_t::noScene;
-	sceneMode_t   previousSceneMode = sceneMode_t::noScene;
-	mouseCursor_t currentCursor     = mouseCursor_t::none;
+	SceneMode_t   sceneMode         = SceneMode_t::noScene;
+	SceneMode_t   previousSceneMode = SceneMode_t::noScene;
+	MouseCursor_t currentCursor     = MouseCursor_t::none;
+
 };
 
 #endif // SCENEWIDGET_H

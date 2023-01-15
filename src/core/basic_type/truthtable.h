@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,15 +37,16 @@ class Equation;
 
 class TruthTable
 {
-public: // Static
-	enum TruthTableErrorEnum{
-		reference_expired = 0
-	};
 
+	/////
+	// Constructors/destructors
 public:
 	explicit TruthTable(shared_ptr<Equation> equation);
 	explicit TruthTable(QList<shared_ptr<Equation>> equations);
 
+	/////
+	// Object functions
+public:
 	QVector<shared_ptr<Signal>>  getInputs()            const; // Throws StatesException
 	QVector<QVector<LogicValue>> getInputTable()        const;
 	QVector<QString>             getOutputsEquations()  const;
@@ -59,11 +60,14 @@ private:
 	QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
 	void buildTable(QVector<shared_ptr<Equation>> equations);
 
+	/////
+	// Object variables
 private:
 	QVector<weak_ptr<Signal>>    inputSignalsTable;
 	QVector<QString>             outputEquationsTextsTable;
 	QVector<QVector<LogicValue>> inputValuesTable;
 	QVector<QVector<LogicValue>> outputValuesTable;
+
 };
 
 #endif // TRUTHTABLE_H

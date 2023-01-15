@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,35 +34,28 @@ class QXmlStreamWriter;
 class QFile;
 
 // StateS classes
-class MachineManager;
+#include "statestypes.h"
 class Signal;
 class MachineActuatorComponent;
+class ViewConfiguration;
 
 
 class MachineXmlWriter : public QObject
 {
 	Q_OBJECT
 
-// Static members
+	/////
+	// Constructors/destructors
+protected:
+	explicit MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration);
 
-public:
-
-	enum MachineaveFileManagerErrorEnum
-	{
-		unable_to_replace = 0,
-		unkown_directory  = 1,
-		unable_to_open    = 2
-	};
-
-// Object members
-
+	/////
+	// Object functions
 public:
 	virtual void writeMachineToFile(); // Throws StatesException
 	virtual QString getMachineXml();
 
 protected:
-	explicit MachineXmlWriter(shared_ptr<MachineManager> machineManager);
-
 	virtual void writeMachineToStream() = 0;
 
 	void createSaveFile(); // Throws StatesException
@@ -75,16 +68,19 @@ protected:
 	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
 	void writeLogicEquation(shared_ptr<Signal> equation);
 
+	/////
+	// Object variables
 protected:
-	shared_ptr<MachineManager> machineManager;
+	shared_ptr<ViewConfiguration> viewConfiguration;
 
 	shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;
 
-	bool writingToFile = false;
+	MachineXmlWriterMode_t mode;
 
 private:
 	shared_ptr<QFile> file;
+
 };
 
 #endif // MACHINEXMLWRITER_H

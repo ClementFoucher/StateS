@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,36 +25,35 @@
 // Parent
 #include <QObject>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class MachineComponent;
+#include "statestypes.h"
 
 
 class GraphicComponent : public QObject
 {
 	Q_OBJECT
 
-public: // Static
-	enum GraphicComponentErrorEnum{
-		reaffect_component   = 0,
-		obsolete_base_object = 1
-	};
+	/////
+	// Static variables
+protected:
+	static const QPen selectionPen;
 
+	/////
+	// Constructors/destructors
 public:
-	explicit GraphicComponent();
+	explicit GraphicComponent(componentId_t logicComponentId);
 
+	/////
+	// Object functions
+public:
+	componentId_t getLogicComponentId() const;
+
+	virtual void refreshDisplay() = 0;
+
+	/////
+	// Object variables
 protected:
-	void setLogicComponent(shared_ptr<MachineComponent> logicComponent); // Throws StatesException
-	shared_ptr<MachineComponent> getLogicComponent() const;
-
-private:
-	weak_ptr<MachineComponent> logicComponent;
-
-protected:
-	static QPen selectionPen;
+	componentId_t logicComponentId;
 
 };
 

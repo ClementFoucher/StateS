@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,6 +24,7 @@
 
 // StateS classes
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 Constant::Constant(const QString& name) :
@@ -44,10 +45,10 @@ void Constant::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 
 void Constant::setCurrentValue(const LogicValue&) // Throws StatesException
 {
-	throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+	throw StatesException("Constant", ConstantError_t::change_current_requested, "Trying to affect a current value to a constant");
 }
 
 void Constant::setCurrentValueSubRange(const LogicValue&, int, int) // Throws StatesException
 {
-	throw StatesException("Constant", change_current_requested, "Trying to affect a current value to a constant");
+	throw StatesException("Constant", ConstantError_t::change_current_requested, "Trying to affect a current value to a constant");
 }

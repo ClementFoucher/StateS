@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,18 +19,27 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SVGIMAGEGENERATOR_H
-#define SVGIMAGEGENERATOR_H
+#ifndef PIXMAPGENERATOR_H
+#define PIXMAPGENERATOR_H
 
 // Qt classes
 class QPixmap;
 class QString;
 
 
-class SvgImageGenerator
+class PixmapGenerator
 {
+
+	/////
+	// Static functions
 public:
 	static QPixmap getPixmapFromSvg(const QString& path);
+
+	static QPixmap getStatesWindowIcon();
+
+	static QPixmap getFsmStateCursor();
+	static QPixmap getFsmTransitionCursor();
+
 };
 
-#endif // SVGIMAGEGENERATOR_H
+#endif // PIXMAPGENERATOR_H

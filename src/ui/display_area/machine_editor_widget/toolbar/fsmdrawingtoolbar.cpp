@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,17 +22,22 @@
 // Current class header
 #include "fsmdrawingtoolbar.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QDebug>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machinebuilder.h"
 #include "fsmgraphicstate.h"
 #include "fsmgraphictransition.h"
-#include "fsm.h"
 
 
-FsmDrawingToolBar::FsmDrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent) :
-    DrawingToolBar(machineBuilder, parent)
+FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
+    DrawingToolBar(parent)
 {
 	// Build actions
 	this->actionMouse = new QAction(this);
@@ -83,13 +88,13 @@ void FsmDrawingToolBar::resetTool()
 	this->actionMouse->          setEnabled(false);
 }
 
-bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
+bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 {
 	bool result = false;
 
 	switch (newTool)
 	{
-	case MachineBuilder::tool::state:
+	case MachineBuilderTool_t::state:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(false);
 		this->actionAddState->       setChecked(true);
@@ -99,7 +104,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 		result = true;
 		break;
 
-	case MachineBuilder::tool::transition:
+	case MachineBuilderTool_t::transition:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(false);
 		this->actionAddState->       setChecked(false);
@@ -109,7 +114,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 		result = true;
 		break;
 
-	case MachineBuilder::tool::initial_state:
+	case MachineBuilderTool_t::initial_state:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(true);
 		this->actionAddState->       setChecked(false);
@@ -119,7 +124,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 		result = true;
 		break;
 
-	case MachineBuilder::tool::none:
+	case MachineBuilderTool_t::none:
 		this->resetTool();
 
 		result =  true;
@@ -134,45 +139,41 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::tool newTool)
 
 void FsmDrawingToolBar::mouseToolRequestedEvent(bool)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
-	if (l_machineBuilder != nullptr)
-	{
-		l_machineBuilder->setTool(MachineBuilder::tool::none);
-	}
+	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	if (l_machineBuilder == nullptr) return;
+
+	l_machineBuilder->setTool(MachineBuilderTool_t::none);
 }
 
 void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
-	if (l_machineBuilder != nullptr)
-	{
-		if (activated)
-			l_machineBuilder->setTool(MachineBuilder::tool::initial_state);
-		else
-			l_machineBuilder->setTool(MachineBuilder::tool::none);
-	}
+	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	if (l_machineBuilder == nullptr) return;
+
+	if (activated)
+		l_machineBuilder->setTool(MachineBuilderTool_t::initial_state);
+	else
+		l_machineBuilder->setTool(MachineBuilderTool_t::none);
 }
 
 void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
-	if (l_machineBuilder != nullptr)
-	{
-		if (activated)
-			l_machineBuilder->setTool(MachineBuilder::tool::state);
-		else
-			l_machineBuilder->setTool(MachineBuilder::tool::none);
-	}
+	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	if (l_machineBuilder == nullptr) return;
+
+	if (activated)
+		l_machineBuilder->setTool(MachineBuilderTool_t::state);
+	else
+		l_machineBuilder->setTool(MachineBuilderTool_t::none);
 }
 
 void FsmDrawingToolBar::transitionToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = this->machineBuilder.lock();
-	if (l_machineBuilder != nullptr)
-	{
-		if (activated)
-			l_machineBuilder->setTool(MachineBuilder::tool::transition);
-		else
-			l_machineBuilder->setTool(MachineBuilder::tool::none);
-	}
+	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	if (l_machineBuilder == nullptr) return;
+
+	if (activated)
+		l_machineBuilder->setTool(MachineBuilderTool_t::transition);
+	else
+		l_machineBuilder->setTool(MachineBuilderTool_t::none);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,14 @@ class MainToolBar : public QToolBar
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit MainToolBar(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setSaveAsActionEnabled (bool enable);
 	void setSaveActionEnabled   (bool enable);
 	void setNewFsmActionEnabled (bool enable);
@@ -53,6 +58,8 @@ signals:
 	void undo                     ();
 	void redo                     ();
 
+	/////
+	// Object variables
 private:
 	QAction* actionSaveAs      = nullptr;
 	QAction* actionSave        = nullptr;
@@ -63,6 +70,7 @@ private:
 	QAction* actionExportHdl   = nullptr;
 	QAction* actionUndo        = nullptr;
 	QAction* actionRedo        = nullptr;
+
 };
 
 #endif // MAINTOOLBAR_H

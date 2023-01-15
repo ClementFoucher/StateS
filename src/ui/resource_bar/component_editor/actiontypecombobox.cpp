@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,10 +26,11 @@
 #include <QDebug>
 
 // StateS classes
-#include "svgimagegenerator.h"
+#include "statestypes.h"
+#include "pixmapgenerator.h"
 #include "actiononsignal.h"
-#include "machineactuatorcomponent.h"
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent) :
@@ -38,46 +39,46 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 	this->action = action;
 
 	// List allowed actions
-	if ((allowedActionTypes & MachineActuatorComponent::pulse) != 0 )
-		this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
-	if ((allowedActionTypes & MachineActuatorComponent::activeOnState) != 0 )
-		this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
-	if ((allowedActionTypes & MachineActuatorComponent::set) != 0 )
-		this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
-	if ((allowedActionTypes & MachineActuatorComponent::reset) != 0 )
-		this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
+	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::pulse) != 0 )
+		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
+	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::activeOnState) != 0 )
+		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
+	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::set) != 0 )
+		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
+	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::reset) != 0 )
+		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
 
 	if (action->getActionSize() > 1)
 	{
-		if ((allowedActionTypes & MachineActuatorComponent::assign) != 0 )
-			this->addItem(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/assign"))), tr("Assign"));
+		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::assign) != 0 )
+			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/assign"))), tr("Assign"));
 	}
 
 	// Select current action in list
 	switch(action->getActionType())
 	{
-	case ActionOnSignal::action_types::pulse:
+	case ActionOnSignalType_t::pulse:
 		this->setCurrentText(tr("Pulse"));
 		break;
-	case ActionOnSignal::action_types::activeOnState:
+	case ActionOnSignalType_t::activeOnState:
 		this->setCurrentText(tr("Active on state"));
 		break;
-	case ActionOnSignal::action_types::set:
+	case ActionOnSignalType_t::set:
 		this->setCurrentText(tr("Set"));
 		break;
-	case ActionOnSignal::action_types::reset:
+	case ActionOnSignalType_t::reset:
 		this->setCurrentText(tr("Reset"));
 		break;
-	case ActionOnSignal::action_types::assign:
+	case ActionOnSignalType_t::assign:
 		this->setCurrentText(tr("Assign"));
 		break;
 	}
 
 	// Nice one... Qt5 style connect is sometime complicated to use
-	connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionTypeComboBox::treatIndexChanged);
+	connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionTypeComboBox::processIndexChanged);
 }
 
-void ActionTypeComboBox::treatIndexChanged(int index)
+void ActionTypeComboBox::processIndexChanged(int index)
 {
 	shared_ptr<ActionOnSignal> l_action = this->action.lock();
 
@@ -87,28 +88,28 @@ void ActionTypeComboBox::treatIndexChanged(int index)
 		{
 			if (this->itemText(index) == tr("Pulse"))
 			{
-				l_action->setActionType(ActionOnSignal::action_types::pulse); // Throws StatesException
+				l_action->setActionType(ActionOnSignalType_t::pulse); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Active on state"))
 			{
-				l_action->setActionType(ActionOnSignal::action_types::activeOnState); // Throws StatesException
+				l_action->setActionType(ActionOnSignalType_t::activeOnState); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Set"))
 			{
-				l_action->setActionType(ActionOnSignal::action_types::set); // Throws StatesException
+				l_action->setActionType(ActionOnSignalType_t::set); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Reset"))
 			{
-				l_action->setActionType(ActionOnSignal::action_types::reset); // Throws StatesException
+				l_action->setActionType(ActionOnSignalType_t::reset); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Assign"))
 			{
-				l_action->setActionType(ActionOnSignal::action_types::assign); // Throws StatesException
+				l_action->setActionType(ActionOnSignalType_t::assign); // Throws StatesException
 			}
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignal::ActionOnSignalErrorEnum::illegal_type) )
+			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_type) )
 			{
 				qDebug() << "(ActionTypeComboBox:) Warning! An illegal action type was selected. Type change ignored.";
 			}

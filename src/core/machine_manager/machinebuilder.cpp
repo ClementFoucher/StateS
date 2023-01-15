@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,18 +28,18 @@ MachineBuilder::MachineBuilder()
 
 }
 
-MachineBuilder::tool MachineBuilder::getTool() const
+MachineBuilderTool_t MachineBuilder::getTool() const
 {
 	return this->currentTool;
 }
 
-void MachineBuilder::setTool(tool newTool)
+void MachineBuilder::setTool(MachineBuilderTool_t newTool)
 {
 	this->currentTool = newTool;
 	emit changedToolEvent(this->currentTool);
 }
 
-void MachineBuilder::setSingleUseTool(MachineBuilder::singleUseTool t)
+void MachineBuilder::setSingleUseTool(MachineBuilderSingleUseTool_t t)
 {
 	emit this->singleUseToolSelected(t);
 }

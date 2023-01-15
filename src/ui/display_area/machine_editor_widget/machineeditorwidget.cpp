@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2022 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,19 +27,17 @@
 #include "scenewidget.h"
 #include "drawingtoolbar.h"
 #include "drawingtoolbarbuilder.h"
-#include "machine.h"
 
 
-MachineEditorWidget::MachineEditorWidget(shared_ptr<MachineManager> machineManager, QWidget* parent) :
+MachineEditorWidget::MachineEditorWidget(QWidget* parent) :
     QMainWindow(parent)
 {
-	this->machineManager = machineManager;
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &MachineEditorWidget::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineReplacedEvent, this, &MachineEditorWidget::machineReplacedEventHandler);
 
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);
 
-	this->machineDisplayArea = new SceneWidget(machineManager, this);
+	this->machineDisplayArea = new SceneWidget(this);
 	this->setCentralWidget(this->machineDisplayArea);
 
 	// Transmit events to upper level
@@ -47,18 +45,11 @@ MachineEditorWidget::MachineEditorWidget(shared_ptr<MachineManager> machineManag
 	connect(this->machineDisplayArea, &SceneWidget::editSelectedItemEvent,   this, &MachineEditorWidget::editSelectedItemEvent);
 	connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &MachineEditorWidget::renameSelectedItemEvent);
 
-	// Initialize display
-	shared_ptr<Machine> machine = this->machineManager->getMachine();
-	if (machine != nullptr)
-	{
-		this->machineManager->addConnection(connect(machine.get(), &Machine::simulationModeChangedEvent, this, &MachineEditorWidget::simulationModeToggledEventHandler));
-		this->drawingToolBar = DrawingToolBarBuilder::buildDrawingToolBar(this->machineManager);
-		if (this->drawingToolBar != nullptr)
-		{
-			this->drawingToolBar->setMovable(true);
-			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
-		}
-	}
+	// Connect machine manager signal
+	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &MachineEditorWidget::simulationModeToggledEventHandler);
+
+	// Initialize tool bar
+	this->buildToolbar();
 }
 
 GenericScene* MachineEditorWidget::getScene() const
@@ -66,39 +57,45 @@ GenericScene* MachineEditorWidget::getScene() const
 	return this->machineDisplayArea->getScene();
 }
 
+void MachineEditorWidget::setView(shared_ptr<ViewConfiguration> viewConfiguration)
+{
+	this->machineDisplayArea->setView(viewConfiguration);
+}
+
+shared_ptr<ViewConfiguration> MachineEditorWidget::getView() const
+{
+	return this->machineDisplayArea->getView();
+}
+
 void MachineEditorWidget::clearSelection()
 {
 	this->machineDisplayArea->clearSelection();
 }
 
-void MachineEditorWidget::machineUpdatedEventHandler(bool isNewMachine)
+void MachineEditorWidget::machineReplacedEventHandler()
 {
-	shared_ptr<Machine> newMachine = this->machineManager->getMachine();
-	if (newMachine != nullptr)
-	{
-		this->machineManager->addConnection(connect(newMachine.get(), &Machine::simulationModeChangedEvent, this, &MachineEditorWidget::simulationModeToggledEventHandler));
-	}
-
-	if (isNewMachine == true)
-	{
-		delete this->drawingToolBar;
-		this->drawingToolBar = DrawingToolBarBuilder::buildDrawingToolBar(this->machineManager);
-		if (this->drawingToolBar != nullptr)
-		{
-			this->drawingToolBar->setMovable(true);
-			this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
-		}
-	}
+	delete this->drawingToolBar;
+	this->buildToolbar();
 }
 
-void MachineEditorWidget::simulationModeToggledEventHandler(Machine::simulation_mode newMode)
+void MachineEditorWidget::simulationModeToggledEventHandler(SimulationMode_t newMode)
 {
-	if (newMode == Machine::simulation_mode::simulateMode)
+	if (newMode == SimulationMode_t::simulateMode)
 	{
 		this->drawingToolBar->setEnabled(false);
 	}
 	else
 	{
 		this->drawingToolBar->setEnabled(true);
+	}
+}
+
+void MachineEditorWidget::buildToolbar()
+{
+	this->drawingToolBar = DrawingToolBarBuilder::buildDrawingToolBar();
+	if (this->drawingToolBar != nullptr)
+	{
+		this->drawingToolBar->setMovable(true);
+		this->addToolBar(Qt::TopToolBarArea, this->drawingToolBar);
 	}
 }

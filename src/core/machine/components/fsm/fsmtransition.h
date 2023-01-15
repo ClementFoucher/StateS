@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,47 +30,49 @@
 using namespace std;
 
 // StateS classes
-class FsmState;
-class FsmGraphicTransition;
+#include "statestypes.h"
 class Equation;
 
 
-class FsmTransition : public FsmComponent, public enable_shared_from_this<FsmTransition>
+class FsmTransition : public FsmComponent
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmTransition(shared_ptr<Fsm> parent, shared_ptr<FsmState> source, shared_ptr<FsmState> target, FsmGraphicTransition* representation = nullptr);
-	~FsmTransition();
+	explicit FsmTransition(componentId_t sourceStateId, componentId_t targetStateId);
+	explicit FsmTransition(componentId_t id, componentId_t sourceStateId, componentId_t targetStateId);
 
-	void setTarget(shared_ptr<FsmState> value);
-	shared_ptr<FsmState> getTarget() const;
+	/////
+	// Object functions
+public:
+	void setSourceStateId(componentId_t sourceStateId);
+	componentId_t getSourceStateId() const;
 
-	void setSource(shared_ptr<FsmState> value);
-	shared_ptr<FsmState> getSource() const;
+	void setTargetStateId(componentId_t targetStateId);
+	componentId_t getTargetStateId() const;
 
 	void setCondition(shared_ptr<Signal> signalNewCondition);
-	shared_ptr<Signal> getCondition() const;
 	void clearCondition();
-
-	FsmGraphicTransition* getGraphicRepresentation();
+	shared_ptr<Signal> getCondition() const;
 
 	virtual uint getAllowedActionTypes() const override;
 
 signals:
 	void conditionChangedEvent();
-	void transitionSliderPositionChangedEvent();
 
 private slots:
-	void graphicRepresentationDeletedEventHandler();
+	void conditionChangedEventHandler();
 
+	/////
+	// Object variables
 private:
-	FsmGraphicTransition* graphicRepresentation = nullptr;
-
-	weak_ptr<FsmState> source;
-	weak_ptr<FsmState> target;
+	componentId_t sourceStateId;
+	componentId_t targetStateId;
 
 	shared_ptr<Equation> condition;
+
 };
 
 #endif // FSMTRANSITION_H

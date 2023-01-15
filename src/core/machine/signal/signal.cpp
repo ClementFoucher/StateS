@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,12 +24,13 @@
 
 // StateS classes
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 Signal::Signal(const QString &name, uint size) // Throws StatesException
 {
 	if (size == 0)
-		throw StatesException("Signal", building_zero_sized, "Signal size set to 0");
+		throw StatesException("Signal", SignalError_t::building_zero_sized, "Signal size set to 0");
 
 	this->name = name;
 	this->initialValue = LogicValue::getValue0(size);
@@ -74,7 +75,7 @@ uint Signal::getSize() const
 void Signal::resize(uint newSize) // Throws StatesException
 {
 	if (newSize == 0)
-		throw StatesException("Signal", resized_to_0, "Trying to resize signal with size 0");
+		throw StatesException("Signal", SignalError_t::signal_resized_to_0, "Trying to resize signal with size 0");
 
 	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
 	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
@@ -155,7 +156,7 @@ void Signal::setCurrentValueSubRange(const LogicValue& value, int rangeL, int ra
 	}
 	else
 	{
-		throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
+		throw StatesException("Signal", SignalError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
 	}
 }
 
@@ -179,7 +180,7 @@ void Signal::setInitialValue(const LogicValue& newInitialValue) // Throws States
 	}
 	else
 	{
-		throw StatesException("Signal", size_mismatch, "Trying to set initial value with value whom size does not match signal size");
+		throw StatesException("Signal", SignalError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size");
 	}
 }
 
@@ -212,7 +213,7 @@ bool Signal::isTrue() const // Throws StatesException
 	}
 	else
 	{
-		throw StatesException("Signal", signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
+		throw StatesException("Signal", SignalError_t::signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
 	}
 }
 
@@ -227,6 +228,6 @@ bool Signal::isFalse() const // Throws StatesException
 	}
 	else
 	{
-		throw StatesException("Signal", signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
+		throw StatesException("Signal", SignalError_t::signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
 	}
 }

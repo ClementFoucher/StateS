@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,10 +25,6 @@
 // Parent
 #include <QLineEdit>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QValidator;
 
@@ -37,10 +33,15 @@ class DynamicLineEdit : public QLineEdit
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);
 	explicit DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void markAsErroneous();
 	void resetView();
 
@@ -51,16 +52,19 @@ signals:
 	void downKeyPressed();
 
 protected:
-	void focusInEvent   (QFocusEvent* event) override;
-	void keyPressEvent  (QKeyEvent*   event) override;
-	void keyReleaseEvent(QKeyEvent*   event) override;
+	virtual void focusInEvent   (QFocusEvent* event) override;
+	virtual void keyPressEvent  (QKeyEvent*   event) override;
+	virtual void keyReleaseEvent(QKeyEvent*   event) override;
 
 private slots:
 	void userValidatedEventHandler();
 
+	/////
+	// Object variables
 private:
 	bool erroneous = false;
 	bool selfManaged = false;
+
 };
 
 #endif // DYNAMICLINEEDIT_H

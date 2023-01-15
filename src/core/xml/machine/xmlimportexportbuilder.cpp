@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,33 +23,68 @@
 #include "xmlimportexportbuilder.h"
 
 // StateS classes
-#include "machinemanager.h"
-#include "statesxmlanalyzer.h"
 #include "fsmxmlwriter.h"
 #include "fsmxmlparser.h"
+#include "machinexmlwriter.h"
+#include "statesxmlanalyzer.h"
+#include "machinemanager.h"
 #include "fsm.h"
 
 
-shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriter(shared_ptr<MachineManager> machineManager)
+/**
+ * @brief XmlImportExportBuilder::buildMachineWriterForUndoRedo
+ * Builds a machine writer without a view configuration for undo/redo commmand.
+ * View Configuration is not used as view doesn't change in that case.
+ * @param machineManager
+ * @return
+ */
+shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRedo()
 {
 	shared_ptr<MachineXmlWriter> machineWriter;
 
-	shared_ptr<Fsm> machineAsFsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (machineAsFsm != nullptr)
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm != nullptr)
 	{
-		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(machineManager));
+		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(MachineXmlWriterMode_t::writeToUndo));
 	}
 
 	return machineWriter;
 }
 
+/**
+ * @brief XmlImportExportBuilder::buildMachineWriterForSaveFile
+ * Builds a machine writer that produces XML for save files.
+ * It includes view configuration as loading a file recovers view.s
+ * @param machineManager
+ * @param viewConfiguration
+ * @return
+ */
+shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFile(shared_ptr<ViewConfiguration> viewConfiguration)
+{
+	shared_ptr<MachineXmlWriter> machineWriter;
+
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm != nullptr)
+	{
+		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(MachineXmlWriterMode_t::writeToFile, viewConfiguration));
+	}
+
+	return machineWriter;
+}
+
+/**
+ * @brief XmlImportExportBuilder::buildStringParser
+ * Builds a parser for a QString object.
+ * @param xmlString
+ * @return
+ */
 shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QString& xmlString)
 {
 	shared_ptr<MachineXmlParser> machineParser;
 
 	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(xmlString));
 
-	if (analyzer->getMachineType() == StateSXmlAnalyzer::machineType::Fsm)
+	if (analyzer->getMachineType() == MachineType_t::Fsm)
 	{
 		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(xmlString));
 	}
@@ -57,13 +92,19 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
 	return machineParser;
 }
 
+/**
+ * @brief XmlImportExportBuilder::buildFileParser
+ * Builds a parser for a QFile object.
+ * @param file
+ * @return
+ */
 shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<QFile> file)
 {
 	shared_ptr<MachineXmlParser> machineParser;
 
 	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(file));
 
-	if (analyzer->getMachineType() == StateSXmlAnalyzer::machineType::Fsm)
+	if (analyzer->getMachineType() == MachineType_t::Fsm)
 	{
 		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(file));
 	}

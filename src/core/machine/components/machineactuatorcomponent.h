@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,30 +48,20 @@ class MachineActuatorComponent : public MachineComponent
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	typedef enum
-	{
-		none          = 0x0,
-		activeOnState = 0x1,
-		pulse         = 0x2,
-		set           = 0x4,
-		reset         = 0x8,
-		assign        = 0x10
-	} allowed_action_types;
+	explicit MachineActuatorComponent();
+	explicit MachineActuatorComponent(componentId_t id);
 
-	enum MachineActuatorComponentErrorEnum
-	{
-		out_of_range = 0
-	};
-
+	/////
+	// Object functions
 public:
-	explicit MachineActuatorComponent(shared_ptr<Machine> owningMachine);
-
-	QList<shared_ptr<ActionOnSignal>> getActions() const;
-	shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
-
 	shared_ptr<ActionOnSignal> addAction(shared_ptr<Signal> signal);
 	void removeAction(uint actionRank); // Throws StatesException
+	shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
+	QList<shared_ptr<ActionOnSignal>> getActions() const;
+
 	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
 	void activateActions();
@@ -84,7 +74,10 @@ signals:
 
 private slots:
 	void cleanActionList();
+	void signalInActionListModifiedEventHandler();
 
+	/////
+	// Object variables
 private:
 	QList<shared_ptr<ActionOnSignal>> actionList;
 

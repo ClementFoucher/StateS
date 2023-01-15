@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,19 +40,26 @@ class SignalTimeline : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit SignalTimeline(uint delay, TimelineWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 private slots:
 	void clockEventHandler();
 	void resetEventHandler();
 	void updateCurrentValue();
 	void updateDelayOutputOption(uint delay);
 
+	/////
+	// Object variables
 private:
 	weak_ptr<Signal> signal;
 
 	QList<GraphicTimeLine*> signalLineDisplay;
+
 };
 
 #endif // SIGNALTIMELINE_H

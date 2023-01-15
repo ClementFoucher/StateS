@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2021 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,56 +26,37 @@
 #include <QObject>
 #include <QUndoCommand>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class MachineManager;
+#include "statestypes.h"
 
 
 class MachineUndoCommand : public QObject, public QUndoCommand
 {
 	Q_OBJECT
 
-public:
-	// Define command id for mergable undo objects
-	enum undo_command_id
-	{
-		undefinedUndoId = -1,
-		machineGenericUndoId = 0,
-
-		// Machine common commands
-		machineUndoRenameId = 1,
-
-		// FSM-specific commands
-		fsmUndoStateMoveId = 10,
-		fsmUndoMoveConditionSliderId = 11,
-	};
-
-	static void setMachineManager(shared_ptr<MachineManager> machineManager);
-
+	/////
+	// Constructors/destructors
 public:
 	explicit MachineUndoCommand();
 	explicit MachineUndoCommand(const QString& previousName);
 
+	/////
+	// Object functions
 	virtual void undo() override;
 	virtual void redo() override;
 
 	virtual int id() const override;
 
-private slots:
-	static void machineUpdatedEventHandler(bool machineHasChanged);
-
 protected:
-	static shared_ptr<MachineManager> machineManager;
+	UndoCommandId_t undoType = UndoCommandId_t::undefinedUndoId;
+	bool firstRedoIgnored = false;
 
-	undo_command_id undoType = undo_command_id::undefinedUndoId;
-	bool firstRedoIgnored;
-
+	/////
+	// Object variables
 private:
 	QString previousName;
 	QString nextName;
+
 };
 
 #endif // MACHINEUNDOCOMMAND_H

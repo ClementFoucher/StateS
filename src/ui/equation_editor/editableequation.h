@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,12 +30,18 @@ class EditableEquation : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit EditableEquation(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	virtual bool validEdit() = 0;
 	virtual bool cancelEdit() = 0;
 	virtual void setEdited(bool edited) = 0;
+
 };
 
 #endif // EDITABLEEQUATION_H

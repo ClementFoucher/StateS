@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2017 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,18 +26,12 @@
 #include "graphicactuator.h"
 #include <QGraphicsItemGroup>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QAction;
 
 // StateS classes
-#include "machine.h"
-class FsmGraphicState;
-class FsmTransition;
-class FsmGraphicTransitionNeighborhood;
+#include "statestypes.h"
+
 
 // FsmGraphicTransition has a dynamic behavior.
 // When setting dynamic mode, all changes will be stored in a temporary way
@@ -51,98 +45,111 @@ class FsmGraphicTransition : public GraphicActuator, public QGraphicsItemGroup
 {
 	Q_OBJECT
 
-public:
-	enum class mode{initMode, standardMode, dynamicSourceMode, dynamicTargetMode};
+	/////
+	// Type declarations
+private:
+	enum class Mode_t {errorMode, standardMode, dynamicSourceMode, dynamicTargetMode};
 
-	// Static
+	/////
+	// Static functions
 public:
 	static QPixmap getPixmap(uint size);
 
+	/////
+	// Static variables
+private:
+	// These static items will depend on configuation later
+	static qreal arrowEndSize;
+	static qreal middleBarLength;
+	static QPen standardPen;
+	static QPen editPen;
+	static QPen highlightPen;
+	static QPen inactivePen;
+	static QPen activePen;
+
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmGraphicTransition();
-	// This is static build of transition, we already have a logic element to represent
-	explicit FsmGraphicTransition(shared_ptr<FsmTransition> logicTransition);
-	// This constructor toggles dynamic mode on target. This is used when drawing a transition graphically
-	explicit FsmGraphicTransition(FsmGraphicState* source, const QPointF& dynamicMousePosition);
+
+	// For persistent build of transition, we already have a logic element to represent
+	explicit FsmGraphicTransition(componentId_t logicComponentId);
+
+	// This constructor toggles dynamic mode on target. This is used to display a temporary transition when adding/editing.
+	explicit FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition);
+
 	~FsmGraphicTransition();
 
-	void setLogicTransition(shared_ptr<FsmTransition> transition);
-	shared_ptr<FsmTransition> getLogicTransition() const;
+	/////
+	// Object functions
+public:
+	virtual void refreshDisplay() override;
 
-	bool setSourceState(FsmGraphicState* newSource);
-	bool setTargetState(FsmGraphicState* newTarget);
-
-	FsmGraphicState* getSource() const;
-	FsmGraphicState* getTarget() const;
-
-	void setMousePosition(const QPointF& mousePos);
-	void setTargetMousePosition(const QPointF& newTarget);
-
-	bool setDynamicSourceMode(const QPointF& mousePosition);
-	bool setDynamicTargetMode(const QPointF& mousePosition);
-	bool endDynamicMode(bool keepChanges);
-
-	shared_ptr<FsmGraphicTransitionNeighborhood> helloIMYourNewNeighbor();
+	componentId_t getSourceStateId() const;
+	componentId_t getTargetStateId() const;
 
 	void setConditionLineSliderPosition(qreal position); // Todo: throw exception
 	qreal getConditionLineSliderPosition() const;
 
 	QGraphicsTextItem* getConditionText() const;
+
 	virtual QPainterPath shape() const override;
 	virtual QRectF boundingRect() const override;
 
-signals:
-	void transitionSliderPositionChangedEvent();
+	// Edition related
+	void setUnderEdit(bool edit);
+	void setDynamicState(componentId_t newDynamicStateId);
+	void setMousePosition(const QPointF& mousePos);
 
-	void editCalledEvent(shared_ptr<FsmTransition>);
-	void dynamicSourceCalledEvent(FsmGraphicTransition*);
-	void dynamicTargetCalledEvent(FsmGraphicTransition*);
+signals:
+	void editTransitionCalledEvent(componentId_t transitionId);
+	void dynamicSourceCalledEvent(componentId_t transitionId);
+	void dynamicTargetCalledEvent(componentId_t transitionId);
+	void deleteTransitionCalledEvent(componentId_t transitionId);
 
 protected:
-	void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-	void keyPressEvent(QKeyEvent* event) override;
-	QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-	void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+	virtual void keyPressEvent(QKeyEvent* event) override;
+	virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private slots:
-	void updateDisplay();
+	void transitionNeedsRefreshEventHandler();
 	void updateText();
 	void treatMenu(QAction* action);
-	void machineModeChangedEventHandler(Machine::simulation_mode);
+	void machineModeChangedEventHandler(SimulationMode_t);
 
 private:
-	void finishInitialize();
+	void updateDisplay();
+	void initializeDefaults();
 	void rebuildArrowEnd();
 	void rebuildBoundingShape();
 	void updateSelectionShapeDisplay();
 
-	void checkNeighbors();
-	void setNeighborhood(shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood);
-	void quitNeighborhood();  // Ohhh... So sad
-	void refreshNeighborhood();
+	QPointF drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
+	QPointF drawAutoTransition(QPointF currentSourcePoint);
+	QPointF drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
 
+	/////
+	// Object variables
 private:
-	// A FSM graphic transition must always have at least a source (may not have target when first drawing)
-	FsmGraphicState* source = nullptr;
-	FsmGraphicState* target = nullptr;
+	// A FSM graphic transition must always have at least a source (may not have a target when drawing)
+	componentId_t sourceStateId = 0;
+	componentId_t targetStateId = 0;
 
 	// Dynamic mode
-	mode currentMode;
+	Mode_t currentMode;
 	// This will be used if one of the linked state is missing in dynamic mode
 	QPointF mousePosition;
-	// Dynamic mode holds a temporary state when mouse hovers a state to preview what would be the result if selected
-	FsmGraphicState* dynamicState = nullptr;
+	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
+	componentId_t dynamicStateId = 0;
 
 	// Base elements of the arrow
-	QGraphicsItem*     arrowBody       = nullptr;
-	QGraphicsItem*     arrowEnd        = nullptr;
-	QGraphicsLineItem* conditionLine   = nullptr;
-	QGraphicsTextItem* conditionText   = nullptr;
-	QGraphicsPathItem* selectionShape  = nullptr;
+	QGraphicsItem*     arrowBody      = nullptr;
+	QGraphicsItem*     arrowEnd       = nullptr;
+	QGraphicsLineItem* conditionLine  = nullptr;
+	QGraphicsTextItem* conditionText  = nullptr;
+	QGraphicsPathItem* selectionShape = nullptr;
 	qreal sceneAngle = 0;
-
-	// This list is shared by all graphic transitions that have same {source, parent} couple (either direction)
-	shared_ptr<FsmGraphicTransitionNeighborhood> neighbors;
 
 	QPen* currentPen = nullptr;
 
@@ -154,14 +161,6 @@ private:
 
 	qreal conditionLineSliderPos;
 
-private:
-	// These static items will depend on configuation later
-	static qreal arrowEndSize;
-	static qreal middleBarLength;
-	static QPen standardPen;
-	static QPen editPen;
-	static QPen inactivePen;
-	static QPen activePen;
 };
 
 #endif // FSMGRAPHICTRANSITION_H

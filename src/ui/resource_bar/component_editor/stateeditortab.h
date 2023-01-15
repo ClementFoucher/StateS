@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,12 +25,8 @@
 // Parent
 #include "componenteditortab.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class FsmState;
+#include "statestypes.h"
 class DynamicLineEdit;
 
 
@@ -38,22 +34,30 @@ class StateEditorTab : public ComponentEditorTab
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit StateEditorTab(shared_ptr<FsmState> state, QWidget* parent = nullptr);
+	explicit StateEditorTab(componentId_t stateId, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setEditName();
 
 protected:
-	void mousePressEvent(QMouseEvent* e) override;
+	virtual void mousePressEvent(QMouseEvent* e) override;
 
 private slots:
-	void nameTextChangedEventHandler(const QString& name);
 	void updateContent();
+	void nameTextChangedEventHandler(const QString& name);
 
+	/////
+	// Object variables
 private:
-	weak_ptr<FsmState> state;
+	componentId_t stateId = 0;
 
 	DynamicLineEdit* textStateName = nullptr;
+
 };
 
 #endif // STATEEDITORTAB_H

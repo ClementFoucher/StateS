@@ -27,8 +27,7 @@
 
 // StateS classes
 #include "truthtable.h"
-#include "StateS_signal.h"
-#include "statesexception.h"
+#include "logicvalue.h"
 
 
 TruthTableOutputTableModel::TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :

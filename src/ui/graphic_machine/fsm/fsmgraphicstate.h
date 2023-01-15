@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,77 +26,80 @@
 #include "graphicactuator.h"
 #include <QGraphicsEllipseItem>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QAction;
 
 // StateS classes
-#include "machine.h"
-class FsmState;
+#include "statestypes.h"
 
 
 class FsmGraphicState : public GraphicActuator, public QGraphicsEllipseItem
 {
 	Q_OBJECT
 
-	// Static
+	/////
+	// Static functions
 public:
-	static QPixmap getPixmap(uint size, bool isInitial = false, bool addArrow = false);
 	static qreal getRadius();
+	static QPixmap getPixmap(uint size, bool isInitial = false, bool addArrow = false);
 
+	/////
+	// Static variables
 private:
 	const static qreal radius;
 	static QBrush inactiveBrush;
 	static QBrush activeBrush;
 	static QPen pen;
 
-	// Public
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmGraphicState();
-	~FsmGraphicState();
+	explicit FsmGraphicState(componentId_t logicComponentId);
 
-	void setLogicState(shared_ptr<FsmState> logicState);
-	shared_ptr<FsmState> getLogicState() const;
-
-	// Raised visibility (should be protected) to allow direct calls:
-	// Needed because an event can be manually transmitted to various items
-	void keyPressEvent(QKeyEvent* event) override;
+	/////
+	// Object functions
+public:
+	virtual void refreshDisplay() override;
 	void enableMoveEvent();
+
+	void moveState(Direction_t direction, bool smallMove);
 
 	virtual QPainterPath shape()  const override;
 	virtual QRectF boundingRect() const override;
 
-	void rebuildRepresentation();
+	virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 signals:
-	void stateMovedEvent();
+	void statePositionAboutToChangeEvent(componentId_t stateId);
 
-	void editStateCalledEvent(shared_ptr<FsmState> state);
-	void renameStateCalledEvent(shared_ptr<FsmState> state);
-	void beginDrawTransitionFromThisState(FsmGraphicState* state);
+	void editStateCalledEvent(componentId_t stateId);
+	void renameStateCalledEvent(componentId_t stateId);
+	void deleteStateCalledEvent(componentId_t stateId);
+	void setInitialStateCalledEvent(componentId_t stateId);
+	void beginDrawTransitionFromThisState(componentId_t stateId);
 
 protected:
-	QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-	void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+	virtual void keyPressEvent(QKeyEvent* event) override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private slots:
 	void componentUpdatedEventHandler();
 	void treatMenu(QAction* action);
-	void machineModeChangedEventHandler(Machine::simulation_mode);
+	void machineModeChangedEventHandler(SimulationMode_t);
 
 private:
-	void askDelete();
+	void rebuildRepresentation();
 	void updateSelectionShapeDisplay();
 
+	/////
+	// Object variables
 private:
 	QGraphicsTextItem*    stateName      = nullptr;
 	QGraphicsEllipseItem* selectionShape = nullptr;
 
 	bool moveEventEnabled = false;
+
 };
 
 #endif // FSMGRAPHICSTATE_H

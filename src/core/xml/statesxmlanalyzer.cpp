@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Clément Foucher
+ * Copyright © 2017-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,13 +27,6 @@
 #include <QFile>
 
 
-StateSXmlAnalyzer::StateSXmlAnalyzer()
-{
-	this->type         = machineType::None;
-	this->version      = "Unknown version";
-	this->xmlIsCorrect = true;
-}
-
 StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file) :
     StateSXmlAnalyzer()
 {
@@ -57,7 +50,14 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource) :
 	this->parse();
 }
 
-StateSXmlAnalyzer::machineType StateSXmlAnalyzer::getMachineType()
+StateSXmlAnalyzer::StateSXmlAnalyzer()
+{
+	this->type         = MachineType_t::None;
+	this->version      = "Unknown version";
+	this->xmlIsCorrect = true;
+}
+
+MachineType_t StateSXmlAnalyzer::getMachineType()
 {
 	return this->type;
 }
@@ -82,7 +82,7 @@ void StateSXmlAnalyzer::parse()
 		{
 			if (this->xmlReader->name() == QString("FSM"))
 			{
-				this->type = machineType::Fsm;
+				this->type = MachineType_t::Fsm;
 				QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
 
 				if (! extractedVersion.isNull())

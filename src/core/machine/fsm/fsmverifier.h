@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,8 +33,8 @@ using namespace std;
 #include <QList>
 
 // StateS classes
+#include "statestypes.h"
 class TruthTable;
-class Fsm;
 
 
 // For now, use pointers to TruthTables for storage reasons
@@ -44,31 +44,39 @@ class FsmVerifier : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Type declarations
 public:
-	enum severity { blocking, structure, tool, hint };
 
 	class Issue
 	{
 	public:
 		QString text;
-		severity type = severity::hint;
+		VerifierSeverityLevel_t type = VerifierSeverityLevel_t::hint;
 		shared_ptr<TruthTable> proof;
 		QList<int> proofsHighlight;
 	};
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmVerifier(shared_ptr<Fsm> machine);
+	explicit FsmVerifier();
 	~FsmVerifier();
 
+	/////
+	// Object functions
+public:
 	const QList<shared_ptr<Issue>>& getIssues();
 	const QList<shared_ptr<Issue>>& verifyFsm(bool checkVhdl);
 
 private:
 	void clearProofs();
 
-	weak_ptr<Fsm> machine;
-
+	/////
+	// Object variables
+private:
 	QList<shared_ptr<Issue>> issues;
+
 };
 
 #endif // FSMVERIFIER_H

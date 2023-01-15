@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,12 +36,12 @@
 #include "langselectiondialog.h"
 #include "errordisplaydialog.h"
 #include "statesexception.h"
-#include "viewconfiguration.h"
 #include "fsm.h"
 #include "machinexmlwriter.h"
 #include "machinexmlparser.h"
 #include "xmlimportexportbuilder.h"
 #include "machinestatus.h"
+#include "graphicattributes.h"
 
 
 ////
@@ -69,10 +69,6 @@ QString StateS::getCopyrightYears()
  */
 StateS::StateS(QApplication* app, const QString& initialFilePath)
 {
-	// Build machine manager
-	this->machineManager = make_shared<MachineManager>();
-	this->machineManager->build();
-
 	// Build and show language selection dialog
 	this->languageSelectionWindow = new LangSelectionDialog(app);
 	connect(this->languageSelectionWindow, &LangSelectionDialog::languageSelected, this, &StateS::languageSelected);
@@ -117,12 +113,8 @@ StateS::~StateS()
 	QByteArray windowGeometry = this->statesUi->saveGeometry();
 	windowGeometrySetting.setValue("MainWindowGeometry", windowGeometry);
 
-	// Force cleaning order to handle dependencies between members
+	// Delete permanent members
 	delete this->statesUi;
-
-	this->machineManager->clear();
-	this->machineManager.reset();
-
 	delete this->translator;
 }
 
@@ -157,14 +149,13 @@ void StateS::languageSelected(QTranslator* translator)
  */
 void StateS::generateNewFsm()
 {
-	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
 	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
 
-	this->machineManager->setViewConfiguration(shared_ptr<ViewConfiguration>(new ViewConfiguration()));
-	this->machineManager->setMachine(newMachine);
+	machineManager->setMachine(newMachine, shared_ptr<GraphicAttributes>(new GraphicAttributes()));
 }
 
 /**
@@ -174,12 +165,11 @@ void StateS::generateNewFsm()
  */
 void StateS::clearMachine()
 {
-	shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
-	this->machineManager->setViewConfiguration(nullptr);
-	this->machineManager->setMachine(nullptr);
+	machineManager->setMachine(nullptr, nullptr);
 }
 
 /**
@@ -209,10 +199,10 @@ void StateS::loadMachine(const QString& path)
 			}
 
 			// If we reached this point, there should have been no exception
-			this->machineManager->setViewConfiguration(parser->getViewConfiguration());
-			this->machineManager->setMachine(parser->getMachine());
+			machineManager->setMachine(parser->getMachine(), parser->getGraphicMachineConfiguration());
+			this->statesUi->setView(parser->getViewConfiguration());
 
-			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+			shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 			machineStatus->setHasSaveFile(true);
 			machineStatus->setUnsavedFlag(false);
 			machineStatus->setSaveFilePath(path);
@@ -242,7 +232,7 @@ void StateS::loadMachine(const QString& path)
  */
 void StateS::saveCurrentMachine(const QString& path)
 {
-	if (this->machineManager->getMachine() != nullptr)
+	if (machineManager->getMachine() != nullptr)
 	{
 		bool fileOk = false;
 
@@ -258,7 +248,7 @@ void StateS::saveCurrentMachine(const QString& path)
 
 		if (fileOk)
 		{
-			shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+			shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 			machineStatus->setHasSaveFile(true);
 			machineStatus->setSaveFilePath(path);
 			this->saveCurrentMachineInCurrentFile();
@@ -273,10 +263,10 @@ void StateS::saveCurrentMachine(const QString& path)
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-	if (this->machineManager->getMachine() != nullptr)
+	if (machineManager->getMachine() != nullptr)
 	{
 		bool fileOk = false;
-		shared_ptr<MachineStatus> machineStatus = this->machineManager->getMachineStatus();
+		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 		QFileInfo file = QFileInfo(machineStatus->getSaveFileFullPath());
 		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
 		{
@@ -291,8 +281,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 		{
 			try
 			{
-				this->machineManager->updateViewConfiguration();
-				shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriter(this->machineManager);
+				shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForSaveFile(this->statesUi->getView());
 				saveManager->writeMachineToFile(); // Throws StatesException
 
 				machineStatus->setUnsavedFlag(false);
@@ -321,7 +310,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 void StateS::launchUi()
 {
 	// Build main UI
-	this->statesUi = new StatesUi(this->machineManager);
+	this->statesUi = new StatesUi();
 	connect(this->statesUi, &StatesUi::newFsmRequestEvent,                   this, &StateS::generateNewFsm);
 	connect(this->statesUi, &StatesUi::clearMachineRequestEvent,             this, &StateS::clearMachine);
 	connect(this->statesUi, &StatesUi::loadMachineRequestEvent,              this, &StateS::loadMachine);

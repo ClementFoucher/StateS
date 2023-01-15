@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,35 +31,29 @@ using namespace std;
 
 // Qt classes
 #include <QHash>
-class QGraphicsItem;
 
 // StateS classes
+#include "statestypes.h"
 #include "logicvalue.h"
-#include "machineundocommand.h"
 class Signal;
 class Input;
 class Output;
-class MachineSimulator;
+class MachineComponent;
 
 
 class Machine : public QObject
 {
 	Q_OBJECT
 
-public: // Static
-	enum MachineErrorEnum
-	{
-		unknown_signal   = 0,
-		impossible_error = 1
-	};
-
-public:
-	enum class signal_type     {Input, Output, LocalVariable, Constant};
-	enum class simulation_mode {editMode, simulateMode};
-
+	/////
+	// Constructors/destructors
 public:
 	explicit Machine();
 	~Machine();
+
+	/////
+	// Object functions
+public:
 
 	// Accessors
 
@@ -80,56 +74,41 @@ public:
 	QList<shared_ptr<Signal>> getIoSignals()               const;
 	QList<shared_ptr<Signal>> getAllSignals()              const;
 
+	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
+
 	// Mutators
 
 	bool setName(const QString& newName);
 
-	shared_ptr<Signal> addSignal(signal_type type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
+	shared_ptr<Signal> addSignal(SignalType_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
 	bool deleteSignal(const QString& name);
 	bool renameSignal(const QString& oldName, const QString& newName);
 	void resizeSignal(const QString& name, uint newSize); // Throws StatesException
 	void changeSignalInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
 	bool changeSignalRank(const QString& name, uint newRank);
 
-	// Overriden in sub classes
-
-	virtual void setSimulator(shared_ptr<MachineSimulator> simulator);
-
-	// Undo/redo related
-
-	void setInhibitEvents(bool inhibit);
-	void beginAtomicEdit();
-	void endAtomicEdit();
-
 	// Other
 
-	simulation_mode getCurrentSimulationMode() const;
-	shared_ptr<MachineSimulator> getSimulator() const;
-	QGraphicsItem* getComponentVisualization() const;
-
-	bool cleanSignalName(QString& nameToClean) const;
 	QString getUniqueSignalName(const QString& prefix) const;
 
 signals:
-	void machineEditedWithoutUndoCommandGeneratedEvent(MachineUndoCommand::undo_command_id commandId);
-	void machineEditedWithUndoCommandGeneratedEvent(MachineUndoCommand* undoCommand);
+	// Machine changes
+	void machineNameChangedEvent();
+	void machineInputListChangedEvent();
+	void machineOutputListChangedEvent();
+	void machineLocalVariableListChangedEvent();
+	void machineConstantListChangedEvent();
 
-	void machineNameChangedEvent(const QString& newName);
-	void inputListChangedEvent();
-	void outputListChangedEvent();
-	void localVariableListChangedEvent();
-	void constantListChangedEvent();
-
-	void componentVisualizationUpdatedEvent();
-	void simulationModeChangedEvent(simulation_mode newMode);
+	// Components changes
+	void graphicComponentNeedsRefreshEvent(componentId_t stateId);
+	void componentDeletedEvent(componentId_t componentId);
 
 protected:
-	void setSimulationMode(simulation_mode newMode);
-	void emitMachineEditedWithoutUndoCommand(MachineUndoCommand::undo_command_id commandId = MachineUndoCommand::undo_command_id::machineGenericUndoId);
-	void emitMachineEditedWithUndoCommand(MachineUndoCommand* undoCommand);
+	void registerComponent(shared_ptr<MachineComponent> newComponent);
+	void removeComponent(componentId_t componentId);
 
 private:
-	shared_ptr<Signal> addSignalAtRank(signal_type type, const QString& name, uint rank, const LogicValue& value);
+	shared_ptr<Signal> addSignalAtRank(SignalType_t type, const QString& name, uint rank, const LogicValue& value);
 	QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
 	void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
 	bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
@@ -138,9 +117,10 @@ private:
 
 	QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
 
-protected:
-	bool isBeingDestroyed = false;
+	bool cleanSignalName(QString& nameToClean) const;
 
+	/////
+	// Object variables
 private:
 	// Store all signals as shared_ptr<Signal> for helper functions,
 	// but can actually be shared_ptr<Input/Output/Constant>
@@ -156,14 +136,10 @@ private:
 	QHash<QString, uint> localVariablesRanks;
 	QHash<QString, uint> constantsRanks;
 
+	QHash<componentId_t, shared_ptr<MachineComponent> > components;
+
 	QString name;
 
-	simulation_mode currentMode = simulation_mode::editMode;
-
-	weak_ptr<MachineSimulator> simulator;
-
-	bool atomicEditionOngoing = false;
-	uint eventInhibitionLevel = 0;
 };
 
 #endif // MACHINE_H

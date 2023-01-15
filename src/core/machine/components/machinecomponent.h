@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,29 +25,40 @@
 // Parent
 #include <QObject>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class Machine;
+#include "statestypes.h"
 
 
 class MachineComponent : public QObject
 {
 	Q_OBJECT
 
-public:
-	explicit MachineComponent(shared_ptr<Machine> owningMachine);
+	/////
+	// Static functions
+private:
+	static componentId_t getUniqueId();
 
-	shared_ptr<Machine> getOwningMachine() const;
+	/////
+	// Constructors/destructors
+public:
+	explicit MachineComponent();
+	explicit MachineComponent(componentId_t id);
+
+	/////
+	// Object functions
+public:
+	void setId(componentId_t id);
+	componentId_t getId() const;
 
 signals:
-	void componentNeedsGraphicUpdateEvent();    // Triggered when logic object has been edited in a way that requires a graphic redraw
+	void componentNeedsGraphicUpdateEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
 	void componentSimulatedStateChangedEvent(); // Triggered when logic object state changes during simulation
 
-private:
-	weak_ptr<Machine> owningMachine;
+	/////
+	// Object variables
+protected:
+	componentId_t id;
+
 };
 
 #endif // MACHINECOMPONENT_H

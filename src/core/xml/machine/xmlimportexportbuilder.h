@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,18 +33,21 @@ using namespace std;
 class QFile;
 
 // StateS classes
-class MachineManager;
 class MachineXmlWriter;
 class MachineXmlParser;
+class ViewConfiguration;
 
 
 class XmlImportExportBuilder : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Static functions
 public:
 	// Writer
-	static shared_ptr<MachineXmlWriter> buildMachineWriter(shared_ptr<MachineManager> machineManager);
+	static shared_ptr<MachineXmlWriter> buildMachineWriterForUndoRedo();
+	static shared_ptr<MachineXmlWriter> buildMachineWriterForSaveFile(shared_ptr<ViewConfiguration> viewConfiguration);
 
 	// Parser
 	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);

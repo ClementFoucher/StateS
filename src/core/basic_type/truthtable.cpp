@@ -26,11 +26,13 @@
 #include <math.h>
 
 // StateS classes
+#include "statestypes.h"
 #include "StateS_signal.h"
 #include "equation.h"
 #include "logicvalue.h"
 #include "constant.h"
 #include "statesexception.h"
+#include "exceptiontypes.h"
 
 
 TruthTable::TruthTable(shared_ptr<Equation> equation)
@@ -60,7 +62,7 @@ QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesExcep
 		if (! sig.expired())
 			list.append(sig.lock());
 		else
-			throw StatesException("TruthTable", reference_expired, "Reference to expired signal");
+			throw StatesException("TruthTable", TruthTableError_t::reference_expired, "Reference to expired signal");
 	}
 
 	return list;
@@ -143,7 +145,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
 
 		if (complexOperand != nullptr)
 		{
-			if (complexOperand->getFunction() != Equation::nature::constant)
+			if (complexOperand->getFunction() != EquationNature_t::constant)
 				list += extractSignals(complexOperand);
 		}
 		else

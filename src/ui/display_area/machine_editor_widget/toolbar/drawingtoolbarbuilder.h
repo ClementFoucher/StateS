@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Clément Foucher
+ * Copyright © 2021-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,12 +25,7 @@
 // Parent class
 #include <QObject>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class MachineManager;
 class DrawingToolBar;
 
 
@@ -38,8 +33,11 @@ class DrawingToolBarBuilder : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Static functions
 public:
-	static DrawingToolBar* buildDrawingToolBar(shared_ptr<MachineManager> machineManager);
+	static DrawingToolBar* buildDrawingToolBar();
+
 };
 
 #endif // DRAWINGTOOLBARBUILDER_H

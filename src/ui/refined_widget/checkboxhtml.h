@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,9 +40,14 @@ class CheckBoxHtml : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit CheckBoxHtml(const QString& text, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void setText(QString newText);
 	void setChecked(bool check);
 	bool isChecked();
@@ -53,9 +58,12 @@ signals:
 private:
 	void labelClicked(QMouseEvent* e);
 
+	/////
+	// Object variables
 private:
 	LabelWithClickEvent* label    = nullptr;
 	QCheckBox*           checkBox = nullptr;
+
 };
 
 #endif // CHECKBOXHTML_H

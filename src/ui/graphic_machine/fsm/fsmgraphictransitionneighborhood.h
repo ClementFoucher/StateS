@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,8 +27,6 @@
 
 // Qt classes
 #include <QMap>
-class QGraphicsPathItem;
-class QGraphicsLineItem;
 
 // StateS classes
 class FsmGraphicTransition;
@@ -39,30 +37,33 @@ class FsmGraphicTransitionNeighborhood : public QObject
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
 	explicit FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target);
 
-	void insertAndNotify(FsmGraphicTransition* value);
-	void removeAndNotify(FsmGraphicTransition* value);
+	/////
+	// Object functions
+public:
+	void insertTransition(FsmGraphicTransition* transition);
+	void removeTransition(FsmGraphicTransition* transition);
+
+	QList<FsmGraphicTransition*> getTransitions() const;
 
 	FsmGraphicState* getSource() const;
+	FsmGraphicState* getTarget() const;
+
 	int count() const;
-	QGraphicsPathItem* buildMyBody(QPen* pen, FsmGraphicTransition* me, QPointF& curveOrigin, QPointF& conditionLinePos, QPointF& curveTarget, qreal& edgeAngle1, qreal& endAngle2, QGraphicsLineItem** conditionLine, qreal conditionLineSliderPos) const;
 
-	int whatIsMyRank(FsmGraphicTransition* me) const;
-	int computeTransitionPosition(FsmGraphicTransition* me) const;
+	int getTransitionNumber(FsmGraphicTransition* transition) const;
 
-signals:
-	void contentChangedEvent();
-
+	/////
+	// Object variables
 private:
-
 	QMap<int, FsmGraphicTransition*> map;
 	FsmGraphicState* source = nullptr;
 	FsmGraphicState* target = nullptr;
 
-
 };
 
 #endif // FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
-

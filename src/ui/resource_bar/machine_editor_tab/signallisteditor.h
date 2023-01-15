@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,7 +36,8 @@ class QPushButton;
 class QTableWidgetItem;
 
 // StateS classes
-#include "machine.h"
+#include "statestypes.h"
+class Signal;
 class DynamicTableItemDelegate;
 class TableWidgetWithResizeEvent;
 
@@ -45,17 +46,40 @@ class SignalListEditor : public QWidget
 {
 	Q_OBJECT
 
+	/////
+	// Type declarations
 private:
-	enum class mode{initMode, standard, addingSignal, renamingSignal, resizingSignal, changingSignalInitialValue};
-	enum ContextAction { Cancel = 0, DeleteSignal = 1, Up = 2, Down = 3, RenameSignal = 4, ResizeSignal = 5, ChangeSignalValue = 6};
+	enum class ListMode_t
+	{
+		initMode,
+		standard,
+		addingSignal,
+		renamingSignal,
+		resizingSignal,
+		changingSignalInitialValue
+	};
+	enum class ContextAction_t : int
+	{
+		Cancel            = 0,
+		DeleteSignal      = 1,
+		Up                = 2,
+		Down              = 3,
+		RenameSignal      = 4,
+		ResizeSignal      = 5,
+		ChangeSignalValue = 6
+	};
 
+	/////
+	// Constructors/destructors
 public:
-	explicit SignalListEditor(shared_ptr<Machine> machine, Machine::signal_type editorType, QWidget* parent = nullptr);
+	explicit SignalListEditor(SignalType_t editorType, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 protected:
-	void keyPressEvent   (QKeyEvent*         event) override;
-	void keyReleaseEvent (QKeyEvent*         event) override;
-	void contextMenuEvent(QContextMenuEvent* event) override;
+	virtual void keyPressEvent   (QKeyEvent*         event) override;
+	virtual void keyReleaseEvent (QKeyEvent*         event) override;
+	virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
 private slots:
 	// General
@@ -83,22 +107,21 @@ private slots:
 	void raiseSelectedSignals();
 	void lowerSelectedSignals();
 	void removeSelectedSignals();
-	void treatMenuEventHandler(QAction* action);
+	void processMenuEventHandler(QAction* action);
 
 private:
-	void switchMode(mode newMode);
+	void switchMode(ListMode_t newMode);
 	void editCurrentCell(bool erroneous = false);
 	void fixSignalSize();
 	QList<QString> getSelectedSignals();
 
+	/////
+	// Object variables
 private:
-	// Static
-	weak_ptr<Machine> machine;
-	Machine::signal_type editorType;
+	SignalType_t editorType;
 	QString newSignalsPrefix;
 
-	// Dynamic
-	mode currentMode = mode::initMode;
+	ListMode_t currentMode = ListMode_t::initMode;
 
 	// Widgets
 	QGridLayout* buttonLayout = nullptr;
@@ -125,6 +148,7 @@ private:
 
 	// Used to know which signal is associated to each cell in table
 	QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;
+
 };
 
 #endif // SIGNALLISTEDITOR_H

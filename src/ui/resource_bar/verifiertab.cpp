@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,15 +34,15 @@
 // StateS classes
 #include "machinemanager.h"
 #include "truthtabledisplay.h"
-#include "fsm.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "truthtable.h"
+#include "fsmverifier.h"
 
 
-VerifierTab::VerifierTab(shared_ptr<MachineManager> machineManager, QWidget* parent) :
+VerifierTab::VerifierTab(QWidget* parent) :
     QWidget(parent)
 {
-	this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier(dynamic_pointer_cast<Fsm>(machineManager->getMachine())));
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &VerifierTab::clearDisplay);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setAlignment(Qt::AlignTop);
@@ -64,6 +64,7 @@ void VerifierTab::checkNow()
 {
 	this->clearDisplay();
 
+	this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier());
 	const QList<shared_ptr<FsmVerifier::Issue>>& issues = this->verifier->verifyFsm(this->checkVhdl);
 
 	if (issues.count() == 0)
@@ -98,19 +99,19 @@ void VerifierTab::checkNow()
 
 			switch (issues[i]->type)
 			{
-			case FsmVerifier::severity::blocking:
+			case VerifierSeverityLevel_t::blocking:
 				brush.setColor(Qt::red);
 				hasRed = true;
 				break;
-			case FsmVerifier::severity::structure:
+			case VerifierSeverityLevel_t::structure:
 				brush.setColor(Qt::blue);
 				hasBlue = true;
 				break;
-			case FsmVerifier::severity::tool:
+			case VerifierSeverityLevel_t::tool:
 				brush.setColor(Qt::darkGreen);
 				hasGreen = true;
 				break;
-			case FsmVerifier::severity::hint:
+			case VerifierSeverityLevel_t::hint:
 				break;
 			}
 
@@ -160,6 +161,8 @@ void VerifierTab::clearDisplay()
 	this->truthTableDisplay = nullptr;
 	this->buttonClear       = nullptr;
 	this->hintBox           = nullptr;
+
+	this->verifier.reset();
 }
 
 void VerifierTab::setCheckVhdl(bool doCheck)
@@ -169,8 +172,9 @@ void VerifierTab::setCheckVhdl(bool doCheck)
 
 void VerifierTab::proofRequested(QListWidgetItem* item)
 {
-	const QList<shared_ptr<FsmVerifier::Issue>>&  issues = this->verifier->getIssues();
+	if (this->verifier == nullptr) return;
 
+	const QList<shared_ptr<FsmVerifier::Issue>>&  issues = this->verifier->getIssues();
 	if (issues[this->list->row(item)]->proof != nullptr)
 	{
 		delete this->truthTableDisplay;

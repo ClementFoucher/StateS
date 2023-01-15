@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,12 +25,8 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class MachineActuatorComponent;
+#include "statestypes.h"
 
 
 /**
@@ -41,13 +37,20 @@ class ActionTableDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit ActionTableDelegate(shared_ptr<MachineActuatorComponent> actuator, QWidget* parent = nullptr);
+	explicit ActionTableDelegate(componentId_t actuatorId, QWidget* parent = nullptr);
 
-	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+	/////
+	// Object functions
+public:
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
 
+	/////
+	// Object variables
 private:
-	weak_ptr<MachineActuatorComponent> actuator;
+	componentId_t actuatorId = 0;
 
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Clément Foucher
+ * Copyright © 2020-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,23 +25,27 @@
 // Parent class
 #include "drawingtoolbar.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
+
+// StateS classes
+#include "statestypes.h"
 
 
 class FsmDrawingToolBar : public DrawingToolBar
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit FsmDrawingToolBar(shared_ptr<MachineBuilder> machineBuilder, QWidget* parent = nullptr);
+	explicit FsmDrawingToolBar(QWidget* parent = nullptr);
 
+	/////
+	// Object functions
 protected:
 	virtual void resetTool() override;
 
 protected slots:
-	bool toolChangedEventHandler(MachineBuilder::tool newTool) override;
+	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) override;
 
 private slots:
 	void mouseToolRequestedEvent(bool activated);
@@ -49,11 +53,14 @@ private slots:
 	void stateToolRequestedEvent(bool activated);
 	void transitionToolRequestedEvent(bool activated);
 
+	/////
+	// Object variables
 private:
 	QAction* actionMouse           = nullptr;
 	QAction* actionAddInitialState = nullptr;
 	QAction* actionAddState        = nullptr;
 	QAction* actionAddTransition   = nullptr;
+
 };
 
 #endif // FSMDRAWINGTOOLBAR_H

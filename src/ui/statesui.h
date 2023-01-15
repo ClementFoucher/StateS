@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,14 +30,14 @@
 using namespace std;
 
 // StateS classes
-#include "machine.h"
-class MachineManager;
+#include "statestypes.h"
 class ResourceBar;
 class DisplayArea;
 class MachineComponent;
 class MainToolBar;
 class MachineEditorWidget;
 class TimelineWidget;
+class ViewConfiguration;
 
 
 /**
@@ -54,11 +54,16 @@ class StatesUi : public QMainWindow
 {
 	Q_OBJECT
 
+	/////
+	// Constructors/destructors
 public:
-	explicit StatesUi(shared_ptr<MachineManager> machineManager);
+	explicit StatesUi();
 
-	void dragEnterEvent(QDragEnterEvent* event) override;
-	void dropEvent(QDropEvent* event) override;
+	/////
+	// Object functions
+public:
+	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
+	shared_ptr<ViewConfiguration> getView() const;
 
 signals:
 	void newFsmRequestEvent();
@@ -68,12 +73,15 @@ signals:
 	void saveMachineInCurrentFileRequestEvent();
 
 protected:
-	void closeEvent     (QCloseEvent* event) override;
-	void keyPressEvent  (QKeyEvent*   event) override;
-	void keyReleaseEvent(QKeyEvent*   event) override;
+	virtual void closeEvent     (QCloseEvent* event) override;
+	virtual void keyPressEvent  (QKeyEvent*   event) override;
+	virtual void keyReleaseEvent(QKeyEvent*   event) override;
+
+	virtual void dragEnterEvent(QDragEnterEvent* event) override;
+	virtual void dropEvent     (QDropEvent*      event) override;
 
 private slots:
-	void machineUpdatedEventHandler(bool isNewMachine);
+	void machineReplacedEventHandler();
 
 	void beginSaveAsProcedure();
 	void beginSaveProcedure();
@@ -86,14 +94,14 @@ private slots:
 	void undo();
 	void redo();
 
-	void itemSelectedInSceneEventHandler(shared_ptr<MachineComponent> item);
+	void itemSelectedInSceneEventHandler(componentId_t componentId);
 	void editSelectedItem();
 	void renameSelectedItem();
 
 	void machineFilePathUpdated();
 	void machineUnsavedStateUpdated();
 
-	void simulationModeToggledEventHandler(Machine::simulation_mode newMode);
+	void simulationModeToggledEventHandler(SimulationMode_t newMode);
 	void setTimelineDetachedState(bool detach);
 
 	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
@@ -104,9 +112,9 @@ private:
 	void updateTitle();
 	bool displayUnsavedConfirmation(const QString& cause);
 
+	/////
+	// Object variables
 private:
-	shared_ptr<MachineManager> machineManager;
-
 	// Top level widgets
 	DisplayArea* displayArea = nullptr;
 	ResourceBar* resourceBar = nullptr;

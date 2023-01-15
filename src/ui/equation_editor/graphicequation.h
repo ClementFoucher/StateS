@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,9 +29,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QMap>
-
 // StateS classes
 #include "logicvalue.h"
 class Signal;
@@ -42,14 +39,21 @@ class GraphicEquation : public QFrame
 {
 	Q_OBJECT
 
+	/////
+	// Type declarations
 private:
-	enum CommonAction { Cancel = 0 };
-	enum DropAction { ReplaceExisting = 1, ExistingAsOperand = 2};
-	enum ContextAction { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
+	enum CommonAction_t { Cancel = 0 };
+	enum DropAction_t { ReplaceExisting = 1, ExistingAsOperand = 2};
+	enum ContextAction_t { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
 
+	/////
+	// Constructors/destructors
 public:
 	explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
 
+	/////
+	// Object functions
+public:
 	void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand); // TODO: throw exception
 
 	shared_ptr<Signal> getLogicEquation() const;
@@ -58,25 +62,23 @@ public:
 	bool validEdit();
 	bool cancelEdit();
 
-
 protected:
-	void enterEvent(QEnterEvent*) override;
-	void leaveEvent(QEvent*) override;
+	virtual void enterEvent(QEnterEvent*) override;
+	virtual void leaveEvent(QEvent*)      override;
 
-	void mousePressEvent      (QMouseEvent* event) override;
-	void mouseMoveEvent       (QMouseEvent* event) override;
-	void mouseReleaseEvent    (QMouseEvent* event) override;
-	void mouseDoubleClickEvent(QMouseEvent* event) override;
+	virtual void mousePressEvent      (QMouseEvent* event) override;
+	virtual void mouseMoveEvent       (QMouseEvent* event) override;
+	virtual void mouseReleaseEvent    (QMouseEvent* event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
 
-	void dragEnterEvent(QDragEnterEvent* event) override;
-	void dragLeaveEvent(QDragLeaveEvent* event) override;
-	void dropEvent     (QDropEvent*      event) override;
+	virtual void dragEnterEvent(QDragEnterEvent* event) override;
+	virtual void dragLeaveEvent(QDragLeaveEvent* event) override;
+	virtual void dropEvent     (QDropEvent*      event) override;
 
-	void contextMenuEvent(QContextMenuEvent* event) override;
+	virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
-protected slots:
-	void enterChildrenEventHandler();
-	void leaveChildrenEventHandler();
+	void enterChildrenEvent();
+	void leaveChildrenEvent();
 
 private slots:
 	void treatMenuEventHandler(QAction* action);
@@ -97,10 +99,11 @@ private:
 
 	void clearEditorWidget();
 
-private:
-	// Use pointer because this is a QWidget with a parent
 	GraphicEquation* parentEquation() const;
 
+	/////
+	// Object variables
+private:
 	bool isTemplate = false;
 
 	weak_ptr<Signal> equation;
@@ -116,6 +119,7 @@ private:
 
 	bool inMouseEvent = false;
 	bool lockSignal;
+
 };
 
 #endif // GRAPHICEQUATION_H
