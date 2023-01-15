@@ -33,36 +33,30 @@ CONFIG += c++17
 QMAKE_LFLAGS += -no-pie
 
 SOURCES += \
-	# Core
+    # Core
 	src/core/main.cpp \
 	src/core/states.cpp \
-	src/core/statesxmlanalyzer.cpp \
 	src/core/basic_type/logicvalue.cpp \
 	src/core/basic_type/truthtable.cpp \
-	src/core/machine/machinebuilder.cpp \
-	src/core/machine/manager/machinemanager.cpp \
-	src/core/machine/manager/machinestatus.cpp \
-	src/core/machine/logic/machine.cpp \
-	src/core/machine/logic/components/machinecomponent.cpp \
-	src/core/machine/logic/components/actiononsignal.cpp \
-	src/core/machine/logic/components/machineactuatorcomponent.cpp \
-	src/core/machine/logic/fsm/fsm.cpp \
-	src/core/machine/logic/fsm/fsmcomponent.cpp \
-	src/core/machine/logic/fsm/fsmstate.cpp \
-	src/core/machine/logic/fsm/fsmtransition.cpp \
-	src/core/machine/logic/fsm/fsmverifier.cpp \
-	src/core/machine/import_export/xmlimportexportbuilder.cpp \
-	src/core/machine/import_export/machineimageexporter.cpp \
-	src/core/machine/import_export/machinexmlparser.cpp \
-	src/core/machine/import_export/machinexmlwriter.cpp \
-	src/core/machine/import_export/fsm/fsmvhdlexport.cpp \
-	src/core/machine/import_export/fsm/fsmxmlparser.cpp \
-	src/core/machine/import_export/fsm/fsmxmlwriter.cpp \
-	src/core/signal/signal.cpp \
-	src/core/signal/input.cpp \
-	src/core/signal/output.cpp \
-	src/core/signal/constant.cpp \
-	src/core/signal/equation.cpp \
+	src/core/machine_manager/machinebuilder.cpp \
+	src/core/machine_manager/machinemanager.cpp \
+	src/core/machine_manager/machinestatus.cpp \
+	src/core/machine/machine.cpp \
+	src/core/machine/components/machinecomponent.cpp \
+	src/core/machine/components/machineactuatorcomponent.cpp \
+	src/core/machine/components/fsm/fsmcomponent.cpp \
+	src/core/machine/components/fsm/fsmstate.cpp \
+	src/core/machine/components/fsm/fsmtransition.cpp \
+	src/core/machine/fsm/fsm.cpp \
+	src/core/machine/fsm/fsmverifier.cpp \
+	src/core/machine/export/machineimageexporter.cpp \
+	src/core/machine/export/fsm/fsmvhdlexport.cpp \
+	src/core/machine/signal/actiononsignal.cpp \
+	src/core/machine/signal/signal.cpp \
+	src/core/machine/signal/input.cpp \
+	src/core/machine/signal/output.cpp \
+	src/core/machine/signal/constant.cpp \
+	src/core/machine/signal/equation.cpp \
 	src/core/simulation/clock.cpp \
 	src/core/simulation/fsmsimulator.cpp \
 	src/core/simulation/machinesimulator.cpp \
@@ -71,12 +65,16 @@ SOURCES += \
 	src/core/undo_engine/diffundocommand.cpp \
 	src/core/undo_engine/machineundocommand.cpp \
 	src/core/undo_engine/undoredomanager.cpp \
+	src/core/xml/statesxmlanalyzer.cpp \
+	src/core/xml/machine/machinexmlparser.cpp \
+	src/core/xml/machine/machinexmlwriter.cpp \
+	src/core/xml/machine/xmlimportexportbuilder.cpp \
+	src/core/xml/machine/fsm/fsmxmlparser.cpp \
+	src/core/xml/machine/fsm/fsmxmlwriter.cpp \
 	# UI
 	src/ui/statesui.cpp \
-	src/ui/machinecomponentvisualizer.cpp \
 	src/ui/graphic_machine/graphicactuator.cpp \
 	src/ui/graphic_machine/graphiccomponent.cpp \
-	src/ui/graphic_machine/viewconfiguration.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphicstate.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphictransition.cpp \
 	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.cpp \
@@ -105,6 +103,7 @@ SOURCES += \
 	src/ui/resource_bar/abouttab.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
 	src/ui/resource_bar/verifiertab.cpp \
+	src/ui/resource_bar/machinecomponentvisualizer.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
 	src/ui/resource_bar/machine_editor_tab/signallisteditor.cpp \
 	src/ui/resource_bar/component_editor/transitioneditortab.cpp \
@@ -124,6 +123,7 @@ SOURCES += \
 	src/ui/display_area/machine_editor_widget/scene/blankscene.cpp \
 	src/ui/display_area/machine_editor_widget/scene/genericscene.cpp \
 	src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp \
+	src/ui/display_area/machine_editor_widget/scene/viewconfiguration.cpp \
 	src/ui/display_area/machine_editor_widget/toolbar/drawingtoolbar.cpp \
 	src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp \
 	src/ui/display_area/machine_editor_widget/toolbar/drawingtoolbarbuilder.cpp \
@@ -143,35 +143,29 @@ SOURCES += \
 	src/third_party/diff_match_patch/diff_match_patch.cpp
 
 HEADERS += \
-	# Core
+    # Core
 	src/core/states.h \
-	src/core/statesxmlanalyzer.h \
 	src/core/basic_type/logicvalue.h \
 	src/core/basic_type/truthtable.h \
-	src/core/machine/machinebuilder.h \
-	src/core/machine/manager/machinemanager.h \
-	src/core/machine/manager/machinestatus.h \
-	src/core/machine/logic/machine.h \
-	src/core/machine/logic/components/machinecomponent.h \
-	src/core/machine/logic/components/actiononsignal.h \
-	src/core/machine/logic/components/machineactuatorcomponent.h \
-	src/core/machine/logic/fsm/fsm.h \
-	src/core/machine/logic/fsm/fsmcomponent.h \
-	src/core/machine/logic/fsm/fsmstate.h \
-	src/core/machine/logic/fsm/fsmtransition.h \
-	src/core/machine/logic/fsm/fsmverifier.h \
-	src/core/machine/import_export/xmlimportexportbuilder.h \
-	src/core/machine/import_export/machineimageexporter.h \
-	src/core/machine/import_export/machinexmlparser.h \
-	src/core/machine/import_export/machinexmlwriter.h \
-	src/core/machine/import_export/fsm/fsmvhdlexport.h \
-	src/core/machine/import_export/fsm/fsmxmlparser.h \
-	src/core/machine/import_export/fsm/fsmxmlwriter.h \
-	src/core/signal/StateS_signal.h \
-	src/core/signal/input.h \
-	src/core/signal/output.h \
-	src/core/signal/constant.h \
-	src/core/signal/equation.h \
+	src/core/machine_manager/machinebuilder.h \
+	src/core/machine_manager/machinemanager.h \
+	src/core/machine_manager/machinestatus.h \
+	src/core/machine/machine.h \
+	src/core/machine/components/machinecomponent.h \
+	src/core/machine/components/machineactuatorcomponent.h \
+	src/core/machine/components/fsm/fsmcomponent.h \
+	src/core/machine/components/fsm/fsmstate.h \
+	src/core/machine/components/fsm/fsmtransition.h \
+	src/core/machine/fsm/fsm.h \
+	src/core/machine/fsm/fsmverifier.h \
+	src/core/machine/export/machineimageexporter.h \
+	src/core/machine/export/fsm/fsmvhdlexport.h \
+	src/core/machine/signal/actiononsignal.h \
+	src/core/machine/signal/StateS_signal.h \
+	src/core/machine/signal/input.h \
+	src/core/machine/signal/output.h \
+	src/core/machine/signal/constant.h \
+	src/core/machine/signal/equation.h \
 	src/core/simulation/clock.h \
 	src/core/simulation/fsmsimulator.h \
 	src/core/simulation/machinesimulator.h \
@@ -180,12 +174,16 @@ HEADERS += \
 	src/core/undo_engine/diffundocommand.h \
 	src/core/undo_engine/machineundocommand.h \
 	src/core/undo_engine/undoredomanager.h \
+	src/core/xml/statesxmlanalyzer.h \
+	src/core/xml/machine/xmlimportexportbuilder.h \
+	src/core/xml/machine/machinexmlparser.h \
+	src/core/xml/machine/machinexmlwriter.h \
+	src/core/xml/machine/fsm/fsmxmlparser.h \
+	src/core/xml/machine/fsm/fsmxmlwriter.h \
 	# UI
 	src/ui/statesui.h \
-	src/ui/machinecomponentvisualizer.h \
 	src/ui/graphic_machine/graphicactuator.h \
 	src/ui/graphic_machine/graphiccomponent.h \
-	src/ui/graphic_machine/viewconfiguration.h \
 	src/ui/graphic_machine/fsm/fsmgraphicstate.h \
 	src/ui/graphic_machine/fsm/fsmgraphictransition.h \
 	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.h \
@@ -214,6 +212,7 @@ HEADERS += \
 	src/ui/resource_bar/abouttab.h \
 	src/ui/resource_bar/resourcebar.h \
 	src/ui/resource_bar/verifiertab.h \
+	src/ui/resource_bar/machinecomponentvisualizer.h \
 	src/ui/resource_bar/component_editor/stateeditortab.h \
 	src/ui/resource_bar/component_editor/transitioneditortab.h \
 	src/ui/resource_bar/component_editor/componenteditortab.h \
@@ -236,6 +235,7 @@ HEADERS += \
 	src/ui/display_area/machine_editor_widget/scene/blankscene.h \
 	src/ui/display_area/machine_editor_widget/scene/genericscene.h \
 	src/ui/display_area/machine_editor_widget/scene/scenewidget.h \
+	src/ui/display_area/machine_editor_widget/scene/viewconfiguration.h \
 	src/ui/display_area/machine_editor_widget/toolbar/drawingtoolbar.h \
 	src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.h \
 	src/ui/display_area/machine_editor_widget/toolbar/drawingtoolbarbuilder.h \
@@ -252,20 +252,23 @@ HEADERS += \
 	src/third_party/diff_match_patch/diff_match_patch.h
 
 INCLUDEPATH += \
-	# Core
+    # Core
 	src/core \
 	src/core/basic_type \
-	src/core/machine \
-	src/core/machine/logic \
-	src/core/machine/logic/components \
-	src/core/machine/logic/fsm \
-	src/core/machine/manager \
-	src/core/machine/import_export \
-	src/core/machine/import_export/fsm \
-	src/core/signal \
-	src/core/simulation \
 	src/core/exceptions \
+	src/core/machine \
+	src/core/machine/components \
+	src/core/machine/components/fsm \
+	src/core/machine/export \
+	src/core/machine/export/fsm \
+	src/core/machine/fsm \
+	src/core/machine/signal \
+	src/core/machine_manager \
+	src/core/simulation \
 	src/core/undo_engine \
+	src/core/xml \
+	src/core/xml/machine \
+	src/core/xml/machine/fsm \
 	# UI
 	src/ui \
 	src/ui/dialogs \
@@ -288,7 +291,7 @@ INCLUDEPATH += \
 	src/third_party/diff_match_patch
 
 OTHER_FILES += \
-	README.md \
+    README.md \
 	text/known_bugs.txt \
 	text/Readme/Linux/README \
 	text/Readme/Windows/README.txt \
@@ -303,8 +306,8 @@ OTHER_FILES += \
 	TODO
 
 RESOURCES += \
-	art/art.qrc \
+    art/art.qrc \
 	translations/translations.qrc
 
 TRANSLATIONS += \
-	translations/french.ts
+    translations/french.ts
