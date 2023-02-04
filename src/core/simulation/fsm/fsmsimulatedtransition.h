@@ -19,50 +19,43 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef FSMSIMULATEDTRANSITION_H
+#define FSMSIMULATEDTRANSITION_H
 
-// Parent
-#include <QGraphicsScene>
+// Parents
+#include "fsmgraphictransition.h"
+#include "simulatedactuatorcomponent.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
+// Qt classes
+class QAction;
 
 // StateS classes
 #include "statestypes.h"
 
 
-class GenericScene : public QGraphicsScene
+class FsmSimulatedTransition : public FsmGraphicTransition, public SimulatedActuatorComponent
 {
 	Q_OBJECT
 
 	/////
+	// Static variables
+private:
+	static const QPen inactivePen;
+	static const QPen activePen;
+
+	/////
 	// Constructors/destructors
 public:
-	explicit GenericScene();
-	~GenericScene();
+	explicit FsmSimulatedTransition(componentId_t logicComponentId);
+
+	virtual ~FsmSimulatedTransition() override;
 
 	/////
 	// Object functions
 public:
-	void setDisplaySize(const QSize& newSize);
-
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-	void updateCursorEvent(MouseCursor_t newCursor);
-
-protected:
-	void updateSceneRect();
-	void clearScene();
-
-	/////
-	// Object variables
-private:
-	QSize displaySize;
+	virtual void refreshDisplay() override;
 
 };
 
-#endif // GENERICSCENE_H
+#endif // FSMSIMULATEDTRANSITION_H
+

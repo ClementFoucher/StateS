@@ -29,8 +29,13 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+#include <QMap>
+
 // SateS classes
+#include "statestypes.h"
 class Clock;
+class SimulatedComponent;
 
 
 class MachineSimulator : public QObject
@@ -41,10 +46,13 @@ class MachineSimulator : public QObject
 	// Constructors/destructors
 public:
 	explicit MachineSimulator();
+	~MachineSimulator();
 
 	/////
 	// Object functions
 public:
+	virtual void build() = 0;
+
 	shared_ptr<Clock> getClock() const;
 
 	void reset();
@@ -54,12 +62,17 @@ public:
 
 	void enableOutputDelay(bool enable);
 
+	QList<SimulatedComponent*> getSimulatedComponents() const;
+	SimulatedComponent* getComponent(componentId_t componentId) const;
+
 signals:
 	void outputDelayChangedEvent(bool enable);
 
 	/////
 	// Object variables
 protected:
+	QMap<componentId_t, SimulatedComponent*> simulatedComponents;
+
 	shared_ptr<Clock> clock;
 
 };

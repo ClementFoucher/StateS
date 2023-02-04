@@ -47,14 +47,13 @@ using namespace std;
 // Static elements
 //
 
-const qreal FsmGraphicState::radius = 50;
-QBrush FsmGraphicState::inactiveBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
-QBrush FsmGraphicState::activeBrush = QBrush(Qt::green, Qt::SolidPattern);
-QPen FsmGraphicState::pen = QPen(Qt::SolidPattern, 3);
+const qreal  FsmGraphicState::radius       = 50;
+const QBrush FsmGraphicState::defaultBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
+const QPen   FsmGraphicState::defaultPen   = QPen(Qt::SolidPattern, 3);
 
 qreal FsmGraphicState::getRadius()
 {
-	return radius;
+	return FsmGraphicState::radius;
 }
 
 QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
@@ -64,14 +63,14 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 
 	QPainter painter(&pixmap);
 
-	painter.setPen(FsmGraphicState::pen);
-	painter.setBrush(FsmGraphicState::inactiveBrush);
-	painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2, FsmGraphicState::pen.width()/2, size-FsmGraphicState::pen.width(), size-FsmGraphicState::pen.width()));
+	painter.setPen(FsmGraphicState::defaultPen);
+	painter.setBrush(FsmGraphicState::defaultBrush);
+	painter.drawEllipse(QRectF(FsmGraphicState::defaultPen.width()/2, FsmGraphicState::defaultPen.width()/2, size-FsmGraphicState::defaultPen.width(), size-FsmGraphicState::defaultPen.width()));
 
 	if (isInitial)
 	{
-		qreal space = size/10 + FsmGraphicState::pen.width();
-		painter.drawEllipse(QRectF(FsmGraphicState::pen.width()/2 + space, FsmGraphicState::pen.width()/2 + space, size-FsmGraphicState::pen.width() - space*2, size-FsmGraphicState::pen.width() - space*2));
+		qreal space = size/10 + FsmGraphicState::defaultPen.width();
+		painter.drawEllipse(QRectF(FsmGraphicState::defaultPen.width()/2 + space, FsmGraphicState::defaultPen.width()/2 + space, size-FsmGraphicState::defaultPen.width() - space*2, size-FsmGraphicState::defaultPen.width() - space*2));
 	}
 
 	if (addArrow)
@@ -91,7 +90,8 @@ FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
     GraphicActuator(logicComponentId),
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
-	this->setPen(pen);
+	this->setPen(defaultPen);
+	this->setBrush(defaultBrush);
 
 	this->setFlag(QGraphicsItem::ItemIsMovable);
 	this->setFlag(QGraphicsItem::ItemIsSelectable);
@@ -99,28 +99,19 @@ FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
 	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 	this->setFlag(QGraphicsItem::ItemClipsToShape);
 
-	this->rebuildRepresentation();
-
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	auto logicState = fsm->getState(this->logicComponentId);
-	connect(logicState.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicState::componentUpdatedEventHandler);
-
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &FsmGraphicState::machineModeChangedEventHandler);
+	this->buildRepresentation();
 }
 
 void FsmGraphicState::refreshDisplay()
 {
-	this->rebuildRepresentation();
-}
+	// Clear
+	this->clearRepresentation();
 
-/**
- * @brief Move even is inhibited until the state
- * is actually placed on the scene. This function
- * enables it afterwhat.
- */
-void FsmGraphicState::enableMoveEvent()
-{
-	this->moveEventEnabled = true;
+	// Rebuild
+	this->buildRepresentation();
+
+	// Update action box
+	GraphicActuator::refreshDisplay();
 }
 
 void FsmGraphicState::moveState(Direction_t direction, bool smallMove)
@@ -163,7 +154,7 @@ QPainterPath FsmGraphicState::shape() const
 	}
 	else
 	{
-		stroker = new QPainterPathStroker(pen);
+		stroker = new QPainterPathStroker(defaultPen);
 		path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
 	}
 
@@ -188,12 +179,14 @@ void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	QGraphicsEllipseItem::paint(painter, &myOption, widget);
 }
 
-void FsmGraphicState::keyPressEvent(QKeyEvent *event)
+void FsmGraphicState::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Delete)
 	{
 		// This call may destroy the current object
 		emit this->deleteStateCalledEvent(this->logicComponentId);
+
+		event->accept();
 	}
 	else if (event->key() == Qt::Key_Menu)
 	{
@@ -207,6 +200,8 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
 		contextEvent->setScreenPos(posOnScreen);
 
 		this->contextMenuEvent(contextEvent);
+
+		event->accept();
 	}
 	else if ( (event->key() == Qt::Key_Right) ||
 	          (event->key() == Qt::Key_Left)  ||
@@ -238,10 +233,14 @@ void FsmGraphicState::keyPressEvent(QKeyEvent *event)
 		}
 
 		this->moveState(direction, smallMove);
+
+		event->accept();
 	}
 	else if (event->key() == Qt::Key_F2)
 	{
 		emit renameStateCalledEvent(this->logicComponentId);
+
+		event->accept();
 	}
 	else
 	{
@@ -254,32 +253,20 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto l_logicState = fsm->getState(this->logicComponentId);
-	if (l_logicState == nullptr) return;
+	auto logicState = fsm->getState(this->logicComponentId);
+	if (logicState == nullptr) return;
 
 	ContextMenu* menu = new ContextMenu();
-	menu->addTitle(tr("State") + " <i>" + l_logicState->getName() + "</i>");
+	menu->addTitle(tr("State") + " <i>" + logicState->getName() + "</i>");
 
-	auto currentMode = machineManager->getCurrentSimulationMode();
-
-	if (currentMode == SimulationMode_t::editMode )
+	if (fsm->getInitialStateId() != logicState->getId())
 	{
-		if (fsm->getInitialStateId() != l_logicState->getId())
-		{
-			menu->addAction(tr("Set initial"));
-		}
-		menu->addAction(tr("Edit"));
-		menu->addAction(tr("Draw transition from this state"));
-		menu->addAction(tr("Rename"));
-		menu->addAction(tr("Delete"));
+		menu->addAction(tr("Set initial"));
 	}
-	else if (currentMode == SimulationMode_t::simulateMode )
-	{
-		if (! l_logicState->getIsActive())
-		{
-			menu->addAction(tr("Set active"));
-		}
-	}
+	menu->addAction(tr("Edit"));
+	menu->addAction(tr("Draw transition from this state"));
+	menu->addAction(tr("Rename"));
+	menu->addAction(tr("Delete"));
 
 	if (menu->actions().count() > 1) // > 1 because title is always here
 	{
@@ -295,13 +282,13 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-	// Inform connected transitions we are moving
 	if (change == GraphicsItemChange::ItemPositionHasChanged)
 	{
-		if (this->moveEventEnabled)
+		//if (this->moveEventEnabled)
 		{
 			emit statePositionAboutToChangeEvent(this->logicComponentId);
 		}
+		this->updateActionBoxPosition();
 	}
 	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
 	{
@@ -321,20 +308,7 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 		this->updateSelectionShapeDisplay();
 	}
 
-	// Reposition action box
-	if (scene() != nullptr)
-	{
-		QGraphicsItemGroup* actionBox = this->getActionsBox();
-		if (actionBox != nullptr)
-			actionBox->setPos(mapToScene(radius + 20, 0));
-	}
-
 	return QGraphicsEllipseItem::itemChange(change, value);
-}
-
-void FsmGraphicState::componentUpdatedEventHandler()
-{
-	this->rebuildRepresentation();
 }
 
 void FsmGraphicState::treatMenu(QAction* action)
@@ -360,72 +334,75 @@ void FsmGraphicState::treatMenu(QAction* action)
 	{
 		emit this->beginDrawTransitionFromThisState(this->logicComponentId);
 	}
-	else if (action->text() == tr("Set active"))
-	{
-		auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-		if (fsm == nullptr) return;
-
-		auto l_logicState = fsm->getState(this->logicComponentId);
-		if (l_logicState == nullptr) return;
-
-		fsm->forceStateActivation(l_logicState);
-	}
-
 }
 
-void FsmGraphicState::machineModeChangedEventHandler(SimulationMode_t)
+void FsmGraphicState::clearRepresentation()
 {
-	this->rebuildRepresentation();
-}
-
-void FsmGraphicState::rebuildRepresentation()
-{
-	// Clear all child items
 	qDeleteAll(this->childItems());
-	this->selectionShape = nullptr;
 
+	this->selectionShape = nullptr;
+	this->actionBoxLine  = nullptr;
+	this->stateName      = nullptr;
+}
+
+void FsmGraphicState::buildRepresentation()
+{
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto l_logicState = fsm->getState(this->logicComponentId);
-	if (l_logicState == nullptr) return;
+	auto logicState = fsm->getState(this->logicComponentId);
+	if (logicState == nullptr) return;
 
-	if (l_logicState->getIsActive())
-		this->setBrush(activeBrush);
-	else
-		this->setBrush(inactiveBrush);
+	this->stateName = new QGraphicsTextItem(this);
+	this->stateName->setHtml("<span style=\"color:black;\">" + logicState->getName() + "</span>");
 
-	stateName = new QGraphicsTextItem(this);
-	stateName->setHtml("<span style=\"color:black;\">" + l_logicState->getName() + "</span>");
+	this->stateName->setPos(-this->stateName->boundingRect().width()/2, -this->stateName->boundingRect().height()/2);
 
-	stateName->setPos(-stateName->boundingRect().width()/2, -stateName->boundingRect().height()/2);
-
-	if (fsm->getInitialStateId() == l_logicState->getId())
+	if (fsm->getInitialStateId() == logicState->getId())
 	{
 		QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
-		insideCircle->setPen(pen);
+		insideCircle->setPen(defaultPen);
 	}
-
-	this->buildActionsBox(pen, true);
-	QGraphicsItemGroup* actionsBox = this->getActionsBox();
-	if (actionsBox != nullptr)
-	{
-		actionsBox->setPos(mapToScene(radius + 20,0)); // Positions must be expressed wrt. scene, ast this is not a child of this (scene stacking issues)
-	}
-
-	this->updateSelectionShapeDisplay();
 }
 
 void FsmGraphicState::updateSelectionShapeDisplay()
 {
-	if ( (this->isSelected()) && (this->selectionShape == nullptr) )
+	if ( (this->isSelected() == true) && (this->selectionShape == nullptr) )
 	{
 		this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
 		this->selectionShape->setPen(selectionPen);
 	}
-	else if ( (!this->isSelected()) && (this->selectionShape != nullptr) )
+	else if ( (this->isSelected() == false) && (this->selectionShape != nullptr) )
 	{
 		delete this->selectionShape;
 		this->selectionShape = nullptr;
+	}
+}
+
+void FsmGraphicState::updateActionBoxPosition()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto logicState = fsm->getState(this->logicComponentId);
+	if (logicState == nullptr) return;
+
+	if (logicState->getActions().count() != 0)
+	{
+		if  (this->actionBoxLine == nullptr)
+		{
+			this->actionBoxLine = new QGraphicsLineItem(radius, 0, radius + 20, 0, this);
+			this->actionBoxLine->setPen(defaultPen);
+		}
+
+		auto actionsBoxCenter = this->actionsBox->boundingRect().height() / 2;
+
+		// Positions is expressed in scene coordinates, as action box is not a child of this (scene stacking issues)
+		this->actionsBox->setPos(mapToScene(radius + 20, -actionsBoxCenter));
+	}
+	else
+	{
+		delete this->actionBoxLine;
+		this->actionBoxLine = nullptr;
 	}
 }

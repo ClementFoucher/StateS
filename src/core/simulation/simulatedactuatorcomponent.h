@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,53 +16,39 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef SIMULATEDACTUATORCOMPONENT_H
+#define SIMULATEDACTUATORCOMPONENT_H
 
 // Parent
-#include <QGraphicsScene>
-
-// C++ classes
-#include <memory>
-using namespace std;
+#include "simulatedcomponent.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class GenericScene : public QGraphicsScene
+class SimulatedActuatorComponent : public SimulatedComponent
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GenericScene();
-	~GenericScene();
+	explicit SimulatedActuatorComponent(componentId_t componentId);
+	virtual ~SimulatedActuatorComponent();
 
 	/////
 	// Object functions
 public:
-	void setDisplaySize(const QSize& newSize);
-
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-	void updateCursorEvent(MouseCursor_t newCursor);
-
-protected:
-	void updateSceneRect();
-	void clearScene();
+	void activateActions();
+	void deactivateActions();
 
 	/////
 	// Object variables
 private:
-	QSize displaySize;
+	componentId_t componentId;
 
 };
 
-#endif // GENERICSCENE_H
+#endif // SIMULATEDACTUATORCOMPONENT_H

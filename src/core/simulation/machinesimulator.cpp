@@ -24,11 +24,21 @@
 
 // StateS classes
 #include "clock.h"
+#include "simulatedcomponent.h"
 
 
 MachineSimulator::MachineSimulator()
 {
 	this->clock = shared_ptr<Clock>(new Clock());
+}
+
+MachineSimulator::~MachineSimulator()
+{
+	auto components = this->simulatedComponents.values();
+	for (auto component : components)
+	{
+		delete component;
+	}
 }
 
 shared_ptr<Clock> MachineSimulator::getClock() const
@@ -59,4 +69,21 @@ void MachineSimulator::suspend()
 void MachineSimulator::enableOutputDelay(bool enable)
 {
 	emit outputDelayChangedEvent(enable);
+}
+
+QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const
+{
+	return this->simulatedComponents.values();
+}
+
+SimulatedComponent* MachineSimulator::getComponent(componentId_t componentId) const
+{
+	if (this->simulatedComponents.keys().contains(componentId))
+	{
+		return this->simulatedComponents[componentId];
+	}
+	else
+	{
+		return nullptr;
+	}
 }

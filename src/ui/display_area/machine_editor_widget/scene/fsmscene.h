@@ -115,10 +115,11 @@ private:
 	// Scene clear/build
 	void machineUpdatedEventHandler();
 	void displayGraphicMachine();
+	void displaySimulatedMachine();
 
 	// Add elements
-	void addTransition(FsmGraphicTransition* newTransition);
-	void addState(FsmGraphicState* newState);
+	void addTransition(FsmGraphicTransition* newTransition, bool connectSignals);
+	void addState(FsmGraphicState* newState, bool connectSignals);
 
 	// Transition adding/editings
 	void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos = QPointF());

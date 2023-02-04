@@ -58,8 +58,12 @@ SOURCES += \
 	src/core/machine/signal/constant.cpp \
 	src/core/machine/signal/equation.cpp \
 	src/core/simulation/clock.cpp \
-	src/core/simulation/fsmsimulator.cpp \
 	src/core/simulation/machinesimulator.cpp \
+	src/core/simulation/simulatedcomponent.cpp \
+	src/core/simulation/simulatedactuatorcomponent.cpp \
+	src/core/simulation/fsm/fsmsimulator.cpp \
+	src/core/simulation/fsm/fsmsimulatedstate.cpp \
+	src/core/simulation/fsm/fsmsimulatedtransition.cpp \
 	src/core/exceptions/statesexception.cpp \
 	src/core/undo_engine/fsmundocommand.cpp \
 	src/core/undo_engine/diffundocommand.cpp \
@@ -172,8 +176,12 @@ HEADERS += \
 	src/core/machine/signal/constant.h \
 	src/core/machine/signal/equation.h \
 	src/core/simulation/clock.h \
-	src/core/simulation/fsmsimulator.h \
 	src/core/simulation/machinesimulator.h \
+	src/core/simulation/simulatedcomponent.h \
+	src/core/simulation/simulatedactuatorcomponent.h \
+	src/core/simulation/fsm/fsmsimulator.h \
+	src/core/simulation/fsm/fsmsimulatedstate.h \
+	src/core/simulation/fsm/fsmsimulatedtransition.h \
 	src/core/exceptions/statesexception.h \
 	src/core/undo_engine/fsmundocommand.h \
 	src/core/undo_engine/diffundocommand.h \
@@ -273,6 +281,7 @@ INCLUDEPATH += \
 	src/core/machine/signal \
 	src/core/machine_manager \
 	src/core/simulation \
+	src/core/simulation/fsm \
 	src/core/undo_engine \
 	src/core/xml \
 	src/core/xml/machine \

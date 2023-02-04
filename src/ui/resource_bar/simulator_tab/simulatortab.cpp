@@ -34,7 +34,6 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "fsmstate.h"
 #include "fsm.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
@@ -171,12 +170,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
 			this->simulator.reset();
 			machineManager->setSimulationMode(SimulationMode_t::editMode);
-
-			foreach(auto stateId, fsm->getAllStatesIds())
-			{
-				auto state = fsm->getState(stateId);
-				state->setActive(false);
-			}
 
 			this->buttonTriggerSimulation->setText(tr("Start simulation"));
 		}

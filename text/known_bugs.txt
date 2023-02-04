@@ -8,8 +8,7 @@
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
 - Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
-- Export to PDF has incorrect margins,
-- Modifying condition position on various transitions in a row constitutes a single edit, thus trigering undo will undo the changes on all edited transitions at once,
+- Export to PDF has incorrect margins.
 
 
 ** VHDL export issues: **

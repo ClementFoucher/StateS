@@ -23,10 +23,8 @@
 #include "fsm.h"
 
 // StateS classes
-#include "machinemanager.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "fsmsimulator.h"
 
 
 Fsm::Fsm() :
@@ -230,15 +228,6 @@ void Fsm::setInitialState(componentId_t stateId)
 componentId_t Fsm::getInitialStateId() const
 {
 	return this->initialStateId;
-}
-
-void Fsm::forceStateActivation(shared_ptr<FsmState> stateToActivate)
-{
-	shared_ptr<FsmSimulator> simulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
-	if (simulator != nullptr)
-	{
-		simulator->forceStateActivation(stateToActivate);
-	}
 }
 
 QString Fsm::getUniqueStateName(QString nameProposal)

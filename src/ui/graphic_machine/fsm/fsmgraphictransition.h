@@ -57,15 +57,14 @@ public:
 
 	/////
 	// Static variables
+protected:
+	static const QPen defaultPen;
+
 private:
-	// These static items will depend on configuation later
-	static qreal arrowEndSize;
-	static qreal middleBarLength;
-	static QPen standardPen;
-	static QPen editPen;
-	static QPen highlightPen;
-	static QPen inactivePen;
-	static QPen activePen;
+	static const qreal arrowEndSize;
+	static const qreal middleBarLength;
+	static const QPen editPen;
+	static const QPen highlightPen;
 
 	/////
 	// Constructors/destructors
@@ -101,36 +100,43 @@ public:
 	void setMousePosition(const QPointF& mousePos);
 
 signals:
-	void editTransitionCalledEvent(componentId_t transitionId);
-	void dynamicSourceCalledEvent(componentId_t transitionId);
-	void dynamicTargetCalledEvent(componentId_t transitionId);
+	void editTransitionCalledEvent  (componentId_t transitionId);
+	void dynamicSourceCalledEvent   (componentId_t transitionId);
+	void dynamicTargetCalledEvent   (componentId_t transitionId);
 	void deleteTransitionCalledEvent(componentId_t transitionId);
 
 protected:
-	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-	virtual void keyPressEvent(QKeyEvent* event) override;
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
+	virtual void keyPressEvent(QKeyEvent* event)                                  override;
+	virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev)                    override;
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private slots:
 	void transitionNeedsRefreshEventHandler();
-	void updateText();
+	void updateConditionText();
 	void treatMenu(QAction* action);
-	void machineModeChangedEventHandler(SimulationMode_t);
 
 private:
-	void updateDisplay();
+	void clearRepresentation();
+	void buildRepresentation();
 	void initializeDefaults();
-	void rebuildArrowEnd();
+	void buildArrowEnd();
+	void repositionArrowEnd(qreal angle, const QPointF& position);
 	void rebuildBoundingShape();
 	void updateSelectionShapeDisplay();
 
-	QPointF drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
-	QPointF drawAutoTransition(QPointF currentSourcePoint);
-	QPointF drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
+	virtual void updateActionBoxPosition() override;
+
+	void drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
+	void drawAutoTransition(QPointF currentSourcePoint);
+	void drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
 
 	/////
 	// Object variables
+protected:
+	const QPen* currentPen          = nullptr;
+	const QPen* currentConditionPen = nullptr;
+
 private:
 	// A FSM graphic transition must always have at least a source (may not have a target when drawing)
 	componentId_t sourceStateId = 0;
@@ -145,21 +151,19 @@ private:
 
 	// Base elements of the arrow
 	QGraphicsItem*     arrowBody      = nullptr;
-	QGraphicsItem*     arrowEnd       = nullptr;
+	QGraphicsPathItem* arrowEnd       = nullptr;
 	QGraphicsLineItem* conditionLine  = nullptr;
 	QGraphicsTextItem* conditionText  = nullptr;
 	QGraphicsPathItem* selectionShape = nullptr;
+
 	qreal sceneAngle = 0;
 
-	QPen* currentPen = nullptr;
-
-	// To avoid redrawing when state moves: useless
-	bool autoTransitionNeedsRedraw = true;
 	QPointF autoTransitionConditionPosition;
 
 	QPainterPath boundingShape;
 
 	qreal conditionLineSliderPos;
+	QPointF conditionLinePos;
 
 };
 

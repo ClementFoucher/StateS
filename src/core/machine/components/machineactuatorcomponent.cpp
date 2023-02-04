@@ -133,22 +133,6 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	}
 }
 
-void MachineActuatorComponent::activateActions()
-{
-	foreach (shared_ptr<ActionOnSignal> action, this->actionList)
-	{
-		action->beginAction();
-	}
-}
-
-void MachineActuatorComponent::deactivateActions()
-{
-	foreach (shared_ptr<ActionOnSignal> action, this->actionList)
-	{
-		action->endAction();
-	}
-}
-
 void MachineActuatorComponent::cleanActionList()
 {
 	QList<shared_ptr<ActionOnSignal>> newActionList;

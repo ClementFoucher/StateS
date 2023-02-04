@@ -64,9 +64,6 @@ public:
 
 	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
-	void activateActions();
-	void deactivateActions();
-
 	virtual uint getAllowedActionTypes() const = 0;
 
 signals:

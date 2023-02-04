@@ -45,11 +45,10 @@ public:
 
 	/////
 	// Static variables
-private:
-	const static qreal radius;
-	static QBrush inactiveBrush;
-	static QBrush activeBrush;
-	static QPen pen;
+protected:
+	static const qreal  radius;
+	static const QBrush defaultBrush;
+	static const QPen   defaultPen;
 
 	/////
 	// Constructors/destructors
@@ -60,14 +59,13 @@ public:
 	// Object functions
 public:
 	virtual void refreshDisplay() override;
-	void enableMoveEvent();
 
 	void moveState(Direction_t direction, bool smallMove);
 
 	virtual QPainterPath shape()  const override;
 	virtual QRectF boundingRect() const override;
 
-	virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+	virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
 signals:
 	void statePositionAboutToChangeEvent(componentId_t stateId);
@@ -79,26 +77,26 @@ signals:
 	void beginDrawTransitionFromThisState(componentId_t stateId);
 
 protected:
-	virtual void keyPressEvent(QKeyEvent* event) override;
-	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+	virtual void keyPressEvent(QKeyEvent* event)                                  override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private slots:
-	void componentUpdatedEventHandler();
 	void treatMenu(QAction* action);
-	void machineModeChangedEventHandler(SimulationMode_t);
 
 private:
-	void rebuildRepresentation();
+	void clearRepresentation();
+	void buildRepresentation();
 	void updateSelectionShapeDisplay();
+
+	virtual void updateActionBoxPosition() override;
 
 	/////
 	// Object variables
 private:
 	QGraphicsTextItem*    stateName      = nullptr;
 	QGraphicsEllipseItem* selectionShape = nullptr;
-
-	bool moveEventEnabled = false;
+	QGraphicsLineItem*    actionBoxLine  = nullptr;
 
 };
 

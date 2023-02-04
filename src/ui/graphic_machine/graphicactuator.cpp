@@ -28,6 +28,7 @@ using namespace std;
 
 // Qt classes
 #include <QBrush>
+#include <QPen>
 #include <QGraphicsItem>
 
 // StateS classes
@@ -38,15 +39,28 @@ using namespace std;
 #include "machine.h"
 
 
+//
+// Static elements
+//
+
+const QPen GraphicActuator::defaultPen = QPen(Qt::SolidPattern, 3);
+
+
+//
+// Class object definition
+//
+
 GraphicActuator::GraphicActuator(componentId_t logicComponentId) :
     GraphicComponent(logicComponentId)
 {
 	this->actionsBox = new QGraphicsItemGroup();
+
+	this->buildActionsBox();
 }
 
 GraphicActuator::~GraphicActuator()
 {
-	delete actionsBox;
+	delete this->actionsBox;
 }
 
 QGraphicsItemGroup* GraphicActuator::getActionsBox() const
@@ -54,10 +68,16 @@ QGraphicsItemGroup* GraphicActuator::getActionsBox() const
 	return this->actionsBox;
 }
 
-void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
+void GraphicActuator::refreshDisplay()
+{
+	this->buildActionsBox();
+	this->updateActionBoxPosition();
+}
+
+void GraphicActuator::buildActionsBox()
 {
 	// Clean
-	qDeleteAll(actionsBox->childItems());
+	qDeleteAll(this->actionsBox->childItems());
 
 	// Check
 	auto machine = machineManager->getMachine();
@@ -78,7 +98,7 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 		shared_ptr<ActionOnSignal> currentAction = actions[i];
 		shared_ptr<Signal> currentSignal = currentAction->getSignalActedOn();
 
-		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), actionsBox);
+		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), this->actionsBox);
 
 		QString currentActionText;
 
@@ -141,35 +161,24 @@ void GraphicActuator::buildActionsBox(const QPen& pen, bool center)
 		if (maxTextWidth < actionText->boundingRect().width())
 			maxTextWidth = actionText->boundingRect().width();
 
-		if (center)
-			actionText->setPos(0, -( ( (textHeight*actions.count()) / 2) ) + i*textHeight);
-		else
-			actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
+		actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
 
 		actionText->setZValue(1);
+
+		this->actionsBox->addToGroup(actionText);
 	}
 
 	QPainterPath actionBorderPath;
-	if (center)
-	{
-		actionBorderPath.lineTo(0,                 ((qreal)actions.count()/2)*textHeight);
-		actionBorderPath.lineTo(0 + maxTextWidth,  ((qreal)actions.count()/2)*textHeight);
-		actionBorderPath.lineTo(0 + maxTextWidth, -((qreal)actions.count()/2)*textHeight);
-		actionBorderPath.lineTo(0,                -((qreal)actions.count()/2)*textHeight);
-		actionBorderPath.lineTo(0,                0);
-		actionBorderPath.lineTo(-20 ,             0);
-	}
-	else
-	{
-		actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
-		actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
-		actionBorderPath.lineTo(maxTextWidth, 0);
-		actionBorderPath.lineTo(0,            0);
-	}
+	actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
+	actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
+	actionBorderPath.lineTo(maxTextWidth, 0);
+	actionBorderPath.lineTo(0,            0);
 
-	QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, actionsBox);
-	stateActionsOutline->setPen(pen);
+	QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, this->actionsBox);
+	stateActionsOutline->setPen(defaultPen);
 	stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
 	stateActionsOutline->setZValue(0);
 	stateActionsOutline->setPos(0, 0);
+
+	this->actionsBox->addToGroup(stateActionsOutline);
 }

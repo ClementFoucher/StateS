@@ -186,6 +186,8 @@ void MachineManager::setSimulationMode(SimulationMode_t newMode)
 		{
 			changeOk = false;
 		}
+
+		this->machineSimulator->build();
 	}
 
 	if (changeOk == true)

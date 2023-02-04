@@ -42,6 +42,9 @@
 #include "graphicfsm.h"
 #include "fsmundocommand.h"
 #include "machinebuilder.h"
+#include "machinesimulator.h"
+#include "fsmsimulatedstate.h"
+#include "fsmsimulatedtransition.h"
 
 
 FsmScene::FsmScene() :
@@ -85,7 +88,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 				machineManager->notifyMachineEdited();
 
 				// Add graphic state to scene
-				this->addState(graphicState);
+				this->addState(graphicState, true);
 
 				// Only one initial state in a FSM, switch to regular state tool
 				machineBuilder->setTool(MachineBuilderTool_t::state);
@@ -103,7 +106,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 				machineManager->notifyMachineEdited();
 
 				// Add graphic state to scene
-				this->addState(graphicState);
+				this->addState(graphicState, true);
 
 				// Transmitting event so that new state is selected
 				// and can be moved within the same click
@@ -135,7 +138,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 						machineManager->notifyMachineEdited();
 
 						// Add graphic transition to scene
-						this->addTransition(graphicTransition);
+						this->addTransition(graphicTransition, true);
 
 						if (this->sceneMode == SceneMode_t::addingTransition)
 						{
@@ -200,7 +203,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 							}
 
 							graphicTransition = graphicFsm->addTransition(logicTransition->getId(), sliderPosition);
-							this->addTransition(graphicTransition);
+							this->addTransition(graphicTransition, true);
 
 							machineManager->notifyMachineEdited();
 						}
@@ -507,16 +510,22 @@ void FsmScene::simulationModeChangeEventHandler(SimulationMode_t newMode)
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
 	{
+		machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+
 		if (newMode == SimulationMode_t::editMode)
 		{
 			this->handleSelection();
 			this->updateSceneMode(SceneMode_t::idle);
-			machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+
+			this->clearScene();
+			this->displayGraphicMachine();
 		}
 		else if (newMode == SimulationMode_t::simulateMode)
 		{
 			this->updateSceneMode(SceneMode_t::simulating);
-			machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+
+			this->clearScene();
+			this->displaySimulatedMachine();
 		}
 	}
 }
@@ -653,7 +662,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transition
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
 	this->dummyTransition = new FsmGraphicTransition(0, transition->getTargetStateId(), sceneMousePos);
 	this->transitionUnderEditId = transition->getLogicComponentId();
-	this->addTransition(this->dummyTransition);
+	this->addTransition(this->dummyTransition, false);
 
 	clearSelection();
 	transition->setSelected(true);
@@ -678,7 +687,7 @@ void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transition
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
 	this->dummyTransition = new FsmGraphicTransition(transition->getSourceStateId(), 0, sceneMousePos);
 	this->transitionUnderEditId = transition->getLogicComponentId();
-	this->addTransition(this->dummyTransition);
+	this->addTransition(this->dummyTransition, false);
 
 	clearSelection();
 	transition->setSelected(true);
@@ -757,7 +766,7 @@ void FsmScene::treatMenu(QAction* action)
 			FsmGraphicState* graphicState = graphicFsm->addState(logicStateId, this->menuMousePos);
 			machineManager->notifyMachineEdited();
 
-			this->addState(graphicState);
+			this->addState(graphicState, true);
 			this->updateSceneRect(); // In case state was added at the edge of the scene
 		}
 		else if (action->text() == tr("Add initial state"))
@@ -768,7 +777,7 @@ void FsmScene::treatMenu(QAction* action)
 			FsmGraphicState* graphicState = graphicFsm->addState(logicStateId, this->menuMousePos);
 			machineManager->notifyMachineEdited();
 
-			this->addState(graphicState);
+			this->addState(graphicState, true);
 			this->updateSceneRect(); // In case state was added at the edge of the scene
 		}
 	}
@@ -833,23 +842,40 @@ void FsmScene::displayGraphicMachine()
 	QList<FsmGraphicState*> states = graphicFsm->getStates();
 	for (FsmGraphicState* graphicState : states)
 	{
-		this->addState(graphicState);
+		this->addState(graphicState, true);
 	}
 
 	QList<FsmGraphicTransition*> transitions = graphicFsm->getTransitions();
 	for (FsmGraphicTransition* graphicTransition : transitions)
 	{
-		this->addTransition(graphicTransition);
+		this->addTransition(graphicTransition, true);
 	}
 }
 
-void FsmScene::addTransition(FsmGraphicTransition* newTransition)
+void FsmScene::displaySimulatedMachine()
 {
-	connect(newTransition, &FsmGraphicTransition::dynamicSourceCalledEvent,    this, &FsmScene::transitionCallsDynamicSourceEventHandler);
-	connect(newTransition, &FsmGraphicTransition::dynamicTargetCalledEvent,    this, &FsmScene::transitionCallsDynamicTargetEventHandler);
-	connect(newTransition, &FsmGraphicTransition::editTransitionCalledEvent,   this, &FsmScene::transitionCallsEditEventHandler);
-	connect(newTransition, &FsmGraphicTransition::deleteTransitionCalledEvent, this, &FsmScene::transitionCallsDeleteEventHandler);
+	auto simulatedMachine = machineManager->getMachineSimulator();
+	if (simulatedMachine == nullptr) return;
 
+	auto simulatedComponents = simulatedMachine->getSimulatedComponents();
+	for (auto simulatedComponent : simulatedComponents)
+	{
+		auto simulatedState = dynamic_cast<FsmSimulatedState*>(simulatedComponent);
+		if (simulatedState != nullptr)
+		{
+			this->addState(simulatedState, false);
+		}
+
+		auto simulatedTransition = dynamic_cast<FsmSimulatedTransition*>(simulatedComponent);
+		if (simulatedTransition != nullptr)
+		{
+			this->addTransition(simulatedTransition, false);
+		}
+	}
+}
+
+void FsmScene::addTransition(FsmGraphicTransition* newTransition, bool connectSignals)
+{
 	this->addItem(newTransition);
 	newTransition->setZValue(2);
 
@@ -861,14 +887,23 @@ void FsmScene::addTransition(FsmGraphicTransition* newTransition)
 	}
 
 	QGraphicsItemGroup* actionsBox = newTransition->getActionsBox();
-	if (actionsBox != nullptr)
+	this->addItem(actionsBox);
+	actionsBox->setZValue(3);
+
+	if (connectSignals ==  true)
 	{
-		this->addItem(actionsBox);
-		actionsBox->setZValue(3);
+		connect(newTransition, &FsmGraphicTransition::dynamicSourceCalledEvent,    this, &FsmScene::transitionCallsDynamicSourceEventHandler);
+		connect(newTransition, &FsmGraphicTransition::dynamicTargetCalledEvent,    this, &FsmScene::transitionCallsDynamicTargetEventHandler);
+		connect(newTransition, &FsmGraphicTransition::editTransitionCalledEvent,   this, &FsmScene::transitionCallsEditEventHandler);
+		connect(newTransition, &FsmGraphicTransition::deleteTransitionCalledEvent, this, &FsmScene::transitionCallsDeleteEventHandler);
 	}
+
+	// For some reason, when removing an item from the scene then
+	// adding it back, its child items will not appear... Refresh.
+	newTransition->refreshDisplay();
 }
 
-void FsmScene::addState(FsmGraphicState* newState)
+void FsmScene::addState(FsmGraphicState* newState, bool connectSignals)
 {
 	this->addItem(newState);
 	newState->setZValue(1);
@@ -877,14 +912,19 @@ void FsmScene::addState(FsmGraphicState* newState)
 	this->addItem(actionsBox);
 	actionsBox->setZValue(3);
 
-	connect(newState, &FsmGraphicState::editStateCalledEvent,             this, &FsmScene::stateCallsEditEventHandler);
-	connect(newState, &FsmGraphicState::renameStateCalledEvent,           this, &FsmScene::stateCallsRenameEventHandler);
-	connect(newState, &FsmGraphicState::deleteStateCalledEvent,           this, &FsmScene::stateCallsDeleteEventHandler);
-	connect(newState, &FsmGraphicState::setInitialStateCalledEvent,       this, &FsmScene::stateCallsSetInitialStateEventHandler);
-	connect(newState, &FsmGraphicState::beginDrawTransitionFromThisState, this, &FsmScene::stateCallsBeginTransitionEventHandler);
-	connect(newState, &FsmGraphicState::statePositionAboutToChangeEvent,  this, &FsmScene::statePositionAboutToChangeEventHandler);
+	if (connectSignals ==  true)
+	{
+		connect(newState, &FsmGraphicState::editStateCalledEvent,             this, &FsmScene::stateCallsEditEventHandler);
+		connect(newState, &FsmGraphicState::renameStateCalledEvent,           this, &FsmScene::stateCallsRenameEventHandler);
+		connect(newState, &FsmGraphicState::deleteStateCalledEvent,           this, &FsmScene::stateCallsDeleteEventHandler);
+		connect(newState, &FsmGraphicState::setInitialStateCalledEvent,       this, &FsmScene::stateCallsSetInitialStateEventHandler);
+		connect(newState, &FsmGraphicState::beginDrawTransitionFromThisState, this, &FsmScene::stateCallsBeginTransitionEventHandler);
+		connect(newState, &FsmGraphicState::statePositionAboutToChangeEvent,  this, &FsmScene::statePositionAboutToChangeEventHandler);
+	}
 
-	newState->enableMoveEvent();
+	// For some reason, when removing an item from the scene then
+	// adding it back, its child items will not appear... Refresh.
+	newState->refreshDisplay();
 }
 
 void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos)
@@ -904,7 +944,7 @@ void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& curre
 			this->dummyTransition = new FsmGraphicTransition(source->getLogicComponentId(), 0, sceneMousePos);
 		}
 
-		this->addTransition(this->dummyTransition);
+		this->addTransition(this->dummyTransition, false);
 	}
 }
 

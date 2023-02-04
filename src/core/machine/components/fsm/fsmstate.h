@@ -58,10 +58,6 @@ public:
 
 	virtual uint getAllowedActionTypes() const override;
 
-	// Simuation status
-	void setActive(bool value);
-	bool getIsActive() const;
-
 signals:
 	void stateRenamedEvent();
 
@@ -72,8 +68,6 @@ private:
 
 	QList<componentId_t> inputTransitionsIds;
 	QList<componentId_t> outputTransitionsIds;
-
-	bool isActive = false;
 
 };
 

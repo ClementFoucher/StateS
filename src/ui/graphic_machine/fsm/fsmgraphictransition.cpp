@@ -44,17 +44,18 @@ using namespace std;
 #include "graphicfsm.h"
 #include "fsm.h"
 #include "fsmgraphicstate.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
 
-qreal FsmGraphicTransition::arrowEndSize = 10;
-qreal FsmGraphicTransition::middleBarLength = 20;
-QPen FsmGraphicTransition::standardPen = QPen(Qt::SolidPattern, 3);
-QPen FsmGraphicTransition::editPen = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
-QPen FsmGraphicTransition::highlightPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
-QPen FsmGraphicTransition::activePen = QPen(QBrush(Qt::darkGreen, Qt::SolidPattern), 3);
-QPen FsmGraphicTransition::inactivePen = QPen(QBrush(Qt::red, Qt::SolidPattern), 3);
+//
+// Static elements
+//
+
+const qreal FsmGraphicTransition::arrowEndSize = 10;
+const qreal FsmGraphicTransition::middleBarLength = 20;
+const QPen FsmGraphicTransition::defaultPen = QPen(Qt::SolidPattern, 3);
+const QPen FsmGraphicTransition::editPen = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
+const QPen FsmGraphicTransition::highlightPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
+
 
 QPixmap FsmGraphicTransition::getPixmap(uint size)
 {
@@ -63,7 +64,7 @@ QPixmap FsmGraphicTransition::getPixmap(uint size)
 
 	QPainter painter(&pixmap);
 
-	painter.setPen(FsmGraphicTransition::standardPen);
+	painter.setPen(FsmGraphicTransition::defaultPen);
 	painter.drawLine(0, 0, size, size);
 	painter.drawLine(0, 0, size/3, 0);
 	painter.drawLine(0, 0, 0, size/3);
@@ -71,18 +72,25 @@ QPixmap FsmGraphicTransition::getPixmap(uint size)
 	return pixmap;
 }
 
+//
+// Class object definition
+//
+
 FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
     GraphicActuator(logicComponentId)
 {
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto logicTransition = fsm->getTransition(this->logicComponentId);
+	if (logicTransition == nullptr) return;
+
 	this->initializeDefaults();
+	this->currentPen = &defaultPen;
 
 	this->conditionLineSliderPos = 0.5;
 	this->conditionText = new QGraphicsTextItem();
 	this->currentMode = Mode_t::standardMode;
-
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	auto logicTransition = fsm->getTransition(this->logicComponentId);
-	connect(logicTransition.get(), &MachineComponent::componentSimulatedStateChangedEvent, this, &FsmGraphicTransition::updateText);
 
 	this->sourceStateId = logicTransition->getSourceStateId();
 	this->targetStateId = logicTransition->getTargetStateId();
@@ -93,44 +101,46 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 	connect(sourceState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
 	connect(targetState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
 
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &FsmGraphicTransition::machineModeChangedEventHandler);
-
-	this->rebuildArrowEnd();
-	this->updateText();
-	this->updateDisplay();
+	this->buildArrowEnd();
+	this->updateConditionText();
+	this->buildRepresentation();
+	// Use this syntax to supress warning for calling a virtual function in constructor,
+	// as this function is not overriden in sub-classes.
+	// Marking it as "final" should do the same, but it didn't work...
+	FsmGraphicTransition::updateActionBoxPosition();
 }
 
 FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
     GraphicActuator(0)
 {
-	this->initializeDefaults();
-
-	if (targetStateId == 0)
-	{
-		this->sourceStateId = sourceStateId;
-
-		this->currentMode = Mode_t::dynamicTargetMode;
-		this->currentPen = &editPen;
-		this->rebuildArrowEnd();
-
-		this->setMousePosition(dynamicMousePosition);
-	}
-	else if (sourceStateId == 0)
-	{
-		this->targetStateId = targetStateId;
-
-		this->currentMode = Mode_t::dynamicSourceMode;
-		this->currentPen = &editPen;
-		this->rebuildArrowEnd();
-
-		this->setMousePosition(dynamicMousePosition);
-	}
-	else
+	if ( ( (sourceStateId != 0) && (targetStateId != 0) ) ||
+	     ( (sourceStateId == 0) && (targetStateId == 0) )
+	   )
 	{
 		this->currentMode = Mode_t::errorMode;
+		return;
 	}
 
-	this->updateDisplay();
+	this->initializeDefaults();
+	this->currentPen = &editPen;
+
+	if (sourceStateId != 0)
+	{
+		this->sourceStateId = sourceStateId;
+		this->currentMode = Mode_t::dynamicTargetMode;
+	}
+	else if (targetStateId != 0)
+	{
+		this->targetStateId = targetStateId;
+		this->currentMode = Mode_t::dynamicSourceMode;
+	}
+
+	this->buildArrowEnd();
+
+	this->dynamicStateId = 0;
+	this->mousePosition = dynamicMousePosition;
+
+	this->buildRepresentation();
 }
 
 FsmGraphicTransition::~FsmGraphicTransition()
@@ -140,9 +150,15 @@ FsmGraphicTransition::~FsmGraphicTransition()
 
 void FsmGraphicTransition::refreshDisplay()
 {
-	this->autoTransitionNeedsRedraw = true;
-	this->updateText();
-	this->updateDisplay();
+	// Clear
+	this->clearRepresentation();
+
+	// Rebuild
+	this->updateConditionText();
+	this->buildRepresentation();
+
+	// Update action box
+	GraphicActuator::refreshDisplay();
 }
 
 componentId_t FsmGraphicTransition::getSourceStateId() const
@@ -160,8 +176,7 @@ void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
 	if ( (position >= 0) && (position <= 1) )
 	{
 		this->conditionLineSliderPos = position;
-		this->autoTransitionNeedsRedraw = true;
-		this->updateDisplay();
+		this->refreshDisplay();
 	}
 }
 
@@ -190,13 +205,13 @@ void FsmGraphicTransition::setUnderEdit(bool edit)
 	if (edit == true)
 	{
 		this->currentPen = &highlightPen;
-		this->rebuildArrowEnd();
+		this->arrowEnd->setPen(highlightPen);
 		this->refreshDisplay();
 	}
 	else
 	{
-		this->currentPen = &standardPen;
-		this->rebuildArrowEnd();
+		this->currentPen = &defaultPen;
+		this->arrowEnd->setPen(defaultPen);
 		this->refreshDisplay();
 	}
 }
@@ -207,8 +222,7 @@ void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
 
 	this->dynamicStateId = newDynamicStateId;
 
-	this->autoTransitionNeedsRedraw = true;
-	this->updateDisplay();
+	this->refreshDisplay();
 }
 
 void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
@@ -216,7 +230,7 @@ void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
 	this->dynamicStateId = 0;
 	this->mousePosition = mousePos;
 
-	this->updateDisplay();
+	this->refreshDisplay();
 }
 
 void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
@@ -309,92 +323,47 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
 
 void FsmGraphicTransition::transitionNeedsRefreshEventHandler()
 {
-	this->updateDisplay();
+	this->refreshDisplay();
 }
 
-void FsmGraphicTransition::updateText()
+void FsmGraphicTransition::updateConditionText()
 {
-	//
-	// Condition
+	// Ignore this call for dummy transactions
+	if (this->currentMode != Mode_t::standardMode) return;
 
-	// Should also make background semi-transparent... (we could avoid color?)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto l_logicTransition = fsm->getTransition(this->logicComponentId);
+	auto logicTransition = fsm->getTransition(this->logicComponentId);
 
-	if (l_logicTransition != nullptr)
+	if (logicTransition != nullptr)
 	{
-		auto currentMode = machineManager->getCurrentSimulationMode();
-
-		if ( (scene() != nullptr) && (currentMode == SimulationMode_t::simulateMode) )
+		if (logicTransition->getCondition() == nullptr)
 		{
-			if (l_logicTransition->getCondition() == nullptr)
-				conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
-			else
-			{
-				shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
-
-				if (equationCondition != nullptr)
-					this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText(true, true) + "</div>");
-				else
-					this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + l_logicTransition->getCondition()->getColoredText(true) + "</div>");
-			}
-
-			if (conditionLine != nullptr)
-			{
-				shared_ptr<Signal> condition = l_logicTransition->getCondition();
-				if (condition != nullptr)
-				{
-					try
-					{
-						if (condition->isTrue())
-							this->conditionLine->setPen(activePen);
-						else
-							this->conditionLine->setPen(inactivePen);
-					}
-					catch (const StatesException& e)
-					{
-						if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::signal_is_not_bool) )
-						{
-							// Condition is incorrect, considered false
-							this->conditionLine->setPen(inactivePen);
-						}
-						else
-							throw;
-					}
-				}
-				else
-				{
-					// Missing condition is implicitly 1
-					this->conditionLine->setPen(activePen);
-				}
-			}
+			this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
 		}
 		else
 		{
-			if (l_logicTransition->getCondition() == nullptr)
-				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
+			shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(logicTransition->getCondition());
+
+			if (equationCondition != nullptr)
+			{
+				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText(false, true) + "</div>");
+			}
 			else
 			{
-				shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(l_logicTransition->getCondition());
-
-				if (equationCondition != nullptr)
-					this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText(false, true) + "</div>");
-				else
-					this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + l_logicTransition->getCondition()->getText() + "</div>");
+				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + logicTransition->getCondition()->getText() + "</div>");
 			}
-			if (this->conditionLine != nullptr)
-				this->conditionLine->setPen(standardPen);
+		}
+		if (this->conditionLine != nullptr)
+		{
+			this->conditionLine->setPen(defaultPen);
 		}
 	}
 	else
+	{
 		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">1</div>");
-
-	//
-	// Actions
-
-	this->buildActionsBox(*this->currentPen, false);
+	}
 }
 
 void FsmGraphicTransition::treatMenu(QAction* action)
@@ -417,12 +386,16 @@ void FsmGraphicTransition::treatMenu(QAction* action)
 	}
 }
 
-void FsmGraphicTransition::machineModeChangedEventHandler(SimulationMode_t)
+void FsmGraphicTransition::clearRepresentation()
 {
-	this->updateText();
+	delete this->conditionLine;
+	delete this->arrowBody;
+
+	this->conditionLine = nullptr;
+	this->arrowBody     = nullptr;
 }
 
-void FsmGraphicTransition::updateDisplay()
+void FsmGraphicTransition::buildRepresentation()
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -499,25 +472,20 @@ void FsmGraphicTransition::updateDisplay()
 		auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 		if (graphicFsm == nullptr) return;
 
-		QPointF conditionLinePos;
 		if ( (graphicFsm->getTransitionRank(this->logicComponentId) == 0) && (currentSourceStateId != currentTargetStateId) )
 		{
-			conditionLinePos = this->drawStraightTransition(currentSourcePoint, currentTargetPoint);
+			this->drawStraightTransition(currentSourcePoint, currentTargetPoint);
 		}
 		else if (currentSourceStateId == currentTargetStateId)
 		{
-			conditionLinePos = this->drawAutoTransition(currentSourcePoint);
+			this->drawAutoTransition(currentSourcePoint);
 		}
 		else
 		{
-			conditionLinePos = this->drawCurvedTransition(currentSourcePoint, currentTargetPoint);
+			this->drawCurvedTransition(currentSourcePoint, currentTargetPoint);
 		}
 
-		this->conditionText->setPos(mapToScene(conditionLinePos) + QPointF(0, 5));
-
-		QGraphicsItemGroup* actionBox = this->getActionsBox();
-		if (actionBox != nullptr)
-			actionBox->setPos(mapToScene(conditionLinePos + this->conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+		this->conditionText->setPos(mapToScene(this->conditionLinePos) + QPointF(0, 5));
 
 		this->rebuildBoundingShape();
 	}
@@ -525,28 +493,35 @@ void FsmGraphicTransition::updateDisplay()
 
 void FsmGraphicTransition::initializeDefaults()
 {
-	this->currentPen = &standardPen;
+	this->currentPen          = &defaultPen;
+	this->currentConditionPen = &defaultPen;
 
 	this->setFlag(QGraphicsItem::ItemIsSelectable);
 	this->setFlag(QGraphicsItem::ItemIsFocusable);
 	this->setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
-void FsmGraphicTransition::rebuildArrowEnd()
+void FsmGraphicTransition::buildArrowEnd()
 {
 	delete this->arrowEnd;
-	this->arrowEnd = new QGraphicsItemGroup(this);
 
-	//QPainterPath arrowPath;
-	QGraphicsLineItem* arrowEnd1 = new QGraphicsLineItem(this->arrowEnd);
-	QGraphicsLineItem* arrowEnd2 = new QGraphicsLineItem(this->arrowEnd);
+	// Initially, arrow will point to north-west
+	QPainterPath arrowPath;
+	arrowPath.lineTo(this->arrowEndSize, 0);
+	arrowPath.moveTo(0, 0);
+	arrowPath.lineTo(0, this->arrowEndSize);
 
-	arrowEnd1->setPen(*this->currentPen);
-	arrowEnd2->setPen(*this->currentPen);
+	this->arrowEnd = new QGraphicsPathItem(this);
+	this->arrowEnd->setPen(*this->currentPen);
+	this->arrowEnd->setPath(arrowPath);
+}
 
-	// Original arrow point north-west
-	arrowEnd1->setLine(0, 0, this->arrowEndSize, 0);
-	arrowEnd2->setLine(0, 0, 0, this->arrowEndSize);
+void FsmGraphicTransition::repositionArrowEnd(qreal angle, const QPointF& position)
+{
+	this->arrowEnd->setRotation(angle);
+	this->arrowEnd->setPos(position);
+
+	this->arrowEnd->setPen(*this->currentPen);
 }
 
 void FsmGraphicTransition::rebuildBoundingShape()
@@ -659,7 +634,15 @@ void FsmGraphicTransition::updateSelectionShapeDisplay()
 	}
 }
 
-QPointF FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
+void FsmGraphicTransition::updateActionBoxPosition()
+{
+	if ( (this->actionsBox != nullptr) && (this->conditionText != nullptr) )
+	{
+		this->actionsBox->setPos(mapToScene(this->conditionLinePos + this->conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+	}
+}
+
+void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
 {
 	delete this->conditionLine;
 	delete this->arrowBody;
@@ -689,16 +672,15 @@ QPointF FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint,
 	this->arrowBody = line;
 
 	// Display condition
-	QPointF conditionLinePos = QPointF();
 	if (this->currentMode == Mode_t::standardMode)
 	{
 		QLineF conditionLineF = straightLine.normalVector();
 		conditionLineF.setLength(middleBarLength);
 		this->conditionLine = new QGraphicsLineItem(conditionLineF, this);
-		this->conditionLine->setPen(*this->currentPen);
+		this->conditionLine->setPen(*this->currentConditionPen);
 		// Determine position
-		conditionLinePos = QPointF(straightLine.p2()*this->conditionLineSliderPos);
-		this->conditionLine->setPos(conditionLinePos - conditionLineF.p2()/2);
+		this->conditionLinePos = QPointF(straightLine.p2()*this->conditionLineSliderPos);
+		this->conditionLine->setPos(this->conditionLinePos - conditionLineF.p2()/2);
 	}
 
 	//
@@ -718,114 +700,97 @@ QPointF FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint,
 	currentTargetPoint = currentSourcePoint + straightLine.p2();
 
 	// Compute arrow end rotation based on line angle
-	this->arrowEnd->setRotation(135-straightLine.angle());
+	qreal arrowRotation = 135-straightLine.angle();
 	// Set arrow position to be at target side
-	this->arrowEnd->setPos(currentTargetPoint - currentSourcePoint); // Positions are intended in scene coordinates. Relocate wrt. this item coordinates: (0, 0) is at source point position
+	// Positions are intended in scene coordinates. Relocate wrt. this item coordinates: (0, 0) is at source point position
+	QPointF arrowPosition = currentTargetPoint - currentSourcePoint;
 
+	this->repositionArrowEnd(arrowRotation, arrowPosition);
+
+	// Positiion the whole transition
 	this->setPos(currentSourcePoint);
-
-	return conditionLinePos;
 }
 
-QPointF FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
+void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 {
-	if (this->autoTransitionNeedsRedraw)
+	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
+	uint rank;
+	if (graphicFsm != nullptr)
 	{
-		delete this->conditionLine;
-		delete this->arrowBody;
-
-		this->conditionLine = nullptr;
-		this->arrowBody     = nullptr;
-
-		auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
-		uint rank;
-		if (graphicFsm != nullptr)
+		auto neighborhood = graphicFsm->getTransitionNeighborhood(this->logicComponentId);
+		if (neighborhood != nullptr)
 		{
-			auto neighborhood = graphicFsm->getTransitionNeighborhood(this->logicComponentId);
-			if (neighborhood != nullptr)
-			{
-				rank = neighborhood->getTransitionNumber(this);
-			}
-			else
-			{
-				rank = 0;
-			}
+			rank = neighborhood->getTransitionNumber(this);
 		}
 		else
 		{
 			rank = 0;
 		}
-
-		QLineF stateCenterToArcStartVector(0, 0, 1, -1);
-		stateCenterToArcStartVector.setLength(FsmGraphicState::getRadius());
-
-		QLineF stateCenterToArcEndVector(0, 0, -1, -1);
-		stateCenterToArcEndVector.setLength(FsmGraphicState::getRadius());
-
-		qreal unitaryArcWidth  = 2*FsmGraphicState::getRadius();
-		qreal unitaryArcHeight = 2*FsmGraphicState::getRadius();
-
-		QLineF stateCenterToUnitaryArcCenterVector(0, 0, 0, 2*stateCenterToArcStartVector.p2().y());
-
-		qreal arcWidth  = unitaryArcWidth  * pow (1.2, rank);
-		qreal arcHeight = unitaryArcHeight * pow (1.4, rank);
-
-		QLineF stateCenterToArcCenterVector(0, 0, 0, stateCenterToUnitaryArcCenterVector.p2().y() - (arcHeight-unitaryArcHeight)/2);
-
-		QRectF arcRect(-arcWidth/2, stateCenterToArcCenterVector.p2().y()-arcHeight/2, arcWidth, arcHeight);
-
-		QPainterPath arc;
-		arc.moveTo(stateCenterToArcStartVector.p2());
-
-		qreal arcStartAngle = -45;
-		qreal arcTotalAngle = 360 - 2* (90 + arcStartAngle);
-
-		arc.arcTo(arcRect, arcStartAngle, arcTotalAngle);
-
-		arc.lineTo(stateCenterToArcEndVector.p2());
-
-		QGraphicsPathItem* arcItem = new QGraphicsPathItem(arc, this);
-		arcItem->setPen(*this->currentPen);
-		this->arrowBody = arcItem;
-
-		if (this->currentMode == Mode_t::standardMode)
-		{
-			QLineF conditionLineF(0, -middleBarLength/2, 0, 1);
-			conditionLineF.setLength(middleBarLength);
-			this->conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
-			this->conditionLine->setPen(*this->currentPen);
-
-			this->autoTransitionConditionPosition = arc.pointAtPercent(this->conditionLineSliderPos);
-			this->conditionLine->setPos(this->autoTransitionConditionPosition);
-			this->conditionLine->setRotation(-arc.angleAtPercent(this->conditionLineSliderPos));
-		}
-
-		this->arrowEnd->setPos(stateCenterToArcEndVector.p2());
-		this->arrowEnd->setRotation(180);
-
-		this->autoTransitionNeedsRedraw = false;
+	}
+	else
+	{
+		rank = 0;
 	}
 
+	QLineF stateCenterToArcStartVector(0, 0, 1, -1);
+	stateCenterToArcStartVector.setLength(FsmGraphicState::getRadius());
+
+	QLineF stateCenterToArcEndVector(0, 0, -1, -1);
+	stateCenterToArcEndVector.setLength(FsmGraphicState::getRadius());
+
+	qreal unitaryArcWidth  = 2*FsmGraphicState::getRadius();
+	qreal unitaryArcHeight = 2*FsmGraphicState::getRadius();
+
+	QLineF stateCenterToUnitaryArcCenterVector(0, 0, 0, 2*stateCenterToArcStartVector.p2().y());
+
+	qreal arcWidth  = unitaryArcWidth  * pow (1.2, rank);
+	qreal arcHeight = unitaryArcHeight * pow (1.4, rank);
+
+	QLineF stateCenterToArcCenterVector(0, 0, 0, stateCenterToUnitaryArcCenterVector.p2().y() - (arcHeight-unitaryArcHeight)/2);
+
+	QRectF arcRect(-arcWidth/2, stateCenterToArcCenterVector.p2().y()-arcHeight/2, arcWidth, arcHeight);
+
+	QPainterPath arc;
+	arc.moveTo(stateCenterToArcStartVector.p2());
+
+	qreal arcStartAngle = -45;
+	qreal arcTotalAngle = 360 - 2* (90 + arcStartAngle);
+
+	arc.arcTo(arcRect, arcStartAngle, arcTotalAngle);
+
+	arc.lineTo(stateCenterToArcEndVector.p2());
+
+	QGraphicsPathItem* arcItem = new QGraphicsPathItem(arc, this);
+	arcItem->setPen(*this->currentPen);
+	this->arrowBody = arcItem;
+
+	if (this->currentMode == Mode_t::standardMode)
+	{
+		QLineF conditionLineF(0, -middleBarLength/2, 0, 1);
+		conditionLineF.setLength(middleBarLength);
+		this->conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
+		this->conditionLine->setPen(*this->currentConditionPen);
+
+		this->conditionLinePos = arc.pointAtPercent(this->conditionLineSliderPos);
+		this->conditionLine->setPos(this->conditionLinePos);
+		this->conditionLine->setRotation(-arc.angleAtPercent(this->conditionLineSliderPos));
+	}
+
+	this->repositionArrowEnd(180, stateCenterToArcEndVector.p2());
+
 	this->setPos(currentSourcePoint);
-	return this->autoTransitionConditionPosition;
 }
 
-QPointF FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
+void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
-	if (graphicFsm == nullptr) return QPointF();
+	if (graphicFsm == nullptr) return;
 
 	auto neighborhood = graphicFsm->getTransitionNeighborhood(this->logicComponentId);
 
-	delete this->conditionLine;
-	delete this->arrowBody;
-
-	this->conditionLine = nullptr;
-	this->arrowBody     = nullptr;
-
-	// Take mates in consideration to draw a curve
-	// All mates will have a curved body, which curve intensity
-	// depends on their rank in mates
+	// Take neighbors in consideration to draw a curve
+	// All neighbors will have a curved body, which curve intensity
+	// depends on their rank in neighborhood
 
 	// Get actual source and target in mates's coordinate system
 	auto sourceStateId = neighborhood->getSource()->getLogicComponentId();
@@ -901,7 +866,7 @@ QPointF FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, Q
 		QPointF conditionPosition(middleVector.p2());
 		conditionPosition.setY(conditionPosition.y() - conditionLineF.length()/2);
 		conditionLineDisplay->setPos(conditionPosition);
-		conditionLineDisplay->setPen(*this->currentPen);
+		conditionLineDisplay->setPen(*this->currentConditionPen);
 		conditionLineDisplay->setRotation(-path.angleAtPercent(this->conditionLineSliderPos));
 	}
 
@@ -921,7 +886,7 @@ QPointF FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, Q
 	// Delta curve origin is the position of curve starting point wrt. source state center
 	QPointF deltaCurveOrigin = deltaSystemOriginVector.p2();
 	// Curve middle is the curve middle point in the horizontal coordinates system which originates at curve origin
-	QPointF conditionLinePos = middleVector.p2();
+	this->conditionLinePos = middleVector.p2();
 	// Curve target is the curve last point in the horizontal coordinates system which originates at curve origin
 	QPointF curveTarget = actualTarget.p2();
 	// Curve angles wrt. states perimeters
@@ -940,17 +905,15 @@ QPointF FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, Q
 	    ((this->currentMode == Mode_t::dynamicTargetMode) && (sourceStateId == this->sourceStateId)) ||
 	    ((this->currentMode == Mode_t::dynamicSourceMode) && (sourceStateId == this->dynamicStateId)))
 	{
+		this->repositionArrowEnd(135-endAngle1, curveTarget);
+
 		this->arrowEnd->setPos(curveTarget);
 		this->arrowEnd->setRotation(135-endAngle1);
 	}
 	else
 	{
-		this->arrowEnd->setPos(0, 0);
-		this->arrowEnd->setRotation(135-endAngle2);
+		this->repositionArrowEnd(135-endAngle2, QPointF(0, 0));
 	}
 
 	this->setPos(currentSourcePoint+deltaCurveOrigin);
-
-	// Must be done after scene mapping
-	return conditionLinePos;
 }

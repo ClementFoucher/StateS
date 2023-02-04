@@ -35,8 +35,7 @@ class QWidget;
 class QSignalMapper;
 
 // StateS classes
-class FsmState;
-class FsmTransition;
+#include "statestypes.h"
 
 
 class FsmSimulator : public MachineSimulator
@@ -51,22 +50,24 @@ public:
 	/////
 	// Object functions
 public:
+	virtual void build() override;
+
 	void targetStateSelectionMadeEventHandler(int i);
-	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
+	void forceStateActivation(componentId_t stateToActivate);
 
 private slots:
 	void resetEventHandler();
 	void clockEventHandler();
 
 private:
-	void activateTransition(shared_ptr<FsmTransition> transition);
+	void activateTransition(componentId_t transitionId);
 
 	/////
 	// Object variables
 private:
-	weak_ptr<FsmState> currentState;
-	weak_ptr<FsmTransition> latestTransitionCrossed;
-	QMap<uint, shared_ptr<FsmTransition>> potentialTransitions;
+	componentId_t activeStateId;
+	componentId_t latestTransitionCrossedId;
+	QMap<uint, componentId_t> potentialTransitionsIds;
 
 	QWidget* targetStateSelector = nullptr;
 	QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction

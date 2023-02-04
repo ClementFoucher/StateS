@@ -85,25 +85,3 @@ uint FsmState::getAllowedActionTypes() const
 	        (uint)actuatorAllowedActionType_t::assign
 	       );
 }
-
-void FsmState::setActive(bool value)
-{
-	this->isActive = value;
-
-	// On enter state, activate actions
-	if (value == true)
-	{
-		this->activateActions();
-	}
-	else
-	{
-		this->deactivateActions();
-	}
-
-	emit this->componentSimulatedStateChangedEvent();
-}
-
-bool FsmState::getIsActive() const
-{
-	return this->isActive;
-}

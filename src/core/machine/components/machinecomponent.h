@@ -52,7 +52,6 @@ public:
 
 signals:
 	void componentNeedsGraphicUpdateEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
-	void componentSimulatedStateChangedEvent(); // Triggered when logic object state changes during simulation
 
 	/////
 	// Object variables

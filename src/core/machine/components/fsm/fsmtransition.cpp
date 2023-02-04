@@ -64,7 +64,6 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 {
 	if (this->condition != nullptr)
 	{
-		disconnect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentSimulatedStateChangedEvent);
 		disconnect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
@@ -81,7 +80,6 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 	if (this->condition != nullptr)
 	{
 		// Propagate events
-		connect(this->condition.get(), &Signal::signalDynamicStateChangedEvent,        this, &MachineComponent::componentSimulatedStateChangedEvent);
 		connect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 

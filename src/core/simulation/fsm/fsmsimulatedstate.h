@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,50 +19,58 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef FSMSIMULATEDSTATE_H
+#define FSMSIMULATEDSTATE_H
 
-// Parent
-#include <QGraphicsScene>
+// Parents
+#include "fsmgraphicstate.h"
+#include "simulatedactuatorcomponent.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
+// Qt classes
+class QAction;
 
 // StateS classes
 #include "statestypes.h"
 
 
-class GenericScene : public QGraphicsScene
+class FsmSimulatedState : public FsmGraphicState, public SimulatedActuatorComponent
 {
 	Q_OBJECT
 
 	/////
+	// Static variables
+private:
+	static const QBrush activeBrush;
+
+	/////
 	// Constructors/destructors
 public:
-	explicit GenericScene();
-	~GenericScene();
+	explicit FsmSimulatedState(componentId_t logicComponentId);
+	virtual ~FsmSimulatedState() override;
 
 	/////
 	// Object functions
 public:
-	void setDisplaySize(const QSize& newSize);
+	virtual void refreshDisplay() override;
+
+	void setActive(bool active);
+	bool getIsActive() const;
 
 signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-	void updateCursorEvent(MouseCursor_t newCursor);
+	void stateActiveStatusChanged();
 
 protected:
-	void updateSceneRect();
-	void clearScene();
+	virtual void keyPressEvent(QKeyEvent* event)                         override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+
+private slots:
+	void treatMenu(QAction* action);
 
 	/////
 	// Object variables
 private:
-	QSize displaySize;
+	bool isActive = false;
 
 };
 
-#endif // GENERICSCENE_H
+#endif // FSMSIMULATEDSTATE_H

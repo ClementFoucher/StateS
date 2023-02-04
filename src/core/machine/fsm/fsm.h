@@ -71,10 +71,6 @@ public:
 	void setInitialState(componentId_t stateId);
 	componentId_t getInitialStateId() const;
 
-	// Simulation
-
-	void forceStateActivation(shared_ptr<FsmState> stateToActivate);
-
 private:
 	QString getUniqueStateName(QString nameProposal);
 

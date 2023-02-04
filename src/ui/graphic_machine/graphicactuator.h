@@ -37,6 +37,11 @@ class GraphicActuator : public GraphicComponent
 	Q_OBJECT
 
 	/////
+	// Static variables
+private:
+	static const QPen defaultPen;
+
+	/////
 	// Constructors/destructors
 public:
 	explicit GraphicActuator(componentId_t logicComponentId);
@@ -47,12 +52,18 @@ public:
 public:
 	QGraphicsItemGroup* getActionsBox() const;
 
+	virtual void refreshDisplay() override;
+
 protected:
-	void buildActionsBox(const QPen& pen, bool center); // TODO: Throws StatesException
+
+private:
+	void buildActionsBox();
+
+	virtual void updateActionBoxPosition() = 0;
 
 	/////
 	// Object variables
-private:
+protected:
 	QGraphicsItemGroup* actionsBox = nullptr;
 
 };
