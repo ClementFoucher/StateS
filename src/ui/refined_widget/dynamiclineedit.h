@@ -34,6 +34,12 @@ class DynamicLineEdit : public QLineEdit
 	Q_OBJECT
 
 	/////
+	// Static variables
+protected:
+	static const QString editStyle;
+	static const QString errorStyle;
+
+	/////
 	// Constructors/destructors
 public:
 	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);

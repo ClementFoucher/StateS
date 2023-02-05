@@ -62,9 +62,9 @@ protected:
 
 private:
 	static const qreal arrowEndSize;
-	static const qreal middleBarLength;
-	static const QPen editPen;
-	static const QPen highlightPen;
+	static const qreal conditionLineLength;
+	static const QPen  editPen;
+	static const QPen  highlightPen;
 
 	/////
 	// Constructors/destructors
@@ -120,8 +120,8 @@ private:
 	void clearRepresentation();
 	void buildRepresentation();
 	void initializeDefaults();
-	void buildArrowEnd();
-	void repositionArrowEnd(qreal angle, const QPointF& position);
+	void buildChildren();
+	void repositionChildren();
 	void rebuildBoundingShape();
 	void updateSelectionShapeDisplay();
 
@@ -149,21 +149,26 @@ private:
 	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
 	componentId_t dynamicStateId = 0;
 
-	// Base elements of the arrow
+	// Components of the arrow
 	QGraphicsItem*     arrowBody      = nullptr;
 	QGraphicsPathItem* arrowEnd       = nullptr;
 	QGraphicsLineItem* conditionLine  = nullptr;
 	QGraphicsTextItem* conditionText  = nullptr;
 	QGraphicsPathItem* selectionShape = nullptr;
 
+	// Parameters for components
 	qreal sceneAngle = 0;
 
-	QPointF autoTransitionConditionPosition;
+	QPointF conditionLinePos;
+	QPointF arrowEndPosition;
+	qreal   conditionLineAngle;
+	qreal   arrowEndAngle;
 
+	// Retain bounding shape for selection
 	QPainterPath boundingShape;
 
+	// Position of the condition line in %
 	qreal conditionLineSliderPos;
-	QPointF conditionLinePos;
 
 };
 

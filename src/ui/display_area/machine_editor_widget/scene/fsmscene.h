@@ -55,8 +55,6 @@ private:
 		// General modes
 		idle,
 		simulating,
-		// Special mode to handle click events TODO: remove
-		goingBackToIdle,
 		// Adding modes with a Machine Builder tool
 		addingInitialState,
 		addingState,
@@ -80,20 +78,21 @@ private:
 	// Constructors/destructors
 public:
 	explicit FsmScene();
+	~FsmScene();
 
 	/////
 	// Object functions
 protected:
-	virtual void mousePressEvent      (QGraphicsSceneMouseEvent*       me) override;
-	virtual void mouseMoveEvent       (QGraphicsSceneMouseEvent*       me) override;
-	virtual void mouseReleaseEvent    (QGraphicsSceneMouseEvent*       me) override;
-	virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*       me) override;
-	virtual void keyPressEvent        (QKeyEvent*                      ke) override;
-	virtual void contextMenuEvent     (QGraphicsSceneContextMenuEvent* ce) override;
+	virtual void mousePressEvent  (QGraphicsSceneMouseEvent*       me) override;
+	virtual void mouseMoveEvent   (QGraphicsSceneMouseEvent*       me) override;
+	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent*       me) override;
+	virtual void keyPressEvent    (QKeyEvent*                      ke) override;
+	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
 private slots:
 	void simulationModeChangeEventHandler(SimulationMode_t newMode);
 	void toolChangeEventHandler(MachineBuilderTool_t newTool);
+	void singleUseToolChangeEventHandler(MachineBuilderSingleUseTool_t newTool);
 
 	void stateCallsEditEventHandler(componentId_t stateId);
 	void stateCallsRenameEventHandler(componentId_t stateId);
@@ -116,6 +115,7 @@ private:
 	void machineUpdatedEventHandler();
 	void displayGraphicMachine();
 	void displaySimulatedMachine();
+	void clearScene();
 
 	// Add elements
 	void addTransition(FsmGraphicTransition* newTransition, bool connectSignals);
@@ -123,8 +123,7 @@ private:
 
 	// Transition adding/editings
 	void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos = QPointF());
-	void cancelDrawTransition();
-	void cancelTransitionEdition();
+	void cancelOngoingAction();
 
 	// Accessors
 	FsmGraphicState* getStateAt(const QPointF& location) const;
@@ -132,12 +131,17 @@ private:
 	/////
 	// Object variables
 private:
+	// Scene mode
 	SceneMode_t sceneMode = SceneMode_t::idle;
-	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 
+	// Transition adding/edition
+	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 	FsmGraphicTransition* dummyTransition = nullptr;
 	componentId_t transitionUnderEditId = 0;
+
+	// Temporary variables
 	QPointF menuMousePos;
+	bool transmitMouseEvent;
 
 };
 

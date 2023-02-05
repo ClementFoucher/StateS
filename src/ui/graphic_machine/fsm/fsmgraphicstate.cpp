@@ -109,6 +109,7 @@ void FsmGraphicState::refreshDisplay()
 
 	// Rebuild
 	this->buildRepresentation();
+	this->updateSelectionShapeDisplay();
 
 	// Update action box
 	GraphicActuator::refreshDisplay();

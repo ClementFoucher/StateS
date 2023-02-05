@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,16 +26,32 @@
 #include <QKeyEvent>
 
 
+//
+// Static elements
+//
+
+const QString DynamicLineEdit::editStyle  = QString("background-color: yellow; color: black;");
+const QString DynamicLineEdit::errorStyle = QString("background-color: red; color: black;");
+
+
+//
+// Class object definition
+//
+
 DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
     QLineEdit(content, parent)
 {
 	this->selfManaged = selfManaged;
 
 	if (this->selfManaged)
+	{
 		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	}
 
 	if (validator != nullptr)
+	{
 		this->setValidator(validator);
+	}
 }
 
 DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent) :
@@ -56,7 +72,7 @@ void DynamicLineEdit::userValidatedEventHandler()
 void DynamicLineEdit::markAsErroneous()
 {
 	this->erroneous = true;
-	this->setStyleSheet( QString( "background-color: red") );
+	this->setStyleSheet(DynamicLineEdit::errorStyle);
 
 	// When erroneous, force focus to continue edit
 	this->setFocus();
@@ -67,18 +83,24 @@ void DynamicLineEdit::resetView()
 	this->erroneous = false;
 	this->setModified(false);
 	if (this->selfManaged)
+	{
 		disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	}
 	this->clearFocus();
 	if (this->selfManaged)
+	{
 		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+	}
 
-	this->setStyleSheet( QString( "background-color: white"));
+	this->setStyleSheet( QString() );
 }
 
 void DynamicLineEdit::focusInEvent(QFocusEvent* event)
 {
 	if (!erroneous)
-		this->setStyleSheet( QString( "background-color: yellow"));
+	{
+		this->setStyleSheet(DynamicLineEdit::editStyle);
+	}
 
 	QLineEdit::focusInEvent(event);
 }
@@ -117,5 +139,7 @@ void DynamicLineEdit::keyReleaseEvent(QKeyEvent* event)
 	}
 
 	if (transmitEvent == true)
+	{
 		QLineEdit::keyReleaseEvent(event);
+	}
 }

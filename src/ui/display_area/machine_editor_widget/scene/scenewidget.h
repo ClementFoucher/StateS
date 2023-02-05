@@ -111,11 +111,12 @@ private:
 	// Object variables
 private:
 	// Zoom panel
-	QLabel*      labelZoom     = nullptr;
-	QPushButton* buttonZoomIn  = nullptr;
-	QPushButton* buttonNoZoom  = nullptr;
-	QPushButton* buttonZoomOut = nullptr;
-	QPushButton* buttonZoomFit = nullptr;
+	QFrame*      zoomBackground = nullptr;
+	QLabel*      labelZoom      = nullptr;
+	QPushButton* buttonZoomIn   = nullptr;
+	QPushButton* buttonNoZoom   = nullptr;
+	QPushButton* buttonZoomOut  = nullptr;
+	QPushButton* buttonZoomFit  = nullptr;
 
 	// Current state
 	SceneMode_t   sceneMode         = SceneMode_t::noScene;

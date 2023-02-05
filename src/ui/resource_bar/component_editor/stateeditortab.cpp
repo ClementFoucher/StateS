@@ -94,17 +94,10 @@ void StateEditorTab::updateContent()
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr)
-	{
-		this->textStateName->setEnabled(false);
 		return;
-	}
 
 	auto state = fsm->getState(this->stateId);
-	if (state == nullptr)
-	{
-		this->textStateName->setEnabled(false);
-		return;
-	}
+	    return;
 
 	this->textStateName->setText(state->getName());
 }
@@ -113,23 +106,17 @@ void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr)
-	{
-		this->textStateName->setEnabled(false);
 		return;
-	}
 
 	auto state = fsm->getState(this->stateId);
 	if (state == nullptr)
-	{
-		this->textStateName->setEnabled(false);
 		return;
-	}
 
 
 	if (name == state->getName()) return; // Must be checked because setting focus triggers this event
 
 	QString previousName = state->getName();
-	bool result = fsm->renameState(state->getId(), name);
+	bool result = fsm->renameState(this->stateId, name);
 	if (result == true)
 	{
 		auto undoCommand = new FsmUndoCommand(state->getId(), previousName);

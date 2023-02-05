@@ -41,7 +41,6 @@ class GenericScene : public QGraphicsScene
 	// Constructors/destructors
 public:
 	explicit GenericScene();
-	~GenericScene();
 
 	/////
 	// Object functions
@@ -56,7 +55,6 @@ signals:
 
 protected:
 	void updateSceneRect();
-	void clearScene();
 
 	/////
 	// Object variables

@@ -51,7 +51,7 @@ using namespace std;
 //
 
 const qreal FsmGraphicTransition::arrowEndSize = 10;
-const qreal FsmGraphicTransition::middleBarLength = 20;
+const qreal FsmGraphicTransition::conditionLineLength = 20;
 const QPen FsmGraphicTransition::defaultPen = QPen(Qt::SolidPattern, 3);
 const QPen FsmGraphicTransition::editPen = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 const QPen FsmGraphicTransition::highlightPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
@@ -85,6 +85,10 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 	auto logicTransition = fsm->getTransition(this->logicComponentId);
 	if (logicTransition == nullptr) return;
 
+	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
+	if (graphicFsm == nullptr) return;
+
+
 	this->initializeDefaults();
 	this->currentPen = &defaultPen;
 
@@ -95,13 +99,12 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 	this->sourceStateId = logicTransition->getSourceStateId();
 	this->targetStateId = logicTransition->getTargetStateId();
 
-	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	auto sourceState = graphicFsm->getState(this->sourceStateId);
 	auto targetState = graphicFsm->getState(this->targetStateId);
 	connect(sourceState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
 	connect(targetState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
 
-	this->buildArrowEnd();
+	this->buildChildren();
 	this->updateConditionText();
 	this->buildRepresentation();
 	// Use this syntax to supress warning for calling a virtual function in constructor,
@@ -135,7 +138,7 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 		this->currentMode = Mode_t::dynamicSourceMode;
 	}
 
-	this->buildArrowEnd();
+	this->buildChildren();
 
 	this->dynamicStateId = 0;
 	this->mousePosition = dynamicMousePosition;
@@ -156,6 +159,7 @@ void FsmGraphicTransition::refreshDisplay()
 	// Rebuild
 	this->updateConditionText();
 	this->buildRepresentation();
+	this->repositionChildren();
 
 	// Update action box
 	GraphicActuator::refreshDisplay();
@@ -204,16 +208,16 @@ void FsmGraphicTransition::setUnderEdit(bool edit)
 {
 	if (edit == true)
 	{
-		this->currentPen = &highlightPen;
-		this->arrowEnd->setPen(highlightPen);
-		this->refreshDisplay();
+		this->currentPen          = &highlightPen;
+		this->currentConditionPen = &highlightPen;
 	}
 	else
 	{
-		this->currentPen = &defaultPen;
-		this->arrowEnd->setPen(defaultPen);
-		this->refreshDisplay();
+		this->currentPen          = &defaultPen;
+		this->currentConditionPen = &defaultPen;
 	}
+
+	this->refreshDisplay();
 }
 
 void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
@@ -355,10 +359,6 @@ void FsmGraphicTransition::updateConditionText()
 				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + logicTransition->getCondition()->getText() + "</div>");
 			}
 		}
-		if (this->conditionLine != nullptr)
-		{
-			this->conditionLine->setPen(defaultPen);
-		}
 	}
 	else
 	{
@@ -388,10 +388,7 @@ void FsmGraphicTransition::treatMenu(QAction* action)
 
 void FsmGraphicTransition::clearRepresentation()
 {
-	delete this->conditionLine;
 	delete this->arrowBody;
-
-	this->conditionLine = nullptr;
 	this->arrowBody     = nullptr;
 }
 
@@ -485,8 +482,6 @@ void FsmGraphicTransition::buildRepresentation()
 			this->drawCurvedTransition(currentSourcePoint, currentTargetPoint);
 		}
 
-		this->conditionText->setPos(mapToScene(this->conditionLinePos) + QPointF(0, 5));
-
 		this->rebuildBoundingShape();
 	}
 }
@@ -501,9 +496,10 @@ void FsmGraphicTransition::initializeDefaults()
 	this->setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
-void FsmGraphicTransition::buildArrowEnd()
+void FsmGraphicTransition::buildChildren()
 {
-	delete this->arrowEnd;
+	//
+	// Arrow end
 
 	// Initially, arrow will point to north-west
 	QPainterPath arrowPath;
@@ -511,17 +507,36 @@ void FsmGraphicTransition::buildArrowEnd()
 	arrowPath.moveTo(0, 0);
 	arrowPath.lineTo(0, this->arrowEndSize);
 
-	this->arrowEnd = new QGraphicsPathItem(this);
+	this->arrowEnd = new QGraphicsPathItem(arrowPath, this);
 	this->arrowEnd->setPen(*this->currentPen);
-	this->arrowEnd->setPath(arrowPath);
+
+	//
+	// Condition line
+
+	if (this->currentMode == Mode_t::standardMode)
+	{
+		QLineF conditionLineF(0, -conditionLineLength/2, 0, conditionLineLength/2);
+		this->conditionLine = new QGraphicsLineItem(conditionLineF, this);
+	}
 }
 
-void FsmGraphicTransition::repositionArrowEnd(qreal angle, const QPointF& position)
+void FsmGraphicTransition::repositionChildren()
 {
-	this->arrowEnd->setRotation(angle);
-	this->arrowEnd->setPos(position);
-
+	this->arrowEnd->setRotation(this->arrowEndAngle);
+	this->arrowEnd->setPos(this->arrowEndPosition);
 	this->arrowEnd->setPen(*this->currentPen);
+
+	if (this->conditionLine != nullptr)
+	{
+		this->conditionLine->setRotation(this->conditionLineAngle);
+		this->conditionLine->setPos(this->conditionLinePos);
+		this->conditionLine->setPen(*this->currentConditionPen);
+	}
+
+	if (this->conditionText != nullptr)
+	{
+		this->conditionText->setPos(mapToScene(this->conditionLinePos) + QPointF(0, 5));
+	}
 }
 
 void FsmGraphicTransition::rebuildBoundingShape()
@@ -540,7 +555,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
 	{
 		QLineF straightLine = arrowBodyStraightLine->line();
 
-		QRectF boundRect(0, -middleBarLength/2, straightLine.length(), middleBarLength);
+		QRectF boundRect(0, -conditionLineLength/2, straightLine.length(), conditionLineLength);
 
 		path.addRect(boundRect);
 		path.angleAtPercent(arrowBodyStraightLine->rotation());
@@ -552,8 +567,8 @@ void FsmGraphicTransition::rebuildBoundingShape()
 		// Auto-transition
 		QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
 
-		qreal outterScale = (arrowPath.boundingRect().height() + 3*middleBarLength/4) / arrowPath.boundingRect().height();
-		qreal innerScale  = (arrowPath.boundingRect().height() - 3*middleBarLength/4) / arrowPath.boundingRect().height();
+		qreal outterScale = (arrowPath.boundingRect().height() + 3*conditionLineLength/4) / arrowPath.boundingRect().height();
+		qreal innerScale  = (arrowPath.boundingRect().height() - 3*conditionLineLength/4) / arrowPath.boundingRect().height();
 
 		QTransform expand;
 		expand.scale(outterScale, outterScale);
@@ -563,8 +578,8 @@ void FsmGraphicTransition::rebuildBoundingShape()
 		shrink.scale(innerScale, innerScale);
 		QPainterPath innerPath = shrink.map(arrowPath);
 
-		outterPath.translate(0, middleBarLength/2);
-		innerPath.translate(0, -middleBarLength/2);
+		outterPath.translate(0, conditionLineLength/2);
+		innerPath.translate(0, -conditionLineLength/2);
 
 		innerPath = innerPath.toReversed();
 
@@ -582,8 +597,8 @@ void FsmGraphicTransition::rebuildBoundingShape()
 
 		QPainterPath arrowPath = ((QGraphicsPathItem*)this->arrowBody)->path();
 
-		qreal outterScale = (arrowPath.boundingRect().width() + middleBarLength/2) / arrowPath.boundingRect().width();
-		qreal innerScale  = (arrowPath.boundingRect().width() - middleBarLength/2) / arrowPath.boundingRect().width();
+		qreal outterScale = (arrowPath.boundingRect().width() + conditionLineLength/2) / arrowPath.boundingRect().width();
+		qreal innerScale  = (arrowPath.boundingRect().width() - conditionLineLength/2) / arrowPath.boundingRect().width();
 
 		QTransform expand;
 		expand.scale(outterScale, outterScale);
@@ -595,13 +610,13 @@ void FsmGraphicTransition::rebuildBoundingShape()
 
 		if (graphicFsm->getTransitionRank(this->logicComponentId) > 0)
 		{
-			outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, middleBarLength/2);
-			innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, -middleBarLength/2);
+			outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, conditionLineLength/2);
+			innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, -conditionLineLength/2);
 		}
 		else
 		{
-			outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, -middleBarLength/2);
-			innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, middleBarLength/2);
+			outterPath.translate(-(outterPath.boundingRect().width()-arrowPath.boundingRect().width())/2, -conditionLineLength/2);
+			innerPath.translate((arrowPath.boundingRect().width()-innerPath.boundingRect().width())/2, conditionLineLength/2);
 		}
 
 		innerPath = innerPath.toReversed();
@@ -644,11 +659,8 @@ void FsmGraphicTransition::updateActionBoxPosition()
 
 void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
 {
-	delete this->conditionLine;
-	delete this->arrowBody;
-
-	this->conditionLine = nullptr;
-	this->arrowBody     = nullptr;
+	//
+	// Build arrow body
 
 	QLineF straightLine(QPointF(0, 0), currentTargetPoint - currentSourcePoint);
 
@@ -666,25 +678,9 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 
 	// Create line graphic representation
 	QGraphicsLineItem* line = new QGraphicsLineItem(this);
-	//   line->setFlag(QGraphicsItem::ItemIsSelectable);
 	line->setPen(*this->currentPen);
 	line->setLine(straightLine);
 	this->arrowBody = line;
-
-	// Display condition
-	if (this->currentMode == Mode_t::standardMode)
-	{
-		QLineF conditionLineF = straightLine.normalVector();
-		conditionLineF.setLength(middleBarLength);
-		this->conditionLine = new QGraphicsLineItem(conditionLineF, this);
-		this->conditionLine->setPen(*this->currentConditionPen);
-		// Determine position
-		this->conditionLinePos = QPointF(straightLine.p2()*this->conditionLineSliderPos);
-		this->conditionLine->setPos(this->conditionLinePos - conditionLineF.p2()/2);
-	}
-
-	//
-	// Update positions with actual ones used for construction
 
 	// If source is a state, line should be translated to begin on state border
 	if ( !((this->currentMode == Mode_t::dynamicSourceMode) && (this->dynamicStateId == 0)) )
@@ -696,23 +692,38 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 		currentSourcePoint += translationVector.p2();
 	}
 
+	//
+	// Compute condition line position (only in standard mode, not displayed in other modes)
+
+	if (this->currentMode == Mode_t::standardMode)
+	{
+		this->conditionLinePos   = QPointF(straightLine.p2()*this->conditionLineSliderPos);
+		this->conditionLineAngle = -straightLine.angle();
+	}
+
+	//
+	// Compute arrow end position
+
 	// Current target position is calculated based on source point translated by line
 	currentTargetPoint = currentSourcePoint + straightLine.p2();
 
 	// Compute arrow end rotation based on line angle
-	qreal arrowRotation = 135-straightLine.angle();
+	this->arrowEndAngle = 135-straightLine.angle();
 	// Set arrow position to be at target side
 	// Positions are intended in scene coordinates. Relocate wrt. this item coordinates: (0, 0) is at source point position
-	QPointF arrowPosition = currentTargetPoint - currentSourcePoint;
+	this->arrowEndPosition = currentTargetPoint - currentSourcePoint;
 
-	this->repositionArrowEnd(arrowRotation, arrowPosition);
+	//
+	// Position the whole transition
 
-	// Positiion the whole transition
 	this->setPos(currentSourcePoint);
 }
 
 void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 {
+	//
+	// Build arrow body
+
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	uint rank;
 	if (graphicFsm != nullptr)
@@ -764,19 +775,23 @@ void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 	arcItem->setPen(*this->currentPen);
 	this->arrowBody = arcItem;
 
+	//
+	// Compute condition line position (only in standard mode, not displayed in other modes)
+
 	if (this->currentMode == Mode_t::standardMode)
 	{
-		QLineF conditionLineF(0, -middleBarLength/2, 0, 1);
-		conditionLineF.setLength(middleBarLength);
-		this->conditionLine = new QGraphicsLineItem(conditionLineF, arcItem);
-		this->conditionLine->setPen(*this->currentConditionPen);
-
-		this->conditionLinePos = arc.pointAtPercent(this->conditionLineSliderPos);
-		this->conditionLine->setPos(this->conditionLinePos);
-		this->conditionLine->setRotation(-arc.angleAtPercent(this->conditionLineSliderPos));
+		this->conditionLinePos   = arc.pointAtPercent(this->conditionLineSliderPos);
+		this->conditionLineAngle = -arc.angleAtPercent(this->conditionLineSliderPos);
 	}
 
-	this->repositionArrowEnd(180, stateCenterToArcEndVector.p2());
+	//
+	// Compute arrow end position
+
+	this->arrowEndAngle = 180;
+	this->arrowEndPosition = stateCenterToArcEndVector.p2();
+
+	//
+	// Position the whole transition
 
 	this->setPos(currentSourcePoint);
 }
@@ -804,6 +819,7 @@ void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPoi
 		currentSourcePoint = temp;
 	}
 
+	//
 	// Build arrow body
 
 	//
@@ -850,70 +866,69 @@ void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPoi
 	QGraphicsPathItem* curve = new QGraphicsPathItem(path, this);
 	curve->setPen(*this->currentPen);
 
-	QLineF middleVector(QPointF(0,0), path.pointAtPercent(this->conditionLineSliderPos));
-
-	QLineF edgeAngle1Line(deltaSystemCPoint, deltaSystemXVector.p2());
-	QLineF edgeAngle2Line(deltaSystemCPoint, deltaSystemXVector.p1());
-
-	// Display condition
-	QGraphicsLineItem* conditionLineDisplay = nullptr;
-	if (this->currentMode == Mode_t::standardMode)
-	{
-		QLineF conditionLineF = sceneSystemYVector;
-		conditionLineF.setLength(20);
-		conditionLineDisplay = new QGraphicsLineItem(conditionLineF, curve);
-
-		QPointF conditionPosition(middleVector.p2());
-		conditionPosition.setY(conditionPosition.y() - conditionLineF.length()/2);
-		conditionLineDisplay->setPos(conditionPosition);
-		conditionLineDisplay->setPen(*this->currentConditionPen);
-		conditionLineDisplay->setRotation(-path.angleAtPercent(this->conditionLineSliderPos));
-	}
-
 	// Drawing in a horizontal coordinates, then rotate.
 	// This is probably too much, but it was easier to reprensent in my mind ;)
 	curve->setTransform(QTransform().rotate(-initialSystemXVector.angle()));
 
-	middleVector.setAngle(middleVector.angle()+initialSystemXVector.angle());
 	deltaSystemOriginVector.setAngle(deltaSystemOriginVector.angle()+initialSystemXVector.angle());
 
 	QLineF actualTarget(QPointF(0, 0), deltaSystemXVector.p2());
 	actualTarget.setAngle(actualTarget.angle() + initialSystemXVector.angle());
 
-	edgeAngle1Line.setAngle(edgeAngle1Line.angle() + initialSystemXVector.angle());
-	edgeAngle2Line.setAngle(edgeAngle2Line.angle() + initialSystemXVector.angle());
-
 	// Delta curve origin is the position of curve starting point wrt. source state center
 	QPointF deltaCurveOrigin = deltaSystemOriginVector.p2();
-	// Curve middle is the curve middle point in the horizontal coordinates system which originates at curve origin
-	this->conditionLinePos = middleVector.p2();
+
 	// Curve target is the curve last point in the horizontal coordinates system which originates at curve origin
 	QPointF curveTarget = actualTarget.p2();
-	// Curve angles wrt. states perimeters
-	qreal endAngle1 = edgeAngle1Line.angle();
-	qreal endAngle2 = edgeAngle2Line.angle();
 
-	this->conditionLine = conditionLineDisplay;
+	// Compute scene angle
+	this->sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();
 
 	this->arrowBody = curve;
 
-	this->sceneAngle = QLineF(QPointF(0,0), curveTarget).angle();
+	//
+	// Compute condition line position (only in standard mode, not displayed in other modes)
 
-	// Place arrow end on correct side
+	if (this->currentMode == Mode_t::standardMode)
+	{
+		QLineF middleVector;
+		qreal  angleAtPos;
+		if (sourceStateId == this->sourceStateId)
+		{
+			middleVector = QLineF(QPointF(0,0), path.pointAtPercent(this->conditionLineSliderPos));
+			angleAtPos   = path.angleAtPercent(this->conditionLineSliderPos);
+		}
+		else
+		{
+			middleVector = QLineF(QPointF(0,0), path.pointAtPercent(1-this->conditionLineSliderPos));
+			angleAtPos   = path.angleAtPercent(1-this->conditionLineSliderPos);
+		}
+		middleVector.setAngle(middleVector.angle() + initialSystemXVector.angle());
+
+		this->conditionLinePos   = middleVector.p2();
+		this->conditionLineAngle = -(angleAtPos + this->sceneAngle);
+	}
+
+	//
+	// Compute arrow end position
 
 	if (((this->currentMode == Mode_t::standardMode)      && (sourceStateId == this->sourceStateId)) ||
 	    ((this->currentMode == Mode_t::dynamicTargetMode) && (sourceStateId == this->sourceStateId)) ||
 	    ((this->currentMode == Mode_t::dynamicSourceMode) && (sourceStateId == this->dynamicStateId)))
 	{
-		this->repositionArrowEnd(135-endAngle1, curveTarget);
-
-		this->arrowEnd->setPos(curveTarget);
-		this->arrowEnd->setRotation(135-endAngle1);
+		QLineF edgeAngleLine(deltaSystemCPoint, deltaSystemXVector.p2());
+		this->arrowEndAngle = 135-(edgeAngleLine.angle() + initialSystemXVector.angle());
+		this->arrowEndPosition = curveTarget;
 	}
 	else
 	{
-		this->repositionArrowEnd(135-endAngle2, QPointF(0, 0));
+		QLineF edgeAngleLine(deltaSystemCPoint, deltaSystemXVector.p1());
+		this->arrowEndAngle = 135-(edgeAngleLine.angle() + initialSystemXVector.angle());
+		this->arrowEndPosition = QPointF(0, 0);
 	}
+
+	//
+	// Position the whole transition
 
 	this->setPos(currentSourcePoint+deltaCurveOrigin);
 }

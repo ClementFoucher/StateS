@@ -31,13 +31,6 @@ GenericScene::GenericScene()
 
 }
 
-GenericScene::~GenericScene()
-{
-	// Remove displayed items to avoid scene deleting
-	// them, as they belong to a graphic manager
-	this->clearScene();
-}
-
 void GenericScene::setDisplaySize(const QSize& newSize)
 {
 	this->displaySize = newSize;
@@ -99,13 +92,4 @@ void GenericScene::updateSceneRect()
 	QRect finalDisplayRectangle(QPoint(leftmostPosition, topmostPosition), QPoint(rightmostPosition, bottommostPosition));
 
 	this->setSceneRect(finalDisplayRectangle);
-}
-
-void GenericScene::clearScene()
-{
-	auto displayedItems = this->items();
-	for (auto item : displayedItems)
-	{
-		this->removeItem(item);
-	}
 }

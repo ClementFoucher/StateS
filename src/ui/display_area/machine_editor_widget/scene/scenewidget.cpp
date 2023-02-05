@@ -31,6 +31,7 @@
 #include <QScrollBar>
 #include <QPushButton>
 #include <QLabel>
+#include <QFrame>
 
 // StateS classes
 #include "machinemanager.h"
@@ -55,33 +56,39 @@ SceneWidget::SceneWidget(QWidget* parent) :
 	// Connect Machine Manager
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent, this, &SceneWidget::machineReplacedEventHandler);
 
-	// Build buttons
-	this->labelZoom     = new QLabel(tr("Zoom"), this);
-	this->buttonZoomIn  = new QPushButton("+", this);
-	this->buttonNoZoom  = new QPushButton("⟳", this);
-	this->buttonZoomOut = new QPushButton("-", this);
-	this->buttonZoomFit = new QPushButton("❊", this);
+	// Build zoom controls
+	this->zoomBackground = new QFrame(this);
+	this->labelZoom      = new QLabel(tr("Zoom"), this);
+	this->buttonZoomIn   = new QPushButton("+", this);
+	this->buttonNoZoom   = new QPushButton("⟳", this);
+	this->buttonZoomOut  = new QPushButton("-", this);
+	this->buttonZoomFit  = new QPushButton("❊", this);
+
+	this->zoomBackground->setStyleSheet(QString("background-color: rgba(0, 0, 0, 0.5); border-radius: 5;"));
+	this->labelZoom->setStyleSheet(QString("color: white;"));
 
 	this->buttonZoomIn ->setToolTip(tr("Zoom in"));
 	this->buttonNoZoom ->setToolTip(tr("Reset zoom"));
 	this->buttonZoomOut->setToolTip(tr("Zoom out"));
 	this->buttonZoomFit->setToolTip(tr("Zoom to fit machine"));
 
-	this->buttonZoomIn ->resize(QSize(20, 20));
-	this->buttonNoZoom ->resize(QSize(20, 20));
-	this->buttonZoomOut->resize(QSize(20, 20));
-	this->buttonZoomFit->resize(QSize(40, 20));
+	this->zoomBackground->resize(50, 100);
+	this->buttonZoomIn  ->resize(QSize(20, 20));
+	this->buttonNoZoom  ->resize(QSize(20, 20));
+	this->buttonZoomOut ->resize(QSize(20, 20));
+	this->buttonZoomFit ->resize(QSize(40, 20));
 
 	connect(this->buttonZoomIn,  &QAbstractButton::clicked, this, &SceneWidget::zoomIn);
 	connect(this->buttonNoZoom,  &QAbstractButton::clicked, this, &SceneWidget::resetZoom);
 	connect(this->buttonZoomOut, &QAbstractButton::clicked, this, &SceneWidget::zoomOut);
 	connect(this->buttonZoomFit, &QAbstractButton::clicked, this, &SceneWidget::zoomFit);
 
-	this->labelZoom    ->setVisible(false);
-	this->buttonZoomIn ->setVisible(false);
-	this->buttonZoomFit->setVisible(false);
-	this->buttonZoomOut->setVisible(false);
-	this->buttonNoZoom ->setVisible(false);
+	this->zoomBackground->setVisible(false);
+	this->labelZoom     ->setVisible(false);
+	this->buttonZoomIn  ->setVisible(false);
+	this->buttonZoomFit ->setVisible(false);
+	this->buttonZoomOut ->setVisible(false);
+	this->buttonNoZoom  ->setVisible(false);
 
 	// Build scene
 	auto machine = machineManager->getMachine();
@@ -250,31 +257,39 @@ void SceneWidget::resizeEvent(QResizeEvent* event)
 	// Relocate overlay buttons (may not be displayed at this time)
 
 	// Base margin
+	int topAlign   = 10;
 	int rightAlign = 10;
+	int backMargin = 5;
+	int yDistance  = 10;
 
 	// Include the potential toolbar size to not overlap,
 	// but always include it to avoid buttons moving under mouse.
 	rightAlign += this->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 
-	int vpos = 10;
-	int xpos = this->width() - this->labelZoom->width() - rightAlign;
+	int vpos = topAlign + backMargin;
+	int xpos = this->width() - this->labelZoom->width() - rightAlign - backMargin;
 	this->labelZoom->move(xpos, vpos);
 
-	vpos = vpos + this->labelZoom->height() + 10;
+	vpos = vpos + this->labelZoom->height() + yDistance;
 	xpos = xpos + this->labelZoom->width()/2 - this->buttonZoomIn->width()/2;
 	this->buttonZoomIn->move(xpos, vpos);
 
-	vpos = vpos + this->buttonZoomIn->height() + 10;
+	vpos = vpos + this->buttonZoomIn->height() + yDistance;
 	xpos = xpos + this->buttonZoomIn->width()/2 - this->buttonNoZoom->width()/2;
 	this->buttonNoZoom ->move(xpos, vpos);
 
-	vpos = vpos + this->buttonNoZoom->height() + 10;
+	vpos = vpos + this->buttonNoZoom->height() + yDistance;
 	xpos = xpos + this->buttonNoZoom->width()/2 - this->buttonZoomOut->width()/2;
 	this->buttonZoomOut->move(xpos, vpos);
 
-	vpos = vpos + this->buttonZoomOut->height() + 10;
+	vpos = vpos + this->buttonZoomOut->height() + yDistance;
 	xpos = xpos + this->buttonZoomOut->width()/2 - this->buttonZoomFit->width()/2;
 	this->buttonZoomFit->move(xpos, vpos);
+
+	int backHeight = (this->buttonZoomFit->pos().y() + this->buttonZoomFit->height()) - (this->labelZoom->pos().y()) + 2*backMargin;
+	int backWidth  = this->labelZoom->width() + 2*backMargin;
+	this->zoomBackground->resize(backWidth, backHeight);
+	this->zoomBackground->move(this->width() - backWidth - rightAlign, topAlign);
 
 	// Transmit event
 	QGraphicsView::resizeEvent(event);
@@ -426,11 +441,12 @@ void SceneWidget::updateDragMode()
 
 void SceneWidget::setZoomPanelVisible(bool visible)
 {
-	this->labelZoom    ->setVisible(visible);
-	this->buttonZoomIn ->setVisible(visible);
-	this->buttonNoZoom ->setVisible(visible);
-	this->buttonZoomOut->setVisible(visible);
-	this->buttonZoomFit->setVisible(visible);
+	this->zoomBackground->setVisible(visible);
+	this->labelZoom     ->setVisible(visible);
+	this->buttonZoomIn  ->setVisible(visible);
+	this->buttonNoZoom  ->setVisible(visible);
+	this->buttonZoomOut ->setVisible(visible);
+	this->buttonZoomFit ->setVisible(visible);
 }
 
 void SceneWidget::setZoomLevel(qreal level)
