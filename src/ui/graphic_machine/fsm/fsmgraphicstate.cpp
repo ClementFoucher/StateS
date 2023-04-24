@@ -109,7 +109,6 @@ void FsmGraphicState::refreshDisplay()
 
 	// Rebuild
 	this->buildRepresentation();
-	this->updateSelectionShapeDisplay();
 
 	// Update action box
 	GraphicActuator::refreshDisplay();
@@ -148,16 +147,8 @@ QPainterPath FsmGraphicState::shape() const
 	QPainterPath path;
 	QPainterPathStroker* stroker;
 
-	if (this->selectionShape != nullptr)
-	{
-		stroker = new QPainterPathStroker(selectionPen);
-		path.addEllipse(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)));
-	}
-	else
-	{
-		stroker = new QPainterPathStroker(defaultPen);
-		path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
-	}
+	stroker = new QPainterPathStroker(defaultPen);
+	path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
 
 	path.setFillRule(Qt::WindingFill);
 	path = path.united(stroker->createStroke(path));
@@ -285,10 +276,8 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 {
 	if (change == GraphicsItemChange::ItemPositionHasChanged)
 	{
-		//if (this->moveEventEnabled)
-		{
-			emit statePositionAboutToChangeEvent(this->logicComponentId);
-		}
+		emit statePositionAboutToChangeEvent(this->logicComponentId);
+
 		this->updateActionBoxPosition();
 	}
 	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
@@ -368,15 +357,21 @@ void FsmGraphicState::buildRepresentation()
 
 void FsmGraphicState::updateSelectionShapeDisplay()
 {
-	if ( (this->isSelected() == true) && (this->selectionShape == nullptr) )
+	if (this->isSelected() == true)
 	{
-		this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
-		this->selectionShape->setPen(selectionPen);
+		if (this->selectionShape == nullptr)
+		{
+			this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
+			this->selectionShape->setPen(selectionPen);
+		}
+		else
+		{
+			this->selectionShape->setVisible(true);
+		}
 	}
 	else if ( (this->isSelected() == false) && (this->selectionShape != nullptr) )
 	{
-		delete this->selectionShape;
-		this->selectionShape = nullptr;
+		this->selectionShape->setVisible(false);
 	}
 }
 

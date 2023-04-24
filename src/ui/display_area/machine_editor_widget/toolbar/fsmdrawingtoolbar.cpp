@@ -79,15 +79,6 @@ FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
 	connect(this->actionAddTransition,   &QAction::triggered, this, &FsmDrawingToolBar::transitionToolRequestedEvent);
 }
 
-void FsmDrawingToolBar::resetTool()
-{
-	this->actionMouse->          setChecked(true);
-	this->actionAddInitialState->setChecked(false);
-	this->actionAddState->       setChecked(false);
-	this->actionAddTransition->  setChecked(false);
-	this->actionMouse->          setEnabled(false);
-}
-
 bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 {
 	bool result = false;
@@ -125,7 +116,11 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 		break;
 
 	case MachineBuilderTool_t::none:
-		this->resetTool();
+		this->actionMouse->          setChecked(true);
+		this->actionAddInitialState->setChecked(false);
+		this->actionAddState->       setChecked(false);
+		this->actionAddTransition->  setChecked(false);
+		this->actionMouse->          setEnabled(false);
 
 		result =  true;
 		break;

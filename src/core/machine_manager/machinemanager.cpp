@@ -176,6 +176,9 @@ void MachineManager::setSimulationMode(SimulationMode_t newMode)
 	}
 	else
 	{
+		// Reset tool when quitting edit mode
+		this->machineBuilder->resetTool();
+
 		// Build simulator
 		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
 		if (fsm != nullptr)

@@ -44,3 +44,8 @@ void MachineBuilder::setSingleUseTool(MachineBuilderSingleUseTool_t t)
 	emit this->singleUseToolSelected(t);
 }
 
+void MachineBuilder::resetTool()
+{
+	this->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+	this->setTool(MachineBuilderTool_t::none);
+}

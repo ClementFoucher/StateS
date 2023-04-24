@@ -41,9 +41,6 @@ public:
 
 	/////
 	// Object functions
-protected:
-	virtual void resetTool() override;
-
 protected slots:
 	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) override;
 

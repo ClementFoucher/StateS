@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,65 +31,41 @@ GenericScene::GenericScene()
 
 }
 
-void GenericScene::setDisplaySize(const QSize& newSize)
+QRectF GenericScene::getItemsBoundingRect()
 {
-	this->displaySize = newSize;
-	this->updateSceneRect();
-}
+	if (this->items().count() == 0) return QRectF();
 
-/**
- * @brief GenericScene::updateSceneRect
- * This function is called on resize, and
- * when mouse button release (can be item moved).
- * Not dynamically linked to item moving event,
- * as it caused too much difficulty with asynchonous
- * events. Mutex did no good as it desynchronized item
- * position and mouse position.
- *
- * Scene size is at least size of the display view,
- * But can be bigger is machine is bigger
- */
-void GenericScene::updateSceneRect()
-{
-	// Initially, set scene to be size of display, centered on point 0
-	// As this is this base view that will be extended,
-	// Point (0, 0) will always be part of displayed scene.
-	// This is to avoid moving a single state and dynamically recalculating
-	// rect to center on it... Quickly comes to high position values.
-	QRect baseDisplayRectangle(QPoint(-this->displaySize.width()/2, -this->displaySize.height()/2), this->displaySize);
+	// Use one item to initialize rect
+	auto firstItem = this->items().at(0);
+	qreal leftmostPosition   = firstItem->mapToScene(firstItem->boundingRect().topLeft()).x();
+	qreal topmostPosition    = firstItem->mapToScene(firstItem->boundingRect().topLeft()).y();
+	qreal rightmostPosition  = firstItem->mapToScene(firstItem->boundingRect().bottomRight()).x();
+	qreal bottommostPosition = firstItem->mapToScene(firstItem->boundingRect().bottomRight()).y();
 
-
-	// Then adjust to include items not seen (includes a margin)
-	int leftmostPosition   = baseDisplayRectangle.topLeft().x();
-	int topmostPosition    = baseDisplayRectangle.topLeft().y();
-	int rightmostPosition  = baseDisplayRectangle.bottomRight().x();
-	int bottommostPosition = baseDisplayRectangle.bottomRight().y();
-
-	int margin = 100;
-
+	// Then adjust to include all items
 	for (QGraphicsItem* item : this->items())
 	{
 		// Get item's boundig box scene coordinates
 		// Use two points instead of the rect to avoid polygon conversion
-		QPointF itemTopLeftF     = item->mapToScene(item->boundingRect().topLeft());
-		QPoint  itemTopLeft      = itemTopLeftF.toPoint();
-		QPointF itemBottomRightF = item->mapToScene(item->boundingRect().bottomRight());
-		QPoint  itemBottomRight  = itemBottomRightF.toPoint();
+		QPointF itemTopLeft     = item->mapToScene(item->boundingRect().topLeft());
+		QPointF itemBottomRight = item->mapToScene(item->boundingRect().bottomRight());
 
-		if (itemTopLeft.x()-margin < leftmostPosition)
-			leftmostPosition = itemTopLeft.x()-margin;
+		if (itemTopLeft.x() < leftmostPosition)
+			leftmostPosition = itemTopLeft.x();
 
-		if (itemTopLeft.y()-margin < topmostPosition)
-			topmostPosition = itemTopLeft.y()-margin;
+		if (itemTopLeft.y() < topmostPosition)
+			topmostPosition = itemTopLeft.y();
 
-		if (itemBottomRight.x()+margin > rightmostPosition)
-			rightmostPosition = itemBottomRight.x()+margin;
+		if (itemBottomRight.x() > rightmostPosition)
+			rightmostPosition = itemBottomRight.x();
 
-		if (itemBottomRight.y()+margin > bottommostPosition)
-			bottommostPosition = itemBottomRight.y()+margin;
+		if (itemBottomRight.y() > bottommostPosition)
+			bottommostPosition = itemBottomRight.y();
 	}
 
-	QRect finalDisplayRectangle(QPoint(leftmostPosition, topmostPosition), QPoint(rightmostPosition, bottommostPosition));
+	// Build rect with a margin
+	const int margin = 100;
+	QRectF finalDisplayRectangle(QPoint(leftmostPosition-margin, topmostPosition-margin), QPoint(rightmostPosition+margin, bottommostPosition+margin));
 
-	this->setSceneRect(finalDisplayRectangle);
+	return finalDisplayRectangle;
 }

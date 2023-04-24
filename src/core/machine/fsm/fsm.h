@@ -37,6 +37,7 @@ class FsmTransition;
 class Fsm : public Machine
 {
 	Q_OBJECT
+
 	/////
 	// Constructors/destructors
 public:
@@ -78,7 +79,7 @@ private:
 	// Object variables
 private:
 	//FSM characteristic
-	componentId_t initialStateId;
+	componentId_t initialStateId = 0;
 
 	// Maintain lists of states and transitions to allow fast access
 	QList<componentId_t> states;

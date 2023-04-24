@@ -37,7 +37,7 @@
 #include "fsm.h"
 #include "contextmenu.h"
 #include "inputsselector.h"
-#include "fsmsimulator.h"
+#include "machinesimulator.h"
 
 
 SimulatorTab::SimulatorTab(QWidget* parent) :
@@ -78,9 +78,11 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 				this->buttonTriggerSimulation->setText(tr("End simulation"));
 
 				machineManager->setSimulationMode(SimulationMode_t::simulateMode);
-				this->simulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+				auto simulator = machineManager->getMachineSimulator();
+				if (simulator == nullptr) return;
+
 				// Reset simulator to reset graphic part which have been created when setSimulator emited mode change event
-				this->simulator->reset();
+				simulator->reset();
 
 				this->simulationTools = new QWidget();
 				this->simulationTools->setLayout(new QVBoxLayout());
@@ -116,9 +118,9 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 				autoStepLayout->addWidget(autoStepUnit);
 				autoStepLayout->addWidget(this->buttonTriggerAutoStep);
 
-				connect(buttonReset,                 &QPushButton::clicked, this->simulator.get(), &FsmSimulator::reset);
-				connect(buttonNextStep,              &QPushButton::clicked, this->simulator.get(), &FsmSimulator::doStep);
-				connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,                  &SimulatorTab::buttonLauchAutoStepClicked);
+				connect(buttonReset,                 &QPushButton::clicked, simulator.get(), &MachineSimulator::reset);
+				connect(buttonNextStep,              &QPushButton::clicked, simulator.get(), &MachineSimulator::doStep);
+				connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,            &SimulatorTab::buttonLauchAutoStepClicked);
 
 				timeManagerLayout->addWidget(buttonReset);
 				timeManagerLayout->addWidget(buttonNextStep);
@@ -168,7 +170,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			delete this->simulationTools;
 			this->simulationTools = nullptr;
 
-			this->simulator.reset();
 			machineManager->setSimulationMode(SimulationMode_t::editMode);
 
 			this->buttonTriggerSimulation->setText(tr("Start simulation"));
@@ -178,24 +179,30 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 
 void SimulatorTab::buttonLauchAutoStepClicked()
 {
+	auto simulator = machineManager->getMachineSimulator();
+	if (simulator == nullptr) return;
+
 	if (this->buttonTriggerAutoStep->isChecked())
 	{
 		float value = this->autoStepValue->text().toFloat() * 1000;
 		if (value != 0)
-			this->simulator->start(value);
+			simulator->start(value);
 		else
-			this->simulator->start(1000);
+			simulator->start(1000);
 
 		this->buttonTriggerAutoStep->setText(tr("Suspend"));
 	}
 	else
 	{
-		this->simulator->suspend();
+		simulator->suspend();
 		this->buttonTriggerAutoStep->setText(tr("Launch"));
 	}
 }
 
 void SimulatorTab::delayOptionToggleEventHandler(bool enabled)
 {
-	this->simulator->enableOutputDelay(enabled);
+	auto simulator = machineManager->getMachineSimulator();
+	if (simulator == nullptr) return;
+
+	simulator->enableOutputDelay(enabled);
 }

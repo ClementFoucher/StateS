@@ -82,11 +82,11 @@ void MachineEditorWidget::simulationModeToggledEventHandler(SimulationMode_t new
 {
 	if (newMode == SimulationMode_t::simulateMode)
 	{
-		this->drawingToolBar->setEnabled(false);
+		this->drawingToolBar->setVisible(false);
 	}
 	else
 	{
-		this->drawingToolBar->setEnabled(true);
+		this->drawingToolBar->setVisible(true);
 	}
 }
 

@@ -322,7 +322,7 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
 		this->updateSelectionShapeDisplay();
 	}
 
-	return QGraphicsItem::itemChange(change, value);
+	return QGraphicsItemGroup::itemChange(change, value);
 }
 
 void FsmGraphicTransition::transitionNeedsRefreshEventHandler()
@@ -389,7 +389,10 @@ void FsmGraphicTransition::treatMenu(QAction* action)
 void FsmGraphicTransition::clearRepresentation()
 {
 	delete this->arrowBody;
-	this->arrowBody     = nullptr;
+	this->arrowBody = nullptr;
+
+	delete this->selectionShape;
+	this->selectionShape = nullptr;
 }
 
 void FsmGraphicTransition::buildRepresentation()
@@ -632,20 +635,25 @@ void FsmGraphicTransition::rebuildBoundingShape()
 	}
 
 	this->boundingShape = t.map(path);
-
-	this->update();
-	this->updateSelectionShapeDisplay();
 }
 
 void FsmGraphicTransition::updateSelectionShapeDisplay()
 {
-	delete this->selectionShape;
-	this->selectionShape = nullptr;
-
-	if (this->isSelected())
+	if (this->isSelected() == true)
 	{
-		this->selectionShape = new QGraphicsPathItem(this->boundingShape, this);
-		this->selectionShape->setPen(selectionPen);
+		if (this->selectionShape == nullptr)
+		{
+			this->selectionShape = new QGraphicsPathItem(this->boundingShape, this);
+			this->selectionShape->setPen(selectionPen);
+		}
+		else
+		{
+			this->selectionShape->setVisible(true);
+		}
+	}
+	else if ( (this->isSelected() == false) && (this->selectionShape != nullptr) )
+	{
+		this->selectionShape->setVisible(false);
 	}
 }
 

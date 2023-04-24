@@ -90,10 +90,15 @@ protected:
 	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
 private slots:
+	// Machine manager signals
 	void simulationModeChangeEventHandler(SimulationMode_t newMode);
+	void machineUpdatedEventHandler();
+
+	// Tools signals
 	void toolChangeEventHandler(MachineBuilderTool_t newTool);
 	void singleUseToolChangeEventHandler(MachineBuilderSingleUseTool_t newTool);
 
+	// States signals
 	void stateCallsEditEventHandler(componentId_t stateId);
 	void stateCallsRenameEventHandler(componentId_t stateId);
 	void stateCallsDeleteEventHandler(componentId_t stateId);
@@ -101,18 +106,21 @@ private slots:
 	void stateCallsBeginTransitionEventHandler(componentId_t stateId);
 	void statePositionAboutToChangeEventHandler(componentId_t stateId);
 
+	// Transitions signals
 	void transitionCallsDynamicSourceEventHandler(componentId_t transitionId);
 	void transitionCallsDynamicTargetEventHandler(componentId_t transitionId);
 	void transitionCallsEditEventHandler(componentId_t transitionId);
 	void transitionCallsDeleteEventHandler(componentId_t transitionId);
 
+	// Others
 	void handleSelection();
 	void treatMenu(QAction* action);
-	void updateSceneMode(FsmScene::SceneMode_t newMode);
 
 private:
+	// Scene mode
+	void updateSceneMode(FsmScene::SceneMode_t newMode);
+
 	// Scene clear/build
-	void machineUpdatedEventHandler();
 	void displayGraphicMachine();
 	void displaySimulatedMachine();
 	void clearScene();

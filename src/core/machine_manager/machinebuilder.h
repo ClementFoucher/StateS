@@ -44,6 +44,7 @@ public:
 	MachineBuilderTool_t getTool() const;
 	void setTool(MachineBuilderTool_t newTool);
 	void setSingleUseTool(MachineBuilderSingleUseTool_t t);
+	void resetTool();
 
 signals:
 	void changedToolEvent(MachineBuilderTool_t t);

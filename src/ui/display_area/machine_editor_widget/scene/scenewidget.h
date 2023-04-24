@@ -53,12 +53,14 @@ class SceneWidget : public StatesGraphicsView
 	/////
 	// Type declarations
 private:
-	enum class SceneMode_t { noScene, idle, movingScene, withTool };
+	enum class SceneMode_t { noScene, editing, simulating };
+	typedef enum : uint32_t { idle = 0, movingScene = 1, usingTool = 2} SceneAction_t;
 
 	/////
 	// Static variables
 private:
-	static double scaleFactor;
+	static const double scaleFactor;
+	static const qreal  sceneMargin;
 
 	/////
 	// Constructors/destructors
@@ -89,8 +91,11 @@ protected:
 
 private slots:
 	void machineReplacedEventHandler();
+	void sceneRectChangedEventHandler(QRectF sceneRect);
+	void simulationModeChangedEventHandler(SimulationMode_t newMode);
 
-	void updateMouseCursor(MouseCursor_t cursor);
+	void toolChangedEventHandler(MachineBuilderTool_t tool);
+	void singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool);
 
 	void zoomIn();
 	void zoomOut();
@@ -101,7 +106,8 @@ private:
 	void clearScene();
 	void buildScene();
 	void updateSceneMode(SceneMode_t newMode);
-	void updateDragMode();
+	void updateSceneAction(SceneAction_t action, bool enable);
+	void updateMouseCursor(MouseCursor_t cursor);
 	void setZoomPanelVisible(bool visible);
 	void setZoomLevel(qreal level);
 	qreal getZoomLevel() const;
@@ -119,9 +125,9 @@ private:
 	QPushButton* buttonZoomFit  = nullptr;
 
 	// Current state
-	SceneMode_t   sceneMode         = SceneMode_t::noScene;
-	SceneMode_t   previousSceneMode = SceneMode_t::noScene;
-	MouseCursor_t currentCursor     = MouseCursor_t::none;
+	SceneMode_t   sceneMode     = SceneMode_t::noScene;
+	uint32_t      currentAction = SceneAction_t::idle;
+	MouseCursor_t currentCursor = MouseCursor_t::none;
 
 };
 

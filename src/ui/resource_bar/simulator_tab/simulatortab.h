@@ -59,9 +59,6 @@ private slots:
 	/////
 	// Object variables
 private:
-	shared_ptr<FsmSimulator> simulator;
-
-	// QWidgets with parent
 	QPushButton  * buttonTriggerSimulation = nullptr;
 	QPushButton  * buttonTriggerAutoStep   = nullptr;
 //	CheckBoxHtml * checkBoxDelay           = nullptr; // Disabled (buggy)

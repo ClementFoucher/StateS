@@ -441,8 +441,6 @@ void StatesUi::machineUnsavedStateUpdated()
 
 void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 {
-	// TODO: moving states is allowed during simlulation, which can trigger undo availability.
-	// These should be obtained from the undo stack instead of just saved here.
 	static bool isUndoEnabled;
 	static bool isRedoEnabled;
 

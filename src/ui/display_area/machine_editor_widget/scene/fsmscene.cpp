@@ -300,12 +300,6 @@ void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
 		this->transmitMouseEvent = true;
 	}
 
-	// Update scene rect on mouse release because the mouse
-	// press/move can cause elements to be added to the scene,
-	// or move across the scene. Doing this on mouse move is
-	// too resource intensive for nothing.
-	this->updateSceneRect();
-
 	if (transmitEvent == true)
 	{
 		GenericScene::mouseReleaseEvent(me);
@@ -439,6 +433,18 @@ void FsmScene::simulationModeChangeEventHandler(SimulationMode_t newMode)
 			this->displaySimulatedMachine();
 		}
 	}
+}
+
+void FsmScene::machineUpdatedEventHandler()
+{
+	delete this->dummyTransition;
+	this->dummyTransition = nullptr;
+
+	this->transitionUnderEditId = 0;
+	this->sceneMode = SceneMode_t::idle;
+	this->transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
+
+	this->displayGraphicMachine();
 }
 
 void FsmScene::toolChangeEventHandler(MachineBuilderTool_t newTool)
@@ -691,7 +697,6 @@ void FsmScene::treatMenu(QAction* action)
 			machineManager->notifyMachineEdited();
 
 			this->addState(graphicState, true);
-			this->updateSceneRect(); // In case state was added at the edge of the scene
 		}
 		else if (action->text() == tr("Add initial state"))
 		{
@@ -702,7 +707,6 @@ void FsmScene::treatMenu(QAction* action)
 			machineManager->notifyMachineEdited();
 
 			this->addState(graphicState, true);
-			this->updateSceneRect(); // In case state was added at the edge of the scene
 		}
 	}
 }
@@ -746,37 +750,6 @@ void FsmScene::updateSceneMode(FsmScene::SceneMode_t newMode)
 	{
 		this->transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 	}
-
-	// Set mode
-	switch(this->sceneMode)
-	{
-	case SceneMode_t::addingInitialState:
-	case SceneMode_t::addingState:
-		emit this->updateCursorEvent(MouseCursor_t::state);
-		break;
-	case SceneMode_t::addingTransition:
-	case SceneMode_t::addingTransitionSingleUse:
-	case SceneMode_t::editingTransitionSource:
-	case SceneMode_t::editingTransitionTarget:
-		emit this->updateCursorEvent(MouseCursor_t::transition);
-		break;
-	case SceneMode_t::idle:
-	case SceneMode_t::simulating:
-		emit this->updateCursorEvent(MouseCursor_t::none);
-		break;
-	}
-}
-
-void FsmScene::machineUpdatedEventHandler()
-{
-	delete this->dummyTransition;
-	this->dummyTransition = nullptr;
-
-	this->transitionUnderEditId = 0;
-	this->sceneMode = SceneMode_t::idle;
-	this->transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
-
-	this->displayGraphicMachine();
 }
 
 void FsmScene::displayGraphicMachine()

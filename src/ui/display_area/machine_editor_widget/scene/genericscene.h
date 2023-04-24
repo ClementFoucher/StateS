@@ -45,21 +45,12 @@ public:
 	/////
 	// Object functions
 public:
-	void setDisplaySize(const QSize& newSize);
+	QRectF getItemsBoundingRect();
 
 signals:
 	void itemSelectedEvent(componentId_t componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
-	void updateCursorEvent(MouseCursor_t newCursor);
-
-protected:
-	void updateSceneRect();
-
-	/////
-	// Object variables
-private:
-	QSize displaySize;
 
 };
 

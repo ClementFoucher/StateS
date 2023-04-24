@@ -44,8 +44,6 @@ protected:
 	void beginAddActions();
 	void endAddActions();
 
-	virtual void resetTool() = 0;
-
 protected slots:
 	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) = 0;
 
