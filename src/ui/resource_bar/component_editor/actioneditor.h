@@ -69,9 +69,17 @@ private:
 	};
 
 	/////
+	// Static variables
+protected:
+	// Remember user choise regarding hint collapse
+	static bool hintCollapsed;
+
+	/////
 	// Constructors/destructors
 public:
 	explicit ActionEditor(componentId_t actuatorId, QString title, QWidget* parent = nullptr);
+
+	~ActionEditor();
 
 	/////
 	// Object functions

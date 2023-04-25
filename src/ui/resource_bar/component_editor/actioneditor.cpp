@@ -52,6 +52,9 @@
 #include "exceptiontypes.h"
 
 
+bool ActionEditor::hintCollapsed = false;
+
+
 ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* parent) :
     QWidget(parent)
 {
@@ -102,6 +105,10 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 
 	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
 	QString hintTitle = tr("Hint:") + " " + tr("Editing actions");
+	if (ActionEditor::hintCollapsed == true)
+	{
+		this->hintDisplay->setCollapsed(true);
+	}
 
 	QString hint;
 	hint += "<br />";
@@ -118,6 +125,11 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 
 	this->fillFirstColumn();
 	this->updateButtonsEnableState();
+}
+
+ActionEditor::~ActionEditor()
+{
+	ActionEditor::hintCollapsed = this->hintDisplay->getCollapsed();
 }
 
 void ActionEditor::keyPressEvent(QKeyEvent* e)
