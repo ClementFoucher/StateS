@@ -47,9 +47,12 @@ using namespace std;
 // Static elements
 //
 
-const qreal  FsmGraphicState::radius       = 50;
+const qreal FsmGraphicState::radius = 50;
+
 const QBrush FsmGraphicState::defaultBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
-const QPen   FsmGraphicState::defaultPen   = QPen(Qt::SolidPattern, 3);
+
+const QPen FsmGraphicState::defaultPen = QPen(Qt::SolidPattern, 3);
+const QPen FsmGraphicState::hoverPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 
 qreal FsmGraphicState::getRadius()
 {
@@ -98,6 +101,8 @@ FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
 	this->setFlag(QGraphicsItem::ItemIsFocusable);
 	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 	this->setFlag(QGraphicsItem::ItemClipsToShape);
+
+	this->setAcceptHoverEvents(true);
 
 	this->buildRepresentation();
 }
@@ -299,6 +304,16 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 	}
 
 	return QGraphicsEllipseItem::itemChange(change, value);
+}
+
+void FsmGraphicState::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+	this->setPen(FsmGraphicState::hoverPen);
+}
+
+void FsmGraphicState::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+{
+	this->setPen(FsmGraphicState::defaultPen);
 }
 
 void FsmGraphicState::treatMenu(QAction* action)

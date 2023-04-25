@@ -33,14 +33,6 @@ class QAction;
 #include "statestypes.h"
 
 
-// FsmGraphicTransition has a dynamic behavior.
-// When setting dynamic mode, all changes will be stored in a temporary way
-// that overseedes the current parameters, but not overrite them. They only
-// takes precedence when existing.
-// In the end, keepChanges indicates wheter we should keep
-// the changes made, and all appropriate actions will be taken wrt. logic FSM,
-// or discard changes and delete dynamic parameters.
-
 class FsmGraphicTransition : public GraphicActuator, public QGraphicsItemGroup
 {
 	Q_OBJECT
@@ -63,8 +55,9 @@ protected:
 private:
 	static const qreal arrowEndSize;
 	static const qreal conditionLineLength;
-	static const QPen  editPen;
-	static const QPen  highlightPen;
+	static const QPen  drawingPen;
+	static const QPen  underEditPen;
+	static const QPen  hoverPen;
 
 	/////
 	// Constructors/destructors
@@ -110,6 +103,8 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* event)                                  override;
 	virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev)                    override;
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event)                 override;
+	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)                 override;
 
 private slots:
 	void transitionNeedsRefreshEventHandler();
@@ -122,6 +117,7 @@ private:
 	void initializeDefaults();
 	void buildChildren();
 	void repositionChildren();
+	void repaint();
 	void rebuildBoundingShape();
 	void updateSelectionShapeDisplay();
 
@@ -148,6 +144,7 @@ private:
 	QPointF mousePosition;
 	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
 	componentId_t dynamicStateId = 0;
+	bool isUnderEdit = false;
 
 	// Components of the arrow
 	QGraphicsItem*     arrowBody      = nullptr;

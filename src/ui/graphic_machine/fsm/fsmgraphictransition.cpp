@@ -52,9 +52,11 @@ using namespace std;
 
 const qreal FsmGraphicTransition::arrowEndSize = 10;
 const qreal FsmGraphicTransition::conditionLineLength = 20;
-const QPen FsmGraphicTransition::defaultPen = QPen(Qt::SolidPattern, 3);
-const QPen FsmGraphicTransition::editPen = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
-const QPen FsmGraphicTransition::highlightPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
+
+const QPen FsmGraphicTransition::defaultPen   = QPen(Qt::SolidPattern, 3);
+const QPen FsmGraphicTransition::drawingPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
+const QPen FsmGraphicTransition::underEditPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
+const QPen FsmGraphicTransition::hoverPen     = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 
 
 QPixmap FsmGraphicTransition::getPixmap(uint size)
@@ -125,7 +127,7 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 	}
 
 	this->initializeDefaults();
-	this->currentPen = &editPen;
+	this->currentPen = &drawingPen;
 
 	if (sourceStateId != 0)
 	{
@@ -208,8 +210,8 @@ void FsmGraphicTransition::setUnderEdit(bool edit)
 {
 	if (edit == true)
 	{
-		this->currentPen          = &highlightPen;
-		this->currentConditionPen = &highlightPen;
+		this->currentPen          = &underEditPen;
+		this->currentConditionPen = &underEditPen;
 	}
 	else
 	{
@@ -217,7 +219,8 @@ void FsmGraphicTransition::setUnderEdit(bool edit)
 		this->currentConditionPen = &defaultPen;
 	}
 
-	this->refreshDisplay();
+	this->isUnderEdit = edit;
+	this->repaint();
 }
 
 void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
@@ -323,6 +326,21 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
 	}
 
 	return QGraphicsItemGroup::itemChange(change, value);
+}
+
+void FsmGraphicTransition::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+	// Temporarity override current color
+	this->currentPen          = &FsmGraphicTransition::hoverPen;
+	this->currentConditionPen = &FsmGraphicTransition::hoverPen;
+
+	this->repaint();
+}
+
+void FsmGraphicTransition::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+{
+	// Restore color depending on edit mode
+	this->setUnderEdit(this->isUnderEdit);
 }
 
 void FsmGraphicTransition::transitionNeedsRefreshEventHandler()
@@ -487,6 +505,8 @@ void FsmGraphicTransition::buildRepresentation()
 
 		this->rebuildBoundingShape();
 	}
+
+	this->repaint();
 }
 
 void FsmGraphicTransition::initializeDefaults()
@@ -497,6 +517,8 @@ void FsmGraphicTransition::initializeDefaults()
 	this->setFlag(QGraphicsItem::ItemIsSelectable);
 	this->setFlag(QGraphicsItem::ItemIsFocusable);
 	this->setFlag(QGraphicsItem::ItemClipsToShape);
+
+	this->setAcceptHoverEvents(true);
 }
 
 void FsmGraphicTransition::buildChildren()
@@ -511,7 +533,6 @@ void FsmGraphicTransition::buildChildren()
 	arrowPath.lineTo(0, this->arrowEndSize);
 
 	this->arrowEnd = new QGraphicsPathItem(arrowPath, this);
-	this->arrowEnd->setPen(*this->currentPen);
 
 	//
 	// Condition line
@@ -527,18 +548,40 @@ void FsmGraphicTransition::repositionChildren()
 {
 	this->arrowEnd->setRotation(this->arrowEndAngle);
 	this->arrowEnd->setPos(this->arrowEndPosition);
-	this->arrowEnd->setPen(*this->currentPen);
 
 	if (this->conditionLine != nullptr)
 	{
 		this->conditionLine->setRotation(this->conditionLineAngle);
 		this->conditionLine->setPos(this->conditionLinePos);
-		this->conditionLine->setPen(*this->currentConditionPen);
 	}
 
 	if (this->conditionText != nullptr)
 	{
 		this->conditionText->setPos(mapToScene(this->conditionLinePos) + QPointF(0, 5));
+	}
+}
+
+void FsmGraphicTransition::repaint()
+{
+	this->arrowEnd->setPen(*this->currentPen);
+
+	if (this->conditionLine != nullptr)
+	{
+		this->conditionLine->setPen(*this->currentConditionPen);
+	}
+
+	QGraphicsLineItem* line = dynamic_cast<QGraphicsLineItem*>(this->arrowBody);
+	if (line != nullptr)
+	{
+		line->setPen(*this->currentPen);
+		return;
+	}
+
+	QGraphicsPathItem* arcItem = dynamic_cast<QGraphicsPathItem*>(this->arrowBody);
+	if (arcItem != nullptr)
+	{
+		arcItem->setPen(*this->currentPen);
+		return;
 	}
 }
 
@@ -686,7 +729,6 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 
 	// Create line graphic representation
 	QGraphicsLineItem* line = new QGraphicsLineItem(this);
-	line->setPen(*this->currentPen);
 	line->setLine(straightLine);
 	this->arrowBody = line;
 
@@ -780,7 +822,6 @@ void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 	arc.lineTo(stateCenterToArcEndVector.p2());
 
 	QGraphicsPathItem* arcItem = new QGraphicsPathItem(arc, this);
-	arcItem->setPen(*this->currentPen);
 	this->arrowBody = arcItem;
 
 	//
@@ -872,7 +913,6 @@ void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPoi
 	path.quadTo(deltaSystemCPoint, deltaSystemXVector.p2());
 
 	QGraphicsPathItem* curve = new QGraphicsPathItem(path, this);
-	curve->setPen(*this->currentPen);
 
 	// Drawing in a horizontal coordinates, then rotate.
 	// This is probably too much, but it was easier to reprensent in my mind ;)

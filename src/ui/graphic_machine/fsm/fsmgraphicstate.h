@@ -49,6 +49,7 @@ protected:
 	static const qreal  radius;
 	static const QBrush defaultBrush;
 	static const QPen   defaultPen;
+	static const QPen   hoverPen;
 
 	/////
 	// Constructors/destructors
@@ -80,6 +81,8 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* event)                                  override;
 	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event)                 override;
+	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)                 override;
 
 private slots:
 	void treatMenu(QAction* action);

@@ -73,6 +73,8 @@ FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
 	this->setFlag(QGraphicsItem::ItemIsFocusable,  false);
 	this->setFlag(QGraphicsItem::ItemClipsToShape, false);
 
+	this->setAcceptHoverEvents(false);
+
 	auto condition = logicTransition->getCondition();
 	if (condition != nullptr) // nullptr is still a valid condition
 	{

@@ -71,6 +71,8 @@ FsmSimulatedState::FsmSimulatedState(componentId_t logicComponentId) :
 	this->setFlag(QGraphicsItem::ItemIsFocusable,               false);
 	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
 	this->setFlag(QGraphicsItem::ItemClipsToShape,              false);
+
+	this->setAcceptHoverEvents(false);
 }
 
 FsmSimulatedState::~FsmSimulatedState()
