@@ -278,14 +278,16 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 	}
 
 	// Connect new machine
-
-	// Event propagation
-	connect(newMachine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
-	connect(newMachine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
-	connect(newMachine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
-	connect(newMachine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
-	connect(newMachine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
-	// Event handling
-	connect(newMachine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
-	connect(newMachine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
+	if (this->machine != nullptr)
+	{
+		// Event propagation
+		connect(this->machine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
+		connect(this->machine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
+		connect(this->machine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
+		connect(this->machine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
+		connect(this->machine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
+		// Event handling
+		connect(this->machine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
+		connect(this->machine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
+	}
 }
