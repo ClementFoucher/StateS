@@ -109,9 +109,11 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 		if (inputs[i]->getSize() > 1)
 		{
 			inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-			QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(inputs[i]->getSize()));
-			inputsGroup->addToGroup(sizeText);
-			sizeText->setPos(-signalsLinesWidth/2 - sizeText->boundingRect().width(), currentLineY - sizeText->boundingRect().height());
+			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
+			QString textSize = "<span style=\"color:black;\">" + QString::number(inputs[i]->getSize()) + "</span>";
+			sizeTextItem->setHtml(textSize);
+			inputsGroup->addToGroup(sizeTextItem);
+			sizeTextItem->setPos(-signalsLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
 		}
 
 		currentInputY += textItem->boundingRect().height();
@@ -146,9 +148,11 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 		if (outputs[i]->getSize() > 1)
 		{
 			outputsGroup->addToGroup(new QGraphicsLineItem(signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-			QGraphicsTextItem* sizeText = new QGraphicsTextItem(QString::number(outputs[i]->getSize()));
-			outputsGroup->addToGroup(sizeText);
-			sizeText->setPos(signalsLinesWidth/2, currentLineY - sizeText->boundingRect().height());
+			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
+			QString textSize = "<span style=\"color:black;\">" + QString::number(outputs[i]->getSize()) + "</span>";
+			sizeTextItem->setHtml(textSize);
+			outputsGroup->addToGroup(sizeTextItem);
+			sizeTextItem->setPos(signalsLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
 		}
 
 		currentOutputY += textItem->boundingRect().height();
