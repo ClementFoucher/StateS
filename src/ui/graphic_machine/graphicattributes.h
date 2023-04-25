@@ -44,13 +44,13 @@ public:
 	/////
 	// Object functions
 public:
-	void addAttribute(uint componentId, attribute_t newAttribute);
-	QList<attribute_t> getAttributes(uint componentId);
+	void addAttribute(uint componentId, QString name, QString value);
+	QString getAttribute(uint componentId, QString name);
 
 	/////
 	// Object variables
 private:
-	QMap<uint, QList<attribute_t> > attributes;
+	QMap<componentId_t, QMap<QString, QString>> attributes;
 
 };
 

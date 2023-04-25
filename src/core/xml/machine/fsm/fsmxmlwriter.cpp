@@ -82,20 +82,8 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 			this->stream->writeAttribute("IsInitial", "true");
 		}
 
-		auto graphicComponentAttributes = fsmGraphicAttributes->getAttributes(stateId);
-		QString x;
-		QString y;
-		for (auto &property : graphicComponentAttributes)
-		{
-			if (property.first == "X")
-			{
-				x = property.second;
-			}
-			else if (property.first == "Y")
-			{
-				y = property.second;
-			}
-		}
+		QString x = fsmGraphicAttributes->getAttribute(stateId, "X");
+		QString y = fsmGraphicAttributes->getAttribute(stateId, "Y");
 
 		if ( (this->mode == MachineXmlWriterMode_t::writeToFile) && (this->viewConfiguration != nullptr) ) // Full save to file
 		{
@@ -140,15 +128,7 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 		this->stream->writeAttribute("Source", sourceState->getName());
 		this->stream->writeAttribute("Target", targetState->getName());
 
-		auto graphicComponentAttributes = fsmGraphicAttributes->getAttributes(transitionId);
-		QString sliderPosition;
-		for (auto &property : graphicComponentAttributes)
-		{
-			if (property.first == "SliderPos")
-			{
-				sliderPosition = property.second;
-			}
-		}
+		QString sliderPosition = fsmGraphicAttributes->getAttribute(transitionId, "SliderPos");
 
 		this->stream->writeAttribute("SliderPos", sliderPosition);
 

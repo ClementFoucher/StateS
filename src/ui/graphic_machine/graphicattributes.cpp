@@ -29,24 +29,25 @@ GraphicAttributes::GraphicAttributes(QObject* parent) :
 
 }
 
-void GraphicAttributes::addAttribute(uint componentId, attribute_t newAttribute)
+void GraphicAttributes::addAttribute(uint componentId, QString name, QString value)
 {
 	if (this->attributes.contains(componentId) == false)
 	{
-		this->attributes[componentId] = QList<attribute_t>();
+		this->attributes[componentId] = QMap<QString, QString>();
 	}
 
-	this->attributes[componentId].append(newAttribute);
+	this->attributes[componentId][name] = value;
 }
 
-QList<attribute_t> GraphicAttributes::getAttributes(uint componentId)
+QString GraphicAttributes::getAttribute(uint componentId, QString name)
 {
 	if (this->attributes.contains(componentId) == true)
 	{
-		return this->attributes[componentId];
+		if (this->attributes[componentId].contains(name))
+		{
+			return this->attributes[componentId][name];
+		}
 	}
-	else
-	{
-		return QList<attribute_t>();
-	}
+
+	return QString();
 }

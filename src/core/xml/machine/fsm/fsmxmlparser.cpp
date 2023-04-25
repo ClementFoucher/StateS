@@ -334,20 +334,22 @@ void FsmXmlParser::parseState()
 		// Get position
 		bool positionOk = true;
 
-		qreal x = attributes.value("X").toDouble(&ok);
+		QString xStr = attributes.value("X").toString();
+		xStr.toDouble(&ok);
 		if (ok == true)
 		{
-			this->graphicAttributes->addAttribute(stateId, attribute_t("X", QString::number(x)));
+			this->graphicAttributes->addAttribute(stateId, "X", xStr);
 		}
 		else
 		{
 			positionOk = false;
 		}
 
-		qreal y = attributes.value("Y").toDouble(&ok);
+		QString yStr = attributes.value("Y").toString();
+		yStr.toDouble(&ok);
 		if (ok == true)
 		{
-			this->graphicAttributes->addAttribute(stateId, attribute_t("Y", QString::number(y)));
+			this->graphicAttributes->addAttribute(stateId, "Y", yStr);
 		}
 		else
 		{
@@ -404,16 +406,13 @@ void FsmXmlParser::parseTransition()
 		auto transition = fsm->getTransition(transitionId);
 
 		// Get slider position
-		QString sliderPosString = attributes.value("SliderPos").toString();
-		qreal sliderPos;
-		if (!sliderPosString.isEmpty())
+		QString sliderPosStr = attributes.value("SliderPos").toString();
+		if (sliderPosStr.isNull() == false)
 		{
-			bool ok;
-			sliderPos = sliderPosString.toFloat(&ok)/100;
-
+			sliderPosStr.toDouble(&ok);
 			if (ok == true)
 			{
-				this->graphicAttributes->addAttribute(transitionId, attribute_t("SliderPos", QString::number(sliderPos)));
+				this->graphicAttributes->addAttribute(transitionId, "SliderPos", sliderPosStr);
 			}
 			else
 			{

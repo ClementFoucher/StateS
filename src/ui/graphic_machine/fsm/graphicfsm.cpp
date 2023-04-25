@@ -60,8 +60,8 @@ shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
 	{
 		auto id = state->getLogicComponentId();
 		auto scenePos = state->scenePos();
-		machineConfiguration->addAttribute(id, attribute_t("X", QString::number(scenePos.x())));
-		machineConfiguration->addAttribute(id, attribute_t("Y", QString::number(scenePos.y())));
+		machineConfiguration->addAttribute(id, "X", QString::number(scenePos.x()));
+		machineConfiguration->addAttribute(id, "Y", QString::number(scenePos.y()));
 	}
 
 	auto transitions = this->getTransitions();
@@ -69,7 +69,7 @@ shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
 	{
 		auto id = transition->getLogicComponentId();
 		auto sliderPos = transition->getConditionLineSliderPosition()*100;
-		machineConfiguration->addAttribute(id, attribute_t("SliderPos", QString::number(sliderPos)));
+		machineConfiguration->addAttribute(id, "SliderPos", QString::number(sliderPos));
 	}
 
 	return machineConfiguration;
@@ -217,19 +217,27 @@ void GraphicFsm::buildStates(shared_ptr<GraphicAttributes> configuration)
 	auto logicStatesIds = fsm->getAllStatesIds();
 	for (auto logicStateId : logicStatesIds)
 	{
-		auto graphicAttributes = configuration->getAttributes(logicStateId);
+		QString xStr = configuration->getAttribute(logicStateId, "X");
+		QString yStr = configuration->getAttribute(logicStateId, "Y");
+
+		bool ok;
 		qreal x = 0;
 		qreal y = 0;
 
-		for (auto &property : graphicAttributes)
+		if (xStr.isNull() == false)
 		{
-			if (property.first == "X")
+			qreal xReal = xStr.toDouble(&ok);
+			if (ok == true)
 			{
-				x = property.second.toDouble();
+				x = xReal;
 			}
-			else if (property.first == "Y")
+		}
+		if (yStr.isNull() == false)
+		{
+			qreal yReal = yStr.toDouble(&ok);
+			if (ok == true)
 			{
-				y = property.second.toDouble();
+				y = yReal;
 			}
 		}
 
@@ -245,14 +253,16 @@ void GraphicFsm::buildTransitions(shared_ptr<GraphicAttributes> configuration)
 	auto logicTransitionsIds = fsm->getAllTransitionsIds();
 	for (auto logicTransitionId : logicTransitionsIds)
 	{
-		auto graphicAttributes = configuration->getAttributes(logicTransitionId);
-		qreal sliderPos = 0;
+		QString sliderPosStr = configuration->getAttribute(logicTransitionId, "SliderPos");
+		bool ok;
+		qreal sliderPos = 0.5;
 
-		for (auto &property : graphicAttributes)
+		if (sliderPosStr.isNull() == false)
 		{
-			if (property.first == "SliderPos")
+			qreal sliderPosReal = sliderPosStr.toDouble(&ok);
+			if (ok == true)
 			{
-				sliderPos = property.second.toDouble();
+				sliderPos = sliderPosReal/100;
 			}
 		}
 

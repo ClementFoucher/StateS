@@ -30,7 +30,6 @@
 // Typedefs
 
 typedef ulong componentId_t;
-typedef QPair<QString, QString> attribute_t;
 
 
 /////
