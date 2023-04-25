@@ -284,7 +284,7 @@ void ActionEditor::selectionChangedEventHandler(const QItemSelection&, const QIt
 
 	QModelIndexList selectedRows = selectionModel->selectedRows();
 
-	foreach (QModelIndex index, selectedRows)
+	for (QModelIndex index : selectedRows)
 	{
 		this->latestSelection.append(actuator->getAction(index.row()));
 	}
@@ -307,7 +307,7 @@ void ActionEditor::displayAddActionMenu() const
 		menu = new ContextMenu();
 		menu->setListStyle();
 
-		foreach(shared_ptr<Signal> var, availableActions)
+		for (shared_ptr<Signal> var : availableActions)
 		{
 			menu->addAction(var->getName());
 		}
@@ -357,7 +357,7 @@ void ActionEditor::processAddActionMenuEventHandler(QAction* action)
 
 	QString signalName = action->text();
 	// Find signal from name
-	foreach (shared_ptr<Signal> var, machine->getWrittableSignals())
+	for (shared_ptr<Signal> var : machine->getWrittableSignals())
 	{
 		if (var->getName() == signalName)
 		{
@@ -499,7 +499,7 @@ void ActionEditor::moveSelectedActionsUp()
 	QList<int> selectedActionsRanks;
 
 	QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
-	foreach (QModelIndex index, rows)
+	for (QModelIndex index : rows)
 	{
 		selectedActionsRanks.append(index.row());
 	}
@@ -513,7 +513,7 @@ void ActionEditor::moveSelectedActionsUp()
 		if (currentActionRank != 0)
 		{
 			bool previousSelected = false;
-			foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+			for (QModelIndex index : this->actionTable->selectionModel()->selectedRows())
 			{
 				if (index.row() == currentActionRank-1)
 				{
@@ -545,7 +545,7 @@ void ActionEditor::moveSelectedActionsDown()
 	QList<int> selectedActionsRanks;
 
 	QModelIndexList rows = this->actionTable->selectionModel()->selectedRows();
-	foreach (QModelIndex index, rows)
+	for (QModelIndex index : rows)
 	{
 		selectedActionsRanks.push_front(index.row());
 	}
@@ -559,7 +559,7 @@ void ActionEditor::moveSelectedActionsDown()
 		if (currentActionRank != this->actionTable->model()->rowCount()-1)
 		{
 			bool nextSelected = false;
-			foreach(QModelIndex index, this->actionTable->selectionModel()->selectedRows())
+			for (QModelIndex index : this->actionTable->selectionModel()->selectedRows())
 			{
 				if (index.row() == currentActionRank+1)
 				{
@@ -699,7 +699,7 @@ void ActionEditor::sortSelectionList()
 	{
 		for (int i = 0 ; i < this->actionTable->model()->rowCount() ; i++)
 		{
-			foreach (QModelIndex index, selectedItems.indexes())
+			for (QModelIndex index : selectedItems.indexes())
 			{
 				if (index.row() == i)
 				{
@@ -741,7 +741,7 @@ void ActionEditor::restoreSelection()
 	// First get locked references to previously selected actions
 	QVector<shared_ptr<ActionOnSignal>> previousSelection;
 
-	foreach (weak_ptr<ActionOnSignal> weakAction, this->latestSelection)
+	for (weak_ptr<ActionOnSignal> weakAction : this->latestSelection)
 	{
 		shared_ptr<ActionOnSignal> lockedAction = weakAction.lock();
 

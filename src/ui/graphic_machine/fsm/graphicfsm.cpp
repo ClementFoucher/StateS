@@ -301,7 +301,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 
 		// Transitions from source to trarget
 		auto logicState1 = fsm->getState(stateId1);
-		foreach (auto outgoingTransitionId, logicState1->getOutgoingTransitionsIds())
+		for (auto outgoingTransitionId : logicState1->getOutgoingTransitionsIds())
 		{
 			// Ignore current transition
 			if (outgoingTransitionId == transitionId) continue;
@@ -321,7 +321,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 		if (newFriend == nullptr)
 		{
 			auto logicState2 = fsm->getState(stateId2);
-			foreach (auto outgoingTransitionId, logicState2->getOutgoingTransitionsIds())
+			for (auto outgoingTransitionId : logicState2->getOutgoingTransitionsIds())
 			{
 				// Ignore current transition
 				if (outgoingTransitionId == transitionId) continue;

@@ -74,7 +74,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 		}
 
 		// Check transitions
-		foreach(auto stateId, fsm->getAllStatesIds())
+		for (auto stateId : fsm->getAllStatesIds())
 		{
 			auto state = fsm->getState(stateId);
 
@@ -82,7 +82,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 			bool errorOnTransition = false;
 
-			foreach(auto transitionId, state->getOutgoingTransitionsIds())
+			for (auto transitionId : state->getOutgoingTransitionsIds())
 			{
 				auto transition = fsm->getTransition(transitionId);
 				if (transition == nullptr) continue;
@@ -146,11 +146,11 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					bool detected = false;
 					uint rowcount = 0;
 					shared_ptr<Issue> currentIssue = nullptr;
-					foreach(QVector<LogicValue> row, result)
+					for (QVector<LogicValue> row : result)
 					{
 						uint trueCount = 0;
 						LogicValue valueTrue = LogicValue::getValue1(1);
-						foreach(LogicValue val, row)
+						for (LogicValue val : row)
 						{
 							if (val == valueTrue)
 								trueCount++;
@@ -188,7 +188,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 			if (!compat->isCompatible())
 			{
-				foreach(shared_ptr<Signal> sig, compat->bothMooreAndMealy)
+				for (shared_ptr<Signal> sig : compat->bothMooreAndMealy)
 				{
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Signal") + " " + sig->getName() + " "
@@ -198,7 +198,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				foreach(shared_ptr<Signal> sig, compat->bothTempAndKeepValue)
+				for (shared_ptr<Signal> sig : compat->bothTempAndKeepValue)
 				{
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Signal") + " " + sig->getName() + " "
@@ -208,7 +208,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				foreach(shared_ptr<Signal> sig, compat->rangeAdressed)
+				for (shared_ptr<Signal> sig : compat->rangeAdressed)
 				{
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Signal") + " " + sig->getName() + " "
@@ -218,7 +218,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				foreach(shared_ptr<Signal> sig, compat->mealyWithKeep)
+				for (shared_ptr<Signal> sig : compat->mealyWithKeep)
 				{
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Signal") + " " + sig->getName() + " "

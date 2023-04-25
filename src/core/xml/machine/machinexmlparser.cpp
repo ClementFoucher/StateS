@@ -268,7 +268,7 @@ void MachineXmlParser::parseAction()
 		QString signalName = attributes.value("Name").toString();
 
 		shared_ptr<Signal> signal;
-		foreach (shared_ptr<Signal> var, this->machine->getWrittableSignals())
+		for (shared_ptr<Signal> var : this->machine->getWrittableSignals())
 		{
 			if (var->getName() == signalName)
 				signal = var;
@@ -441,7 +441,7 @@ void MachineXmlParser::parseLogicEquation()
 
 	if (nodeName == "LogicVariable")
 	{
-		foreach (shared_ptr<Signal> var, this->machine->getReadableSignals())
+		for (shared_ptr<Signal> var : this->machine->getReadableSignals())
 		{
 			if (var->getName() == attributes.value("Name"))
 			{

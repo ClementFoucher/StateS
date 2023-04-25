@@ -562,7 +562,7 @@ void Equation::computeCurrentValue()
 
 	uint operandsSize = 0;
 
-	foreach(shared_ptr<Signal> currentOperand, this->getOperands())
+	for (shared_ptr<Signal> currentOperand : this->getOperands())
 	{
 		if (currentOperand == nullptr)
 		{
@@ -670,7 +670,7 @@ void Equation::computeCurrentValue()
 		case EquationNature_t::concatOp:
 		{
 			int sizeCount = 0;
-			foreach (shared_ptr<Signal> currentOperand, this->getOperands())
+			for (shared_ptr<Signal> currentOperand : this->getOperands())
 			{
 				sizeCount += currentOperand->getSize();
 			}
@@ -678,7 +678,7 @@ void Equation::computeCurrentValue()
 			LogicValue concatVector(sizeCount);
 
 			int currentBit = sizeCount - 1;
-			foreach (shared_ptr<Signal> currentOperand, this->getOperands())
+			for (shared_ptr<Signal> currentOperand : this->getOperands())
 			{
 				for (int i = currentOperand->getSize()-1 ; i >= 0 ; i--)
 				{
@@ -694,7 +694,7 @@ void Equation::computeCurrentValue()
 		case EquationNature_t::nandOp:
 		{
 			LogicValue partialResult(operandsSize, true);
-			foreach(shared_ptr<Signal> operand, operands)
+			for (shared_ptr<Signal> operand : operands)
 			{
 				partialResult &= operand->getCurrentValue();
 			}
@@ -710,7 +710,7 @@ void Equation::computeCurrentValue()
 		case EquationNature_t::norOp:
 		{
 			LogicValue partialResult(operandsSize);
-			foreach(shared_ptr<Signal> operand, operands)
+			for (shared_ptr<Signal> operand : operands)
 			{
 				partialResult |= operand->getCurrentValue();
 			}
@@ -726,7 +726,7 @@ void Equation::computeCurrentValue()
 		case EquationNature_t::xnorOp:
 		{
 			LogicValue partialResult(operandsSize);
-			foreach(shared_ptr<Signal> operand, operands)
+			for (shared_ptr<Signal> operand : operands)
 			{
 				partialResult ^= operand->getCurrentValue();
 			}

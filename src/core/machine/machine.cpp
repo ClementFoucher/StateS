@@ -257,7 +257,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& na
 	//this->setInhibitEvents(true);
 
 	// First check if name doesn't already exist
-	foreach (shared_ptr<Signal> signal, getAllSignals())
+	for (shared_ptr<Signal> signal : this->getAllSignals())
 	{
 		if (signal->getName() == name)
 			return nullptr;
@@ -704,7 +704,7 @@ bool Machine::cleanSignalName(QString& nameToClean) const
 	QString nameBeingCleaned = nameToClean.trimmed();
 	QString cleanName;
 
-	foreach (QChar c, nameBeingCleaned)
+	for (QChar c : nameBeingCleaned)
 	{
 		if ( ( (c.isLetterOrNumber()) ) ||
 		     ( (c == '_')             ) ||
@@ -742,7 +742,7 @@ QString Machine::getUniqueSignalName(const QString& prefix) const
 		currentName = baseName + QString::number(i);
 
 		nameIsValid = true;
-		foreach(shared_ptr<Signal> colleage, this->getAllSignals())
+		for (shared_ptr<Signal> colleage : this->getAllSignals())
 		{
 			if (colleage->getName() == currentName)
 			{
@@ -786,7 +786,7 @@ QHash<QString, shared_ptr<Signal> > Machine::getAllSignalsMap() const
 {
 	QHash<QString, shared_ptr<Signal>> allSignals;
 
-	foreach (shared_ptr<Signal> signal, getAllSignals())
+	for (shared_ptr<Signal> signal : this->getAllSignals())
 	{
 		allSignals[signal->getName()] = signal;
 	}

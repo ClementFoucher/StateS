@@ -435,7 +435,7 @@ shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const
 	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
 
 	shared_ptr<FsmState> ret = nullptr;
-	foreach(auto stateId, fsm->getAllStatesIds())
+	for (auto stateId : fsm->getAllStatesIds())
 	{
 		auto state = fsm->getState(stateId);
 		if (state->getName() == name)

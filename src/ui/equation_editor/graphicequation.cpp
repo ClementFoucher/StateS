@@ -498,7 +498,7 @@ bool GraphicEquation::validEdit()
 		}
 		else
 		{
-			foreach (QObject* child, this->children())
+			for (QObject* child : this->children())
 			{
 				GraphicEquation* operand = dynamic_cast<GraphicEquation*>(child);
 				if (operand != nullptr)
@@ -527,7 +527,7 @@ bool GraphicEquation::cancelEdit()
 		}
 		else
 		{
-			foreach (QObject* child, this->children())
+			for (QObject* child : this->children())
 			{
 				GraphicEquation* operand = dynamic_cast<GraphicEquation*>(child);
 				if (operand != nullptr)

@@ -253,7 +253,7 @@ QString Fsm::getUniqueStateName(QString nameProposal)
 	while (!nameIsValid)
 	{
 		nameIsValid = true;
-		foreach(auto colleagueId, this->states)
+		for (auto colleagueId : this->states)
 		{
 			auto colleague = this->getState(colleagueId);
 			if (colleague->getName() == currentName)

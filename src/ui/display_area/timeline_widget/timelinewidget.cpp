@@ -99,7 +99,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		layout->addWidget(titleInputs);
 
-		foreach (shared_ptr<Input> var, machine->getInputs())
+		for (shared_ptr<Input> var : machine->getInputs())
 		{
 			SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock);
 			layout->addWidget(varTL);
@@ -113,7 +113,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		layout->addWidget(titleOutputs);
 
-		foreach (shared_ptr<Output> var, machine->getOutputs())
+		for (shared_ptr<Output> var : machine->getOutputs())
 		{
 			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
 			layout->addWidget(varTL);
@@ -127,7 +127,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		layout->addWidget(titleVariables);
 
-		foreach (shared_ptr<Signal> var, machine->getLocalVariables())
+		for (shared_ptr<Signal> var : machine->getLocalVariables())
 		{
 			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
 			layout->addWidget(varTL);

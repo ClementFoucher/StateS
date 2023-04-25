@@ -138,7 +138,7 @@ void MachineActuatorComponent::cleanActionList()
 	QList<shared_ptr<ActionOnSignal>> newActionList;
 
 	bool listChanged = false;
-	foreach(shared_ptr<ActionOnSignal> action, this->actionList)
+	for (shared_ptr<ActionOnSignal> action : this->actionList)
 	{
 		if (action->getSignalActedOn() != nullptr)
 		{

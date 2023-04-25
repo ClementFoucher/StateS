@@ -177,7 +177,7 @@ void ConditionEditor::treatMenuSetCondition(QAction* action)
 	if (transition == nullptr) return;
 
 
-	foreach (shared_ptr<Signal> currentVariable, machine->getReadableSignals())
+	for (shared_ptr<Signal> currentVariable : machine->getReadableSignals())
 	{
 		if (currentVariable->getName() == action->text())
 		{

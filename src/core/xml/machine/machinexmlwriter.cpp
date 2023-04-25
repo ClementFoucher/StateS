@@ -134,7 +134,7 @@ void MachineXmlWriter::writeMachineSignals()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	foreach (shared_ptr<Signal> var, machine->getAllSignals())
+	for (shared_ptr<Signal> var : machine->getAllSignals())
 	{
 		// Type
 		if (dynamic_pointer_cast<Input>(var) != nullptr)
@@ -169,7 +169,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	if (actions.count() != 0)
 	{
 		this->stream->writeStartElement("Actions");
-		foreach (shared_ptr<ActionOnSignal> action, actions)
+		for (shared_ptr<ActionOnSignal> action : actions)
 		{
 			this->stream->writeStartElement("Action");
 

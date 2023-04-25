@@ -361,7 +361,7 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 			}
 
 			// Transmit event to each state in the list
-			foreach (QGraphicsItem* item, this->selectedItems())
+			for (QGraphicsItem* item : this->selectedItems())
 			{
 				FsmGraphicState* state = dynamic_cast<FsmGraphicState*>(item);
 
@@ -956,7 +956,7 @@ FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
 	QList<QGraphicsItem*> itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder);
 	// Warning: if using transform on view, the upper line should be adapted!
 
-	foreach (QGraphicsItem* item, itemsAtThisPoint)
+	for (QGraphicsItem* item : itemsAtThisPoint)
 	{
 		// Select the topmost visible state
 		FsmGraphicState* currentItem = dynamic_cast<FsmGraphicState*> (item);

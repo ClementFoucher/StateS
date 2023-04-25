@@ -68,7 +68,7 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 {
 	this->stream->writeStartElement("States");
 
-	foreach (auto stateId, fsm->getAllStatesIds())
+	for (auto stateId : fsm->getAllStatesIds())
 	{
 		auto state = fsm->getState(stateId);
 		this->stream->writeStartElement("State");
@@ -116,7 +116,7 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 {
 	this->stream->writeStartElement("Transitions");
 
-	foreach (auto transitionId, fsm->getAllTransitionsIds())
+	for (auto transitionId : fsm->getAllTransitionsIds())
 	{
 		auto transition = fsm->getTransition(transitionId);
 

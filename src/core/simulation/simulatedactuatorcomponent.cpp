@@ -48,7 +48,7 @@ void SimulatedActuatorComponent::activateActions()
 	if (actuatorComponent == nullptr) return;
 
 	auto actionList = actuatorComponent->getActions();
-	foreach (shared_ptr<ActionOnSignal> action, actionList)
+	for (shared_ptr<ActionOnSignal> action : actionList)
 	{
 		action->beginAction();
 	}
@@ -63,7 +63,7 @@ void SimulatedActuatorComponent::deactivateActions()
 	if (actuatorComponent == nullptr) return;
 
 	auto actionList = actuatorComponent->getActions();
-	foreach (shared_ptr<ActionOnSignal> action, actionList)
+	for (shared_ptr<ActionOnSignal> action : actionList)
 	{
 		action->endAction();
 	}

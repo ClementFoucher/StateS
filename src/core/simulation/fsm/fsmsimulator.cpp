@@ -133,13 +133,13 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and variables to their initial value
-	foreach(shared_ptr<Signal> sig, fsm->getReadableVariableSignals())
+	for (shared_ptr<Signal> sig : fsm->getReadableVariableSignals())
 	{
 		sig->reinitialize();
 	}
 
 	// Then compute outputs: first reset all of them...
-	foreach(shared_ptr<Output> sig, fsm->getOutputs())
+	for (shared_ptr<Output> sig : fsm->getOutputs())
 	{
 		sig->resetValue();
 	}
@@ -177,7 +177,7 @@ void FsmSimulator::clockEventHandler()
 		//
 		// Look for potential transitions
 		QMap<uint, componentId_t> candidateTransitions;
-		foreach(auto transitionId, currentActiveState->getOutgoingTransitionsIds())
+		for (auto transitionId : currentActiveState->getOutgoingTransitionsIds())
 		{
 			auto transition = fsm->getTransition(transitionId);
 			if (transition == nullptr) continue;

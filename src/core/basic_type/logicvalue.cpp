@@ -49,7 +49,7 @@ LogicValue LogicValue::fromString(const QString &textValue) // Throws StatesExce
 {
 	LogicValue realValue;
 
-	foreach(QChar c, textValue)
+	for (QChar c : textValue)
 	{
 		if (c == '0')
 			realValue.prepend(false);
@@ -330,7 +330,7 @@ QString LogicValue::toString() const
 	}
 	else
 	{
-		foreach (bool b, *((QVector<bool>*)this))
+		for (bool b : *((QVector<bool>*)this))
 		{
 			text = (b?"1":"0") + text;
 		}

@@ -76,7 +76,7 @@ EquationEditor::EquationEditor(shared_ptr<Signal> initialEquation, QWidget* pare
 		inputsTitle->setAlignment(Qt::AlignCenter);
 		inputListLayout->addWidget(inputsTitle);
 
-		foreach (shared_ptr<Signal> input, machine->getInputs())
+		for (shared_ptr<Signal> input : machine->getInputs())
 		{
 			inputListLayout->addWidget(new GraphicEquation(input, true));
 		}
@@ -93,7 +93,7 @@ EquationEditor::EquationEditor(shared_ptr<Signal> initialEquation, QWidget* pare
 		variablesTitle->setAlignment(Qt::AlignCenter);
 		variableListLayout->addWidget(variablesTitle);
 
-		foreach (shared_ptr<Signal> variable, machine->getLocalVariables())
+		for (shared_ptr<Signal> variable : machine->getLocalVariables())
 		{
 			variableListLayout->addWidget(new GraphicEquation(variable, true));
 		}
@@ -110,7 +110,7 @@ EquationEditor::EquationEditor(shared_ptr<Signal> initialEquation, QWidget* pare
 
 	constantListLayout->addWidget(new GraphicEquation(shared_ptr<Equation>(new Equation(EquationNature_t::constant)), true));
 
-	foreach (shared_ptr<Signal> constant, machine->getConstants())
+	for (shared_ptr<Signal> constant : machine->getConstants())
 	{
 		constantListLayout->addWidget(new GraphicEquation(constant, true));
 	}

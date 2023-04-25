@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2023 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -57,7 +57,7 @@ QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesExcep
 {
 	QVector<shared_ptr<Signal>> list;
 
-	foreach(weak_ptr<Signal> sig, this->inputSignalsTable)
+	for (weak_ptr<Signal> sig : this->inputSignalsTable)
 	{
 		if (! sig.expired())
 			list.append(sig.lock());
@@ -106,7 +106,7 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
 {
 	QVector<LogicValue> output;
 
-	foreach(QVector<LogicValue> currentRow, this->outputValuesTable)
+	for (QVector<LogicValue> currentRow : this->outputValuesTable)
 	{
 		output.append(currentRow[0]);
 	}
@@ -139,7 +139,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
 {
 	QList<shared_ptr<Signal>> list;
 
-	foreach(shared_ptr<Signal> sig, equation->getOperands())
+	for (shared_ptr<Signal> sig : equation->getOperands())
 	{
 		shared_ptr<Equation> complexOperand = dynamic_pointer_cast<Equation>(sig);
 
@@ -167,7 +167,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 	// Obtain all signals involved in all equations
 	QList<shared_ptr<Signal>> signalList;
 
-	foreach(shared_ptr<Equation> equation, equations)
+	for (shared_ptr<Equation> equation : equations)
 	{
 		signalList += extractSignals(equation);
 		this->outputEquationsTextsTable.append(equation->getText());
@@ -176,7 +176,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 	// Clean list so each signal only appears once
 	QVector<shared_ptr<Signal>> signalVector;
 
-	foreach(shared_ptr<Signal> signal, signalList)
+	for (shared_ptr<Signal> signal : signalList)
 	{
 		if (!signalVector.contains(signal))
 		{
@@ -187,14 +187,14 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 
 	// Count inputs bit by bit
 	uint inputCount = 0;
-	foreach(shared_ptr<Signal> sig, signalVector)
+	for (shared_ptr<Signal> sig : signalVector)
 	{
 		inputCount += sig->getSize();
 	}
 
 	// Prepare first row
 	QVector<LogicValue> currentRow;
-	foreach(shared_ptr<Signal> sig, signalVector)
+	for (shared_ptr<Signal> sig : signalVector)
 	{
 		currentRow.append(LogicValue(sig->getSize(), false));
 	}
@@ -211,7 +211,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 		}
 
 		QVector<LogicValue> currentResultLine;
-		foreach(shared_ptr<Equation> equation, equations)
+		for (shared_ptr<Equation> equation : equations)
 		{
 			currentResultLine.append(equation->getCurrentValue());
 		}

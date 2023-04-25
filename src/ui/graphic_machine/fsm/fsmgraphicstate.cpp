@@ -286,7 +286,7 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 		if (value.toBool() == true)
 		{
 			// Refuse selection if there is a transition already selected
-			foreach(QGraphicsItem* selectedItem, this->scene()->selectedItems())
+			for (QGraphicsItem* selectedItem : this->scene()->selectedItems())
 			{
 				if (dynamic_cast<FsmGraphicTransition*>(selectedItem) != nullptr)
 					return (QVariant)false;

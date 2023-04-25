@@ -326,7 +326,7 @@ void SignalListEditor::updateList()
 	// Save previous selection if not overwritten
 	if ( ( this->signalSelectionToRestore.isEmpty() ) && ( this->signalsList->selectedItems().count() != 0 ) )
 	{
-		foreach (QModelIndex index, this->signalsList->selectionModel()->selectedRows())
+		for (QModelIndex index : this->signalsList->selectionModel()->selectedRows())
 		{
 			this->signalSelectionToRestore.append(this->signalsList->item(index.row(), 0)->text());
 		}
@@ -363,7 +363,7 @@ void SignalListEditor::updateList()
 		signalsToAdd = machine->getConstants();
 	}
 
-	foreach (shared_ptr<Signal> sig, signalsToAdd)
+	for (shared_ptr<Signal> sig : signalsToAdd)
 	{
 		this->signalsList->insertRow(this->signalsList->rowCount());
 
@@ -790,7 +790,7 @@ void SignalListEditor::raiseSelectedSignals()
 	QList<int>  signalsRanks;
 
 	QModelIndexList rows = this->signalsList->selectionModel()->selectedRows();
-	foreach (QModelIndex index, rows)
+	for (QModelIndex index : rows)
 	{
 		signalsRanks.append(index.row());
 	}
@@ -820,7 +820,7 @@ void SignalListEditor::lowerSelectedSignals()
 	QList<int> signalsRanks;
 
 	QModelIndexList rows = this->signalsList->selectionModel()->selectedRows();
-	foreach (QModelIndex index, rows)
+	for (QModelIndex index : rows)
 	{
 		signalsRanks.push_front(index.row());
 	}
@@ -847,7 +847,7 @@ void SignalListEditor::removeSelectedSignals()
 	QStringList selection;
 	int lastSelectionIndex = -1;
 
-	foreach (QModelIndex index, this->signalsList->selectionModel()->selectedRows())
+	for (QModelIndex index : this->signalsList->selectionModel()->selectedRows())
 	{
 		selection.append(this->signalsList->item(index.row(), 0)->text());
 		if (lastSelectionIndex < index.row())
@@ -860,7 +860,7 @@ void SignalListEditor::removeSelectedSignals()
 
 	if (selection.isEmpty() == false)
 	{
-		foreach (QString signalName, selection)
+		for (QString signalName : selection)
 		{
 			machine->deleteSignal(signalName);
 		}
@@ -1049,7 +1049,7 @@ QList<QString> SignalListEditor::getSelectedSignals()
 {
 	QList<QString> selectionString;
 
-	foreach (QModelIndex index, this->signalsList->selectionModel()->selectedRows())
+	for (QModelIndex index : this->signalsList->selectionModel()->selectedRows())
 	{
 		QTableWidgetItem* currentItem = this->signalsList->item(index.row(), 1);
 		if (currentItem != nullptr)

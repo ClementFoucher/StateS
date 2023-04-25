@@ -78,7 +78,7 @@ QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const
 
 SimulatedComponent* MachineSimulator::getComponent(componentId_t componentId) const
 {
-	if (this->simulatedComponents.keys().contains(componentId))
+	if (this->simulatedComponents.contains(componentId))
 	{
 		return this->simulatedComponents[componentId];
 	}
