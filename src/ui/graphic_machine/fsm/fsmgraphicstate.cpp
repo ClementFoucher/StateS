@@ -149,16 +149,23 @@ void FsmGraphicState::moveState(Direction_t direction, bool smallMove)
 
 QPainterPath FsmGraphicState::shape() const
 {
-	QPainterPath path;
-	QPainterPathStroker* stroker;
+	// All states share the same shape:
+	// store shape after building and always return the same.
+	static QPainterPath path;
 
-	stroker = new QPainterPathStroker(defaultPen);
-	path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
+	if (path.isEmpty())
+	{
+		QPainterPathStroker* stroker;
 
-	path.setFillRule(Qt::WindingFill);
-	path = path.united(stroker->createStroke(path));
-	path = path.simplified();
-	delete stroker;
+		stroker = new QPainterPathStroker(defaultPen);
+		path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
+
+		path.setFillRule(Qt::WindingFill);
+		path = path.united(stroker->createStroke(path));
+		path = path.simplified();
+		delete stroker;
+	}
+
 	return path;
 }
 
