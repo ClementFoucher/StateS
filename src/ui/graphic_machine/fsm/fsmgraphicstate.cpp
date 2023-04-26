@@ -189,8 +189,6 @@ void FsmGraphicState::keyPressEvent(QKeyEvent* event)
 	{
 		// This call may destroy the current object
 		emit this->deleteStateCalledEvent(this->logicComponentId);
-
-		event->accept();
 	}
 	else if (event->key() == Qt::Key_Menu)
 	{
@@ -204,47 +202,10 @@ void FsmGraphicState::keyPressEvent(QKeyEvent* event)
 		contextEvent->setScreenPos(posOnScreen);
 
 		this->contextMenuEvent(contextEvent);
-
-		event->accept();
-	}
-	else if ( (event->key() == Qt::Key_Right) ||
-	          (event->key() == Qt::Key_Left)  ||
-	          (event->key() == Qt::Key_Up)    ||
-	          (event->key() == Qt::Key_Down)
-	        )
-	{
-		Direction_t direction;
-		switch (event->key())
-		{
-		case Qt::Key_Left:
-			direction = Direction_t::left;
-			break;
-		case Qt::Key_Right:
-			direction = Direction_t::right;
-			break;
-		case Qt::Key_Up:
-			direction = Direction_t::up;
-			break;
-		case Qt::Key_Down:
-			direction = Direction_t::down;
-			break;
-		}
-
-		bool smallMove = false;
-		if ((event->modifiers() & Qt::ShiftModifier) != 0)
-		{
-			smallMove = true;
-		}
-
-		this->moveState(direction, smallMove);
-
-		event->accept();
 	}
 	else if (event->key() == Qt::Key_F2)
 	{
 		emit renameStateCalledEvent(this->logicComponentId);
-
-		event->accept();
 	}
 	else
 	{
