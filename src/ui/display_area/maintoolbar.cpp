@@ -64,10 +64,10 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	this->actionExportImage->setText(tr("Export to image file"));
 	this->actionExportImage->setToolTip(tr("Export machine to an image file"));
 
-	this->actionExportHdl = new QAction(this);
-	this->actionExportHdl->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
-	this->actionExportHdl->setText(tr("Export to VHDL"));
-	this->actionExportHdl->setToolTip(tr("Export machine to VHDL"));
+	this->actionExportCode = new QAction(this);
+	this->actionExportCode->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
+	this->actionExportCode->setText(tr("Export to VHDL"));
+	this->actionExportCode->setToolTip(tr("Export machine to VHDL"));
 
 	this->actionUndo = new QAction(this);
 	this->actionUndo->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/undo"))));
@@ -82,7 +82,7 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	this->actionSaveAs->setEnabled(false);
 	this->actionSave->setEnabled(false);
 	this->actionExportImage->setEnabled(false);
-	this->actionExportHdl->setEnabled(false);
+	this->actionExportCode->setEnabled(false);
 	this->actionUndo->setEnabled(false);
 	this->actionRedo->setEnabled(false);
 
@@ -95,7 +95,7 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	//this->addAction(this->actionClear);
 	this->addSeparator();
 	this->addAction(this->actionExportImage);
-	this->addAction(this->actionExportHdl);
+	this->addAction(this->actionExportCode);
 	this->addSeparator();
 	this->addAction(this->actionUndo);
 	this->addAction(this->actionRedo);
@@ -108,7 +108,7 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	connect(this->actionNewFsm,      &QAction::triggered, this, &MainToolBar::newMachineRequestedEvent);
 	//connect(this->actionClear,       &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
 	connect(this->actionExportImage, &QAction::triggered, this, &MainToolBar::exportImageRequestedEvent);
-	connect(this->actionExportHdl,   &QAction::triggered, this, &MainToolBar::exportHdlRequestedEvent);
+	connect(this->actionExportCode,  &QAction::triggered, this, &MainToolBar::exportCodeRequestedEvent);
 	connect(this->actionUndo,        &QAction::triggered, this, &MainToolBar::undo);
 	connect(this->actionRedo,        &QAction::triggered, this, &MainToolBar::redo);
 }
@@ -128,10 +128,14 @@ void MainToolBar::setNewFsmActionEnabled(bool enable)
 	this->actionNewFsm->setEnabled(enable);
 }
 
-void MainToolBar::setExportActionsEnabled(bool enable)
+void MainToolBar::setExportImageEnabled(bool enable)
 {
 	this->actionExportImage->setEnabled(enable);
-	this->actionExportHdl  ->setEnabled(enable);
+}
+
+void MainToolBar::setExportCodeEnabled(bool enable)
+{
+	this->actionExportCode->setEnabled(enable);
 }
 
 void MainToolBar::setUndoActionEnabled(bool enable)
@@ -152,4 +156,14 @@ bool MainToolBar::getUndoActionEnabled() const
 bool MainToolBar::getRedoActionEnabled() const
 {
 	return this->actionRedo->isEnabled();
+}
+
+bool MainToolBar::getSaveActionEnabled() const
+{
+	return this->actionSave->isEnabled();
+}
+
+bool MainToolBar::getExportCodeEnabled() const
+{
+	return this->actionExportCode->isEnabled();
 }

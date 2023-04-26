@@ -38,15 +38,18 @@ public:
 	/////
 	// Object functions
 public:
-	void setSaveAsActionEnabled (bool enable);
-	void setSaveActionEnabled   (bool enable);
-	void setNewFsmActionEnabled (bool enable);
-	void setExportActionsEnabled(bool enable);
-	void setUndoActionEnabled   (bool enable);
-	void setRedoActionEnabled   (bool enable);
+	void setSaveAsActionEnabled(bool enable);
+	void setSaveActionEnabled  (bool enable);
+	void setNewFsmActionEnabled(bool enable);
+	void setExportImageEnabled (bool enable);
+	void setExportCodeEnabled  (bool enable);
+	void setUndoActionEnabled  (bool enable);
+	void setRedoActionEnabled  (bool enable);
 
 	bool getUndoActionEnabled() const;
 	bool getRedoActionEnabled() const;
+	bool getSaveActionEnabled() const;
+	bool getExportCodeEnabled() const;
 
 signals:
 	void saveAsRequestedEvent     ();
@@ -54,7 +57,7 @@ signals:
 	void loadRequestedEvent       ();
 	void newMachineRequestedEvent ();
 	void exportImageRequestedEvent();
-	void exportHdlRequestedEvent  ();
+	void exportCodeRequestedEvent ();
 	void undo                     ();
 	void redo                     ();
 
@@ -67,7 +70,7 @@ private:
 	QAction* actionNewFsm      = nullptr;
 	//QAction* actionClear       = nullptr;
 	QAction* actionExportImage = nullptr;
-	QAction* actionExportHdl   = nullptr;
+	QAction* actionExportCode  = nullptr;
 	QAction* actionUndo        = nullptr;
 	QAction* actionRedo        = nullptr;
 

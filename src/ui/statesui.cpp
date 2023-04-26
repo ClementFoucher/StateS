@@ -100,7 +100,7 @@ StatesUi::StatesUi()
 	connect(this->toolbar, &MainToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
 	connect(this->toolbar, &MainToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
 	connect(this->toolbar, &MainToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
-	connect(this->toolbar, &MainToolBar::exportHdlRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
+	connect(this->toolbar, &MainToolBar::exportCodeRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
 	connect(this->toolbar, &MainToolBar::undo,                      this, &StatesUi::undo);
 	connect(this->toolbar, &MainToolBar::redo,                      this, &StatesUi::redo);
 
@@ -443,6 +443,7 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 {
 	static bool isUndoEnabled;
 	static bool isRedoEnabled;
+	static bool isSaveEnabled;
 
 	auto machine = machineManager->getMachine();
 	if ( (machine != nullptr) && (newMode == SimulationMode_t::simulateMode) )
@@ -454,10 +455,13 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 
 		isUndoEnabled = this->toolbar->getUndoActionEnabled();
 		isRedoEnabled = this->toolbar->getRedoActionEnabled();
+		isSaveEnabled = this->toolbar->getSaveActionEnabled();
 
-		this->toolbar->setNewFsmActionEnabled(false);
+		this->toolbar->setSaveActionEnabled(false);
+		this->toolbar->setSaveAsActionEnabled(false);
 		this->toolbar->setUndoActionEnabled(false);
 		this->toolbar->setRedoActionEnabled(false);
+		this->toolbar->setExportCodeEnabled(false);
 	}
 	else
 	{
@@ -468,9 +472,11 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 			this->timeline = nullptr;
 		}
 
-		this->toolbar->setNewFsmActionEnabled(true);
+		this->toolbar->setSaveActionEnabled(isSaveEnabled);
+		this->toolbar->setSaveAsActionEnabled(true);
 		this->toolbar->setUndoActionEnabled(isUndoEnabled);
 		this->toolbar->setRedoActionEnabled(isRedoEnabled);
+		this->toolbar->setExportCodeEnabled(true);
 	}
 }
 
@@ -512,12 +518,14 @@ void StatesUi::resetUi()
 	if (machineManager->getMachine() != nullptr)
 	{
 		this->toolbar->setSaveAsActionEnabled(true);
-		this->toolbar->setExportActionsEnabled(true);
+		this->toolbar->setExportImageEnabled(true);
+		this->toolbar->setExportCodeEnabled(true);
 	}
 	else
 	{
 		this->toolbar->setSaveAsActionEnabled(false);
-		this->toolbar->setExportActionsEnabled(false);
+		this->toolbar->setExportImageEnabled(false);
+		this->toolbar->setExportCodeEnabled(false);
 	}
 
 	this->toolbar->setUndoActionEnabled(false);
