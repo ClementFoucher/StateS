@@ -111,26 +111,6 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	this->setTabOrder(signalsTabs, this->machineName);
 }
 
-void MachineEditorTab::setHintCollapsed(bool collapse)
-{
-	this->hintDisplay->setCollapsed(collapse);
-}
-
-void MachineEditorTab::setVisuCollapsed(bool collapse)
-{
-	this->machineDisplay->setCollapsed(collapse);
-}
-
-bool MachineEditorTab::getHintCollapsed()
-{
-	return this->hintDisplay->getCollapsed();
-}
-
-bool MachineEditorTab::getVisuCollapsed()
-{
-	return this->machineDisplay->getCollapsed();
-}
-
 void MachineEditorTab::showEvent(QShowEvent* e)
 {
 	// Ensure we get the view back

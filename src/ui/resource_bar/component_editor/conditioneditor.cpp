@@ -102,27 +102,6 @@ ConditionEditor::~ConditionEditor()
 	delete truthTableDisplay; // In case not shown
 }
 
-void ConditionEditor::updateTransition(componentId_t newTransitionId)
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto oldTransition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
-
-	if (oldTransition != nullptr)
-	{
-		disconnect(oldTransition.get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
-	}
-
-	auto newTransition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(newTransitionId));
-	if (newTransition == nullptr) return;
-
-	this->transitionId = newTransitionId;
-	connect(newTransition.get(), &FsmTransition::conditionChangedEvent, this, &ConditionEditor::updateContent);
-
-	this->updateContent();
-}
-
 void ConditionEditor::editCondition()
 {
 	auto machine = machineManager->getMachine();

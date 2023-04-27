@@ -47,7 +47,6 @@ public:
 	/////
 	// Object functions
 public:
-	void setId(componentId_t id);
 	componentId_t getId() const;
 
 signals:

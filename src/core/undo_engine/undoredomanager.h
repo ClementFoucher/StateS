@@ -53,7 +53,6 @@ public:
 	void undo();
 	void redo();
 
-	void clearStack();
 	void setClean();
 
 	void addUndoCommand(MachineUndoCommand* undoCommand);

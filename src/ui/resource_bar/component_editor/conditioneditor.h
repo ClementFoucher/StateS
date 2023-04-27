@@ -53,9 +53,6 @@ public:
 
 	/////
 	// Object functions
-public:
-	void updateTransition(componentId_t newTransitionId);
-
 private slots:
 	void editCondition();
 	void clearCondition();

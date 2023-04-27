@@ -43,11 +43,6 @@ MachineComponent::MachineComponent(componentId_t id)
 	this->id = id;
 }
 
-void MachineComponent::setId(componentId_t id)
-{
-	this->id = id;
-}
-
 componentId_t MachineComponent::getId() const
 {
 	return this->id;

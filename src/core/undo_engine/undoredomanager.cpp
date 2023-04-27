@@ -48,11 +48,6 @@ void UndoRedoManager::redo()
 	DiffUndoCommand::updateXmlRepresentation();
 }
 
-void UndoRedoManager::clearStack()
-{
-	this->undoStack.clear();
-}
-
 void UndoRedoManager::setClean()
 {
 	this->undoStack.setClean();

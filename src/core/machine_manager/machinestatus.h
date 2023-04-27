@@ -45,8 +45,6 @@ public:
 	/////
 	// Object functions
 public:
-	static shared_ptr<MachineStatus> clonePaths(shared_ptr<MachineStatus> fromObject);
-
 	void setUnsavedFlag    (bool newUnsavedFlag);
 	void setHasSaveFile    (bool newHasSaveFile);
 	void setSaveFilePath   (const QString& newPath);

@@ -46,12 +46,6 @@ public:
 
 	/////
 	// Object functions
-public:
-	void setHintCollapsed(bool collapse);
-	void setVisuCollapsed(bool collapse);
-	bool getHintCollapsed();
-	bool getVisuCollapsed();
-
 protected:
 	virtual void showEvent(QShowEvent* e) override;
 

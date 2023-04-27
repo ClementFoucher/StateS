@@ -63,26 +63,6 @@ HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QW
 	layout->addWidget(this->machineDisplay);
 }
 
-void HintTab::setHintCollapsed(bool collapse)
-{
-	this->hintDisplay->setCollapsed(collapse);
-}
-
-void HintTab::setVisuCollapsed(bool collapse)
-{
-	this->machineDisplay->setCollapsed(collapse);
-}
-
-bool HintTab::getHintCollapsed()
-{
-	return this->hintDisplay->getCollapsed();
-}
-
-bool HintTab::getVisuCollapsed()
-{
-	return this->machineDisplay->getCollapsed();
-}
-
 void HintTab::showEvent(QShowEvent* e)
 {
 	// Ensure we get the view back
