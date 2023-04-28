@@ -119,34 +119,6 @@ void FsmGraphicState::refreshDisplay()
 	GraphicActuator::refreshDisplay();
 }
 
-void FsmGraphicState::moveState(Direction_t direction, bool smallMove)
-{
-	qreal moveSize = 10;
-	if (smallMove == true)
-	{
-		moveSize = 1;
-	}
-
-	QPointF movePoint;
-	switch (direction)
-	{
-	case Direction_t::left:
-		movePoint = QPointF(-moveSize, 0);
-		break;
-	case Direction_t::right:
-		movePoint = QPointF(moveSize, 0);
-		break;
-	case Direction_t::up:
-		movePoint = QPointF(0, -moveSize);
-		break;
-	case Direction_t::down:
-		movePoint = QPointF(0, moveSize);
-		break;
-	}
-
-	this->setPos(this->pos() + movePoint);
-}
-
 QPainterPath FsmGraphicState::shape() const
 {
 	// All states share the same shape:
@@ -247,11 +219,14 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-	if (change == GraphicsItemChange::ItemPositionHasChanged)
+	if (change == GraphicsItemChange::ItemPositionChange)
 	{
 		emit statePositionAboutToChangeEvent(this->logicComponentId);
-
+	}
+	if (change == GraphicsItemChange::ItemPositionHasChanged)
+	{
 		this->updateActionBoxPosition();
+		emit statePositionChangedEvent(this->logicComponentId);
 	}
 	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
 	{

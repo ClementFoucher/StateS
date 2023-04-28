@@ -53,6 +53,9 @@ public:
 	void undo();
 	void redo();
 
+	void beginMacro(const QString& text);
+	void endMacro();
+
 	void setClean();
 
 	void addUndoCommand(MachineUndoCommand* undoCommand);
@@ -73,6 +76,7 @@ private slots:
 	// Object variables
 private:
 	QUndoStack undoStack;
+	bool recordingMacro = false;
 
 };
 

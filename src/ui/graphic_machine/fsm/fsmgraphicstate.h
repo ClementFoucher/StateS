@@ -61,8 +61,6 @@ public:
 public:
 	virtual void refreshDisplay() override;
 
-	void moveState(Direction_t direction, bool smallMove);
-
 	virtual QPainterPath shape()  const override;
 	virtual QRectF boundingRect() const override;
 
@@ -70,6 +68,7 @@ public:
 
 signals:
 	void statePositionAboutToChangeEvent(componentId_t stateId);
+	void statePositionChangedEvent(componentId_t stateId);
 
 	void editStateCalledEvent(componentId_t stateId);
 	void renameStateCalledEvent(componentId_t stateId);

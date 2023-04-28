@@ -325,39 +325,22 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 	          (ke->key() == Qt::Key_Down)
 	          )
 	{
-		// Handle these events in scene as they can
-		// be dispatched to multiple states .
+		// Handle move events in scene as they can
+		// be dispatched to multiple states.
 		if (this->selectedItems().count() == 0)
 		{
-			// Ignore event => transmitted to view widget
-			// which will handle it as view move
+			// No selected item: ignore event. Event will then be
+			// transmitted to view widget which will handle it as view move
 			ke->ignore();
 		}
-		else
+		else // At least one item selected
 		{
 			bool atLeastOneState = false;
 
-			Direction_t direction;
-			switch (ke->key())
-			{
-			case Qt::Key_Left:
-				direction = Direction_t::left;
-				break;
-			case Qt::Key_Right:
-				direction = Direction_t::right;
-				break;
-			case Qt::Key_Up:
-				direction = Direction_t::up;
-				break;
-			case Qt::Key_Down:
-				direction = Direction_t::down;
-				break;
-			}
-
-			bool smallMove = false;
+			qreal moveSize = 10;
 			if ((ke->modifiers() & Qt::ShiftModifier) != 0)
 			{
-				smallMove = true;
+				moveSize = 1;
 			}
 
 			// Transmit event to each state in the list
@@ -368,11 +351,29 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 				if (state != nullptr)
 				{
 					atLeastOneState = true;
-					state->moveState(direction, smallMove);
+
+					QPointF movePoint;
+					switch (ke->key())
+					{
+					case Qt::Key_Left:
+						movePoint = QPointF(-moveSize, 0);
+						break;
+					case Qt::Key_Right:
+						movePoint = QPointF(moveSize, 0);
+						break;
+					case Qt::Key_Up:
+						movePoint = QPointF(0, -moveSize);
+						break;
+					case Qt::Key_Down:
+						movePoint = QPointF(0, moveSize);
+						break;
+					}
+
+					state->setPos(state->pos() + movePoint);
 				}
 			}
 
-			if (!atLeastOneState)
+			if (atLeastOneState == false)
 			{
 				// Same as if there were no selected items at all
 				ke->ignore();
@@ -573,8 +574,42 @@ void FsmScene::stateCallsBeginTransitionEventHandler(componentId_t stateId)
 
 void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 {
+	static bool inMacro = false;
+	static uint statesRemaining;
+
+	if (inMacro == false)
+	{
+		// Count the number of selected states
+		uint selectedStatesCount = 0;
+		for (QGraphicsItem* item : this->selectedItems())
+		{
+			if (dynamic_cast<FsmGraphicState*>(item) != nullptr)
+			{
+				selectedStatesCount++;
+			}
+		}
+		if (selectedStatesCount > 1)
+		{
+			// If multiple states selected, create an undo macro
+			machineManager->beginUndoMacro(tr("Multiple states moved"));
+			statesRemaining = selectedStatesCount;
+			inMacro = true;
+		}
+	}
+
 	auto undoCommand = new FsmUndoCommand(UndoCommandId_t::fsmUndoStateMoveId, stateId);
 	machineManager->notifyMachineEdited(undoCommand);
+
+	if (inMacro == true)
+	{
+		statesRemaining--;
+
+		if (statesRemaining == 0)
+		{
+			machineManager->endUndoMacro();
+			inMacro = false;
+		}
+	}
 }
 
 void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transitionId)

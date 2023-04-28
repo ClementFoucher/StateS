@@ -103,8 +103,8 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 
 	auto sourceState = graphicFsm->getState(this->sourceStateId);
 	auto targetState = graphicFsm->getState(this->targetStateId);
-	connect(sourceState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
-	connect(targetState, &FsmGraphicState::statePositionAboutToChangeEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
+	connect(sourceState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
+	connect(targetState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
 
 	this->buildChildren();
 	this->updateConditionText();

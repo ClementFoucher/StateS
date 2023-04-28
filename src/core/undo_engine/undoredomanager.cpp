@@ -48,6 +48,19 @@ void UndoRedoManager::redo()
 	DiffUndoCommand::updateXmlRepresentation();
 }
 
+void UndoRedoManager::beginMacro(const QString & text)
+{
+	this->undoStack.beginMacro(text);
+	this->recordingMacro = true;
+}
+
+void UndoRedoManager::endMacro()
+{
+	this->undoStack.endMacro();
+	this->recordingMacro = false;
+	DiffUndoCommand::updateXmlRepresentation();
+}
+
 void UndoRedoManager::setClean()
 {
 	this->undoStack.setClean();
@@ -60,7 +73,10 @@ void UndoRedoManager::addUndoCommand(MachineUndoCommand* undoCommand)
 	auto machineStatus = machineManager->getMachineStatus();
 	machineStatus->setUnsavedFlag(true);
 
-	DiffUndoCommand::updateXmlRepresentation();
+	if (this->recordingMacro == false)
+	{
+		DiffUndoCommand::updateXmlRepresentation();
+	}
 }
 
 void UndoRedoManager::buildAndAddDiffUndoCommand()
