@@ -118,26 +118,6 @@
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <source>No compatible signal!</source>
-        <translation type="vanished">Aucun signal compatible !</translation>
-    </message>
-    <message>
-        <source>Action on signal</source>
-        <translation type="vanished">Action sur le signal</translation>
-    </message>
-    <message>
-        <source>Affect whole signal</source>
-        <translation type="vanished">Affecter la totalité du signal</translation>
-    </message>
-    <message>
-        <source>Affect signal single bit</source>
-        <translation type="vanished">Affecter un seul bit</translation>
-    </message>
-    <message>
-        <source>Affect signal range</source>
-        <translation type="vanished">Affecter un sous-vecteur</translation>
-    </message>
-    <message>
         <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="247"/>
         <source>Edit affected bit</source>
         <translation>Éditer le bit affecté</translation>
@@ -166,10 +146,6 @@
         <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="117"/>
         <source>Right-click</source>
         <translation>Faites un clic-droit</translation>
-    </message>
-    <message>
-        <source>on a vector signal</source>
-        <translation type="vanished">sur un signal de type vecteur</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="107"/>
@@ -555,30 +531,6 @@
         <location filename="../src/ui/graphic_machine/fsm/fsmgraphicstate.cpp" line="276"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
-    </message>
-    <message>
-        <source>Set active</source>
-        <translation type="vanished">Activer</translation>
-    </message>
-    <message>
-        <source>Delete current state?</source>
-        <translation type="vanished">Supprimer l&apos;état courant ?</translation>
-    </message>
-    <message>
-        <source>The connected transition will be deleted</source>
-        <translation type="vanished">La transition connectée sera supprimée</translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation type="vanished">Toutes les</translation>
-    </message>
-    <message>
-        <source>connected transitions will be deleted</source>
-        <translation type="vanished">transitions connectées seront supprimées</translation>
-    </message>
-    <message>
-        <source>User confirmation needed</source>
-        <translation type="vanished">Confirmation de l&apos;utilisateur requise</translation>
     </message>
 </context>
 <context>
@@ -1524,10 +1476,6 @@
         <translation>Nom de la machine</translation>
     </message>
     <message>
-        <source>Signal editor</source>
-        <translation type="vanished">Éditeur de signaux</translation>
-    </message>
-    <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="77"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
@@ -1546,14 +1494,6 @@
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="80"/>
         <source>Constants</source>
         <translation>Constantes</translation>
-    </message>
-    <message>
-        <source>Switch between signals types using tabs.</source>
-        <translation type="vanished">Naviguez entre les types de signaux à l&apos;aide des onglets.</translation>
-    </message>
-    <message>
-        <source>Signals length can not exceed 64 bits.</source>
-        <translation type="vanished">La taille des signaux ne peut excéder 64 bits.</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="67"/>
@@ -1844,6 +1784,24 @@
         <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="429"/>
         <source>Unexpected node encountered while parsing action list:</source>
         <translation>Nœud inattendu trouvé en lisant la liste des actions :</translation>
+    </message>
+</context>
+<context>
+    <name>MachineXmlWriter</name>
+    <message>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="211"/>
+        <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
+        <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="215"/>
+        <source>Specified directory doesn&apos;t exist.</source>
+        <translation>Le dossier spécifié n&apos;existe pas.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="222"/>
+        <source>Unable to open file in write mode.</source>
+        <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>
 </context>
 <context>
@@ -2140,10 +2098,6 @@
         <translation>Annuler</translation>
     </message>
     <message>
-        <source>Action on signal</source>
-        <translation type="vanished">Action sur le signal</translation>
-    </message>
-    <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/signallisteditor.cpp" line="232"/>
         <location filename="../src/ui/resource_bar/machine_editor_tab/signallisteditor.cpp" line="286"/>
         <source>Up</source>
@@ -2154,30 +2108,6 @@
         <location filename="../src/ui/resource_bar/machine_editor_tab/signallisteditor.cpp" line="293"/>
         <source>Down</source>
         <translation>Descendre</translation>
-    </message>
-    <message>
-        <source>Delete signal</source>
-        <translation type="vanished">Supprimer le signal</translation>
-    </message>
-    <message>
-        <source>Action on all selected signals</source>
-        <translation type="vanished">Action sur la totalité des signaux sélectionnés</translation>
-    </message>
-    <message>
-        <source>Delete signals</source>
-        <translation type="vanished">Supprimer les signaux</translation>
-    </message>
-    <message>
-        <source>Rename signal</source>
-        <translation type="vanished">Renommer le signal</translation>
-    </message>
-    <message>
-        <source>Resize signal</source>
-        <translation type="vanished">Redimentionner le signal</translation>
-    </message>
-    <message>
-        <source>Change signal value</source>
-        <translation type="vanished">Changer la valeur du signal</translation>
     </message>
 </context>
 <context>
@@ -2282,8 +2212,7 @@
         <translation>Impossible de charger le fichier.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="293"/>
-        <location filename="../src/core/states.cpp" line="297"/>
+        <location filename="../src/core/states.cpp" line="281"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>

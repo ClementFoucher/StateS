@@ -52,21 +52,23 @@ protected:
 	/////
 	// Object functions
 public:
-	virtual void writeMachineToFile(); // Throws StatesException
-	virtual QString getMachineXml();
+	void writeMachineToFile(); // Throws StatesException
+	QString getMachineXml();
 
 protected:
 	virtual void writeMachineToStream() = 0;
 
+	void writeMachineCommonElements();
+	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
+	void writeLogicEquation(shared_ptr<Signal> equation);
+
+private:
 	void createSaveFile(); // Throws StatesException
 	void createSaveString();
 	void finalizeSaveFile();
 
-	void writeMachineCommonElements();
 	void writeMachineConfiguration();
 	void writeMachineSignals();
-	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
-	void writeLogicEquation(shared_ptr<Signal> equation);
 
 	/////
 	// Object variables

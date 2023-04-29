@@ -50,7 +50,7 @@ MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewC
 
 void MachineXmlWriter::writeMachineToFile()
 {
-	this->createSaveFile();
+	this->createSaveFile(); // Throws StatesException
 	this->writeMachineToStream();
 	this->finalizeSaveFile();
 }
@@ -62,44 +62,6 @@ QString MachineXmlWriter::getMachineXml()
 	return this->xmlString;
 }
 
-void MachineXmlWriter::createSaveFile() // Throws StatesException
-{
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
-	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
-	{
-		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unable_to_replace, "Unable to replace existing file");
-	}
-	else if ( !fileInfo.absoluteDir().exists() )
-	{
-		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unkown_directory, "Directory doesn't exist");
-	}
-
-	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
-	bool fileOpened = file->open(QIODevice::WriteOnly);
-	if (fileOpened == false)
-	{
-		throw StatesException("MachineSaveFileManager", MachineaveFileManagerError_t::unable_to_open, "Unable to open file");
-	}
-
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(this->file.get()));
-
-	this->stream->setAutoFormatting(true);
-	this->stream->writeStartDocument();
-}
-
-void MachineXmlWriter::createSaveString()
-{
-	this->xmlString = QString();
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(&this->xmlString));
-}
-
-void MachineXmlWriter::finalizeSaveFile()
-{
-	this->file->close();
-	this->file = nullptr;
-}
-
 void MachineXmlWriter::writeMachineCommonElements()
 {
 	if (this->mode == MachineXmlWriterMode_t::writeToFile)
@@ -107,59 +69,6 @@ void MachineXmlWriter::writeMachineCommonElements()
 		this->writeMachineConfiguration();
 	}
 	this->writeMachineSignals();
-}
-
-void MachineXmlWriter::writeMachineConfiguration()
-{
-	if (this->viewConfiguration == nullptr) return;
-
-	this->stream->writeStartElement("Configuration");
-
-	this->stream->writeStartElement("Scale");
-	this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
-	this->stream->writeEndElement();
-
-	this->stream->writeStartElement("ViewCentralPoint");
-	this->stream->writeAttribute("X", QString::number(this->viewConfiguration->viewCenter.x() + this->viewConfiguration->sceneTranslation.x()));
-	this->stream->writeAttribute("Y", QString::number(this->viewConfiguration->viewCenter.y() + this->viewConfiguration->sceneTranslation.y()));
-	this->stream->writeEndElement();
-
-	this->stream->writeEndElement();
-}
-
-void MachineXmlWriter::writeMachineSignals()
-{
-	this->stream->writeStartElement("Signals");
-
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	for (shared_ptr<Signal> var : machine->getAllSignals())
-	{
-		// Type
-		if (dynamic_pointer_cast<Input>(var) != nullptr)
-			this->stream->writeStartElement("Input");
-		else if (dynamic_pointer_cast<Output>(var) != nullptr)
-			this->stream->writeStartElement("Output");
-		else if (dynamic_pointer_cast<Constant>(var) != nullptr)
-			this->stream->writeStartElement("Constant");
-		else
-			this->stream->writeStartElement("Variable");
-
-		// Name
-		this->stream->writeAttribute("Name", var->getName());
-
-		// Size
-		this->stream->writeAttribute("Size", QString::number(var->getSize()));
-
-		// Initial value (except for outputs)
-		if (dynamic_pointer_cast<Output>(var) == nullptr)
-			this->stream->writeAttribute("Initial_value", var->getInitialValue().toString());
-
-		this->stream->writeEndElement();
-	}
-
-	this->stream->writeEndElement();
 }
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
@@ -291,4 +200,95 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 	}
 
 	this->stream->writeEndElement(); // LogicEquation | LogicVariable
+}
+
+void MachineXmlWriter::createSaveFile() // Throws StatesException
+{
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
+	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
+	{
+		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_replace, tr("Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights."));
+	}
+	else if ( !fileInfo.absoluteDir().exists() )
+	{
+		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unkown_directory, tr("Specified directory doesn't exist."));
+	}
+
+	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
+	bool fileOpened = file->open(QIODevice::WriteOnly);
+	if (fileOpened == false)
+	{
+		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_open, tr("Unable to open file in write mode."));
+	}
+
+	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(this->file.get()));
+
+	this->stream->setAutoFormatting(true);
+	this->stream->writeStartDocument();
+}
+
+void MachineXmlWriter::createSaveString()
+{
+	this->xmlString = QString();
+	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(&this->xmlString));
+}
+
+void MachineXmlWriter::finalizeSaveFile()
+{
+	this->file->close();
+	this->file = nullptr;
+}
+
+void MachineXmlWriter::writeMachineConfiguration()
+{
+	if (this->viewConfiguration == nullptr) return;
+
+	this->stream->writeStartElement("Configuration");
+
+	this->stream->writeStartElement("Scale");
+	this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
+	this->stream->writeEndElement();
+
+	this->stream->writeStartElement("ViewCentralPoint");
+	this->stream->writeAttribute("X", QString::number(this->viewConfiguration->viewCenter.x() + this->viewConfiguration->sceneTranslation.x()));
+	this->stream->writeAttribute("Y", QString::number(this->viewConfiguration->viewCenter.y() + this->viewConfiguration->sceneTranslation.y()));
+	this->stream->writeEndElement();
+
+	this->stream->writeEndElement();
+}
+
+void MachineXmlWriter::writeMachineSignals()
+{
+	this->stream->writeStartElement("Signals");
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	for (shared_ptr<Signal> var : machine->getAllSignals())
+	{
+		// Type
+		if (dynamic_pointer_cast<Input>(var) != nullptr)
+			this->stream->writeStartElement("Input");
+		else if (dynamic_pointer_cast<Output>(var) != nullptr)
+			this->stream->writeStartElement("Output");
+		else if (dynamic_pointer_cast<Constant>(var) != nullptr)
+			this->stream->writeStartElement("Constant");
+		else
+			this->stream->writeStartElement("Variable");
+
+		// Name
+		this->stream->writeAttribute("Name", var->getName());
+
+		// Size
+		this->stream->writeAttribute("Size", QString::number(var->getSize()));
+
+		// Initial value (except for outputs)
+		if (dynamic_pointer_cast<Output>(var) == nullptr)
+			this->stream->writeAttribute("Initial_value", var->getInitialValue().toString());
+
+		this->stream->writeEndElement();
+	}
+
+	this->stream->writeEndElement();
 }

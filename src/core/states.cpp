@@ -263,42 +263,26 @@ void StateS::saveCurrentMachine(const QString& path)
  */
 void StateS::saveCurrentMachineInCurrentFile()
 {
-	if (machineManager->getMachine() != nullptr)
+	if (machineManager->getMachine() == nullptr)
+		return;
+
+	auto saveManager = XmlImportExportBuilder::buildMachineWriterForSaveFile(this->statesUi->getView());
+
+	try
 	{
-		bool fileOk = false;
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-		QFileInfo file = QFileInfo(machineStatus->getSaveFileFullPath());
-		if ( (file.exists()) && ( (file.permissions() & QFileDevice::WriteUser) != 0) )
-		{
-			fileOk = true;
-		}
-		else if ( (! file.exists()) && (file.absoluteDir().exists()) )
-		{
-			fileOk = true;
-		}
+		saveManager->writeMachineToFile(); // Throws StatesException
 
-		if (fileOk)
+		machineManager->getMachineStatus()->setUnsavedFlag(false);
+	}
+	catch (const StatesException& e)
+	{
+		if (e.getSourceClass() == "MachineXmlWriter")
 		{
-			try
-			{
-				shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForSaveFile(this->statesUi->getView());
-				saveManager->writeMachineToFile(); // Throws StatesException
-
-				machineStatus->setUnsavedFlag(false);
-			}
-			catch (const StatesException& e)
-			{
-				if (e.getSourceClass() == "FsmSaveFileManager")
-				{
-					this->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
-				}
-				if (e.getSourceClass() == "MachineSaveFileManager")
-				{
-					this->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
-				}
-				else
-					throw;
-			}
+			this->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
+		}
+		else
+		{
+			throw;
 		}
 	}
 }
