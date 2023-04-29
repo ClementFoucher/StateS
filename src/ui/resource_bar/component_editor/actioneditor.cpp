@@ -114,7 +114,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 	hint += "<br />";
 	hint += tr("Double-click") + " " + tr("on an affected value") + " " + tr("to edit it.");
 	hint += "<br />";
-	hint += tr("Right-click") + " " + tr("on a vector signal") + " " + tr("to display range options.");
+	hint += tr("Right-click") + " " + tr("on a vector variable") + " " + tr("to display range options.");
 	hint += "<br />";
 
 	this->hintDisplay->setContent(hintTitle, hint, true);
@@ -184,7 +184,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 			shared_ptr<ActionOnSignal> actionActedOn = actuator->getAction(actionRank); // Throws StatesException
 
 			ContextMenu* menu = new ContextMenu();
-			menu->addTitle(tr("Action on signal") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
+			menu->addTitle(tr("Action on variable") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
 
 			QVariant data;
 			QAction* actionToAdd = nullptr;
@@ -217,7 +217,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
 			if (actionActedOn->getSignalActedOn()->getSize() > 1)
 			{
-				actionToAdd = menu->addAction(tr("Affect whole signal"));
+				actionToAdd = menu->addAction(tr("Affect whole variable"));
 				actionToAdd->setCheckable(true);
 				if (actionActedOn->getActionRangeL() == -1)
 					actionToAdd->setChecked(true);
@@ -225,7 +225,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 				data.setValue(dataValue);
 				actionToAdd->setData(data);
 
-				actionToAdd = menu->addAction(tr("Affect signal single bit"));
+				actionToAdd = menu->addAction(tr("Affect variable single bit"));
 				actionToAdd->setCheckable(true);
 				if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() == -1) )
 					actionToAdd->setChecked(true);
@@ -233,7 +233,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 				data.setValue(dataValue);
 				actionToAdd->setData(data);
 
-				actionToAdd = menu->addAction(tr("Affect signal range"));
+				actionToAdd = menu->addAction(tr("Affect variable range"));
 				actionToAdd->setCheckable(true);
 				if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() != -1) )
 					actionToAdd->setChecked(true);
@@ -328,7 +328,7 @@ void ActionEditor::displayAddActionMenu() const
 	}
 	else
 	{
-		menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
+		menu = ContextMenu::createErrorMenu(tr("No compatible variable!"));
 	}
 
 	menu->popup(this->buttonAddAction->mapToGlobal(QPoint(this->buttonAddAction->width(), -menu->sizeHint().height())));

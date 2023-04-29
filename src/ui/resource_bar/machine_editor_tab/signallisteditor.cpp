@@ -222,7 +222,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 				this->currentSignal = currentSignal;
 
 				ContextMenu* menu = new ContextMenu();
-				menu->addTitle(tr("Action on signal") + " <i>" + currentSignal->getName() + "</i>");
+				menu->addTitle(tr("Action on variable") + " <i>" + currentSignal->getName() + "</i>");
 
 				QVariant data;
 				QAction* actionToAdd = nullptr;
@@ -243,24 +243,24 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 
 				menu->addSeparator();
 
-				actionToAdd = menu->addAction(tr("Rename signal"));
+				actionToAdd = menu->addAction(tr("Rename variable"));
 				data.setValue((int)ContextAction_t::RenameSignal);
 				actionToAdd->setData(data);
 
-				actionToAdd = menu->addAction(tr("Resize signal"));
+				actionToAdd = menu->addAction(tr("Resize variable"));
 				data.setValue((int)ContextAction_t::ResizeSignal);
 				actionToAdd->setData(data);
 
 				if (this->editorType != SignalType_t::Output)
 				{
-					actionToAdd = menu->addAction(tr("Change signal value"));
+					actionToAdd = menu->addAction(tr("Change variable value"));
 					data.setValue((int)ContextAction_t::ChangeSignalValue);
 					actionToAdd->setData(data);
 				}
 
 				menu->addSeparator();
 
-				actionToAdd = menu->addAction(tr("Delete signal"));
+				actionToAdd = menu->addAction(tr("Delete variable"));
 				data.setValue((int)ContextAction_t::DeleteSignal);
 				actionToAdd->setData(data);
 
@@ -276,7 +276,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 		else if (list.count() != 0)
 		{
 			ContextMenu* menu = new ContextMenu();
-			menu->addTitle(tr("Action on all selected signals"));
+			menu->addTitle(tr("Action on all selected variables"));
 
 			QVariant data;
 			QAction* actionToAdd = nullptr;
@@ -297,7 +297,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 
 			menu->addSeparator();
 
-			actionToAdd = menu->addAction(tr("Delete signals"));
+			actionToAdd = menu->addAction(tr("Delete variables"));
 			data.setValue((int)ContextAction_t::DeleteSignal);
 			actionToAdd->setData(data);
 
@@ -698,7 +698,7 @@ void SignalListEditor::endResizeSignal()
 	{
 		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::resized_to_0) )
 		{
-			qDebug() << "(SignalListEditor:) Info: Wrong input for signal size, change ignored.";
+			qDebug() << "(SignalListEditor:) Info: Wrong input for variable size, change ignored.";
 			this->editCurrentCell(true);
 		}
 		else
@@ -736,7 +736,7 @@ void SignalListEditor::endChangeSignalInitialValue()
 	{
 		if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::size_mismatch) )
 		{
-			qDebug() << "(SignalListEditor:) Info: Wrong input for signal initial value, change ignored.";
+			qDebug() << "(SignalListEditor:) Info: Wrong input for variable initial value, change ignored.";
 			this->editCurrentCell(true);
 		}
 		else

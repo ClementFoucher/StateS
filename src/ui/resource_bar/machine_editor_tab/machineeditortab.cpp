@@ -64,7 +64,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	//
 	// Title
 
-	QLabel* title = new QLabel("<b>" + tr("Signal editor")  + "</b>", this);
+	QLabel* title = new QLabel("<b>" + tr("Variable editor")  + "</b>", this);
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
@@ -84,9 +84,9 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	//
 	// Hint
 
-	QLabel* hintText = new QLabel(tr("Switch between signals types using tabs.")
+	QLabel* hintText = new QLabel(tr("Switch between variable types using tabs.")
 	                              + "<br />"
-	                              + tr("Signals length can not exceed 64 bits.")
+	                              + tr("Variable length can not exceed 64 bits.")
 	                              + "<br />"
 	                              + tr("Allowed characters are alphanumerical ones, space and")
 	                              + " {'_', '@', '#', '-'}."
@@ -96,7 +96,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	hintText->setAlignment(Qt::AlignCenter);
 	hintText->setWordWrap(true);
 
-	QString hintTitle = tr("Hint:") + " " + tr("Signal editor");
+	QString hintTitle = tr("Hint:") + " " + tr("Variable editor");
 	this->hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText, this);
 	layout->addWidget(this->hintDisplay);
 
