@@ -44,7 +44,6 @@ SOURCES += \
 	src/core/machine/machine.cpp \
 	src/core/machine/components/machinecomponent.cpp \
 	src/core/machine/components/machineactuatorcomponent.cpp \
-	src/core/machine/components/fsm/fsmcomponent.cpp \
 	src/core/machine/components/fsm/fsmstate.cpp \
 	src/core/machine/components/fsm/fsmtransition.cpp \
 	src/core/machine/fsm/fsm.cpp \
@@ -162,7 +161,6 @@ HEADERS += \
 	src/core/machine/machine.h \
 	src/core/machine/components/machinecomponent.h \
 	src/core/machine/components/machineactuatorcomponent.h \
-	src/core/machine/components/fsm/fsmcomponent.h \
 	src/core/machine/components/fsm/fsmstate.h \
 	src/core/machine/components/fsm/fsmtransition.h \
 	src/core/machine/fsm/fsm.h \

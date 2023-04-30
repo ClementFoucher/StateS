@@ -23,7 +23,7 @@
 #define FSMSTATE_H
 
 // Parent
-#include "fsmcomponent.h"
+#include "machineactuatorcomponent.h"
 
 // Qt classes
 #include <QList>
@@ -32,7 +32,7 @@
 #include "statestypes.h"
 
 
-class FsmState : public FsmComponent
+class FsmState : public MachineActuatorComponent
 {
 	Q_OBJECT
 

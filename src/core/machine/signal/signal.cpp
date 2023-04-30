@@ -195,33 +195,13 @@ void Signal::resetValue()
 	setCurrentValue(LogicValue::getValue0(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
 }
 
-void Signal::set()
-{
-	setCurrentValue(LogicValue::getValue1(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
-}
-
-// True or false concept here only apply to one bit signals
-// A larger signal will neither be true nor false
+// True concept here only apply to one bit signals
+// A larger signal muust never be checked for trueness
 bool Signal::isTrue() const // Throws StatesException
 {
 	if (this->getSize() == 1)
 	{
 		if (this->currentValue == LogicValue::getValue1(1))
-			return true;
-		else
-			return false;
-	}
-	else
-	{
-		throw StatesException("Signal", SignalError_t::signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
-	}
-}
-
-bool Signal::isFalse() const // Throws StatesException
-{
-	if (this->getSize() == 1)
-	{
-		if (this->currentValue[0] == 0)
 			return true;
 		else
 			return false;

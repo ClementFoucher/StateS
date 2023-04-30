@@ -66,12 +66,10 @@ public:
 	LogicValue getCurrentValue() const;
 
 	void resetValue();
-	void set();
 
-	// Concepts of true and false are only applicable to size 1 signals
-	// A signal with size > 1 will neither be true nor false
-	bool isTrue()  const; // Throws StatesException
-	bool isFalse() const; // Throws StatesException
+	// Concept of true is only applicable to size 1 signals
+	// A signal with size > 1 will never be true
+	bool isTrue() const; // Throws StatesException
 
 signals:
 	// General events

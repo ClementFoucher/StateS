@@ -254,8 +254,6 @@ shared_ptr<Signal> Machine::addSignal(SignalType_t type, const QString& name, co
 
 shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& name, uint rank, const LogicValue& value)
 {
-	//this->setInhibitEvents(true);
-
 	// First check if name doesn't already exist
 	for (shared_ptr<Signal> signal : this->getAllSignals())
 	{
@@ -328,12 +326,6 @@ shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& na
 		break;
 	}
 
-	/*if (signal != nullptr)
-	{
-		//this->setInhibitEvents(false);
-		//this->emitMachineEditedWithoutUndoCommand();
-	}*/
-
 	return signal;
 }
 
@@ -359,8 +351,6 @@ void Machine::addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QStrin
 
 bool Machine::deleteSignal(const QString& name)
 {
-	//this->setInhibitEvents(true);
-
 	bool result;
 
 	if (inputs.contains(name))
@@ -398,12 +388,6 @@ bool Machine::deleteSignal(const QString& name)
 	else
 		result = false;
 
-	/*if (result == true)
-	{
-		this->setInhibitEvents(false);
-		this->emitMachineEditedWithoutUndoCommand();
-	}*/
-
 	return result;
 }
 
@@ -436,8 +420,6 @@ bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_pt
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
-	//this->setInhibitEvents(true);
-
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	QString correctedNewName = newName;
@@ -504,8 +486,6 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 		else // Should not happen as we checked all lists
 			return false;
 
-		//this->setInhibitEvents(false);
-		//this->emitMachineEditedWithoutUndoCommand();
 		return true;
 	}
 }
@@ -529,8 +509,6 @@ bool Machine::renameSignalInList(const QString& oldName, const QString& newName,
 
 void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesException
 {
-	//this->setInhibitEvents(true);
-
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
@@ -559,16 +537,11 @@ void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesEx
 		{
 			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
 		}
-
-		//this->setInhibitEvents(false);
-		//this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 
 void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
 {
-	//this->setInhibitEvents(true);
-
 	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
@@ -595,9 +568,6 @@ void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
 		}
 		else // Should not happen as we checked all lists
 			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
-
-		//this->setInhibitEvents(false);
-		//this->emitMachineEditedWithoutUndoCommand();
 	}
 }
 

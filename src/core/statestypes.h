@@ -23,7 +23,7 @@
 #define STATESTYPES_H
 
 // Qt classes
-#include <QPair>
+#include <QtTypes>
 
 
 /////
@@ -38,7 +38,6 @@ typedef ulong componentId_t;
 enum class SimulationMode_t              { editMode, simulateMode };
 enum class ImageFormat_t                 { pdf, svg, png, jpg };
 enum class LeftRight_t                   { left, right };
-enum class Direction_t                   { left, right, up, down };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
 enum class ActionOnSignalType_t          { activeOnState, pulse, set, reset, assign };
 enum class SignalType_t                  { Input, Output, LocalVariable, Constant };

@@ -23,7 +23,7 @@
 #define FSMTRANSITION_H
 
 // Parent
-#include "fsmcomponent.h"
+#include "machineactuatorcomponent.h"
 
 // C++ classes
 #include <memory>
@@ -34,7 +34,7 @@ using namespace std;
 class Equation;
 
 
-class FsmTransition : public FsmComponent
+class FsmTransition : public MachineActuatorComponent
 {
 	Q_OBJECT
 

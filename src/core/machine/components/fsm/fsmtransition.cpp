@@ -27,14 +27,14 @@
 
 
 FsmTransition::FsmTransition(componentId_t sourceStateId, componentId_t targetStateId) :
-    FsmComponent()
+    MachineActuatorComponent()
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;
 }
 
 FsmTransition::FsmTransition(componentId_t id, componentId_t sourceStateId, componentId_t targetStateId) :
-    FsmComponent(id)
+    MachineActuatorComponent(id)
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;

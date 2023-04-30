@@ -24,13 +24,13 @@
 
 
 FsmState::FsmState(const QString& name) :
-    FsmComponent()
+    MachineActuatorComponent()
 {
 	this->name = name;
 }
 
 FsmState::FsmState(componentId_t id, const QString& name) :
-    FsmComponent(id)
+    MachineActuatorComponent(id)
 {
 	this->name = name;
 }
