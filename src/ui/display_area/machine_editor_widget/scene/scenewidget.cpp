@@ -439,6 +439,7 @@ void SceneWidget::buildScene()
 	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);
 
 	this->setScene(newScene);
+	newScene->recomputeSceneRect();
 	this->setView(nullptr);
 	this->updateSceneMode(SceneMode_t::editing);
 }

@@ -46,6 +46,7 @@ public:
 	// Object functions
 public:
 	QRectF getItemsBoundingRect();
+	void recomputeSceneRect();
 
 signals:
 	void itemSelectedEvent(componentId_t componentId);

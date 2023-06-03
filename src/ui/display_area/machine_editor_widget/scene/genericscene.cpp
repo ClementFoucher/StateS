@@ -24,6 +24,8 @@
 
 // Qt classes
 #include <QGraphicsItem>
+#include <QGraphicsView>
+
 
 
 GenericScene::GenericScene()
@@ -68,4 +70,39 @@ QRectF GenericScene::getItemsBoundingRect()
 	QRectF finalDisplayRectangle(QPoint(leftmostPosition-margin, topmostPosition-margin), QPoint(rightmostPosition+margin, bottommostPosition+margin));
 
 	return finalDisplayRectangle;
+}
+
+void GenericScene::recomputeSceneRect()
+{
+	// Ensure the scene rect always covers at least
+	// the size of the view vidget, centered on (0, 0)
+
+	if (this->views().count() == 0) return;
+
+	auto displaySize = this->views().at(0)->size();
+	auto left   = -displaySize.width()/2;
+	auto right  =  displaySize.width()/2;
+	auto top    = -displaySize.height()/2;
+	auto bottom =  displaySize.height()/2;
+
+	auto newSceneRect = this->getItemsBoundingRect();
+
+	if (newSceneRect.left() > left)
+	{
+		newSceneRect.setLeft(left);
+	}
+	if (newSceneRect.right() < right)
+	{
+		newSceneRect.setRight(right);
+	}
+	if (newSceneRect.top() > top)
+	{
+		newSceneRect.setTop(top);
+	}
+	if (newSceneRect.bottom() < bottom)
+	{
+		newSceneRect.setBottom(bottom);
+	}
+
+	this->setSceneRect(newSceneRect);
 }

@@ -612,6 +612,11 @@ void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 	}
 }
 
+void FsmScene::statePositionChangedEventHandler(componentId_t)
+{
+	this->recomputeSceneRect();
+}
+
 void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transitionId)
 {
 	auto machineBuilder = machineManager->getMachineBuilder();
@@ -869,6 +874,7 @@ void FsmScene::clearScene()
 				disconnect(stateItem, &FsmGraphicState::setInitialStateCalledEvent,       this, &FsmScene::stateCallsSetInitialStateEventHandler);
 				disconnect(stateItem, &FsmGraphicState::beginDrawTransitionFromThisState, this, &FsmScene::stateCallsBeginTransitionEventHandler);
 				disconnect(stateItem, &FsmGraphicState::statePositionAboutToChangeEvent,  this, &FsmScene::statePositionAboutToChangeEventHandler);
+				disconnect(stateItem, &FsmGraphicState::statePositionChangedEvent,        this, &FsmScene::statePositionChangedEventHandler);
 			}
 
 			auto actions = stateItem->getActionsBox();
@@ -880,6 +886,8 @@ void FsmScene::clearScene()
 			this->removeItem(stateItem);
 		}
 	}
+
+	this->recomputeSceneRect();
 }
 
 void FsmScene::addTransition(FsmGraphicTransition* newTransition, bool connectSignals)
@@ -905,6 +913,8 @@ void FsmScene::addTransition(FsmGraphicTransition* newTransition, bool connectSi
 		connect(newTransition, &FsmGraphicTransition::editTransitionCalledEvent,   this, &FsmScene::transitionCallsEditEventHandler);
 		connect(newTransition, &FsmGraphicTransition::deleteTransitionCalledEvent, this, &FsmScene::transitionCallsDeleteEventHandler);
 	}
+
+	this->recomputeSceneRect();
 }
 
 void FsmScene::addState(FsmGraphicState* newState, bool connectSignals)
@@ -924,7 +934,10 @@ void FsmScene::addState(FsmGraphicState* newState, bool connectSignals)
 		connect(newState, &FsmGraphicState::setInitialStateCalledEvent,       this, &FsmScene::stateCallsSetInitialStateEventHandler);
 		connect(newState, &FsmGraphicState::beginDrawTransitionFromThisState, this, &FsmScene::stateCallsBeginTransitionEventHandler);
 		connect(newState, &FsmGraphicState::statePositionAboutToChangeEvent,  this, &FsmScene::statePositionAboutToChangeEventHandler);
+		connect(newState, &FsmGraphicState::statePositionChangedEvent,        this, &FsmScene::statePositionChangedEventHandler);
 	}
+
+	this->recomputeSceneRect();
 }
 
 void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos)

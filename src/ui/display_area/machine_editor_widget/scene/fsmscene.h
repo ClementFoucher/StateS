@@ -105,6 +105,7 @@ private slots:
 	void stateCallsSetInitialStateEventHandler(componentId_t stateId);
 	void stateCallsBeginTransitionEventHandler(componentId_t stateId);
 	void statePositionAboutToChangeEventHandler(componentId_t stateId);
+	void statePositionChangedEventHandler(componentId_t stateId);
 
 	// Transitions signals
 	void transitionCallsDynamicSourceEventHandler(componentId_t transitionId);
