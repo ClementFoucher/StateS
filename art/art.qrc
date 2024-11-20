@@ -19,5 +19,7 @@
         <file alias="add_checkpoint">3rd_party/Oxygen15.04.1-flag-blue.svg</file>
         <file alias="redo">svg/Redo.svg</file>
         <file alias="undo">svg/Undo.svg</file>
+        <file alias="increment">svg/Increment.svg</file>
+        <file alias="decrement">svg/Decrement.svg</file>
     </qresource>
 </RCC>

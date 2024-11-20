@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -305,6 +305,14 @@ void MachineXmlParser::parseAction()
 		else if (actionTypeText == "Assign")
 		{
 			actionType = ActionOnSignalType_t::assign;
+		}
+		else if (actionTypeText == "Increment")
+		{
+			actionType = ActionOnSignalType_t::increment;
+		}
+		else if (actionTypeText == "Decrement")
+		{
+			actionType = ActionOnSignalType_t::decrement;
 		}
 		else
 		{

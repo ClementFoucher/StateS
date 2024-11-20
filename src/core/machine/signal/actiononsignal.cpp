@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -119,6 +119,8 @@ void ActionOnSignal::setActionType(ActionOnSignalType_t newType) // Throws State
 			{
 			case ActionOnSignalType_t::reset:
 			case ActionOnSignalType_t::set:
+			case ActionOnSignalType_t::increment:
+			case ActionOnSignalType_t::decrement:
 				// Switch to implicit
 				this->actionValue = LogicValue::getNullValue();
 				break;
@@ -264,6 +266,14 @@ LogicValue ActionOnSignal::getActionValue() const
 			case ActionOnSignalType_t::pulse: // May be implicit on one-bit signals
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
+			case ActionOnSignalType_t::increment:
+				publicActionValue = l_signal->getCurrentValue();
+				publicActionValue.increment();
+				break;
+			case ActionOnSignalType_t::decrement:
+				publicActionValue = l_signal->getCurrentValue();
+				publicActionValue.decrement();
+				break;
 			case ActionOnSignalType_t::assign:
 				// Should not happen: only explicit values here
 				break;
@@ -315,8 +325,10 @@ bool ActionOnSignal::isActionValueEditable() const
 	}
 	else
 	{
-		if ( (this->actionType == ActionOnSignalType_t::set) ||
-		     (this->actionType == ActionOnSignalType_t::reset) )
+		if ( (this->actionType == ActionOnSignalType_t::set)      ||
+		     (this->actionType == ActionOnSignalType_t::reset)    ||
+		     (this->actionType == ActionOnSignalType_t::increment)||
+		     (this->actionType == ActionOnSignalType_t::decrement) )
 			return false;
 		else
 			return true;
@@ -340,7 +352,9 @@ void ActionOnSignal::beginAction()
 		case ActionOnSignalType_t::reset:
 		case ActionOnSignalType_t::set:
 		case ActionOnSignalType_t::assign:
-			// Do not register, action is maintained
+		case ActionOnSignalType_t::increment:
+		case ActionOnSignalType_t::decrement:
+			// Do not register, value change is definitive
 			break;
 		}
 	}

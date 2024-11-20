@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -105,6 +105,12 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 				break;
 			case ActionOnSignalType_t::assign:
 				this->stream->writeAttribute("Action_Type", "Assign");
+				break;
+			case ActionOnSignalType_t::increment:
+				this->stream->writeAttribute("Action_Type", "Increment");
+				break;
+			case ActionOnSignalType_t::decrement:
+				this->stream->writeAttribute("Action_Type", "Decrement");
 				break;
 			}
 

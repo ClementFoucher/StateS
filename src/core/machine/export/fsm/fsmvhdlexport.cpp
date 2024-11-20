@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -193,6 +193,8 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 				case ActionOnSignalType_t::assign:
 				case ActionOnSignalType_t::set:
 				case ActionOnSignalType_t::reset:
+				case ActionOnSignalType_t::increment:
+				case ActionOnSignalType_t::decrement:
 					characteristics.isKeepValue = true;
 					break;
 				case ActionOnSignalType_t::activeOnState:
@@ -226,6 +228,8 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 				case ActionOnSignalType_t::assign:
 				case ActionOnSignalType_t::set:
 				case ActionOnSignalType_t::reset:
+				case ActionOnSignalType_t::increment:
+				case ActionOnSignalType_t::decrement:
 					characteristics.isKeepValue = true;
 					break;
 				case ActionOnSignalType_t::activeOnState:
@@ -655,8 +659,10 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 		case ActionOnSignalType_t::reset:
 			stream << "'0'";
 			break;
+		case ActionOnSignalType_t::increment:
+		case ActionOnSignalType_t::decrement:
 		case ActionOnSignalType_t::assign:
-			// Impossible case
+			// Impossible cases
 			break;
 		}
 	}
@@ -677,7 +683,12 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 		case ActionOnSignalType_t::assign:
 			stream << "\"" << action->getActionValue().toString() << "\"";
 			break;
-
+		case ActionOnSignalType_t::increment:
+			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " + 1)";
+			break;
+		case ActionOnSignalType_t::decrement:
+			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " - 1)";
+			break;
 		}
 	}
 

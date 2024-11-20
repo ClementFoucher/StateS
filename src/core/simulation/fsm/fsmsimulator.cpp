@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,6 +41,7 @@
 #include "fsmsimulatedtransition.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
+#include "actiononsignal.h"
 
 
 FsmSimulator::FsmSimulator() :
@@ -133,13 +134,13 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and variables to their initial value
-	for (shared_ptr<Signal> sig : fsm->getReadableVariableSignals())
+	for (shared_ptr<Signal>& sig : fsm->getReadableVariableSignals())
 	{
 		sig->reinitialize();
 	}
 
 	// Then compute outputs: first reset all of them...
-	for (shared_ptr<Output> sig : fsm->getOutputs())
+	for (shared_ptr<Output>& sig : fsm->getOutputs())
 	{
 		sig->resetValue();
 	}
@@ -255,6 +256,18 @@ void FsmSimulator::clockEventHandler()
 
 			this->potentialTransitionsIds = candidateTransitions;
 			this->targetStateSelector->show();
+		}
+		else
+		{
+			// No transition crossed: look for maintained actions in current state
+			for (auto& action : currentActiveState->getActions())
+			{
+				if ( (action->getActionType() == ActionOnSignalType_t::increment) ||
+				     (action->getActionType() == ActionOnSignalType_t::decrement) )
+				{
+					action->beginAction();
+				}
+			}
 		}
 	}
 }

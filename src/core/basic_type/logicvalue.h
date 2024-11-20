@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -51,6 +51,7 @@ public:
 	uint getSize() const;
 
 	bool increment();
+	bool decrement();
 
 	bool isNull() const;
 	QString toString() const;

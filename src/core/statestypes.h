@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,7 @@ enum class SimulationMode_t              { editMode, simulateMode };
 enum class ImageFormat_t                 { pdf, svg, png, jpg };
 enum class LeftRight_t                   { left, right };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
-enum class ActionOnSignalType_t          { activeOnState, pulse, set, reset, assign };
+enum class ActionOnSignalType_t          { activeOnState, pulse, set, reset, assign, increment, decrement };
 enum class SignalType_t                  { Input, Output, LocalVariable, Constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };
 enum class MachineType_t                 { None, Fsm };
@@ -86,7 +86,9 @@ enum class actuatorAllowedActionType_t : uint
 	pulse         = 0x2,
 	set           = 0x4,
 	reset         = 0x8,
-	assign        = 0x10
+	assign        = 0x10,
+	increment     = 0x20,
+	decrement     = 0x40
 };
 
 enum class UndoCommandId_t : int32_t

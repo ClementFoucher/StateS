@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -282,6 +282,35 @@ bool LogicValue::increment()
 		{
 			lastI = i;
 			(*this)[i] = true;
+			break;
+		}
+	}
+
+	if (lastI == this->getSize())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// Return value for decrement indicates if value goes below 0
+bool LogicValue::decrement()
+{
+	uint lastI = this->getSize();
+
+	for (int i = 0 ; i < this->size() ; i++)
+	{
+		if ((*this)[i] == false)
+		{
+			(*this)[i] = true;
+		}
+		else
+		{
+			lastI = i;
+			(*this)[i] = false;
 			break;
 		}
 	}

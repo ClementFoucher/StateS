@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -154,6 +154,17 @@ void GraphicActuator::buildActionsBox()
 				currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
 				currentActionText += "</span>";
 			}
+			break;
+		case ActionOnSignalType_t::increment:
+			currentActionText += "<span style=\"color:black;\">";
+			currentActionText += " ← " + currentSignal->getName() + " + 1";
+			currentActionText += "</span>";
+			break;
+		case ActionOnSignalType_t::decrement:
+			currentActionText += "<span style=\"color:black;\">";
+			currentActionText += " ← " + currentSignal->getName() + " - 1";
+			currentActionText += "</span>";
+			break;
 		}
 
 		actionText->setHtml(currentActionText);

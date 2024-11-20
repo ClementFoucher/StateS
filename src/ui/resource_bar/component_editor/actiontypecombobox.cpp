@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,6 +52,10 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 	{
 		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::assign) != 0 )
 			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/assign"))), tr("Assign"));
+		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::increment) != 0 )
+			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/increment"))), tr("Increment"));
+		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::decrement) != 0 )
+			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/decrement"))), tr("Decrement"));
 	}
 
 	// Select current action in list
@@ -71,6 +75,12 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 		break;
 	case ActionOnSignalType_t::assign:
 		this->setCurrentText(tr("Assign"));
+		break;
+	case ActionOnSignalType_t::increment:
+		this->setCurrentText(tr("Increment"));
+		break;
+	case ActionOnSignalType_t::decrement:
+		this->setCurrentText(tr("Decrement"));
 		break;
 	}
 
@@ -105,6 +115,14 @@ void ActionTypeComboBox::processIndexChanged(int index)
 			else if (this->itemText(index) == tr("Assign"))
 			{
 				l_action->setActionType(ActionOnSignalType_t::assign); // Throws StatesException
+			}
+			else if (this->itemText(index) == tr("Increment"))
+			{
+				l_action->setActionType(ActionOnSignalType_t::increment); // Throws StatesException
+			}
+			else if (this->itemText(index) == tr("Decrement"))
+			{
+				l_action->setActionType(ActionOnSignalType_t::decrement); // Throws StatesException
 			}
 		}
 		catch (const StatesException& e)

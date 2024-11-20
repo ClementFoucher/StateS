@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -113,10 +113,12 @@ shared_ptr<Signal> FsmTransition::getCondition() const
 
 uint FsmTransition::getAllowedActionTypes() const
 {
-	return ((uint)actuatorAllowedActionType_t::pulse |
-	        (uint)actuatorAllowedActionType_t::set   |
-	        (uint)actuatorAllowedActionType_t::reset |
-	        (uint)actuatorAllowedActionType_t::assign
+	return ((uint)actuatorAllowedActionType_t::pulse     |
+	        (uint)actuatorAllowedActionType_t::set       |
+	        (uint)actuatorAllowedActionType_t::reset     |
+	        (uint)actuatorAllowedActionType_t::assign    |
+	        (uint)actuatorAllowedActionType_t::increment |
+	        (uint)actuatorAllowedActionType_t::decrement
 	       );
 }
 

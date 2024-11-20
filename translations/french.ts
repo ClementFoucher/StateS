@@ -245,38 +245,52 @@
     <name>ActionTypeComboBox</name>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="43"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="61"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="89"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="65"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="99"/>
         <source>Pulse</source>
         <translation>Impulsion</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="45"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="64"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="93"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="68"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="103"/>
         <source>Active on state</source>
         <translation>Actif sur état</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="47"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="67"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="97"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="71"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="107"/>
         <source>Set</source>
         <translation>Set</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="49"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="70"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="101"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="74"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="111"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="54"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="73"/>
-        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="105"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="77"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="115"/>
         <source>Assign</source>
         <translation>Affecter</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="80"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="119"/>
+        <source>Increment</source>
+        <translation>Incrémenter</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="58"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="83"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontypecombobox.cpp" line="123"/>
+        <source>Decrement</source>
+        <translation>Décrémenter</translation>
     </message>
 </context>
 <context>
@@ -569,13 +583,13 @@
     <name>FsmScene</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="241"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="726"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="731"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="242"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="736"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="741"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
@@ -627,17 +641,17 @@
 <context>
     <name>FsmSimulator</name>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="226"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="227"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="227"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="228"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
     </message>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="228"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="229"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -1628,7 +1642,7 @@
     </message>
     <message>
         <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="188"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="430"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="438"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
@@ -1639,7 +1653,7 @@
     </message>
     <message>
         <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="188"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="430"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="438"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
@@ -1687,71 +1701,71 @@
     </message>
     <message>
         <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="281"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="313"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="431"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="321"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="439"/>
         <source>Action ignored.</source>
         <translation>Action ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="311"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="319"/>
         <source>Unexpected action type encountered while parsing action list:</source>
         <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="312"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="320"/>
         <source>Action type was</source>
         <translation>Le type d&apos;action était</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="328"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="336"/>
         <source>Error in action type for signal</source>
         <translation>Erreur dans le type d&apos;action pour le signal</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="329"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="337"/>
         <source>Default action type used instead.</source>
         <translation>Type d&apos;action par défaut utilisé.</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="369"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="377"/>
         <source>Error in action range for signal</source>
         <translation>Erreur dans le range du signal</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="370"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="378"/>
         <source>Range ignored. Default value will be ignored too if present.</source>
         <translation>Le range a été ignoré. La valeur par défaut sera ignorée également si elle existe.</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="399"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="418"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="407"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="426"/>
         <source>Error in action value for signal</source>
         <translation>Erreur dans la valeur de l&apos;action pour le signal</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="400"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="419"/>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="529"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="408"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="427"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="537"/>
         <source>Value ignored and set to</source>
         <translation>Valeur ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="528"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="536"/>
         <source>Error in constant value while parsing equation:</source>
         <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="537"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="545"/>
         <source>Unexpected equation nature encountered while parsing logic equation:</source>
         <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="538"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="546"/>
         <source>Equation nature was:</source>
         <translation>La nature de l&apos;équation était :</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="539"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="547"/>
         <source>Token ignored. Will retry with other tokens if existing.</source>
         <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
     </message>
@@ -1781,7 +1795,7 @@
         <translation>Impossible de lire la taille du signal</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="429"/>
+        <location filename="../src/core/xml/machine/machinexmlparser.cpp" line="437"/>
         <source>Unexpected node encountered while parsing action list:</source>
         <translation>Nœud inattendu trouvé en lisant la liste des actions :</translation>
     </message>
@@ -1789,17 +1803,17 @@
 <context>
     <name>MachineXmlWriter</name>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="211"/>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="217"/>
         <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
         <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="215"/>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="221"/>
         <source>Specified directory doesn&apos;t exist.</source>
         <translation>Le dossier spécifié n&apos;existe pas.</translation>
     </message>
     <message>
-        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="222"/>
+        <location filename="../src/core/xml/machine/machinexmlwriter.cpp" line="228"/>
         <source>Unable to open file in write mode.</source>
         <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>

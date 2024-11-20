@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -138,9 +138,23 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 			}
 			else if (index.column()  == 2)
 			{
-				return QVariant(action->getActionValue().toString());
+				switch (action->getActionType())
+				{
+				case ActionOnSignalType_t::reset:
+				case ActionOnSignalType_t::set:
+				case ActionOnSignalType_t::activeOnState:
+				case ActionOnSignalType_t::pulse:
+				case ActionOnSignalType_t::assign:
+					return QVariant(action->getActionValue().toString());
+					break;
+				case ActionOnSignalType_t::increment:
+					return QVariant(action->getSignalActedOn()->getName() + " + 1");
+					break;
+				case ActionOnSignalType_t::decrement:
+					return QVariant(action->getSignalActedOn()->getName() + " - 1");
+					break;
+				}
 			}
-
 		}
 		else if (role == Qt::EditRole)
 		{
