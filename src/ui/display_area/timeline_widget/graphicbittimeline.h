@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICTIMELINE_H
-#define GRAPHICTIMELINE_H
+#ifndef GRAPHICBITTIMELINE_H
+#define GRAPHICBITTIMELINE_H
 
 // Parent
 #include <QWidget>
@@ -30,14 +30,14 @@
 #include <QVector>
 
 
-class GraphicTimeLine : public QWidget
+class GraphicBitTimeLine : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
+	explicit GraphicBitTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -66,4 +66,4 @@ private:
 
 };
 
-#endif // GRAPHICTIMELINE_H
+#endif // GRAPHICBITTIMELINE_H

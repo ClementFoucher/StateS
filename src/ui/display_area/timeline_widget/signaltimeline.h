@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@ using namespace std;
 // StateS classes
 class Signal;
 class Clock;
-class GraphicTimeLine;
+class GraphicBitTimeLine;
 class TimelineWidget;
 
 
@@ -58,7 +58,7 @@ private slots:
 private:
 	weak_ptr<Signal> signal;
 
-	QList<GraphicTimeLine*> signalLineDisplay;
+	QList<GraphicBitTimeLine*> signalLineDisplay;
 
 };
 

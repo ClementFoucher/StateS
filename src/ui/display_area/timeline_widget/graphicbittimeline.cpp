@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,13 +20,13 @@
  */
 
 // Current class header
-#include "graphictimeline.h"
+#include "graphicbittimeline.h"
 
 // Qt classes
 #include <QPainter>
 
 
-GraphicTimeLine::GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent) :
+GraphicBitTimeLine::GraphicBitTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent) :
     QWidget(parent)
 {
 	this->pointsPerCycle = pointsPerCycle;
@@ -37,7 +37,7 @@ GraphicTimeLine::GraphicTimeLine(uint pointsPerCycle, uint eventDelay, bool init
 	this->reset(initialValue);
 }
 
-void GraphicTimeLine::addPoint(bool state)
+void GraphicBitTimeLine::addPoint(bool state)
 {
 	this->points.append(state);
 
@@ -82,7 +82,7 @@ void GraphicTimeLine::addPoint(bool state)
 	repaint();
 }
 
-void GraphicTimeLine::updateLastPoint(bool state)
+void GraphicBitTimeLine::updateLastPoint(bool state)
 {
 	// If no change to do, return
 	if (this->points.last() == state)
@@ -101,7 +101,7 @@ void GraphicTimeLine::updateLastPoint(bool state)
 	}
 }
 
-void GraphicTimeLine::reset(bool initialValue)
+void GraphicBitTimeLine::reset(bool initialValue)
 {
 	this->points.clear();
 	this->points.append(initialValue);
@@ -118,7 +118,7 @@ void GraphicTimeLine::reset(bool initialValue)
 	repaint();
 }
 
-void GraphicTimeLine::chageEventDelay(uint eventDelay)
+void GraphicBitTimeLine::chageEventDelay(uint eventDelay)
 {
 	this->eventDelay = eventDelay;
 
@@ -132,7 +132,7 @@ void GraphicTimeLine::chageEventDelay(uint eventDelay)
 }
 
 
-void GraphicTimeLine::paintEvent(QPaintEvent*)
+void GraphicBitTimeLine::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 
@@ -151,7 +151,7 @@ void GraphicTimeLine::paintEvent(QPaintEvent*)
 	}
 }
 
-void GraphicTimeLine::removeLastPoint()
+void GraphicBitTimeLine::removeLastPoint()
 {
 	if (this->points.count() > 1) // First point can't be handled: we need an initial value
 	{

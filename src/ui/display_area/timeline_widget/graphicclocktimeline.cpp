@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,7 @@
 
 
 GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
-    GraphicTimeLine(2, 0, false, parent)
+    GraphicBitTimeLine(2, 0, false, parent)
 {
 	connect(clock.get(), &Clock::prepareForClockEvent, this, &GraphicClockTimeLine::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,    this, &GraphicClockTimeLine::resetEventHandler);

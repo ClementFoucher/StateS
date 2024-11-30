@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #define GRAPHICCLOCKTIMELINE_H
 
 // Parent
-#include "graphictimeline.h"
+#include "graphicbittimeline.h"
 
 // C++ classes
 #include <memory>
@@ -33,7 +33,7 @@ using namespace std;
 class Clock;
 
 
-class GraphicClockTimeLine : public GraphicTimeLine
+class GraphicClockTimeLine : public GraphicBitTimeLine
 {
 	Q_OBJECT
 

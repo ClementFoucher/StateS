@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 // StateS classes
 #include "StateS_signal.h"
 #include "clock.h"
-#include "graphictimeline.h"
+#include "graphicbittimeline.h"
 #include "timelinewidget.h"
 
 
@@ -49,7 +49,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidge
 
 	if (signal->getSize() == 1)
 	{
-		GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(4, outputDelay, signal->getInitialValue()[0]);
+		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(4, outputDelay, signal->getInitialValue()[0]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
 		this->signalLineDisplay.append(timeLineDisplay);
@@ -67,7 +67,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidge
 			QLabel* bitNumber = new QLabel(QString::number(i));
 			innerLayout->addWidget(bitNumber);
 
-			GraphicTimeLine* timeLineDisplay = new GraphicTimeLine(4, outputDelay, signal->getInitialValue()[i]);
+			GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(4, outputDelay, signal->getInitialValue()[i]);
 			timeLineDisplay->setMinimumHeight(20);
 			timeLineDisplay->setMaximumHeight(20);
 			this->signalLineDisplay.append(timeLineDisplay);
@@ -126,7 +126,7 @@ void SignalTimeline::resetEventHandler()
 
 void SignalTimeline::updateDelayOutputOption(uint delay)
 {
-	for (GraphicTimeLine* gtl : this->signalLineDisplay)
+	for (GraphicBitTimeLine* gtl : this->signalLineDisplay)
 	{
 		gtl->chageEventDelay(delay);
 	}
