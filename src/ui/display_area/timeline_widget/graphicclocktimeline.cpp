@@ -27,10 +27,12 @@
 
 
 GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
-    GraphicBitTimeLine(2, 0, false, parent)
+	GraphicBitTimeLine(0, false, parent)
 {
 	connect(clock.get(), &Clock::prepareForClockEvent, this, &GraphicClockTimeLine::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,    this, &GraphicClockTimeLine::resetEventHandler);
+
+	this->pointsPerCycle = 2;
 }
 
 void GraphicClockTimeLine::clockEventHandler()

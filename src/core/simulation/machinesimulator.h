@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -60,13 +60,8 @@ public:
 	void start(uint period);
 	void suspend();
 
-	void enableOutputDelay(bool enable);
-
 	QList<SimulatedComponent*> getSimulatedComponents() const;
 	SimulatedComponent* getComponent(componentId_t componentId) const;
-
-signals:
-	void outputDelayChangedEvent(bool enable);
 
 	/////
 	// Object variables

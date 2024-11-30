@@ -33,7 +33,6 @@ using namespace std;
 class Signal;
 class Clock;
 class GraphicBitTimeLine;
-class TimelineWidget;
 
 
 class SignalTimeline : public QWidget
@@ -43,7 +42,7 @@ class SignalTimeline : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalTimeline(uint delay, TimelineWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit SignalTimeline(uint delay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -51,7 +50,6 @@ private slots:
 	void clockEventHandler();
 	void resetEventHandler();
 	void updateCurrentValue();
-	void updateDelayOutputOption(uint delay);
 
 	/////
 	// Object variables

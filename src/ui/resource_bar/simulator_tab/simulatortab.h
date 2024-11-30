@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,10 +24,6 @@
 
 // Parent
 #include <QWidget>
-
-// C++ classes
-#include <memory>
-using namespace std;
 
 // Qt classes
 class QPushButton;
@@ -54,14 +50,12 @@ public:
 private slots:
 	void triggerSimulationMode(bool enabled);
 	void buttonLauchAutoStepClicked();
-	void delayOptionToggleEventHandler(bool enabled);
 
 	/////
 	// Object variables
 private:
 	QPushButton  * buttonTriggerSimulation = nullptr;
 	QPushButton  * buttonTriggerAutoStep   = nullptr;
-//	CheckBoxHtml * checkBoxDelay           = nullptr; // Disabled (buggy)
 	QLineEdit    * autoStepValue           = nullptr;
 	QWidget      * simulationTools         = nullptr;
 

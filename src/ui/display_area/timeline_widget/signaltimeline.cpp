@@ -30,16 +30,11 @@
 #include "StateS_signal.h"
 #include "clock.h"
 #include "graphicbittimeline.h"
-#include "timelinewidget.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidget, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
-	// If this parameter is not null, this is only for this connection
-	if (simulationWidget != nullptr)
-		connect(simulationWidget, &TimelineWidget::outputDelayChangedEvent, this, &SignalTimeline::updateDelayOutputOption);
-
 	this->signal = signal;
 
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
@@ -49,7 +44,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidge
 
 	if (signal->getSize() == 1)
 	{
-		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(4, outputDelay, signal->getInitialValue()[0]);
+		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[0]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
 		this->signalLineDisplay.append(timeLineDisplay);
@@ -67,7 +62,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, TimelineWidget* simulationWidge
 			QLabel* bitNumber = new QLabel(QString::number(i));
 			innerLayout->addWidget(bitNumber);
 
-			GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(4, outputDelay, signal->getInitialValue()[i]);
+			GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[i]);
 			timeLineDisplay->setMinimumHeight(20);
 			timeLineDisplay->setMaximumHeight(20);
 			this->signalLineDisplay.append(timeLineDisplay);
@@ -121,13 +116,5 @@ void SignalTimeline::resetEventHandler()
 		{
 			this->signalLineDisplay[i]->reset(l_signal->getCurrentValue()[i]);
 		}
-	}
-}
-
-void SignalTimeline::updateDelayOutputOption(uint delay)
-{
-	for (GraphicBitTimeLine* gtl : this->signalLineDisplay)
-	{
-		gtl->chageEventDelay(delay);
 	}
 }

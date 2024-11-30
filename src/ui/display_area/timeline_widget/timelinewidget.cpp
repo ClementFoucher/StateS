@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -78,8 +78,6 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	shared_ptr<MachineSimulator> simulator = machineManager->getMachineSimulator();
 	shared_ptr<Clock>            clock     = simulator->getClock();
 
-	connect(simulator.get(), &MachineSimulator::outputDelayChangedEvent, this, &TimelineWidget::delayOutputOptionTriggered); // Relay option change event
-
 	QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
 	layout->setAlignment(Qt::AlignTop);
 
@@ -101,7 +99,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (shared_ptr<Input> var : machine->getInputs())
 		{
-			SignalTimeline* varTL = new SignalTimeline(3, nullptr, var, clock);
+			SignalTimeline* varTL = new SignalTimeline(3, var, clock);
 			layout->addWidget(varTL);
 		}
 	}
@@ -115,7 +113,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (shared_ptr<Output> var : machine->getOutputs())
 		{
-			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
+			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
 			layout->addWidget(varTL);
 		}
 	}
@@ -129,7 +127,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (shared_ptr<Signal> var : machine->getLocalVariables())
 		{
-			SignalTimeline* varTL = new SignalTimeline(0, this, var, clock);
+			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
 			layout->addWidget(varTL);
 		}
 	}
@@ -225,12 +223,4 @@ void TimelineWidget::bindMe()
 	this->actionDetach->setIcon(detachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
-}
-
-void TimelineWidget::delayOutputOptionTriggered(bool activated)
-{
-	if (activated)
-		emit outputDelayChangedEvent(1);
-	else
-		emit outputDelayChangedEvent(0);
 }

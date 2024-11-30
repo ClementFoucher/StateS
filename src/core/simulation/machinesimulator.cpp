@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -64,11 +64,6 @@ void MachineSimulator::start(uint period)
 void MachineSimulator::suspend()
 {
 	this->clock->stop();
-}
-
-void MachineSimulator::enableOutputDelay(bool enable)
-{
-	emit outputDelayChangedEvent(enable);
 }
 
 QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const

@@ -26,13 +26,10 @@
 #include <QPainter>
 
 
-GraphicBitTimeLine::GraphicBitTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent) :
-    QWidget(parent)
+GraphicBitTimeLine::GraphicBitTimeLine(uint eventDelay, bool initialValue, QWidget* parent) :
+	QWidget(parent)
 {
-	this->pointsPerCycle = pointsPerCycle;
-	this->eventDelay     = eventDelay;
-
-	this->stepLength = 5;
+	this->eventDelay = eventDelay;
 
 	this->reset(initialValue);
 }
@@ -68,12 +65,11 @@ void GraphicBitTimeLine::addPoint(bool state)
 			// Horizontal line
 			timeLinePoly.append(QPoint(lastPosition.x() + 1, state?1:0));
 		}
-		else // (i >= this->eventDelay)
+		else // (i > this->eventDelay)
 		{
 			// Horizontal line with new value after delay
 			timeLinePoly.append(QPoint(lastPosition.x() + 1, state?1:0));
 		}
-
 	}
 
 	this->setMinimumWidth(timeLinePoly.last().x()*this->stepLength + 5*this->stepLength);
@@ -117,20 +113,6 @@ void GraphicBitTimeLine::reset(bool initialValue)
 
 	repaint();
 }
-
-void GraphicBitTimeLine::chageEventDelay(uint eventDelay)
-{
-	this->eventDelay = eventDelay;
-
-	QVector<bool> oldPointVector = this->points;
-	this->reset(oldPointVector[0]);
-
-	for (int i = 1 ; i < oldPointVector.count() ; i++)
-	{
-		this->addPoint(oldPointVector[i]);
-	}
-}
-
 
 void GraphicBitTimeLine::paintEvent(QPaintEvent*)
 {

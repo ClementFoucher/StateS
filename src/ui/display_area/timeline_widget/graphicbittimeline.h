@@ -37,7 +37,7 @@ class GraphicBitTimeLine : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicBitTimeLine(uint pointsPerCycle, uint eventDelay, bool initialValue, QWidget* parent = nullptr);
+	explicit GraphicBitTimeLine(uint eventDelay, bool initialValue, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -45,7 +45,6 @@ public:
 	void addPoint(bool state);
 	void updateLastPoint(bool state);
 	void reset(bool initialValue);
-	void chageEventDelay(uint eventDelay);
 
 protected:
 	virtual void paintEvent(QPaintEvent*) override;
@@ -56,12 +55,12 @@ private:
 	/////
 	// Object variables
 protected:
-	uint stepLength;
+	uint stepLength     = 5;
+	uint pointsPerCycle = 4;
 
 private:
 	QPolygon timeLinePoly;
 	QVector<bool> points;
-	uint pointsPerCycle;
 	uint eventDelay;
 
 };
