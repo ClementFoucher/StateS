@@ -27,10 +27,8 @@
 
 
 GraphicBitTimeLine::GraphicBitTimeLine(uint eventDelay, bool initialValue, QWidget* parent) :
-	QWidget(parent)
+	GraphicTimeLine(eventDelay, parent)
 {
-	this->eventDelay = eventDelay;
-
 	this->reset(initialValue);
 }
 
@@ -147,4 +145,3 @@ void GraphicBitTimeLine::removeLastPoint()
 		}
 	}
 }
-

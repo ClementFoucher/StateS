@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,45 +19,29 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALTIMELINE_H
-#define SIGNALTIMELINE_H
+#ifndef GRAPHICTIMELINE_H
+#define GRAPHICTIMELINE_H
 
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
 
-// StateS classes
-class Signal;
-class Clock;
-class GraphicTimeLine;
-
-
-class SignalTimeline : public QWidget
+class GraphicTimeLine : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalTimeline(uint delay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
-
-	/////
-	// Object functions
-private slots:
-	void clockEventHandler();
-	void resetEventHandler();
-	void updateCurrentValue();
+	explicit GraphicTimeLine(uint eventDelay, QWidget* parent = nullptr);
 
 	/////
 	// Object variables
-private:
-	weak_ptr<Signal> signal;
-
-	QList<GraphicTimeLine*> signalLineDisplay;
+protected:
+	uint stepLength     = 5;
+	uint pointsPerCycle = 4;
+	uint eventDelay;
 
 };
 
-#endif // SIGNALTIMELINE_H
+#endif // GRAPHICTIMELINE_H

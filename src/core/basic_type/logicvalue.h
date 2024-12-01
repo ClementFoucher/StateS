@@ -55,6 +55,7 @@ public:
 
 	bool isNull() const;
 	QString toString() const;
+	int toInt() const;
 
 	// Operator overloading
 

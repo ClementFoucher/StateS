@@ -137,6 +137,8 @@ SOURCES += \
 	src/ui/display_area/timeline_widget/clocktimeline.cpp \
 	src/ui/display_area/timeline_widget/graphicbittimeline.cpp \
 	src/ui/display_area/timeline_widget/graphicclocktimeline.cpp \
+	src/ui/display_area/timeline_widget/graphictimeline.cpp \
+	src/ui/display_area/timeline_widget/graphicvectortimeline.cpp \
 	src/ui/display_area/timeline_widget/signaltimeline.cpp \
 	src/ui/static/pixmapgenerator.cpp \
 	src/ui/truth_table/truthtabledisplay.cpp \
@@ -257,6 +259,8 @@ HEADERS += \
 	src/ui/display_area/timeline_widget/clocktimeline.h \
 	src/ui/display_area/timeline_widget/graphicbittimeline.h \
 	src/ui/display_area/timeline_widget/graphicclocktimeline.h \
+	src/ui/display_area/timeline_widget/graphictimeline.h \
+	src/ui/display_area/timeline_widget/graphicvectortimeline.h \
 	src/ui/display_area/timeline_widget/signaltimeline.h \
 	src/ui/static/pixmapgenerator.h \
 	src/ui/truth_table/truthtabledisplay.h \

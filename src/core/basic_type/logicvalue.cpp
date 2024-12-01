@@ -359,11 +359,24 @@ QString LogicValue::toString() const
 	}
 	else
 	{
-		for (bool b : *((QVector<bool>*)this))
+		for (bool& b : *((QVector<bool>*)this))
 		{
 			text = (b?"1":"0") + text;
 		}
 	}
 
 	return text;
+}
+
+int LogicValue::toInt() const
+{
+	int acc = 0;
+	for (int i = 0 ; i < this->size() ; i++)
+	{
+		if ((*this)[i] == true)
+		{
+			acc += pow(2, i);
+		}
+	}
+	return acc;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,45 +19,12 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICBITTIMELINE_H
-#define GRAPHICBITTIMELINE_H
-
-// Parent
+// Current class header
 #include "graphictimeline.h"
 
-// Qt classes
-#include <QPolygon>
-#include <QVector>
 
-
-class GraphicBitTimeLine : public GraphicTimeLine
+GraphicTimeLine::GraphicTimeLine(uint eventDelay, QWidget* parent) :
+    QWidget(parent)
 {
-	Q_OBJECT
-
-	/////
-	// Constructors/destructors
-public:
-	explicit GraphicBitTimeLine(uint eventDelay, bool initialValue, QWidget* parent = nullptr);
-
-	/////
-	// Object functions
-public:
-	void addPoint(bool state);
-	void updateLastPoint(bool state);
-	void reset(bool initialValue);
-
-protected:
-	virtual void paintEvent(QPaintEvent*) override;
-
-private:
-	void removeLastPoint();
-
-	/////
-	// Object variables
-private:
-	QPolygon timeLinePoly;
-	QVector<bool> points;
-
-};
-
-#endif // GRAPHICBITTIMELINE_H
+	this->eventDelay = eventDelay;
+}

@@ -30,6 +30,7 @@
 #include "StateS_signal.h"
 #include "clock.h"
 #include "graphicbittimeline.h"
+#include "graphicvectortimeline.h"
 
 
 SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
@@ -42,37 +43,45 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shar
 	QLabel* varName = new QLabel(signal->getName());
 	globalLayout->addWidget(varName);
 
-	if (signal->getSize() == 1)
+	QVBoxLayout* bitsLayout = new QVBoxLayout();
+
+	// Global value display for vectors
+	if (signal->getSize() > 1)
 	{
-		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[0]);
+		QHBoxLayout* innerLayout = new QHBoxLayout();
+
+		QLabel* valueLabel = new QLabel(tr("Value"));
+		innerLayout->addWidget(valueLabel);
+
+		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, signal->getInitialValue());
+		timeLineDisplay->setMinimumHeight(30);
+		timeLineDisplay->setMaximumHeight(30);
+		this->signalLineDisplay.append(timeLineDisplay);
+		innerLayout->addWidget(timeLineDisplay);
+
+		bitsLayout->addLayout(innerLayout);
+	}
+
+	// Individual bits display
+	for (uint i = 0 ; i < signal->getSize() ; i++)
+	{
+		QHBoxLayout* innerLayout = new QHBoxLayout();
+
+		if (signal->getSize() > 1)
+		{
+			QLabel* bitNumberLabel = new QLabel(tr("Bit") + " #" + QString::number(i));
+			innerLayout->addWidget(bitNumberLabel);
+		}
+
+		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[i]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
 		this->signalLineDisplay.append(timeLineDisplay);
+		innerLayout->addWidget(timeLineDisplay);
 
-		globalLayout->addWidget(timeLineDisplay);
+		bitsLayout->addLayout(innerLayout);
 	}
-	else
-	{
-		QVBoxLayout* bitsLayout = new QVBoxLayout();
-
-		for (uint i = 0 ; i < signal->getSize() ; i++)
-		{
-			QHBoxLayout* innerLayout = new QHBoxLayout();
-
-			QLabel* bitNumber = new QLabel(QString::number(i));
-			innerLayout->addWidget(bitNumber);
-
-			GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[i]);
-			timeLineDisplay->setMinimumHeight(20);
-			timeLineDisplay->setMaximumHeight(20);
-			this->signalLineDisplay.append(timeLineDisplay);
-			innerLayout->addWidget(timeLineDisplay);
-
-			bitsLayout->addLayout(innerLayout);
-		}
-
-		globalLayout->addLayout(bitsLayout);
-	}
+	globalLayout->addLayout(bitsLayout);
 
 	connect(signal.get(), &Signal::signalDynamicStateChangedEvent, this, &SignalTimeline::updateCurrentValue);
 
@@ -85,11 +94,28 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shar
 void SignalTimeline::clockEventHandler()
 {
 	shared_ptr<Signal> l_signal = this->signal.lock();
-	if (l_signal != nullptr)
+	if (l_signal == nullptr) return;
+
+
+	uint bitNumber = 0;
+	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
 	{
-		for (uint i = 0 ; i < l_signal->getSize() ; i++)
+		if ( (l_signal->getSize() > 1) && (i == 0) )
 		{
-			this->signalLineDisplay[i]->addPoint(l_signal->getCurrentValue()[i]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			if (vectorTimeLine != nullptr)
+			{
+				vectorTimeLine->addPoint(l_signal->getCurrentValue());
+			}
+		}
+		else
+		{
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			if (timeLine != nullptr)
+			{
+				timeLine->addPoint(l_signal->getCurrentValue()[bitNumber]);
+			}
+			bitNumber++;
 		}
 	}
 }
@@ -98,11 +124,27 @@ void SignalTimeline::clockEventHandler()
 void SignalTimeline::updateCurrentValue()
 {
 	shared_ptr<Signal> l_signal = this->signal.lock();
-	if (l_signal != nullptr)
+	if (l_signal == nullptr) return;
+
+	uint bitNumber = 0;
+	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
 	{
-		for (uint i = 0 ; i < l_signal->getSize() ; i++)
+		if ( (l_signal->getSize() > 1) && (i == 0) )
 		{
-			this->signalLineDisplay[i]->updateLastPoint(l_signal->getCurrentValue()[i]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			if (vectorTimeLine != nullptr)
+			{
+				vectorTimeLine->updateLastPoint(l_signal->getCurrentValue());
+			}
+		}
+		else
+		{
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			if (timeLine != nullptr)
+			{
+				timeLine->updateLastPoint(l_signal->getCurrentValue()[bitNumber]);
+			}
+			bitNumber++;
 		}
 	}
 }
@@ -110,11 +152,27 @@ void SignalTimeline::updateCurrentValue()
 void SignalTimeline::resetEventHandler()
 {
 	shared_ptr<Signal> l_signal = this->signal.lock();
-	if (l_signal != nullptr)
+	if (l_signal == nullptr) return;
+
+	uint bitNumber = 0;
+	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
 	{
-		for (uint i = 0 ; i < l_signal->getSize() ; i++)
+		if ( (l_signal->getSize() > 1) && (i == 0) )
 		{
-			this->signalLineDisplay[i]->reset(l_signal->getCurrentValue()[i]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			if (vectorTimeLine != nullptr)
+			{
+				vectorTimeLine->reset(l_signal->getCurrentValue());
+			}
+		}
+		else
+		{
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			if (timeLine != nullptr)
+			{
+				timeLine->reset(l_signal->getCurrentValue()[bitNumber]);
+			}
+			bitNumber++;
 		}
 	}
 }

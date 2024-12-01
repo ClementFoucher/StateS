@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,45 +19,49 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALTIMELINE_H
-#define SIGNALTIMELINE_H
+#ifndef GRAPHICVECTORTIMELINE_H
+#define GRAPHICVECTORTIMELINE_H
 
 // Parent
-#include <QWidget>
+#include "graphictimeline.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
+// Qt classes
+#include <QPolygon>
+#include <QVector>
 
 // StateS classes
-class Signal;
-class Clock;
-class GraphicTimeLine;
+#include "logicvalue.h"
 
 
-class SignalTimeline : public QWidget
+class GraphicVectorTimeLine : public GraphicTimeLine
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalTimeline(uint delay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit GraphicVectorTimeLine(uint eventDelay, const LogicValue& initialValue, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-private slots:
-	void clockEventHandler();
-	void resetEventHandler();
-	void updateCurrentValue();
+public:
+	void addPoint(const LogicValue& newValue);
+	void updateLastPoint(const LogicValue& state);
+	void reset(const LogicValue& initialValue);
+
+protected:
+	virtual void paintEvent(QPaintEvent*) override;
+
+private:
+	void removeLastPoint();
 
 	/////
 	// Object variables
 private:
-	weak_ptr<Signal> signal;
-
-	QList<GraphicTimeLine*> signalLineDisplay;
+	QPolygon timeLinePoly1;
+	QPolygon timeLinePoly2;
+	QVector<LogicValue> values;
 
 };
 
-#endif // SIGNALTIMELINE_H
+#endif // GRAPHICVECTORTIMELINE_H
