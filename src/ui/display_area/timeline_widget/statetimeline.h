@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,63 +19,43 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMSIMULATOR_H
-#define FSMSIMULATOR_H
+#ifndef STATETIMELINE_H
+#define STATETIMELINE_H
 
 // Parent
-#include "machinesimulator.h"
+#include <QWidget>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QMap>
-class QWidget;
-class QSignalMapper;
-
 // StateS classes
-#include "statestypes.h"
+class Signal;
+class Clock;
+class GraphicVectorTimeLine;
 
 
-class FsmSimulator : public MachineSimulator
+class StateTimeLine : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmSimulator();
+	explicit StateTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-public:
-	virtual void build() override;
-
-	void targetStateSelectionMadeEventHandler(int i);
-	void forceStateActivation(componentId_t stateToActivate);
-	componentId_t getActiveStateId() const;
-
 private slots:
-	void resetEventHandler();
 	void clockEventHandler();
-
-private:
-	void activateTransition(componentId_t transitionId);
-
-signals:
-	void stateChangedEvent();
+	void resetEventHandler();
+	void updateCurrentValue();
 
 	/////
 	// Object variables
 private:
-	componentId_t activeStateId;
-	componentId_t latestTransitionCrossedId;
-	QMap<uint, componentId_t> potentialTransitionsIds;
-
-	QWidget* targetStateSelector = nullptr;
-	QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
+	GraphicVectorTimeLine* stateDisplay;
 
 };
 
-#endif // FSMSIMULATOR_H
+#endif // STATETIMELINE_H

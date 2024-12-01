@@ -221,22 +221,22 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="172"/>
         <source>No action.</source>
         <translation>Aucune action.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="212"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="226"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="230"/>
         <source>Signal</source>
         <translation>Signal</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="234"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -641,17 +641,17 @@
 <context>
     <name>FsmSimulator</name>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="227"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="232"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="228"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="233"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
     </message>
     <message>
-        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="229"/>
+        <location filename="../src/core/simulation/fsm/fsmsimulator.cpp" line="234"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -2125,6 +2125,19 @@
     </message>
 </context>
 <context>
+    <name>SignalTimeline</name>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="55"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="75"/>
+        <source>Bit</source>
+        <translation>Bit</translation>
+    </message>
+</context>
+<context>
     <name>SimulatorTab</name>
     <message>
         <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="49"/>
@@ -2133,17 +2146,17 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="53"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="175"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="164"/>
         <source>Start simulation</source>
         <translation>Démarrer la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="107"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="96"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="153"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="142"/>
         <source>No initial state!</source>
         <translation>Aucun état initial !</translation>
     </message>
@@ -2153,43 +2166,43 @@
         <translation>Mettre fin à la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="138"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="127"/>
         <source>Click on bits from the list below to switch value:</source>
         <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="108"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="97"/>
         <source>Do one step</source>
         <translation>Avancer d&apos;un pas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="111"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="100"/>
         <source>Do one step every</source>
         <translation>Avancer d&apos;un pas toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="102"/>
         <source>second(s)</source>
         <translation>seconde(s)</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="114"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="198"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="187"/>
         <source>Launch</source>
         <translation>Démarrer</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="193"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="182"/>
         <source>Suspend</source>
         <translation>Suspendre</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="93"/>
         <source>Time manager</source>
         <translation>Gestion du temps</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="133"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="122"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
@@ -2229,6 +2242,14 @@
         <location filename="../src/core/states.cpp" line="281"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
+    </message>
+</context>
+<context>
+    <name>StateTimeLine</name>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/statetimeline.cpp" line="55"/>
+        <source>State</source>
+        <translation>État</translation>
     </message>
 </context>
 <context>
@@ -2308,53 +2329,61 @@
 <context>
     <name>TimelineWidget</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="51"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="61"/>
         <source>StateS timeline visualizer</source>
         <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="53"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="65"/>
         <source>Tools</source>
         <translation>Outils</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="57"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="69"/>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="61"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="222"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="73"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="233"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="86"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="97"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="97"/>
+        <source>State</source>
+        <translation type="vanished">État</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="106"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="111"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="120"/>
+        <source>Internal variables</source>
+        <translation>Variables internes</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="135"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="125"/>
         <source>Local variables</source>
-        <translation>Variables locales</translation>
+        <translation type="vanished">Variables locales</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="173"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="184"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="208"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="219"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>

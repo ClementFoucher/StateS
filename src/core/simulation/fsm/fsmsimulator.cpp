@@ -116,6 +116,11 @@ void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 	}
 }
 
+componentId_t FsmSimulator::getActiveStateId() const
+{
+	return this->activeStateId;
+}
+
 void FsmSimulator::resetEventHandler()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -294,4 +299,6 @@ void FsmSimulator::activateTransition(componentId_t transitionId)
 	{
 		newActiveState->setActive(true);
 	}
+
+	emit stateChangedEvent();
 }

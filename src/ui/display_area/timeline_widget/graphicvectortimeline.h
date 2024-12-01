@@ -38,19 +38,37 @@ class GraphicVectorTimeLine : public GraphicTimeLine
 	Q_OBJECT
 
 	/////
+	// Type declarations
+	enum class DisplayMode_t
+	{
+		vector,
+		state
+	};
+
+	/////
 	// Constructors/destructors
 public:
 	explicit GraphicVectorTimeLine(uint eventDelay, const LogicValue& initialValue, QWidget* parent = nullptr);
+	explicit GraphicVectorTimeLine(uint eventDelay, const QString&    initialState, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
 	void addPoint(const LogicValue& newValue);
-	void updateLastPoint(const LogicValue& state);
+	void addPoint(const QString&    newState);
+
+	void updateLastPoint(const LogicValue& value);
+	void updateLastPoint(const QString&    state);
+
 	void reset(const LogicValue& initialValue);
+	void reset(const QString&    initialState);
 
 protected:
 	virtual void paintEvent(QPaintEvent*) override;
+
+private:
+	void buildPoly(bool valueChanged);
+	void resetPoly();
 
 private:
 	void removeLastPoint();
@@ -58,9 +76,11 @@ private:
 	/////
 	// Object variables
 private:
+	DisplayMode_t mode;
 	QPolygon timeLinePoly1;
 	QPolygon timeLinePoly2;
 	QVector<LogicValue> values;
+	QVector<QString>    states;
 
 };
 

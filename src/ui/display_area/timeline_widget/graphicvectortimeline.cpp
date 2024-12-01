@@ -29,7 +29,15 @@
 GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, const LogicValue& initialValue, QWidget* parent) :
 	GraphicTimeLine(eventDelay, parent)
 {
+	this->mode = DisplayMode_t::vector;
 	this->reset(initialValue);
+}
+
+GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, const QString& initialState, QWidget* parent) :
+	GraphicTimeLine(eventDelay, parent)
+{
+	this->mode = DisplayMode_t::state;
+	this->reset(initialState);
 }
 
 void GraphicVectorTimeLine::addPoint(const LogicValue& newValue)
@@ -37,52 +45,50 @@ void GraphicVectorTimeLine::addPoint(const LogicValue& newValue)
 	auto previousValue = this->values.last();
 	this->values.append(newValue);
 
-	for (uint i = 0 ; i < this->pointsPerCycle ; i++)
-	{
-		QPoint lastPosition = timeLinePoly1.last();
+	bool valueChanged = (newValue != previousValue) ? true : false;
+	this->buildPoly(valueChanged);
 
-		if ( (i == 0) && (newValue != previousValue) )
-		{
-			if (lastPosition.y() == 0)
-			{
-				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 1));
-				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 0));
-			}
-			else
-			{
-				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 0));
-				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 1));
-			}
-		}
-		else
-		{
-			if (lastPosition.y() == 0)
-			{
-				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 0));
-				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 1));
-			}
-			else
-			{
-				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 1));
-				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 0));
-			}
-		}
-	}
-
-	this->setMinimumWidth(timeLinePoly1.last().x()*this->stepLength + 5*this->stepLength);
-	this->setMaximumWidth(timeLinePoly1.last().x()*this->stepLength + 5*this->stepLength);
-
-	repaint();
+	this->update();
 }
 
-void GraphicVectorTimeLine::updateLastPoint(const LogicValue& state)
+void GraphicVectorTimeLine::addPoint(const QString& newState)
+{
+	auto previousState = this->states.last();
+	this->states.append(newState);
+
+	bool stateChanged = (newState != previousState) ? true : false;
+	this->buildPoly(stateChanged);
+
+	this->update();
+}
+
+void GraphicVectorTimeLine::updateLastPoint(const LogicValue& value)
 {
 	// If no change to do, return
-	if (this->values.last() == state)
+	if (this->values.last() == value)
 		return;
 
 	// Else change last point
 	if (this->values.count() > 1)
+	{
+		this->removeLastPoint();
+		this->addPoint(value);
+	}
+	else
+	{
+		// Replace first point
+		this->reset(value);
+	}
+}
+
+void GraphicVectorTimeLine::updateLastPoint(const QString& state)
+{
+	// If no change to do, return
+	if (this->states.last() == state)
+		return;
+
+	// Else change last point
+	if (this->states.count() > 1)
 	{
 		this->removeLastPoint();
 		this->addPoint(state);
@@ -99,19 +105,17 @@ void GraphicVectorTimeLine::reset(const LogicValue& initialValue)
 	this->values.clear();
 	this->values.append(initialValue);
 
-	timeLinePoly1.clear();
-	timeLinePoly2.clear();
-	// Starting point of graphic vector: not a real point
-	timeLinePoly1.append(QPoint(0, 0));
-	timeLinePoly2.append(QPoint(0, 1));
-	// Actual initial point
-	timeLinePoly1.append(QPoint(1, 0));
-	timeLinePoly2.append(QPoint(1, 1));
+	this->resetPoly();
+	this->update();
+}
 
-	this->setMinimumWidth(5*this->stepLength);
-	this->setMaximumWidth(5*this->stepLength);
+void GraphicVectorTimeLine::reset(const QString& initialState)
+{
+	this->states.clear();
+	this->states.append(initialState);
 
-	repaint();
+	this->resetPoly();
+	this->update();
 }
 
 void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
@@ -153,15 +157,44 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 	int x = 0;
 	int width = oneCycleWidth/4;
 	bool firstChangeDone = false;
-	for (int i = 0 ; i < this->values.count() ; i++)
+
+	int iterations;
+	switch (this->mode)
+	{
+	case DisplayMode_t::vector:
+		iterations = this->values.count();
+		break;
+	case DisplayMode_t::state:
+		iterations = this->states.count();
+		break;
+	break;
+	}
+	for (int i = 0 ; i < iterations ; i++)
 	{
 		bool doDisplay = true;
-		auto currentValue = this->values[i];
 
-		if (i != this->values.count()-1)
+		if (i != iterations-1)
 		{
-			auto nextValue = this->values[i+1];
-			if (currentValue == nextValue)
+			bool valueChanged;
+			switch (this->mode)
+			{
+			case DisplayMode_t::vector:
+				{
+					auto currentValue = this->values[i];
+					auto nextValue    = this->values[i+1];
+					valueChanged = (currentValue == nextValue) ? false : true;
+				}
+				break;
+			case DisplayMode_t::state:
+				{
+					auto currentValue = this->states[i];
+					auto nextValue    = this->states[i+1];
+					valueChanged = (currentValue == nextValue) ? false : true;
+				}
+				break;
+			}
+
+			if (valueChanged == false)
 			{
 				doDisplay = false;
 				width += oneCycleWidth;
@@ -175,8 +208,19 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 				firstChangeDone = true;
 				x += oneCycleWidth/5;
 			}
+
+			QString text;
+			switch (this->mode)
+			{
+			case DisplayMode_t::vector:
+				text = QString::number(this->values[i].toInt());
+				break;
+			case DisplayMode_t::state:
+				text = this->states[i];
+				break;
+			}
 			QRectF rectangle(x, 0, width, this->height());
-			painter.drawText(rectangle, QString::number(currentValue.toInt()), QTextOption(Qt::AlignCenter));
+			painter.drawText(rectangle, text, QTextOption(Qt::AlignCenter));
 
 			x += width;
 			width = oneCycleWidth;
@@ -184,15 +228,87 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 	}
 }
 
+void GraphicVectorTimeLine::buildPoly(bool valueChanged)
+{
+	for (uint i = 0 ; i < this->pointsPerCycle ; i++)
+	{
+		QPoint lastPosition = timeLinePoly1.last();
+
+		if ( (i == 0) && (valueChanged == true) )
+		{
+			if (lastPosition.y() == 0)
+			{
+				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 1));
+				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 0));
+			}
+			else
+			{
+				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 0));
+				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 1));
+			}
+		}
+		else
+		{
+			if (lastPosition.y() == 0)
+			{
+				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 0));
+				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 1));
+			}
+			else
+			{
+				timeLinePoly1.append(QPoint(lastPosition.x() + 1, 1));
+				timeLinePoly2.append(QPoint(lastPosition.x() + 1, 0));
+			}
+		}
+	}
+
+	this->setMinimumWidth(timeLinePoly1.last().x()*this->stepLength + 5*this->stepLength);
+	this->setMaximumWidth(timeLinePoly1.last().x()*this->stepLength + 5*this->stepLength);
+}
+
+void GraphicVectorTimeLine::resetPoly()
+{
+	this->timeLinePoly1.clear();
+	this->timeLinePoly2.clear();
+	// Starting point of graphic vector: not a real point
+	this->timeLinePoly1.append(QPoint(0, 0));
+	this->timeLinePoly2.append(QPoint(0, 1));
+	// Actual initial point
+	this->timeLinePoly1.append(QPoint(1, 0));
+	this->timeLinePoly2.append(QPoint(1, 1));
+
+	this->setMinimumWidth(5*this->stepLength);
+	this->setMaximumWidth(5*this->stepLength);
+}
+
 void GraphicVectorTimeLine::removeLastPoint()
 {
-	if (this->values.count() > 1) // First point can't be handled: we need an initial value
+	int values;
+	switch (this->mode)
+	{
+	case DisplayMode_t::vector:
+		values = this->values.count();
+		break;
+	case DisplayMode_t::state:
+		values = this->states.count();
+		break;
+	}
+
+	if (values > 1) // First point can't be handled: we need an initial value
 	{
 		for (uint i = 0 ; i < this->pointsPerCycle ; i++)
 		{
 			this->timeLinePoly1.removeLast();
 			this->timeLinePoly2.removeLast();
 		}
-		this->values.removeLast();
+		switch (this->mode)
+		{
+		case DisplayMode_t::vector:
+			this->values.removeLast();
+			break;
+		case DisplayMode_t::state:
+			this->states.removeLast();
+			break;
+		}
 	}
 }

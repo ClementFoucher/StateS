@@ -38,6 +38,7 @@
 #include "machine.h"
 #include "signaltimeline.h"
 #include "clocktimeline.h"
+#include "statetimeline.h"
 #include "input.h"
 #include "output.h"
 #include "machinesimulator.h"
@@ -47,9 +48,20 @@
 TimelineWidget::TimelineWidget(QWidget* parent) :
     QMainWindow(parent)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	shared_ptr<MachineSimulator> simulator = machineManager->getMachineSimulator();
+	if (simulator == nullptr) return;
+
+
+	/////
+	// Configure window
 	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle(tr("StateS timeline visualizer"));
 
+	/////
+	// Build toolbar
 	this->toolBar = this->addToolBar(tr("Tools"));
 	this->toolBar->setIconSize(QSize(64, 64));
 
@@ -64,32 +76,31 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	this->toolBar->addAction(action);
 	this->toolBar->addAction(this->actionDetach);
 
+	/////
+	// Build clock
+	shared_ptr<Clock> clock = simulator->getClock();
 
-	// Add resources in a scroll area
+	/////
+	// Add timelines in a scroll area
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidgetResizable(true);
 	scrollArea->setFrameShape(QFrame::NoFrame);
 	scrollArea->setStyleSheet("background-color: transparent");
-
 	scrollArea->setWidget(new QWidget());
 
 	this->setCentralWidget(scrollArea);
 
-	shared_ptr<MachineSimulator> simulator = machineManager->getMachineSimulator();
-	shared_ptr<Clock>            clock     = simulator->getClock();
-
 	QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
 	layout->setAlignment(Qt::AlignTop);
 
+	// Clock
 	QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
 	titleClock->setAlignment(Qt::AlignCenter);
 
 	layout->addWidget(titleClock);
 	layout->addWidget(new ClockTimeLine(clock));
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
+	// Inputs
 	if (machine->getInputs().count() != 0)
 	{
 		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
@@ -104,6 +115,20 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 		}
 	}
 
+	// Internal variables
+	QLabel* titleVariables = new QLabel("<b>" + tr("Internal variables") + "</b>");
+	titleVariables->setAlignment(Qt::AlignCenter);
+	layout->addWidget(titleVariables);
+
+	layout->addWidget(new StateTimeLine(clock));
+
+	for (shared_ptr<Signal> var : machine->getLocalVariables())
+	{
+		SignalTimeline* varTL = new SignalTimeline(0, var, clock);
+		layout->addWidget(varTL);
+	}
+
+	// Outputs
 	if (machine->getOutputs().count() != 0)
 	{
 		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
@@ -112,20 +137,6 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 		layout->addWidget(titleOutputs);
 
 		for (shared_ptr<Output> var : machine->getOutputs())
-		{
-			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
-			layout->addWidget(varTL);
-		}
-	}
-
-	if (machine->getLocalVariables().count() != 0)
-	{
-		QLabel* titleVariables = new QLabel("<b>" + tr("Local variables") + "</b>");
-		titleVariables->setAlignment(Qt::AlignCenter);
-
-		layout->addWidget(titleVariables);
-
-		for (shared_ptr<Signal> var : machine->getLocalVariables())
 		{
 			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
 			layout->addWidget(varTL);
