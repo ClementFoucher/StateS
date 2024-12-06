@@ -86,19 +86,23 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	scrollArea->setWidgetResizable(true);
 	scrollArea->setFrameShape(QFrame::NoFrame);
 	scrollArea->setStyleSheet("background-color: transparent");
-	scrollArea->setWidget(new QWidget());
-
 	this->setCentralWidget(scrollArea);
 
-	QVBoxLayout* layout = new QVBoxLayout(scrollArea->widget());
-	layout->setAlignment(Qt::AlignTop);
+	auto scrolledWidget = new QWidget();
+	auto hLayout = new QHBoxLayout(scrolledWidget);
+	scrollArea->setWidget(scrolledWidget);
+
+	auto vLayout = new QVBoxLayout();
+	vLayout->setAlignment(Qt::AlignTop);
+	hLayout->addLayout(vLayout);
+	hLayout->addStretch();
 
 	// Clock
 	QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
 	titleClock->setAlignment(Qt::AlignCenter);
 
-	layout->addWidget(titleClock);
-	layout->addWidget(new ClockTimeLine(clock));
+	vLayout->addWidget(titleClock);
+	vLayout->addWidget(new ClockTimeLine(clock));
 
 	// Inputs
 	if (machine->getInputs().count() != 0)
@@ -106,26 +110,26 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
 		titleInputs->setAlignment(Qt::AlignCenter);
 
-		layout->addWidget(titleInputs);
+		vLayout->addWidget(titleInputs);
 
 		for (shared_ptr<Input> var : machine->getInputs())
 		{
 			SignalTimeline* varTL = new SignalTimeline(3, var, clock);
-			layout->addWidget(varTL);
+			vLayout->addWidget(varTL);
 		}
 	}
 
 	// Internal variables
 	QLabel* titleVariables = new QLabel("<b>" + tr("Internal variables") + "</b>");
 	titleVariables->setAlignment(Qt::AlignCenter);
-	layout->addWidget(titleVariables);
+	vLayout->addWidget(titleVariables);
 
-	layout->addWidget(new StateTimeLine(clock));
+	vLayout->addWidget(new StateTimeLine(clock));
 
 	for (shared_ptr<Signal> var : machine->getLocalVariables())
 	{
 		SignalTimeline* varTL = new SignalTimeline(0, var, clock);
-		layout->addWidget(varTL);
+		vLayout->addWidget(varTL);
 	}
 
 	// Outputs
@@ -134,12 +138,12 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
 		titleOutputs->setAlignment(Qt::AlignCenter);
 
-		layout->addWidget(titleOutputs);
+		vLayout->addWidget(titleOutputs);
 
 		for (shared_ptr<Output> var : machine->getOutputs())
 		{
 			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
-			layout->addWidget(varTL);
+			vLayout->addWidget(varTL);
 		}
 	}
 }

@@ -48,6 +48,11 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shar
 	// Global value display for vectors
 	if (signal->getSize() > 1)
 	{
+		auto line = new QFrame();
+		line->setFrameShape(QFrame::VLine);
+		line->setFrameShadow(QFrame::Plain);
+		globalLayout->addWidget(line);
+
 		QHBoxLayout* innerLayout = new QHBoxLayout();
 
 		QLabel* valueLabel = new QLabel(tr("Value"));
