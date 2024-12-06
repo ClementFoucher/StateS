@@ -88,9 +88,9 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	scrollArea->setStyleSheet("background-color: transparent");
 	this->setCentralWidget(scrollArea);
 
-	auto scrolledWidget = new QWidget();
-	auto hLayout = new QHBoxLayout(scrolledWidget);
-	scrollArea->setWidget(scrolledWidget);
+	this->displayWidget = new QWidget();
+	auto hLayout = new QHBoxLayout(this->displayWidget);
+	scrollArea->setWidget(this->displayWidget);
 
 	auto vLayout = new QVBoxLayout();
 	vLayout->setAlignment(Qt::AlignTop);
@@ -198,17 +198,13 @@ void TimelineWidget::exportToPDF()
 
 		QPainter painter(&printer);
 
-		// Thanks to Qt doc for this code:
 		painter.begin(&printer);
-		double xscale = printer.pageRect(QPrinter::Millimeter).width()/double(centralWidget()->width());
-		double yscale = printer.pageRect(QPrinter::Millimeter).height()/double(centralWidget()->height());
+		double xscale = printer.pageRect(QPrinter::DevicePixel).width()/((double)(this->displayWidget->width()));
+		double yscale = printer.pageRect(QPrinter::DevicePixel).height()/((double)(this->displayWidget->height()));
 		double scale = qMin(xscale, yscale);
-		painter.translate(printer.paperRect(QPrinter::Millimeter).x() + printer.pageRect(QPrinter::Millimeter).width()/2,
-		                  printer.paperRect(QPrinter::Millimeter).y() + printer.pageRect(QPrinter::Millimeter).height()/2);
 		painter.scale(scale, scale);
-		painter.translate(-width()/2, -height()/2);
-
-		centralWidget()->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);
+		this->displayWidget->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);
+		painter.end();
 	}
 }
 

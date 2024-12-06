@@ -59,7 +59,8 @@ private slots:
 	/////
 	// Object variables
 private:
-	QAction* actionDetach = nullptr;
+	QAction* actionDetach  = nullptr;
+	QWidget* displayWidget = nullptr;
 
 	QToolBar* toolBar = nullptr;
 
