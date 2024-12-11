@@ -93,6 +93,8 @@ private slots:
 	void machineReplacedEventHandler();
 	void sceneRectChangedEventHandler(QRectF sceneRect);
 	void simulationModeChangedEventHandler(SimulationMode_t newMode);
+	void sceneSimulationModeAboutToChangeEventHandler();
+	void sceneSimulationModeChangedEventHandler();
 
 	void toolChangedEventHandler(MachineBuilderTool_t tool);
 	void singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool);
@@ -128,6 +130,9 @@ private:
 	SceneMode_t   sceneMode     = SceneMode_t::noScene;
 	uint32_t      currentAction = SceneAction_t::idle;
 	MouseCursor_t currentCursor = MouseCursor_t::none;
+
+	// Temporary state
+	shared_ptr<ViewConfiguration> viewConfigurationSave;
 
 };
 

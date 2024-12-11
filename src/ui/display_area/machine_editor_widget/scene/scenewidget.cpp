@@ -310,6 +310,20 @@ void SceneWidget::simulationModeChangedEventHandler(SimulationMode_t newMode)
 	}
 }
 
+void SceneWidget::sceneSimulationModeAboutToChangeEventHandler()
+{
+	this->viewConfigurationSave = this->getView();
+}
+
+void SceneWidget::sceneSimulationModeChangedEventHandler()
+{
+	if (this->viewConfigurationSave != nullptr)
+	{
+		this->setView(this->viewConfigurationSave);
+		this->viewConfigurationSave.reset();
+	}
+}
+
 void SceneWidget::toolChangedEventHandler(MachineBuilderTool_t tool)
 {
 	// Tool changes are only handled in edit mode
@@ -430,10 +444,12 @@ void SceneWidget::buildScene()
 		return;
 	}
 
-	connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
-	connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
-	connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
-	connect(newScene, &GenericScene::sceneRectChanged,        this, &SceneWidget::sceneRectChangedEventHandler);
+	connect(newScene, &GenericScene::itemSelectedEvent,                     this, &SceneWidget::itemSelectedEvent);
+	connect(newScene, &GenericScene::editSelectedItemEvent,                 this, &SceneWidget::editSelectedItemEvent);
+	connect(newScene, &GenericScene::renameSelectedItemEvent,               this, &SceneWidget::renameSelectedItemEvent);
+	connect(newScene, &GenericScene::sceneRectChanged,                      this, &SceneWidget::sceneRectChangedEventHandler);
+	connect(newScene, &GenericScene::sceneSimulationModeAboutToChangeEvent, this, &SceneWidget::sceneSimulationModeAboutToChangeEventHandler);
+	connect(newScene, &GenericScene::sceneSimulationModeChangedEvent,       this, &SceneWidget::sceneSimulationModeChangedEventHandler);
 
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
 	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);

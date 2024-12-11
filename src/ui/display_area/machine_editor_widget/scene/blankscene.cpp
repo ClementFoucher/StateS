@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,4 +34,9 @@ BlankScene::BlankScene()
 	this->text = this->addText(tr("No machine loaded"), this->defaultFont);
 
 	this->text->setDefaultTextColor(QColor("light gray"));
+}
+
+void BlankScene::updateSimulatioMode(SimulationMode_t)
+{
+	// Ignore
 }

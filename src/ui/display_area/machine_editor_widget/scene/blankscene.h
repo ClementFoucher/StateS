@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,6 +37,9 @@ class BlankScene : public GenericScene
 	// Constructors/destructors
 public:
 	explicit BlankScene();
+
+protected:
+	virtual void updateSimulatioMode(SimulationMode_t newMode) override;
 
 	/////
 	// Object variables

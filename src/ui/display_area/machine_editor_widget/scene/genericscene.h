@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,10 +25,6 @@
 // Parent
 #include <QGraphicsScene>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
 #include "statestypes.h"
 
@@ -48,10 +44,18 @@ public:
 	QRectF getItemsBoundingRect();
 	void recomputeSceneRect();
 
+protected:
+	virtual void updateSimulatioMode(SimulationMode_t newMode) = 0;
+
 signals:
 	void itemSelectedEvent(componentId_t componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
+	void sceneSimulationModeAboutToChangeEvent();
+	void sceneSimulationModeChangedEvent();
+
+private slots:
+	void simulationModeChangeEventHandler(SimulationMode_t newMode);
 
 };
 

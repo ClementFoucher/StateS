@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2024 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,8 +52,7 @@ FsmScene::FsmScene() :
 {
 	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &FsmScene::simulationModeChangeEventHandler);
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,        this, &FsmScene::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &FsmScene::machineUpdatedEventHandler);
 
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &FsmScene::toolChangeEventHandler);
@@ -404,7 +403,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 	}
 }
 
-void FsmScene::simulationModeChangeEventHandler(SimulationMode_t newMode)
+void FsmScene::updateSimulatioMode(SimulationMode_t newMode)
 {
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
