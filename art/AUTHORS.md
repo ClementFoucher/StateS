@@ -24,7 +24,8 @@ Some of these files are based upon or use third party files mentioned above.
 
 | File name                                     |
 |-----------------------------------------------|
-|[StateS.png](png/StateS.png)                   |
+|[StateS.png and variants](png/StateS.png)      |
+|[StateS.ico](ico/StateS.icog)                  |
 |[StateS.svg](svg/StateS.svg)                   |
 |[Active_on_state.svg](svg/Active_on_state.svg) |
 |[Assign.svg](svg/Assign.svg)                   |
