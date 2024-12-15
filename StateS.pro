@@ -313,18 +313,12 @@ INCLUDEPATH += \
 
 OTHER_FILES += \
     README.md \
-	text/known_bugs.txt \
-	text/Readme/Linux/README \
-	text/Readme/Windows/README.txt \
-	text/release_notes.txt \
-	text/upcoming_features.txt \
-	text/code_guidelines.txt \
-	LICENSE \
-	LICENSE.txt \
-	src/core/basic_type/README.txt \
-	art/AUTHORS \
-	art/AUTHORS.txt \
-	TODO
+    LICENSE \
+    art/AUTHORS.md \
+    text/known_bugs.txt \
+    text/release_notes.txt \
+    text/upcoming_features.txt \
+    text/code_guidelines.txt
 
 RESOURCES += \
     art/art.qrc \
