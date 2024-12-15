@@ -4,11 +4,6 @@
 <context>
     <name>AboutTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="124"/>
-        <source>StateS web site:</source>
-        <translation>Site web de States :</translation>
-    </message>
-    <message>
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="152"/>
         <source>Suggestion? Feature request?</source>
         <translation>Une suggestion ?</translation>
@@ -29,11 +24,6 @@
         <translation>la liste des bugs connus</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="132"/>
-        <source>Need help?</source>
-        <translation>Besoin d&apos;aide ?</translation>
-    </message>
-    <message>
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="78"/>
         <source>Distributed under the terms of the</source>
         <translation>Distribué selon les termes de la</translation>
@@ -43,6 +33,11 @@
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="94"/>
         <source>version</source>
         <translation>version</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="124"/>
+        <source>StateS sources:</source>
+        <translation>Sources de StateS :</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="141"/>
@@ -582,44 +577,44 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="241"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="731"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="240"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="730"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="242"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="741"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="241"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="740"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="525"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="524"/>
         <source>Delete current state?</source>
         <translation>Supprimer l&apos;état courant ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="527"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="526"/>
         <source>The connected transition will be deleted</source>
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="528"/>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="528"/>
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="531"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="530"/>
         <source>User confirmation required</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="594"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="593"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
     </message>
@@ -2127,12 +2122,12 @@
 <context>
     <name>SignalTimeline</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="55"/>
+        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="58"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="75"/>
+        <location filename="../src/ui/display_area/timeline_widget/signaltimeline.cpp" line="77"/>
         <source>Bit</source>
         <translation>Bit</translation>
     </message>
@@ -2345,45 +2340,37 @@
     </message>
     <message>
         <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="73"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="233"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="231"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="97"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="101"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <source>State</source>
-        <translation type="vanished">État</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="106"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="110"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="120"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="123"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="135"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="138"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <source>Local variables</source>
-        <translation type="vanished">Variables locales</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="184"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="186"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="219"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="217"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>

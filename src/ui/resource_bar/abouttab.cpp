@@ -83,7 +83,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	licenseLabel->setOpenExternalLinks(true);
 	layout->addWidget(licenseLabel);
 
-	QLabel* artLicenseLabel = new QLabel(tr("See") + " <a href=\"https://raw.githubusercontent.com/ClementFoucher/StateS/main/art/AUTHORS.txt\">" + tr("credits for art used in StateS") + "</a>", this);
+	QLabel* artLicenseLabel = new QLabel(tr("See") + " <a href=\"https://github.com/ClementFoucher/StateS/blob/main/art/AUTHORS.md\">" + tr("credits for art used in StateS") + "</a>", this);
 	artLicenseLabel->setAlignment(Qt::AlignCenter);
 	artLicenseLabel->setWordWrap(true);
 	artLicenseLabel->setTextFormat(Qt::RichText);
@@ -91,7 +91,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	artLicenseLabel->setOpenExternalLinks(true);
 	layout->addWidget(artLicenseLabel);
 
-	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software includes third-party work licensed under the") + " <a href=\"https://www.apache.org/licenses/\">" + tr("Apache License") + " " + tr("version") + " 2.0</a>", this);
+	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software includes third-party work licensed under the") + " <a href=\"https://www.apache.org/licenses/LICENSE-2.0\">" + tr("Apache License") + " " + tr("version") + " 2.0</a>", this);
 	thirdPartyLicenseLabel->setAlignment(Qt::AlignCenter);
 	thirdPartyLicenseLabel->setWordWrap(true);
 	thirdPartyLicenseLabel->setTextFormat(Qt::RichText);
@@ -121,7 +121,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	emailLabel->setOpenExternalLinks(true);
 	layout->addWidget(emailLabel);
 
-	QLabel* websiteLabel = new QLabel(tr("StateS web site:") + "<br /><a href=\"https://github.com/ClementFoucher/StateS\">https://github.com/ClementFoucher/StateS</a>", this);
+	QLabel* websiteLabel = new QLabel(tr("StateS sources:") + "<br /><a href=\"https://github.com/ClementFoucher/StateS\">https://github.com/ClementFoucher/StateS</a>", this);
 	websiteLabel->setAlignment(Qt::AlignCenter);
 	websiteLabel->setWordWrap(true);
 	websiteLabel->setTextFormat(Qt::RichText);
@@ -129,13 +129,13 @@ AboutTab::AboutTab(QWidget* parent) :
 	websiteLabel->setOpenExternalLinks(true);
 	layout->addWidget(websiteLabel);
 
-	QLabel* wikiLabel= new QLabel("<a href=\"https://sourceforge.net/p/states/wiki/Home/\">" + tr("Need help?") + "</a>", this);
+	/*QLabel* wikiLabel= new QLabel("<a href=\"https://sourceforge.net/p/states/wiki/Home/\">" + tr("Need help?") + "</a>", this);
 	wikiLabel->setAlignment(Qt::AlignCenter);
 	wikiLabel->setWordWrap(true);
 	wikiLabel->setTextFormat(Qt::RichText);
 	wikiLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	wikiLabel->setOpenExternalLinks(true);
-	layout->addWidget(wikiLabel);
+	layout->addWidget(wikiLabel);*/
 
 	QLabel* supportLabel = new QLabel("<a href=\"https://github.com/ClementFoucher/StateS/issues\">" + tr("Found a bug?") + "</a><br />"
 	                                  + tr("(Please consult") + " "
