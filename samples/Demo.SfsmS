@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FSM Name="Demo machine">
+<FSM Name="Demo machine" StateS_version="0.4.5">
     <Configuration>
-        <Scale Value="0.657516"/>
-        <ViewCentralPoint X="621.129" Y="408.042"/>
+        <Scale Value="0.717577"/>
+        <ViewCentralPoint X="770.174" Y="518.846"/>
     </Configuration>
     <Signals>
         <Input Name="bootOK" Size="1" Initial_value="0"/>
@@ -16,45 +16,54 @@
         <Output Name="leds" Size="2"/>
         <Output Name="alarm" Size="1"/>
         <Output Name="power" Size="1"/>
+        <Variable Name="error counter" Size="4" Initial_value="0000"/>
+        <Variable Name="init duration" Size="4" Initial_value="0000"/>
     </Signals>
     <States>
-        <State Name="Init" X="458.787" Y="51.5">
+        <State Name="Init" X="557.904" Y="160.381">
+            <Actions>
+                <Action Signal_Type="Variable" Name="power" Action_Type="Pulse" Action_Value="1"/>
+                <Action Signal_Type="Variable" Name="init duration" Action_Type="Increment" Action_Value="0001"/>
+            </Actions>
+        </State>
+        <State Name="On" X="832.904" Y="393.068">
             <Actions>
                 <Action Signal_Type="Variable" Name="power" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </State>
-        <State Name="On" X="733.787" Y="285.5">
-            <Actions>
-                <Action Signal_Type="Variable" Name="power" Action_Type="Pulse" Action_Value="1"/>
-            </Actions>
-        </State>
-        <State Name="Error" X="353.787" Y="579.5">
+        <State Name="Error" X="452.904" Y="687.068">
             <Actions>
                 <Action Signal_Type="Variable" Name="alarm" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </State>
-        <State Name="Off" IsInitial="true" X="58.7868" Y="285.5"/>
-        <State Name="Blink_led_0" X="727.368" Y="756.042">
+        <State Name="Off" IsInitial="true" X="157.904" Y="393.068"/>
+        <State Name="Blink_led_0" X="826.485" Y="863.61">
             <Actions>
                 <Action Signal_Type="Variable" Name="leds" Action_Type="ActiveOnState" Action_Value="1" RangeL="0"/>
             </Actions>
         </State>
-        <State Name="Blink_led_1" X="1196.11" Y="747.072">
+        <State Name="Blink_led_1" X="1295.23" Y="854.64">
             <Actions>
                 <Action Signal_Type="Variable" Name="leds" Action_Type="ActiveOnState" Action_Value="1" RangeL="1"/>
             </Actions>
         </State>
     </States>
     <Transitions>
-        <Transition Source="Init" Target="On" SliderPos="50">
+        <Transition Source="Init" Target="On" SliderPos="36">
             <Condition>
                 <LogicVariable Name="bootOK"/>
             </Condition>
+            <Actions>
+                <Action Signal_Type="Variable" Name="init duration" Action_Type="Reset" Action_Value="0000"/>
+            </Actions>
         </Transition>
         <Transition Source="On" Target="Error" SliderPos="50">
             <Condition>
                 <LogicVariable Name="error"/>
             </Condition>
+            <Actions>
+                <Action Signal_Type="Variable" Name="error counter" Action_Type="Increment" Action_Value="0001"/>
+            </Actions>
         </Transition>
         <Transition Source="On" Target="Off" SliderPos="50">
             <Condition>
@@ -94,10 +103,13 @@
                 <Action Signal_Type="Variable" Name="checkOK" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </Transition>
-        <Transition Source="Off" Target="Error" SliderPos="50">
+        <Transition Source="Off" Target="Error" SliderPos="24">
             <Condition>
                 <LogicVariable Name="error"/>
             </Condition>
+            <Actions>
+                <Action Signal_Type="Variable" Name="error counter" Action_Type="Increment" Action_Value="0001"/>
+            </Actions>
         </Transition>
         <Transition Source="Off" Target="Init" SliderPos="62">
             <Condition>
@@ -118,7 +130,7 @@
                 <Action Signal_Type="Variable" Name="boot" Action_Type="Pulse" Action_Value="1"/>
             </Actions>
         </Transition>
-        <Transition Source="Blink_led_0" Target="Blink_led_1" SliderPos="70">
+        <Transition Source="Blink_led_0" Target="Blink_led_1" SliderPos="50">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
@@ -132,7 +144,7 @@
                 </LogicEquation>
             </Condition>
         </Transition>
-        <Transition Source="Blink_led_1" Target="Blink_led_0" SliderPos="34">
+        <Transition Source="Blink_led_1" Target="Blink_led_0" SliderPos="50">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
