@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -102,14 +102,12 @@ void GraphicActuator::buildActionsBox()
 
 		QString currentActionText;
 
-		auto currentMode = machineManager->getCurrentSimulationMode();
-
 		// Signal name
 
-		if (currentMode == SimulationMode_t::simulateMode)
-			currentActionText = currentSignal->getColoredText(true);
-		else
-			currentActionText = currentSignal->getText();
+		currentActionText = "<span style=\"color:black;\">";
+		currentActionText += currentSignal->getText();
+		currentActionText += "</span>";
+
 
 		// Signal range
 

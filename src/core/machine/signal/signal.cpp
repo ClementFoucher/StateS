@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -85,27 +85,7 @@ void Signal::resize(uint newSize) // Throws StatesException
 
 QString Signal::getText() const
 {
-	return this->getColoredText(false);
-}
-
-QString Signal::getColoredText(bool activeColored) const
-{
-	if (!activeColored)
-	{
-		return "<span style=\"color:black;\">" + this->name + "</span>";
-	}
-	else
-	{
-		if (this->getSize() == 1)
-		{
-			if (this->isTrue()) // Throws StatesException - Size checked - ignored
-				return "<span style=\"color:green;\">" + this->name + "</span>";
-			else // (this->isFalse())
-				return "<span style=\"color:red;\">"   + this->name + "</span>";
-		}
-		else
-			return "<span style=\"color:blue;\">"  + this->name + "</span>";
-	}
+	return this->name;
 }
 
 void Signal::setCurrentValue(const LogicValue& value) // Throws StatesException

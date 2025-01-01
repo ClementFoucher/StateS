@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,8 +29,8 @@
 #include <QWidgetAction>
 
 
-const QString ContextMenu::errorStyle("background-color: lightgrey; border: 3px solid red; color: red");
-const QString ContextMenu::listStyle("background-color: lightgrey; border: 3px double");
+const QString ContextMenu::errorStyle("border: 3px solid red; color: red");
+const QString ContextMenu::listStyle("border: 3px double");
 
 
 ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)

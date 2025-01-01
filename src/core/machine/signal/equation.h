@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -80,7 +80,7 @@ public:
 	virtual void resize(uint)    override; // Throws StatesException
 
 	virtual QString getText() const override;
-	QString getColoredText(bool activeColored, bool errorColored) const;
+	QString getColoredText(bool raw = false) const;
 
 	EquationComputationFailureCause_t getComputationFailureCause() const;
 

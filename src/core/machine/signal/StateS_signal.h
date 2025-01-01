@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,7 +59,6 @@ public:
 	void reinitialize();
 
 	virtual QString getText() const;
-	QString getColoredText(bool activeColored) const;
 
 	virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
 	virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException

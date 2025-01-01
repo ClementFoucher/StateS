@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -370,11 +370,11 @@ void FsmGraphicTransition::updateConditionText()
 
 			if (equationCondition != nullptr)
 			{
-				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText(false, true) + "</div>");
+				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText() + "</div>");
 			}
 			else
 			{
-				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + logicTransition->getCondition()->getText() + "</div>");
+				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;color:black;\">" + logicTransition->getCondition()->getText() + "</div>");
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -352,20 +352,22 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 
 QString Equation::getText() const
 {
-	return this->getColoredText(false, false);
+	return this->getColoredText(true);
 }
 
-QString Equation::getColoredText(bool activeColored, bool errorColored) const
+QString Equation::getColoredText(bool raw) const
 {
 	QString text;
-
-	if ( (this->getSize() == 0) && (errorColored == true) )
+	if (raw == false)
 	{
-		text += "<span style=\"color:red;\">";
-	}
-	else
-	{
-		text += "<span style=\"color:black;\">";
+		if (this->getSize() == 0)
+		{
+			text += "<span style=\"color:red;\">";
+		}
+		else
+		{
+			text += "<span style=\"color:black;\">";
+		}
 	}
 
 	if (this->function == EquationNature_t::constant)
@@ -388,11 +390,11 @@ QString Equation::getColoredText(bool activeColored, bool errorColored) const
 
 			if (equationOperand != nullptr)
 			{
-				text += equationOperand->getColoredText(activeColored, false);
+				text += equationOperand->getColoredText(raw);
 			}
 			else if (signalOperand != nullptr)
 			{
-				text += signalOperand->getColoredText(activeColored);
+				text += signalOperand->getText();
 			}
 			else
 			{
@@ -455,7 +457,10 @@ QString Equation::getColoredText(bool activeColored, bool errorColored) const
 			text += " )";
 	}
 
-	text += "</span>";
+	if (raw == false)
+	{
+		text += "</span>";
+	}
 
 	return text;
 }
