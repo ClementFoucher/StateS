@@ -208,7 +208,12 @@
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="331"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="322"/>
+        <source>Availables variables:</source>
+        <translation>Variables disponibles :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="332"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
@@ -227,8 +232,8 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="230"/>
-        <source>Signal</source>
-        <translation>Signal</translation>
+        <source>Variable</source>
+        <translation>Variable</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="234"/>
@@ -351,6 +356,11 @@
         <translation>Afficher la table de vérité</translation>
     </message>
     <message>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="132"/>
+        <source>No compatible variable!</source>
+        <translation>Aucune variable compatible !</translation>
+    </message>
+    <message>
         <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="313"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
@@ -375,11 +385,6 @@
         <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="245"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="132"/>
-        <source>No compatible signal!</source>
-        <translation>Aucun signal compatible !</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="83"/>

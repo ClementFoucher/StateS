@@ -319,6 +319,7 @@ void ActionEditor::displayAddActionMenu() const
 		menu = new ContextMenu();
 		menu->setListStyle();
 
+		menu->addTitle(tr("Availables variables:"));
 		for (shared_ptr<Signal> var : availableActions)
 		{
 			menu->addAction(var->getName());
@@ -331,7 +332,7 @@ void ActionEditor::displayAddActionMenu() const
 		menu = ContextMenu::createErrorMenu(tr("No compatible variable!"));
 	}
 
-	menu->popup(this->buttonAddAction->mapToGlobal(QPoint(this->buttonAddAction->width(), -menu->sizeHint().height())));
+	menu->popup(this->buttonAddAction->mapToGlobal(QPoint(0, -menu->sizeHint().height())));
 }
 
 void ActionEditor::removeSelectedActions()

@@ -129,7 +129,7 @@ void ConditionEditor::editCondition()
 	}
 	else
 	{
-		ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible signal!"));
+		ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible variable!"));
 		menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
 	}
 }

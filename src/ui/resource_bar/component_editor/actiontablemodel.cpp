@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2024 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -227,7 +227,7 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 			}
 			else if (section == 1)
 			{
-				return QVariant(tr("Signal"));
+				return QVariant(tr("Variable"));
 			}
 			else if (section == 2)
 			{
