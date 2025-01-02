@@ -2,6 +2,7 @@
 * StateS v. 0.4 *
 *****************
 
+- 2025-01-02 - V 0.4.5 - Add increment/decrement actions. Many small enhancements to the graphical representation of the FSM. Many under-the-hood improvements. Moved from Qt 5 to Qt 6. Moved from SourceForge to GitHub.
 - 2020-11-01 - V 0.4.4 - Retain the latest folders used for image and VHDL export; corrected Machine tab title; corrected machine name triggering edition mode erroneously; adding an initial state does not generate two undo events any more; many internal code reorganization.
 - 2020-10-26 - V 0.4.3 - Corrected a crash and an incorrect behavior of the drawing tools toolbar. Reworked the UI classes hierarchy.
 - 2020-10-11 - V 0.4.2 - Moved drawing tools to a toolbar so that they remain available regardless of the current tab.
@@ -51,11 +52,11 @@
 * StateS v. 0.1 *
 *****************
 
-2014-11-16 - V 0.1.7 - Added support for variable affectation, which allows to maintain variable state.
-2014-11-16 - V 0.1.6 - Allow machine drawing using contextual menu.
-2014-11-16 - V 0.1.5 - Variables state on conditions (color) now displayed independently for each variable instead of the whole transition.
-2014-11-16 - V 0.1.4 - * Warning! Save files compatibility broken! * Added support for equations with more than two operands.
-2014-11-14 - V 0.1.3 - Now allow dragging scene using middle mouse button.
-2014-11-14 - V 0.1.2 - Added icons on buttons and custom cursor shapes for machine building.
-2014-11-13 - V 0.1.1 - Rebuilt simulator tab. Added a hint for how to use inputs.
-2014-11-11 - V 0.1   - Initial release.
+- 2014-11-16 - V 0.1.7 - Added support for variable affectation, which allows to maintain variable state.
+- 2014-11-16 - V 0.1.6 - Allow machine drawing using contextual menu.
+- 2014-11-16 - V 0.1.5 - Variables state on conditions (color) now displayed independently for each variable instead of the whole transition.
+- 2014-11-16 - V 0.1.4 - * Warning! Save files compatibility broken! * Added support for equations with more than two operands.
+- 2014-11-14 - V 0.1.3 - Now allow dragging scene using middle mouse button.
+- 2014-11-14 - V 0.1.2 - Added icons on buttons and custom cursor shapes for machine building.
+- 2014-11-13 - V 0.1.1 - Rebuilt simulator tab. Added a hint for how to use inputs.
+- 2014-11-11 - V 0.1   - Initial release.

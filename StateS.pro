@@ -6,20 +6,24 @@
 
 ###
 # Update these
-VERSION = 0.4.4
-DATE = 2014-2022
+VERSION = 0.4.5
+DATE = 2014-2025
 # And remember to update version in readme and other text files
 ###
 
 
 QT += core \
       gui \
-	  widgets \
-	  printsupport \
-	  svg
+      widgets \
+      printsupport \
+      svg
 
 # Only for diff-match-patch to use deprecated QRegExp... should seriously think about replacing this obsolete library
 QT += core5compat
+
+# Uncomment the following line when building with MSys2's MinGW Qt6 static
+#win32: QMAKE_LIBS += -lgraphite2 -lbz2 -lusp10 -lRpcrt4
+win32: RC_ICONS = art/ico/StateS.ico
 
 TARGET = StateS
 TEMPLATE = app
@@ -322,7 +326,7 @@ OTHER_FILES += \
 
 RESOURCES += \
     art/art.qrc \
-	translations/translations.qrc
+    translations/translations.qrc
 
 TRANSLATIONS += \
     translations/french.ts
