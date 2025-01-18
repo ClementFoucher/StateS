@@ -38,56 +38,57 @@ QMAKE_LFLAGS += -no-pie
 
 SOURCES += \
     # Core
-	src/core/main.cpp \
+	src/main.cpp \
 	src/core/states.cpp \
 	src/core/basic_type/logicvalue.cpp \
 	src/core/basic_type/truthtable.cpp \
 	src/core/machine_manager/machinebuilder.cpp \
 	src/core/machine_manager/machinemanager.cpp \
 	src/core/machine_manager/machinestatus.cpp \
-	src/core/machine/machine.cpp \
-	src/core/machine/components/machinecomponent.cpp \
-	src/core/machine/components/machineactuatorcomponent.cpp \
-	src/core/machine/components/fsm/fsmstate.cpp \
-	src/core/machine/components/fsm/fsmtransition.cpp \
-	src/core/machine/fsm/fsm.cpp \
-	src/core/machine/fsm/fsmverifier.cpp \
-	src/core/machine/export/machineimageexporter.cpp \
-	src/core/machine/export/fsm/fsmvhdlexport.cpp \
-	src/core/machine/signal/actiononsignal.cpp \
-	src/core/machine/signal/signal.cpp \
-	src/core/machine/signal/input.cpp \
-	src/core/machine/signal/output.cpp \
-	src/core/machine/signal/constant.cpp \
-	src/core/machine/signal/equation.cpp \
 	src/core/simulation/clock.cpp \
-	src/core/simulation/machinesimulator.cpp \
-	src/core/simulation/simulatedcomponent.cpp \
-	src/core/simulation/simulatedactuatorcomponent.cpp \
-	src/core/simulation/fsm/fsmsimulator.cpp \
-	src/core/simulation/fsm/fsmsimulatedstate.cpp \
-	src/core/simulation/fsm/fsmsimulatedtransition.cpp \
 	src/core/exceptions/statesexception.cpp \
 	src/core/undo_engine/fsmundocommand.cpp \
 	src/core/undo_engine/diffundocommand.cpp \
 	src/core/undo_engine/machineundocommand.cpp \
 	src/core/undo_engine/undoredomanager.cpp \
 	src/core/xml/statesxmlanalyzer.cpp \
-	src/core/xml/machine/machinexmlparser.cpp \
-	src/core/xml/machine/machinexmlwriter.cpp \
-	src/core/xml/machine/xmlimportexportbuilder.cpp \
-	src/core/xml/machine/fsm/fsmxmlparser.cpp \
-	src/core/xml/machine/fsm/fsmxmlwriter.cpp \
+	# Machine
+	src/machine/export/machineimageexporter.cpp \
+	src/machine/export/fsm/fsmvhdlexport.cpp \
+	src/machine/graphic/graphicmachine.cpp \
+	src/machine/graphic/components/graphicactuator.cpp \
+	src/machine/graphic/components/graphiccomponent.cpp \
+	src/machine/graphic/fsm/graphicfsm.cpp \
+	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.cpp \
+	src/machine/graphic/fsm/components/fsmgraphicstate.cpp \
+	src/machine/graphic/fsm/components/fsmgraphictransition.cpp \
+	src/machine/logic/machine.cpp \
+	src/machine/logic/components/machinecomponent.cpp \
+	src/machine/logic/components/machineactuatorcomponent.cpp \
+	src/machine/logic/components/signal/actiononsignal.cpp \
+	src/machine/logic/components/signal/signal.cpp \
+	src/machine/logic/components/signal/input.cpp \
+	src/machine/logic/components/signal/output.cpp \
+	src/machine/logic/components/signal/constant.cpp \
+	src/machine/logic/components/signal/equation.cpp \
+	src/machine/logic/fsm/fsm.cpp \
+	src/machine/logic/fsm/components/fsmstate.cpp \
+	src/machine/logic/fsm/components/fsmtransition.cpp \
+	src/machine/logic/fsm/verifier/fsmverifier.cpp \
+	src/machine/simulated/machinesimulator.cpp \
+	src/machine/simulated/components/simulatedcomponent.cpp \
+	src/machine/simulated/components/simulatedactuatorcomponent.cpp \
+	src/machine/simulated/fsm/fsmsimulator.cpp \
+	src/machine/simulated/fsm/components/fsmsimulatedstate.cpp \
+	src/machine/simulated/fsm/components/fsmsimulatedtransition.cpp \
+	src/machine/xml/graphicattributes.cpp \
+	src/machine/xml/machinexmlparser.cpp \
+	src/machine/xml/machinexmlwriter.cpp \
+	src/machine/xml/xmlimportexportbuilder.cpp \
+	src/machine/xml/fsm/fsmxmlparser.cpp \
+	src/machine/xml/fsm/fsmxmlwriter.cpp \
 	# UI
 	src/ui/statesui.cpp \
-	src/ui/graphic_machine/graphicmachine.cpp \
-	src/ui/graphic_machine/graphicattributes.cpp \
-	src/ui/graphic_machine/graphicactuator.cpp \
-	src/ui/graphic_machine/graphiccomponent.cpp \
-	src/ui/graphic_machine/fsm/fsmgraphicstate.cpp \
-	src/ui/graphic_machine/fsm/fsmgraphictransition.cpp \
-	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.cpp \
-	src/ui/graphic_machine/fsm/graphicfsm.cpp \
 	src/ui/dialogs/imageexportdialog.cpp \
 	src/ui/dialogs/langselectiondialog.cpp \
 	src/ui/dialogs/vhdlexportdialog.cpp \
@@ -165,49 +166,50 @@ HEADERS += \
 	src/core/machine_manager/machinebuilder.h \
 	src/core/machine_manager/machinemanager.h \
 	src/core/machine_manager/machinestatus.h \
-	src/core/machine/machine.h \
-	src/core/machine/components/machinecomponent.h \
-	src/core/machine/components/machineactuatorcomponent.h \
-	src/core/machine/components/fsm/fsmstate.h \
-	src/core/machine/components/fsm/fsmtransition.h \
-	src/core/machine/fsm/fsm.h \
-	src/core/machine/fsm/fsmverifier.h \
-	src/core/machine/export/machineimageexporter.h \
-	src/core/machine/export/fsm/fsmvhdlexport.h \
-	src/core/machine/signal/actiononsignal.h \
-	src/core/machine/signal/StateS_signal.h \
-	src/core/machine/signal/input.h \
-	src/core/machine/signal/output.h \
-	src/core/machine/signal/constant.h \
-	src/core/machine/signal/equation.h \
 	src/core/simulation/clock.h \
-	src/core/simulation/machinesimulator.h \
-	src/core/simulation/simulatedcomponent.h \
-	src/core/simulation/simulatedactuatorcomponent.h \
-	src/core/simulation/fsm/fsmsimulator.h \
-	src/core/simulation/fsm/fsmsimulatedstate.h \
-	src/core/simulation/fsm/fsmsimulatedtransition.h \
 	src/core/exceptions/statesexception.h \
 	src/core/undo_engine/fsmundocommand.h \
 	src/core/undo_engine/diffundocommand.h \
 	src/core/undo_engine/machineundocommand.h \
 	src/core/undo_engine/undoredomanager.h \
 	src/core/xml/statesxmlanalyzer.h \
-	src/core/xml/machine/xmlimportexportbuilder.h \
-	src/core/xml/machine/machinexmlparser.h \
-	src/core/xml/machine/machinexmlwriter.h \
-	src/core/xml/machine/fsm/fsmxmlparser.h \
-	src/core/xml/machine/fsm/fsmxmlwriter.h \
+	# Machine
+	src/machine/export/machineimageexporter.h \
+	src/machine/export/fsm/fsmvhdlexport.h \
+	src/machine/graphic/graphicmachine.h \
+	src/machine/graphic/components/graphicactuator.h \
+	src/machine/graphic/components/graphiccomponent.h \
+	src/machine/graphic/fsm/graphicfsm.h \
+	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.h \
+	src/machine/graphic/fsm/components/fsmgraphicstate.h \
+	src/machine/graphic/fsm/components/fsmgraphictransition.h \
+	src/machine/logic/machine.h \
+	src/machine/logic/components/machinecomponent.h \
+	src/machine/logic/components/machineactuatorcomponent.h \
+	src/machine/logic/components/signal/actiononsignal.h \
+	src/machine/logic/components/signal/StateS_signal.h \
+	src/machine/logic/components/signal/input.h \
+	src/machine/logic/components/signal/output.h \
+	src/machine/logic/components/signal/constant.h \
+	src/machine/logic/components/signal/equation.h \
+	src/machine/logic/fsm/fsm.h \
+	src/machine/logic/fsm/components/fsmstate.h \
+	src/machine/logic/fsm/components/fsmtransition.h \
+	src/machine/logic/fsm/verifier/fsmverifier.h \
+	src/machine/simulated/machinesimulator.h \
+	src/machine/simulated/components/simulatedcomponent.h \
+	src/machine/simulated/components/simulatedactuatorcomponent.h \
+	src/machine/simulated/fsm/fsmsimulator.h \
+	src/machine/simulated/fsm/components/fsmsimulatedstate.h \
+	src/machine/simulated/fsm/components/fsmsimulatedtransition.h \
+	src/machine/xml/graphicattributes.h \
+	src/machine/xml/xmlimportexportbuilder.h \
+	src/machine/xml/machinexmlparser.h \
+	src/machine/xml/machinexmlwriter.h \
+	src/machine/xml/fsm/fsmxmlparser.h \
+	src/machine/xml/fsm/fsmxmlwriter.h \
 	# UI
 	src/ui/statesui.h \
-	src/ui/graphic_machine/graphicmachine.h \
-	src/ui/graphic_machine/graphicattributes.h \
-	src/ui/graphic_machine/graphicactuator.h \
-	src/ui/graphic_machine/graphiccomponent.h \
-	src/ui/graphic_machine/fsm/fsmgraphicstate.h \
-	src/ui/graphic_machine/fsm/fsmgraphictransition.h \
-	src/ui/graphic_machine/fsm/fsmgraphictransitionneighborhood.h \
-	src/ui/graphic_machine/fsm/graphicfsm.h \
 	src/ui/dialogs/vhdlexportdialog.h \
 	src/ui/dialogs/langselectiondialog.h \
 	src/ui/dialogs/errordisplaydialog.h \
@@ -277,23 +279,33 @@ HEADERS += \
 
 INCLUDEPATH += \
     # Core
+	src \
 	src/core \
 	src/core/basic_type \
 	src/core/exceptions \
-	src/core/machine \
-	src/core/machine/components \
-	src/core/machine/components/fsm \
-	src/core/machine/export \
-	src/core/machine/export/fsm \
-	src/core/machine/fsm \
-	src/core/machine/signal \
 	src/core/machine_manager \
 	src/core/simulation \
-	src/core/simulation/fsm \
 	src/core/undo_engine \
 	src/core/xml \
-	src/core/xml/machine \
-	src/core/xml/machine/fsm \
+	# Machine
+	src/machine/export \
+	src/machine/export/fsm \
+	src/machine/graphic \
+	src/machine/graphic/components \
+	src/machine/graphic/fsm \
+	src/machine/graphic/fsm/components \
+	src/machine/logic \
+	src/machine/logic/components \
+	src/machine/logic/components/signal \
+	src/machine/logic/fsm \
+	src/machine/logic/fsm/components \
+	src/machine/logic/fsm/verifier \
+	src/machine/simulated \
+	src/machine/simulated/components \
+	src/machine/simulated/fsm \
+	src/machine/simulated/fsm/components \
+	src/machine/xml \
+	src/machine/xml/fsm \
 	# UI
 	src/ui \
 	src/ui/dialogs \
@@ -302,8 +314,6 @@ INCLUDEPATH += \
 	src/ui/display_area/machine_editor_widget/scene \
 	src/ui/display_area/machine_editor_widget/toolbar \
 	src/ui/display_area/timeline_widget \
-	src/ui/graphic_machine \
-	src/ui/graphic_machine/fsm \
 	src/ui/equation_editor \
 	src/ui/refined_widget \
 	src/ui/truth_table \
