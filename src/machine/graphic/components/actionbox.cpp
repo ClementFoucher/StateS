@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "graphicactuator.h"
+#include "actionbox.h"
 
 // C++ classes
 #include <memory>
@@ -43,62 +43,54 @@ using namespace std;
 // Static elements
 //
 
-const QPen GraphicActuator::defaultPen = QPen(Qt::SolidPattern, 3);
+const QPen ActionBox::defaultPen = QPen(Qt::SolidPattern, 3);
 
 
 //
 // Class object definition
 //
 
-GraphicActuator::GraphicActuator(componentId_t logicComponentId) :
-    GraphicComponent(logicComponentId)
+ActionBox::ActionBox(componentId_t actuatorId, bool addLine)
 {
-	this->actionsBox = new QGraphicsItemGroup();
+	this->actuatorId = actuatorId;
+	this->addLine = addLine;
+	this->textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
 
-	this->buildActionsBox();
+	this->buildActionBox();
 }
 
-GraphicActuator::~GraphicActuator()
+void ActionBox::refreshDisplay()
 {
-	delete this->actionsBox;
+	this->buildActionBox();
 }
 
-QGraphicsItemGroup* GraphicActuator::getActionsBox() const
-{
-	return this->actionsBox;
-}
-
-void GraphicActuator::refreshDisplay()
-{
-	this->buildActionsBox();
-	this->updateActionBoxPosition();
-}
-
-void GraphicActuator::buildActionsBox()
+void ActionBox::buildActionBox()
 {
 	// Clean
-	qDeleteAll(this->actionsBox->childItems());
+	qDeleteAll(this->childItems());
+	this->actionsOutline = nullptr;
+	this->leftLine       = nullptr;
 
 	// Check
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->logicComponentId));
+	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
 	if (actuator == nullptr) return;
 
 	auto actions = actuator->getActions();
 	if (actions.count() == 0) return;
 
 	// Build
-	qreal textHeight = QGraphicsTextItem("Hello, world!").boundingRect().height();
 	qreal maxTextWidth = 0;
+	qreal boxLeft = (this->addLine == true) ? 20 : 0;
 
 	for (int i = 0 ; i < actions.count() ; i++)
 	{
 		shared_ptr<ActionOnSignal> currentAction = actions[i];
 		shared_ptr<Signal> currentSignal = currentAction->getSignalActedOn();
 
-		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), this->actionsBox);
+		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), this);
 
 		QString currentActionText;
 
@@ -170,24 +162,39 @@ void GraphicActuator::buildActionsBox()
 		if (maxTextWidth < actionText->boundingRect().width())
 			maxTextWidth = actionText->boundingRect().width();
 
-		actionText->setPos(QPointF(0, i*actionText->boundingRect().height()));
+		actionText->setPos(QPointF(boxLeft, i*actionText->boundingRect().height()));
 
 		actionText->setZValue(1);
 
-		this->actionsBox->addToGroup(actionText);
+		this->addToGroup(actionText);
 	}
 
 	QPainterPath actionBorderPath;
-	actionBorderPath.lineTo(0,            ((qreal)actions.count())*textHeight);
-	actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*textHeight);
+	actionBorderPath.lineTo(0,            ((qreal)actions.count())*this->textHeight);
+	actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*this->textHeight);
 	actionBorderPath.lineTo(maxTextWidth, 0);
 	actionBorderPath.lineTo(0,            0);
 
-	QGraphicsPathItem* stateActionsOutline = new QGraphicsPathItem(actionBorderPath, this->actionsBox);
-	stateActionsOutline->setPen(defaultPen);
-	stateActionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
-	stateActionsOutline->setZValue(0);
-	stateActionsOutline->setPos(0, 0);
+	this->actionsOutline = new QGraphicsPathItem(actionBorderPath, this);
+	this->actionsOutline->setPen(defaultPen);
+	this->actionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
+	this->actionsOutline->setZValue(0);
+	this->actionsOutline->setPos(boxLeft, 0);
 
-	this->actionsBox->addToGroup(stateActionsOutline);
+	this->addToGroup(this->actionsOutline);
+
+	if (this->addLine == true)
+	{
+		qreal center = this->actionsOutline->boundingRect().height() / 2;
+		this->leftLine = new QGraphicsLineItem(0, center, 20, center, this);
+		this->leftLine->setPen(defaultPen);
+	}
+}
+
+qreal ActionBox::getHeight() const
+{
+	if (this->actionsOutline == nullptr) return 0;
+
+
+	return this->actionsOutline->boundingRect().height();
 }

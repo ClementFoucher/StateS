@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,6 +41,7 @@ using namespace std;
 #include "fsmstate.h"
 #include "contextmenu.h"
 #include "fsm.h"
+#include "actionbox.h"
 
 
 //
@@ -90,7 +91,7 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 //
 
 FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
-    GraphicActuator(logicComponentId),
+    GraphicComponent(logicComponentId),
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
 	this->setPen(defaultPen);
@@ -105,6 +106,14 @@ FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
 	this->setAcceptHoverEvents(true);
 
 	this->buildRepresentation();
+	// Build action box separately as it is not a child of this (scene stacking issues)
+	this->actionBox = new ActionBox(logicComponentId, true);
+	this->updateActionBoxPosition();
+}
+
+FsmGraphicState::~FsmGraphicState()
+{
+	delete this->actionBox;
 }
 
 void FsmGraphicState::refreshDisplay()
@@ -116,7 +125,8 @@ void FsmGraphicState::refreshDisplay()
 	this->buildRepresentation();
 
 	// Update action box
-	GraphicActuator::refreshDisplay();
+	this->actionBox->refreshDisplay();
+	this->updateActionBoxPosition();
 }
 
 QPainterPath FsmGraphicState::shape() const
@@ -153,6 +163,11 @@ void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	QStyleOptionGraphicsItem myOption(*option);
 	myOption.state &= ~QStyle::State_Selected;
 	QGraphicsEllipseItem::paint(painter, &myOption, widget);
+}
+
+ActionBox* FsmGraphicState::getActionBox() const
+{
+	return this->actionBox;
 }
 
 void FsmGraphicState::keyPressEvent(QKeyEvent* event)
@@ -192,6 +207,7 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
 	auto logicState = fsm->getState(this->logicComponentId);
 	if (logicState == nullptr) return;
+
 
 	ContextMenu* menu = new ContextMenu();
 	menu->addTitle(tr("State") + " <i>" + logicState->getName() + "</i>");
@@ -234,7 +250,8 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 		if (value.toBool() == true)
 		{
 			// Refuse selection if there is a transition already selected
-			for (QGraphicsItem* selectedItem : this->scene()->selectedItems())
+			const auto selectedItems = this->scene()->selectedItems();
+			for (QGraphicsItem* selectedItem : selectedItems)
 			{
 				if (dynamic_cast<FsmGraphicTransition*>(selectedItem) != nullptr)
 					return (QVariant)false;
@@ -289,7 +306,6 @@ void FsmGraphicState::clearRepresentation()
 	qDeleteAll(this->childItems());
 
 	this->selectionShape = nullptr;
-	this->actionBoxLine  = nullptr;
 	this->stateName      = nullptr;
 }
 
@@ -300,6 +316,7 @@ void FsmGraphicState::buildRepresentation()
 
 	auto logicState = fsm->getState(this->logicComponentId);
 	if (logicState == nullptr) return;
+
 
 	this->stateName = new QGraphicsTextItem(this);
 	this->stateName->setHtml("<span style=\"color:black;\">" + logicState->getName() + "</span>");
@@ -335,28 +352,8 @@ void FsmGraphicState::updateSelectionShapeDisplay()
 
 void FsmGraphicState::updateActionBoxPosition()
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
+	auto actionsBoxCenter = this->actionBox->getHeight() / 2;
 
-	auto logicState = fsm->getState(this->logicComponentId);
-	if (logicState == nullptr) return;
-
-	if (logicState->getActions().count() != 0)
-	{
-		if  (this->actionBoxLine == nullptr)
-		{
-			this->actionBoxLine = new QGraphicsLineItem(radius, 0, radius + 20, 0, this);
-			this->actionBoxLine->setPen(defaultPen);
-		}
-
-		auto actionsBoxCenter = this->actionsBox->boundingRect().height() / 2;
-
-		// Positions is expressed in scene coordinates, as action box is not a child of this (scene stacking issues)
-		this->actionsBox->setPos(mapToScene(radius + 20, -actionsBoxCenter));
-	}
-	else
-	{
-		delete this->actionBoxLine;
-		this->actionBoxLine = nullptr;
-	}
+	// Position is expressed in scene coordinates, as action box is not a child of this (scene stacking issues)
+	this->actionBox->setPos(mapToScene(radius, -actionsBoxCenter));
 }

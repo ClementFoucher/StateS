@@ -44,6 +44,7 @@ using namespace std;
 #include "graphicfsm.h"
 #include "fsm.h"
 #include "fsmgraphicstate.h"
+#include "actionbox.h"
 
 
 //
@@ -79,7 +80,7 @@ QPixmap FsmGraphicTransition::getPixmap(uint size)
 //
 
 FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
-    GraphicActuator(logicComponentId)
+    GraphicComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -109,14 +110,14 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 	this->buildChildren();
 	this->updateConditionText();
 	this->buildRepresentation();
-	// Use this syntax to supress warning for calling a virtual function in constructor,
-	// as this function is not overriden in sub-classes.
-	// Marking it as "final" should do the same, but it didn't work...
-	FsmGraphicTransition::updateActionBoxPosition();
+	// Build action box separately as it is not a child of this (scene stacking issues)
+	this->actionBox = new ActionBox(logicComponentId);
+
+	this->repositionChildren();
 }
 
 FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
-    GraphicActuator(0)
+    GraphicComponent(0)
 {
 	if ( ( (sourceStateId != 0) && (targetStateId != 0) ) ||
 	     ( (sourceStateId == 0) && (targetStateId == 0) )
@@ -150,7 +151,8 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 
 FsmGraphicTransition::~FsmGraphicTransition()
 {
-	delete conditionText;
+	delete this->conditionText;
+	delete this->actionBox;
 }
 
 void FsmGraphicTransition::refreshDisplay()
@@ -161,10 +163,13 @@ void FsmGraphicTransition::refreshDisplay()
 	// Rebuild
 	this->updateConditionText();
 	this->buildRepresentation();
-	this->repositionChildren();
+	if (this->actionBox != nullptr)
+	{
+		this->actionBox->refreshDisplay();
+	}
 
-	// Update action box
-	GraphicActuator::refreshDisplay();
+	// Reposition
+	this->repositionChildren();
 }
 
 componentId_t FsmGraphicTransition::getSourceStateId() const
@@ -204,6 +209,11 @@ QPainterPath FsmGraphicTransition::shape() const
 QRectF FsmGraphicTransition::boundingRect() const
 {
 	return this->boundingShape.boundingRect();
+}
+
+ActionBox* FsmGraphicTransition::getActionBox() const
+{
+	return this->actionBox;
 }
 
 void FsmGraphicTransition::setUnderEdit(bool edit)
@@ -559,6 +569,11 @@ void FsmGraphicTransition::repositionChildren()
 	{
 		this->conditionText->setPos(mapToScene(this->conditionLinePos) + QPointF(0, 5));
 	}
+
+	if ( (this->actionBox != nullptr) && (this->conditionText != nullptr) )
+	{
+		this->actionBox->setPos(mapToScene(this->conditionLinePos + this->conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
+	}
 }
 
 void FsmGraphicTransition::repaint()
@@ -697,14 +712,6 @@ void FsmGraphicTransition::updateSelectionShapeDisplay()
 	else if ( (this->isSelected() == false) && (this->selectionShape != nullptr) )
 	{
 		this->selectionShape->setVisible(false);
-	}
-}
-
-void FsmGraphicTransition::updateActionBoxPosition()
-{
-	if ( (this->actionsBox != nullptr) && (this->conditionText != nullptr) )
-	{
-		this->actionsBox->setPos(mapToScene(this->conditionLinePos + this->conditionText->boundingRect().bottomLeft() + QPointF(0, 5)));
 	}
 }
 

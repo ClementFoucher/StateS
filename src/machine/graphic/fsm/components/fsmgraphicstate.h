@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #define FSMGRAPHICSTATE_H
 
 // Parents
-#include "graphicactuator.h"
+#include "graphiccomponent.h"
 #include <QGraphicsEllipseItem>
 
 // Qt classes
@@ -31,9 +31,10 @@ class QAction;
 
 // StateS classes
 #include "statestypes.h"
+class ActionBox;
 
 
-class FsmGraphicState : public GraphicActuator, public QGraphicsEllipseItem
+class FsmGraphicState : public GraphicComponent, public QGraphicsEllipseItem
 {
 	Q_OBJECT
 
@@ -55,6 +56,7 @@ protected:
 	// Constructors/destructors
 public:
 	explicit FsmGraphicState(componentId_t logicComponentId);
+	~FsmGraphicState();
 
 	/////
 	// Object functions
@@ -65,6 +67,8 @@ public:
 	virtual QRectF boundingRect() const override;
 
 	virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+
+	ActionBox* getActionBox() const;
 
 signals:
 	void statePositionAboutToChangeEvent(componentId_t stateId);
@@ -91,14 +95,14 @@ private:
 	void buildRepresentation();
 	void updateSelectionShapeDisplay();
 
-	virtual void updateActionBoxPosition() override;
+	void updateActionBoxPosition();
 
 	/////
 	// Object variables
 private:
 	QGraphicsTextItem*    stateName      = nullptr;
 	QGraphicsEllipseItem* selectionShape = nullptr;
-	QGraphicsLineItem*    actionBoxLine  = nullptr;
+	ActionBox*            actionBox      = nullptr;
 
 };
 

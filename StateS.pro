@@ -56,7 +56,7 @@ SOURCES += \
 	src/machine/export/machineimageexporter.cpp \
 	src/machine/export/fsm/fsmvhdlexport.cpp \
 	src/machine/graphic/graphicmachine.cpp \
-	src/machine/graphic/components/graphicactuator.cpp \
+	src/machine/graphic/components/actionbox.cpp \
 	src/machine/graphic/components/graphiccomponent.cpp \
 	src/machine/graphic/fsm/graphicfsm.cpp \
 	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.cpp \
@@ -177,7 +177,7 @@ HEADERS += \
 	src/machine/export/machineimageexporter.h \
 	src/machine/export/fsm/fsmvhdlexport.h \
 	src/machine/graphic/graphicmachine.h \
-	src/machine/graphic/components/graphicactuator.h \
+	src/machine/graphic/components/actionbox.h \
 	src/machine/graphic/components/graphiccomponent.h \
 	src/machine/graphic/fsm/graphicfsm.h \
 	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.h \

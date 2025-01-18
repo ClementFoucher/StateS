@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,22 +19,22 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICACTUATOR_H
-#define GRAPHICACTUATOR_H
+#ifndef ACTIONBOX_H
+#define ACTIONBOX_H
 
 // Parent
-#include "graphiccomponent.h"
+#include <QGraphicsItemGroup>
 
 // Qt classes
-class QGraphicsItemGroup;
+#include <QGraphicsPathItem>
 
 // StateS classes
 #include "statestypes.h"
 
 
-class GraphicActuator : public GraphicComponent
+class ActionBox : public QGraphicsItemGroup
 {
-	Q_OBJECT
+	//Q_OBJECT
 
 	/////
 	// Static variables
@@ -44,28 +44,26 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicActuator(componentId_t logicComponentId);
-	~GraphicActuator();
+	explicit ActionBox(componentId_t actuatorId, bool addLine = false);
 
 	/////
 	// Object functions
 public:
-	QGraphicsItemGroup* getActionsBox() const;
-
-	virtual void refreshDisplay() override;
-
-protected:
+	void refreshDisplay();
+	qreal getHeight() const;
 
 private:
-	void buildActionsBox();
-
-	virtual void updateActionBoxPosition() = 0;
+	void buildActionBox();
 
 	/////
 	// Object variables
 protected:
-	QGraphicsItemGroup* actionsBox = nullptr;
+	qreal textHeight = 0;
+	componentId_t actuatorId = 0;
+	bool addLine;
+	QGraphicsPathItem* actionsOutline = nullptr;
+	QGraphicsLineItem* leftLine       = nullptr;
 
 };
 
-#endif // GRAPHICACTUATOR_H
+#endif // ACTIONBOX_H

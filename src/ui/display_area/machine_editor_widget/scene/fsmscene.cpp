@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,6 +45,7 @@
 #include "machinesimulator.h"
 #include "fsmsimulatedstate.h"
 #include "fsmsimulatedtransition.h"
+#include "actionbox.h"
 
 
 FsmScene::FsmScene() :
@@ -853,7 +854,7 @@ void FsmScene::clearScene()
 				this->removeItem(condition);
 			}
 
-			auto actions = transitionItem->getActionsBox();
+			auto actions = transitionItem->getActionBox();
 			if (actions != nullptr)
 			{
 				this->removeItem(actions);
@@ -876,7 +877,7 @@ void FsmScene::clearScene()
 				disconnect(stateItem, &FsmGraphicState::statePositionChangedEvent,        this, &FsmScene::statePositionChangedEventHandler);
 			}
 
-			auto actions = stateItem->getActionsBox();
+			auto actions = stateItem->getActionBox();
 			if (actions != nullptr)
 			{
 				this->removeItem(actions);
@@ -901,9 +902,12 @@ void FsmScene::addTransition(FsmGraphicTransition* newTransition, bool connectSi
 		condition->setZValue(3);
 	}
 
-	QGraphicsItemGroup* actionsBox = newTransition->getActionsBox();
-	this->addItem(actionsBox);
-	actionsBox->setZValue(3);
+	QGraphicsItemGroup* actionsBox = newTransition->getActionBox();
+	if (actionsBox != nullptr)
+	{
+		this->addItem(actionsBox);
+		actionsBox->setZValue(3);
+	}
 
 	if (connectSignals ==  true)
 	{
@@ -921,7 +925,7 @@ void FsmScene::addState(FsmGraphicState* newState, bool connectSignals)
 	this->addItem(newState);
 	newState->setZValue(1);
 
-	QGraphicsItemGroup* actionsBox = newState->getActionsBox();
+	QGraphicsItemGroup* actionsBox = newState->getActionBox();
 	this->addItem(actionsBox);
 	actionsBox->setZValue(3);
 
