@@ -123,9 +123,10 @@ void FsmGraphicState::refreshDisplay()
 
 	// Rebuild
 	this->buildRepresentation();
-
-	// Update action box
+	this->updateSelectionShapeDisplay();
 	this->actionBox->refreshDisplay();
+
+	// Reposition
 	this->updateActionBoxPosition();
 }
 

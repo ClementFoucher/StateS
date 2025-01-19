@@ -163,6 +163,7 @@ void FsmGraphicTransition::refreshDisplay()
 	// Rebuild
 	this->updateConditionText();
 	this->buildRepresentation();
+	this->updateSelectionShapeDisplay();
 	if (this->actionBox != nullptr)
 	{
 		this->actionBox->refreshDisplay();
