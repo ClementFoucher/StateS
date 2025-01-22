@@ -2,6 +2,7 @@
 * StateS v. 0.4 *
 *****************
 
+- 2025-01-22 - V 0.4.6 - Fix the action box position not being updated when deleting actions. Fix selection shape of states and transition disapearing when an edition was done through the resource bar.
 - 2025-01-02 - V 0.4.5 - Add increment/decrement actions. Many small enhancements to the graphical representation of the FSM. Many under-the-hood improvements. Moved from Qt 5 to Qt 6. Moved from SourceForge to GitHub.
 - 2020-11-01 - V 0.4.4 - Retain the latest folders used for image and VHDL export; corrected Machine tab title; corrected machine name triggering edition mode erroneously; adding an initial state does not generate two undo events any more; many internal code reorganization.
 - 2020-10-26 - V 0.4.3 - Corrected a crash and an incorrect behavior of the drawing tools toolbar. Reworked the UI classes hierarchy.
