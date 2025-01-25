@@ -28,12 +28,12 @@
 // StateS classes
 #include "statestypes.h"
 #include "pixmapgenerator.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
 
-ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent) :
+ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent) :
     QComboBox(parent)
 {
 	this->action = action;
@@ -90,7 +90,7 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 
 void ActionTypeComboBox::processIndexChanged(int index)
 {
-	shared_ptr<ActionOnSignal> l_action = this->action.lock();
+	shared_ptr<ActionOnVariable> l_action = this->action.lock();
 
 	if (l_action != nullptr)
 	{

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ using namespace std;
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "dynamiclineedit.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
 ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget *parent) :
@@ -62,7 +62,7 @@ QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 	if (actuator == nullptr) return nullptr;
 
 
-	shared_ptr<ActionOnSignal> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
+	shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
 	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
 	return new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);

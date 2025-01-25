@@ -28,7 +28,7 @@
 // StateS classes
 #include "statestypes.h"
 #include "variable.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
@@ -45,7 +45,7 @@ MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
 
 }
 
-shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Variable> signal)
+shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Variable> signal)
 {
 	// Default action type
 	ActionOnVariableType_t actionType;
@@ -59,8 +59,8 @@ shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Variab
 		actionType = ActionOnVariableType_t::pulse;
 	}
 
-	shared_ptr<ActionOnSignal> action(new ActionOnSignal(signal, actionType));
-	connect(action.get(), &ActionOnSignal::actionChangedEvent, this, &MachineActuatorComponent::signalInActionListModifiedEventHandler);
+	shared_ptr<ActionOnVariable> action(new ActionOnVariable(signal, actionType));
+	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::signalInActionListModifiedEventHandler);
 	this->actionList.append(action);
 
 	// To remove destroyed signals from the action list
@@ -92,7 +92,7 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 	}
 }
 
-shared_ptr<ActionOnSignal> MachineActuatorComponent::getAction(uint actionRank) const // Throws StatesException
+shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const // Throws StatesException
 {
 	if (actionRank < (uint)this->actionList.count())
 	{
@@ -104,7 +104,7 @@ shared_ptr<ActionOnSignal> MachineActuatorComponent::getAction(uint actionRank) 
 	}
 }
 
-QList<shared_ptr<ActionOnSignal> > MachineActuatorComponent::getActions() const
+QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
 {
 	return this->actionList;
 }
@@ -115,7 +115,7 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	{
 		if (newActionRank < (uint)this->actionList.count())
 		{
-			shared_ptr<ActionOnSignal> action = this->actionList.at(oldActionRank);
+			shared_ptr<ActionOnVariable> action = this->actionList.at(oldActionRank);
 			this->actionList.removeAt(oldActionRank);
 			this->actionList.insert(newActionRank, action);
 
@@ -135,10 +135,10 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 
 void MachineActuatorComponent::cleanActionList()
 {
-	QList<shared_ptr<ActionOnSignal>> newActionList;
+	QList<shared_ptr<ActionOnVariable>> newActionList;
 
 	bool listChanged = false;
-	for (shared_ptr<ActionOnSignal> action : this->actionList)
+	for (shared_ptr<ActionOnVariable> action : this->actionList)
 	{
 		if (action->getSignalActedOn() != nullptr)
 		{

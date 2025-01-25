@@ -30,10 +30,10 @@
 // StateS classes
 #include "equation.h"
 #include "graphicequation.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
-RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent) :
+RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent) :
     QDialog(parent)
 {
 	int rangeL = action->getActionRangeL();

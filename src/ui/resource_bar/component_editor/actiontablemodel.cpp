@@ -31,7 +31,7 @@ using namespace std;
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "variable.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
 ActionTableModel::ActionTableModel(componentId_t actuatorId, QObject* parent) :
@@ -105,7 +105,7 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 
 	if (actuator->getActions().count() != 0)
 	{
-		shared_ptr<ActionOnSignal> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
+		shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
 
 		if (role == Qt::DisplayRole)
 		{
@@ -189,7 +189,7 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 	if (actuator == nullptr) return false;
 
 
-	shared_ptr<ActionOnSignal> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
+	shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
 
 	if (action->isActionValueEditable() == true)
 	{
@@ -271,7 +271,7 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 		}
 		else
 		{
-			shared_ptr<ActionOnSignal> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
+			shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
 
 			if (action->isActionValueEditable())
 				flags |= (Qt::ItemIsEnabled | Qt::ItemIsEditable);

@@ -35,7 +35,7 @@ class QTextStream;
 #include "statestypes.h"
 class Fsm;
 class Variable;
-class ActionOnSignal;
+class ActionOnVariable;
 
 
 class FsmVhdlExport
@@ -105,7 +105,7 @@ private:
 	void writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
 
 	void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const;
+	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const;
 
 	QString generateEquationText(shared_ptr<Variable> equation, shared_ptr<Fsm> l_machine) const;
 

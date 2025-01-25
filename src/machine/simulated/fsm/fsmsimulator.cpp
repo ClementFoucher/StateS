@@ -41,7 +41,7 @@
 #include "fsmsimulatedtransition.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
 FsmSimulator::FsmSimulator() :

@@ -65,7 +65,7 @@ SOURCES += \
 	src/machine/logic/machine.cpp \
 	src/machine/logic/components/machinecomponent.cpp \
 	src/machine/logic/components/machineactuatorcomponent.cpp \
-	src/machine/logic/components/variable/actiononsignal.cpp \
+	src/machine/logic/components/variable/actiononvariable.cpp \
 	src/machine/logic/components/variable/input.cpp \
 	src/machine/logic/components/variable/output.cpp \
 	src/machine/logic/components/variable/constant.cpp \
@@ -186,7 +186,7 @@ HEADERS += \
 	src/machine/logic/machine.h \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
-	src/machine/logic/components/variable/actiononsignal.h \
+	src/machine/logic/components/variable/actiononvariable.h \
 	src/machine/logic/components/variable/input.h \
 	src/machine/logic/components/variable/output.h \
 	src/machine/logic/components/variable/constant.h \

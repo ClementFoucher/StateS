@@ -47,7 +47,7 @@
 #include "collapsiblewidgetwithtitle.h"
 #include "actiontablemodel.h"
 #include "actiontabledelegate.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
@@ -181,7 +181,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 	{
 		try
 		{
-			shared_ptr<ActionOnSignal> actionActedOn = actuator->getAction(actionRank); // Throws StatesException
+			shared_ptr<ActionOnVariable> actionActedOn = actuator->getAction(actionRank); // Throws StatesException
 
 			ContextMenu* menu = new ContextMenu();
 			menu->addTitle(tr("Action on variable") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
@@ -393,7 +393,7 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	int dataValue   = action->data().toInt();
 	uint actionRank = (dataValue&0xFFF0)>>8;
 
-	shared_ptr<ActionOnSignal> actionOnSignal = actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
+	shared_ptr<ActionOnVariable> actionOnSignal = actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
 
 	int oldRangeL = actionOnSignal->getActionRangeL();
 	int oldRangeR = actionOnSignal->getActionRangeR();
@@ -752,11 +752,11 @@ void ActionEditor::restoreSelection()
 	selectionModel->clearSelection();
 
 	// First get locked references to previously selected actions
-	QVector<shared_ptr<ActionOnSignal>> previousSelection;
+	QVector<shared_ptr<ActionOnVariable>> previousSelection;
 
-	for (weak_ptr<ActionOnSignal> weakAction : this->latestSelection)
+	for (weak_ptr<ActionOnVariable> weakAction : this->latestSelection)
 	{
-		shared_ptr<ActionOnSignal> lockedAction = weakAction.lock();
+		shared_ptr<ActionOnVariable> lockedAction = weakAction.lock();
 
 		if (lockedAction != nullptr)
 			previousSelection.append(lockedAction);
@@ -765,7 +765,7 @@ void ActionEditor::restoreSelection()
 	// Then select back previously selected actions
 	for (int i = 0 ; i < actuator->getActions().count() ; i++)
 	{
-		shared_ptr<ActionOnSignal> action = actuator->getAction(i);
+		shared_ptr<ActionOnVariable> action = actuator->getAction(i);
 
 		if (previousSelection.contains(action))
 		{

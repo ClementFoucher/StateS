@@ -32,7 +32,7 @@
 #include "variable.h"
 #include "viewconfiguration.h"
 #include "graphicattributes.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 #include "machineactuatorcomponent.h"
 #include "equation.h"
 #include "exceptiontypes.h"
@@ -323,7 +323,7 @@ void MachineXmlParser::parseAction()
 			return;
 		}
 
-		shared_ptr<ActionOnSignal> action = this->currentActuator->addAction(signal);
+		shared_ptr<ActionOnVariable> action = this->currentActuator->addAction(signal);
 
 		try
 		{

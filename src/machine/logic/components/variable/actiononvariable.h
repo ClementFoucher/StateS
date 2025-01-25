@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONONSIGNAL_H
-#define ACTIONONSIGNAL_H
+#ifndef ACTIONONVARIABLE_H
+#define ACTIONONVARIABLE_H
 
 // Parent
 #include <QObject>
@@ -36,7 +36,7 @@ class Variable;
 
 
 /**
- * @brief The ActionOnSignal class manages actions on signals.
+ * @brief The ActionOnVariable class manages actions on variables.
  *
  * The range parameters are valid when >= 0.
  * If only left range is valid, the action acts on a single bit.
@@ -58,14 +58,14 @@ class Variable;
  * returns 0 and other getters return meaningless values.
  * Begin and end actions have no effect.
  */
-class ActionOnSignal : public QObject
+class ActionOnVariable : public QObject
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnSignal(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
+	explicit ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
 							int rangeL = -1, int rangeR = -1);
 
 	/////
@@ -109,4 +109,4 @@ private:
 
 };
 
-#endif // ACTIONONSIGNAL_H
+#endif // ACTIONONVARIABLE_H

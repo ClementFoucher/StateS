@@ -37,7 +37,7 @@
 #include "output.h"
 #include "constant.h"
 #include "equation.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
@@ -73,12 +73,12 @@ void MachineXmlWriter::writeMachineCommonElements()
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
 {
-	QList<shared_ptr<ActionOnSignal>> actions = component->getActions();
+	QList<shared_ptr<ActionOnVariable>> actions = component->getActions();
 
 	if (actions.count() != 0)
 	{
 		this->stream->writeStartElement("Actions");
-		for (shared_ptr<ActionOnSignal> action : actions)
+		for (shared_ptr<ActionOnVariable> action : actions)
 		{
 			this->stream->writeStartElement("Action");
 

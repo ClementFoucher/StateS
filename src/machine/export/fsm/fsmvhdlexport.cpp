@@ -36,7 +36,7 @@
 #include "input.h"
 #include "output.h"
 #include "equation.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
 FsmVhdlExport::FsmVhdlExport()
@@ -180,7 +180,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 	{
 		auto state = l_machine->getState(stateId);
 
-		for (shared_ptr<ActionOnSignal> action : state->getActions())
+		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
 			if (action->getSignalActedOn() == signal)
 			{
@@ -215,7 +215,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 	{
 		auto transition = l_machine->getTransition(transitionId);
 
-		for (shared_ptr<ActionOnSignal> action : transition->getActions())
+		for (shared_ptr<ActionOnVariable> action : transition->getActions())
 		{
 			if (action->getSignalActedOn() == signal)
 			{
@@ -526,7 +526,7 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 		stream << " =>\n";
 
 		int writtenActions = 0;
-		for (shared_ptr<ActionOnSignal> action : state->getActions())
+		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
 			if (this->mooreSignals.contains(action->getSignalActedOn()))
 			{
@@ -561,7 +561,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 			{
 				auto transition = l_machine->getTransition(transitionId);
 
-				for (shared_ptr<ActionOnSignal> action : transition->getActions())
+				for (shared_ptr<ActionOnVariable> action : transition->getActions())
 				{
 					if (action->getSignalActedOn() == signal)
 					{
@@ -578,7 +578,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 				for (shared_ptr<FsmTransition> transition : transitions)
 				{
-					for (shared_ptr<ActionOnSignal> action : transition->getActions())
+					for (shared_ptr<ActionOnVariable> action : transition->getActions())
 					{
 						if (action->getSignalActedOn() == signal)
 						{
@@ -637,7 +637,7 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 	}
 }
 
-void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const
+void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const
 {
 	shared_ptr<Variable> signal = action->getSignalActedOn();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "actiononsignal.h"
+#include "actiononvariable.h"
 
 
 SimulatedActuatorComponent::SimulatedActuatorComponent(componentId_t componentId)
@@ -48,7 +48,7 @@ void SimulatedActuatorComponent::activateActions()
 	if (actuatorComponent == nullptr) return;
 
 	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnSignal> action : actionList)
+	for (shared_ptr<ActionOnVariable> action : actionList)
 	{
 		action->beginAction();
 	}
@@ -63,7 +63,7 @@ void SimulatedActuatorComponent::deactivateActions()
 	if (actuatorComponent == nullptr) return;
 
 	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnSignal> action : actionList)
+	for (shared_ptr<ActionOnVariable> action : actionList)
 	{
 		action->endAction();
 	}

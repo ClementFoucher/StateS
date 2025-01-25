@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class ActionOnSignal;
+class ActionOnVariable;
 
 
 /**
@@ -47,7 +47,7 @@ class ActionTypeComboBox : public QComboBox
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
+	explicit ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -57,7 +57,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<ActionOnSignal> action;
+	weak_ptr<ActionOnVariable> action;
 
 };
 

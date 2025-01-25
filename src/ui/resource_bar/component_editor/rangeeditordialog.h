@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS classes
 class Equation;
-class ActionOnSignal;
+class ActionOnVariable;
 
 
 class RangeEditorDialog : public QDialog
@@ -41,7 +41,7 @@ class RangeEditorDialog : public QDialog
 	/////
 	// Constructors/destructors
 public:
-	RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget* parent = nullptr);
+	RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent = nullptr);
 
 	/////
 	// Object functions

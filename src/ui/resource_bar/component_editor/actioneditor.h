@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,7 +37,7 @@ class QItemSelection;
 // StateS Classes
 #include "statestypes.h"
 class CollapsibleWidgetWithTitle;
-class ActionOnSignal;
+class ActionOnVariable;
 
 
 /**
@@ -121,7 +121,7 @@ private:
 	QPushButton*                buttonMoveDown     = nullptr;
 	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
 
-	QList<weak_ptr<ActionOnSignal>> latestSelection;
+	QList<weak_ptr<ActionOnVariable>> latestSelection;
 
 };
 

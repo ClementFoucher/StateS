@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class ActionOnSignal;
+class ActionOnVariable;
 class Variable;
 
 
@@ -57,10 +57,10 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnSignal> addAction(shared_ptr<Variable> signal);
+	shared_ptr<ActionOnVariable> addAction(shared_ptr<Variable> signal);
 	void removeAction(uint actionRank); // Throws StatesException
-	shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
-	QList<shared_ptr<ActionOnSignal>> getActions() const;
+	shared_ptr<ActionOnVariable> getAction(uint actionRank) const; // Throws StatesException
+	QList<shared_ptr<ActionOnVariable>> getActions() const;
 
 	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
@@ -76,7 +76,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	QList<shared_ptr<ActionOnSignal>> actionList;
+	QList<shared_ptr<ActionOnVariable>> actionList;
 
 };
 
