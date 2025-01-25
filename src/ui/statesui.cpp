@@ -100,7 +100,7 @@ StatesUi::StatesUi()
 	connect(this->toolbar, &MainToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
 	connect(this->toolbar, &MainToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
 	connect(this->toolbar, &MainToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
-	connect(this->toolbar, &MainToolBar::exportCodeRequestedEvent,   this, &StatesUi::beginExportVhdlProcedure);
+	connect(this->toolbar, &MainToolBar::exportCodeRequestedEvent,  this, &StatesUi::beginExportVhdlProcedure);
 	connect(this->toolbar, &MainToolBar::undo,                      this, &StatesUi::undo);
 	connect(this->toolbar, &MainToolBar::redo,                      this, &StatesUi::redo);
 

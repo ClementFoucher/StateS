@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -97,6 +97,7 @@ void StateEditorTab::updateContent()
 		return;
 
 	auto state = fsm->getState(this->stateId);
+	if (state == nullptr)
 	    return;
 
 	this->textStateName->setText(state->getName());
