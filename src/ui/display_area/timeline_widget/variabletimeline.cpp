@@ -33,20 +33,20 @@
 #include "graphicvectortimeline.h"
 
 
-VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent) :
+VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> variable, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
-	this->signal = signal;
+	this->variable = variable;
 
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
-	QLabel* varName = new QLabel(signal->getName());
+	QLabel* varName = new QLabel(variable->getName());
 	globalLayout->addWidget(varName);
 
 	QVBoxLayout* bitsLayout = new QVBoxLayout();
 
 	// Global value display for vectors
-	if (signal->getSize() > 1)
+	if (variable->getSize() > 1)
 	{
 		auto line = new QFrame();
 		line->setFrameShape(QFrame::VLine);
@@ -58,96 +58,96 @@ VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> signal
 		QLabel* valueLabel = new QLabel(tr("Value"));
 		innerLayout->addWidget(valueLabel);
 
-		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, signal->getInitialValue());
+		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, variable->getInitialValue());
 		timeLineDisplay->setMinimumHeight(30);
 		timeLineDisplay->setMaximumHeight(30);
-		this->signalLineDisplay.append(timeLineDisplay);
+		this->variableLineDisplay.append(timeLineDisplay);
 		innerLayout->addWidget(timeLineDisplay);
 
 		bitsLayout->addLayout(innerLayout);
 	}
 
 	// Individual bits display
-	for (uint i = 0 ; i < signal->getSize() ; i++)
+	for (uint i = 0 ; i < variable->getSize() ; i++)
 	{
 		QHBoxLayout* innerLayout = new QHBoxLayout();
 
-		if (signal->getSize() > 1)
+		if (variable->getSize() > 1)
 		{
 			QLabel* bitNumberLabel = new QLabel(tr("Bit") + " #" + QString::number(i));
 			innerLayout->addWidget(bitNumberLabel);
 		}
 
-		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, signal->getInitialValue()[i]);
+		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, variable->getInitialValue()[i]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
-		this->signalLineDisplay.append(timeLineDisplay);
+		this->variableLineDisplay.append(timeLineDisplay);
 		innerLayout->addWidget(timeLineDisplay);
 
 		bitsLayout->addLayout(innerLayout);
 	}
 	globalLayout->addLayout(bitsLayout);
 
-	connect(signal.get(), &Variable::variableDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
+	connect(variable.get(), &Variable::variableDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
 
 	connect(clock.get(), &Clock::prepareForClockEvent, this, &VariableTimeline::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,    this, &VariableTimeline::resetEventHandler);
 }
 
 // On clock event, duplicate current value:
-// it will be edited dynamically with signal update
+// it will be edited dynamically with variable update
 void VariableTimeline::clockEventHandler()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
-	if (l_signal == nullptr) return;
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable == nullptr) return;
 
 
 	uint bitNumber = 0;
-	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
+	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_signal->getSize() > 1) && (i == 0) )
+		if ( (l_variable->getSize() > 1) && (i == 0) )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->addPoint(l_signal->getCurrentValue());
+				vectorTimeLine->addPoint(l_variable->getCurrentValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->addPoint(l_signal->getCurrentValue()[bitNumber]);
+				timeLine->addPoint(l_variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
 	}
 }
 
-// Value is updated depending on actions on signal
+// Value is updated depending on actions on variable
 void VariableTimeline::updateCurrentValue()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
-	if (l_signal == nullptr) return;
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable == nullptr) return;
 
 	uint bitNumber = 0;
-	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
+	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_signal->getSize() > 1) && (i == 0) )
+		if ( (l_variable->getSize() > 1) && (i == 0) )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->updateLastPoint(l_signal->getCurrentValue());
+				vectorTimeLine->updateLastPoint(l_variable->getCurrentValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->updateLastPoint(l_signal->getCurrentValue()[bitNumber]);
+				timeLine->updateLastPoint(l_variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
@@ -156,26 +156,26 @@ void VariableTimeline::updateCurrentValue()
 
 void VariableTimeline::resetEventHandler()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
-	if (l_signal == nullptr) return;
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable == nullptr) return;
 
 	uint bitNumber = 0;
-	for (uint i = 0 ; i < this->signalLineDisplay.count() ; i++)
+	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_signal->getSize() > 1) && (i == 0) )
+		if ( (l_variable->getSize() > 1) && (i == 0) )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->signalLineDisplay[0]);
+			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->reset(l_signal->getCurrentValue());
+				vectorTimeLine->reset(l_variable->getCurrentValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->signalLineDisplay[i]);
+			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->reset(l_signal->getCurrentValue()[bitNumber]);
+				timeLine->reset(l_variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}

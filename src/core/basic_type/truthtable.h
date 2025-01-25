@@ -57,13 +57,13 @@ public:
 	uint getOutputCount() const;
 
 private:
-	QList<shared_ptr<Variable> > extractSignals(shared_ptr<Equation> equation) const;
+	QList<shared_ptr<Variable> > extractVariables(shared_ptr<Equation> equation) const;
 	void buildTable(QVector<shared_ptr<Equation>> equations);
 
 	/////
 	// Object variables
 private:
-	QVector<weak_ptr<Variable>>  inputSignalsTable;
+	QVector<weak_ptr<Variable>>  inputVariablesTable;
 	QVector<QString>             outputEquationsTextsTable;
 	QVector<QVector<LogicValue>> inputValuesTable;
 	QVector<QVector<LogicValue>> outputValuesTable;

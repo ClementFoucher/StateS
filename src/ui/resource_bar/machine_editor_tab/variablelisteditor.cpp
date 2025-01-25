@@ -143,7 +143,7 @@ VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* par
 	connect(this->buttonAdd,    &QAbstractButton::clicked, this, &VariableListEditor::beginAddVariable);
 	connect(this->buttonRemove, &QAbstractButton::clicked, this, &VariableListEditor::removeSelectedVariables);
 
-	// To enable/disable buttons when a signal is selected
+	// To enable/disable buttons when a variable is selected
 	connect(this->variablesList, &QTableWidget::itemSelectionChanged,  this, &VariableListEditor::updateButtonsEnableState);
 
 	connect(this->variablesList, &TableWidgetWithResizeEvent::resized, this, &VariableListEditor::handleListResizedEvent);
@@ -215,14 +215,14 @@ void VariableListEditor::contextMenuEvent(QContextMenuEvent* event)
 			if (this->variablesList->columnCount() == 3)
 				this->currentVariableValue = variablesList->item(row, 2);
 
-			shared_ptr<Variable> currentSignal = associatedVariables[cellUnderMouse].lock();
+			shared_ptr<Variable> currentVariable = associatedVariables[cellUnderMouse].lock();
 
-			if (currentSignal != nullptr)
+			if (currentVariable != nullptr)
 			{
-				this->currentVariable = currentSignal;
+				this->currentVariable = currentVariable;
 
 				ContextMenu* menu = new ContextMenu();
-				menu->addTitle(tr("Action on variable") + " <i>" + currentSignal->getName() + "</i>");
+				menu->addTitle(tr("Action on variable") + " <i>" + currentVariable->getName() + "</i>");
 
 				QVariant data;
 				QAction* actionToAdd = nullptr;
@@ -315,10 +315,10 @@ void VariableListEditor::contextMenuEvent(QContextMenuEvent* event)
 /**
  * @brief VariableListEditor::updateList
  * UpdateList totally resets the widget.
- * The list is filled with signals existing
+ * The list is filled with variables existing
  * in machine at this time.
  * This can be called to take into account the
- * creation/edition of a signal, or to cancel
+ * creation/edition of a variable, or to cancel
  * a creation/edition that has not been validated.
  */
 void VariableListEditor::updateList()
@@ -343,45 +343,45 @@ void VariableListEditor::updateList()
 
 	disconnect(this->variablesList,  &QTableWidget::itemSelectionChanged, this, &VariableListEditor::updateButtonsEnableState);
 
-	// Get signals I have to deal with
-	QList<shared_ptr<Variable>> signalsToAdd;
+	// Get variables I have to deal with
+	QList<shared_ptr<Variable>> variablesToAdd;
 
 	if (this->editorType == VariableNature_t::input)
 	{
-		signalsToAdd = machine->getInputsAsVariables();
+		variablesToAdd = machine->getInputsAsVariables();
 	}
 	else if (this->editorType == VariableNature_t::output)
 	{
-		signalsToAdd = machine->getOutputsAsVariables();
+		variablesToAdd = machine->getOutputsAsVariables();
 	}
 	else if (this->editorType == VariableNature_t::internal)
 	{
-		signalsToAdd = machine->getLocalVariables();
+		variablesToAdd = machine->getInternalVariables();
 	}
 	else if (this->editorType == VariableNature_t::constant)
 	{
-		signalsToAdd = machine->getConstants();
+		variablesToAdd = machine->getConstants();
 	}
 
-	for (shared_ptr<Variable> sig : signalsToAdd)
+	for (shared_ptr<Variable> sig : variablesToAdd)
 	{
 		this->variablesList->insertRow(this->variablesList->rowCount());
 
-		// Signal name
+		// Variable name
 		QTableWidgetItem* currentItem = new QTableWidgetItem(sig->getName());
 		Qt::ItemFlags currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 0, currentItem);
 		this->associatedVariables[currentItem] = sig;
 
-		// Signal size
+		// Variable size
 		currentItem = new QTableWidgetItem(QString::number(sig->getSize()));
 		currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 1, currentItem);
 		this->associatedVariables[currentItem] = sig;
 
-		// Signal (initial) value
+		// Variable (initial) value
 		if (this->variablesList->columnCount() == 3)
 		{
 			currentItem = new QTableWidgetItem(sig->getInitialValue().toString());
@@ -391,7 +391,7 @@ void VariableListEditor::updateList()
 			this->associatedVariables[currentItem] = sig;
 		}
 
-		// Select signal if it was selected before list clear
+		// Select variable if it was selected before list clear
 		if ( ( ! this->variableSelectionToRestore.isEmpty() ) && ( this->variableSelectionToRestore.contains(sig->getName()) ) )
 		{
 			// Obtain current selection
@@ -568,7 +568,7 @@ void VariableListEditor::endAddVariable()
 		finalName = this->currentVariableName->text();
 	}
 
-	// Overwrite selection to select new signal name
+	// Overwrite selection to select new variable name
 	LogicValue initialValue = LogicValue::getNullValue();
 
 	if (this->currentVariableValue != nullptr)
@@ -585,7 +585,7 @@ void VariableListEditor::endAddVariable()
 		{
 			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
-				qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
+				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
 			}
 			else
 				throw;
@@ -599,11 +599,11 @@ void VariableListEditor::endAddVariable()
 
 	// If success, list is reloaded through events,
 	// which resets mode.
-	shared_ptr<Variable> newSignal = machine->addVariable(this->editorType, finalName, initialValue);
+	shared_ptr<Variable> newVariable = machine->addVariable(this->editorType, finalName, initialValue);
 	machineManager->notifyMachineEdited();
 
-	// If adding signal failed, continue editing signal name
-	if (newSignal == nullptr)
+	// If adding variable failed, continue editing variable name
+	if (newVariable == nullptr)
 	{
 		this->fixVariableSize();
 
@@ -617,7 +617,7 @@ void VariableListEditor::endAddVariable()
 }
 
 
-// Begin edit signal is trigerred by double-click on table item
+// Begin edit variable is trigerred by double-click on table item
 void VariableListEditor::beginEditVariable(QTableWidgetItem* characteristicToEdit)
 {
 	this->currentTableItem = characteristicToEdit;
@@ -645,13 +645,13 @@ void VariableListEditor::endRenameVariable()
 
 	QString finalName = editor->text();
 
-	shared_ptr<Variable> currentSignal = this->associatedVariables[currentTableItem].lock();
+	shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
 
-	if ( (currentSignal != nullptr) && (finalName != currentSignal->getName()) )
+	if ( (currentVariable != nullptr) && (finalName != currentVariable->getName()) )
 	{
-		// Overwrite selection to select new signal name
+		// Overwrite selection to select new variable name
 		this->variableSelectionToRestore.append(finalName);
-		bool success = machine->renameVariable(currentSignal->getName(), finalName);
+		bool success = machine->renameVariable(currentVariable->getName(), finalName);
 
 		if (success == true)
 		{
@@ -681,11 +681,11 @@ void VariableListEditor::endResizeVariable()
 
 		uint finalSize = (uint)editor->text().toInt();
 
-		shared_ptr<Variable> currentSignal = this->associatedVariables[currentTableItem].lock();
+		shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
 
-		if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
+		if ( (currentVariable != nullptr) && (finalSize != currentVariable->getSize()) )
 		{
-			machine->resizeVariable(currentSignal->getName(), finalSize); // Throws StatesException
+			machine->resizeVariable(currentVariable->getName(), finalSize); // Throws StatesException
 			machineManager->notifyMachineEdited();
 		}
 		else
@@ -698,7 +698,7 @@ void VariableListEditor::endResizeVariable()
 	{
 		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::resized_to_0) )
 		{
-			qDebug() << "(SignalListEditor:) Info: Wrong input for variable size, change ignored.";
+			qDebug() << "(VariableListEditor:) Info: Wrong input for variable size, change ignored.";
 			this->editCurrentCell(true);
 		}
 		else
@@ -717,14 +717,14 @@ void VariableListEditor::endChangeVariableInitialValue()
 
 		LogicValue newInitialValue = LogicValue::fromString(editor->text()); // Throws StatesException
 
-		shared_ptr<Variable> currentSignal = this->associatedVariables[currentTableItem].lock();
+		shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
 
-		if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
+		if ( (currentVariable != nullptr) && (newInitialValue != currentVariable->getInitialValue()) )
 		{
-			if (newInitialValue.getSize() < currentSignal->getSize())
-				newInitialValue.resize(currentSignal->getSize()); // Throws StatesException
+			if (newInitialValue.getSize() < currentVariable->getSize())
+				newInitialValue.resize(currentVariable->getSize()); // Throws StatesException
 
-			machine->changeVariableInitialValue(currentSignal->getName(), newInitialValue); // Throws StatesException
+			machine->changeVariableInitialValue(currentVariable->getName(), newInitialValue); // Throws StatesException
 			machineManager->notifyMachineEdited();
 		}
 		else
@@ -734,9 +734,9 @@ void VariableListEditor::endChangeVariableInitialValue()
 	}
 	catch (const StatesException& e)
 	{
-		if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::size_mismatch) )
+		if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::size_mismatch) )
 		{
-			qDebug() << "(SignalListEditor:) Info: Wrong input for variable initial value, change ignored.";
+			qDebug() << "(VariableListEditor:) Info: Wrong input for variable initial value, change ignored.";
 			this->editCurrentCell(true);
 		}
 		else
@@ -787,22 +787,22 @@ void VariableListEditor::raiseSelectedVariables()
 	// Update list to make sure selection order matches list order
 	this->updateList();
 
-	QList<int>  signalsRanks;
+	QList<int>  variablesRanks;
 
 	QModelIndexList rows = this->variablesList->selectionModel()->selectedRows();
 	for (QModelIndex index : rows)
 	{
-		signalsRanks.append(index.row());
+		variablesRanks.append(index.row());
 	}
 
 	if (rows.isEmpty() == false)
 	{
 		for (int i = 0 ; i < rows.count() ; i++)
 		{
-			if ( (signalsRanks.at(i) != 0) && ( ! this->variablesList->item(signalsRanks.at(i)-1, 0)->isSelected() ) )
+			if ( (variablesRanks.at(i) != 0) && ( ! this->variablesList->item(variablesRanks.at(i)-1, 0)->isSelected() ) )
 			{
-				// Actually lower upper signals rater than raising signal itself
-				machine->changeVariableRank(this->variablesList->item(signalsRanks.at(i)-1, 0)->text(), signalsRanks.at(i));
+				// Actually lower upper variables rater than raising variable itself
+				machine->changeVariableRank(this->variablesList->item(variablesRanks.at(i)-1, 0)->text(), variablesRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -817,22 +817,22 @@ void VariableListEditor::lowerSelectedVariables()
 	// Update list to make sure selection order matches list order
 	this->updateList();
 
-	QList<int> signalsRanks;
+	QList<int> variablesRanks;
 
 	QModelIndexList rows = this->variablesList->selectionModel()->selectedRows();
 	for (QModelIndex index : rows)
 	{
-		signalsRanks.push_front(index.row());
+		variablesRanks.push_front(index.row());
 	}
 
 	if (rows.isEmpty() == false)
 	{
 		for (int i = 0 ; i < rows.count() ; i++)
 		{
-			if ( (signalsRanks.at(i) != this->variablesList->rowCount()-1) && ( ! this->variablesList->item(signalsRanks.at(i)+1, 0)->isSelected() ) )
+			if ( (variablesRanks.at(i) != this->variablesList->rowCount()-1) && ( ! this->variablesList->item(variablesRanks.at(i)+1, 0)->isSelected() ) )
 			{
-				// Actually raise lower signals rater than lowering signal itself
-				machine->changeVariableRank(this->variablesList->item(signalsRanks.at(i)+1, 0)->text(), signalsRanks.at(i));
+				// Actually raise lower variables rater than lowering variable itself
+				machine->changeVariableRank(this->variablesList->item(variablesRanks.at(i)+1, 0)->text(), variablesRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -854,15 +854,15 @@ void VariableListEditor::removeSelectedVariables()
 			lastSelectionIndex = index.row();
 	}
 
-	// Overwrite selection to select next signal in list (if not last)
+	// Overwrite selection to select next variable in list (if not last)
 	if (lastSelectionIndex < this->variablesList->rowCount()-1)
 		this->variableSelectionToRestore.append(variablesList->item(lastSelectionIndex+1,0)->text());
 
 	if (selection.isEmpty() == false)
 	{
-		for (QString signalName : selection)
+		for (QString variableName : selection)
 		{
-			machine->deleteVariable(signalName);
+			machine->deleteVariable(variableName);
 		}
 		machineManager->notifyMachineEdited();
 	}
@@ -966,12 +966,12 @@ void VariableListEditor::editCurrentCell(bool erroneous)
 	}
 	else if (this->currentMode == ListMode_t::changingVariableInitialValue)
 	{
-		shared_ptr<Variable> currentSignal = this->associatedVariables[this->currentTableItem].lock();
+		shared_ptr<Variable> currentVariable = this->associatedVariables[this->currentTableItem].lock();
 
-		if (currentSignal != nullptr)
+		if (currentVariable != nullptr)
 		{
 			// A string made of only '0' and '1' chars, witch length is between 0 and size
-			QRegularExpression re("[01]{0," + QString::number(currentSignal->getSize()) + "}");
+			QRegularExpression re("[01]{0," + QString::number(currentVariable->getSize()) + "}");
 			this->listDelegate->setValidator(shared_ptr<QValidator>(new QRegularExpressionValidator(re)));
 		}
 	}
@@ -1037,7 +1037,7 @@ void VariableListEditor::fixVariableSize()
 		{
 			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
-				qDebug() << "(SignalListEditor:) Info: Wrong input for initial value, change ignored.";
+				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
 			}
 			else
 				throw;

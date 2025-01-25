@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,7 +46,7 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 		                             + tr("Warning! Experimental feature.") + "<br />"
 		                             + tr("Output generation has strong restrictions:") + "<br />"
 		                             + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
-		                             + tr("Please run machine verifier to identify affected signals.") + "</span>");
+		                             + tr("Please run machine verifier to identify affected variables.") + "</span>");
 		warning->setAlignment(Qt::AlignCenter);
 		layout->addWidget(warning);
 	}

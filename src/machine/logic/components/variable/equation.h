@@ -35,8 +35,8 @@ using namespace std;
 
 /**
  * @brief
- * An equation is a gathering of signals and other equations, linked by an operator.
- * Equations are thus "compouned signals", which value is dynamic and depends
+ * An equation is a gathering of variables and other equations, linked by an operator.
+ * Equations are thus "compouned variables", which value is dynamic and depends
  * on the values of operands at each moment.
  *
  * Equation size in bits is also dynamic and depends on operands size,
@@ -44,7 +44,7 @@ using namespace std;
  *
  * An equation can store as operand:
  * - nullptr => operand is not set
- * - machine signals
+ * - machine variables
  * - equations with a size
  * - equations with no size
  *
@@ -53,7 +53,7 @@ using namespace std;
  * An equation with operands of different sizes will behave the same.
  *
  * An equation store its own copy (cloned at initialization) of Equation operands => shared_ptr.
- * Machine Signals are primary held by the machine => weak_ptr.
+ * Machine variables are primary held by the machine => weak_ptr.
  *
  */
 class Equation : public Variable
@@ -63,7 +63,7 @@ class Equation : public Variable
 	/////
 	// Static functions
 private:
-	static bool signalHasSize(shared_ptr<Variable> sig);
+	static bool variableHasSize(shared_ptr<Variable> sig);
 
 	/////
 	// Constructors/destructors
@@ -112,7 +112,7 @@ public:
 
 private slots:
 	void computeCurrentValue();
-	void signalDeletedEventHandler();
+	void variableDeletedEventHandler();
 
 private:
 	void increaseOperandCountInternal();
@@ -125,7 +125,7 @@ private:
 
 	OperatorType_t function;
 	// Different storage for different ownership (weak/shared)
-	QVector<weak_ptr<Variable>>   signalOperands;
+	QVector<weak_ptr<Variable>>   variableOperands;
 	QVector<shared_ptr<Equation>> equationOperands;
 
 	// This size holds the maximum operands count

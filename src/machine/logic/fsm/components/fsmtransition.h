@@ -53,7 +53,7 @@ public:
 	void setTargetStateId(componentId_t targetStateId);
 	componentId_t getTargetStateId() const;
 
-	void setCondition(shared_ptr<Variable> signalNewCondition);
+	void setCondition(shared_ptr<Variable> variableNewCondition);
 	void clearCondition();
 	shared_ptr<Variable> getCondition() const;
 

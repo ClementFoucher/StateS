@@ -59,7 +59,7 @@ EquationEditor::EquationEditor(shared_ptr<Variable> initialEquation, QWidget* pa
 	resourcesTitle->setAlignment(Qt::AlignCenter);
 	mainLayout->addWidget(resourcesTitle);
 
-	// Signals
+	// Variables
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
@@ -83,7 +83,7 @@ EquationEditor::EquationEditor(shared_ptr<Variable> initialEquation, QWidget* pa
 	}
 
 	// Variables
-	if (machine->getLocalVariables().count() != 0)
+	if (machine->getInternalVariables().count() != 0)
 	{
 		QVBoxLayout* variableListLayout = new QVBoxLayout();
 		variableListLayout->setAlignment(Qt::AlignTop);
@@ -93,7 +93,7 @@ EquationEditor::EquationEditor(shared_ptr<Variable> initialEquation, QWidget* pa
 		variablesTitle->setAlignment(Qt::AlignCenter);
 		variableListLayout->addWidget(variablesTitle);
 
-		for (shared_ptr<Variable> variable : machine->getLocalVariables())
+		for (shared_ptr<Variable> variable : machine->getInternalVariables())
 		{
 			variableListLayout->addWidget(new GraphicEquation(variable, true));
 		}

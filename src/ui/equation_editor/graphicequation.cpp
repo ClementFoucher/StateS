@@ -44,14 +44,14 @@
 
 
 // A graphic equation can either represent
-// a logic equation or a logic signal
+// a logic equation or a logic variable
 
-GraphicEquation::GraphicEquation(shared_ptr<Variable> equation, bool isTemplate, bool lockSignal, QWidget* parent) :
+GraphicEquation::GraphicEquation(shared_ptr<Variable> equation, bool isTemplate, bool lockVariable, QWidget* parent) :
     QFrame(parent)
 {
 	this->equation   = equation;
 	this->isTemplate = isTemplate;
-	this->lockSignal = lockSignal;
+	this->lockVariable = lockVariable;
 
 	if (!isTemplate)
 		this->setAcceptDrops(true);
@@ -101,8 +101,8 @@ void GraphicEquation::buildEquation()
 
 void GraphicEquation::buildTemplateEquation()
 {
-	shared_ptr<Variable> equationAsSignal = this->equation.lock();
-	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation> (equationAsSignal);
+	shared_ptr<Variable> equationAsVariable = this->equation.lock();
+	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation>(equationAsVariable);
 
 	if (equationAsEquation != nullptr)
 	{
@@ -171,22 +171,22 @@ void GraphicEquation::buildTemplateEquation()
 			break;
 		}
 
-		QLabel* signalText = new QLabel(text);
-		signalText->setAlignment(Qt::AlignCenter);
-		equationLayout->addWidget(signalText);
+		QLabel* variableText = new QLabel(text);
+		variableText->setAlignment(Qt::AlignCenter);
+		equationLayout->addWidget(variableText);
 
 		this->setLayout(equationLayout);
 	}
-	else if (equationAsSignal != nullptr)
+	else if (equationAsVariable != nullptr)
 	{
-		this->buildSignalEquation();
+		this->buildVariableEquation();
 	}
 }
 
 void GraphicEquation::buildCompleteEquation()
 {
-	shared_ptr<Variable> equationAsSignal = this->equation.lock();
-	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation> (equationAsSignal);
+	shared_ptr<Variable> equationAsVariable = this->equation.lock();
+	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation>(equationAsVariable);
 
 	if (equationAsEquation != nullptr)
 	{
@@ -200,7 +200,7 @@ void GraphicEquation::buildCompleteEquation()
 		for (uint i = 0 ; i < equationAsEquation->getOperandCount() ; i++)
 		{
 			// Add operand
-			equationLayout->addWidget(new GraphicEquation(equationAsEquation->getOperand(i), false, this->lockSignal, this)); // Throws StatesException - Constrained by operand count - ignored
+			equationLayout->addWidget(new GraphicEquation(equationAsEquation->getOperand(i), false, this->lockVariable, this)); // Throws StatesException - Constrained by operand count - ignored
 
 			// Add operator, except for last operand
 			if (i < equationAsEquation->getOperandCount() - 1)
@@ -298,9 +298,9 @@ void GraphicEquation::buildCompleteEquation()
 
 		this->setToolTip(tr("This equation") + " " + tr("is size") + " " + QString::number(equationAsEquation->getSize()));
 	}
-	else if (equationAsSignal != nullptr)
+	else if (equationAsVariable != nullptr)
 	{
-		this->buildSignalEquation();
+		this->buildVariableEquation();
 	}
 }
 
@@ -309,25 +309,25 @@ void GraphicEquation::clearEditorWidget()
 	this->editorWidget = nullptr;
 }
 
-void GraphicEquation::buildSignalEquation()
+void GraphicEquation::buildVariableEquation()
 {
-	shared_ptr<Variable> equationAsSignal = this->equation.lock();
-	if (equationAsSignal != nullptr)
+	shared_ptr<Variable> equationAsVariable = this->equation.lock();
+	if (equationAsVariable != nullptr)
 	{
 		QHBoxLayout* equationLayout = new QHBoxLayout();
-		QLabel* signalText = nullptr;
+		QLabel* variableText = nullptr;
 
-		signalText = new QLabel(equationAsSignal->getName());
-		this->setToolTip(tr("Signal") + " " + equationAsSignal->getName() + " " + tr("is size") + " " + QString::number(equationAsSignal->getSize()));
+		variableText = new QLabel(equationAsVariable->getName());
+		this->setToolTip(tr("Variable") + " " + equationAsVariable->getName() + " " + tr("is size") + " " + QString::number(equationAsVariable->getSize()));
 
-		signalText->setAlignment(Qt::AlignCenter);
-		equationLayout->addWidget(signalText);
+		variableText->setAlignment(Qt::AlignCenter);
+		equationLayout->addWidget(variableText);
 
-		if ( (isTemplate) && (equationAsSignal->getSize() > 1) )
+		if ( (isTemplate) && (equationAsVariable->getSize() > 1) )
 		{
-			// Add a sub-widget to allow directly dragging sub-range from signal
+			// Add a sub-widget to allow directly dragging sub-range from variable
 			shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp));
-			extractor->setOperand(0, equationAsSignal); // Throws StatesException - Extract op aways has operand 0 - ignored
+			extractor->setOperand(0, equationAsVariable); // Throws StatesException - Extract op aways has operand 0 - ignored
 
 			GraphicEquation* extractorWidget = new GraphicEquation(extractor, true);
 			equationLayout->addWidget(extractorWidget);
@@ -348,17 +348,17 @@ void GraphicEquation::setDefaultBorderColor()
 		this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
 	else
 	{
-		shared_ptr<Variable> equationAsSignal = this->equation.lock();
+		shared_ptr<Variable> equationAsVariable = this->equation.lock();
 
-		if ( ( equationAsSignal == nullptr ) || (equationAsSignal->getCurrentValue().isNull()) )
+		if ( ( equationAsVariable == nullptr ) || (equationAsVariable->getCurrentValue().isNull()) )
 		{
 			this->setStyleSheet("GraphicEquation {border: 1px solid red; border-radius: 10px}");
 
-			if ( equationAsSignal == nullptr )
+			if ( equationAsVariable == nullptr )
 				this->setToolTip(tr("Empty operand"));
 			else
 			{
-				shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation>(equationAsSignal);
+				shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation>(equationAsVariable);
 
 				if (equationAsEquation != nullptr)
 				{
@@ -578,8 +578,8 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 
 			drag->setMimeData(mimeData);
 
-			shared_ptr<Variable> l_signal = this->equation.lock();
-			shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (l_signal);
+			shared_ptr<Variable> l_variable = this->equation.lock();
+			shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation>(l_variable);
 
 			// Drag image may not match template display: create a correct equation
 			if ( (l_equation != nullptr) && (l_equation->getFunction() == OperatorType_t::extractOp) )
@@ -589,7 +589,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 
 				drag->setPixmap(displayGraphicEquation.grab());
 			}
-			else if ( (l_equation == nullptr) && (l_signal != nullptr) ) // This is a simple signal => do not use template
+			else if ( (l_equation == nullptr) && (l_variable != nullptr) ) // This is a simple variable => do not use template
 			{
 				GraphicEquation displayGraphicEquation(this->equation.lock());
 
@@ -676,7 +676,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 		{
 			shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (l_equation);
 
-			if ( (complexEquation != nullptr) || (this->lockSignal == false) )
+			if ( (complexEquation != nullptr) || (this->lockVariable == false) )
 			{
 				ContextMenu* menu = new ContextMenu();
 				menu->addTitle(tr("Equation:") +  " <i>" + l_equation->getText() + "</i>");
@@ -791,10 +791,10 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 		// Obtain new equation
 		this->droppedEquation = mimeData->getEquation()->getLogicEquation();
 
-		shared_ptr<Variable> signalEquation = this->equation.lock();
+		shared_ptr<Variable> variableEquation = this->equation.lock();
 
 		// Automatically replace empty operands
-		if (signalEquation == nullptr)
+		if (variableEquation == nullptr)
 		{
 			replaceEquation(droppedEquation);
 		}
@@ -803,7 +803,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 			// Ask what to do
 			ContextMenu* menu = new ContextMenu();
 			menu->addTitle(tr("What should I do?"));
-			menu->addSubTitle(tr("Existing equation:") +  " <i>"  + signalEquation->getText() + "</i>");
+			menu->addSubTitle(tr("Existing equation:") +  " <i>"  + variableEquation->getText() + "</i>");
 			menu->addSubTitle(tr("Dropped equation:") + " <i> " + droppedEquation->getText() + "</i>");
 
 			QVariant data;
@@ -828,7 +828,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
 				// Build tooltip
 				shared_ptr<Equation> newEquation = droppedComplexEquation->clone();
-				newEquation->setOperand(0, signalEquation); // Throws StatesException - Remaining natures always have operand 0 - ignored
+				newEquation->setOperand(0, variableEquation); // Throws StatesException - Remaining natures always have operand 0 - ignored
 
 				a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
 				newEquation.reset();
@@ -860,7 +860,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 	QVariant data = action->data();
 	int dataValue = data.toInt();
 
-	shared_ptr<Variable> signalEquation  = this->equation.lock();
+	shared_ptr<Variable> variableEquation  = this->equation.lock();
 
 	switch (dataValue)
 	{
@@ -879,7 +879,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
 		complexEquation = dynamic_pointer_cast<Equation>(this->droppedEquation);
 		newEquation = complexEquation->clone();
-		newEquation->setOperand(0, signalEquation); // Throws StatesException - Extract op aways has operand 0 - ignored
+		newEquation->setOperand(0, variableEquation); // Throws StatesException - Extract op aways has operand 0 - ignored
 
 		// Nothing should be done after that line because it
 		// will cause parent to rebuild, deleting this
@@ -891,10 +891,10 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
 		valid = false;
 
-		if (signalEquation != nullptr)
+		if (variableEquation != nullptr)
 		{
 			QMessageBox::StandardButton reply;
-			reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete equation?") + "<br />" + tr("Content is:") + " " + signalEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
+			reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete equation?") + "<br />" + tr("Content is:") + " " + variableEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
 			if (reply == QMessageBox::StandardButton::Ok)
 				valid = true;
 		}
@@ -910,9 +910,9 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
 	case ContextAction_t::IncrementOperandCount:
 
-		if (signalEquation != nullptr)
+		if (variableEquation != nullptr)
 		{
-			complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
+			complexEquation = dynamic_pointer_cast<Equation>(variableEquation);
 
 			complexEquation->increaseOperandCount(); // Throws StatesException - The menu only provides this option when applicable - ignored
 
@@ -923,18 +923,18 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 
 	case ContextAction_t::DecrementOperandCount:
 
-		if (signalEquation != nullptr)
+		if (variableEquation != nullptr)
 		{
 
 			valid = false;
 
-			complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
-			shared_ptr<Variable> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1); // Throws StatesException - Constrained by operand count - ignored
+			complexEquation = dynamic_pointer_cast<Equation>(variableEquation);
+			shared_ptr<Variable> variableEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1); // Throws StatesException - Constrained by operand count - ignored
 
-			if (signalEquation != nullptr)
+			if (variableEquation != nullptr)
 			{
 				QMessageBox::StandardButton reply;
-				reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete last oprand?") + "<br />" + tr("Content is:") + " " + signalEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
+				reply = QMessageBox::question(this, tr("User confirmation needed"), tr("Delete last oprand?") + "<br />" + tr("Content is:") + " " + variableEquation->getText(), QMessageBox::Ok | QMessageBox::Cancel);
 
 				if (reply == QMessageBox::StandardButton::Ok)
 					valid = true;
@@ -961,14 +961,14 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 		}
 		break;
 	case ContextAction_t::ExtractSwitchSingle:
-		complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
+		complexEquation = dynamic_pointer_cast<Equation>(variableEquation);
 		if ( (complexEquation != nullptr) && (complexEquation->getFunction() == OperatorType_t::extractOp) )
 		{
 			complexEquation->setRange(complexEquation->getRangeL());
 		}
 		break;
 	case ContextAction_t::ExtractSwitchRange:
-		complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
+		complexEquation = dynamic_pointer_cast<Equation>(variableEquation);
 		if ( (complexEquation != nullptr) && (complexEquation->getFunction() == OperatorType_t::extractOp) )
 		{
 			complexEquation->setRange(complexEquation->getRangeL(), 0);

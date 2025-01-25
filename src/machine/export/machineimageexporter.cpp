@@ -205,24 +205,24 @@ void MachineImageExporter::generatePrintingRects()
 		}
 
 		// Size
-		if ( (this->includeComponent == true) && ( (this->includeConstant == true) || (this->includeVariables == true) ) ) // Component and at least a signal display
+		if ( (this->includeComponent == true) && ( (this->includeConstant == true) || (this->includeVariables == true) ) ) // Component and at least a variable display
 		{
 			this->componentPrintingRect.setHeight(totalHeight / 2);
 
-			if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both signal displays
+			if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both variable displays
 			{
 				this->constantsPrintingRect.setHeight(totalHeight / 4 - this->spacer);
 				this->variablesPrintingRect.setHeight(totalHeight / 4 - this->spacer);
 			}
-			else // Only one signal display
+			else // Only one variable display
 			{
 				this->constantsPrintingRect.setHeight(totalHeight / 2 - this->spacer);
 				this->variablesPrintingRect.setHeight(totalHeight / 2 - this->spacer);
 			}
 		}
-		else if (this->includeComponent == true) // Only signal displays
+		else if (this->includeComponent == true) // Only variable displays
 		{
-			if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both signal displays
+			if ( (this->includeConstant == true) && (this->includeVariables == true) ) // Both variable displays
 			{
 				this->constantsPrintingRect.setHeight(totalHeight / 2);
 				this->variablesPrintingRect.setHeight(totalHeight / 2 - this->spacer);
@@ -379,7 +379,7 @@ void MachineImageExporter::renderVariables()
 	variableScene->addItem(text);
 
 	int pos = 0;
-	for(shared_ptr<Variable> variable : machine->getLocalVariables())
+	for(shared_ptr<Variable> variable : machine->getInternalVariables())
 	{
 		QString varText = variable->getName();
 		if (variable->getSize() > 1)

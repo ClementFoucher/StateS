@@ -30,7 +30,7 @@
 Variable::Variable(const QString &name, uint size) // Throws StatesException
 {
 	if (size == 0)
-		throw StatesException("Signal", VariableError_t::building_zero_sized, "Signal size set to 0");
+		throw StatesException("Variable", VariableError_t::building_zero_sized, "Variable size set to 0");
 
 	this->name = name;
 	this->initialValue = LogicValue::getValue0(size);
@@ -46,7 +46,7 @@ Variable::Variable(const QString &name, uint size) // Throws StatesException
 }
 
 Variable::Variable(const QString& name) :
-	Variable(name, 1) // Size to 1 => no exception to catch - ignored
+    Variable(name, 1) // Size to 1 => no exception to catch - ignored
 {
 
 }
@@ -75,7 +75,7 @@ uint Variable::getSize() const
 void Variable::resize(uint newSize) // Throws StatesException
 {
 	if (newSize == 0)
-		throw StatesException("Signal", VariableError_t::variable_resized_to_0, "Trying to resize signal with size 0");
+		throw StatesException("Variable", VariableError_t::variable_resized_to_0, "Trying to resize variable with size 0");
 
 	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
 	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
@@ -136,7 +136,7 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 	}
 	else
 	{
-		throw StatesException("Signal", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
+		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size or specified rank");
 	}
 }
 
@@ -160,7 +160,7 @@ void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 	}
 	else
 	{
-		throw StatesException("Signal", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size");
+		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size");
 	}
 }
 
@@ -175,8 +175,8 @@ void Variable::resetValue()
 	setCurrentValue(LogicValue::getValue0(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
 }
 
-// True concept here only apply to one bit signals
-// A larger signal muust never be checked for trueness
+// True concept here only apply to one bit variables
+// A larger variable must never be checked for trueness
 bool Variable::isTrue() const // Throws StatesException
 {
 	if (this->getSize() == 1)
@@ -188,6 +188,6 @@ bool Variable::isTrue() const // Throws StatesException
 	}
 	else
 	{
-		throw StatesException("Signal", VariableError_t::variable_is_not_bool, "Asking for boolean value on non 1-sized signal");
+		throw StatesException("Variable", VariableError_t::variable_is_not_bool, "Asking for boolean value on non 1-sized variable");
 	}
 }

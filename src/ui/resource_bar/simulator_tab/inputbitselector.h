@@ -43,7 +43,7 @@ class InputBitSelector : public QFrame
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBitSelector(shared_ptr<Variable> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
+	explicit InputBitSelector(shared_ptr<Variable> variableToCommand, uint bitNumber, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -56,12 +56,12 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent*)       override;
 
 private slots:
-	void signalValueChangedEventHandler();
+	void variableValueChangedEventHandler();
 
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> signalToCommand;
+	weak_ptr<Variable> variableToCommand;
 	uint bitNumber = 0;
 
 	// QWidget with parent

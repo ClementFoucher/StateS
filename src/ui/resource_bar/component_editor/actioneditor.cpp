@@ -368,11 +368,11 @@ void ActionEditor::processAddActionMenuEventHandler(QAction* action)
 	if (actuator == nullptr) return;
 
 
-	QString signalName = action->text();
-	// Find signal from name
+	QString variableName = action->text();
+	// Find variable from name
 	for (shared_ptr<Variable> var : machine->getWrittableVariables())
 	{
-		if (var->getName() == signalName)
+		if (var->getName() == variableName)
 		{
 			actuator->addAction(var);
 			machineManager->notifyMachineEdited();
@@ -393,10 +393,10 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	int dataValue   = action->data().toInt();
 	uint actionRank = (dataValue&0xFFF0)>>8;
 
-	shared_ptr<ActionOnVariable> actionOnSignal = actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
+	shared_ptr<ActionOnVariable> actionOnVariable = actuator->getAction(actionRank); // Throws StatesException - Ignored: list generated from action list
 
-	int oldRangeL = actionOnSignal->getActionRangeL();
-	int oldRangeR = actionOnSignal->getActionRangeR();
+	int oldRangeL = actionOnVariable->getActionRangeL();
+	int oldRangeR = actionOnVariable->getActionRangeR();
 	QModelIndex index;
 
 	int newRangeL = -1;
@@ -468,7 +468,7 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::AffectEditRange:
-		unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(actionOnSignal));
+		unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(actionOnVariable));
 		rangeEditor->exec();
 
 		if (rangeEditor->result() == QDialog::Accepted)
@@ -484,12 +484,12 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	{
 		if (setRange == true)
 		{
-			actionOnSignal->setActionRange(newRangeL, newRangeR);
+			actionOnVariable->setActionRange(newRangeL, newRangeR);
 		}
 	}
 	catch (const StatesException& e)
 	{
-		if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
+		if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
 		{
 			qDebug() << "(ActionEditor:) Warning: Incorrect range was set. Range change ignored.";
 		}
@@ -519,7 +519,7 @@ void ActionEditor::moveSelectedActionsUp()
 
 	for (int i = 0 ; i < rows.count() ; i++)
 	{
-		// Actually lower upper signals rather than raise signal itself
+		// Actually lower upper variables rather than raise variable itself
 
 		// Check if previous row is selected
 		int currentActionRank = selectedActionsRanks.at(i) ;
@@ -565,7 +565,7 @@ void ActionEditor::moveSelectedActionsDown()
 
 	for (int i = 0 ; i < rows.count() ; i++)
 	{
-		// Actually raise lower signals rater than lowering signal itself
+		// Actually raise lower variables rater than lowering variable itself
 
 		// Check if next row is selected
 		int currentActionRank = selectedActionsRanks.at(i) ;

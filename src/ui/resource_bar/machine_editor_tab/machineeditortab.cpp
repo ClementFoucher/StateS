@@ -69,17 +69,17 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	layout->addWidget(title);
 
 	//
-	// Signals
+	// Variables
 
-	QTabWidget* signalsTabs = new QTabWidget(this);
-	layout->addWidget(signalsTabs);
+	QTabWidget* variablesTabs = new QTabWidget(this);
+	layout->addWidget(variablesTabs);
 
-	signalsTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
-	signalsTabs->insertTab(1, new VariableListEditor(VariableNature_t::output),   tr("Outputs"));
-	signalsTabs->insertTab(2, new VariableListEditor(VariableNature_t::internal), tr("Variables"));
-	signalsTabs->insertTab(3, new VariableListEditor(VariableNature_t::constant), tr("Constants"));
+	variablesTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
+	variablesTabs->insertTab(1, new VariableListEditor(VariableNature_t::output),   tr("Outputs"));
+	variablesTabs->insertTab(2, new VariableListEditor(VariableNature_t::internal), tr("Variables"));
+	variablesTabs->insertTab(3, new VariableListEditor(VariableNature_t::constant), tr("Constants"));
 
-	signalsTabs->setCurrentIndex(0);
+	variablesTabs->setCurrentIndex(0);
 
 	//
 	// Hint
@@ -108,7 +108,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 
 	//
 	// Set tab focus order to prevent machine name being edited by default
-	this->setTabOrder(signalsTabs, this->machineName);
+	this->setTabOrder(variablesTabs, this->machineName);
 }
 
 void MachineEditorTab::showEvent(QShowEvent* e)

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -74,8 +74,8 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 	//
 	// Main sizes
 
-	const qreal signalsLinesWidth = 20;
-	const qreal horizontalSignalsNamesSpacer = 50;
+	const qreal variablesLinesWidth = 20;
+	const qreal horizontalVariablesNamesSpacer = 50;
 	const qreal verticalElementsSpacer = 5;
 	const qreal busesLineHeight = 10;
 	const qreal busesLineWidth = 5;
@@ -87,7 +87,7 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 	// Items position wrt. subgroup:
 	// All items @ Y = 0, and rising
-	// Signals names @ X > 0
+	// Variables names @ X > 0
 	// Lines @ X < 0
 
 	QList<shared_ptr<Input>> inputs = machine->getInputs();
@@ -104,16 +104,16 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 		textItem->setPos(0, currentInputY);
 
 		qreal currentLineY = currentInputY + textItem->boundingRect().height()/2;
-		inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth, currentLineY, 0, currentLineY));//, inputsGroup);
+		inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth, currentLineY, 0, currentLineY));//, inputsGroup);
 
 		if (inputs[i]->getSize() > 1)
 		{
-			inputsGroup->addToGroup(new QGraphicsLineItem(-signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+			inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
 			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
 			QString textSize = "<span style=\"color:black;\">" + QString::number(inputs[i]->getSize()) + "</span>";
 			sizeTextItem->setHtml(textSize);
 			inputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(-signalsLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
+			sizeTextItem->setPos(-variablesLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
 		}
 
 		currentInputY += textItem->boundingRect().height();
@@ -126,7 +126,7 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 	// Items position wrt. subgroup:
 	// All items @ Y = 0, and rising
-	// Signals names @ X < 0
+	// Variables names @ X < 0
 	// Lines @ X > 0
 
 	QList<shared_ptr<Output>> outputs = machine->getOutputs();
@@ -143,16 +143,16 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 		textItem->setPos(-textItem->boundingRect().width(), currentOutputY);
 
 		qreal currentLineY = currentOutputY + textItem->boundingRect().height()/2;
-		outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, signalsLinesWidth, currentLineY));
+		outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, variablesLinesWidth, currentLineY));
 
 		if (outputs[i]->getSize() > 1)
 		{
-			outputsGroup->addToGroup(new QGraphicsLineItem(signalsLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, signalsLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+			outputsGroup->addToGroup(new QGraphicsLineItem(variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
 			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
 			QString textSize = "<span style=\"color:black;\">" + QString::number(outputs[i]->getSize()) + "</span>";
 			sizeTextItem->setHtml(textSize);
 			outputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(signalsLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
+			sizeTextItem->setPos(variablesLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
 		}
 
 		currentOutputY += textItem->boundingRect().height();
@@ -172,25 +172,25 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 	// Width
 
-	qreal inputsNamesWidth = inputsGroup->boundingRect().width() - signalsLinesWidth;
-	qreal outputsNamesWidth = outputsGroup->boundingRect().width() - signalsLinesWidth;
+	qreal inputsNamesWidth = inputsGroup->boundingRect().width() - variablesLinesWidth;
+	qreal outputsNamesWidth = outputsGroup->boundingRect().width() - variablesLinesWidth;
 
-	componentWidth = inputsNamesWidth + horizontalSignalsNamesSpacer + outputsNamesWidth;
+	componentWidth = inputsNamesWidth + horizontalVariablesNamesSpacer + outputsNamesWidth;
 
-	if (componentWidth <= title->boundingRect().width() + horizontalSignalsNamesSpacer)
+	if (componentWidth <= title->boundingRect().width() + horizontalVariablesNamesSpacer)
 	{
-		componentWidth = title->boundingRect().width() + horizontalSignalsNamesSpacer;
+		componentWidth = title->boundingRect().width() + horizontalVariablesNamesSpacer;
 	}
 
 	// Height
 
-	qreal maxSignalsHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
+	qreal maxVariablesHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
 
 	componentHeight =
 	        verticalElementsSpacer +
 	        title->boundingRect().height() +
 	        verticalElementsSpacer +
-	        maxSignalsHeight +
+			maxVariablesHeight +
 	        verticalElementsSpacer;
 
 	//
@@ -222,14 +222,14 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 	title->setPos( (componentWidth-title->boundingRect().width())/2, verticalElementsSpacer);
 
-	qreal verticalSignalsNameOffset = title->boundingRect().bottom() + verticalElementsSpacer;
+	qreal verticalVariablesNameOffset = title->boundingRect().bottom() + verticalElementsSpacer;
 
 	qreal inoutsDeltaHeight = inputsGroup->boundingRect().height() - outputsGroup->boundingRect().height();
 	qreal additionalInputsOffet  = (inoutsDeltaHeight > 0 ? 0 : -inoutsDeltaHeight/2);
 	qreal additionalOutputsOffet = (inoutsDeltaHeight < 0 ? 0 : inoutsDeltaHeight/2);
 
-	inputsGroup-> setPos(0,              verticalSignalsNameOffset + additionalInputsOffet);
-	outputsGroup->setPos(componentWidth, verticalSignalsNameOffset + additionalOutputsOffet);
+	inputsGroup-> setPos(0,              verticalVariablesNameOffset + additionalInputsOffet);
+	outputsGroup->setPos(componentWidth, verticalVariablesNameOffset + additionalOutputsOffet);
 
 	//
 	// Done

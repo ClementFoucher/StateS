@@ -36,7 +36,7 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariab
 {
 	this->variable = variable;
 	connect(variable.get(), &Variable::variableResizedEvent, this, &ActionOnVariable::variableResizedEventHandler);
-	// Renaming a signal doesn't actually changes the action configuration,
+	// Renaming a variable doesn't actually changes the action configuration,
 	// but it changes the way the action is displayed: trigger an actionChangedEvent
 	connect(variable.get(), &Variable::variableRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
 
@@ -53,8 +53,8 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariab
 		this->rangeL = -1;
 		this->rangeR = -1;
 
-		qDebug() << "(ActionOnSignal:) Warning! The extraction range requested for action value ([" + QString::number(rangeL) + ( (rangeR>=0) ? (":" + QString::number(rangeR)) : ("") ) + "]) isn't correct (signal size is [" + QString::number(variable->getSize()-1) + ":0]).";
-		qDebug() << "(ActionOnSignal:) Range ignored and action set to full signal.";
+		qDebug() << "(ActionOnVariable:) Warning! The extraction range requested for action value ([" + QString::number(rangeL) + ( (rangeR>=0) ? (":" + QString::number(rangeR)) : ("") ) + "]) isn't correct (variable size is [" + QString::number(variable->getSize()-1) + ":0]).";
+		qDebug() << "(ActionOnVariable:) Range ignored and action set to full variable.";
 	}
 
 	////
@@ -64,8 +64,8 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariab
 	{
 		this->actionType = ActionOnVariableType_t::set;
 
-		qDebug() << "(ActionOnSignal:) Warning! The action type requested is illegal for 1-bit actions.";
-		qDebug() << "(ActionOnSignal:) Action type defaulted to 'set'";
+		qDebug() << "(ActionOnVariable:) Warning! The action type requested is illegal for 1-bit actions.";
+		qDebug() << "(ActionOnVariable:) Action type defaulted to 'set'";
 	}
 	else
 	{
@@ -95,20 +95,20 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariab
 			// Incorrect value provided
 			this->actionValue = LogicValue::getValue1(this->getActionSize());
 
-			qDebug() << "(ActionOnSignal:) Warning! The action value requested (" + actionValue.toString() + ") didn't match action size (" + QString::number(this->getActionSize()) + ").";
-			qDebug() << "(ActionOnSignal:) Value defaulted to " + this->actionValue.toString();
+			qDebug() << "(ActionOnVariable:) Warning! The action value requested (" + actionValue.toString() + ") didn't match action size (" + QString::number(this->getActionSize()) + ").";
+			qDebug() << "(ActionOnVariable:) Value defaulted to " + this->actionValue.toString();
 		}
 	}
 }
 
 void ActionOnVariable::setActionType(ActionOnVariableType_t newType) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		if ( (this->getActionSize() == 1) && (newType == ActionOnVariableType_t::assign) )
 		{
-			throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_type, "Type can't be applied to this signal");
+			throw StatesException("ActionOnVariable", ActionOnVariableError_t::illegal_type, "Type can't be applied to this variable");
 		}
 
 		// Changing type impacts affected value:
@@ -151,8 +151,8 @@ void ActionOnVariable::setActionType(ActionOnVariableType_t newType) // Throws S
 
 void ActionOnVariable::setActionValue(LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		if (this->isActionValueEditable())
 		{
@@ -166,26 +166,26 @@ void ActionOnVariable::setActionValue(LogicValue newValue) // Throws StatesExcep
 				// Allow for shorter value => fill left with zeros
 				LogicValue correctedValue = newValue;
 
-				correctedValue.resize(this->getActionSize()); // Throws StatesException - Ignored - should not happen as action size is never 0 when signal in not nullptr
+				correctedValue.resize(this->getActionSize()); // Throws StatesException - Ignored - should not happen as action size is never 0 when variable in not nullptr
 				this->actionValue = correctedValue;
 				emit actionChangedEvent();
 			}
 			else
 			{
-				throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_value, "Requested action value doesn't match action size");
+				throw StatesException("ActionOnVariable", ActionOnVariableError_t::illegal_value, "Requested action value doesn't match action size");
 			}
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", ActionOnVariableError_t::action_value_is_read_only, "Can't affect action value as value is implicit for this action");
+			throw StatesException("ActionOnVariable", ActionOnVariableError_t::action_value_is_read_only, "Can't affect action value as value is implicit for this action");
 		}
 	}
 }
 
 void ActionOnVariable::setActionRange(int newRangeL, int newRangeR, LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		if (this->checkIfRangeFitsVariable(newRangeL, newRangeR) == true)
 		{
@@ -223,7 +223,7 @@ void ActionOnVariable::setActionRange(int newRangeL, int newRangeR, LogicValue n
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_range, "Requested range does not fit signal size");
+			throw StatesException("ActionOnVariable", ActionOnVariableError_t::illegal_range, "Requested range does not fit variable size");
 		}
 	}
 }
@@ -242,8 +242,8 @@ LogicValue ActionOnVariable::getActionValue() const
 {
 	LogicValue publicActionValue = LogicValue::getNullValue();
 
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		if (this->isActionValueEditable())
 		{
@@ -260,18 +260,18 @@ LogicValue ActionOnVariable::getActionValue() const
 			case ActionOnVariableType_t::set:
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case ActionOnVariableType_t::activeOnState: // May be implicit on one-bit signals
+			case ActionOnVariableType_t::activeOnState: // May be implicit on one-bit variables
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case ActionOnVariableType_t::pulse: // May be implicit on one-bit signals
+			case ActionOnVariableType_t::pulse: // May be implicit on one-bit variables
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
 			case ActionOnVariableType_t::increment:
-				publicActionValue = l_signal->getCurrentValue();
+				publicActionValue = l_variable->getCurrentValue();
 				publicActionValue.increment();
 				break;
 			case ActionOnVariableType_t::decrement:
-				publicActionValue = l_signal->getCurrentValue();
+				publicActionValue = l_variable->getCurrentValue();
 				publicActionValue.decrement();
 				break;
 			case ActionOnVariableType_t::assign:
@@ -298,15 +298,15 @@ uint ActionOnVariable::getActionSize() const
 {
 	uint actionSize = 0;
 
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
-		if (l_signal->getSize() == 1)
+		if (l_variable->getSize() == 1)
 			actionSize = 1;
 		else
 		{
 			if ( (this->rangeL < 0) && (this->rangeR < 0) )
-				actionSize = l_signal->getSize();
+				actionSize = l_variable->getSize();
 			else if ( (this->rangeL >= 0) && (this->rangeR < 0) )
 				actionSize = 1;
 			else
@@ -338,10 +338,10 @@ bool ActionOnVariable::isActionValueEditable() const
 
 void ActionOnVariable::beginAction()
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if  (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
-		l_signal->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
+		l_variable->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
 
 		switch (this->actionType)
 		{
@@ -362,12 +362,12 @@ void ActionOnVariable::beginAction()
 
 void ActionOnVariable::endAction()
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if  (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if  (l_variable != nullptr)
 	{
 		if (this->isActionActing)
 		{
-			l_signal->setCurrentValueSubRange(LogicValue::getValue0(this->getActionSize()), this->rangeL, this->rangeR);
+			l_variable->setCurrentValueSubRange(LogicValue::getValue0(this->getActionSize()), this->rangeL, this->rangeR);
 			this->isActionActing = false;
 		}
 	}
@@ -375,38 +375,38 @@ void ActionOnVariable::endAction()
 
 void ActionOnVariable::variableResizedEventHandler()
 {
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		try
 		{
-			if (l_signal->getSize() == 1) // We are now acting on a 1-bit signal
+			if (l_variable->getSize() == 1) // We are now acting on a 1-bit variable
 			{
 				// Clear range
 				this->rangeL = -1;
 				this->rangeR = -1;
 
-				// Switch to implicit value whatever the signal size was
+				// Switch to implicit value whatever the variable size was
 				this->actionValue = LogicValue::getNullValue();
 
-				if (this->actionType == ActionOnVariableType_t::assign) // Assign is illegal for single bit signals
+				if (this->actionType == ActionOnVariableType_t::assign) // Assign is illegal for single bit variables
 					this->actionType = ActionOnVariableType_t::set;
 			}
-			else // We are now acting on a vector signal
+			else // We are now acting on a vector variable
 			{
 				// First check if range is still valid
 				if ( (this->rangeL >= 0) && (this->rangeR < 0) ) // Single bit action
 				{
 					// Check if bit extracted still in range
-					if (this->rangeL >= (int)l_signal->getSize())
-						this->rangeL = l_signal->getSize()-1;
+					if (this->rangeL >= (int)l_variable->getSize())
+						this->rangeL = l_variable->getSize()-1;
 				}
 				else if ( (this->rangeL >= 0) && (this->rangeR >= 0) ) // Sub-range action
 				{
 					// Check if parameters are still in range
-					if (this->rangeL >= (int)l_signal->getSize())
+					if (this->rangeL >= (int)l_variable->getSize())
 					{
-						this->rangeL = l_signal->getSize()-1;
+						this->rangeL = l_variable->getSize()-1;
 
 						// Make sure R param is always lower than L param
 						if (this->rangeR >= this->rangeL)
@@ -443,7 +443,7 @@ void ActionOnVariable::variableResizedEventHandler()
 		{
 			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
-				qDebug() << "(ActionOnSignal:) Error! Unable to resize action value. Action is probably broken now.";
+				qDebug() << "(ActionOnVariable:) Error! Unable to resize action value. Action is probably broken now.";
 			}
 			else
 				throw;
@@ -455,8 +455,8 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 {
 	bool valuesMach = false;
 
-	shared_ptr<Variable> l_signal = this->variable.lock();
-	if (l_signal != nullptr)
+	shared_ptr<Variable> l_variable = this->variable.lock();
+	if (l_variable != nullptr)
 	{
 		if ( (rangeL < 0 ) && (rangeR < 0) )
 		{
@@ -466,7 +466,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 		else if ( (rangeL >= 0) && (rangeR < 0) )
 		{
 			// Single-bit action: check if in range
-			if (rangeL < (int)l_signal->getSize())
+			if (rangeL < (int)l_variable->getSize())
 			{
 				valuesMach = true;
 			}
@@ -478,7 +478,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 			{
 				// We know both parameters are positive, and their order is correct.
 				// Check if left side is in range.
-				if (rangeL < (int)l_signal->getSize())
+				if (rangeL < (int)l_variable->getSize())
 				{
 					valuesMach = true;
 				}

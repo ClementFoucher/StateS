@@ -50,19 +50,19 @@ TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
 
 /**
  * @brief TruthTable::getInputs
- * @return Obtain the list of signals representing the
+ * @return Obtain the list of variables representing the
  * inputs of the truth table.
  */
 QVector<shared_ptr<Variable> > TruthTable::getInputs() const // Throws StatesException
 {
 	QVector<shared_ptr<Variable>> list;
 
-	for (weak_ptr<Variable> sig : this->inputSignalsTable)
+	for (weak_ptr<Variable> sig : this->inputVariablesTable)
 	{
 		if (! sig.expired())
 			list.append(sig.lock());
 		else
-			throw StatesException("TruthTable", TruthTableError_t::reference_expired, "Reference to expired signal");
+			throw StatesException("TruthTable", TruthTableError_t::reference_expired, "Reference to expired variable");
 	}
 
 	return list;
@@ -80,7 +80,7 @@ QVector<QString> TruthTable::getOutputsEquations() const
 /**
  * @brief TruthTable::getInputTable
  * @return The list of inputs: a vector of rows, each row
- * being a vector with each value corresponding to a input signal.
+ * being a vector with each value corresponding to a input variable.
  */
 QVector<QVector<LogicValue> > TruthTable::getInputTable() const
 {
@@ -116,7 +116,7 @@ QVector<LogicValue> TruthTable::getSingleOutputTable() const
 
 uint TruthTable::getInputCount() const
 {
-	return this->inputSignalsTable.count();
+	return this->inputVariablesTable.count();
 }
 
 /**
@@ -129,13 +129,13 @@ uint TruthTable::getOutputCount() const
 }
 
 /**
- * @brief TruthTable::extractSignals
+ * @brief TruthTable::extractVariables
  * @param equation
- * @return A list of all signals involved in equation, except
- * constants. Note that a signal can have multiple instances
+ * @return A list of all variables involved in equation, except
+ * constants. Note that a variable can have multiple instances
  * in output list if it is present at multiple times in the equation.
  */
-QList<shared_ptr<Variable>> TruthTable::extractSignals(shared_ptr<Equation> equation) const
+QList<shared_ptr<Variable>> TruthTable::extractVariables(shared_ptr<Equation> equation) const
 {
 	QList<shared_ptr<Variable>> list;
 
@@ -146,7 +146,7 @@ QList<shared_ptr<Variable>> TruthTable::extractSignals(shared_ptr<Equation> equa
 		if (complexOperand != nullptr)
 		{
 			if (complexOperand->getFunction() != OperatorType_t::constant)
-				list += extractSignals(complexOperand);
+				list += extractVariables(complexOperand);
 		}
 		else
 		{
@@ -164,37 +164,37 @@ QList<shared_ptr<Variable>> TruthTable::extractSignals(shared_ptr<Equation> equa
  */
 void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 {
-	// Obtain all signals involved in all equations
-	QList<shared_ptr<Variable>> signalList;
+	// Obtain all variables involved in all equations
+	QList<shared_ptr<Variable>> variablesList;
 
 	for (shared_ptr<Equation> equation : equations)
 	{
-		signalList += extractSignals(equation);
+		variablesList += extractVariables(equation);
 		this->outputEquationsTextsTable.append(equation->getText());
 	}
 
-	// Clean list so each signal only appears once
-	QVector<shared_ptr<Variable>> signalVector;
+	// Clean list so each variable only appears once
+	QVector<shared_ptr<Variable>> variablesVector;
 
-	for (shared_ptr<Variable> signal : signalList)
+	for (shared_ptr<Variable> variable : variablesList)
 	{
-		if (!signalVector.contains(signal))
+		if (!variablesVector.contains(variable))
 		{
-			signalVector.append(signal);
-			this->inputSignalsTable.append(signal);
+			variablesVector.append(variable);
+			this->inputVariablesTable.append(variable);
 		}
 	}
 
 	// Count inputs bit by bit
 	uint inputCount = 0;
-	for (shared_ptr<Variable> sig : signalVector)
+	for (shared_ptr<Variable> sig : variablesVector)
 	{
 		inputCount += sig->getSize();
 	}
 
 	// Prepare first row
 	QVector<LogicValue> currentRow;
-	for (shared_ptr<Variable> sig : signalVector)
+	for (shared_ptr<Variable> sig : variablesVector)
 	{
 		currentRow.append(LogicValue(sig->getSize(), false));
 	}
@@ -205,9 +205,9 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 		this->inputValuesTable.append(currentRow);
 
 		// Compute outputs for this row
-		for (int i = 0 ; i < signalVector.count() ; i++)
+		for (int i = 0 ; i < variablesVector.count() ; i++)
 		{
-			signalVector[i]->setCurrentValue(currentRow[i]); // Throws StatesException - value is built for signal size - ignored
+			variablesVector[i]->setCurrentValue(currentRow[i]); // Throws StatesException - value is built for variable size - ignored
 		}
 
 		QVector<LogicValue> currentResultLine;

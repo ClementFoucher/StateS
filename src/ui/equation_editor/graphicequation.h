@@ -49,7 +49,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicEquation(shared_ptr<Variable> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(shared_ptr<Variable> equation, bool isTemplate = false, bool lockVariable = false, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -94,7 +94,7 @@ private:
 	void replaceEquation(shared_ptr<Variable> newEquation);
 	void buildEquation();
 	void buildTemplateEquation();
-	void buildSignalEquation();
+	void buildVariableEquation();
 	void buildCompleteEquation();
 
 	void clearEditorWidget();
@@ -118,7 +118,7 @@ private:
 	EditableEquation* editorWidget = nullptr;
 
 	bool inMouseEvent = false;
-	bool lockSignal;
+	bool lockVariable;
 
 };
 

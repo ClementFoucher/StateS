@@ -60,18 +60,18 @@ componentId_t FsmTransition::getTargetStateId() const
 	return this->targetStateId;
 }
 
-void FsmTransition::setCondition(shared_ptr<Variable> signalNewCondition)
+void FsmTransition::setCondition(shared_ptr<Variable> variableNewCondition)
 {
 	if (this->condition != nullptr)
 	{
 		disconnect(this->condition.get(), &Variable::variableStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
-	shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(signalNewCondition);
+	shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(variableNewCondition);
 	if (equationNewCondition == nullptr)
 	{
 		QVector<shared_ptr<Variable>> operand;
-		operand.append(signalNewCondition);
+		operand.append(variableNewCondition);
 		equationNewCondition = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
 	}
 

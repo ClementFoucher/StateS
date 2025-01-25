@@ -70,7 +70,7 @@ public:
 	};
 
 private:
-	struct WrittableSignalCharacteristics_t
+	struct WrittableVariableCharacteristics_t
 	{
 		bool isMoore         = false;
 		bool isMealy         = false;
@@ -94,8 +94,8 @@ public:
 
 private:
 	void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-	WrittableSignalCharacteristics_t determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> signal, bool storeResults);
-	QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
+	WrittableVariableCharacteristics_t determineWrittableVariableCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> variable, bool storeResults);
+	QString generateVhdlSignalName(const QString& prefix, const QString& name) const;
 	QString cleanNameForVhdl(const QString& name) const;
 
 	void writeHeader(QTextStream& stream) const;
@@ -115,28 +115,28 @@ private:
 	bool resetLogicPositive;
 	bool prefixSignals;
 
-	QMap<shared_ptr<Variable>, QString> signalVhdlName;
+	QMap<shared_ptr<Variable>, QString> variableVhdlName;
 	QMap<componentId_t, QString> stateVhdlName;
 	QString machineVhdlName;
 
-	// The following is used to determine how a writtable signal should be affected value.
+	// The following is used to determine how a writtable variable should be affected value.
 
 	// For now, we only handle these cases:
-	// - A signal is either Mealy or Moore, not both.
-	// - A signal either keeps its value or has an active-on-state/pulse value, not both.
+	// - A variable is either Mealy or Moore, not both.
+	// - A variable either keeps its value or has an active-on-state/pulse value, not both.
 
-	QList<shared_ptr<Variable>> mooreSignals;
-	QList<shared_ptr<Variable>> mealySignals; // TODO: Mealy signals are currently ignored.
+	QList<shared_ptr<Variable>> mooreVariables;
+	QList<shared_ptr<Variable>> mealyVariables; // TODO: Mealy variables are currently ignored.
 
-	QList<shared_ptr<Variable>> tempValueSignals;
-	QList<shared_ptr<Variable>> keepValueSignals;
+	QList<shared_ptr<Variable>> tempValueVariables;
+	QList<shared_ptr<Variable>> keepValueVariables;
 
-	// At first, the signals with range adressing should be treated
-	// as independant bits, each bit acting like a whole signal.
+	// At first, the variables with range adressing should be treated
+	// as independant bits, each bit acting like a whole variable.
 	// Then maybe determine independant ranges, not alway go @ bit level.
 
-	// TODO: Range adresssed signals are currently ignored.
-	//QList<shared_ptr<Signal>> rangeAdressedSignals;
+	// TODO: Range adresssed variables are currently ignored.
+	//QList<shared_ptr<Variable>> rangeAdressedVariables;
 
 };
 

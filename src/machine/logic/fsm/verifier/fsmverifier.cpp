@@ -188,43 +188,43 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 			if (!compat->isCompatible())
 			{
-				for (shared_ptr<Variable> sig : compat->bothMooreAndMealy)
+				for (shared_ptr<Variable> variable : compat->bothMooreAndMealy)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Signal") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both Moore and Mealy behaviors.") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
-					        + tr("This signal will be ignored on VHDL export.");
+							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 				for (shared_ptr<Variable> sig : compat->bothTempAndKeepValue)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Signal") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + sig->getName() + " "
 					        + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
-					        + tr("This signal will be ignored on VHDL export.");
+							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 				for (shared_ptr<Variable> sig : compat->rangeAdressed)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Signal") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + sig->getName() + " "
 					        + tr("has range-adressed output generation.") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
-					        + tr("This signal will be ignored on VHDL export.");
+							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 				for (shared_ptr<Variable> sig : compat->mealyWithKeep)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Signal") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + sig->getName() + " "
 					        + tr("has Mealy outputs affectation (remembered value).") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these signals.") + " "
-					        + tr("This signal will be ignored on VHDL export.");
+							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}

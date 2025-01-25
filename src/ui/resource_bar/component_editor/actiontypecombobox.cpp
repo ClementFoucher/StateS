@@ -127,7 +127,7 @@ void ActionTypeComboBox::processIndexChanged(int index)
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
+			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
 			{
 				qDebug() << "(ActionTypeComboBox:) Warning! An illegal action type was selected. Type change ignored.";
 			}

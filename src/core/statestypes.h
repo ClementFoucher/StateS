@@ -69,7 +69,7 @@ enum class OperatorType_t
 	diffOp,  // Diff  equations always have exactly two operand and are size one
 	extractOp, // Extract equations always have exacly one operand
 	concatOp,
-	constant, // To allow dynamically creating constants (which are not machine signals)
+	constant, // To allow dynamically creating constants (which are not machine variables)
 	identity // For internal use only, exactly one operand
 };
 

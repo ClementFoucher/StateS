@@ -59,10 +59,10 @@ public:
 
 	QString getName() const;
 
-	QList<shared_ptr<Input>>    getInputs()         const; // TODO: throw exception
-	QList<shared_ptr<Output>>   getOutputs()        const; // TODO: throw exception
-	QList<shared_ptr<Variable>> getLocalVariables() const;
-	QList<shared_ptr<Variable>> getConstants()      const;
+	QList<shared_ptr<Input>>    getInputs()            const; // TODO: throw exception
+	QList<shared_ptr<Output>>   getOutputs()           const; // TODO: throw exception
+	QList<shared_ptr<Variable>> getInternalVariables() const;
+	QList<shared_ptr<Variable>> getConstants()         const;
 
 	QList<shared_ptr<Variable>> getInputsAsVariables()  const;
 	QList<shared_ptr<Variable>> getOutputsAsVariables() const;

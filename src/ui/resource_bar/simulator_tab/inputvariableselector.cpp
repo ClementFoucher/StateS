@@ -31,20 +31,20 @@
 #include "inputbitselector.h"
 
 
-InputVariableSelector::InputVariableSelector(shared_ptr<Variable> relatedSignal, QWidget *parent) :
+InputVariableSelector::InputVariableSelector(shared_ptr<Variable> relatedVariable, QWidget *parent) :
     QWidget(parent)
 {
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
-	QLabel* signalName = new QLabel(relatedSignal->getName(), this);
-	globalLayout->addWidget(signalName);
+	QLabel* variableName = new QLabel(relatedVariable->getName(), this);
+	globalLayout->addWidget(variableName);
 
 	QHBoxLayout* bitLayout = new QHBoxLayout();
 	globalLayout->addLayout(bitLayout, 0);
 
-	for (int i = (int)relatedSignal->getSize()-1 ; i >= 0 ; i--)
+	for (int i = (int)relatedVariable->getSize()-1 ; i >= 0 ; i--)
 	{
-		InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i, this);
+		InputBitSelector* currentBit = new InputBitSelector(relatedVariable, i, this);
 		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
 	}
 }

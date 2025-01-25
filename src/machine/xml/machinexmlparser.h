@@ -66,7 +66,7 @@ protected:
 
 	void parseMachineName(const QString& fileName);
 	void parseConfiguration();
-	void parseSignal();
+	void parseVariable();
 	void parseAction();
 	void parseLogicEquation();
 

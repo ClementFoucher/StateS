@@ -167,7 +167,7 @@ void FsmSimulator::clockEventHandler()
 
 
 	//
-	// First reset pulse signals
+	// First reset pulse variables
 	auto latestTransitionCrossed = dynamic_cast<FsmSimulatedTransition*>(this->simulatedComponents[this->latestTransitionCrossedId]);
 	if (latestTransitionCrossed != nullptr)
 	{
@@ -199,7 +199,7 @@ void FsmSimulator::clockEventHandler()
 				}
 				catch (const StatesException& e)
 				{
-					if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::variable_is_not_bool) )
+					if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::variable_is_not_bool) )
 					{
 						// Transition condition is incorrect, considered false: nothing to do
 					}

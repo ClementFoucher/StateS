@@ -88,22 +88,22 @@ void ActionBox::buildActionBox()
 	for (int i = 0 ; i < actions.count() ; i++)
 	{
 		shared_ptr<ActionOnVariable> currentAction = actions[i];
-		shared_ptr<Variable> currentSignal = currentAction->getVariableActedOn();
+		shared_ptr<Variable> currentVariable = currentAction->getVariableActedOn();
 
-		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), this);
+		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentVariable->getName(), this);
 
 		QString currentActionText;
 
-		// Signal name
+		// Variable name
 
 		currentActionText = "<span style=\"color:black;\">";
-		currentActionText += currentSignal->getText();
+		currentActionText += currentVariable->getText();
 		currentActionText += "</span>";
 
 
-		// Signal range
+		// Variable range
 
-		if (currentSignal->getSize() > 1)
+		if (currentVariable->getSize() > 1)
 		{
 			int rangeL = currentAction->getActionRangeL();
 			int rangeR = currentAction->getActionRangeR();
@@ -147,12 +147,12 @@ void ActionBox::buildActionBox()
 			break;
 		case ActionOnVariableType_t::increment:
 			currentActionText += "<span style=\"color:black;\">";
-			currentActionText += " ← " + currentSignal->getName() + " + 1";
+			currentActionText += " ← " + currentVariable->getName() + " + 1";
 			currentActionText += "</span>";
 			break;
 		case ActionOnVariableType_t::decrement:
 			currentActionText += "<span style=\"color:black;\">";
-			currentActionText += " ← " + currentSignal->getName() + " - 1";
+			currentActionText += " ← " + currentVariable->getName() + " - 1";
 			currentActionText += "</span>";
 			break;
 		}

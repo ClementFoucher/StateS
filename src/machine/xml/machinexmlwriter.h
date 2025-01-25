@@ -68,7 +68,7 @@ private:
 	void finalizeSaveFile();
 
 	void writeMachineConfiguration();
-	void writeMachineSignals();
+	void writeMachineVariables();
 
 	/////
 	// Object variables

@@ -40,8 +40,8 @@ InputsSelector::InputsSelector(QList<shared_ptr<Input> > inputList, QWidget *par
 
 	for (shared_ptr<Input> currentInput : inputList)
 	{
-		InputVariableSelector* currentSignalSelector = new InputVariableSelector(currentInput, this);
-		layout->addWidget(currentSignalSelector);
+		InputVariableSelector* currentVariableSelector = new InputVariableSelector(currentInput, this);
+		layout->addWidget(currentVariableSelector);
 	}
 }
 

@@ -45,7 +45,7 @@ MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
 
 }
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Variable> signal)
+shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Variable> variable)
 {
 	// Default action type
 	ActionOnVariableType_t actionType;
@@ -59,12 +59,12 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Vari
 		actionType = ActionOnVariableType_t::pulse;
 	}
 
-	shared_ptr<ActionOnVariable> action(new ActionOnVariable(signal, actionType));
-	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::signalInActionListModifiedEventHandler);
+	shared_ptr<ActionOnVariable> action(new ActionOnVariable(variable, actionType));
+	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::variableInActionListModifiedEventHandler);
 	this->actionList.append(action);
 
-	// To remove destroyed signals from the action list
-	connect(signal.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+	// To remove destroyed variables from the action list
+	connect(variable.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 
 	emit this->actionListChangedEvent();
 	emit this->componentNeedsGraphicUpdateEvent(this->id);
@@ -76,10 +76,10 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 {
 	if (actionRank < (uint)this->actionList.count())
 	{
-		shared_ptr<Variable> signal = actionList.at(actionRank)->getVariableActedOn();
-		if (signal != nullptr)
+		shared_ptr<Variable> variable = actionList.at(actionRank)->getVariableActedOn();
+		if (variable != nullptr)
 		{
-			disconnect(signal.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+			disconnect(variable.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 		}
 
 		this->actionList.removeAt(actionRank);
@@ -158,7 +158,7 @@ void MachineActuatorComponent::cleanActionList()
 	}
 }
 
-void MachineActuatorComponent::signalInActionListModifiedEventHandler()
+void MachineActuatorComponent::variableInActionListModifiedEventHandler()
 {
 	emit this->actionListChangedEvent();
 	emit this->componentNeedsGraphicUpdateEvent(this->id);

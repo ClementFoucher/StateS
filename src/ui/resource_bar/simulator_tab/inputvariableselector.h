@@ -40,7 +40,7 @@ class InputVariableSelector : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit InputVariableSelector(shared_ptr<Variable> relatedSignal, QWidget* parent = nullptr);
+	explicit InputVariableSelector(shared_ptr<Variable> relatedVariable, QWidget* parent = nullptr);
 
 };
 

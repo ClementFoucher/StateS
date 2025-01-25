@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -201,18 +201,18 @@ void RangeExtractorWidget::update()
 				if (l_equation->getRangeL() != -1)
 					text = QString::number(l_equation->getRangeL());
 
-				int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
+				int variableSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
 				if (l_equation->getRangeR() != -1)
 				{
-					this->rangeLEditor->updateContent(l_equation->getRangeR(), signalSize-1, text);;
+					this->rangeLEditor->updateContent(l_equation->getRangeR(), variableSize-1, text);;
 
 					text = QString::number(l_equation->getRangeR());
 					this->rangeREditor->updateContent(0, l_equation->getRangeL(), text);
 				}
 				else
 				{
-					this->rangeLEditor->updateContent(0, signalSize-1, text);
+					this->rangeLEditor->updateContent(0, variableSize-1, text);
 				}
 			}
 		}
@@ -268,11 +268,11 @@ void RangeExtractorWidget::reset()
 			if (l_equation->getRangeL() != -1)
 				text = QString::number(l_equation->getRangeL());
 
-			int signalSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
+			int variableSize = l_equation->getOperand(0)->getSize(); // Throws StatesException - Extract op aways has operand 0 - ignored
 
 			if (l_equation->getRangeR() != -1)
 			{
-				this->rangeLEditor = new LineEditWithUpDownButtons(l_equation->getRangeR()+1, signalSize-1, text);
+				this->rangeLEditor = new LineEditWithUpDownButtons(l_equation->getRangeR()+1, variableSize-1, text);
 				layout->addWidget(this->rangeLEditor);
 
 				label = new QLabel("..");
@@ -286,7 +286,7 @@ void RangeExtractorWidget::reset()
 			}
 			else
 			{
-				this->rangeLEditor = new LineEditWithUpDownButtons(0, signalSize-1, text);
+				this->rangeLEditor = new LineEditWithUpDownButtons(0, variableSize-1, text);
 				layout->addWidget(this->rangeLEditor);
 			}
 

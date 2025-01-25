@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,7 +45,7 @@ private:
 	{
 		none,
 		configuration_group,
-		signals_group,
+		variables_group,
 		states_group,
 		transitions_group
 	};

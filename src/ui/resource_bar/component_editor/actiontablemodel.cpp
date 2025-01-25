@@ -111,12 +111,12 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		{
 			if (index.column()  == 1)
 			{
-				shared_ptr<Variable> signal = action->getVariableActedOn();
+				shared_ptr<Variable> variable = action->getVariableActedOn();
 
 				// Build name
-				QString nameText = signal->getName();
+				QString nameText = variable->getName();
 
-				if (signal->getSize() > 1)
+				if (variable->getSize() > 1)
 				{
 					int rangeL = action->getActionRangeL();
 					int rangeR = action->getActionRangeR();

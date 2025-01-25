@@ -68,7 +68,7 @@ void MachineXmlWriter::writeMachineCommonElements()
 	{
 		this->writeMachineConfiguration();
 	}
-	this->writeMachineSignals();
+	this->writeMachineVariables();
 }
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
@@ -264,7 +264,7 @@ void MachineXmlWriter::writeMachineConfiguration()
 	this->stream->writeEndElement();
 }
 
-void MachineXmlWriter::writeMachineSignals()
+void MachineXmlWriter::writeMachineVariables()
 {
 	this->stream->writeStartElement("Signals");
 

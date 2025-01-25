@@ -78,11 +78,11 @@ shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility
 	if (fsm == nullptr) return nullptr;
 
 	shared_ptr<ExportCompatibility> compatibility(new ExportCompatibility());
-	WrittableSignalCharacteristics_t charac;
+	WrittableVariableCharacteristics_t charac;
 
 	for (shared_ptr<Output> output : fsm->getOutputs())
 	{
-		charac = this->determineWrittableSignalCharacteristics(fsm, output, false);
+		charac = this->determineWrittableVariableCharacteristics(fsm, output, false);
 
 		if (charac.isKeepValue && charac.isTempValue)
 			compatibility->bothTempAndKeepValue.append(output);
@@ -96,9 +96,9 @@ shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility
 		if (charac.isMealy && charac.isKeepValue)
 			compatibility->mealyWithKeep.append(output);
 	}
-	for (shared_ptr<Variable> variable : fsm->getLocalVariables())
+	for (shared_ptr<Variable> variable : fsm->getInternalVariables())
 	{
-		charac = this->determineWrittableSignalCharacteristics(fsm, variable, false);
+		charac = this->determineWrittableVariableCharacteristics(fsm, variable, false);
 
 		if (charac.isKeepValue && charac.isTempValue)
 			compatibility->bothTempAndKeepValue.append(variable);
@@ -143,36 +143,36 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 		this->stateVhdlName[stateId] = stateName;
 	}
 
-	// Signals
+	// Variables
 	QString signalName;
 
 	for (shared_ptr<Input> input : l_machine->getInputs())
 	{
-		signalName = this->generateSignalVhdlName("I_", input->getName());
-		this->signalVhdlName[input] = signalName;
+		signalName = this->generateVhdlSignalName("I_", input->getName());
+		this->variableVhdlName[input] = signalName;
 	}
 	for (shared_ptr<Output> output : l_machine->getOutputs())
 	{
-		signalName = this->generateSignalVhdlName("O_", output->getName());
-		this->determineWrittableSignalCharacteristics(l_machine, output, true);
-		this->signalVhdlName[output] = signalName;
+		signalName = this->generateVhdlSignalName("O_", output->getName());
+		this->determineWrittableVariableCharacteristics(l_machine, output, true);
+		this->variableVhdlName[output] = signalName;
 	}
-	for (shared_ptr<Variable> variable : l_machine->getLocalVariables())
+	for (shared_ptr<Variable> variable : l_machine->getInternalVariables())
 	{
-		signalName = this->generateSignalVhdlName("SIG_", variable->getName());
-		this->determineWrittableSignalCharacteristics(l_machine, variable, true);
-		this->signalVhdlName[variable] = signalName;
+		signalName = this->generateVhdlSignalName("SIG_", variable->getName());
+		this->determineWrittableVariableCharacteristics(l_machine, variable, true);
+		this->variableVhdlName[variable] = signalName;
 	}
 	for (shared_ptr<Variable> constant : l_machine->getConstants())
 	{
-		signalName = this->generateSignalVhdlName("CONST_", constant->getName());
-		this->signalVhdlName[constant] = signalName;
+		signalName = this->generateVhdlSignalName("CONST_", constant->getName());
+		this->variableVhdlName[constant] = signalName;
 	}
 }
 
-FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> signal, bool storeResults)
+FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWrittableVariableCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> variable, bool storeResults)
 {
-	WrittableSignalCharacteristics_t characteristics;
+	WrittableVariableCharacteristics_t characteristics;
 
 	bool doNotGenerate = !storeResults;
 
@@ -182,7 +182,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 
 		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
-			if (action->getVariableActedOn() == signal)
+			if (action->getVariableActedOn() == variable)
 			{
 				characteristics.isMoore = true;
 
@@ -217,7 +217,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 
 		for (shared_ptr<ActionOnVariable> action : transition->getActions())
 		{
-			if (action->getVariableActedOn() == signal)
+			if (action->getVariableActedOn() == variable)
 			{
 				characteristics.isMealy = true;
 
@@ -256,23 +256,23 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 	if (!doNotGenerate)
 	{
 		if (characteristics.isMoore)
-			this->mooreSignals.append(signal);
+			this->mooreVariables.append(variable);
 		else if (characteristics.isMealy)
-			this->mealySignals.append(signal);
+			this->mealyVariables.append(variable);
 
 		if (characteristics.isTempValue)
-			this->tempValueSignals.append(signal);
+			this->tempValueVariables.append(variable);
 		else if (characteristics.isKeepValue)
-			this->keepValueSignals.append(signal);
+			this->keepValueVariables.append(variable);
 
-//        if (signalIsRangeAdressed)
-//            this->rangeAdressedSignals.append(signal);
+//        if (variableIsRangeAdressed)
+//            this->rangeAdressedVariables.append(variable);
 	}
 
 	return characteristics;
 }
 
-QString FsmVhdlExport::generateSignalVhdlName(const QString& prefix, const QString& name) const
+QString FsmVhdlExport::generateVhdlSignalName(const QString& prefix, const QString& name) const
 {
 	QString signalRadical;
 
@@ -284,7 +284,7 @@ QString FsmVhdlExport::generateSignalVhdlName(const QString& prefix, const QStri
 	// Check for duplicates
 	int occurence = 2;
 	QString signalName = signalRadical;
-	while (this->signalVhdlName.values().contains(signalName))
+	while (this->variableVhdlName.values().contains(signalName))
 	{
 		signalName = signalRadical + QString::number(occurence);
 		occurence++;
@@ -329,7 +329,7 @@ void FsmVhdlExport::writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) 
 
 	for (shared_ptr<Input> input : inputs)
 	{
-		stream << this->signalVhdlName[input] << " : in std_logic";
+		stream << this->variableVhdlName[input] << " : in std_logic";
 
 		if (input->getSize() > 1)
 		{
@@ -345,7 +345,7 @@ void FsmVhdlExport::writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) 
 
 	for (shared_ptr<Output> output : outputs)
 	{
-		stream << this->signalVhdlName[output] << " : out std_logic";
+		stream << this->variableVhdlName[output] << " : out std_logic";
 
 		if (output->getSize() > 1)
 		{
@@ -384,12 +384,12 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  signal next_state    : state_type;\n\n";
 
 	//QList<shared_ptr<Input>> inputs = l_machine->getInputs();
-	QList<shared_ptr<Variable>> localVars = l_machine->getLocalVariables();
+	QList<shared_ptr<Variable>> localVars = l_machine->getInternalVariables();
 	QList<shared_ptr<Variable>> constants = l_machine->getConstants();
 
 	for (shared_ptr<Variable> localVar : localVars)
 	{
-		stream << "  signal " + this->signalVhdlName[localVar] << " : std_logic";
+		stream << "  signal " + this->variableVhdlName[localVar] << " : std_logic";
 
 		if (localVar->getSize() > 1)
 		{
@@ -409,7 +409,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 	for (shared_ptr<Variable> constant : constants)
 	{
-		stream << "  constant " + this->signalVhdlName[constant] << " : std_logic";
+		stream << "  constant " + this->variableVhdlName[constant] << " : std_logic";
 
 		if (constant->getSize() > 1)
 		{
@@ -460,7 +460,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 			shared_ptr<Variable> condition = transition->getCondition();
 			stream << generateEquationText(condition, l_machine);
 
-			// Add compare for single signal equations
+			// Add compare for single variable equations
 			if ((condition != nullptr) && (dynamic_pointer_cast<Equation>(condition) == nullptr))
 				stream << " = '1'";
 
@@ -490,10 +490,10 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 	// Output computation : asynchronous processes
 
-	if (!this->mooreSignals.isEmpty())
+	if (!this->mooreVariables.isEmpty())
 		this->writeMooreOutputs(stream, l_machine);
 
-	if (!this->mealySignals.isEmpty())
+	if (!this->mealyVariables.isEmpty())
 		this->writeMealyOutputs(stream, l_machine);
 
 	// The end
@@ -505,12 +505,12 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  compute_moore : process(current_state)\n";
 	stream << "  begin\n";
 
-	for (shared_ptr<Variable> signal : this->mooreSignals)
+	for (shared_ptr<Variable> variable : this->mooreVariables)
 	{
-		if (this->tempValueSignals.contains(signal))
+		if (this->tempValueVariables.contains(variable))
 		{
-			// Write default value for temp signals
-			stream << "    " << this->signalVhdlName[signal] << " <= \"" << LogicValue::getValue0(signal->getSize()).toString() << "\";\n";
+			// Write default value for temp variables
+			stream << "    " << this->variableVhdlName[variable] << " <= \"" << LogicValue::getValue0(variable->getSize()).toString() << "\";\n";
 		}
 	}
 	stream << "    -- Signals handled in this process but not listed above this line implicitly maintain their value.\n";
@@ -528,7 +528,7 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 		int writtenActions = 0;
 		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
-			if (this->mooreSignals.contains(action->getVariableActedOn()))
+			if (this->mooreVariables.contains(action->getVariableActedOn()))
 			{
 				writtenActions++;
 
@@ -551,9 +551,9 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 {
 	stream << "  -- Compute Mealy outputs\n";
 
-	for (shared_ptr<Variable> signal : this->mealySignals)
+	for (shared_ptr<Variable> variable : this->mealyVariables)
 	{
-		if (this->tempValueSignals.contains(signal))
+		if (this->tempValueVariables.contains(variable))
 		{
 			QList<shared_ptr<FsmTransition>> transitions;
 
@@ -563,7 +563,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 				for (shared_ptr<ActionOnVariable> action : transition->getActions())
 				{
-					if (action->getVariableActedOn() == signal)
+					if (action->getVariableActedOn() == variable)
 					{
 						transitions.append(transition);
 						break;
@@ -573,16 +573,16 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 			if (!transitions.isEmpty())
 			{
-				stream << "  affect_" << this->signalVhdlName[signal] << ":";
-				stream << this->signalVhdlName[signal] << " <= ";
+				stream << "  affect_" << this->variableVhdlName[variable] << ":";
+				stream << this->variableVhdlName[variable] << " <= ";
 
 				for (shared_ptr<FsmTransition> transition : transitions)
 				{
 					for (shared_ptr<ActionOnVariable> action : transition->getActions())
 					{
-						if (action->getVariableActedOn() == signal)
+						if (action->getVariableActedOn() == variable)
 						{
-							if (signal->getSize() > 1)
+							if (variable->getSize() > 1)
 								stream << "\"" << action->getActionValue().toString() << "\"";
 							else
 								stream << "'1'";
@@ -594,7 +594,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 					}
 				}
 
-				stream << LogicValue::getValue0(signal->getSize()).toString() << ";\n";
+				stream << LogicValue::getValue0(variable->getSize()).toString() << ";\n";
 			}
 		}
 	}
@@ -603,13 +603,13 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const
 {
 	QList<shared_ptr<Input>> inputs = l_machine->getInputs();
-	QList<shared_ptr<Variable>> localVars = l_machine->getLocalVariables();
+	QList<shared_ptr<Variable>> localVars = l_machine->getInternalVariables();
 
 	for (shared_ptr<Input> input : inputs)
 	{
 		stream << "                              ";
 
-		stream << this->signalVhdlName[input];
+		stream << this->variableVhdlName[input];
 
 		if ( (input == inputs.last()) && (localVars.count() == 0) )
 		{
@@ -621,10 +621,10 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 		}
 	}
 
-	for (shared_ptr<Variable> localVar : l_machine->getLocalVariables())
+	for (shared_ptr<Variable> localVar : l_machine->getInternalVariables())
 	{
 		stream << "                              ";
-		stream << this->signalVhdlName[localVar];
+		stream << this->variableVhdlName[localVar];
 
 		if (localVar == localVars.last())
 		{
@@ -639,15 +639,15 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 
 void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const
 {
-	shared_ptr<Variable> signal = action->getVariableActedOn();
+	shared_ptr<Variable> variable = action->getVariableActedOn();
 
 	stream << "      ";
-	stream << this->signalVhdlName[signal];
+	stream << this->variableVhdlName[variable];
 	stream << " <= ";
 
 	ActionOnVariableType_t type = action->getActionType();
 
-	if (signal->getSize() == 1)
+	if (variable->getSize() == 1)
 	{
 		switch(type)
 		{
@@ -675,19 +675,19 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 			stream << "\"" <<  action->getActionValue().toString() << "\"";
 			break;
 		case ActionOnVariableType_t::set:
-			stream << "\"" << LogicValue::getValue1(signal->getSize()).toString() << "\"";
+			stream << "\"" << LogicValue::getValue1(variable->getSize()).toString() << "\"";
 			break;
 		case ActionOnVariableType_t::reset:
-			stream << "\"" << LogicValue::getValue0(signal->getSize()).toString() << "\"";
+			stream << "\"" << LogicValue::getValue0(variable->getSize()).toString() << "\"";
 			break;
 		case ActionOnVariableType_t::assign:
 			stream << "\"" << action->getActionValue().toString() << "\"";
 			break;
 		case ActionOnVariableType_t::increment:
-			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " + 1)";
+			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variable] << " + 1)";
 			break;
 		case ActionOnVariableType_t::decrement:
-			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " - 1)";
+			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variable] << " - 1)";
 			break;
 		}
 	}
@@ -789,7 +789,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Variable> equation, share
 	}
 	else if (equation != nullptr)
 	{
-		text += this->signalVhdlName[equation];
+		text += this->variableVhdlName[equation];
 	}
 	else
 	{

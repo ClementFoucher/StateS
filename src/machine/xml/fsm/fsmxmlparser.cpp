@@ -83,7 +83,7 @@ void FsmXmlParser::treatStartElement()
 		}
 		else if (nodeName == "Signals")
 		{
-			this->currentGroup = Group_t::signals_group;
+			this->currentGroup = Group_t::variables_group;
 		}
 		else if (nodeName == "States")
 		{
@@ -105,8 +105,8 @@ void FsmXmlParser::treatStartElement()
 		case Group_t::configuration_group:
 			this->parseConfiguration();
 			break;
-		case Group_t::signals_group:
-			this->parseSignal();
+		case Group_t::variables_group:
+			this->parseVariable();
 			break;
 		case Group_t::states_group:
 			this->currentSubGroup = Subgroup_t::state;

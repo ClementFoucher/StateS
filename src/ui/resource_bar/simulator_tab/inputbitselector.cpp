@@ -31,21 +31,21 @@
 #include "variable.h"
 
 
-InputBitSelector::InputBitSelector(shared_ptr<Variable> signalToCommand, uint bitNumber, QWidget *parent) :
+InputBitSelector::InputBitSelector(shared_ptr<Variable> variableToCommand, uint bitNumber, QWidget *parent) :
     QFrame(parent)
 {
-	this->signalToCommand = signalToCommand;
+	this->variableToCommand = variableToCommand;
 	this->bitNumber       = bitNumber;
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 
-	this->bitValue = new QLabel(QString::number(signalToCommand->getCurrentValue()[this->bitNumber]), this);
-	this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of signal") + " " + signalToCommand->getName());
+	this->bitValue = new QLabel(QString::number(variableToCommand->getCurrentValue()[this->bitNumber]), this);
+	this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of variable") + " " + variableToCommand->getName());
 	layout->addWidget(this->bitValue);
 
 	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-	connect(signalToCommand.get(), &Variable::variableDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
+	connect(variableToCommand.get(), &Variable::variableDynamicStateChangedEvent, this, &InputBitSelector::variableValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEnterEvent* event)
@@ -65,14 +65,14 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-	shared_ptr<Variable> l_signalToCommand = this->signalToCommand.lock();
-	if (l_signalToCommand != nullptr)
+	shared_ptr<Variable> l_variableToCommand = this->variableToCommand.lock();
+	if (l_variableToCommand != nullptr)
 	{
-		LogicValue signalValue = l_signalToCommand->getCurrentValue();
+		LogicValue variableValue = l_variableToCommand->getCurrentValue();
 
-		signalValue[this->bitNumber] = !signalValue[this->bitNumber];
+		variableValue[this->bitNumber] = !variableValue[this->bitNumber];
 
-		l_signalToCommand->setCurrentValue(signalValue);  // Throws StatesException - TODO: what if signalValue[] is incorrect?
+		l_variableToCommand->setCurrentValue(variableValue);  // Throws StatesException - TODO: what if variableValue[] is incorrect?
 	}
 }
 
@@ -91,11 +91,11 @@ void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 	// Just because this class never sends event to parent
 }
 
-void InputBitSelector::signalValueChangedEventHandler()
+void InputBitSelector::variableValueChangedEventHandler()
 {
-	shared_ptr<Variable> l_signalToCommand = this->signalToCommand.lock();
-	if (l_signalToCommand != nullptr)
+	shared_ptr<Variable> l_variableToCommand = this->variableToCommand.lock();
+	if (l_variableToCommand != nullptr)
 	{
-		this->bitValue->setText(QString::number(l_signalToCommand->getCurrentValue()[this->bitNumber]));
+		this->bitValue->setText(QString::number(l_variableToCommand->getCurrentValue()[this->bitNumber]));
 	}
 }

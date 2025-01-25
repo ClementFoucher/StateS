@@ -149,45 +149,45 @@ void MachineXmlParser::parseConfiguration()
 	}
 }
 
-void MachineXmlParser::parseSignal()
+void MachineXmlParser::parseVariable()
 {
 	QXmlStreamAttributes attributes = this->xmlReader->attributes();
 	QString nodeName = this->xmlReader->name().toString();
 
 	// Get name
-	QString signalName = attributes.value("Name").toString();
-	if (signalName.isNull())
+	QString variableName = attributes.value("Name").toString();
+	if (variableName.isNull())
 	{
-		this->warnings.append(tr("Error!") + " " + tr("Unnamed signal encountered while parsing signal list: unable to extract name."));
-		this->warnings.append("    " + tr("Signal ignored."));
+		this->warnings.append(tr("Error!") + " " + tr("Unnamed variable encountered while parsing variable list: unable to extract name."));
+		this->warnings.append("    " + tr("Variable ignored."));
 
 		return;
 	}
 
 	// Get type
-	shared_ptr<Variable> signal;
+	shared_ptr<Variable> variable;
 	if (nodeName == "Input")
 	{
-		signal = machine->addVariable(VariableNature_t::input, signalName);
+		variable = machine->addVariable(VariableNature_t::input, variableName);
 	}
 	else if (nodeName == "Output")
 	{
-		signal = machine->addVariable(VariableNature_t::output, signalName);
+		variable = machine->addVariable(VariableNature_t::output, variableName);
 	}
 	else if (nodeName == "Variable")
 	{
-		signal = machine->addVariable(VariableNature_t::internal, signalName);
+		variable = machine->addVariable(VariableNature_t::internal, variableName);
 	}
 	else if (nodeName == "Constant")
 	{
-		signal = machine->addVariable(VariableNature_t::constant, signalName);
+		variable = machine->addVariable(VariableNature_t::constant, variableName);
 	}
 	else
 	{
-		this->warnings.append(tr("Error!") + " " + tr("Unexpected signal type encountered while parsing signal list:"));
+		this->warnings.append(tr("Error!") + " " + tr("Unexpected variable type encountered while parsing variable list:"));
 		this->warnings.append("    " + tr("Expected") + " \"Input\", \"Output\", \"Variable\" " + tr("or") + " \"Constant\", " + tr("got") + " \"" + nodeName + "\".");
-		this->warnings.append("    " + tr("Signal name was:") + " " + signalName + ".");
-		this->warnings.append("    " + tr("Signal ignored."));
+		this->warnings.append("    " + tr("Variable name was:") + " " + variableName + ".");
+		this->warnings.append("    " + tr("Variable ignored."));
 
 		return;
 	}
@@ -202,17 +202,17 @@ void MachineXmlParser::parseSignal()
 		{
 			try
 			{
-				machine->resizeVariable(signalName, size); // Throws StatesException (Signal, Equation and Machine)
+				machine->resizeVariable(variableName, size); // Throws StatesException (Variable, Equation and Machine)
 				// Equation: ignored, this is not an equation,
-				// Machine: ignored, we just created the signal,
-				// Only Signal has to be handled
+				// Machine: ignored, we just created the variable,
+				// Only Variable has to be handled
 			}
 			catch (const StatesException& e)
 			{
-				if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::variable_resized_to_0) )
+				if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::variable_resized_to_0) )
 				{
-					this->warnings.append(tr("Unable to resize signal") + " \"" + signalName + "\".");
-					this->warnings.append("    " + tr("Signal size ignored and defaulted to") + " \"1\".");
+					this->warnings.append(tr("Unable to resize variable") + " \"" + variableName + "\".");
+					this->warnings.append("    " + tr("Variable size ignored and defaulted to") + " \"1\".");
 
 					return;
 				}
@@ -223,8 +223,8 @@ void MachineXmlParser::parseSignal()
 	}
 	else
 	{
-		this->warnings.append(tr("Error!") + " " + tr("Unable to extract signal size for signal") + " \"" + signalName + "\".");
-		this->warnings.append("    " + tr("Signal size ignored and defaulted to") + " \"1\".");
+		this->warnings.append(tr("Error!") + " " + tr("Unable to extract variable size for variable") + " \"" + variableName + "\".");
+		this->warnings.append("    " + tr("Variable size ignored and defaulted to") + " \"1\".");
 
 		return;
 	}
@@ -236,21 +236,21 @@ void MachineXmlParser::parseSignal()
 		{
 			LogicValue initialValue = LogicValue::fromString(attributes.value("Initial_value").toString()); // Throws StatesException
 
-			this->machine->changeVariableInitialValue(signalName, initialValue); // Throws StatesException
+			this->machine->changeVariableInitialValue(variableName, initialValue); // Throws StatesException
 		}
 		catch (const StatesException& e)
 		{
 			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
 			{
-				this->warnings.append(tr("Error!") + " " + "Unable to extract initial value of signal " + signalName + ".");
+				this->warnings.append(tr("Error!") + " " + "Unable to extract initial value of variable " + variableName + ".");
 				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value").toString() + "\".");
-				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
+				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(variable->getSize()) + "\".");
 			}
-			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::size_mismatch) )
+			else if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::size_mismatch) )
 			{
-				this->warnings.append("Error in initial value of signal " + signalName + ".");
-				this->warnings.append("    " + tr("The initial value size does not match signal size."));
-				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
+				this->warnings.append("Error in initial value of variable " + variableName + ".");
+				this->warnings.append("    " + tr("The initial value size does not match variable size."));
+				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(variable->getSize()) + "\".");
 			}
 			else
 				throw;
@@ -265,19 +265,19 @@ void MachineXmlParser::parseAction()
 
 	if (nodeName == "Action")
 	{
-		QString signalName = attributes.value("Name").toString();
+		QString variableName = attributes.value("Name").toString();
 
-		shared_ptr<Variable> signal;
+		shared_ptr<Variable> variable;
 		for (shared_ptr<Variable> var : this->machine->getWrittableVariables())
 		{
-			if (var->getName() == signalName)
-				signal = var;
+			if (var->getName() == variableName)
+				variable = var;
 		}
 
-		if (signal == nullptr)
+		if (variable == nullptr)
 		{
-			this->warnings.append(tr("Reference to undeclared signal encountered while parsing action list:"));
-			this->warnings.append("    " + tr("Signal name was") + " \"" + signalName + "\".");
+			this->warnings.append(tr("Reference to undeclared variable encountered while parsing action list:"));
+			this->warnings.append("    " + tr("Variable name was") + " \"" + variableName + "\".");
 			this->warnings.append("    " + tr("Action ignored."));
 
 			return;
@@ -323,7 +323,7 @@ void MachineXmlParser::parseAction()
 			return;
 		}
 
-		shared_ptr<ActionOnVariable> action = this->currentActuator->addAction(signal);
+		shared_ptr<ActionOnVariable> action = this->currentActuator->addAction(variable);
 
 		try
 		{
@@ -331,9 +331,9 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
+			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
 			{
-				this->warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
+				this->warnings.append(tr("Error in action type for variable") + " \"" + variableName + "\".");
 				this->warnings.append("    " + tr("Default action type used instead."));
 			}
 			else
@@ -372,9 +372,9 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
+			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
 			{
-				this->warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
+				this->warnings.append(tr("Error in action range for variable") + " \"" + variableName + "\".");
 				this->warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
 
 				return;
@@ -404,7 +404,7 @@ void MachineXmlParser::parseAction()
 
 					actionValue = LogicValue::getValue0(avsize);
 
-					this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
+					this->warnings.append(tr("Error in action value for variable") + " \"" + variableName + "\".");
 					this->warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
 
 					return;
@@ -421,9 +421,9 @@ void MachineXmlParser::parseAction()
 				}
 				catch (const StatesException& e)
 				{
-					if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_value) )
+					if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_value) )
 					{
-						this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
+						this->warnings.append(tr("Error in action value for variable") + " \"" + variableName + "\".");
 						this->warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
 					}
 					else
@@ -561,7 +561,7 @@ void MachineXmlParser::parseLogicEquation()
 
 		if (equationType == OperatorType_t::constant)
 		{
-			newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
+			newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for variable size - ignored
 		}
 		else if (equationType == OperatorType_t::extractOp)
 		{

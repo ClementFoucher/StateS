@@ -174,7 +174,7 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		hint += "<br />";
 		hint += tr("Tabs:");
 		hint += "<br />";
-		hint += tr("Machine tab is used to edit machine name and signals");
+		hint += tr("Machine tab is used to edit machine name and variables");
 		hint += "<br />";
 		hint += tr("State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)");
 		hint += "<br />";

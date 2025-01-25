@@ -39,7 +39,7 @@ class Variable;
  * a machine component with action capabilities.
  *
  * It manages a ranked list of actions and is able to
- * remove an action when the associated signal is deleted.
+ * remove an action when the associated variable is deleted.
  *
  * A MachineActuatorComponent triggers the actions activation
  * and deactivation.
@@ -57,7 +57,7 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnVariable> addAction(shared_ptr<Variable> signal);
+	shared_ptr<ActionOnVariable> addAction(shared_ptr<Variable> variable);
 	void removeAction(uint actionRank); // Throws StatesException
 	shared_ptr<ActionOnVariable> getAction(uint actionRank) const; // Throws StatesException
 	QList<shared_ptr<ActionOnVariable>> getActions() const;
@@ -71,7 +71,7 @@ signals:
 
 private slots:
 	void cleanActionList();
-	void signalInActionListModifiedEventHandler();
+	void variableInActionListModifiedEventHandler();
 
 	/////
 	// Object variables

@@ -126,7 +126,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	vLayout->addWidget(new StateTimeLine(clock));
 
-	for (shared_ptr<Variable> var : machine->getLocalVariables())
+	for (shared_ptr<Variable> var : machine->getInternalVariables())
 	{
 		VariableTimeline* varTL = new VariableTimeline(0, var, clock);
 		vLayout->addWidget(varTL);

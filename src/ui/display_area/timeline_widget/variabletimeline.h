@@ -42,7 +42,7 @@ class VariableTimeline : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTimeline(uint delay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit VariableTimeline(uint delay, shared_ptr<Variable> variable, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -54,9 +54,9 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> signal;
+	weak_ptr<Variable> variable;
 
-	QList<GraphicTimeLine*> signalLineDisplay;
+	QList<GraphicTimeLine*> variableLineDisplay;
 
 };
 

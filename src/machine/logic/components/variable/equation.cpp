@@ -106,7 +106,7 @@ Equation::Equation(OperatorType_t function, int operandCount) :
 	this->rangeR = -1;
 	this->constantValue = LogicValue::getNullValue();
 
-	this->signalOperands   = QVector<weak_ptr<Variable>>    (this->allowedOperandCount);
+	this->variableOperands = QVector<weak_ptr<Variable>>  (this->allowedOperandCount);
 	this->equationOperands = QVector<shared_ptr<Equation>>(this->allowedOperandCount);
 }
 
@@ -129,7 +129,7 @@ shared_ptr<Equation> Equation::clone() const
 
 	if (this->function == OperatorType_t::constant)
 	{
-		eq->setConstantValue(this->constantValue); // Throws StatesException - constantValue is built for signal size - ignored
+		eq->setConstantValue(this->constantValue); // Throws StatesException - constantValue is built for variable size - ignored
 	}
 	else if (this->function == OperatorType_t::extractOp)
 	{
@@ -142,7 +142,7 @@ shared_ptr<Equation> Equation::clone() const
 
 /**
  * @brief getSize returns the apparent size of the equation.
- * 0 means current size is not defined => result will be a null signal.
+ * 0 means current size is not defined => result will be a null variable.
  * @return
  */
 uint Equation::getSize() const
@@ -291,8 +291,8 @@ bool Equation::setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet) /
 			}
 			else
 			{
-				connect(newOperand.get(), &Variable::variableDeletedEvent, this, &Equation::signalDeletedEventHandler);
-				signalOperands[i] = newOperand;
+				connect(newOperand.get(), &Variable::variableDeletedEvent, this, &Equation::variableDeletedEventHandler);
+				variableOperands[i] = newOperand;
 				actualNewOperand = newOperand;
 			}
 
@@ -335,11 +335,11 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 
 		if (oldOperand != nullptr)
 		{
-			disconnect(oldOperand.get(), &Variable::variableDeletedEvent, this, &Equation::signalDeletedEventHandler);
+			disconnect(oldOperand.get(), &Variable::variableDeletedEvent, this, &Equation::variableDeletedEventHandler);
 		}
 
 		equationOperands[i].reset();
-		signalOperands[i].reset();
+		variableOperands[i].reset();
 
 		if (!quiet)
 		{
@@ -385,16 +385,16 @@ QString Equation::getColoredText(bool raw) const
 
 		for (uint i = 0 ; i < this->allowedOperandCount ; i++)
 		{
-			shared_ptr<Variable> signalOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
-			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(signalOperand);
+			shared_ptr<Variable> variableOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
+			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(variableOperand);
 
 			if (equationOperand != nullptr)
 			{
 				text += equationOperand->getColoredText(raw);
 			}
-			else if (signalOperand != nullptr)
+			else if (variableOperand != nullptr)
 			{
-				text += signalOperand->getText();
+				text += variableOperand->getText();
 			}
 			else
 			{
@@ -548,8 +548,8 @@ QVector<shared_ptr<Variable>> Equation::getOperands() const
 
 	for (uint i = 0 ; i < this->allowedOperandCount ; i++)
 	{
-		if (!signalOperands[i].expired())
-			operands[i] = signalOperands[i].lock();
+		if (!variableOperands[i].expired())
+			operands[i] = variableOperands[i].lock();
 		else if (equationOperands[i] != nullptr)
 			operands[i] = equationOperands[i];
 	}
@@ -769,13 +769,13 @@ void Equation::computeCurrentValue()
 	}
 }
 
-void Equation::signalDeletedEventHandler()
+void Equation::variableDeletedEventHandler()
 {
 	this->computeCurrentValue();
 	emit this->variableStaticConfigurationChangedEvent();
 }
 
-bool Equation::signalHasSize(shared_ptr<Variable> sig)
+bool Equation::variableHasSize(shared_ptr<Variable> sig)
 {
 	if (sig == nullptr)
 		return false;
@@ -804,7 +804,7 @@ void Equation::decreaseOperandCountInternal() // Throws StatesException
 	clearOperand(this->allowedOperandCount-1); // Throws StatesException - Operand count checked - ignored
 	this->allowedOperandCount--;
 
-	this->signalOperands.resize(this->allowedOperandCount);
+	this->variableOperands.resize(this->allowedOperandCount);
 	this->equationOperands.resize(this->allowedOperandCount);
 }
 
@@ -819,7 +819,7 @@ void Equation::increaseOperandCountInternal()
 {
 	this->allowedOperandCount++;
 
-	this->signalOperands.resize(this->allowedOperandCount);
+	this->variableOperands.resize(this->allowedOperandCount);
 	this->equationOperands.resize(this->allowedOperandCount);
 }
 
