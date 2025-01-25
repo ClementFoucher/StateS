@@ -45,7 +45,7 @@ public:
 	// Object functions
 public:
 	QString getName() const;
-	void setName(const QString& value); // TODO: check signal name here and throw StatesException
+	void setName(const QString& value); // TODO: check variable name here and throw StatesException
 
 	virtual uint getSize() const;
 	virtual void resize(uint newSize); // Throws StatesException
@@ -62,22 +62,22 @@ public:
 
 	void resetValue();
 
-	// Concept of true is only applicable to size 1 signals
-	// A signal with size > 1 will never be true
+	// Concept of true is only applicable to size 1 variables
+	// A variable with size > 1 will never be true
 	bool isTrue() const; // Throws StatesException
 
 signals:
 	// General events
-	void signalStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
-	void signalDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
+	void variableStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
+	void variableDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
 
 	// Specific events detail
-	void signalRenamedEvent();
-	void signalResizedEvent();
-	void SignalInitialValueChangedEvent();
+	void variableRenamedEvent();
+	void variableResizedEvent();
+	void variableInitialValueChangedEvent();
 
 	// Deletion event
-	void signalDeletedEvent();
+	void variableDeletedEvent();
 
 	/////
 	// Object variables

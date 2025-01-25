@@ -35,10 +35,10 @@
 ActionOnVariable::ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
 	this->signal = signal;
-	connect(signal.get(), &Variable::signalResizedEvent, this, &ActionOnVariable::signalResizedEventHandler);
+	connect(signal.get(), &Variable::variableResizedEvent, this, &ActionOnVariable::signalResizedEventHandler);
 	// Renaming a signal doesn't actually changes the action configuration,
 	// but it changes the way the action is displayed: trigger an actionChangedEvent
-	connect(signal.get(), &Variable::signalRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
+	connect(signal.get(), &Variable::variableRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
 
 	////
 	// Affect range parameters

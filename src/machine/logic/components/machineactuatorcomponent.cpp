@@ -64,7 +64,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Vari
 	this->actionList.append(action);
 
 	// To remove destroyed signals from the action list
-	connect(signal.get(), &Variable::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+	connect(signal.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 
 	emit this->actionListChangedEvent();
 	emit this->componentNeedsGraphicUpdateEvent(this->id);
@@ -79,7 +79,7 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 		shared_ptr<Variable> signal = actionList.at(actionRank)->getSignalActedOn();
 		if (signal != nullptr)
 		{
-			disconnect(signal.get(), &Variable::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+			disconnect(signal.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 		}
 
 		this->actionList.removeAt(actionRank);

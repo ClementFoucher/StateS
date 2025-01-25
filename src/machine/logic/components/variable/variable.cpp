@@ -37,12 +37,12 @@ Variable::Variable(const QString &name, uint size) // Throws StatesException
 	this->currentValue = this->initialValue;
 
 	// Link specific events signals to general events
-	connect(this, &Variable::signalRenamedEvent,             this, &Variable::signalStaticConfigurationChangedEvent);
-	connect(this, &Variable::signalResizedEvent,             this, &Variable::signalStaticConfigurationChangedEvent);
-	connect(this, &Variable::SignalInitialValueChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
+	connect(this, &Variable::variableRenamedEvent,             this, &Variable::variableStaticConfigurationChangedEvent);
+	connect(this, &Variable::variableResizedEvent,             this, &Variable::variableStaticConfigurationChangedEvent);
+	connect(this, &Variable::variableInitialValueChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 
 	// This event also impacts dynamic values
-	connect(this, &Variable::signalResizedEvent, this, &Variable::signalDynamicStateChangedEvent);
+	connect(this, &Variable::variableResizedEvent, this, &Variable::variableDynamicStateChangedEvent);
 }
 
 Variable::Variable(const QString& name) :
@@ -53,7 +53,7 @@ Variable::Variable(const QString& name) :
 
 Variable::~Variable()
 {
-	emit signalDeletedEvent();
+	emit variableDeletedEvent();
 }
 
 QString Variable::getName() const
@@ -64,7 +64,7 @@ QString Variable::getName() const
 void Variable::setName(const QString& value)
 {
 	this->name = value;
-	emit signalRenamedEvent();
+	emit variableRenamedEvent();
 }
 
 uint Variable::getSize() const
@@ -80,7 +80,7 @@ void Variable::resize(uint newSize) // Throws StatesException
 	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
 	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
 
-	emit signalResizedEvent();
+	emit variableResizedEvent();
 }
 
 QString Variable::getText() const
@@ -132,7 +132,7 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 
 	if (setOk == true)
 	{
-		emit signalDynamicStateChangedEvent();
+		emit variableDynamicStateChangedEvent();
 	}
 	else
 	{
@@ -156,7 +156,7 @@ void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 	{
 		this->initialValue = newInitialValue;
 
-		emit SignalInitialValueChangedEvent();
+		emit variableInitialValueChangedEvent();
 	}
 	else
 	{
@@ -167,7 +167,7 @@ void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 void Variable::reinitialize()
 {
 	this->currentValue = this->initialValue;
-	emit signalDynamicStateChangedEvent();
+	emit variableDynamicStateChangedEvent();
 }
 
 void Variable::resetValue()

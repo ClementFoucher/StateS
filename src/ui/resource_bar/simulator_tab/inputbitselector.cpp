@@ -45,7 +45,7 @@ InputBitSelector::InputBitSelector(shared_ptr<Variable> signalToCommand, uint bi
 
 	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-	connect(signalToCommand.get(), &Variable::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
+	connect(signalToCommand.get(), &Variable::variableDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEnterEvent* event)

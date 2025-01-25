@@ -78,7 +78,7 @@ FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
 	auto condition = logicTransition->getCondition();
 	if (condition != nullptr) // nullptr is still a valid condition
 	{
-		connect(condition.get(), &Variable::signalDynamicStateChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
+		connect(condition.get(), &Variable::variableDynamicStateChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
 	}
 
 	connect(sourceState, &FsmSimulatedState::stateActiveStatusChanged, this, &FsmSimulatedTransition::refreshDisplay);

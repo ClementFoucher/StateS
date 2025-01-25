@@ -64,7 +64,7 @@ void FsmTransition::setCondition(shared_ptr<Variable> signalNewCondition)
 {
 	if (this->condition != nullptr)
 	{
-		disconnect(this->condition.get(), &Variable::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Variable::variableStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
 	shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(signalNewCondition);
@@ -80,7 +80,7 @@ void FsmTransition::setCondition(shared_ptr<Variable> signalNewCondition)
 	if (this->condition != nullptr)
 	{
 		// Propagate events
-		connect(this->condition.get(), &Variable::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Variable::variableStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
 	emit this->conditionChangedEvent();

@@ -223,7 +223,7 @@ void Equation::setFunction(OperatorType_t newFunction)
 		this->rangeR = -1;
 	}
 
-	emit signalStaticConfigurationChangedEvent();
+	emit variableStaticConfigurationChangedEvent();
 
 	this->computeCurrentValue();
 }
@@ -235,7 +235,7 @@ void Equation::setRange(int rangeL, int rangeR)
 		this->rangeL = rangeL;
 		this->rangeR = rangeR;
 
-		emit signalStaticConfigurationChangedEvent();
+		emit variableStaticConfigurationChangedEvent();
 
 		this->computeCurrentValue();
 	}
@@ -291,22 +291,22 @@ bool Equation::setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet) /
 			}
 			else
 			{
-				connect(newOperand.get(), &Variable::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
+				connect(newOperand.get(), &Variable::variableDeletedEvent, this, &Equation::signalDeletedEventHandler);
 				signalOperands[i] = newOperand;
 				actualNewOperand = newOperand;
 			}
 
 
 			// Structural changes are propagated
-			connect(actualNewOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
+			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 			// Local stuff
-			connect(actualNewOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-			connect(actualNewOperand.get(), &Variable::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+			connect(actualNewOperand.get(), &Variable::variableDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 		}
 
 		if (!quiet)
 		{
-			emit signalStaticConfigurationChangedEvent();
+			emit variableStaticConfigurationChangedEvent();
 
 			this->computeCurrentValue();
 		}
@@ -328,14 +328,14 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 	if (oldOperand != nullptr)
 	{
 		// Signal propagation
-		disconnect(oldOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
+		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 		// Local stuff
-		disconnect(oldOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-		disconnect(oldOperand.get(), &Variable::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+		disconnect(oldOperand.get(), &Variable::variableDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 
 		if (oldOperand != nullptr)
 		{
-			disconnect(oldOperand.get(), &Variable::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
+			disconnect(oldOperand.get(), &Variable::variableDeletedEvent, this, &Equation::signalDeletedEventHandler);
 		}
 
 		equationOperands[i].reset();
@@ -343,7 +343,7 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 
 		if (!quiet)
 		{
-			emit signalStaticConfigurationChangedEvent();
+			emit variableStaticConfigurationChangedEvent();
 
 			this->computeCurrentValue();
 		}
@@ -473,7 +473,7 @@ void Equation::setConstantValue(const LogicValue& value) // Throws StatesExcepti
 
 		this->computeCurrentValue();
 
-		emit Variable::signalStaticConfigurationChangedEvent();
+		emit Variable::variableStaticConfigurationChangedEvent();
 	}
 	else
 		throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect a value to a dynamically determined equation");
@@ -753,13 +753,13 @@ void Equation::computeCurrentValue()
 	}
 
 	if (previousValue != this->currentValue)
-		emit signalDynamicStateChangedEvent();
+		emit variableDynamicStateChangedEvent();
 
 	if (previousValue.getSize() != this->currentValue.getSize())
 	{
 		try
 		{
-			emit signalResizedEvent();
+			emit variableResizedEvent();
 		}
 		catch (const std::bad_weak_ptr&)
 		{
@@ -772,7 +772,7 @@ void Equation::computeCurrentValue()
 void Equation::signalDeletedEventHandler()
 {
 	this->computeCurrentValue();
-	emit this->signalStaticConfigurationChangedEvent();
+	emit this->variableStaticConfigurationChangedEvent();
 }
 
 bool Equation::signalHasSize(shared_ptr<Variable> sig)
@@ -841,7 +841,7 @@ void Equation::increaseOperandCount() // Throws StatesException
 	case OperatorType_t::concatOp:
 		this->increaseOperandCountInternal();
 
-		emit signalStaticConfigurationChangedEvent();
+		emit variableStaticConfigurationChangedEvent();
 
 		this->computeCurrentValue();
 		break;
@@ -871,7 +871,7 @@ void Equation::decreaseOperandCount() // Throws StatesException
 		{
 			this->decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
 
-			emit signalStaticConfigurationChangedEvent();
+			emit variableStaticConfigurationChangedEvent();
 
 			this->computeCurrentValue();
 		}

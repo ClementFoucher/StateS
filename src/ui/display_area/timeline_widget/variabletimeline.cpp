@@ -88,7 +88,7 @@ VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> signal
 	}
 	globalLayout->addLayout(bitsLayout);
 
-	connect(signal.get(), &Variable::signalDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
+	connect(signal.get(), &Variable::variableDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
 
 	connect(clock.get(), &Clock::prepareForClockEvent, this, &VariableTimeline::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,    this, &VariableTimeline::resetEventHandler);

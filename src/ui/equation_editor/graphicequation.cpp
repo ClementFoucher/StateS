@@ -61,7 +61,7 @@ GraphicEquation::GraphicEquation(shared_ptr<Variable> equation, bool isTemplate,
 		this->rootEquation = equation;
 
 	if (equation != nullptr)
-		connect(equation.get(), &Variable::signalStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
+		connect(equation.get(), &Variable::variableStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
 
 	this->buildEquation();
 }
