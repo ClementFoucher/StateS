@@ -98,7 +98,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					{
 						QVector<shared_ptr<Signal>> operand;
 						operand.append(condition);
-						equation = shared_ptr<Equation>(new Equation(EquationNature_t::identity, operand));
+						equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
 					}
 
 					equations.append(equation);

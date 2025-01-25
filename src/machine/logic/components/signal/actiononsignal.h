@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -65,23 +65,23 @@ class ActionOnSignal : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
-	                        int rangeL = -1, int rangeR = -1);
+	explicit ActionOnSignal(shared_ptr<Signal> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
+							int rangeL = -1, int rangeR = -1);
 
 	/////
 	// Object functions
 public:
-	void setActionType (ActionOnSignalType_t newType); // Throws StatesException
+	void setActionType (ActionOnVariableType_t newType); // Throws StatesException
 	void setActionValue(LogicValue newValue);  // Throws StatesException
 	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
 
-	shared_ptr<Signal>   getSignalActedOn()      const;
-	ActionOnSignalType_t getActionType()         const;
-	LogicValue           getActionValue()        const;
-	int                  getActionRangeL()       const;
-	int                  getActionRangeR()       const;
-	uint                 getActionSize()         const;
-	bool                 isActionValueEditable() const;
+	shared_ptr<Signal>     getSignalActedOn()      const;
+	ActionOnVariableType_t getActionType()         const;
+	LogicValue             getActionValue()        const;
+	int                    getActionRangeL()       const;
+	int                    getActionRangeR()       const;
+	uint                   getActionSize()         const;
+	bool                   isActionValueEditable() const;
 
 	void beginAction();
 	void endAction();
@@ -100,10 +100,10 @@ private:
 private:
 	weak_ptr<Signal> signal;
 
-	ActionOnSignalType_t actionType;
-	LogicValue           actionValue;
-	int                  rangeL;
-	int                  rangeR;
+	ActionOnVariableType_t actionType;
+	LogicValue             actionValue;
+	int                    rangeL;
+	int                    rangeR;
 
 	bool isActionActing = false;
 

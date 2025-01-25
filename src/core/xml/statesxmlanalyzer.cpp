@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,7 +52,7 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource) :
 
 StateSXmlAnalyzer::StateSXmlAnalyzer()
 {
-	this->type         = MachineType_t::None;
+	this->type         = MachineType_t::none;
 	this->version      = "Unknown version";
 	this->xmlIsCorrect = true;
 }
@@ -82,7 +82,7 @@ void StateSXmlAnalyzer::parse()
 		{
 			if (this->xmlReader->name() == QString("FSM"))
 			{
-				this->type = MachineType_t::Fsm;
+				this->type = MachineType_t::fsm;
 				QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
 
 				if (! extractedVersion.isNull())

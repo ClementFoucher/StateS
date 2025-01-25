@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,7 +52,7 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnSignal> action, QWidget*
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
-	this->equation = shared_ptr<Equation>(new Equation(EquationNature_t::extractOp, 1));
+	this->equation = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp, 1));
 	this->equation->setRange(rangeL, rangeR);
 	this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 

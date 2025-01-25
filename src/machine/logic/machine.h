@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -80,7 +80,7 @@ public:
 
 	bool setName(const QString& newName);
 
-	shared_ptr<Signal> addSignal(SignalType_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
+	shared_ptr<Signal> addSignal(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
 	bool deleteSignal(const QString& name);
 	bool renameSignal(const QString& oldName, const QString& newName);
 	void resizeSignal(const QString& name, uint newSize); // Throws StatesException
@@ -108,7 +108,7 @@ protected:
 	void removeComponent(componentId_t componentId);
 
 private:
-	shared_ptr<Signal> addSignalAtRank(SignalType_t type, const QString& name, uint rank, const LogicValue& value);
+	shared_ptr<Signal> addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value);
 	QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
 	void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
 	bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);

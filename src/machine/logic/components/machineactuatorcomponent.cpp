@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,15 +48,15 @@ MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
 shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Signal> signal)
 {
 	// Default action type
-	ActionOnSignalType_t actionType;
+	ActionOnVariableType_t actionType;
 
-	if ((this->getAllowedActionTypes() & (uint)actuatorAllowedActionType_t::activeOnState) != 0)
+	if ((this->getAllowedActionTypes() & (uint)actuatorAllowedActionType_t::continuous) != 0)
 	{
-		actionType = ActionOnSignalType_t::activeOnState;
+		actionType = ActionOnVariableType_t::activeOnState;
 	}
 	else
 	{
-		actionType = ActionOnSignalType_t::pulse;
+		actionType = ActionOnVariableType_t::pulse;
 	}
 
 	shared_ptr<ActionOnSignal> action(new ActionOnSignal(signal, actionType));

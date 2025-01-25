@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -79,11 +79,11 @@ const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
 
 uint FsmState::getAllowedActionTypes() const
 {
-	return ((uint)actuatorAllowedActionType_t::activeOnState |
-	        (uint)actuatorAllowedActionType_t::set           |
-	        (uint)actuatorAllowedActionType_t::reset         |
-	        (uint)actuatorAllowedActionType_t::assign        |
-	        (uint)actuatorAllowedActionType_t::increment     |
+	return ((uint)actuatorAllowedActionType_t::continuous |
+			(uint)actuatorAllowedActionType_t::set        |
+			(uint)actuatorAllowedActionType_t::reset      |
+			(uint)actuatorAllowedActionType_t::assign     |
+			(uint)actuatorAllowedActionType_t::increment  |
 	        (uint)actuatorAllowedActionType_t::decrement
 	       );
 }

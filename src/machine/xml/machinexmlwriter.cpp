@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2024 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -91,25 +91,25 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 
 			switch(action->getActionType())
 			{
-			case ActionOnSignalType_t::activeOnState:
+			case ActionOnVariableType_t::activeOnState:
 				this->stream->writeAttribute("Action_Type", "ActiveOnState");
 				break;
-			case ActionOnSignalType_t::pulse:
+			case ActionOnVariableType_t::pulse:
 				this->stream->writeAttribute("Action_Type", "Pulse");
 				break;
-			case ActionOnSignalType_t::set:
+			case ActionOnVariableType_t::set:
 				this->stream->writeAttribute("Action_Type", "Set");
 				break;
-			case ActionOnSignalType_t::reset:
+			case ActionOnVariableType_t::reset:
 				this->stream->writeAttribute("Action_Type", "Reset");
 				break;
-			case ActionOnSignalType_t::assign:
+			case ActionOnVariableType_t::assign:
 				this->stream->writeAttribute("Action_Type", "Assign");
 				break;
-			case ActionOnSignalType_t::increment:
+			case ActionOnVariableType_t::increment:
 				this->stream->writeAttribute("Action_Type", "Increment");
 				break;
-			case ActionOnSignalType_t::decrement:
+			case ActionOnVariableType_t::decrement:
 				this->stream->writeAttribute("Action_Type", "Decrement");
 				break;
 			}
@@ -136,53 +136,53 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 		this->stream->writeStartElement("LogicEquation");
 		switch (complexEquation->getFunction())
 		{
-		case EquationNature_t::andOp:
+		case OperatorType_t::andOp:
 			this->stream->writeAttribute("Nature", "and");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::nandOp:
+		case OperatorType_t::nandOp:
 			this->stream->writeAttribute("Nature", "nand");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::norOp:
+		case OperatorType_t::norOp:
 			this->stream->writeAttribute("Nature", "nor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::notOp:
+		case OperatorType_t::notOp:
 			this->stream->writeAttribute("Nature", "not");
 			break;
-		case EquationNature_t::orOp:
+		case OperatorType_t::orOp:
 			this->stream->writeAttribute("Nature", "or");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::xnorOp:
+		case OperatorType_t::xnorOp:
 			this->stream->writeAttribute("Nature", "xnor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::xorOp:
+		case OperatorType_t::xorOp:
 			this->stream->writeAttribute("Nature", "xor");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::equalOp:
+		case OperatorType_t::equalOp:
 			this->stream->writeAttribute("Nature", "equals");
 			break;
-		case EquationNature_t::diffOp:
+		case OperatorType_t::diffOp:
 			this->stream->writeAttribute("Nature", "differs");
 			break;
-		case EquationNature_t::extractOp:
+		case OperatorType_t::extractOp:
 			this->stream->writeAttribute("Nature", "extract");
 			this->stream->writeAttribute("RangeL", QString::number(complexEquation->getRangeL()));
 			this->stream->writeAttribute("RangeR", QString::number(complexEquation->getRangeR()));
 			break;
-		case EquationNature_t::concatOp:
+		case OperatorType_t::concatOp:
 			this->stream->writeAttribute("Nature", "concatenate");
 			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
 			break;
-		case EquationNature_t::constant:
+		case OperatorType_t::constant:
 			this->stream->writeAttribute("Nature", "constant");
 			this->stream->writeAttribute("Value", complexEquation->getCurrentValue().toString());
 			break;
-		case EquationNature_t::identity:
+		case OperatorType_t::identity:
 			// Should not happen
 			break;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -74,10 +74,10 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	QTabWidget* signalsTabs = new QTabWidget(this);
 	layout->addWidget(signalsTabs);
 
-	signalsTabs->insertTab(0, new SignalListEditor(SignalType_t::Input),         tr("Inputs"));
-	signalsTabs->insertTab(1, new SignalListEditor(SignalType_t::Output),        tr("Outputs"));
-	signalsTabs->insertTab(2, new SignalListEditor(SignalType_t::LocalVariable), tr("Variables"));
-	signalsTabs->insertTab(3, new SignalListEditor(SignalType_t::Constant),      tr("Constants"));
+	signalsTabs->insertTab(0, new SignalListEditor(VariableNature_t::input),    tr("Inputs"));
+	signalsTabs->insertTab(1, new SignalListEditor(VariableNature_t::output),   tr("Outputs"));
+	signalsTabs->insertTab(2, new SignalListEditor(VariableNature_t::internal), tr("Variables"));
+	signalsTabs->insertTab(3, new SignalListEditor(VariableNature_t::constant), tr("Constants"));
 
 	signalsTabs->setCurrentIndex(0);
 

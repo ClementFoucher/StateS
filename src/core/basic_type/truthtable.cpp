@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -145,7 +145,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
 
 		if (complexOperand != nullptr)
 		{
-			if (complexOperand->getFunction() != EquationNature_t::constant)
+			if (complexOperand->getFunction() != OperatorType_t::constant)
 				list += extractSignals(complexOperand);
 		}
 		else

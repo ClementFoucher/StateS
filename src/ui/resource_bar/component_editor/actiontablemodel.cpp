@@ -140,17 +140,17 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 			{
 				switch (action->getActionType())
 				{
-				case ActionOnSignalType_t::reset:
-				case ActionOnSignalType_t::set:
-				case ActionOnSignalType_t::activeOnState:
-				case ActionOnSignalType_t::pulse:
-				case ActionOnSignalType_t::assign:
+				case ActionOnVariableType_t::reset:
+				case ActionOnVariableType_t::set:
+				case ActionOnVariableType_t::activeOnState:
+				case ActionOnVariableType_t::pulse:
+				case ActionOnVariableType_t::assign:
 					return QVariant(action->getActionValue().toString());
 					break;
-				case ActionOnSignalType_t::increment:
+				case ActionOnVariableType_t::increment:
 					return QVariant(action->getSignalActedOn()->getName() + " + 1");
 					break;
-				case ActionOnSignalType_t::decrement:
+				case ActionOnVariableType_t::decrement:
 					return QVariant(action->getSignalActedOn()->getName() + " - 1");
 					break;
 				}

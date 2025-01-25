@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -72,7 +72,7 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 	{
 		QVector<shared_ptr<Signal>> operand;
 		operand.append(signalNewCondition);
-		equationNewCondition = shared_ptr<Equation>(new Equation(EquationNature_t::identity, operand));
+		equationNewCondition = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
 	}
 
 	this->condition = equationNewCondition;
@@ -96,7 +96,7 @@ shared_ptr<Signal> FsmTransition::getCondition() const
 {
 	if (this->condition != nullptr)
 	{
-		if (this->condition->getFunction() != EquationNature_t::identity)
+		if (this->condition->getFunction() != OperatorType_t::identity)
 		{
 			return this->condition;
 		}

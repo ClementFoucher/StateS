@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2024 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 #include "exceptiontypes.h"
 
 
-ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
+ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
 	this->signal = signal;
 	connect(signal.get(), &Signal::signalResizedEvent, this, &ActionOnSignal::signalResizedEventHandler);
@@ -60,9 +60,9 @@ ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t a
 	////
 	// Affect action type
 
-	if ( (this->getActionSize() == 1) && (actionType == ActionOnSignalType_t::assign) )
+	if ( (this->getActionSize() == 1) && (actionType == ActionOnVariableType_t::assign) )
 	{
-		this->actionType = ActionOnSignalType_t::set;
+		this->actionType = ActionOnVariableType_t::set;
 
 		qDebug() << "(ActionOnSignal:) Warning! The action type requested is illegal for 1-bit actions.";
 		qDebug() << "(ActionOnSignal:) Action type defaulted to 'set'";
@@ -101,12 +101,12 @@ ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnSignalType_t a
 	}
 }
 
-void ActionOnSignal::setActionType(ActionOnSignalType_t newType) // Throws StatesException
+void ActionOnSignal::setActionType(ActionOnVariableType_t newType) // Throws StatesException
 {
 	shared_ptr<Signal> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
-		if ( (this->getActionSize() == 1) && (newType == ActionOnSignalType_t::assign) )
+		if ( (this->getActionSize() == 1) && (newType == ActionOnVariableType_t::assign) )
 		{
 			throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_type, "Type can't be applied to this signal");
 		}
@@ -117,25 +117,25 @@ void ActionOnSignal::setActionType(ActionOnSignalType_t newType) // Throws State
 		{
 			switch (newType)
 			{
-			case ActionOnSignalType_t::reset:
-			case ActionOnSignalType_t::set:
-			case ActionOnSignalType_t::increment:
-			case ActionOnSignalType_t::decrement:
+			case ActionOnVariableType_t::reset:
+			case ActionOnVariableType_t::set:
+			case ActionOnVariableType_t::increment:
+			case ActionOnVariableType_t::decrement:
 				// Switch to implicit
 				this->actionValue = LogicValue::getNullValue();
 				break;
-			case ActionOnSignalType_t::activeOnState:
-			case ActionOnSignalType_t::pulse:
-			case ActionOnSignalType_t::assign:
+			case ActionOnVariableType_t::activeOnState:
+			case ActionOnVariableType_t::pulse:
+			case ActionOnVariableType_t::assign:
 
 				// Check if previous action type had implicit value
 				// and switch to explicit if necessary, preserving
 				// previous action value.
-				if (this->actionType == ActionOnSignalType_t::reset)
+				if (this->actionType == ActionOnVariableType_t::reset)
 				{
 					this->actionValue = LogicValue::getValue0(this->getActionSize());
 				}
-				else if (this->actionType == ActionOnSignalType_t::set)
+				else if (this->actionType == ActionOnVariableType_t::set)
 				{
 					this->actionValue = LogicValue::getValue1(this->getActionSize());
 				}
@@ -233,7 +233,7 @@ shared_ptr<Signal> ActionOnSignal::getSignalActedOn() const
 	return this->signal.lock();
 }
 
-ActionOnSignalType_t ActionOnSignal::getActionType() const
+ActionOnVariableType_t ActionOnSignal::getActionType() const
 {
 	return this->actionType;
 }
@@ -254,27 +254,27 @@ LogicValue ActionOnSignal::getActionValue() const
 			// Implicit values
 			switch (this->actionType)
 			{
-			case ActionOnSignalType_t::reset:
+			case ActionOnVariableType_t::reset:
 				publicActionValue = LogicValue::getValue0(this->getActionSize());
 				break;
-			case ActionOnSignalType_t::set:
+			case ActionOnVariableType_t::set:
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case ActionOnSignalType_t::activeOnState: // May be implicit on one-bit signals
+			case ActionOnVariableType_t::activeOnState: // May be implicit on one-bit signals
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case ActionOnSignalType_t::pulse: // May be implicit on one-bit signals
+			case ActionOnVariableType_t::pulse: // May be implicit on one-bit signals
 				publicActionValue = LogicValue::getValue1(this->getActionSize());
 				break;
-			case ActionOnSignalType_t::increment:
+			case ActionOnVariableType_t::increment:
 				publicActionValue = l_signal->getCurrentValue();
 				publicActionValue.increment();
 				break;
-			case ActionOnSignalType_t::decrement:
+			case ActionOnVariableType_t::decrement:
 				publicActionValue = l_signal->getCurrentValue();
 				publicActionValue.decrement();
 				break;
-			case ActionOnSignalType_t::assign:
+			case ActionOnVariableType_t::assign:
 				// Should not happen: only explicit values here
 				break;
 			}
@@ -325,10 +325,10 @@ bool ActionOnSignal::isActionValueEditable() const
 	}
 	else
 	{
-		if ( (this->actionType == ActionOnSignalType_t::set)      ||
-		     (this->actionType == ActionOnSignalType_t::reset)    ||
-		     (this->actionType == ActionOnSignalType_t::increment)||
-		     (this->actionType == ActionOnSignalType_t::decrement) )
+		if ( (this->actionType == ActionOnVariableType_t::set)      ||
+			 (this->actionType == ActionOnVariableType_t::reset)    ||
+			 (this->actionType == ActionOnVariableType_t::increment)||
+			 (this->actionType == ActionOnVariableType_t::decrement) )
 			return false;
 		else
 			return true;
@@ -345,15 +345,15 @@ void ActionOnSignal::beginAction()
 
 		switch (this->actionType)
 		{
-		case ActionOnSignalType_t::pulse:
-		case ActionOnSignalType_t::activeOnState:
+		case ActionOnVariableType_t::pulse:
+		case ActionOnVariableType_t::activeOnState:
 			this->isActionActing = true;
 			break;
-		case ActionOnSignalType_t::reset:
-		case ActionOnSignalType_t::set:
-		case ActionOnSignalType_t::assign:
-		case ActionOnSignalType_t::increment:
-		case ActionOnSignalType_t::decrement:
+		case ActionOnVariableType_t::reset:
+		case ActionOnVariableType_t::set:
+		case ActionOnVariableType_t::assign:
+		case ActionOnVariableType_t::increment:
+		case ActionOnVariableType_t::decrement:
 			// Do not register, value change is definitive
 			break;
 		}
@@ -389,8 +389,8 @@ void ActionOnSignal::signalResizedEventHandler()
 				// Switch to implicit value whatever the signal size was
 				this->actionValue = LogicValue::getNullValue();
 
-				if (this->actionType == ActionOnSignalType_t::assign) // Assign is illegal for single bit signals
-					this->actionType = ActionOnSignalType_t::set;
+				if (this->actionType == ActionOnVariableType_t::assign) // Assign is illegal for single bit signals
+					this->actionType = ActionOnVariableType_t::set;
 			}
 			else // We are now acting on a vector signal
 			{

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -338,7 +338,7 @@ void SceneWidget::toolChangedEventHandler(MachineBuilderTool_t tool)
 		this->updateMouseCursor(MouseCursor_t::none);
 		this->updateSceneAction(SceneAction_t::usingTool, false);
 		break;
-	case MachineBuilderTool_t::initial_state:
+	case MachineBuilderTool_t::initialState:
 	case MachineBuilderTool_t::state:
 		this->updateMouseCursor(MouseCursor_t::state);
 		this->updateSceneAction(SceneAction_t::usingTool, true);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -105,7 +105,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 		result = true;
 		break;
 
-	case MachineBuilderTool_t::initial_state:
+	case MachineBuilderTool_t::initialState:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(true);
 		this->actionAddState->       setChecked(false);
@@ -146,7 +146,7 @@ void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
-		l_machineBuilder->setTool(MachineBuilderTool_t::initial_state);
+		l_machineBuilder->setTool(MachineBuilderTool_t::initialState);
 	else
 		l_machineBuilder->setTool(MachineBuilderTool_t::none);
 }

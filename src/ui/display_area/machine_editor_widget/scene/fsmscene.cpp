@@ -452,7 +452,7 @@ void FsmScene::toolChangeEventHandler(MachineBuilderTool_t newTool)
 {
 	switch(newTool)
 	{
-	case MachineBuilderTool_t::initial_state:
+	case MachineBuilderTool_t::initialState:
 		this->updateSceneMode(SceneMode_t::addingInitialState);
 		break;
 	case MachineBuilderTool_t::state:

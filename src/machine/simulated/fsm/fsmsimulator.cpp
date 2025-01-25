@@ -267,8 +267,8 @@ void FsmSimulator::clockEventHandler()
 			// No transition crossed: look for maintained actions in current state
 			for (auto& action : currentActiveState->getActions())
 			{
-				if ( (action->getActionType() == ActionOnSignalType_t::increment) ||
-				     (action->getActionType() == ActionOnSignalType_t::decrement) )
+				if ( (action->getActionType() == ActionOnVariableType_t::increment) ||
+					 (action->getActionType() == ActionOnVariableType_t::decrement) )
 				{
 					action->beginAction();
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,7 +41,7 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 	// List allowed actions
 	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::pulse) != 0 )
 		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
-	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::activeOnState) != 0 )
+	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::continuous) != 0 )
 		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
 	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::set) != 0 )
 		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
@@ -61,25 +61,25 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 	// Select current action in list
 	switch(action->getActionType())
 	{
-	case ActionOnSignalType_t::pulse:
+	case ActionOnVariableType_t::pulse:
 		this->setCurrentText(tr("Pulse"));
 		break;
-	case ActionOnSignalType_t::activeOnState:
+	case ActionOnVariableType_t::activeOnState:
 		this->setCurrentText(tr("Active on state"));
 		break;
-	case ActionOnSignalType_t::set:
+	case ActionOnVariableType_t::set:
 		this->setCurrentText(tr("Set"));
 		break;
-	case ActionOnSignalType_t::reset:
+	case ActionOnVariableType_t::reset:
 		this->setCurrentText(tr("Reset"));
 		break;
-	case ActionOnSignalType_t::assign:
+	case ActionOnVariableType_t::assign:
 		this->setCurrentText(tr("Assign"));
 		break;
-	case ActionOnSignalType_t::increment:
+	case ActionOnVariableType_t::increment:
 		this->setCurrentText(tr("Increment"));
 		break;
-	case ActionOnSignalType_t::decrement:
+	case ActionOnVariableType_t::decrement:
 		this->setCurrentText(tr("Decrement"));
 		break;
 	}
@@ -98,31 +98,31 @@ void ActionTypeComboBox::processIndexChanged(int index)
 		{
 			if (this->itemText(index) == tr("Pulse"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::pulse); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::pulse); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Active on state"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::activeOnState); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::activeOnState); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Set"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::set); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::set); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Reset"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::reset); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::reset); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Assign"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::assign); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::assign); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Increment"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::increment); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::increment); // Throws StatesException
 			}
 			else if (this->itemText(index) == tr("Decrement"))
 			{
-				l_action->setActionType(ActionOnSignalType_t::decrement); // Throws StatesException
+				l_action->setActionType(ActionOnVariableType_t::decrement); // Throws StatesException
 			}
 		}
 		catch (const StatesException& e)

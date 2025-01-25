@@ -68,8 +68,8 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit Equation(EquationNature_t function, int allowedOperandCount = -1);
-	explicit Equation(EquationNature_t function, const QVector<shared_ptr<Signal>>& operandList);
+	explicit Equation(OperatorType_t function, int allowedOperandCount = -1);
+	explicit Equation(OperatorType_t function, const QVector<shared_ptr<Signal>>& operandList);
 
 	/////
 	// Object functions
@@ -84,8 +84,8 @@ public:
 
 	EquationComputationFailureCause_t getComputationFailureCause() const;
 
-	EquationNature_t getFunction() const;
-	void setFunction(EquationNature_t newFunction);
+	OperatorType_t getFunction() const;
+	void setFunction(OperatorType_t newFunction);
 
 	bool isInverted() const;
 
@@ -123,7 +123,7 @@ private:
 private:
 	EquationComputationFailureCause_t failureCause = EquationComputationFailureCause_t::uncomputed;
 
-	EquationNature_t function;
+	OperatorType_t function;
 	// Different storage for different ownership (weak/shared)
 	QVector<weak_ptr<Signal>>     signalOperands;
 	QVector<shared_ptr<Equation>> equationOperands;

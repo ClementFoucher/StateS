@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -186,19 +186,19 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 			{
 				characteristics.isMoore = true;
 
-				ActionOnSignalType_t actionType = action->getActionType();
+				ActionOnVariableType_t actionType = action->getActionType();
 
 				switch (actionType)
 				{
-				case ActionOnSignalType_t::assign:
-				case ActionOnSignalType_t::set:
-				case ActionOnSignalType_t::reset:
-				case ActionOnSignalType_t::increment:
-				case ActionOnSignalType_t::decrement:
+				case ActionOnVariableType_t::assign:
+				case ActionOnVariableType_t::set:
+				case ActionOnVariableType_t::reset:
+				case ActionOnVariableType_t::increment:
+				case ActionOnVariableType_t::decrement:
 					characteristics.isKeepValue = true;
 					break;
-				case ActionOnSignalType_t::activeOnState:
-				case ActionOnSignalType_t::pulse:
+				case ActionOnVariableType_t::activeOnState:
+				case ActionOnVariableType_t::pulse:
 					characteristics.isTempValue = true;
 					break;
 				}
@@ -221,19 +221,19 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 			{
 				characteristics.isMealy = true;
 
-				ActionOnSignalType_t actionType = action->getActionType();
+				ActionOnVariableType_t actionType = action->getActionType();
 
 				switch (actionType)
 				{
-				case ActionOnSignalType_t::assign:
-				case ActionOnSignalType_t::set:
-				case ActionOnSignalType_t::reset:
-				case ActionOnSignalType_t::increment:
-				case ActionOnSignalType_t::decrement:
+				case ActionOnVariableType_t::assign:
+				case ActionOnVariableType_t::set:
+				case ActionOnVariableType_t::reset:
+				case ActionOnVariableType_t::increment:
+				case ActionOnVariableType_t::decrement:
 					characteristics.isKeepValue = true;
 					break;
-				case ActionOnSignalType_t::activeOnState:
-				case ActionOnSignalType_t::pulse:
+				case ActionOnVariableType_t::activeOnState:
+				case ActionOnVariableType_t::pulse:
 					characteristics.isTempValue = true;
 					break;
 				}
@@ -645,23 +645,23 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	stream << this->signalVhdlName[signal];
 	stream << " <= ";
 
-	ActionOnSignalType_t type = action->getActionType();
+	ActionOnVariableType_t type = action->getActionType();
 
 	if (signal->getSize() == 1)
 	{
 		switch(type)
 		{
-		case ActionOnSignalType_t::activeOnState:
-		case ActionOnSignalType_t::pulse:
-		case ActionOnSignalType_t::set:
+		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::pulse:
+		case ActionOnVariableType_t::set:
 			stream << "'1'";
 			break;
-		case ActionOnSignalType_t::reset:
+		case ActionOnVariableType_t::reset:
 			stream << "'0'";
 			break;
-		case ActionOnSignalType_t::increment:
-		case ActionOnSignalType_t::decrement:
-		case ActionOnSignalType_t::assign:
+		case ActionOnVariableType_t::increment:
+		case ActionOnVariableType_t::decrement:
+		case ActionOnVariableType_t::assign:
 			// Impossible cases
 			break;
 		}
@@ -670,23 +670,23 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	{
 		switch(type)
 		{
-		case ActionOnSignalType_t::activeOnState:
-		case ActionOnSignalType_t::pulse:
+		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::pulse:
 			stream << "\"" <<  action->getActionValue().toString() << "\"";
 			break;
-		case ActionOnSignalType_t::set:
+		case ActionOnVariableType_t::set:
 			stream << "\"" << LogicValue::getValue1(signal->getSize()).toString() << "\"";
 			break;
-		case ActionOnSignalType_t::reset:
+		case ActionOnVariableType_t::reset:
 			stream << "\"" << LogicValue::getValue0(signal->getSize()).toString() << "\"";
 			break;
-		case ActionOnSignalType_t::assign:
+		case ActionOnVariableType_t::assign:
 			stream << "\"" << action->getActionValue().toString() << "\"";
 			break;
-		case ActionOnSignalType_t::increment:
+		case ActionOnVariableType_t::increment:
 			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " + 1)";
 			break;
-		case ActionOnSignalType_t::decrement:
+		case ActionOnVariableType_t::decrement:
 			stream << "std_logic_vector(unsigned(" << this->signalVhdlName[signal] << " - 1)";
 			break;
 		}
@@ -703,14 +703,14 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 
 	if (complexEquation != nullptr)
 	{
-		EquationNature_t function = complexEquation->getFunction();
+		OperatorType_t function = complexEquation->getFunction();
 
 		// Prefix
-		if (function == EquationNature_t::constant)
+		if (function == OperatorType_t::constant)
 		{
 			text += "\"" + complexEquation->getCurrentValue().toString() + "\"";
 		}
-		else if (function == EquationNature_t::extractOp)
+		else if (function == OperatorType_t::extractOp)
 		{
 			int rangeL = complexEquation->getRangeL();
 			int rangeR = complexEquation->getRangeR();
@@ -728,7 +728,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 
 			text += ")";
 		}
-		else if (function == EquationNature_t::notOp)
+		else if (function == OperatorType_t::notOp)
 		{
 			text += "not ";
 			text += generateEquationText(complexEquation->getOperand(0), l_machine); // Throws StatesException - Not op always has operand 0, even if nullptr - ignored
@@ -747,37 +747,37 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 				{
 					switch(function)
 					{
-					case EquationNature_t::andOp:
+					case OperatorType_t::andOp:
 						text += " and ";
 						break;
-					case EquationNature_t::orOp:
+					case OperatorType_t::orOp:
 						text += " or ";
 						break;
-					case EquationNature_t::xorOp:
+					case OperatorType_t::xorOp:
 						text += " xor ";
 						break;
-					case EquationNature_t::nandOp:
+					case OperatorType_t::nandOp:
 						text += " nand ";
 						break;
-					case EquationNature_t::norOp:
+					case OperatorType_t::norOp:
 						text += " nor ";
 						break;
-					case EquationNature_t::xnorOp:
+					case OperatorType_t::xnorOp:
 						text += " xnor ";
 						break;
-					case EquationNature_t::equalOp:
+					case OperatorType_t::equalOp:
 						text += " = ";
 						break;
-					case EquationNature_t::diffOp:
+					case OperatorType_t::diffOp:
 						text += " /= ";
 						break;
-					case EquationNature_t::concatOp:
+					case OperatorType_t::concatOp:
 						text += "&";
 						break;
-					case EquationNature_t::extractOp:
-					case EquationNature_t::notOp:
-					case EquationNature_t::constant:
-					case EquationNature_t::identity:
+					case OperatorType_t::extractOp:
+					case OperatorType_t::notOp:
+					case OperatorType_t::constant:
+					case OperatorType_t::identity:
 						break;
 					}
 				}

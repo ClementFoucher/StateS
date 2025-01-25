@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -227,22 +227,22 @@ bool Machine::setName(const QString& newName)
 	}
 }
 
-shared_ptr<Signal> Machine::addSignal(SignalType_t type, const QString& name, const LogicValue& value)
+shared_ptr<Signal> Machine::addSignal(VariableNature_t type, const QString& name, const LogicValue& value)
 {
 	uint rank;
 
 	switch(type)
 	{
-	case SignalType_t::Input:
+	case VariableNature_t::input:
 		rank = this->inputs.count();
 		break;
-	case SignalType_t::Output:
+	case VariableNature_t::output:
 		rank = this->outputs.count();
 		break;
-	case SignalType_t::LocalVariable:
+	case VariableNature_t::internal:
 		rank = this->localVariables.count();
 		break;
-	case SignalType_t::Constant:
+	case VariableNature_t::constant:
 		rank = this->constants.count();
 		break;
 	default:
@@ -252,7 +252,7 @@ shared_ptr<Signal> Machine::addSignal(SignalType_t type, const QString& name, co
 	return this->addSignalAtRank(type, name, rank, value);
 }
 
-shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& name, uint rank, const LogicValue& value)
+shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value)
 {
 	// First check if name doesn't already exist
 	for (shared_ptr<Signal> signal : this->getAllSignals())
@@ -281,7 +281,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& na
 	shared_ptr<Signal> signal;
 	switch(type)
 	{
-	case SignalType_t::Input:
+	case VariableNature_t::input:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
 
@@ -293,14 +293,14 @@ shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& na
 		emit this->machineInputListChangedEvent();
 
 		break;
-	case SignalType_t::Output:
+	case VariableNature_t::output:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
 
 		emit this->machineOutputListChangedEvent();
 
 		break;
-	case SignalType_t::LocalVariable:
+	case VariableNature_t::internal:
 		signal = shared_ptr<Signal>(new Signal(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
 
@@ -312,7 +312,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(SignalType_t type, const QString& na
 		emit this->machineLocalVariableListChangedEvent();
 
 		break;
-	case SignalType_t::Constant:
+	case VariableNature_t::constant:
 		signal = dynamic_pointer_cast<Signal>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
 

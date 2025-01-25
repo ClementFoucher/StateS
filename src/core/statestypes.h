@@ -45,18 +45,18 @@ enum class SimulationMode_t              { editMode, simulateMode };
 enum class ImageFormat_t                 { pdf, svg, png, jpg };
 enum class LeftRight_t                   { left, right };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
-enum class ActionOnSignalType_t          { activeOnState, pulse, set, reset, assign, increment, decrement };
-enum class SignalType_t                  { Input, Output, LocalVariable, Constant };
+enum class ActionOnVariableType_t        { activeOnState, pulse, set, reset, assign, increment, decrement };
+enum class VariableNature_t              { input, output, internal, constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };
-enum class MachineType_t                 { None, Fsm };
+enum class MachineType_t                 { none, fsm };
 enum class MouseCursor_t                 { none, state, transition };
-enum class MachineBuilderTool_t          { none, initial_state, state, transition };
+enum class MachineBuilderTool_t          { none, initialState, state, transition };
 enum class MachineBuilderSingleUseTool_t { none, drawTransitionFromScene, editTransitionSource, editTransitionTarget };
 
 
 // This enum must always be treated using a switch in order to obtain
 // a warning when adding a new member in all places it is used.
-enum class EquationNature_t
+enum class OperatorType_t
 {
 	notOp,  // Not equations always have exactly one operand
 	andOp,
@@ -87,14 +87,14 @@ enum class EquationComputationFailureCause_t
 
 enum class actuatorAllowedActionType_t : uint
 {
-	none          = 0x0,
-	activeOnState = 0x1,
-	pulse         = 0x2,
-	set           = 0x4,
-	reset         = 0x8,
-	assign        = 0x10,
-	increment     = 0x20,
-	decrement     = 0x40
+	none       = 0x0,
+	continuous = 0x1,
+	pulse      = 0x2,
+	set        = 0x4,
+	reset      = 0x8,
+	assign     = 0x10,
+	increment  = 0x20,
+	decrement  = 0x40
 };
 
 enum class UndoCommandId_t : int32_t

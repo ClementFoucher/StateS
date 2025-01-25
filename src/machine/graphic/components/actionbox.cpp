@@ -129,15 +129,15 @@ void ActionBox::buildActionBox()
 
 		switch (currentAction->getActionType())
 		{
-		case ActionOnSignalType_t::set:
-		case ActionOnSignalType_t::reset:
-		case ActionOnSignalType_t::assign:
+		case ActionOnVariableType_t::set:
+		case ActionOnVariableType_t::reset:
+		case ActionOnVariableType_t::assign:
 			currentActionText += "<span style=\"color:black;\">";
 			currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
 			currentActionText += "</span>";
 			break;
-		case ActionOnSignalType_t::activeOnState:
-		case ActionOnSignalType_t::pulse:
+		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::pulse:
 			if (currentAction->getActionSize() > 1)
 			{
 				currentActionText += "<span style=\"color:black;\">";
@@ -145,12 +145,12 @@ void ActionBox::buildActionBox()
 				currentActionText += "</span>";
 			}
 			break;
-		case ActionOnSignalType_t::increment:
+		case ActionOnVariableType_t::increment:
 			currentActionText += "<span style=\"color:black;\">";
 			currentActionText += " ← " + currentSignal->getName() + " + 1";
 			currentActionText += "</span>";
 			break;
-		case ActionOnSignalType_t::decrement:
+		case ActionOnVariableType_t::decrement:
 			currentActionText += "<span style=\"color:black;\">";
 			currentActionText += " ← " + currentSignal->getName() + " - 1";
 			currentActionText += "</span>";

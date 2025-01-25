@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2024 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -168,19 +168,19 @@ void MachineXmlParser::parseSignal()
 	shared_ptr<Signal> signal;
 	if (nodeName == "Input")
 	{
-		signal = machine->addSignal(SignalType_t::Input, signalName);
+		signal = machine->addSignal(VariableNature_t::input, signalName);
 	}
 	else if (nodeName == "Output")
 	{
-		signal = machine->addSignal(SignalType_t::Output, signalName);
+		signal = machine->addSignal(VariableNature_t::output, signalName);
 	}
 	else if (nodeName == "Variable")
 	{
-		signal = machine->addSignal(SignalType_t::LocalVariable, signalName);
+		signal = machine->addSignal(VariableNature_t::internal, signalName);
 	}
 	else if (nodeName == "Constant")
 	{
-		signal = machine->addSignal(SignalType_t::Constant, signalName);
+		signal = machine->addSignal(VariableNature_t::constant, signalName);
 	}
 	else
 	{
@@ -283,36 +283,36 @@ void MachineXmlParser::parseAction()
 			return;
 		}
 
-		ActionOnSignalType_t actionType;
+		ActionOnVariableType_t actionType;
 		QString actionTypeText = attributes.value("Action_Type").toString();
 
 		if (actionTypeText == "Pulse")
 		{
-			actionType = ActionOnSignalType_t::pulse;
+			actionType = ActionOnVariableType_t::pulse;
 		}
 		else if (actionTypeText == "ActiveOnState")
 		{
-			actionType = ActionOnSignalType_t::activeOnState;
+			actionType = ActionOnVariableType_t::activeOnState;
 		}
 		else if (actionTypeText == "Set")
 		{
-			actionType = ActionOnSignalType_t::set;
+			actionType = ActionOnVariableType_t::set;
 		}
 		else if (actionTypeText == "Reset")
 		{
-			actionType = ActionOnSignalType_t::reset;
+			actionType = ActionOnVariableType_t::reset;
 		}
 		else if (actionTypeText == "Assign")
 		{
-			actionType = ActionOnSignalType_t::assign;
+			actionType = ActionOnVariableType_t::assign;
 		}
 		else if (actionTypeText == "Increment")
 		{
-			actionType = ActionOnSignalType_t::increment;
+			actionType = ActionOnVariableType_t::increment;
 		}
 		else if (actionTypeText == "Decrement")
 		{
-			actionType = ActionOnSignalType_t::decrement;
+			actionType = ActionOnVariableType_t::decrement;
 		}
 		else
 		{
@@ -460,7 +460,7 @@ void MachineXmlParser::parseLogicEquation()
 	}
 	else if (nodeName == "LogicEquation")
 	{
-		EquationNature_t equationType;
+		OperatorType_t equationType;
 		int rangeL = -1;
 		int rangeR = -1;
 		LogicValue constantValue;
@@ -477,28 +477,28 @@ void MachineXmlParser::parseLogicEquation()
 
 		QString valueNature = attributes.value("Nature").toString();
 		if (valueNature == "not")
-			equationType = EquationNature_t::notOp;
+			equationType = OperatorType_t::notOp;
 		else if (valueNature == "and")
-			equationType = EquationNature_t::andOp;
+			equationType = OperatorType_t::andOp;
 		else if (valueNature == "or")
-			equationType = EquationNature_t::orOp;
+			equationType = OperatorType_t::orOp;
 		else if (valueNature == "xor")
-			equationType = EquationNature_t::xorOp;
+			equationType = OperatorType_t::xorOp;
 		else if (valueNature == "nand")
-			equationType = EquationNature_t::nandOp;
+			equationType = OperatorType_t::nandOp;
 		else if (valueNature == "nor")
-			equationType = EquationNature_t::norOp;
+			equationType = OperatorType_t::norOp;
 		else if (valueNature == "xnor")
-			equationType = EquationNature_t::xnorOp;
+			equationType = OperatorType_t::xnorOp;
 		else if (valueNature == "equals")
-			equationType = EquationNature_t::equalOp;
+			equationType = OperatorType_t::equalOp;
 		else if (valueNature == "differs")
-			equationType = EquationNature_t::diffOp;
+			equationType = OperatorType_t::diffOp;
 		else if (valueNature == "concatenate")
-			equationType = EquationNature_t::concatOp;
+			equationType = OperatorType_t::concatOp;
 		else if (valueNature == "extract")
 		{
-			equationType = EquationNature_t::extractOp;
+			equationType = OperatorType_t::extractOp;
 
 			srangel = attributes.value("RangeL").toString();
 			sranger = attributes.value("RangeR").toString();
@@ -513,7 +513,7 @@ void MachineXmlParser::parseLogicEquation()
 		}
 		else if (valueNature == "constant")
 		{
-			equationType = EquationNature_t::constant;
+			equationType = OperatorType_t::constant;
 
 			try
 			{
@@ -559,11 +559,11 @@ void MachineXmlParser::parseLogicEquation()
 			newEquation = shared_ptr<Equation>(new Equation(equationType));
 		}
 
-		if (equationType == EquationNature_t::constant)
+		if (equationType == OperatorType_t::constant)
 		{
 			newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for signal size - ignored
 		}
-		else if (equationType == EquationNature_t::extractOp)
+		else if (equationType == OperatorType_t::extractOp)
 		{
 			newEquation->setRange(rangeL, rangeR);
 		}

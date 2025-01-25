@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,7 +46,7 @@
 #include "exceptiontypes.h"
 
 
-SignalListEditor::SignalListEditor(SignalType_t editorType, QWidget* parent) :
+SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent) :
     QWidget(parent)
 {
 	this->editorType = editorType;
@@ -54,7 +54,7 @@ SignalListEditor::SignalListEditor(SignalType_t editorType, QWidget* parent) :
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	QStringList headerTexts;
 
-	if (editorType == SignalType_t::Input)
+	if (editorType == VariableNature_t::input)
 	{
 		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
@@ -65,7 +65,7 @@ SignalListEditor::SignalListEditor(SignalType_t editorType, QWidget* parent) :
 
 		this->newSignalsPrefix = tr("Input");
 	}
-	else if (editorType == SignalType_t::Output)
+	else if (editorType == VariableNature_t::output)
 	{
 		this->signalsList = new TableWidgetWithResizeEvent(0, 2, this);
 
@@ -75,7 +75,7 @@ SignalListEditor::SignalListEditor(SignalType_t editorType, QWidget* parent) :
 
 		this->newSignalsPrefix = tr("Output");
 	}
-	else if (editorType == SignalType_t::LocalVariable)
+	else if (editorType == VariableNature_t::internal)
 	{
 		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
@@ -86,7 +86,7 @@ SignalListEditor::SignalListEditor(SignalType_t editorType, QWidget* parent) :
 
 		this->newSignalsPrefix = tr("Variable");
 	}
-	else if (editorType == SignalType_t::Constant)
+	else if (editorType == VariableNature_t::constant)
 	{
 		this->signalsList = new TableWidgetWithResizeEvent(0, 3, this);
 
@@ -251,7 +251,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 				data.setValue((int)ContextAction_t::ResizeSignal);
 				actionToAdd->setData(data);
 
-				if (this->editorType != SignalType_t::Output)
+				if (this->editorType != VariableNature_t::output)
 				{
 					actionToAdd = menu->addAction(tr("Change variable value"));
 					data.setValue((int)ContextAction_t::ChangeSignalValue);
@@ -346,19 +346,19 @@ void SignalListEditor::updateList()
 	// Get signals I have to deal with
 	QList<shared_ptr<Signal>> signalsToAdd;
 
-	if (this->editorType == SignalType_t::Input)
+	if (this->editorType == VariableNature_t::input)
 	{
 		signalsToAdd = machine->getInputsAsSignals();
 	}
-	else if (this->editorType == SignalType_t::Output)
+	else if (this->editorType == VariableNature_t::output)
 	{
 		signalsToAdd = machine->getOutputsAsSignals();
 	}
-	else if (this->editorType == SignalType_t::LocalVariable)
+	else if (this->editorType == VariableNature_t::internal)
 	{
 		signalsToAdd = machine->getLocalVariables();
 	}
-	else if (this->editorType == SignalType_t::Constant)
+	else if (this->editorType == VariableNature_t::constant)
 	{
 		signalsToAdd = machine->getConstants();
 	}
