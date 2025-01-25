@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -49,7 +49,7 @@ ResourceBar::ResourceBar(QWidget* parent) :
 
 void ResourceBar::setSelectedItem(componentId_t componentId)
 {
-	if (componentId == 0)
+	if (componentId == nullId)
 	{
 		this->clearSelection();
 		return;

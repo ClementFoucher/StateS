@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -147,7 +147,7 @@ private:
 	// Transition adding/edition
 	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 	FsmGraphicTransition* dummyTransition = nullptr;
-	componentId_t transitionUnderEditId = 0;
+	componentId_t transitionUnderEditId = nullId;
 
 	// Temporary variables
 	QPointF menuMousePos;

@@ -441,7 +441,7 @@ void FsmScene::machineUpdatedEventHandler()
 	delete this->dummyTransition;
 	this->dummyTransition = nullptr;
 
-	this->transitionUnderEditId = 0;
+	this->transitionUnderEditId = nullId;
 	this->sceneMode = SceneMode_t::idle;
 	this->transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 
@@ -630,7 +630,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transition
 
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
-	this->dummyTransition = new FsmGraphicTransition(0, transition->getTargetStateId(), sceneMousePos);
+	this->dummyTransition = new FsmGraphicTransition(nullId, transition->getTargetStateId(), sceneMousePos);
 	this->transitionUnderEditId = transition->getLogicComponentId();
 	this->addTransition(this->dummyTransition, false);
 
@@ -654,7 +654,7 @@ void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transition
 
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
-	this->dummyTransition = new FsmGraphicTransition(transition->getSourceStateId(), 0, sceneMousePos);
+	this->dummyTransition = new FsmGraphicTransition(transition->getSourceStateId(), nullId, sceneMousePos);
 	this->transitionUnderEditId = transition->getLogicComponentId();
 	this->addTransition(this->dummyTransition, false);
 
@@ -718,7 +718,7 @@ void FsmScene::handleSelection()
 	}
 	else
 	{
-		emit itemSelectedEvent(0);
+		emit itemSelectedEvent(nullId);
 	}
 }
 
@@ -950,14 +950,14 @@ void FsmScene::beginDrawTransition(FsmGraphicState* source, const QPointF& curre
 	{
 		if (!currentMousePos.isNull())
 		{
-			this->dummyTransition = new FsmGraphicTransition(source->getLogicComponentId(), 0, currentMousePos);
+			this->dummyTransition = new FsmGraphicTransition(source->getLogicComponentId(), nullId, currentMousePos);
 		}
 		else
 		{
 			// Compute mouse pos wrt. scene
 			QGraphicsView* currentView = this->views().constFirst();
 			QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
-			this->dummyTransition = new FsmGraphicTransition(source->getLogicComponentId(), 0, sceneMousePos);
+			this->dummyTransition = new FsmGraphicTransition(source->getLogicComponentId(), nullId, sceneMousePos);
 		}
 
 		this->addTransition(this->dummyTransition, false);

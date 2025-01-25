@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -38,7 +38,7 @@ componentId_t Fsm::addState(bool isInitial, QString name, componentId_t id)
 	shared_ptr<FsmState> state = nullptr;
 	componentId_t stateId;
 
-	if (id != 0)
+	if (id != nullId)
 	{
 		state = shared_ptr<FsmState>(new FsmState(id, this->getUniqueStateName(name)));
 		stateId = id;
@@ -65,12 +65,12 @@ componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targ
 	auto source = this->getState(sourceStateId);
 	auto target = this->getState(targetStateId);
 
-	if ( (source == nullptr) || (target == nullptr) ) return 0;
+	if ( (source == nullptr) || (target == nullptr) ) return nullId;
 
 	shared_ptr<FsmTransition> transition;
 	componentId_t transitionId;
 
-	if (id != 0)
+	if (id != nullId)
 	{
 		transition = shared_ptr<FsmTransition>(new FsmTransition(id, source->getId(), target->getId()));
 		transitionId = id;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -315,13 +315,13 @@ void FsmXmlParser::parseState()
 		componentId_t extractedId = attributes.value("Id").toULong(&ok);
 		if (ok == false)
 		{
-			extractedId = 0;
+			extractedId = nullId;
 		}
 
 		// Build state
 		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
 		componentId_t stateId;
-		if (extractedId != 0)
+		if (extractedId != nullId)
 		{
 			stateId = fsm->addState(isInitial, stateName, extractedId);
 		}
@@ -390,12 +390,12 @@ void FsmXmlParser::parseTransition()
 		componentId_t extractedId = attributes.value("Id").toULong(&ok);
 		if (ok == false)
 		{
-			extractedId = 0;
+			extractedId = nullId;
 		}
 
 		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
 		componentId_t transitionId;
-		if (extractedId != 0)
+		if (extractedId != nullId)
 		{
 			transitionId = fsm->addTransition(source->getId(), target->getId(), extractedId);
 		}

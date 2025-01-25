@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2024 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,6 +30,12 @@
 // Typedefs
 
 typedef ulong componentId_t;
+
+
+/////
+// Constants
+
+const componentId_t nullId = 0;
 
 
 /////

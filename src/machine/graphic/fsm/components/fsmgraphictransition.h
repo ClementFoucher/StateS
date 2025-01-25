@@ -136,15 +136,15 @@ protected:
 
 private:
 	// A FSM graphic transition must always have at least a source (may not have a target when drawing)
-	componentId_t sourceStateId = 0;
-	componentId_t targetStateId = 0;
+	componentId_t sourceStateId = nullId;
+	componentId_t targetStateId = nullId;
 
 	// Dynamic mode
 	Mode_t currentMode;
 	// This will be used if one of the linked state is missing in dynamic mode
 	QPointF mousePosition;
 	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
-	componentId_t dynamicStateId = 0;
+	componentId_t dynamicStateId = nullId;
 	bool isUnderEdit = false;
 
 	// Components of the arrow

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -54,7 +54,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	componentId_t stateId = 0;
+	componentId_t stateId = nullId;
 
 	DynamicLineEdit* textStateName = nullptr;
 

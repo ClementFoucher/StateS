@@ -59,7 +59,7 @@ private:
 	// Object variables
 protected:
 	qreal textHeight = 0;
-	componentId_t actuatorId = 0;
+	componentId_t actuatorId = nullId;
 	bool addLine;
 	QGraphicsPathItem* actionsOutline = nullptr;
 	QGraphicsLineItem* leftLine       = nullptr;

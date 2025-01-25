@@ -117,10 +117,10 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 }
 
 FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
-    GraphicComponent(0)
+	GraphicComponent(nullId)
 {
-	if ( ( (sourceStateId != 0) && (targetStateId != 0) ) ||
-	     ( (sourceStateId == 0) && (targetStateId == 0) )
+	if ( ( (sourceStateId != nullId) && (targetStateId != nullId) ) ||
+		 ( (sourceStateId == nullId) && (targetStateId == nullId) )
 	   )
 	{
 		this->currentMode = Mode_t::errorMode;
@@ -130,12 +130,12 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 	this->initializeDefaults();
 	this->currentPen = &drawingPen;
 
-	if (sourceStateId != 0)
+	if (sourceStateId != nullId)
 	{
 		this->sourceStateId = sourceStateId;
 		this->currentMode = Mode_t::dynamicTargetMode;
 	}
-	else if (targetStateId != 0)
+	else if (targetStateId != nullId)
 	{
 		this->targetStateId = targetStateId;
 		this->currentMode = Mode_t::dynamicSourceMode;
@@ -143,7 +143,7 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 
 	this->buildChildren();
 
-	this->dynamicStateId = 0;
+	this->dynamicStateId = nullId;
 	this->mousePosition = dynamicMousePosition;
 
 	this->buildRepresentation();
@@ -245,7 +245,7 @@ void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
 
 void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
 {
-	this->dynamicStateId = 0;
+	this->dynamicStateId = nullId;
 	this->mousePosition = mousePos;
 
 	this->refreshDisplay();
@@ -434,8 +434,8 @@ void FsmGraphicTransition::buildRepresentation()
 	// For ends that are connected to a state, center is used as a first approximation
 	QPointF currentSourcePoint;
 	QPointF currentTargetPoint;
-	componentId_t currentSourceStateId = 0;
-	componentId_t currentTargetStateId = 0;
+	componentId_t currentSourceStateId = nullId;
+	componentId_t currentTargetStateId = nullId;
 	auto currentSourceState = graphicFsm->getState(this->sourceStateId);
 	auto currentTargetState = graphicFsm->getState(this->targetStateId);
 
@@ -449,7 +449,7 @@ void FsmGraphicTransition::buildRepresentation()
 	}
 	else if (this->currentMode == Mode_t::dynamicSourceMode)
 	{
-		if (this->dynamicStateId != 0)
+		if (this->dynamicStateId != nullId)
 		{
 			auto dynamicState = graphicFsm->getState(this->dynamicStateId);
 			currentSourcePoint = dynamicState->scenePos();
@@ -458,7 +458,7 @@ void FsmGraphicTransition::buildRepresentation()
 		else
 		{
 			currentSourcePoint = this->mousePosition;
-			currentSourceStateId = 0;
+			currentSourceStateId = nullId;
 		}
 
 		currentTargetPoint = currentTargetState->scenePos();
@@ -469,7 +469,7 @@ void FsmGraphicTransition::buildRepresentation()
 		currentSourcePoint = currentSourceState->scenePos();
 		currentSourceStateId = this->sourceStateId;
 
-		if (this->dynamicStateId != 0)
+		if (this->dynamicStateId != nullId)
 		{
 			auto dynamicState = graphicFsm->getState(this->dynamicStateId);
 			currentTargetPoint = dynamicState->scenePos();
@@ -478,13 +478,13 @@ void FsmGraphicTransition::buildRepresentation()
 		else
 		{
 			currentTargetPoint = this->mousePosition;
-			currentTargetStateId = 0;
+			currentTargetStateId = nullId;
 		}
 	}
 
 	//
 	// Redraw arrow body
-	if (this->logicComponentId == 0)
+	if (this->logicComponentId == nullId)
 	{
 		// Currently adding or editing a transition
 		if (currentSourceStateId != currentTargetStateId)
@@ -501,7 +501,7 @@ void FsmGraphicTransition::buildRepresentation()
 		auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 		if (graphicFsm == nullptr) return;
 
-		if ( (graphicFsm->getTransitionRank(this->logicComponentId) == 0) && (currentSourceStateId != currentTargetStateId) )
+		if ( (graphicFsm->getTransitionRank(this->logicComponentId) == nullId) && (currentSourceStateId != currentTargetStateId) )
 		{
 			this->drawStraightTransition(currentSourcePoint, currentTargetPoint);
 		}
@@ -724,7 +724,7 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 	QLineF straightLine(QPointF(0, 0), currentTargetPoint - currentSourcePoint);
 
 	// Set line appropriate size (reduce current size by correct number of state radius to point on states border)
-	if ( ((this->currentMode == Mode_t::dynamicSourceMode) || (this->currentMode == Mode_t::dynamicTargetMode)) && (this->dynamicStateId == 0) )
+	if ( ((this->currentMode == Mode_t::dynamicSourceMode) || (this->currentMode == Mode_t::dynamicTargetMode)) && (this->dynamicStateId == nullId) )
 	{
 		// Reduce line length to match space between state center and mouse position
 		straightLine.setLength(straightLine.length() - FsmGraphicState::getRadius());
@@ -741,7 +741,7 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 	this->arrowBody = line;
 
 	// If source is a state, line should be translated to begin on state border
-	if ( !((this->currentMode == Mode_t::dynamicSourceMode) && (this->dynamicStateId == 0)) )
+	if ( !((this->currentMode == Mode_t::dynamicSourceMode) && (this->dynamicStateId == nullId)) )
 	{
 		// Translation vector is based on straight line (same vector) and normalized to required translation length
 		QLineF translationVector(straightLine);

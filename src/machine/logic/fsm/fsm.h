@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -49,8 +49,8 @@ public:
 
 	// Components accessors and mutators
 
-	componentId_t addState     (bool isInitial = false, QString name = QString(), componentId_t id = 0);
-	componentId_t addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id = 0);
+	componentId_t addState     (bool isInitial = false, QString name = QString(), componentId_t id = nullId);
+	componentId_t addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id = nullId);
 
 	void removeState     (componentId_t stateId);
 	void removeTransition(componentId_t transitionId);
@@ -79,7 +79,7 @@ private:
 	// Object variables
 private:
 	//FSM characteristic
-	componentId_t initialStateId = 0;
+	componentId_t initialStateId = nullId;
 
 	// Maintain lists of states and transitions to allow fast access
 	QList<componentId_t> states;

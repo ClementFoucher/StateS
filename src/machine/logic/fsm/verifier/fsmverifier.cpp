@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -65,7 +65,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 	else
 	{
 		// Check initial state
-		if (fsm->getInitialStateId() == 0)
+		if (fsm->getInitialStateId() == nullId)
 		{
 			shared_ptr<Issue> issue(new Issue());
 			issue->text = tr("No initial state.");

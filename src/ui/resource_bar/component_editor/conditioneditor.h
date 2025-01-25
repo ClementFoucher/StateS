@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -71,7 +71,7 @@ private:
 	/////
 	// Object variables
 private:
-	componentId_t transitionId = 0;
+	componentId_t transitionId = nullId;
 	shared_ptr<TruthTable> truthTable;
 
 	// QWidgets with parent

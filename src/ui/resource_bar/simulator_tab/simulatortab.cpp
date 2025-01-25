@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -71,7 +71,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 	{
 		if (this->simulationTools == nullptr)
 		{
-			if (fsm->getInitialStateId() != 0)
+			if (fsm->getInitialStateId() != nullId)
 			{
 				// First thing to do would be to check machine correctness
 

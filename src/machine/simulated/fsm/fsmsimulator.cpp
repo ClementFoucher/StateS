@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -98,7 +98,7 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 
 void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 {
-	if (this->activeStateId != 0)
+	if (this->activeStateId != nullId)
 	{
 		auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
 		if (previousActiveState != nullptr)
@@ -126,10 +126,10 @@ void FsmSimulator::resetEventHandler()
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	this->latestTransitionCrossedId = 0;
+	this->latestTransitionCrossedId = nullId;
 
 	// Disable any active state
-	if (this->activeStateId != 0)
+	if (this->activeStateId != nullId)
 	{
 		auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
 		if (previousActiveState != nullptr)
@@ -172,7 +172,7 @@ void FsmSimulator::clockEventHandler()
 	if (latestTransitionCrossed != nullptr)
 	{
 		latestTransitionCrossed->deactivateActions();
-		this->latestTransitionCrossedId = 0;
+		this->latestTransitionCrossedId = nullId;
 	}
 
 	//
