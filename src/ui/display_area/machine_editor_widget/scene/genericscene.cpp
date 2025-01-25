@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -47,7 +47,8 @@ QRectF GenericScene::getItemsBoundingRect()
 	qreal bottommostPosition = firstItem->mapToScene(firstItem->boundingRect().bottomRight()).y();
 
 	// Then adjust to include all items
-	for (QGraphicsItem* item : this->items())
+	const auto items = this->items();
+	for (QGraphicsItem* item : items)
 	{
 		// Get item's boundig box scene coordinates
 		// Use two points instead of the rect to avoid polygon conversion

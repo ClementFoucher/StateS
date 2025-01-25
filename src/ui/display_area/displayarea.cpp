@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -75,12 +75,17 @@ void DisplayArea::addWidget(QWidget* widget, QString title)
 
 void DisplayArea::removeWidget(QWidget* widget)
 {
-	for (tuple<QString, QWidget*> t : this->widgets)
+	for (tuple<QString, QWidget*> t : as_const(this->widgets))
 	{
 		QWidget* currentWidget = get<1>(t);
 		if (currentWidget == widget)
 		{
 			this->widgets.removeAll(t);
+			// This is necessary as widgets are managed by StateSUI:
+			// if we don't set a null parent, it is still managed by this,
+			// and thus will be deleted when we change the central widget.
+			// TODO: find a better way: it is not clean that there are two
+			// objects in charge of the lifespan of a widget.
 			widget->setParent(nullptr);
 
 			int newWidgetCount = this->widgets.count();
