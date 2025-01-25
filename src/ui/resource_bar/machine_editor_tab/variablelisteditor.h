@@ -53,20 +53,20 @@ private:
 	{
 		initMode,
 		standard,
-		addingSignal,
-		renamingSignal,
-		resizingSignal,
-		changingSignalInitialValue
+		addingVariable,
+		renamingVariable,
+		resizingVariable,
+		changingVariableInitialValue
 	};
 	enum class ContextAction_t : int
 	{
-		Cancel            = 0,
-		DeleteSignal      = 1,
-		Up                = 2,
-		Down              = 3,
-		RenameSignal      = 4,
-		ResizeSignal      = 5,
-		ChangeSignalValue = 6
+		Cancel              = 0,
+		DeleteVariable      = 1,
+		Up                  = 2,
+		Down                = 3,
+		RenameVariable      = 4,
+		ResizeVariable      = 5,
+		ChangeVariableValue = 6
 	};
 
 	/////
@@ -87,47 +87,47 @@ private slots:
 	void updateButtonsEnableState();
 	void handleListResizedEvent();
 
-	// Handle signal add
-	void beginAddSignal();
-	void addingSignalSwitchField(QTableWidgetItem* newItem);
-	void addingSignalCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
-	void endAddSignal();
+	// Handle variable add
+	void beginAddVariable();
+	void addingVariableSwitchField(QTableWidgetItem* newItem);
+	void addingVariableCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
+	void endAddVariable();
 
-	// Handle signal edit
-	void beginEditSignal(QTableWidgetItem* characteristicToEdit);
-	void endRenameSignal();
-	void endResizeSignal();
-	void endChangeSignalInitialValue();
+	// Handle variable edit
+	void beginEditVariable(QTableWidgetItem* characteristicToEdit);
+	void endRenameVariable();
+	void endResizeVariable();
+	void endChangeVariableInitialValue();
 
 	// Add/edit common
 	void validateCurrentEdit();
 	void cancelCurrentEdit();
 
 	// Other
-	void raiseSelectedSignals();
-	void lowerSelectedSignals();
-	void removeSelectedSignals();
+	void raiseSelectedVariables();
+	void lowerSelectedVariables();
+	void removeSelectedVariables();
 	void processMenuEventHandler(QAction* action);
 
 private:
 	void switchMode(ListMode_t newMode);
 	void editCurrentCell(bool erroneous = false);
-	void fixSignalSize();
-	QList<QString> getSelectedSignals();
+	void fixVariableSize();
+	QList<QString> getSelectedVariables();
 
 	/////
 	// Object variables
 private:
 	VariableNature_t editorType;
-	QString newSignalsPrefix;
+	QString newVariablesPrefix;
 
 	ListMode_t currentMode = ListMode_t::initMode;
 
 	// Widgets
 	QGridLayout* buttonLayout = nullptr;
 
-	TableWidgetWithResizeEvent* signalsList  = nullptr;
-	DynamicTableItemDelegate*   listDelegate = nullptr;
+	TableWidgetWithResizeEvent* variablesList = nullptr;
+	DynamicTableItemDelegate*   listDelegate  = nullptr;
 
 	QPushButton* buttonAdd    = nullptr;
 	QPushButton* buttonRemove = nullptr;
@@ -138,16 +138,16 @@ private:
 
 	// Cell under edition
 	QTableWidgetItem* currentTableItem = nullptr;
-	QStringList signalSelectionToRestore;
-	weak_ptr<Variable> currentSignal;
+	QStringList variableSelectionToRestore;
+	weak_ptr<Variable> currentVariable;
 
-	// Signal begin created
-	QTableWidgetItem* currentSignalName  = nullptr;
-	QTableWidgetItem* currentSignalSize  = nullptr;
-	QTableWidgetItem* currentSignalValue = nullptr;
+	// Variable begin created
+	QTableWidgetItem* currentVariableName  = nullptr;
+	QTableWidgetItem* currentVariableSize  = nullptr;
+	QTableWidgetItem* currentVariableValue = nullptr;
 
-	// Used to know which signal is associated to each cell in table
-	QMap<QTableWidgetItem*, weak_ptr<Variable>> associatedSignals;
+	// Used to know which variable is associated to each cell in table
+	QMap<QTableWidgetItem*, weak_ptr<Variable>> associatedVariables;
 
 };
 
