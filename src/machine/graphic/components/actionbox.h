@@ -32,9 +32,9 @@
 #include "statestypes.h"
 
 
-class ActionBox : public QGraphicsItemGroup
+class ActionBox : public QObject, public QGraphicsItemGroup
 {
-	//Q_OBJECT
+	Q_OBJECT
 
 	/////
 	// Static variables
