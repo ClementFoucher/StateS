@@ -19,32 +19,29 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class header
-#include "inputsignalselector.h"
+#ifndef INPUTVARIABLESELECTOR_H
+#define INPUTVARIABLESELECTOR_H
 
-// Qt classes
-#include <QHBoxLayout>
-#include <QLabel>
+// Parent
+#include <QWidget>
+
+// C++ classes
+#include <memory>
+using namespace std;
 
 // StateS classes
-#include "variable.h"
-#include "inputbitselector.h"
+class Variable;
 
 
-InputSignalSelector::InputSignalSelector(shared_ptr<Variable> relatedSignal, QWidget *parent) :
-    QWidget(parent)
+class InputVariableSelector : public QWidget
 {
-	QHBoxLayout* globalLayout = new QHBoxLayout(this);
+	Q_OBJECT
 
-	QLabel* signalName = new QLabel(relatedSignal->getName(), this);
-	globalLayout->addWidget(signalName);
+	/////
+	// Constructors/destructors
+public:
+	explicit InputVariableSelector(shared_ptr<Variable> relatedSignal, QWidget* parent = nullptr);
 
-	QHBoxLayout* bitLayout = new QHBoxLayout();
-	globalLayout->addLayout(bitLayout, 0);
+};
 
-	for (int i = (int)relatedSignal->getSize()-1 ; i >= 0 ; i--)
-	{
-		InputBitSelector* currentBit = new InputBitSelector(relatedSignal, i, this);
-		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
-	}
-}
+#endif // INPUTVARIABLESELECTOR_H

@@ -126,7 +126,7 @@ SOURCES += \
 	src/ui/resource_bar/simulator_tab/simulatortab.cpp \
 	src/ui/resource_bar/simulator_tab/inputbitselector.cpp \
 	src/ui/resource_bar/simulator_tab/inputsselector.cpp \
-	src/ui/resource_bar/simulator_tab/inputsignalselector.cpp \
+	src/ui/resource_bar/simulator_tab/inputvariableselector.cpp \
 	src/ui/display_area/displayarea.cpp \
 	src/ui/display_area/maintoolbar.cpp \
 	src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp \
@@ -248,9 +248,9 @@ HEADERS += \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.h \
 	src/ui/resource_bar/simulator_tab/simulatortab.h \
-	src/ui/resource_bar/simulator_tab/inputsignalselector.h \
 	src/ui/resource_bar/simulator_tab/inputbitselector.h \
 	src/ui/resource_bar/simulator_tab/inputsselector.h \
+	src/ui/resource_bar/simulator_tab/inputvariableselector.h \
 	src/ui/display_area/displayarea.h \
 	src/ui/display_area/maintoolbar.h \
 	src/ui/display_area/machine_editor_widget/machineeditorwidget.h \
