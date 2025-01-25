@@ -65,12 +65,12 @@ SOURCES += \
 	src/machine/logic/machine.cpp \
 	src/machine/logic/components/machinecomponent.cpp \
 	src/machine/logic/components/machineactuatorcomponent.cpp \
-	src/machine/logic/components/signal/actiononsignal.cpp \
-	src/machine/logic/components/signal/input.cpp \
-	src/machine/logic/components/signal/output.cpp \
-	src/machine/logic/components/signal/constant.cpp \
-	src/machine/logic/components/signal/equation.cpp \
-	src/machine/logic/components/signal/variable.cpp \
+	src/machine/logic/components/variable/actiononsignal.cpp \
+	src/machine/logic/components/variable/input.cpp \
+	src/machine/logic/components/variable/output.cpp \
+	src/machine/logic/components/variable/constant.cpp \
+	src/machine/logic/components/variable/equation.cpp \
+	src/machine/logic/components/variable/variable.cpp \
 	src/machine/logic/fsm/fsm.cpp \
 	src/machine/logic/fsm/components/fsmstate.cpp \
 	src/machine/logic/fsm/components/fsmtransition.cpp \
@@ -186,12 +186,12 @@ HEADERS += \
 	src/machine/logic/machine.h \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
-	src/machine/logic/components/signal/actiononsignal.h \
-	src/machine/logic/components/signal/input.h \
-	src/machine/logic/components/signal/output.h \
-	src/machine/logic/components/signal/constant.h \
-	src/machine/logic/components/signal/equation.h \
-	src/machine/logic/components/signal/variable.h \
+	src/machine/logic/components/variable/actiononsignal.h \
+	src/machine/logic/components/variable/input.h \
+	src/machine/logic/components/variable/output.h \
+	src/machine/logic/components/variable/constant.h \
+	src/machine/logic/components/variable/equation.h \
+	src/machine/logic/components/variable/variable.h \
 	src/machine/logic/fsm/fsm.h \
 	src/machine/logic/fsm/components/fsmstate.h \
 	src/machine/logic/fsm/components/fsmtransition.h \
@@ -296,7 +296,7 @@ INCLUDEPATH += \
 	src/machine/graphic/fsm/components \
 	src/machine/logic \
 	src/machine/logic/components \
-	src/machine/logic/components/signal \
+	src/machine/logic/components/variable \
 	src/machine/logic/fsm \
 	src/machine/logic/fsm/components \
 	src/machine/logic/fsm/verifier \
