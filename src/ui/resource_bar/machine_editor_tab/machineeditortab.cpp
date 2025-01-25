@@ -29,7 +29,7 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "signallisteditor.h"
+#include "variablelisteditor.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "dynamiclineedit.h"
@@ -74,10 +74,10 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	QTabWidget* signalsTabs = new QTabWidget(this);
 	layout->addWidget(signalsTabs);
 
-	signalsTabs->insertTab(0, new SignalListEditor(VariableNature_t::input),    tr("Inputs"));
-	signalsTabs->insertTab(1, new SignalListEditor(VariableNature_t::output),   tr("Outputs"));
-	signalsTabs->insertTab(2, new SignalListEditor(VariableNature_t::internal), tr("Variables"));
-	signalsTabs->insertTab(3, new SignalListEditor(VariableNature_t::constant), tr("Constants"));
+	signalsTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
+	signalsTabs->insertTab(1, new VariableListEditor(VariableNature_t::output),   tr("Outputs"));
+	signalsTabs->insertTab(2, new VariableListEditor(VariableNature_t::internal), tr("Variables"));
+	signalsTabs->insertTab(3, new VariableListEditor(VariableNature_t::constant), tr("Constants"));
 
 	signalsTabs->setCurrentIndex(0);
 

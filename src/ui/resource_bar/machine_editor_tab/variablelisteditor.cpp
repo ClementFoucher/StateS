@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "signallisteditor.h"
+#include "variablelisteditor.h"
 
 // C++ classes
 #include <algorithm>
@@ -46,7 +46,7 @@
 #include "exceptiontypes.h"
 
 
-SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent) :
+VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* parent) :
     QWidget(parent)
 {
 	this->editorType = editorType;
@@ -61,7 +61,7 @@ SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent)
 		headerTexts.append(tr("Input"));
 		headerTexts.append(tr("Initial value"));
 
-		connect(machineManager.get(), &MachineManager::machineInputListChangedEvent, this, &SignalListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineInputListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newSignalsPrefix = tr("Input");
 	}
@@ -71,7 +71,7 @@ SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent)
 
 		headerTexts.append(tr("Output"));
 
-		connect(machineManager.get(), &MachineManager::machineOutputListChangedEvent, this, &SignalListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineOutputListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newSignalsPrefix = tr("Output");
 	}
@@ -82,7 +82,7 @@ SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent)
 		headerTexts.append(tr("Variable"));
 		headerTexts.append(tr("Initial value"));
 
-		connect(machineManager.get(), &MachineManager::machineLocalVariableListChangedEvent, this, &SignalListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineLocalVariableListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newSignalsPrefix = tr("Variable");
 	}
@@ -93,12 +93,12 @@ SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent)
 		headerTexts.append(tr("Constant"));
 		headerTexts.append(tr("Value"));
 
-		connect(machineManager.get(), &MachineManager::machineConstantListChangedEvent, this, &SignalListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineConstantListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newSignalsPrefix = tr("Constant");
 	}
 
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &SignalListEditor::updateList);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &VariableListEditor::updateList);
 
 	this->newSignalsPrefix += " #";
 
@@ -138,20 +138,20 @@ SignalListEditor::SignalListEditor(VariableNature_t editorType, QWidget* parent)
 
 	layout->addLayout(this->buttonLayout);
 
-	connect(this->buttonUp,     &QAbstractButton::clicked, this, &SignalListEditor::raiseSelectedSignals);
-	connect(this->buttonDown,   &QAbstractButton::clicked, this, &SignalListEditor::lowerSelectedSignals);
-	connect(this->buttonAdd,    &QAbstractButton::clicked, this, &SignalListEditor::beginAddSignal);
-	connect(this->buttonRemove, &QAbstractButton::clicked, this, &SignalListEditor::removeSelectedSignals);
+	connect(this->buttonUp,     &QAbstractButton::clicked, this, &VariableListEditor::raiseSelectedSignals);
+	connect(this->buttonDown,   &QAbstractButton::clicked, this, &VariableListEditor::lowerSelectedSignals);
+	connect(this->buttonAdd,    &QAbstractButton::clicked, this, &VariableListEditor::beginAddSignal);
+	connect(this->buttonRemove, &QAbstractButton::clicked, this, &VariableListEditor::removeSelectedSignals);
 
 	// To enable/disable buttons when a signal is selected
-	connect(this->signalsList, &QTableWidget::itemSelectionChanged,  this, &SignalListEditor::updateButtonsEnableState);
+	connect(this->signalsList, &QTableWidget::itemSelectionChanged,  this, &VariableListEditor::updateButtonsEnableState);
 
-	connect(this->signalsList, &TableWidgetWithResizeEvent::resized, this, &SignalListEditor::handleListResizedEvent);
+	connect(this->signalsList, &TableWidgetWithResizeEvent::resized, this, &VariableListEditor::handleListResizedEvent);
 
 	this->updateList();
 }
 
-void SignalListEditor::keyPressEvent(QKeyEvent* event)
+void VariableListEditor::keyPressEvent(QKeyEvent* event)
 {
 	bool transmitEvent = true;
 
@@ -176,7 +176,7 @@ void SignalListEditor::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void SignalListEditor::keyReleaseEvent(QKeyEvent* event)
+void VariableListEditor::keyReleaseEvent(QKeyEvent* event)
 {
 	bool transmitEvent = true;
 
@@ -197,7 +197,7 @@ void SignalListEditor::keyReleaseEvent(QKeyEvent* event)
 		QWidget::keyPressEvent(event);
 }
 
-void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
+void VariableListEditor::contextMenuEvent(QContextMenuEvent* event)
 {
 	QPoint correctedPos = signalsList->mapFromParent(event->pos());
 	correctedPos.setX(correctedPos.x() - signalsList->verticalHeader()->width());
@@ -270,7 +270,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 
 				menu->popup(this->mapToGlobal(event->pos()));
 
-				connect(menu, &QMenu::triggered, this, &SignalListEditor::processMenuEventHandler);
+				connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
 			}
 		}
 		else if (list.count() != 0)
@@ -307,13 +307,13 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 
 			menu->popup(this->mapToGlobal(event->pos()));
 
-			connect(menu, &QMenu::triggered, this, &SignalListEditor::processMenuEventHandler);
+			connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
 		}
 	}
 }
 
 /**
- * @brief SignalListEditor::updateList
+ * @brief VariableListEditor::updateList
  * UpdateList totally resets the widget.
  * The list is filled with signals existing
  * in machine at this time.
@@ -321,7 +321,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
  * creation/edition of a signal, or to cancel
  * a creation/edition that has not been validated.
  */
-void SignalListEditor::updateList()
+void VariableListEditor::updateList()
 {
 	// Save previous selection if not overwritten
 	if ( ( this->signalSelectionToRestore.isEmpty() ) && ( this->signalsList->selectedItems().count() != 0 ) )
@@ -341,7 +341,7 @@ void SignalListEditor::updateList()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	disconnect(this->signalsList,  &QTableWidget::itemSelectionChanged, this, &SignalListEditor::updateButtonsEnableState);
+	disconnect(this->signalsList,  &QTableWidget::itemSelectionChanged, this, &VariableListEditor::updateButtonsEnableState);
 
 	// Get signals I have to deal with
 	QList<shared_ptr<Variable>> signalsToAdd;
@@ -409,10 +409,10 @@ void SignalListEditor::updateList()
 
 	this->signalSelectionToRestore.clear();
 	this->updateButtonsEnableState();
-	connect(this->signalsList,  &QTableWidget::itemSelectionChanged, this, &SignalListEditor::updateButtonsEnableState);
+	connect(this->signalsList,  &QTableWidget::itemSelectionChanged, this, &VariableListEditor::updateButtonsEnableState);
 }
 
-void SignalListEditor::updateButtonsEnableState()
+void VariableListEditor::updateButtonsEnableState()
 {
 	this->buttonRemove->setEnabled(false);
 	this->buttonUp->setEnabled(false);
@@ -476,7 +476,7 @@ void SignalListEditor::updateButtonsEnableState()
 	}
 }
 
-void SignalListEditor::handleListResizedEvent()
+void VariableListEditor::handleListResizedEvent()
 {
 	if (this->currentTableItem != nullptr)
 	{
@@ -484,7 +484,7 @@ void SignalListEditor::handleListResizedEvent()
 	}
 }
 
-void SignalListEditor::beginAddSignal()
+void VariableListEditor::beginAddSignal()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -514,11 +514,11 @@ void SignalListEditor::beginAddSignal()
 	this->setFocus(); // Prevent temporarily loosing focus when disabling buttons on mode switch
 	switchMode(ListMode_t::addingSignal);
 
-	connect(this->signalsList, &QTableWidget::itemClicked,        this, &SignalListEditor::addingSignalSwitchField);
-	connect(this->signalsList, &QTableWidget::currentItemChanged, this, &SignalListEditor::addingSignalCurrentItemChanged);
+	connect(this->signalsList, &QTableWidget::itemClicked,        this, &VariableListEditor::addingSignalSwitchField);
+	connect(this->signalsList, &QTableWidget::currentItemChanged, this, &VariableListEditor::addingSignalCurrentItemChanged);
 }
 
-void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
+void VariableListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
 {
 	// Ignore clicks on disabled cells
 	if ( (newItem->flags() & Qt::ItemIsEnabled) == 0 ) return;
@@ -539,7 +539,7 @@ void SignalListEditor::addingSignalSwitchField(QTableWidgetItem* newItem)
 	this->editCurrentCell();
 }
 
-void SignalListEditor::addingSignalCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem*)
+void VariableListEditor::addingSignalCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem*)
 {
 	if (current != nullptr)
 	{
@@ -547,13 +547,13 @@ void SignalListEditor::addingSignalCurrentItemChanged(QTableWidgetItem* current,
 	}
 }
 
-void SignalListEditor::endAddSignal()
+void VariableListEditor::endAddSignal()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	disconnect(this->signalsList, &QTableWidget::currentItemChanged, this, &SignalListEditor::addingSignalCurrentItemChanged);
-	disconnect(this->signalsList, &QTableWidget::itemClicked,        this, &SignalListEditor::addingSignalSwitchField);
+	disconnect(this->signalsList, &QTableWidget::currentItemChanged, this, &VariableListEditor::addingSignalCurrentItemChanged);
+	disconnect(this->signalsList, &QTableWidget::itemClicked,        this, &VariableListEditor::addingSignalSwitchField);
 	this->signalsList->closePersistentEditor(this->currentTableItem);
 
 	QString finalName;
@@ -610,15 +610,15 @@ void SignalListEditor::endAddSignal()
 		this->currentTableItem = this->currentSignalName;
 		this->currentSignalName->setText(finalName);
 
-		connect(this->signalsList, &QTableWidget::currentItemChanged, this, &SignalListEditor::addingSignalCurrentItemChanged);
-		connect(this->signalsList, &QTableWidget::itemClicked,        this, &SignalListEditor::addingSignalSwitchField);
+		connect(this->signalsList, &QTableWidget::currentItemChanged, this, &VariableListEditor::addingSignalCurrentItemChanged);
+		connect(this->signalsList, &QTableWidget::itemClicked,        this, &VariableListEditor::addingSignalSwitchField);
 		this->editCurrentCell(true);
 	}
 }
 
 
 // Begin edit signal is trigerred by double-click on table item
-void SignalListEditor::beginEditSignal(QTableWidgetItem* characteristicToEdit)
+void VariableListEditor::beginEditSignal(QTableWidgetItem* characteristicToEdit)
 {
 	this->currentTableItem = characteristicToEdit;
 
@@ -636,7 +636,7 @@ void SignalListEditor::beginEditSignal(QTableWidgetItem* characteristicToEdit)
 	}
 }
 
-void SignalListEditor::endRenameSignal()
+void VariableListEditor::endRenameSignal()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -670,7 +670,7 @@ void SignalListEditor::endRenameSignal()
 	}
 }
 
-void SignalListEditor::endResizeSignal()
+void VariableListEditor::endResizeSignal()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -706,7 +706,7 @@ void SignalListEditor::endResizeSignal()
 	}
 }
 
-void SignalListEditor::endChangeSignalInitialValue()
+void VariableListEditor::endChangeSignalInitialValue()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -744,7 +744,7 @@ void SignalListEditor::endChangeSignalInitialValue()
 	}
 }
 
-void SignalListEditor::validateCurrentEdit()
+void VariableListEditor::validateCurrentEdit()
 {
 	if (this->currentMode == ListMode_t::addingSignal)
 	{
@@ -764,14 +764,14 @@ void SignalListEditor::validateCurrentEdit()
 	}
 }
 
-void SignalListEditor::cancelCurrentEdit()
+void VariableListEditor::cancelCurrentEdit()
 {
 	if (this->currentMode != ListMode_t::standard)
 	{
 		if (this->currentMode == ListMode_t::addingSignal)
 		{
-			disconnect(this->signalsList, &QTableWidget::currentItemChanged, this, &SignalListEditor::addingSignalCurrentItemChanged);
-			disconnect(this->signalsList, &QTableWidget::itemClicked,        this, &SignalListEditor::addingSignalSwitchField);
+			disconnect(this->signalsList, &QTableWidget::currentItemChanged, this, &VariableListEditor::addingSignalCurrentItemChanged);
+			disconnect(this->signalsList, &QTableWidget::itemClicked,        this, &VariableListEditor::addingSignalSwitchField);
 		}
 
 		// Reset list
@@ -779,7 +779,7 @@ void SignalListEditor::cancelCurrentEdit()
 	}
 }
 
-void SignalListEditor::raiseSelectedSignals()
+void VariableListEditor::raiseSelectedSignals()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -809,7 +809,7 @@ void SignalListEditor::raiseSelectedSignals()
 	}
 }
 
-void SignalListEditor::lowerSelectedSignals()
+void VariableListEditor::lowerSelectedSignals()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -839,7 +839,7 @@ void SignalListEditor::lowerSelectedSignals()
 	}
 }
 
-void SignalListEditor::removeSelectedSignals()
+void VariableListEditor::removeSelectedSignals()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -868,7 +868,7 @@ void SignalListEditor::removeSelectedSignals()
 	}
 }
 
-void SignalListEditor::processMenuEventHandler(QAction* action)
+void VariableListEditor::processMenuEventHandler(QAction* action)
 {
 	QVariant data = action->data();
 	ContextAction_t dataValue = ContextAction_t(data.toInt());
@@ -898,7 +898,7 @@ void SignalListEditor::processMenuEventHandler(QAction* action)
 	}
 }
 
-void SignalListEditor::switchMode(ListMode_t newMode)
+void VariableListEditor::switchMode(ListMode_t newMode)
 {
 	if (newMode != this->currentMode)
 	{
@@ -921,19 +921,19 @@ void SignalListEditor::switchMode(ListMode_t newMode)
 			this->buttonCancel = nullptr;
 			this->buttonOK     = nullptr;
 
-			connect(this->signalsList, &QTableWidget::itemDoubleClicked, this, &SignalListEditor::beginEditSignal);
+			connect(this->signalsList, &QTableWidget::itemDoubleClicked, this, &VariableListEditor::beginEditSignal);
 		}
 		else if ( (newMode == ListMode_t::addingSignal)  || (newMode == ListMode_t::renamingSignal) || (newMode == ListMode_t::resizingSignal) || (newMode == ListMode_t::changingSignalInitialValue) )
 		{
-			disconnect(signalsList, &QTableWidget::itemDoubleClicked, this, &SignalListEditor::beginEditSignal);
+			disconnect(signalsList, &QTableWidget::itemDoubleClicked, this, &VariableListEditor::beginEditSignal);
 
 			this->buttonOK = new QPushButton(tr("OK"));
 			this->buttonLayout->addWidget(this->buttonOK, 0, 0, 1, 21);
-			connect(this->buttonOK, &QPushButton::clicked, this, &SignalListEditor::validateCurrentEdit);
+			connect(this->buttonOK, &QPushButton::clicked, this, &VariableListEditor::validateCurrentEdit);
 
 			this->buttonCancel = new QPushButton(tr("Cancel"));
 			this->buttonLayout->addWidget(this->buttonCancel, 0, 21, 1, 21);
-			connect(this->buttonCancel, &QPushButton::clicked, this, &SignalListEditor::cancelCurrentEdit);
+			connect(this->buttonCancel, &QPushButton::clicked, this, &VariableListEditor::cancelCurrentEdit);
 
 			// Disable all items in list except edited item row
 			// (TODO: Should also disable other lists to avoid begin another
@@ -955,7 +955,7 @@ void SignalListEditor::switchMode(ListMode_t newMode)
 	}
 }
 
-void SignalListEditor::editCurrentCell(bool erroneous)
+void VariableListEditor::editCurrentCell(bool erroneous)
 {
 	//
 	// Set validator
@@ -1008,7 +1008,7 @@ void SignalListEditor::editCurrentCell(bool erroneous)
 	this->signalsList->openPersistentEditor(this->currentTableItem);
 
 	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-	connect(editor, &DynamicLineEdit::returnPressed, this, &SignalListEditor::validateCurrentEdit);
+	connect(editor, &DynamicLineEdit::returnPressed, this, &VariableListEditor::validateCurrentEdit);
 
 	// Done
 
@@ -1020,7 +1020,7 @@ void SignalListEditor::editCurrentCell(bool erroneous)
 	editor->setFocus();
 }
 
-void SignalListEditor::fixSignalSize()
+void VariableListEditor::fixSignalSize()
 {
 	if(this->currentSignalValue != nullptr)
 	{
@@ -1045,7 +1045,7 @@ void SignalListEditor::fixSignalSize()
 	}
 }
 
-QList<QString> SignalListEditor::getSelectedSignals()
+QList<QString> VariableListEditor::getSelectedSignals()
 {
 	QList<QString> selectionString;
 

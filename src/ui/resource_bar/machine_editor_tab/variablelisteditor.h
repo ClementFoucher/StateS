@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALLISTEDITOR_H
-#define SIGNALLISTEDITOR_H
+#ifndef VARIABLELISTEDITOR_H
+#define VARIABLELISTEDITOR_H
 
 // Parent
 #include <QWidget>
@@ -42,7 +42,7 @@ class DynamicTableItemDelegate;
 class TableWidgetWithResizeEvent;
 
 
-class SignalListEditor : public QWidget
+class VariableListEditor : public QWidget
 {
 	Q_OBJECT
 
@@ -72,7 +72,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalListEditor(VariableNature_t editorType, QWidget* parent = nullptr);
+	explicit VariableListEditor(VariableNature_t editorType, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -151,4 +151,4 @@ private:
 
 };
 
-#endif // SIGNALLISTEDITOR_H
+#endif // VARIABLELISTEDITOR_H
