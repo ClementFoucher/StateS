@@ -489,7 +489,7 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	}
 	catch (const StatesException& e)
 	{
-		if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_range) )
+		if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
 		{
 			qDebug() << "(ActionEditor:) Warning: Incorrect range was set. Range change ignored.";
 		}

@@ -209,7 +209,7 @@ void MachineXmlParser::parseSignal()
 			}
 			catch (const StatesException& e)
 			{
-				if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::signal_resized_to_0) )
+				if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::variable_resized_to_0) )
 				{
 					this->warnings.append(tr("Unable to resize signal") + " \"" + signalName + "\".");
 					this->warnings.append("    " + tr("Signal size ignored and defaulted to") + " \"1\".");
@@ -246,7 +246,7 @@ void MachineXmlParser::parseSignal()
 				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value").toString() + "\".");
 				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(signal->getSize()) + "\".");
 			}
-			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::size_mismatch) )
+			else if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::size_mismatch) )
 			{
 				this->warnings.append("Error in initial value of signal " + signalName + ".");
 				this->warnings.append("    " + tr("The initial value size does not match signal size."));
@@ -331,7 +331,7 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_type) )
+			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
 			{
 				this->warnings.append(tr("Error in action type for signal") + " \"" + signalName + "\".");
 				this->warnings.append("    " + tr("Default action type used instead."));
@@ -372,7 +372,7 @@ void MachineXmlParser::parseAction()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_range) )
+			if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
 			{
 				this->warnings.append(tr("Error in action range for signal") + " \"" + signalName + "\".");
 				this->warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
@@ -421,7 +421,7 @@ void MachineXmlParser::parseAction()
 				}
 				catch (const StatesException& e)
 				{
-					if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnSignalError_t::illegal_value) )
+					if ( (e.getSourceClass() == "ActionOnSignal") && (e.getEnumValue() == ActionOnVariableError_t::illegal_value) )
 					{
 						this->warnings.append(tr("Error in action value for signal") + " \"" + signalName + "\".");
 						this->warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");

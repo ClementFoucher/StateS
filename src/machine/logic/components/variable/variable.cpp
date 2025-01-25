@@ -30,7 +30,7 @@
 Variable::Variable(const QString &name, uint size) // Throws StatesException
 {
 	if (size == 0)
-		throw StatesException("Signal", SignalError_t::building_zero_sized, "Signal size set to 0");
+		throw StatesException("Signal", VariableError_t::building_zero_sized, "Signal size set to 0");
 
 	this->name = name;
 	this->initialValue = LogicValue::getValue0(size);
@@ -75,7 +75,7 @@ uint Variable::getSize() const
 void Variable::resize(uint newSize) // Throws StatesException
 {
 	if (newSize == 0)
-		throw StatesException("Signal", SignalError_t::signal_resized_to_0, "Trying to resize signal with size 0");
+		throw StatesException("Signal", VariableError_t::variable_resized_to_0, "Trying to resize signal with size 0");
 
 	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
 	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
@@ -136,7 +136,7 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 	}
 	else
 	{
-		throw StatesException("Signal", SignalError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
+		throw StatesException("Signal", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size or specified rank");
 	}
 }
 
@@ -160,7 +160,7 @@ void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 	}
 	else
 	{
-		throw StatesException("Signal", SignalError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size");
+		throw StatesException("Signal", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match signal size");
 	}
 }
 
@@ -188,6 +188,6 @@ bool Variable::isTrue() const // Throws StatesException
 	}
 	else
 	{
-		throw StatesException("Signal", SignalError_t::signal_is_not_bool, "Asking for boolean value on non 1-sized signal");
+		throw StatesException("Signal", VariableError_t::variable_is_not_bool, "Asking for boolean value on non 1-sized signal");
 	}
 }

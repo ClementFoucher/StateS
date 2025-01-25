@@ -122,7 +122,7 @@ void FsmSimulatedTransition::refreshDisplay()
 		}
 		catch (const StatesException& e)
 		{
-			if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::signal_is_not_bool) )
+			if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::variable_is_not_bool) )
 			{
 				// Condition is incorrect, considered false
 				this->currentConditionPen = &inactivePen;

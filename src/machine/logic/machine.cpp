@@ -512,7 +512,7 @@ void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesEx
 	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
-		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
+		throw StatesException("Machine", MachineError_t::unknown_variable, "Trying to change initial value of unknown signal");
 	else
 	{
 		allSignals[name]->resize(newSize); // Throws StatesException - propagated
@@ -545,7 +545,7 @@ void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
 	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
-		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
+		throw StatesException("Machine", MachineError_t::unknown_variable, "Trying to change initial value of unknown signal");
 	else
 	{
 		allSignals[name]->setInitialValue(newValue);// Throws StatesException - propagated

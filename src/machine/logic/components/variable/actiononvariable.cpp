@@ -108,7 +108,7 @@ void ActionOnVariable::setActionType(ActionOnVariableType_t newType) // Throws S
 	{
 		if ( (this->getActionSize() == 1) && (newType == ActionOnVariableType_t::assign) )
 		{
-			throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_type, "Type can't be applied to this signal");
+			throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_type, "Type can't be applied to this signal");
 		}
 
 		// Changing type impacts affected value:
@@ -172,12 +172,12 @@ void ActionOnVariable::setActionValue(LogicValue newValue) // Throws StatesExcep
 			}
 			else
 			{
-				throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_value, "Requested action value doesn't match action size");
+				throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_value, "Requested action value doesn't match action size");
 			}
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", ActionOnSignalError_t::action_value_is_read_only, "Can't affect action value as value is implicit for this action");
+			throw StatesException("ActionOnSignal", ActionOnVariableError_t::action_value_is_read_only, "Can't affect action value as value is implicit for this action");
 		}
 	}
 }
@@ -223,7 +223,7 @@ void ActionOnVariable::setActionRange(int newRangeL, int newRangeR, LogicValue n
 		}
 		else
 		{
-			throw StatesException("ActionOnSignal", ActionOnSignalError_t::illegal_range, "Requested range does not fit signal size");
+			throw StatesException("ActionOnSignal", ActionOnVariableError_t::illegal_range, "Requested range does not fit signal size");
 		}
 	}
 }

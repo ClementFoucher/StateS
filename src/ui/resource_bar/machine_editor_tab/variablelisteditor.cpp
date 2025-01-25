@@ -734,7 +734,7 @@ void VariableListEditor::endChangeVariableInitialValue()
 	}
 	catch (const StatesException& e)
 	{
-		if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == SignalError_t::size_mismatch) )
+		if ( (e.getSourceClass() == "Signal") && (e.getEnumValue() == VariableError_t::size_mismatch) )
 		{
 			qDebug() << "(SignalListEditor:) Info: Wrong input for variable initial value, change ignored.";
 			this->editCurrentCell(true);

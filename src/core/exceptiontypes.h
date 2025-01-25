@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,7 +41,7 @@ typedef enum
 	illegal_value             = 1,
 	illegal_range             = 2,
 	action_value_is_read_only = 3
-} ActionOnSignalError_t;
+} ActionOnVariableError_t;
 
 typedef enum
 {
@@ -59,16 +59,16 @@ typedef enum
 
 typedef enum
 {
-	building_zero_sized = 0,
-	signal_resized_to_0 = 1,
-	size_mismatch       = 2,
-	signal_is_not_bool  = 3,
-	value_is_read_only  = 4
-} SignalError_t;
+	building_zero_sized   = 0,
+	variable_resized_to_0 = 1,
+	size_mismatch         = 2,
+	variable_is_not_bool  = 3,
+	value_is_read_only    = 4
+} VariableError_t;
 
 typedef enum
 {
-	unknown_signal   = 0,
+	unknown_variable = 0,
 	impossible_error = 1
 } MachineError_t;
 
