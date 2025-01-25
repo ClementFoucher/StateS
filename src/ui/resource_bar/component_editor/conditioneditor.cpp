@@ -111,7 +111,7 @@ void ConditionEditor::editCondition()
 	if (transition == nullptr) return;
 
 
-	if (machine->getReadableSignals().count() != 0)
+	if (machine->getReadableVariables().count() != 0)
 	{
 		EquationEditor* eqEdit = new EquationEditor(transition->getCondition());
 
@@ -156,7 +156,7 @@ void ConditionEditor::treatMenuSetCondition(QAction* action)
 	if (transition == nullptr) return;
 
 
-	for (shared_ptr<Variable> currentVariable : machine->getReadableSignals())
+	for (shared_ptr<Variable> currentVariable : machine->getReadableVariables())
 	{
 		if (currentVariable->getName() == action->text())
 		{

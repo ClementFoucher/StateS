@@ -313,7 +313,7 @@ void ActionEditor::displayAddActionMenu() const
 
 	ContextMenu* menu;
 
-	QList<shared_ptr<Variable>> availableActions = machine->getWrittableSignals();
+	QList<shared_ptr<Variable>> availableActions = machine->getWrittableVariables();
 	if (availableActions.count() != 0)
 	{
 		menu = new ContextMenu();
@@ -370,7 +370,7 @@ void ActionEditor::processAddActionMenuEventHandler(QAction* action)
 
 	QString signalName = action->text();
 	// Find signal from name
-	for (shared_ptr<Variable> var : machine->getWrittableSignals())
+	for (shared_ptr<Variable> var : machine->getWrittableVariables())
 	{
 		if (var->getName() == signalName)
 		{

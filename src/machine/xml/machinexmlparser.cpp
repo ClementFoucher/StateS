@@ -168,19 +168,19 @@ void MachineXmlParser::parseSignal()
 	shared_ptr<Variable> signal;
 	if (nodeName == "Input")
 	{
-		signal = machine->addSignal(VariableNature_t::input, signalName);
+		signal = machine->addVariable(VariableNature_t::input, signalName);
 	}
 	else if (nodeName == "Output")
 	{
-		signal = machine->addSignal(VariableNature_t::output, signalName);
+		signal = machine->addVariable(VariableNature_t::output, signalName);
 	}
 	else if (nodeName == "Variable")
 	{
-		signal = machine->addSignal(VariableNature_t::internal, signalName);
+		signal = machine->addVariable(VariableNature_t::internal, signalName);
 	}
 	else if (nodeName == "Constant")
 	{
-		signal = machine->addSignal(VariableNature_t::constant, signalName);
+		signal = machine->addVariable(VariableNature_t::constant, signalName);
 	}
 	else
 	{
@@ -202,7 +202,7 @@ void MachineXmlParser::parseSignal()
 		{
 			try
 			{
-				machine->resizeSignal(signalName, size); // Throws StatesException (Signal, Equation and Machine)
+				machine->resizeVariable(signalName, size); // Throws StatesException (Signal, Equation and Machine)
 				// Equation: ignored, this is not an equation,
 				// Machine: ignored, we just created the signal,
 				// Only Signal has to be handled
@@ -236,7 +236,7 @@ void MachineXmlParser::parseSignal()
 		{
 			LogicValue initialValue = LogicValue::fromString(attributes.value("Initial_value").toString()); // Throws StatesException
 
-			this->machine->changeSignalInitialValue(signalName, initialValue); // Throws StatesException
+			this->machine->changeVariableInitialValue(signalName, initialValue); // Throws StatesException
 		}
 		catch (const StatesException& e)
 		{
@@ -268,7 +268,7 @@ void MachineXmlParser::parseAction()
 		QString signalName = attributes.value("Name").toString();
 
 		shared_ptr<Variable> signal;
-		for (shared_ptr<Variable> var : this->machine->getWrittableSignals())
+		for (shared_ptr<Variable> var : this->machine->getWrittableVariables())
 		{
 			if (var->getName() == signalName)
 				signal = var;
@@ -449,7 +449,7 @@ void MachineXmlParser::parseLogicEquation()
 
 	if (nodeName == "LogicVariable")
 	{
-		for (shared_ptr<Variable> var : this->machine->getReadableSignals())
+		for (shared_ptr<Variable> var : this->machine->getReadableVariables())
 		{
 			if (var->getName() == attributes.value("Name"))
 			{

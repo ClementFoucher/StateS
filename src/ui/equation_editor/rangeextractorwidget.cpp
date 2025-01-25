@@ -37,7 +37,7 @@ RangeExtractorWidget::RangeExtractorWidget(shared_ptr<Equation> equation, QWidge
 {
 	this->equation = equation;
 
-	connect(equation.get(), &Equation::signalStaticConfigurationChangedEvent, this, &RangeExtractorWidget::update);
+	connect(equation.get(), &Equation::variableStaticConfigurationChangedEvent, this, &RangeExtractorWidget::update);
 
 	this->reset();
 }

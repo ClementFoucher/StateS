@@ -348,11 +348,11 @@ void VariableListEditor::updateList()
 
 	if (this->editorType == VariableNature_t::input)
 	{
-		signalsToAdd = machine->getInputsAsSignals();
+		signalsToAdd = machine->getInputsAsVariables();
 	}
 	else if (this->editorType == VariableNature_t::output)
 	{
-		signalsToAdd = machine->getOutputsAsSignals();
+		signalsToAdd = machine->getOutputsAsVariables();
 	}
 	else if (this->editorType == VariableNature_t::internal)
 	{
@@ -489,7 +489,7 @@ void VariableListEditor::beginAddVariable()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	QString initialName = machine->getUniqueSignalName(this->newVariablesPrefix);
+	QString initialName = machine->getUniqueVariableName(this->newVariablesPrefix);
 
 	this->variablesList->insertRow(variablesList->rowCount());
 
@@ -599,7 +599,7 @@ void VariableListEditor::endAddVariable()
 
 	// If success, list is reloaded through events,
 	// which resets mode.
-	shared_ptr<Variable> newSignal = machine->addSignal(this->editorType, finalName, initialValue);
+	shared_ptr<Variable> newSignal = machine->addVariable(this->editorType, finalName, initialValue);
 	machineManager->notifyMachineEdited();
 
 	// If adding signal failed, continue editing signal name
@@ -651,7 +651,7 @@ void VariableListEditor::endRenameVariable()
 	{
 		// Overwrite selection to select new signal name
 		this->variableSelectionToRestore.append(finalName);
-		bool success = machine->renameSignal(currentSignal->getName(), finalName);
+		bool success = machine->renameVariable(currentSignal->getName(), finalName);
 
 		if (success == true)
 		{
@@ -685,7 +685,7 @@ void VariableListEditor::endResizeVariable()
 
 		if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
 		{
-			machine->resizeSignal(currentSignal->getName(), finalSize); // Throws StatesException
+			machine->resizeVariable(currentSignal->getName(), finalSize); // Throws StatesException
 			machineManager->notifyMachineEdited();
 		}
 		else
@@ -724,7 +724,7 @@ void VariableListEditor::endChangeVariableInitialValue()
 			if (newInitialValue.getSize() < currentSignal->getSize())
 				newInitialValue.resize(currentSignal->getSize()); // Throws StatesException
 
-			machine->changeSignalInitialValue(currentSignal->getName(), newInitialValue); // Throws StatesException
+			machine->changeVariableInitialValue(currentSignal->getName(), newInitialValue); // Throws StatesException
 			machineManager->notifyMachineEdited();
 		}
 		else
@@ -802,7 +802,7 @@ void VariableListEditor::raiseSelectedVariables()
 			if ( (signalsRanks.at(i) != 0) && ( ! this->variablesList->item(signalsRanks.at(i)-1, 0)->isSelected() ) )
 			{
 				// Actually lower upper signals rater than raising signal itself
-				machine->changeSignalRank(this->variablesList->item(signalsRanks.at(i)-1, 0)->text(), signalsRanks.at(i));
+				machine->changeVariableRank(this->variablesList->item(signalsRanks.at(i)-1, 0)->text(), signalsRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -832,7 +832,7 @@ void VariableListEditor::lowerSelectedVariables()
 			if ( (signalsRanks.at(i) != this->variablesList->rowCount()-1) && ( ! this->variablesList->item(signalsRanks.at(i)+1, 0)->isSelected() ) )
 			{
 				// Actually raise lower signals rater than lowering signal itself
-				machine->changeSignalRank(this->variablesList->item(signalsRanks.at(i)+1, 0)->text(), signalsRanks.at(i));
+				machine->changeVariableRank(this->variablesList->item(signalsRanks.at(i)+1, 0)->text(), signalsRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -862,7 +862,7 @@ void VariableListEditor::removeSelectedVariables()
 	{
 		for (QString signalName : selection)
 		{
-			machine->deleteSignal(signalName);
+			machine->deleteVariable(signalName);
 		}
 		machineManager->notifyMachineEdited();
 	}

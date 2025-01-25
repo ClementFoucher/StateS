@@ -139,7 +139,7 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and variables to their initial value
-	for (shared_ptr<Variable>& sig : fsm->getReadableVariableSignals())
+	for (shared_ptr<Variable>& sig : fsm->getReadableVariableVariables())
 	{
 		sig->reinitialize();
 	}

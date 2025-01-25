@@ -271,7 +271,7 @@ void MachineXmlWriter::writeMachineSignals()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	for (shared_ptr<Variable> var : machine->getAllSignals())
+	for (shared_ptr<Variable> var : machine->getAllVariables())
 	{
 		// Type
 		if (dynamic_pointer_cast<Input>(var) != nullptr)
