@@ -36,7 +36,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "signaltimeline.h"
+#include "variabletimeline.h"
 #include "clocktimeline.h"
 #include "statetimeline.h"
 #include "input.h"
@@ -114,7 +114,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (shared_ptr<Input> var : machine->getInputs())
 		{
-			SignalTimeline* varTL = new SignalTimeline(3, var, clock);
+			VariableTimeline* varTL = new VariableTimeline(3, var, clock);
 			vLayout->addWidget(varTL);
 		}
 	}
@@ -128,7 +128,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	for (shared_ptr<Variable> var : machine->getLocalVariables())
 	{
-		SignalTimeline* varTL = new SignalTimeline(0, var, clock);
+		VariableTimeline* varTL = new VariableTimeline(0, var, clock);
 		vLayout->addWidget(varTL);
 	}
 
@@ -142,7 +142,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (shared_ptr<Output> var : machine->getOutputs())
 		{
-			SignalTimeline* varTL = new SignalTimeline(0, var, clock);
+			VariableTimeline* varTL = new VariableTimeline(0, var, clock);
 			vLayout->addWidget(varTL);
 		}
 	}

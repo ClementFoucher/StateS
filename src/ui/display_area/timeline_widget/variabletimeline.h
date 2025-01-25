@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNALTIMELINE_H
-#define SIGNALTIMELINE_H
+#ifndef VARIABLETIMELINE_H
+#define VARIABLETIMELINE_H
 
 // Parent
 #include <QWidget>
@@ -35,14 +35,14 @@ class Clock;
 class GraphicTimeLine;
 
 
-class SignalTimeline : public QWidget
+class VariableTimeline : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalTimeline(uint delay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit VariableTimeline(uint delay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -60,4 +60,4 @@ private:
 
 };
 
-#endif // SIGNALTIMELINE_H
+#endif // VARIABLETIMELINE_H

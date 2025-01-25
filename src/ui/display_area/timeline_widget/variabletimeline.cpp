@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "signaltimeline.h"
+#include "variabletimeline.h"
 
 // Qt classes
 #include <QLabel>
@@ -33,7 +33,7 @@
 #include "graphicvectortimeline.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent) :
+VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
 	this->signal = signal;
@@ -88,15 +88,15 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Variable> signal, sh
 	}
 	globalLayout->addLayout(bitsLayout);
 
-	connect(signal.get(), &Variable::signalDynamicStateChangedEvent, this, &SignalTimeline::updateCurrentValue);
+	connect(signal.get(), &Variable::signalDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
 
-	connect(clock.get(), &Clock::prepareForClockEvent, this, &SignalTimeline::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,    this, &SignalTimeline::resetEventHandler);
+	connect(clock.get(), &Clock::prepareForClockEvent, this, &VariableTimeline::clockEventHandler);
+	connect(clock.get(), &Clock::resetGraphicEvent,    this, &VariableTimeline::resetEventHandler);
 }
 
 // On clock event, duplicate current value:
 // it will be edited dynamically with signal update
-void SignalTimeline::clockEventHandler()
+void VariableTimeline::clockEventHandler()
 {
 	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
@@ -126,7 +126,7 @@ void SignalTimeline::clockEventHandler()
 }
 
 // Value is updated depending on actions on signal
-void SignalTimeline::updateCurrentValue()
+void VariableTimeline::updateCurrentValue()
 {
 	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
@@ -154,7 +154,7 @@ void SignalTimeline::updateCurrentValue()
 	}
 }
 
-void SignalTimeline::resetEventHandler()
+void VariableTimeline::resetEventHandler()
 {
 	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
