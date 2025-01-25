@@ -37,7 +37,7 @@ class QTableWidgetItem;
 
 // StateS classes
 #include "statestypes.h"
-class Signal;
+class Variable;
 class DynamicTableItemDelegate;
 class TableWidgetWithResizeEvent;
 
@@ -139,7 +139,7 @@ private:
 	// Cell under edition
 	QTableWidgetItem* currentTableItem = nullptr;
 	QStringList signalSelectionToRestore;
-	weak_ptr<Signal> currentSignal;
+	weak_ptr<Variable> currentSignal;
 
 	// Signal begin created
 	QTableWidgetItem* currentSignalName  = nullptr;
@@ -147,7 +147,7 @@ private:
 	QTableWidgetItem* currentSignalValue = nullptr;
 
 	// Used to know which signal is associated to each cell in table
-	QMap<QTableWidgetItem*, weak_ptr<Signal>> associatedSignals;
+	QMap<QTableWidgetItem*, weak_ptr<Variable>> associatedSignals;
 
 };
 

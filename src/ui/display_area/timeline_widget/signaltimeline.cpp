@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,13 +27,13 @@
 #include <QVBoxLayout>
 
 // StateS classes
-#include "StateS_signal.h"
+#include "variable.h"
 #include "clock.h"
 #include "graphicbittimeline.h"
 #include "graphicvectortimeline.h"
 
 
-SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent) :
+SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
 	this->signal = signal;
@@ -88,7 +88,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shar
 	}
 	globalLayout->addLayout(bitsLayout);
 
-	connect(signal.get(), &Signal::signalDynamicStateChangedEvent, this, &SignalTimeline::updateCurrentValue);
+	connect(signal.get(), &Variable::signalDynamicStateChangedEvent, this, &SignalTimeline::updateCurrentValue);
 
 	connect(clock.get(), &Clock::prepareForClockEvent, this, &SignalTimeline::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,    this, &SignalTimeline::resetEventHandler);
@@ -98,7 +98,7 @@ SignalTimeline::SignalTimeline(uint outputDelay, shared_ptr<Signal> signal, shar
 // it will be edited dynamically with signal update
 void SignalTimeline::clockEventHandler()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
 
 
@@ -128,7 +128,7 @@ void SignalTimeline::clockEventHandler()
 // Value is updated depending on actions on signal
 void SignalTimeline::updateCurrentValue()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
 
 	uint bitNumber = 0;
@@ -156,7 +156,7 @@ void SignalTimeline::updateCurrentValue()
 
 void SignalTimeline::resetEventHandler()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal == nullptr) return;
 
 	uint bitNumber = 0;

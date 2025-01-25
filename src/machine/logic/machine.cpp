@@ -60,29 +60,29 @@ QString Machine::getName() const
 
 // General lists obtention
 
-QList<shared_ptr<Signal> > Machine::getInputsAsSignals() const
+QList<shared_ptr<Variable> > Machine::getInputsAsSignals() const
 {
 	return getRankedSignalList(&this->inputs, &this->inputsRanks);
 }
 
-QList<shared_ptr<Signal> > Machine::getOutputsAsSignals() const
+QList<shared_ptr<Variable> > Machine::getOutputsAsSignals() const
 {
 	return getRankedSignalList(&this->outputs, &this->outputsRanks);
 }
 
-QList<shared_ptr<Signal> > Machine::getLocalVariables() const
+QList<shared_ptr<Variable> > Machine::getLocalVariables() const
 {
 	return getRankedSignalList(&this->localVariables, &this->localVariablesRanks);
 }
 
-QList<shared_ptr<Signal> > Machine::getConstants() const
+QList<shared_ptr<Variable> > Machine::getConstants() const
 {
 	return getRankedSignalList(&this->constants, &this->constantsRanks);
 }
 
-QList<shared_ptr<Signal>> Machine::getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const
+QList<shared_ptr<Variable>> Machine::getRankedSignalList(const QHash<QString, shared_ptr<Variable>>* signalHash, const QHash<QString, uint>* rankHash) const
 {
-	QList<shared_ptr<Signal> > rankedList;
+	QList<shared_ptr<Variable> > rankedList;
 
 	if (signalHash->count() != rankHash->count())
 	{
@@ -145,9 +145,9 @@ QList<shared_ptr<Output> > Machine::getOutputs() const
 
 // Aggregate lists obtention
 
-QList<shared_ptr<Signal> > Machine::getWrittableSignals() const
+QList<shared_ptr<Variable> > Machine::getWrittableSignals() const
 {
-	QList<shared_ptr<Signal>> writtableVariables;
+	QList<shared_ptr<Variable>> writtableVariables;
 
 	writtableVariables += this->getOutputsAsSignals();
 	writtableVariables += this->getLocalVariables();
@@ -155,9 +155,9 @@ QList<shared_ptr<Signal> > Machine::getWrittableSignals() const
 	return writtableVariables;
 }
 
-QList<shared_ptr<Signal> > Machine::getReadableSignals() const
+QList<shared_ptr<Variable> > Machine::getReadableSignals() const
 {
-	QList<shared_ptr<Signal>> readableSignals;
+	QList<shared_ptr<Variable>> readableSignals;
 
 	readableSignals += this->getInputsAsSignals();
 	readableSignals += this->getLocalVariables();
@@ -166,9 +166,9 @@ QList<shared_ptr<Signal> > Machine::getReadableSignals() const
 	return readableSignals;
 }
 
-QList<shared_ptr<Signal> > Machine::getReadableVariableSignals() const
+QList<shared_ptr<Variable> > Machine::getReadableVariableSignals() const
 {
-	QList<shared_ptr<Signal>> readableVariables;
+	QList<shared_ptr<Variable>> readableVariables;
 
 	readableVariables += this->getInputsAsSignals();
 	readableVariables += this->getLocalVariables();
@@ -176,9 +176,9 @@ QList<shared_ptr<Signal> > Machine::getReadableVariableSignals() const
 	return readableVariables;
 }
 
-QList<shared_ptr<Signal> > Machine::getVariablesSignals() const
+QList<shared_ptr<Variable> > Machine::getVariablesSignals() const
 {
-	QList<shared_ptr<Signal>> allVariables;
+	QList<shared_ptr<Variable>> allVariables;
 
 	allVariables += this->getInputsAsSignals();
 	allVariables += this->getOutputsAsSignals();
@@ -187,9 +187,9 @@ QList<shared_ptr<Signal> > Machine::getVariablesSignals() const
 	return allVariables;
 }
 
-QList<shared_ptr<Signal> > Machine::getIoSignals() const
+QList<shared_ptr<Variable> > Machine::getIoSignals() const
 {
-	QList<shared_ptr<Signal>> IOs;
+	QList<shared_ptr<Variable>> IOs;
 
 	IOs += this->getInputsAsSignals();
 	IOs += this->getOutputsAsSignals();
@@ -197,9 +197,9 @@ QList<shared_ptr<Signal> > Machine::getIoSignals() const
 	return IOs;
 }
 
-QList<shared_ptr<Signal> > Machine::getAllSignals() const
+QList<shared_ptr<Variable> > Machine::getAllSignals() const
 {
-	QList<shared_ptr<Signal>> allSignals;
+	QList<shared_ptr<Variable>> allSignals;
 
 	allSignals += this->getInputsAsSignals();
 	allSignals += this->getOutputsAsSignals();
@@ -227,7 +227,7 @@ bool Machine::setName(const QString& newName)
 	}
 }
 
-shared_ptr<Signal> Machine::addSignal(VariableNature_t type, const QString& name, const LogicValue& value)
+shared_ptr<Variable> Machine::addSignal(VariableNature_t type, const QString& name, const LogicValue& value)
 {
 	uint rank;
 
@@ -252,10 +252,10 @@ shared_ptr<Signal> Machine::addSignal(VariableNature_t type, const QString& name
 	return this->addSignalAtRank(type, name, rank, value);
 }
 
-shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value)
+shared_ptr<Variable> Machine::addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value)
 {
 	// First check if name doesn't already exist
-	for (shared_ptr<Signal> signal : this->getAllSignals())
+	for (shared_ptr<Variable> signal : this->getAllSignals())
 	{
 		if (signal->getName() == name)
 			return nullptr;
@@ -278,11 +278,11 @@ shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString
 	}
 
 	// Determine list to reference signal in
-	shared_ptr<Signal> signal;
+	shared_ptr<Variable> signal;
 	switch(type)
 	{
 	case VariableNature_t::input:
-		signal = dynamic_pointer_cast<Signal>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		signal = dynamic_pointer_cast<Variable>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->inputs, &this->inputsRanks);
 
 		if (! value.isNull())
@@ -294,14 +294,14 @@ shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString
 
 		break;
 	case VariableNature_t::output:
-		signal = dynamic_pointer_cast<Signal>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		signal = dynamic_pointer_cast<Variable>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->outputs, &this->outputsRanks);
 
 		emit this->machineOutputListChangedEvent();
 
 		break;
 	case VariableNature_t::internal:
-		signal = shared_ptr<Signal>(new Signal(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		signal = shared_ptr<Variable>(new Variable(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->localVariables, &this->localVariablesRanks);
 
 		if (! value.isNull())
@@ -313,7 +313,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString
 
 		break;
 	case VariableNature_t::constant:
-		signal = dynamic_pointer_cast<Signal>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		signal = dynamic_pointer_cast<Variable>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
 		this->addSignalToList(signal, rank, &this->constants, &this->constantsRanks);
 
 		if (! value.isNull())
@@ -329,7 +329,7 @@ shared_ptr<Signal> Machine::addSignalAtRank(VariableNature_t type, const QString
 	return signal;
 }
 
-void Machine::addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
+void Machine::addSignalToList(shared_ptr<Variable> signal, uint rank, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash)
 {
 	// Fix rank to avoid not-continuous ranks
 	uint actualRank = ((int)rank < signalHash->count()) ? rank : signalHash->count();
@@ -391,7 +391,7 @@ bool Machine::deleteSignal(const QString& name)
 	return result;
 }
 
-bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
+bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash)
 {
 	if (!signalHash->contains(name))
 		return false;
@@ -420,7 +420,7 @@ bool Machine::deleteSignalFromList(const QString& name, QHash<QString, shared_pt
 
 bool Machine::renameSignal(const QString& oldName, const QString& newName)
 {
-	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
+	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	QString correctedNewName = newName;
 	this->cleanSignalName(correctedNewName);
@@ -490,12 +490,12 @@ bool Machine::renameSignal(const QString& oldName, const QString& newName)
 	}
 }
 
-bool Machine::renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal> > *signalHash, QHash<QString, uint> *rankHash)
+bool Machine::renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Variable> > *signalHash, QHash<QString, uint> *rankHash)
 {
 	if (!signalHash->contains(oldName))
 		return false;
 
-	shared_ptr<Signal> itemToRename = (*signalHash)[oldName];
+	shared_ptr<Variable> itemToRename = (*signalHash)[oldName];
 	itemToRename->setName(newName);
 
 	signalHash->remove(oldName);
@@ -509,7 +509,7 @@ bool Machine::renameSignalInList(const QString& oldName, const QString& newName,
 
 void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesException
 {
-	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
+	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
 		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
@@ -542,7 +542,7 @@ void Machine::resizeSignal(const QString &name, uint newSize) // Throws StatesEx
 
 void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
 {
-	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
+	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
 		throw StatesException("Machine", MachineError_t::unknown_signal, "Trying to change initial value of unknown signal");
@@ -573,7 +573,7 @@ void Machine::changeSignalInitialValue(const QString &name, LogicValue newValue)
 
 bool Machine::changeSignalRank(const QString& name, uint newRank)
 {
-	QHash<QString, shared_ptr<Signal>> allSignals = getAllSignalsMap();
+	QHash<QString, shared_ptr<Variable>> allSignals = getAllSignalsMap();
 
 	if ( !allSignals.contains(name) ) // First check if signal exists
 	{
@@ -612,7 +612,7 @@ bool Machine::changeSignalRank(const QString& name, uint newRank)
 	}
 }
 
-bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash)
+bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash)
 {
 	if (!signalHash->contains(name))
 		return false;
@@ -712,7 +712,7 @@ QString Machine::getUniqueSignalName(const QString& prefix) const
 		currentName = baseName + QString::number(i);
 
 		nameIsValid = true;
-		for (shared_ptr<Signal> colleage : this->getAllSignals())
+		for (shared_ptr<Variable> colleage : this->getAllSignals())
 		{
 			if (colleage->getName() == currentName)
 			{
@@ -752,11 +752,11 @@ shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) co
 	}
 }
 
-QHash<QString, shared_ptr<Signal> > Machine::getAllSignalsMap() const
+QHash<QString, shared_ptr<Variable> > Machine::getAllSignalsMap() const
 {
-	QHash<QString, shared_ptr<Signal>> allSignals;
+	QHash<QString, shared_ptr<Variable>> allSignals;
 
-	for (shared_ptr<Signal> signal : this->getAllSignals())
+	for (shared_ptr<Variable> signal : this->getAllSignals())
 	{
 		allSignals[signal->getName()] = signal;
 	}

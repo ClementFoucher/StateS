@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,9 +27,9 @@
 
 // StateS classes
 #include "truthtable.h"
-#include "StateS_signal.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
+#include "variable.h"
 
 
 TruthTableInputTableModel::TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :

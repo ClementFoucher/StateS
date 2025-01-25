@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,10 +28,10 @@
 #include <QLabel>
 
 // StateS classes
-#include "StateS_signal.h"
+#include "variable.h"
 
 
-InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget *parent) :
+InputBitSelector::InputBitSelector(shared_ptr<Variable> signalToCommand, uint bitNumber, QWidget *parent) :
     QFrame(parent)
 {
 	this->signalToCommand = signalToCommand;
@@ -45,7 +45,7 @@ InputBitSelector::InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitN
 
 	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-	connect(signalToCommand.get(), &Signal::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
+	connect(signalToCommand.get(), &Variable::signalDynamicStateChangedEvent, this, &InputBitSelector::signalValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEnterEvent* event)
@@ -65,7 +65,7 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-	shared_ptr<Signal> l_signalToCommand = this->signalToCommand.lock();
+	shared_ptr<Variable> l_signalToCommand = this->signalToCommand.lock();
 	if (l_signalToCommand != nullptr)
 	{
 		LogicValue signalValue = l_signalToCommand->getCurrentValue();
@@ -93,7 +93,7 @@ void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 
 void InputBitSelector::signalValueChangedEventHandler()
 {
-	shared_ptr<Signal> l_signalToCommand = this->signalToCommand.lock();
+	shared_ptr<Variable> l_signalToCommand = this->signalToCommand.lock();
 	if (l_signalToCommand != nullptr)
 	{
 		this->bitValue->setText(QString::number(l_signalToCommand->getCurrentValue()[this->bitNumber]));

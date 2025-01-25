@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ class QWidget;
 
 // StateS classes
 class GraphicEquation;
-class Signal;
+class Variable;
 
 
 class EquationEditor : public QDialog
@@ -44,12 +44,12 @@ class EquationEditor : public QDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditor(shared_ptr<Signal> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditor(shared_ptr<Variable> initialEquation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	shared_ptr<Signal> getResultEquation() const;
+	shared_ptr<Variable> getResultEquation() const;
 
 protected:
 	virtual void keyPressEvent  (QKeyEvent* event)   override;

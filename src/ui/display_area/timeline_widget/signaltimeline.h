@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class Signal;
+class Variable;
 class Clock;
 class GraphicTimeLine;
 
@@ -42,7 +42,7 @@ class SignalTimeline : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit SignalTimeline(uint delay, shared_ptr<Signal> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit SignalTimeline(uint delay, shared_ptr<Variable> signal, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -54,7 +54,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<Signal> signal;
+	weak_ptr<Variable> signal;
 
 	QList<GraphicTimeLine*> signalLineDisplay;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@ using namespace std;
 // States classes
 #include "machinemanager.h"
 #include "fsmtransition.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "fsm.h"
 #include "fsmsimulator.h"
 #include "statesexception.h"
@@ -78,7 +78,7 @@ FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
 	auto condition = logicTransition->getCondition();
 	if (condition != nullptr) // nullptr is still a valid condition
 	{
-		connect(condition.get(), &Signal::signalDynamicStateChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
+		connect(condition.get(), &Variable::signalDynamicStateChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
 	}
 
 	connect(sourceState, &FsmSimulatedState::stateActiveStatusChanged, this, &FsmSimulatedTransition::refreshDisplay);
@@ -106,7 +106,7 @@ void FsmSimulatedTransition::refreshDisplay()
 
 	//
 	// Condition pen
-	shared_ptr<Signal> condition = logicTransition->getCondition();
+	shared_ptr<Variable> condition = logicTransition->getCondition();
 	if (condition != nullptr)
 	{
 		try

@@ -38,7 +38,6 @@ using namespace std;
 #include "fsmgraphicstate.h"
 #include "fsmtransition.h"
 #include "fsmgraphictransitionneighborhood.h"
-#include "StateS_signal.h"
 #include "contextmenu.h"
 #include "equation.h"
 #include "graphicfsm.h"

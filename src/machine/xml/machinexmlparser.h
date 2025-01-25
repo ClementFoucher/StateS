@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,7 @@ class Machine;
 class ViewConfiguration;
 class GraphicAttributes;
 class MachineActuatorComponent;
-class Signal;
+class Variable;
 class Equation;
 
 
@@ -85,8 +85,8 @@ protected:
 	shared_ptr<Machine> machine;
 
 	shared_ptr<MachineActuatorComponent> currentActuator;
-	shared_ptr<Signal> rootLogicEquation;
-	shared_ptr<Signal> currentLogicEquation;
+	shared_ptr<Variable> rootLogicEquation;
+	shared_ptr<Variable> currentLogicEquation;
 
 	shared_ptr<QXmlStreamReader> xmlReader;
 	shared_ptr<QFile> file; // Keep it just to maintain a reference to the file so that it is not destroyed

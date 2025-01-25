@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -126,7 +126,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	vLayout->addWidget(new StateTimeLine(clock));
 
-	for (shared_ptr<Signal> var : machine->getLocalVariables())
+	for (shared_ptr<Variable> var : machine->getLocalVariables())
 	{
 		SignalTimeline* varTL = new SignalTimeline(0, var, clock);
 		vLayout->addWidget(varTL);

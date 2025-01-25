@@ -36,7 +36,7 @@
 // StateS classes
 #include "statestypes.h"
 #include "dynamiclineedit.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
 #include "contextmenu.h"
@@ -215,7 +215,7 @@ void SignalListEditor::contextMenuEvent(QContextMenuEvent* event)
 			if (this->signalsList->columnCount() == 3)
 				this->currentSignalValue = signalsList->item(row, 2);
 
-			shared_ptr<Signal> currentSignal = associatedSignals[cellUnderMouse].lock();
+			shared_ptr<Variable> currentSignal = associatedSignals[cellUnderMouse].lock();
 
 			if (currentSignal != nullptr)
 			{
@@ -344,7 +344,7 @@ void SignalListEditor::updateList()
 	disconnect(this->signalsList,  &QTableWidget::itemSelectionChanged, this, &SignalListEditor::updateButtonsEnableState);
 
 	// Get signals I have to deal with
-	QList<shared_ptr<Signal>> signalsToAdd;
+	QList<shared_ptr<Variable>> signalsToAdd;
 
 	if (this->editorType == VariableNature_t::input)
 	{
@@ -363,7 +363,7 @@ void SignalListEditor::updateList()
 		signalsToAdd = machine->getConstants();
 	}
 
-	for (shared_ptr<Signal> sig : signalsToAdd)
+	for (shared_ptr<Variable> sig : signalsToAdd)
 	{
 		this->signalsList->insertRow(this->signalsList->rowCount());
 
@@ -599,7 +599,7 @@ void SignalListEditor::endAddSignal()
 
 	// If success, list is reloaded through events,
 	// which resets mode.
-	shared_ptr<Signal> newSignal = machine->addSignal(this->editorType, finalName, initialValue);
+	shared_ptr<Variable> newSignal = machine->addSignal(this->editorType, finalName, initialValue);
 	machineManager->notifyMachineEdited();
 
 	// If adding signal failed, continue editing signal name
@@ -645,7 +645,7 @@ void SignalListEditor::endRenameSignal()
 
 	QString finalName = editor->text();
 
-	shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
+	shared_ptr<Variable> currentSignal = this->associatedSignals[currentTableItem].lock();
 
 	if ( (currentSignal != nullptr) && (finalName != currentSignal->getName()) )
 	{
@@ -681,7 +681,7 @@ void SignalListEditor::endResizeSignal()
 
 		uint finalSize = (uint)editor->text().toInt();
 
-		shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
+		shared_ptr<Variable> currentSignal = this->associatedSignals[currentTableItem].lock();
 
 		if ( (currentSignal != nullptr) && (finalSize != currentSignal->getSize()) )
 		{
@@ -717,7 +717,7 @@ void SignalListEditor::endChangeSignalInitialValue()
 
 		LogicValue newInitialValue = LogicValue::fromString(editor->text()); // Throws StatesException
 
-		shared_ptr<Signal> currentSignal = this->associatedSignals[currentTableItem].lock();
+		shared_ptr<Variable> currentSignal = this->associatedSignals[currentTableItem].lock();
 
 		if ( (currentSignal != nullptr) && (newInitialValue != currentSignal->getInitialValue()) )
 		{
@@ -966,7 +966,7 @@ void SignalListEditor::editCurrentCell(bool erroneous)
 	}
 	else if (this->currentMode == ListMode_t::changingSignalInitialValue)
 	{
-		shared_ptr<Signal> currentSignal = this->associatedSignals[this->currentTableItem].lock();
+		shared_ptr<Variable> currentSignal = this->associatedSignals[this->currentTableItem].lock();
 
 		if (currentSignal != nullptr)
 		{

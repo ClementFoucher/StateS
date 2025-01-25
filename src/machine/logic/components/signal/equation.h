@@ -23,7 +23,7 @@
 #define EQUATION_H
 
 // Parent
-#include "StateS_signal.h"
+#include "variable.h"
 
 // C++ classes
 #include <memory>
@@ -56,20 +56,20 @@ using namespace std;
  * Machine Signals are primary held by the machine => weak_ptr.
  *
  */
-class Equation : public Signal
+class Equation : public Variable
 {
 	Q_OBJECT
 
 	/////
 	// Static functions
 private:
-	static bool signalHasSize(shared_ptr<Signal> sig);
+	static bool signalHasSize(shared_ptr<Variable> sig);
 
 	/////
 	// Constructors/destructors
 public:
 	explicit Equation(OperatorType_t function, int allowedOperandCount = -1);
-	explicit Equation(OperatorType_t function, const QVector<shared_ptr<Signal>>& operandList);
+	explicit Equation(OperatorType_t function, const QVector<shared_ptr<Variable>>& operandList);
 
 	/////
 	// Object functions
@@ -89,11 +89,11 @@ public:
 
 	bool isInverted() const;
 
-	shared_ptr<Signal> getOperand(uint i) const; // Throws StatesException
-	bool setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet = false); // Throws StatesException
+	shared_ptr<Variable> getOperand(uint i) const; // Throws StatesException
+	bool setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet = false); // Throws StatesException
 	void clearOperand(uint i, bool quiet = false); // Throws StatesException
 
-	QVector<shared_ptr<Signal>> getOperands() const;
+	QVector<shared_ptr<Variable>> getOperands() const;
 
 	uint getOperandCount() const;
 	void increaseOperandCount(); // Throws StatesException
@@ -125,7 +125,7 @@ private:
 
 	OperatorType_t function;
 	// Different storage for different ownership (weak/shared)
-	QVector<weak_ptr<Signal>>     signalOperands;
+	QVector<weak_ptr<Variable>>   signalOperands;
 	QVector<shared_ptr<Equation>> equationOperands;
 
 	// This size holds the maximum operands count

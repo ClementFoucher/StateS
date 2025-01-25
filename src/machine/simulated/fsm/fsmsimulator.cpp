@@ -34,7 +34,7 @@
 #include "fsm.h"
 #include "graphicfsm.h"
 #include "fsmstate.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "output.h"
 #include "fsmtransition.h"
 #include "fsmsimulatedstate.h"
@@ -139,7 +139,7 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and variables to their initial value
-	for (shared_ptr<Signal>& sig : fsm->getReadableVariableSignals())
+	for (shared_ptr<Variable>& sig : fsm->getReadableVariableSignals())
 	{
 		sig->reinitialize();
 	}

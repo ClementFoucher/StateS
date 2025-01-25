@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class Signal;
+class Variable;
 
 
 class InputSignalSelector : public QWidget
@@ -40,7 +40,7 @@ class InputSignalSelector : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget* parent = nullptr);
+	explicit InputSignalSelector(shared_ptr<Variable> relatedSignal, QWidget* parent = nullptr);
 
 };
 

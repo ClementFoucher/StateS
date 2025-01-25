@@ -29,7 +29,7 @@
 #include "statestypes.h"
 #include "statesexception.h"
 #include "machine.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "viewconfiguration.h"
 #include "graphicattributes.h"
 #include "actiononsignal.h"
@@ -165,7 +165,7 @@ void MachineXmlParser::parseSignal()
 	}
 
 	// Get type
-	shared_ptr<Signal> signal;
+	shared_ptr<Variable> signal;
 	if (nodeName == "Input")
 	{
 		signal = machine->addSignal(VariableNature_t::input, signalName);
@@ -267,8 +267,8 @@ void MachineXmlParser::parseAction()
 	{
 		QString signalName = attributes.value("Name").toString();
 
-		shared_ptr<Signal> signal;
-		for (shared_ptr<Signal> var : this->machine->getWrittableSignals())
+		shared_ptr<Variable> signal;
+		for (shared_ptr<Variable> var : this->machine->getWrittableSignals())
 		{
 			if (var->getName() == signalName)
 				signal = var;
@@ -445,11 +445,11 @@ void MachineXmlParser::parseLogicEquation()
 	QXmlStreamAttributes attributes = this->xmlReader->attributes();
 	QString nodeName = this->xmlReader->name().toString();
 
-	shared_ptr<Signal> equation;
+	shared_ptr<Variable> equation;
 
 	if (nodeName == "LogicVariable")
 	{
-		for (shared_ptr<Signal> var : this->machine->getReadableSignals())
+		for (shared_ptr<Variable> var : this->machine->getReadableSignals())
 		{
 			if (var->getName() == attributes.value("Name"))
 			{

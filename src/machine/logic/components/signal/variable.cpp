@@ -20,14 +20,14 @@
  */
 
 // Current class header
-#include "StateS_signal.h"
+#include "variable.h"
 
 // StateS classes
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
 
-Signal::Signal(const QString &name, uint size) // Throws StatesException
+Variable::Variable(const QString &name, uint size) // Throws StatesException
 {
 	if (size == 0)
 		throw StatesException("Signal", SignalError_t::building_zero_sized, "Signal size set to 0");
@@ -37,42 +37,42 @@ Signal::Signal(const QString &name, uint size) // Throws StatesException
 	this->currentValue = this->initialValue;
 
 	// Link specific events signals to general events
-	connect(this, &Signal::signalRenamedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
-	connect(this, &Signal::signalResizedEvent,             this, &Signal::signalStaticConfigurationChangedEvent);
-	connect(this, &Signal::SignalInitialValueChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+	connect(this, &Variable::signalRenamedEvent,             this, &Variable::signalStaticConfigurationChangedEvent);
+	connect(this, &Variable::signalResizedEvent,             this, &Variable::signalStaticConfigurationChangedEvent);
+	connect(this, &Variable::SignalInitialValueChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
 
 	// This event also impacts dynamic values
-	connect(this, &Signal::signalResizedEvent, this, &Signal::signalDynamicStateChangedEvent);
+	connect(this, &Variable::signalResizedEvent, this, &Variable::signalDynamicStateChangedEvent);
 }
 
-Signal::Signal(const QString& name) :
-    Signal(name, 1) // Size to 1 => no exception to catch - ignored
+Variable::Variable(const QString& name) :
+	Variable(name, 1) // Size to 1 => no exception to catch - ignored
 {
 
 }
 
-Signal::~Signal()
+Variable::~Variable()
 {
 	emit signalDeletedEvent();
 }
 
-QString Signal::getName() const
+QString Variable::getName() const
 {
 	return this->name;
 }
 
-void Signal::setName(const QString& value)
+void Variable::setName(const QString& value)
 {
 	this->name = value;
 	emit signalRenamedEvent();
 }
 
-uint Signal::getSize() const
+uint Variable::getSize() const
 {
 	return this->currentValue.getSize();
 }
 
-void Signal::resize(uint newSize) // Throws StatesException
+void Variable::resize(uint newSize) // Throws StatesException
 {
 	if (newSize == 0)
 		throw StatesException("Signal", SignalError_t::signal_resized_to_0, "Trying to resize signal with size 0");
@@ -83,19 +83,19 @@ void Signal::resize(uint newSize) // Throws StatesException
 	emit signalResizedEvent();
 }
 
-QString Signal::getText() const
+QString Variable::getText() const
 {
 	return this->name;
 }
 
-void Signal::setCurrentValue(const LogicValue& value) // Throws StatesException
+void Variable::setCurrentValue(const LogicValue& value) // Throws StatesException
 {
 	// We have to make sure we use this call fuction,
 	// and not the overriding ones:
-	Signal::setCurrentValueSubRange(value, -1, -1); // Throws StatesException - Propagted
+	Variable::setCurrentValueSubRange(value, -1, -1); // Throws StatesException - Propagted
 }
 
-void Signal::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR) // Throws StatesException
+void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR) // Throws StatesException
 {
 	bool setOk = false;
 
@@ -140,17 +140,17 @@ void Signal::setCurrentValueSubRange(const LogicValue& value, int rangeL, int ra
 	}
 }
 
-LogicValue Signal::getCurrentValue() const
+LogicValue Variable::getCurrentValue() const
 {
 	return this->currentValue;
 }
 
-LogicValue Signal::getInitialValue() const
+LogicValue Variable::getInitialValue() const
 {
 	return this->initialValue;
 }
 
-void Signal::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
+void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
 {
 	if (this->getSize() == newInitialValue.getSize())
 	{
@@ -164,20 +164,20 @@ void Signal::setInitialValue(const LogicValue& newInitialValue) // Throws States
 	}
 }
 
-void Signal::reinitialize()
+void Variable::reinitialize()
 {
 	this->currentValue = this->initialValue;
 	emit signalDynamicStateChangedEvent();
 }
 
-void Signal::resetValue()
+void Variable::resetValue()
 {
 	setCurrentValue(LogicValue::getValue0(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
 }
 
 // True concept here only apply to one bit signals
 // A larger signal muust never be checked for trueness
-bool Signal::isTrue() const // Throws StatesException
+bool Variable::isTrue() const // Throws StatesException
 {
 	if (this->getSize() == 1)
 	{

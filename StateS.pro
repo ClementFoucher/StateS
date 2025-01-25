@@ -37,8 +37,8 @@ CONFIG += c++17
 QMAKE_LFLAGS += -no-pie
 
 SOURCES += \
-    # Core
 	src/main.cpp \
+	# Core
 	src/core/states.cpp \
 	src/core/basic_type/logicvalue.cpp \
 	src/core/basic_type/truthtable.cpp \
@@ -66,11 +66,11 @@ SOURCES += \
 	src/machine/logic/components/machinecomponent.cpp \
 	src/machine/logic/components/machineactuatorcomponent.cpp \
 	src/machine/logic/components/signal/actiononsignal.cpp \
-	src/machine/logic/components/signal/signal.cpp \
 	src/machine/logic/components/signal/input.cpp \
 	src/machine/logic/components/signal/output.cpp \
 	src/machine/logic/components/signal/constant.cpp \
 	src/machine/logic/components/signal/equation.cpp \
+	src/machine/logic/components/signal/variable.cpp \
 	src/machine/logic/fsm/fsm.cpp \
 	src/machine/logic/fsm/components/fsmstate.cpp \
 	src/machine/logic/fsm/components/fsmtransition.cpp \
@@ -187,11 +187,11 @@ HEADERS += \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
 	src/machine/logic/components/signal/actiononsignal.h \
-	src/machine/logic/components/signal/StateS_signal.h \
 	src/machine/logic/components/signal/input.h \
 	src/machine/logic/components/signal/output.h \
 	src/machine/logic/components/signal/constant.h \
 	src/machine/logic/components/signal/equation.h \
+	src/machine/logic/components/signal/variable.h \
 	src/machine/logic/fsm/fsm.h \
 	src/machine/logic/fsm/components/fsmstate.h \
 	src/machine/logic/fsm/components/fsmtransition.h \

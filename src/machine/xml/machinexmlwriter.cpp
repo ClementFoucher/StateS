@@ -127,7 +127,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	}
 }
 
-void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
+void MachineXmlWriter::writeLogicEquation(shared_ptr<Variable> equation)
 {
 	shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (equation);
 
@@ -189,7 +189,7 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Signal> equation)
 
 		for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
 		{
-			shared_ptr<Signal> operand = complexEquation->getOperand(i); // Throws StatesException - Constrained by operand count - ignored
+			shared_ptr<Variable> operand = complexEquation->getOperand(i); // Throws StatesException - Constrained by operand count - ignored
 			if (operand != nullptr)
 			{
 				this->stream->writeStartElement("Operand");
@@ -271,7 +271,7 @@ void MachineXmlWriter::writeMachineSignals()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	for (shared_ptr<Signal> var : machine->getAllSignals())
+	for (shared_ptr<Variable> var : machine->getAllSignals())
 	{
 		// Type
 		if (dynamic_pointer_cast<Input>(var) != nullptr)

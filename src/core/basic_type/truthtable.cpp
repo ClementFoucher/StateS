@@ -27,7 +27,7 @@
 
 // StateS classes
 #include "statestypes.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "equation.h"
 #include "logicvalue.h"
 #include "constant.h"
@@ -53,11 +53,11 @@ TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
  * @return Obtain the list of signals representing the
  * inputs of the truth table.
  */
-QVector<shared_ptr<Signal> > TruthTable::getInputs() const // Throws StatesException
+QVector<shared_ptr<Variable> > TruthTable::getInputs() const // Throws StatesException
 {
-	QVector<shared_ptr<Signal>> list;
+	QVector<shared_ptr<Variable>> list;
 
-	for (weak_ptr<Signal> sig : this->inputSignalsTable)
+	for (weak_ptr<Variable> sig : this->inputSignalsTable)
 	{
 		if (! sig.expired())
 			list.append(sig.lock());
@@ -135,11 +135,11 @@ uint TruthTable::getOutputCount() const
  * constants. Note that a signal can have multiple instances
  * in output list if it is present at multiple times in the equation.
  */
-QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equation) const
+QList<shared_ptr<Variable>> TruthTable::extractSignals(shared_ptr<Equation> equation) const
 {
-	QList<shared_ptr<Signal>> list;
+	QList<shared_ptr<Variable>> list;
 
-	for (shared_ptr<Signal> sig : equation->getOperands())
+	for (shared_ptr<Variable> sig : equation->getOperands())
 	{
 		shared_ptr<Equation> complexOperand = dynamic_pointer_cast<Equation>(sig);
 
@@ -165,7 +165,7 @@ QList<shared_ptr<Signal>> TruthTable::extractSignals(shared_ptr<Equation> equati
 void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 {
 	// Obtain all signals involved in all equations
-	QList<shared_ptr<Signal>> signalList;
+	QList<shared_ptr<Variable>> signalList;
 
 	for (shared_ptr<Equation> equation : equations)
 	{
@@ -174,9 +174,9 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 	}
 
 	// Clean list so each signal only appears once
-	QVector<shared_ptr<Signal>> signalVector;
+	QVector<shared_ptr<Variable>> signalVector;
 
-	for (shared_ptr<Signal> signal : signalList)
+	for (shared_ptr<Variable> signal : signalList)
 	{
 		if (!signalVector.contains(signal))
 		{
@@ -187,14 +187,14 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 
 	// Count inputs bit by bit
 	uint inputCount = 0;
-	for (shared_ptr<Signal> sig : signalVector)
+	for (shared_ptr<Variable> sig : signalVector)
 	{
 		inputCount += sig->getSize();
 	}
 
 	// Prepare first row
 	QVector<LogicValue> currentRow;
-	for (shared_ptr<Signal> sig : signalVector)
+	for (shared_ptr<Variable> sig : signalVector)
 	{
 		currentRow.append(LogicValue(sig->getSize(), false));
 	}

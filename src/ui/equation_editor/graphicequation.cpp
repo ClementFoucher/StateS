@@ -46,7 +46,7 @@
 // A graphic equation can either represent
 // a logic equation or a logic signal
 
-GraphicEquation::GraphicEquation(shared_ptr<Signal> equation, bool isTemplate, bool lockSignal, QWidget* parent) :
+GraphicEquation::GraphicEquation(shared_ptr<Variable> equation, bool isTemplate, bool lockSignal, QWidget* parent) :
     QFrame(parent)
 {
 	this->equation   = equation;
@@ -61,7 +61,7 @@ GraphicEquation::GraphicEquation(shared_ptr<Signal> equation, bool isTemplate, b
 		this->rootEquation = equation;
 
 	if (equation != nullptr)
-		connect(equation.get(), &Signal::signalStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
+		connect(equation.get(), &Variable::signalStaticConfigurationChangedEvent, this, &GraphicEquation::updateBorder);
 
 	this->buildEquation();
 }
@@ -101,7 +101,7 @@ void GraphicEquation::buildEquation()
 
 void GraphicEquation::buildTemplateEquation()
 {
-	shared_ptr<Signal> equationAsSignal = this->equation.lock();
+	shared_ptr<Variable> equationAsSignal = this->equation.lock();
 	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation> (equationAsSignal);
 
 	if (equationAsEquation != nullptr)
@@ -185,7 +185,7 @@ void GraphicEquation::buildTemplateEquation()
 
 void GraphicEquation::buildCompleteEquation()
 {
-	shared_ptr<Signal> equationAsSignal = this->equation.lock();
+	shared_ptr<Variable> equationAsSignal = this->equation.lock();
 	shared_ptr<Equation> equationAsEquation = dynamic_pointer_cast<Equation> (equationAsSignal);
 
 	if (equationAsEquation != nullptr)
@@ -311,7 +311,7 @@ void GraphicEquation::clearEditorWidget()
 
 void GraphicEquation::buildSignalEquation()
 {
-	shared_ptr<Signal> equationAsSignal = this->equation.lock();
+	shared_ptr<Variable> equationAsSignal = this->equation.lock();
 	if (equationAsSignal != nullptr)
 	{
 		QHBoxLayout* equationLayout = new QHBoxLayout();
@@ -348,7 +348,7 @@ void GraphicEquation::setDefaultBorderColor()
 		this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
 	else
 	{
-		shared_ptr<Signal> equationAsSignal = this->equation.lock();
+		shared_ptr<Variable> equationAsSignal = this->equation.lock();
 
 		if ( ( equationAsSignal == nullptr ) || (equationAsSignal->getCurrentValue().isNull()) )
 		{
@@ -418,7 +418,7 @@ GraphicEquation* GraphicEquation::parentEquation() const
 // new equation, unless we are top level.
 // Graphic equation is rebuilt by parent, which destoys
 // current object.
-void GraphicEquation::replaceEquation(shared_ptr<Signal> newEquation)
+void GraphicEquation::replaceEquation(shared_ptr<Variable> newEquation)
 {
 	// Find equation parent
 	GraphicEquation* parentEquation = this->parentEquation();
@@ -442,7 +442,7 @@ void GraphicEquation::replaceEquation(shared_ptr<Signal> newEquation)
 // This function is typically called by children operand
 // to replace themselves.
 // Graphic equation is rebuild after logic equation update.
-void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand)
+void GraphicEquation::updateEquation(shared_ptr<Variable> oldOperand, shared_ptr<Variable> newOperand)
 {
 	shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (this->equation.lock());
 
@@ -466,7 +466,7 @@ void GraphicEquation::updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<S
 // Returns the equation currently represented by the graphic object.
 // This is typically a pointer to a part of a logic equation,
 // unless we are top level, then the whole equation is returned.
-shared_ptr<Signal> GraphicEquation::getLogicEquation() const
+shared_ptr<Variable> GraphicEquation::getLogicEquation() const
 {
 	if (rootEquation != nullptr)
 		return rootEquation;
@@ -578,7 +578,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 
 			drag->setMimeData(mimeData);
 
-			shared_ptr<Signal> l_signal = this->equation.lock();
+			shared_ptr<Variable> l_signal = this->equation.lock();
 			shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation> (l_signal);
 
 			// Drag image may not match template display: create a correct equation
@@ -670,7 +670,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 {
 	if (!isTemplate)
 	{
-		shared_ptr<Signal> l_equation = this->equation.lock();
+		shared_ptr<Variable> l_equation = this->equation.lock();
 
 		if (l_equation != nullptr)
 		{
@@ -791,7 +791,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 		// Obtain new equation
 		this->droppedEquation = mimeData->getEquation()->getLogicEquation();
 
-		shared_ptr<Signal> signalEquation = this->equation.lock();
+		shared_ptr<Variable> signalEquation = this->equation.lock();
 
 		// Automatically replace empty operands
 		if (signalEquation == nullptr)
@@ -860,7 +860,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 	QVariant data = action->data();
 	int dataValue = data.toInt();
 
-	shared_ptr<Signal> signalEquation  = this->equation.lock();
+	shared_ptr<Variable> signalEquation  = this->equation.lock();
 
 	switch (dataValue)
 	{
@@ -929,7 +929,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 			valid = false;
 
 			complexEquation = dynamic_pointer_cast<Equation>(signalEquation);
-			shared_ptr<Signal> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1); // Throws StatesException - Constrained by operand count - ignored
+			shared_ptr<Variable> signalEquation = complexEquation->getOperand(complexEquation->getOperandCount() - 1); // Throws StatesException - Constrained by operand count - ignored
 
 			if (signalEquation != nullptr)
 			{

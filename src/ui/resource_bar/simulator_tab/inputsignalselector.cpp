@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,11 +27,11 @@
 #include <QLabel>
 
 // StateS classes
-#include "StateS_signal.h"
+#include "variable.h"
 #include "inputbitselector.h"
 
 
-InputSignalSelector::InputSignalSelector(shared_ptr<Signal> relatedSignal, QWidget *parent) :
+InputSignalSelector::InputSignalSelector(shared_ptr<Variable> relatedSignal, QWidget *parent) :
     QWidget(parent)
 {
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);

@@ -39,7 +39,7 @@
  * @param operandCount Number of operands. Omitting this value results in a default-sized equation with 2 operands for variable operand functions.
  */
 Equation::Equation(OperatorType_t function, int operandCount) :
-    Signal("<sub>(equation)</sub>")
+    Variable("<sub>(equation)</sub>")
 {
 	this->function = function;
 	this->currentValue = LogicValue::getNullValue();
@@ -106,11 +106,11 @@ Equation::Equation(OperatorType_t function, int operandCount) :
 	this->rangeR = -1;
 	this->constantValue = LogicValue::getNullValue();
 
-	this->signalOperands   = QVector<weak_ptr<Signal>>    (this->allowedOperandCount);
+	this->signalOperands   = QVector<weak_ptr<Variable>>    (this->allowedOperandCount);
 	this->equationOperands = QVector<shared_ptr<Equation>>(this->allowedOperandCount);
 }
 
-Equation::Equation(OperatorType_t function, const QVector<shared_ptr<Signal>>& operandList) :
+Equation::Equation(OperatorType_t function, const QVector<shared_ptr<Variable>>& operandList) :
     Equation(function, operandList.count())
 {
 	for (int i = 0 ; i < operandList.count() ; i++)
@@ -242,7 +242,7 @@ void Equation::setRange(int rangeL, int rangeR)
 
 }
 
-shared_ptr<Signal> Equation::getOperand(uint i) const // Throws StatesException
+shared_ptr<Variable> Equation::getOperand(uint i) const // Throws StatesException
 {
 	if (i < this->allowedOperandCount)
 		return this->getOperands().at(i);
@@ -258,7 +258,7 @@ shared_ptr<Signal> Equation::getOperand(uint i) const // Throws StatesException
  * All given operands that are equation will be cloned.
  * @return
  */
-bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet) // Throws StatesException
+bool Equation::setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet) // Throws StatesException
 {
 	// Do not allow placing an operand outside defined range
 	if (i >= this->allowedOperandCount)
@@ -282,26 +282,26 @@ bool Equation::setOperand(uint i, shared_ptr<Signal> newOperand, bool quiet) // 
 			// Assign operand
 
 			shared_ptr<Equation> newEquationOperand = dynamic_pointer_cast <Equation> (newOperand);
-			shared_ptr<Signal> actualNewOperand;
+			shared_ptr<Variable> actualNewOperand;
 
 			if (newEquationOperand != nullptr)
 			{
 				equationOperands[i] = newEquationOperand->clone();
-				actualNewOperand = dynamic_pointer_cast<Signal>(equationOperands[i]);
+				actualNewOperand = dynamic_pointer_cast<Variable>(equationOperands[i]);
 			}
 			else
 			{
-				connect(newOperand.get(), &Signal::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
+				connect(newOperand.get(), &Variable::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
 				signalOperands[i] = newOperand;
 				actualNewOperand = newOperand;
 			}
 
 
 			// Structural changes are propagated
-			connect(actualNewOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+			connect(actualNewOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
 			// Local stuff
-			connect(actualNewOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-			connect(actualNewOperand.get(), &Signal::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+			connect(actualNewOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+			connect(actualNewOperand.get(), &Variable::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 		}
 
 		if (!quiet)
@@ -323,19 +323,19 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 		throw StatesException("Equation", EquationError_t::out_of_range_access, "Out of range operand access");
 	}
 
-	shared_ptr<Signal> oldOperand = this->getOperand(i); // Throws StatesException - Operand count checked - ignored
+	shared_ptr<Variable> oldOperand = this->getOperand(i); // Throws StatesException - Operand count checked - ignored
 
 	if (oldOperand != nullptr)
 	{
 		// Signal propagation
-		disconnect(oldOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Signal::signalStaticConfigurationChangedEvent);
+		disconnect(oldOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Variable::signalStaticConfigurationChangedEvent);
 		// Local stuff
-		disconnect(oldOperand.get(), &Signal::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-		disconnect(oldOperand.get(), &Signal::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+		disconnect(oldOperand.get(), &Variable::signalStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
+		disconnect(oldOperand.get(), &Variable::signalDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
 
 		if (oldOperand != nullptr)
 		{
-			disconnect(oldOperand.get(), &Signal::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
+			disconnect(oldOperand.get(), &Variable::signalDeletedEvent, this, &Equation::signalDeletedEventHandler);
 		}
 
 		equationOperands[i].reset();
@@ -385,7 +385,7 @@ QString Equation::getColoredText(bool raw) const
 
 		for (uint i = 0 ; i < this->allowedOperandCount ; i++)
 		{
-			shared_ptr<Signal> signalOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
+			shared_ptr<Variable> signalOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
 			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(signalOperand);
 
 			if (equationOperand != nullptr)
@@ -473,7 +473,7 @@ void Equation::setConstantValue(const LogicValue& value) // Throws StatesExcepti
 
 		this->computeCurrentValue();
 
-		emit Signal::signalStaticConfigurationChangedEvent();
+		emit Variable::signalStaticConfigurationChangedEvent();
 	}
 	else
 		throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect a value to a dynamically determined equation");
@@ -542,9 +542,9 @@ void Equation::setCurrentValueSubRange(const LogicValue&, int, int)
  * This must not be used to take ownership of operands.
  * @return
  */
-QVector<shared_ptr<Signal>> Equation::getOperands() const
+QVector<shared_ptr<Variable>> Equation::getOperands() const
 {
-	QVector<shared_ptr<Signal>> operands(this->allowedOperandCount);
+	QVector<shared_ptr<Variable>> operands(this->allowedOperandCount);
 
 	for (uint i = 0 ; i < this->allowedOperandCount ; i++)
 	{
@@ -567,7 +567,7 @@ void Equation::computeCurrentValue()
 
 	uint operandsSize = 0;
 
-	for (shared_ptr<Signal> currentOperand : this->getOperands())
+	for (shared_ptr<Variable> currentOperand : this->getOperands())
 	{
 		if (currentOperand == nullptr)
 		{
@@ -598,7 +598,7 @@ void Equation::computeCurrentValue()
 
 	if (doCompute)
 	{
-		QVector<shared_ptr<Signal>> operands = this->getOperands();
+		QVector<shared_ptr<Variable>> operands = this->getOperands();
 		this->failureCause = EquationComputationFailureCause_t::nofail;
 
 		switch (this->function)
@@ -675,7 +675,7 @@ void Equation::computeCurrentValue()
 		case OperatorType_t::concatOp:
 		{
 			int sizeCount = 0;
-			for (shared_ptr<Signal> currentOperand : this->getOperands())
+			for (shared_ptr<Variable> currentOperand : this->getOperands())
 			{
 				sizeCount += currentOperand->getSize();
 			}
@@ -683,7 +683,7 @@ void Equation::computeCurrentValue()
 			LogicValue concatVector(sizeCount);
 
 			int currentBit = sizeCount - 1;
-			for (shared_ptr<Signal> currentOperand : this->getOperands())
+			for (shared_ptr<Variable> currentOperand : this->getOperands())
 			{
 				for (int i = currentOperand->getSize()-1 ; i >= 0 ; i--)
 				{
@@ -699,7 +699,7 @@ void Equation::computeCurrentValue()
 		case OperatorType_t::nandOp:
 		{
 			LogicValue partialResult(operandsSize, true);
-			for (shared_ptr<Signal> operand : operands)
+			for (shared_ptr<Variable> operand : operands)
 			{
 				partialResult &= operand->getCurrentValue();
 			}
@@ -715,7 +715,7 @@ void Equation::computeCurrentValue()
 		case OperatorType_t::norOp:
 		{
 			LogicValue partialResult(operandsSize);
-			for (shared_ptr<Signal> operand : operands)
+			for (shared_ptr<Variable> operand : operands)
 			{
 				partialResult |= operand->getCurrentValue();
 			}
@@ -731,7 +731,7 @@ void Equation::computeCurrentValue()
 		case OperatorType_t::xnorOp:
 		{
 			LogicValue partialResult(operandsSize);
-			for (shared_ptr<Signal> operand : operands)
+			for (shared_ptr<Variable> operand : operands)
 			{
 				partialResult ^= operand->getCurrentValue();
 			}
@@ -775,7 +775,7 @@ void Equation::signalDeletedEventHandler()
 	emit this->signalStaticConfigurationChangedEvent();
 }
 
-bool Equation::signalHasSize(shared_ptr<Signal> sig)
+bool Equation::signalHasSize(shared_ptr<Variable> sig)
 {
 	if (sig == nullptr)
 		return false;

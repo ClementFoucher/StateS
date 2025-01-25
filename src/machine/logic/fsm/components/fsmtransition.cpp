@@ -60,17 +60,17 @@ componentId_t FsmTransition::getTargetStateId() const
 	return this->targetStateId;
 }
 
-void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
+void FsmTransition::setCondition(shared_ptr<Variable> signalNewCondition)
 {
 	if (this->condition != nullptr)
 	{
-		disconnect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Variable::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
 	shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(signalNewCondition);
 	if (equationNewCondition == nullptr)
 	{
-		QVector<shared_ptr<Signal>> operand;
+		QVector<shared_ptr<Variable>> operand;
 		operand.append(signalNewCondition);
 		equationNewCondition = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
 	}
@@ -80,7 +80,7 @@ void FsmTransition::setCondition(shared_ptr<Signal> signalNewCondition)
 	if (this->condition != nullptr)
 	{
 		// Propagate events
-		connect(this->condition.get(), &Signal::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Variable::signalStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
 	}
 
 	emit this->conditionChangedEvent();
@@ -92,7 +92,7 @@ void FsmTransition::clearCondition()
 	this->setCondition(nullptr);
 }
 
-shared_ptr<Signal> FsmTransition::getCondition() const
+shared_ptr<Variable> FsmTransition::getCondition() const
 {
 	if (this->condition != nullptr)
 	{

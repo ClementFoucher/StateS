@@ -96,7 +96,7 @@ shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility
 		if (charac.isMealy && charac.isKeepValue)
 			compatibility->mealyWithKeep.append(output);
 	}
-	for (shared_ptr<Signal> variable : fsm->getLocalVariables())
+	for (shared_ptr<Variable> variable : fsm->getLocalVariables())
 	{
 		charac = this->determineWrittableSignalCharacteristics(fsm, variable, false);
 
@@ -157,20 +157,20 @@ void FsmVhdlExport::generateVhdlCharacteristics(shared_ptr<Fsm> l_machine)
 		this->determineWrittableSignalCharacteristics(l_machine, output, true);
 		this->signalVhdlName[output] = signalName;
 	}
-	for (shared_ptr<Signal> variable : l_machine->getLocalVariables())
+	for (shared_ptr<Variable> variable : l_machine->getLocalVariables())
 	{
 		signalName = this->generateSignalVhdlName("SIG_", variable->getName());
 		this->determineWrittableSignalCharacteristics(l_machine, variable, true);
 		this->signalVhdlName[variable] = signalName;
 	}
-	for (shared_ptr<Signal> constant : l_machine->getConstants())
+	for (shared_ptr<Variable> constant : l_machine->getConstants())
 	{
 		signalName = this->generateSignalVhdlName("CONST_", constant->getName());
 		this->signalVhdlName[constant] = signalName;
 	}
 }
 
-FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults)
+FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> signal, bool storeResults)
 {
 	WrittableSignalCharacteristics_t characteristics;
 
@@ -384,10 +384,10 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  signal next_state    : state_type;\n\n";
 
 	//QList<shared_ptr<Input>> inputs = l_machine->getInputs();
-	QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
-	QList<shared_ptr<Signal>> constants = l_machine->getConstants();
+	QList<shared_ptr<Variable>> localVars = l_machine->getLocalVariables();
+	QList<shared_ptr<Variable>> constants = l_machine->getConstants();
 
-	for (shared_ptr<Signal> localVar : localVars)
+	for (shared_ptr<Variable> localVar : localVars)
 	{
 		stream << "  signal " + this->signalVhdlName[localVar] << " : std_logic";
 
@@ -407,7 +407,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 	stream << "\n";
 
-	for (shared_ptr<Signal> constant : constants)
+	for (shared_ptr<Variable> constant : constants)
 	{
 		stream << "  constant " + this->signalVhdlName[constant] << " : std_logic";
 
@@ -457,7 +457,7 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 			auto transition = l_machine->getTransition(transitionId);
 
-			shared_ptr<Signal> condition = transition->getCondition();
+			shared_ptr<Variable> condition = transition->getCondition();
 			stream << generateEquationText(condition, l_machine);
 
 			// Add compare for single signal equations
@@ -505,7 +505,7 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 	stream << "  compute_moore : process(current_state)\n";
 	stream << "  begin\n";
 
-	for (shared_ptr<Signal> signal : this->mooreSignals)
+	for (shared_ptr<Variable> signal : this->mooreSignals)
 	{
 		if (this->tempValueSignals.contains(signal))
 		{
@@ -551,7 +551,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 {
 	stream << "  -- Compute Mealy outputs\n";
 
-	for (shared_ptr<Signal> signal : this->mealySignals)
+	for (shared_ptr<Variable> signal : this->mealySignals)
 	{
 		if (this->tempValueSignals.contains(signal))
 		{
@@ -603,7 +603,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const
 {
 	QList<shared_ptr<Input>> inputs = l_machine->getInputs();
-	QList<shared_ptr<Signal>> localVars = l_machine->getLocalVariables();
+	QList<shared_ptr<Variable>> localVars = l_machine->getLocalVariables();
 
 	for (shared_ptr<Input> input : inputs)
 	{
@@ -621,7 +621,7 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 		}
 	}
 
-	for (shared_ptr<Signal> localVar : l_machine->getLocalVariables())
+	for (shared_ptr<Variable> localVar : l_machine->getLocalVariables())
 	{
 		stream << "                              ";
 		stream << this->signalVhdlName[localVar];
@@ -639,7 +639,7 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 
 void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const
 {
-	shared_ptr<Signal> signal = action->getSignalActedOn();
+	shared_ptr<Variable> signal = action->getSignalActedOn();
 
 	stream << "      ";
 	stream << this->signalVhdlName[signal];
@@ -695,7 +695,7 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	stream << ";\n";
 }
 
-QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const
+QString FsmVhdlExport::generateEquationText(shared_ptr<Variable> equation, shared_ptr<Fsm> l_machine) const
 {
 	QString text;
 
@@ -737,7 +737,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Signal> equation, shared_
 		{
 			text += "(";
 
-			QVector<shared_ptr<Signal>> operands = complexEquation->getOperands();
+			QVector<shared_ptr<Variable>> operands = complexEquation->getOperands();
 
 			for (int i = 0 ; i < operands.count() ; i++)
 			{

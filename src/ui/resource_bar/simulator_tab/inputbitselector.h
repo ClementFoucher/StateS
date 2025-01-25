@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@ using namespace std;
 class QLabel;
 
 // StateS classes
-class Signal;
+class Variable;
 
 
 class InputBitSelector : public QFrame
@@ -43,7 +43,7 @@ class InputBitSelector : public QFrame
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBitSelector(shared_ptr<Signal> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
+	explicit InputBitSelector(shared_ptr<Variable> signalToCommand, uint bitNumber, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -61,7 +61,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<Signal> signalToCommand;
+	weak_ptr<Variable> signalToCommand;
 	uint bitNumber = 0;
 
 	// QWidget with parent

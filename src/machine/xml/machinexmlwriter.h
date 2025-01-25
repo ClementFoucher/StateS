@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,7 @@ class QFile;
 
 // StateS classes
 #include "statestypes.h"
-class Signal;
+class Variable;
 class MachineActuatorComponent;
 class ViewConfiguration;
 
@@ -60,7 +60,7 @@ protected:
 
 	void writeMachineCommonElements();
 	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
-	void writeLogicEquation(shared_ptr<Signal> equation);
+	void writeLogicEquation(shared_ptr<Variable> equation);
 
 private:
 	void createSaveFile(); // Throws StatesException

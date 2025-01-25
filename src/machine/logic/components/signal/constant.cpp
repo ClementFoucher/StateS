@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,19 +28,19 @@
 
 
 Constant::Constant(const QString& name) :
-    Signal(name)
+    Variable(name)
 {
 }
 
 Constant::Constant(const QString& name, uint size) : // Throws StatesException
-    Signal(name, size) // Throws StatesException: propagated
+    Variable(name, size) // Throws StatesException: propagated
 {
 }
 
 void Constant::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
 {
-	Signal::setInitialValue(newInitialValue); // Throws StatesException - Propagated
-	Signal::setCurrentValue(newInitialValue); // Throws StatesException - Propagated
+	Variable::setInitialValue(newInitialValue); // Throws StatesException - Propagated
+	Variable::setCurrentValue(newInitialValue); // Throws StatesException - Propagated
 }
 
 void Constant::setCurrentValue(const LogicValue&) // Throws StatesException

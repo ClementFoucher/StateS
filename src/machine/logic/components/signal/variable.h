@@ -19,31 +19,27 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#ifndef VARIABLE_H
+#define VARIABLE_H
 
 // Parent
 #include <QObject>
-
-// C++ classes
-#include <memory>
-using namespace std;
 
 // StateS classes
 #include "logicvalue.h"
 
 
-class Signal : public QObject
+class Variable : public QObject
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit Signal(const QString& name, uint size); // Throws StatesException
-	explicit Signal(const QString& name);
+	explicit Variable(const QString& name, uint size); // Throws StatesException
+	explicit Variable(const QString& name);
 
-	~Signal();
+	~Variable();
 
 	/////
 	// Object functions
@@ -95,4 +91,4 @@ private:
 
 };
 
-#endif // SIGNAL_H
+#endif // VARIABLE_H

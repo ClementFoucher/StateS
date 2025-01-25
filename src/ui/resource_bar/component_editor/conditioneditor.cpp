@@ -119,7 +119,7 @@ void ConditionEditor::editCondition()
 
 		if (result == QDialog::DialogCode::Accepted)
 		{
-			shared_ptr<Signal> tmp = eqEdit->getResultEquation();
+			shared_ptr<Variable> tmp = eqEdit->getResultEquation();
 
 			transition->setCondition(tmp);
 			machineManager->notifyMachineEdited();
@@ -156,7 +156,7 @@ void ConditionEditor::treatMenuSetCondition(QAction* action)
 	if (transition == nullptr) return;
 
 
-	for (shared_ptr<Signal> currentVariable : machine->getReadableSignals())
+	for (shared_ptr<Variable> currentVariable : machine->getReadableSignals())
 	{
 		if (currentVariable->getName() == action->text())
 		{

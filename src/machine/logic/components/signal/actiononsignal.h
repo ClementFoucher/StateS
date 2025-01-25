@@ -32,7 +32,7 @@ using namespace std;
 // StateS classes
 #include "statestypes.h"
 #include "logicvalue.h"
-class Signal;
+class Variable;
 
 
 /**
@@ -65,7 +65,7 @@ class ActionOnSignal : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnSignal(shared_ptr<Signal> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
+	explicit ActionOnSignal(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
 							int rangeL = -1, int rangeR = -1);
 
 	/////
@@ -75,7 +75,7 @@ public:
 	void setActionValue(LogicValue newValue);  // Throws StatesException
 	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
 
-	shared_ptr<Signal>     getSignalActedOn()      const;
+	shared_ptr<Variable>     getSignalActedOn()      const;
 	ActionOnVariableType_t getActionType()         const;
 	LogicValue             getActionValue()        const;
 	int                    getActionRangeL()       const;
@@ -98,7 +98,7 @@ private:
 	/////
 	// Object variables
 private:
-	weak_ptr<Signal> signal;
+	weak_ptr<Variable> signal;
 
 	ActionOnVariableType_t actionType;
 	LogicValue             actionValue;

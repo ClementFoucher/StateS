@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS classes
 class ActionOnSignal;
-class Signal;
+class Variable;
 
 
 /**
@@ -57,7 +57,7 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnSignal> addAction(shared_ptr<Signal> signal);
+	shared_ptr<ActionOnSignal> addAction(shared_ptr<Variable> signal);
 	void removeAction(uint actionRank); // Throws StatesException
 	shared_ptr<ActionOnSignal> getAction(uint actionRank) const; // Throws StatesException
 	QList<shared_ptr<ActionOnSignal>> getActions() const;

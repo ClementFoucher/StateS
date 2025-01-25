@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ class QTextStream;
 // StateS classes
 #include "statestypes.h"
 class Fsm;
-class Signal;
+class Variable;
 class ActionOnSignal;
 
 
@@ -47,10 +47,10 @@ public:
 	class ExportCompatibility
 	{
 	public:
-		QList<shared_ptr<Signal>> bothMooreAndMealy;
-		QList<shared_ptr<Signal>> bothTempAndKeepValue;
-		QList<shared_ptr<Signal>> rangeAdressed;
-		QList<shared_ptr<Signal>> mealyWithKeep;
+		QList<shared_ptr<Variable>> bothMooreAndMealy;
+		QList<shared_ptr<Variable>> bothTempAndKeepValue;
+		QList<shared_ptr<Variable>> rangeAdressed;
+		QList<shared_ptr<Variable>> mealyWithKeep;
 
 		bool isCompatible()
 		{
@@ -94,7 +94,7 @@ public:
 
 private:
 	void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-	WrittableSignalCharacteristics_t determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Signal> signal, bool storeResults);
+	WrittableSignalCharacteristics_t determineWrittableSignalCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> signal, bool storeResults);
 	QString generateSignalVhdlName(const QString& prefix, const QString& name) const;
 	QString cleanNameForVhdl(const QString& name) const;
 
@@ -107,7 +107,7 @@ private:
 	void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
 	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnSignal> action) const;
 
-	QString generateEquationText(shared_ptr<Signal> equation, shared_ptr<Fsm> l_machine) const;
+	QString generateEquationText(shared_ptr<Variable> equation, shared_ptr<Fsm> l_machine) const;
 
 	/////
 	// Object variables
@@ -115,7 +115,7 @@ private:
 	bool resetLogicPositive;
 	bool prefixSignals;
 
-	QMap<shared_ptr<Signal>, QString> signalVhdlName;
+	QMap<shared_ptr<Variable>, QString> signalVhdlName;
 	QMap<componentId_t, QString> stateVhdlName;
 	QString machineVhdlName;
 
@@ -125,11 +125,11 @@ private:
 	// - A signal is either Mealy or Moore, not both.
 	// - A signal either keeps its value or has an active-on-state/pulse value, not both.
 
-	QList<shared_ptr<Signal>> mooreSignals;
-	QList<shared_ptr<Signal>> mealySignals; // TODO: Mealy signals are currently ignored.
+	QList<shared_ptr<Variable>> mooreSignals;
+	QList<shared_ptr<Variable>> mealySignals; // TODO: Mealy signals are currently ignored.
 
-	QList<shared_ptr<Signal>> tempValueSignals;
-	QList<shared_ptr<Signal>> keepValueSignals;
+	QList<shared_ptr<Variable>> tempValueSignals;
+	QList<shared_ptr<Variable>> keepValueSignals;
 
 	// At first, the signals with range adressing should be treated
 	// as independant bits, each bit acting like a whole signal.

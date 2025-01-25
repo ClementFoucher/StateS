@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@
 #include "machinemanager.h"
 #include "genericscene.h"
 #include "machine.h"
-#include "StateS_signal.h"
+#include "variable.h"
 
 
 MachineImageExporter::MachineImageExporter(GenericScene* scene, shared_ptr<QGraphicsScene> component)
@@ -345,7 +345,7 @@ void MachineImageExporter::renderConstants()
 	constantScene->addItem(constantsTitle);
 
 	int pos = 0;
-	for(shared_ptr<Signal> constant : machine->getConstants())
+	for(shared_ptr<Variable> constant : machine->getConstants())
 	{
 		QString constText = constant->getName();
 		if (constant->getSize() > 1)
@@ -379,7 +379,7 @@ void MachineImageExporter::renderVariables()
 	variableScene->addItem(text);
 
 	int pos = 0;
-	for(shared_ptr<Signal> variable : machine->getLocalVariables())
+	for(shared_ptr<Variable> variable : machine->getLocalVariables())
 	{
 		QString varText = variable->getName();
 		if (variable->getSize() > 1)

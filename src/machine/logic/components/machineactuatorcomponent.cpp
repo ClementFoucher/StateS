@@ -27,7 +27,7 @@
 
 // StateS classes
 #include "statestypes.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "actiononsignal.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
@@ -45,7 +45,7 @@ MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
 
 }
 
-shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Signal> signal)
+shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Variable> signal)
 {
 	// Default action type
 	ActionOnVariableType_t actionType;
@@ -64,7 +64,7 @@ shared_ptr<ActionOnSignal> MachineActuatorComponent::addAction(shared_ptr<Signal
 	this->actionList.append(action);
 
 	// To remove destroyed signals from the action list
-	connect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+	connect(signal.get(), &Variable::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 
 	emit this->actionListChangedEvent();
 	emit this->componentNeedsGraphicUpdateEvent(this->id);
@@ -76,10 +76,10 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 {
 	if (actionRank < (uint)this->actionList.count())
 	{
-		shared_ptr<Signal> signal = actionList.at(actionRank)->getSignalActedOn();
+		shared_ptr<Variable> signal = actionList.at(actionRank)->getSignalActedOn();
 		if (signal != nullptr)
 		{
-			disconnect(signal.get(), &Signal::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+			disconnect(signal.get(), &Variable::signalDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 		}
 
 		this->actionList.removeAt(actionRank);

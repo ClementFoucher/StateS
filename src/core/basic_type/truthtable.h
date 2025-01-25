@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@ using namespace std;
 #include <QVector>
 
 // StateS classes
-class Signal;
+class Variable;
 class LogicValue;
 class Equation;
 
@@ -47,23 +47,23 @@ public:
 	/////
 	// Object functions
 public:
-	QVector<shared_ptr<Signal>>  getInputs()            const; // Throws StatesException
-	QVector<QVector<LogicValue>> getInputTable()        const;
-	QVector<QString>             getOutputsEquations()  const;
-	QVector<QVector<LogicValue>> getOutputTable()       const;
-	QVector<LogicValue>          getSingleOutputTable() const;
+	QVector<shared_ptr<Variable>> getInputs()            const; // Throws StatesException
+	QVector<QVector<LogicValue>>  getInputTable()        const;
+	QVector<QString>              getOutputsEquations()  const;
+	QVector<QVector<LogicValue>>  getOutputTable()       const;
+	QVector<LogicValue>           getSingleOutputTable() const;
 
 	uint getInputCount()  const;
 	uint getOutputCount() const;
 
 private:
-	QList<shared_ptr<Signal> > extractSignals(shared_ptr<Equation> equation) const;
+	QList<shared_ptr<Variable> > extractSignals(shared_ptr<Equation> equation) const;
 	void buildTable(QVector<shared_ptr<Equation>> equations);
 
 	/////
 	// Object variables
 private:
-	QVector<weak_ptr<Signal>>    inputSignalsTable;
+	QVector<weak_ptr<Variable>>  inputSignalsTable;
 	QVector<QString>             outputEquationsTextsTable;
 	QVector<QVector<LogicValue>> inputValuesTable;
 	QVector<QVector<LogicValue>> outputValuesTable;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS classes
 #include "logicvalue.h"
-class Signal;
+class Variable;
 class EditableEquation;
 
 
@@ -49,14 +49,14 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicEquation(shared_ptr<Signal> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(shared_ptr<Variable> equation, bool isTemplate = false, bool lockSignal = false, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void updateEquation(shared_ptr<Signal> oldOperand, shared_ptr<Signal> newOperand); // TODO: throw exception
+	void updateEquation(shared_ptr<Variable> oldOperand, shared_ptr<Variable> newOperand); // TODO: throw exception
 
-	shared_ptr<Signal> getLogicEquation() const;
+	shared_ptr<Variable> getLogicEquation() const;
 
 	void forceCompleteRendering();
 	bool validEdit();
@@ -91,7 +91,7 @@ private:
 	void setDefaultBorderColor();
 	void setHilightedBorderColor();
 
-	void replaceEquation(shared_ptr<Signal> newEquation);
+	void replaceEquation(shared_ptr<Variable> newEquation);
 	void buildEquation();
 	void buildTemplateEquation();
 	void buildSignalEquation();
@@ -106,11 +106,11 @@ private:
 private:
 	bool isTemplate = false;
 
-	weak_ptr<Signal> equation;
+	weak_ptr<Variable> equation;
 	// Only top-level GraphicEquation holds root Equation
-	shared_ptr<Signal> rootEquation;
+	shared_ptr<Variable> rootEquation;
 
-	shared_ptr<Signal> droppedEquation;
+	shared_ptr<Variable> droppedEquation;
 
 	bool completeRendering = false;
 	bool mouseIn = false;

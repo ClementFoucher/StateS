@@ -30,7 +30,7 @@ using namespace std;
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "actiononsignal.h"
 
 
@@ -111,7 +111,7 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		{
 			if (index.column()  == 1)
 			{
-				shared_ptr<Signal> signal = action->getSignalActedOn();
+				shared_ptr<Variable> signal = action->getSignalActedOn();
 
 				// Build name
 				QString nameText = signal->getName();

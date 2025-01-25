@@ -35,7 +35,7 @@ using namespace std;
 // StateS classes
 #include "statestypes.h"
 #include "logicvalue.h"
-class Signal;
+class Variable;
 class Input;
 class Output;
 class MachineComponent;
@@ -61,18 +61,18 @@ public:
 
 	QList<shared_ptr<Input>>  getInputs()         const; // TODO: throw exception
 	QList<shared_ptr<Output>> getOutputs()        const; // TODO: throw exception
-	QList<shared_ptr<Signal>> getLocalVariables() const;
-	QList<shared_ptr<Signal>> getConstants()      const;
+	QList<shared_ptr<Variable>> getLocalVariables() const;
+	QList<shared_ptr<Variable>> getConstants()      const;
 
-	QList<shared_ptr<Signal>> getInputsAsSignals()  const;
-	QList<shared_ptr<Signal>> getOutputsAsSignals() const;
+	QList<shared_ptr<Variable>> getInputsAsSignals()  const;
+	QList<shared_ptr<Variable>> getOutputsAsSignals() const;
 
-	QList<shared_ptr<Signal>> getWrittableSignals()        const;
-	QList<shared_ptr<Signal>> getReadableSignals()         const;
-	QList<shared_ptr<Signal>> getReadableVariableSignals() const;
-	QList<shared_ptr<Signal>> getVariablesSignals()        const;
-	QList<shared_ptr<Signal>> getIoSignals()               const;
-	QList<shared_ptr<Signal>> getAllSignals()              const;
+	QList<shared_ptr<Variable>> getWrittableSignals()        const;
+	QList<shared_ptr<Variable>> getReadableSignals()         const;
+	QList<shared_ptr<Variable>> getReadableVariableSignals() const;
+	QList<shared_ptr<Variable>> getVariablesSignals()        const;
+	QList<shared_ptr<Variable>> getIoSignals()               const;
+	QList<shared_ptr<Variable>> getAllSignals()              const;
 
 	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
 
@@ -80,7 +80,7 @@ public:
 
 	bool setName(const QString& newName);
 
-	shared_ptr<Signal> addSignal(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
+	shared_ptr<Variable> addSignal(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
 	bool deleteSignal(const QString& name);
 	bool renameSignal(const QString& oldName, const QString& newName);
 	void resizeSignal(const QString& name, uint newSize); // Throws StatesException
@@ -108,14 +108,14 @@ protected:
 	void removeComponent(componentId_t componentId);
 
 private:
-	shared_ptr<Signal> addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value);
-	QList<shared_ptr<Signal>> getRankedSignalList(const QHash<QString, shared_ptr<Signal>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
-	void addSignalToList(shared_ptr<Signal> signal, uint rank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-	bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-	bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
-	bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Signal>>* signalHash, QHash<QString, uint>* rankHash);
+	shared_ptr<Variable> addSignalAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value);
+	QList<shared_ptr<Variable>> getRankedSignalList(const QHash<QString, shared_ptr<Variable>>* signalHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
+	void addSignalToList(shared_ptr<Variable> signal, uint rank, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash);
+	bool deleteSignalFromList(const QString& name, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash);
+	bool renameSignalInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash);
+	bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Variable>>* signalHash, QHash<QString, uint>* rankHash);
 
-	QHash<QString, shared_ptr<Signal>> getAllSignalsMap() const;
+	QHash<QString, shared_ptr<Variable>> getAllSignalsMap() const;
 
 	bool cleanSignalName(QString& nameToClean) const;
 
@@ -126,10 +126,10 @@ private:
 	// but can actually be shared_ptr<Input/Output/Constant>
 
 	// Mutex required for list edition?
-	QHash<QString, shared_ptr<Signal>> inputs;
-	QHash<QString, shared_ptr<Signal>> outputs;
-	QHash<QString, shared_ptr<Signal>> localVariables;
-	QHash<QString, shared_ptr<Signal>> constants;
+	QHash<QString, shared_ptr<Variable>> inputs;
+	QHash<QString, shared_ptr<Variable>> outputs;
+	QHash<QString, shared_ptr<Variable>> localVariables;
+	QHash<QString, shared_ptr<Variable>> constants;
 
 	QHash<QString, uint> inputsRanks;
 	QHash<QString, uint> outputsRanks;

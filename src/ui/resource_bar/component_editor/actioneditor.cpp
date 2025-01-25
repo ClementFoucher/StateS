@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,7 +42,7 @@
 #include "machineactuatorcomponent.h"
 #include "actiontypecombobox.h"
 #include "contextmenu.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "rangeeditordialog.h"
 #include "collapsiblewidgetwithtitle.h"
 #include "actiontablemodel.h"
@@ -313,14 +313,14 @@ void ActionEditor::displayAddActionMenu() const
 
 	ContextMenu* menu;
 
-	QList<shared_ptr<Signal>> availableActions = machine->getWrittableSignals();
+	QList<shared_ptr<Variable>> availableActions = machine->getWrittableSignals();
 	if (availableActions.count() != 0)
 	{
 		menu = new ContextMenu();
 		menu->setListStyle();
 
 		menu->addTitle(tr("Availables variables:"));
-		for (shared_ptr<Signal> var : availableActions)
+		for (shared_ptr<Variable> var : availableActions)
 		{
 			menu->addAction(var->getName());
 		}
@@ -370,7 +370,7 @@ void ActionEditor::processAddActionMenuEventHandler(QAction* action)
 
 	QString signalName = action->text();
 	// Find signal from name
-	for (shared_ptr<Signal> var : machine->getWrittableSignals())
+	for (shared_ptr<Variable> var : machine->getWrittableSignals())
 	{
 		if (var->getName() == signalName)
 		{

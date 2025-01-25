@@ -27,18 +27,18 @@
 
 // StateS classes
 #include "statestypes.h"
-#include "StateS_signal.h"
+#include "variable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 
 
-ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
+ActionOnSignal::ActionOnSignal(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
 	this->signal = signal;
-	connect(signal.get(), &Signal::signalResizedEvent, this, &ActionOnSignal::signalResizedEventHandler);
+	connect(signal.get(), &Variable::signalResizedEvent, this, &ActionOnSignal::signalResizedEventHandler);
 	// Renaming a signal doesn't actually changes the action configuration,
 	// but it changes the way the action is displayed: trigger an actionChangedEvent
-	connect(signal.get(), &Signal::signalRenamedEvent, this, &ActionOnSignal::actionChangedEvent);
+	connect(signal.get(), &Variable::signalRenamedEvent, this, &ActionOnSignal::actionChangedEvent);
 
 	////
 	// Affect range parameters
@@ -103,7 +103,7 @@ ActionOnSignal::ActionOnSignal(shared_ptr<Signal> signal, ActionOnVariableType_t
 
 void ActionOnSignal::setActionType(ActionOnVariableType_t newType) // Throws StatesException
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if ( (this->getActionSize() == 1) && (newType == ActionOnVariableType_t::assign) )
@@ -151,7 +151,7 @@ void ActionOnSignal::setActionType(ActionOnVariableType_t newType) // Throws Sta
 
 void ActionOnSignal::setActionValue(LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if (this->isActionValueEditable())
@@ -184,7 +184,7 @@ void ActionOnSignal::setActionValue(LogicValue newValue) // Throws StatesExcepti
 
 void ActionOnSignal::setActionRange(int newRangeL, int newRangeR, LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if (this->checkIfRangeFitsSignal(newRangeL, newRangeR) == true)
@@ -228,7 +228,7 @@ void ActionOnSignal::setActionRange(int newRangeL, int newRangeR, LogicValue new
 	}
 }
 
-shared_ptr<Signal> ActionOnSignal::getSignalActedOn() const
+shared_ptr<Variable> ActionOnSignal::getSignalActedOn() const
 {
 	return this->signal.lock();
 }
@@ -242,7 +242,7 @@ LogicValue ActionOnSignal::getActionValue() const
 {
 	LogicValue publicActionValue = LogicValue::getNullValue();
 
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if (this->isActionValueEditable())
@@ -298,7 +298,7 @@ uint ActionOnSignal::getActionSize() const
 {
 	uint actionSize = 0;
 
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if (l_signal->getSize() == 1)
@@ -338,7 +338,7 @@ bool ActionOnSignal::isActionValueEditable() const
 
 void ActionOnSignal::beginAction()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if  (l_signal != nullptr)
 	{
 		l_signal->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
@@ -362,7 +362,7 @@ void ActionOnSignal::beginAction()
 
 void ActionOnSignal::endAction()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if  (l_signal != nullptr)
 	{
 		if (this->isActionActing)
@@ -375,7 +375,7 @@ void ActionOnSignal::endAction()
 
 void ActionOnSignal::signalResizedEventHandler()
 {
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		try
@@ -455,7 +455,7 @@ bool ActionOnSignal::checkIfRangeFitsSignal(int rangeL, int rangeR) const
 {
 	bool valuesMach = false;
 
-	shared_ptr<Signal> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->signal.lock();
 	if (l_signal != nullptr)
 	{
 		if ( (rangeL < 0 ) && (rangeR < 0) )
