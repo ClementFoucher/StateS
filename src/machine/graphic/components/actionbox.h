@@ -62,7 +62,6 @@ protected:
 	componentId_t actuatorId = nullId;
 	bool addLine;
 	QGraphicsPathItem* actionsOutline = nullptr;
-	QGraphicsLineItem* leftLine       = nullptr;
 
 };
 

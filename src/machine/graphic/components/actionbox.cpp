@@ -69,7 +69,6 @@ void ActionBox::buildActionBox()
 	// Clean
 	qDeleteAll(this->childItems());
 	this->actionsOutline = nullptr;
-	this->leftLine       = nullptr;
 
 	// Check
 	auto machine = machineManager->getMachine();
@@ -81,6 +80,7 @@ void ActionBox::buildActionBox()
 	auto actions = actuator->getActions();
 	if (actions.count() == 0) return;
 
+
 	// Build
 	qreal maxTextWidth = 0;
 	qreal boxLeft = (this->addLine == true) ? 20 : 0;
@@ -89,17 +89,60 @@ void ActionBox::buildActionBox()
 	{
 		shared_ptr<ActionOnVariable> currentAction = actions[i];
 		shared_ptr<Variable> currentVariable = currentAction->getVariableActedOn();
-
-		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentVariable->getName(), this);
+		if (currentVariable == nullptr) continue;
 
 		QString currentActionText;
+		qreal xPos = boxLeft;
+		qreal currentTextWidth = 0;
+
+		// Memorized state
+
+		bool isMemorized;
+		switch (currentAction->getActionType())
+		{
+		case ActionOnVariableType_t::set:
+		case ActionOnVariableType_t::reset:
+		case ActionOnVariableType_t::assign:
+		case ActionOnVariableType_t::increment:
+		case ActionOnVariableType_t::decrement:
+			isMemorized = true;
+			break;
+		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::pulse:
+			isMemorized = false;
+			break;
+		}
+
+		if (isMemorized == true)
+		{
+			auto memorizedText = new QGraphicsTextItem(this);
+			memorizedText->setHtml("<span style=\"color:black;\">M</span>");
+			currentTextWidth += memorizedText->boundingRect().width();
+
+			memorizedText->setPos(QPointF(xPos, i*this->textHeight));
+			memorizedText->setZValue(1);
+
+			this->addToGroup(memorizedText);
+
+			QPainterPath memorizedBorderPath;
+			memorizedBorderPath.lineTo(0,                this->textHeight);
+			memorizedBorderPath.lineTo(currentTextWidth, this->textHeight);
+			memorizedBorderPath.lineTo(currentTextWidth, 0);
+			memorizedBorderPath.lineTo(0,                0);
+
+			auto memorizedOutline = new QGraphicsPathItem(memorizedBorderPath, this);
+			memorizedOutline->setPen(defaultPen);
+			memorizedOutline->setZValue(1);
+			memorizedOutline->setPos(xPos, i*this->textHeight);
+
+			xPos += memorizedText->boundingRect().width();
+		}
 
 		// Variable name
 
 		currentActionText = "<span style=\"color:black;\">";
 		currentActionText += currentVariable->getText();
 		currentActionText += "</span>";
-
 
 		// Variable range
 
@@ -141,7 +184,7 @@ void ActionBox::buildActionBox()
 			if (currentAction->getActionSize() > 1)
 			{
 				currentActionText += "<span style=\"color:black;\">";
-				currentActionText += " ↷ " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
+				currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
 				currentActionText += "</span>";
 			}
 			break;
@@ -157,13 +200,14 @@ void ActionBox::buildActionBox()
 			break;
 		}
 
+		QGraphicsTextItem* actionText = new QGraphicsTextItem(this);
 		actionText->setHtml(currentActionText);
+		currentTextWidth += actionText->boundingRect().width();
 
-		if (maxTextWidth < actionText->boundingRect().width())
-			maxTextWidth = actionText->boundingRect().width();
+		if (maxTextWidth < currentTextWidth)
+			maxTextWidth = currentTextWidth;
 
-		actionText->setPos(QPointF(boxLeft, i*actionText->boundingRect().height()));
-
+		actionText->setPos(QPointF(xPos, i*this->textHeight));
 		actionText->setZValue(1);
 
 		this->addToGroup(actionText);
@@ -186,8 +230,8 @@ void ActionBox::buildActionBox()
 	if (this->addLine == true)
 	{
 		qreal center = this->actionsOutline->boundingRect().height() / 2;
-		this->leftLine = new QGraphicsLineItem(0, center, 20, center, this);
-		this->leftLine->setPen(defaultPen);
+		auto leftLine = new QGraphicsLineItem(0, center, 20, center, this);
+		leftLine->setPen(defaultPen);
 	}
 }
 
