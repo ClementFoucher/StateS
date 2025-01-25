@@ -87,7 +87,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 			else
 				this->stream->writeAttribute("Signal_Type", "Variable");
 
-			this->stream->writeAttribute("Name", action->getSignalActedOn()->getName());
+			this->stream->writeAttribute("Name", action->getVariableActedOn()->getName());
 
 			switch(action->getActionType())
 			{

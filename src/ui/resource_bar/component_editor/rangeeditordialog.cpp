@@ -54,7 +54,7 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidge
 
 	this->equation = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp, 1));
 	this->equation->setRange(rangeL, rangeR);
-	this->equation->setOperand(0, action->getSignalActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
+	this->equation->setOperand(0, action->getVariableActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
 
 	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true, this);
 	layout->addWidget(graphicEquation);

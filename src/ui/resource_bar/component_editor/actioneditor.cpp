@@ -184,7 +184,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 			shared_ptr<ActionOnVariable> actionActedOn = actuator->getAction(actionRank); // Throws StatesException
 
 			ContextMenu* menu = new ContextMenu();
-			menu->addTitle(tr("Action on variable") + " <i>" + actionActedOn->getSignalActedOn()->getName() + "</i>");
+			menu->addTitle(tr("Action on variable") + " <i>" + actionActedOn->getVariableActedOn()->getName() + "</i>");
 
 			QVariant data;
 			QAction* actionToAdd = nullptr;
@@ -215,7 +215,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
 			menu->addSeparator();
 
-			if (actionActedOn->getSignalActedOn()->getSize() > 1)
+			if (actionActedOn->getVariableActedOn()->getSize() > 1)
 			{
 				actionToAdd = menu->addAction(tr("Affect whole variable"));
 				actionToAdd->setCheckable(true);

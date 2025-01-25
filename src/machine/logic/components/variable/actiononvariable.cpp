@@ -32,18 +32,18 @@
 #include "exceptiontypes.h"
 
 
-ActionOnVariable::ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
+ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
 {
-	this->signal = signal;
-	connect(signal.get(), &Variable::variableResizedEvent, this, &ActionOnVariable::signalResizedEventHandler);
+	this->variable = variable;
+	connect(variable.get(), &Variable::variableResizedEvent, this, &ActionOnVariable::variableResizedEventHandler);
 	// Renaming a signal doesn't actually changes the action configuration,
 	// but it changes the way the action is displayed: trigger an actionChangedEvent
-	connect(signal.get(), &Variable::variableRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
+	connect(variable.get(), &Variable::variableRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
 
 	////
 	// Affect range parameters
 
-	if (this->checkIfRangeFitsSignal(rangeL, rangeR) == true)
+	if (this->checkIfRangeFitsVariable(rangeL, rangeR) == true)
 	{
 		this->rangeL = rangeL;
 		this->rangeR = rangeR;
@@ -53,7 +53,7 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariable
 		this->rangeL = -1;
 		this->rangeR = -1;
 
-		qDebug() << "(ActionOnSignal:) Warning! The extraction range requested for action value ([" + QString::number(rangeL) + ( (rangeR>=0) ? (":" + QString::number(rangeR)) : ("") ) + "]) isn't correct (signal size is [" + QString::number(signal->getSize()-1) + ":0]).";
+		qDebug() << "(ActionOnSignal:) Warning! The extraction range requested for action value ([" + QString::number(rangeL) + ( (rangeR>=0) ? (":" + QString::number(rangeR)) : ("") ) + "]) isn't correct (signal size is [" + QString::number(variable->getSize()-1) + ":0]).";
 		qDebug() << "(ActionOnSignal:) Range ignored and action set to full signal.";
 	}
 
@@ -103,7 +103,7 @@ ActionOnVariable::ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariable
 
 void ActionOnVariable::setActionType(ActionOnVariableType_t newType) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		if ( (this->getActionSize() == 1) && (newType == ActionOnVariableType_t::assign) )
@@ -151,7 +151,7 @@ void ActionOnVariable::setActionType(ActionOnVariableType_t newType) // Throws S
 
 void ActionOnVariable::setActionValue(LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		if (this->isActionValueEditable())
@@ -184,10 +184,10 @@ void ActionOnVariable::setActionValue(LogicValue newValue) // Throws StatesExcep
 
 void ActionOnVariable::setActionRange(int newRangeL, int newRangeR, LogicValue newValue) // Throws StatesException
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
-		if (this->checkIfRangeFitsSignal(newRangeL, newRangeR) == true)
+		if (this->checkIfRangeFitsVariable(newRangeL, newRangeR) == true)
 		{
 			this->rangeL = newRangeL;
 			this->rangeR = newRangeR;
@@ -228,9 +228,9 @@ void ActionOnVariable::setActionRange(int newRangeL, int newRangeR, LogicValue n
 	}
 }
 
-shared_ptr<Variable> ActionOnVariable::getSignalActedOn() const
+shared_ptr<Variable> ActionOnVariable::getVariableActedOn() const
 {
-	return this->signal.lock();
+	return this->variable.lock();
 }
 
 ActionOnVariableType_t ActionOnVariable::getActionType() const
@@ -242,7 +242,7 @@ LogicValue ActionOnVariable::getActionValue() const
 {
 	LogicValue publicActionValue = LogicValue::getNullValue();
 
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		if (this->isActionValueEditable())
@@ -298,7 +298,7 @@ uint ActionOnVariable::getActionSize() const
 {
 	uint actionSize = 0;
 
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		if (l_signal->getSize() == 1)
@@ -338,7 +338,7 @@ bool ActionOnVariable::isActionValueEditable() const
 
 void ActionOnVariable::beginAction()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if  (l_signal != nullptr)
 	{
 		l_signal->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
@@ -362,7 +362,7 @@ void ActionOnVariable::beginAction()
 
 void ActionOnVariable::endAction()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if  (l_signal != nullptr)
 	{
 		if (this->isActionActing)
@@ -373,9 +373,9 @@ void ActionOnVariable::endAction()
 	}
 }
 
-void ActionOnVariable::signalResizedEventHandler()
+void ActionOnVariable::variableResizedEventHandler()
 {
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		try
@@ -451,11 +451,11 @@ void ActionOnVariable::signalResizedEventHandler()
 	}
 }
 
-bool ActionOnVariable::checkIfRangeFitsSignal(int rangeL, int rangeR) const
+bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 {
 	bool valuesMach = false;
 
-	shared_ptr<Variable> l_signal = this->signal.lock();
+	shared_ptr<Variable> l_signal = this->variable.lock();
 	if (l_signal != nullptr)
 	{
 		if ( (rangeL < 0 ) && (rangeR < 0) )

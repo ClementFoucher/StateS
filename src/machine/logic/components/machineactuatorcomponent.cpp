@@ -76,7 +76,7 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 {
 	if (actionRank < (uint)this->actionList.count())
 	{
-		shared_ptr<Variable> signal = actionList.at(actionRank)->getSignalActedOn();
+		shared_ptr<Variable> signal = actionList.at(actionRank)->getVariableActedOn();
 		if (signal != nullptr)
 		{
 			disconnect(signal.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
@@ -140,7 +140,7 @@ void MachineActuatorComponent::cleanActionList()
 	bool listChanged = false;
 	for (shared_ptr<ActionOnVariable> action : this->actionList)
 	{
-		if (action->getSignalActedOn() != nullptr)
+		if (action->getVariableActedOn() != nullptr)
 		{
 			newActionList.append(action);
 		}

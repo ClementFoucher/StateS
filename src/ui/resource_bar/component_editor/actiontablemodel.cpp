@@ -111,7 +111,7 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		{
 			if (index.column()  == 1)
 			{
-				shared_ptr<Variable> signal = action->getSignalActedOn();
+				shared_ptr<Variable> signal = action->getVariableActedOn();
 
 				// Build name
 				QString nameText = signal->getName();
@@ -148,10 +148,10 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 					return QVariant(action->getActionValue().toString());
 					break;
 				case ActionOnVariableType_t::increment:
-					return QVariant(action->getSignalActedOn()->getName() + " + 1");
+					return QVariant(action->getVariableActedOn()->getName() + " + 1");
 					break;
 				case ActionOnVariableType_t::decrement:
-					return QVariant(action->getSignalActedOn()->getName() + " - 1");
+					return QVariant(action->getVariableActedOn()->getName() + " - 1");
 					break;
 				}
 			}

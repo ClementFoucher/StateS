@@ -182,7 +182,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 
 		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
-			if (action->getSignalActedOn() == signal)
+			if (action->getVariableActedOn() == signal)
 			{
 				characteristics.isMoore = true;
 
@@ -217,7 +217,7 @@ FsmVhdlExport::WrittableSignalCharacteristics_t FsmVhdlExport::determineWrittabl
 
 		for (shared_ptr<ActionOnVariable> action : transition->getActions())
 		{
-			if (action->getSignalActedOn() == signal)
+			if (action->getVariableActedOn() == signal)
 			{
 				characteristics.isMealy = true;
 
@@ -528,7 +528,7 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 		int writtenActions = 0;
 		for (shared_ptr<ActionOnVariable> action : state->getActions())
 		{
-			if (this->mooreSignals.contains(action->getSignalActedOn()))
+			if (this->mooreSignals.contains(action->getVariableActedOn()))
 			{
 				writtenActions++;
 
@@ -563,7 +563,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 				for (shared_ptr<ActionOnVariable> action : transition->getActions())
 				{
-					if (action->getSignalActedOn() == signal)
+					if (action->getVariableActedOn() == signal)
 					{
 						transitions.append(transition);
 						break;
@@ -580,7 +580,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 				{
 					for (shared_ptr<ActionOnVariable> action : transition->getActions())
 					{
-						if (action->getSignalActedOn() == signal)
+						if (action->getVariableActedOn() == signal)
 						{
 							if (signal->getSize() > 1)
 								stream << "\"" << action->getActionValue().toString() << "\"";
@@ -639,7 +639,7 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream,
 
 void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const
 {
-	shared_ptr<Variable> signal = action->getSignalActedOn();
+	shared_ptr<Variable> signal = action->getVariableActedOn();
 
 	stream << "      ";
 	stream << this->signalVhdlName[signal];

@@ -42,16 +42,16 @@ class Variable;
  * If only left range is valid, the action acts on a single bit.
  * If both are valid, the action acts on the [rangeL..rangeR] sub-vector.
  *
- * If signal is size 1 or action acts on a single bit
+ * If variable is size 1 or action acts on a single bit
  *   => action value is always implicit and assign type is illegal.
- * Else (vector signal with whole range or sub-range action)
+ * Else (vector variable with whole range or sub-range action)
  *   => action value is implicit for set and reset types, explicit for others.
  *
  * For implicit action values, actionValue is null, but the
  * value can still be obtained using public function getActionValue().
  *
- * Action only has a weak link to associated signal.
- * If signal is deleted, Action should be deleted too.
+ * Action only has a weak link to associated variable.
+ * If variable is deleted, Action should be deleted too.
  * But in the meantime, action just doesn't react to any
  * external sollicitation: setters are ignored, action
  * value getter returns null value, action size getter
@@ -65,8 +65,8 @@ class ActionOnVariable : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnVariable(shared_ptr<Variable> signal, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
-							int rangeL = -1, int rangeR = -1);
+	explicit ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
+							  int rangeL = -1, int rangeR = -1);
 
 	/////
 	// Object functions
@@ -75,7 +75,7 @@ public:
 	void setActionValue(LogicValue newValue);  // Throws StatesException
 	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
 
-	shared_ptr<Variable>     getSignalActedOn()      const;
+	shared_ptr<Variable>   getVariableActedOn()    const;
 	ActionOnVariableType_t getActionType()         const;
 	LogicValue             getActionValue()        const;
 	int                    getActionRangeL()       const;
@@ -90,15 +90,15 @@ signals:
 	void actionChangedEvent();
 
 private slots:
-	void signalResizedEventHandler();
+	void variableResizedEventHandler();
 
 private:
-	bool checkIfRangeFitsSignal(int rangeL, int rangeR) const;
+	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
 
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> signal;
+	weak_ptr<Variable> variable;
 
 	ActionOnVariableType_t actionType;
 	LogicValue             actionValue;

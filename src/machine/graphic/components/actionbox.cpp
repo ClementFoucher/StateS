@@ -88,7 +88,7 @@ void ActionBox::buildActionBox()
 	for (int i = 0 ; i < actions.count() ; i++)
 	{
 		shared_ptr<ActionOnVariable> currentAction = actions[i];
-		shared_ptr<Variable> currentSignal = currentAction->getSignalActedOn();
+		shared_ptr<Variable> currentSignal = currentAction->getVariableActedOn();
 
 		QGraphicsTextItem* actionText = new QGraphicsTextItem(currentSignal->getName(), this);
 
