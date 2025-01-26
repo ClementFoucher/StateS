@@ -60,8 +60,6 @@ public:
 	virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
 	LogicValue getCurrentValue() const;
 
-	void resetValue();
-
 	// Concept of true is only applicable to size 1 variables
 	// A variable with size > 1 will never be true
 	bool isTrue() const; // Throws StatesException

@@ -58,10 +58,18 @@ public:
 
 private slots:
 	void resetEventHandler();
+	void clockAboutToTickEventHandler();
+	void clockPrepareActionsEventHandler();
 	void clockEventHandler();
 
 private:
-	void activateTransition(componentId_t transitionId);
+	void crossTransition(componentId_t transitionId);
+
+	void activateStateActions(componentId_t actuatorId, bool isFirstActivation);
+	void activateTransitionActions(componentId_t actuatorId, bool isPreparation);
+
+	void deactivateStateActions(componentId_t actuatorId);
+	void deactivateTransitionActions(componentId_t actuatorId, bool isPreparation);
 
 signals:
 	void stateChangedEvent();
@@ -69,8 +77,9 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t activeStateId;
-	componentId_t latestTransitionCrossedId;
+	componentId_t activeStateId             = nullId;
+	componentId_t latestTransitionCrossedId = nullId;
+	componentId_t transitionToBeCrossedId   = nullId;
 	QMap<uint, componentId_t> potentialTransitionsIds;
 
 	QWidget* targetStateSelector = nullptr;

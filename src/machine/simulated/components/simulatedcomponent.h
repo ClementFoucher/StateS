@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,6 +22,9 @@
 #ifndef SIMULATEDCOMPONENT_H
 #define SIMULATEDCOMPONENT_H
 
+// StateS classes
+#include "statestypes.h"
+
 
 class SimulatedComponent
 {
@@ -29,8 +32,13 @@ class SimulatedComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedComponent();
+	explicit SimulatedComponent(componentId_t componentId);
 	virtual ~SimulatedComponent();
+
+	/////
+	// Object variables
+protected:
+	componentId_t componentId;
 
 };
 

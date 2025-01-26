@@ -476,7 +476,7 @@
 <context>
     <name>Fsm</name>
     <message>
-        <location filename="../src/machine/logic/fsm/fsm.cpp" line="241"/>
+        <location filename="../src/machine/logic/fsm/fsm.cpp" line="243"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -627,13 +627,13 @@
 <context>
     <name>FsmSimulatedState</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="152"/>
+        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="143"/>
         <source>State</source>
         <translation>État</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="156"/>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="173"/>
+        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="147"/>
+        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="164"/>
         <source>Set active</source>
         <translation>Activer</translation>
     </message>
@@ -641,17 +641,17 @@
 <context>
     <name>FsmSimulator</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="232"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="237"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="233"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="238"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="234"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="239"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -1467,6 +1467,19 @@
     </message>
 </context>
 <context>
+    <name>InputsSelector</name>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="56"/>
+        <source>Click on bits from the list below to switch input value:</source>
+        <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="76"/>
+        <source>No input available on the machine</source>
+        <translation>Aucune entrée disponible dans la machine</translation>
+    </message>
+</context>
+<context>
     <name>LangSelectionDialog</name>
     <message>
         <location filename="../src/ui/dialogs/langselectiondialog.cpp" line="104"/>
@@ -2013,73 +2026,141 @@
     </message>
 </context>
 <context>
+    <name>SimulatorConfigurator</name>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="39"/>
+        <source>Select desired actions behavior</source>
+        <translation>Sélectionnez le comportement voulu pour les actions</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="43"/>
+        <source>Note: the default behavior matches a digital electronics implementation where memorized actions are synchronous and other actions are combinatorial</source>
+        <translation>Note : le comportement par défaut correspond à celui d&apos;une implémentation en électronique numérique, dans lequel les actions mémorisées sont synchrones et les autres sont combinatoires</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="49"/>
+        <source>Memorized actions on states:</source>
+        <translation>Actions mémorisées sur état :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="53"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="63"/>
+        <source>Activate one cycle after state is entered</source>
+        <translation>Activer un cycle après l&apos;entrée dans l&apos;état</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="54"/>
+        <source>Activate immediately when state is entered</source>
+        <translation>Activer immédiatement lors de l&apos;entrée dans l&apos;état</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="58"/>
+        <source>Continous actions on states:</source>
+        <translation>Actions continues sur état :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="62"/>
+        <source>Activate immediately after state is entered</source>
+        <translation>Activer immediatement après l&apos;entrée dans l&apos;état</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="67"/>
+        <source>Memorized actions on transitions:</source>
+        <translation>Actions mémorisées sur transition :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="71"/>
+        <source>Activate immediately after transition is crossed</source>
+        <translation>Activer immédiatement après que la transition soit franchie</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="72"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="80"/>
+        <source>Prepare before transition is crossed</source>
+        <translation>Préparer avant que la transition soit franchie</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="76"/>
+        <source>Pulse actions on transitions:</source>
+        <translation>Actions impulsionelles sur transition :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp" line="81"/>
+        <source>Activate after transition is crossed</source>
+        <translation>Active après que la transition soit franchie</translation>
+    </message>
+</context>
+<context>
     <name>SimulatorTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="49"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="53"/>
         <source>Simulator</source>
         <translation>Simulateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="53"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="164"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="59"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="157"/>
         <source>Start simulation</source>
         <translation>Démarrer la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="96"/>
-        <source>Reset</source>
-        <translation>Réinitialiser</translation>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="66"/>
+        <source>Simulation configuration</source>
+        <translation>Configuration de la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="142"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="135"/>
         <source>No initial state!</source>
         <translation>Aucun état initial !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="105"/>
         <source>End simulation</source>
         <translation>Mettre fin à la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="127"/>
-        <source>Click on bits from the list below to switch value:</source>
-        <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="97"/>
-        <source>Do one step</source>
-        <translation>Avancer d&apos;un pas</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="100"/>
-        <source>Do one step every</source>
-        <translation>Avancer d&apos;un pas toutes les</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="102"/>
-        <source>second(s)</source>
-        <translation>seconde(s)</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="103"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="187"/>
-        <source>Launch</source>
-        <translation>Démarrer</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="182"/>
-        <source>Suspend</source>
-        <translation>Suspendre</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="93"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="113"/>
         <source>Time manager</source>
         <translation>Gestion du temps</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="122"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="123"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
+    </message>
+</context>
+<context>
+    <name>SimulatorTimeController</name>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="46"/>
+        <source>Reset</source>
+        <translation>Réinitialiser</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="47"/>
+        <source>Do one step</source>
+        <translation>Avancer d&apos;un pas</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="50"/>
+        <source>Do one step every</source>
+        <translation>Avancer d&apos;un pas toutes les</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="52"/>
+        <source>second(s)</source>
+        <translation>seconde(s)</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="53"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="88"/>
+        <source>Launch</source>
+        <translation>Démarrer</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="83"/>
+        <source>Suspend</source>
+        <translation>Suspendre</translation>
     </message>
 </context>
 <context>

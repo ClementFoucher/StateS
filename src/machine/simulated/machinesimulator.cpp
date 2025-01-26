@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -66,7 +66,7 @@ void MachineSimulator::suspend()
 	this->clock->stop();
 }
 
-QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const
+const QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const
 {
 	return this->simulatedComponents.values();
 }
@@ -81,4 +81,24 @@ SimulatedComponent* MachineSimulator::getComponent(componentId_t componentId) co
 	{
 		return nullptr;
 	}
+}
+
+void MachineSimulator::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
+{
+	this->memorizedStateActionBehavior = behv;
+}
+
+void MachineSimulator::setContinuousStateActionBehavior(SimulationBehavior_t behv)
+{
+	this->continuousStateActionBehavior = behv;
+}
+
+void MachineSimulator::setMemorizedTransitionActionBehavior(SimulationBehavior_t behv)
+{
+	this->memorizedTransitionActionBehavior = behv;
+}
+
+void MachineSimulator::setPulseTransitionActionBehavior(SimulationBehavior_t behv)
+{
+	this->pulseTransitionActionBehavior = behv;
 }

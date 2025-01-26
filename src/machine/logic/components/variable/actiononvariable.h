@@ -82,6 +82,7 @@ public:
 	int                    getActionRangeR()       const;
 	uint                   getActionSize()         const;
 	bool                   isActionValueEditable() const;
+	bool                   isActionMemorized()     const;
 
 	void beginAction();
 	void endAction();

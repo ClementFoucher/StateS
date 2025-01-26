@@ -97,23 +97,7 @@ void ActionBox::buildActionBox()
 
 		// Memorized state
 
-		bool isMemorized;
-		switch (currentAction->getActionType())
-		{
-		case ActionOnVariableType_t::set:
-		case ActionOnVariableType_t::reset:
-		case ActionOnVariableType_t::assign:
-		case ActionOnVariableType_t::increment:
-		case ActionOnVariableType_t::decrement:
-			isMemorized = true;
-			break;
-		case ActionOnVariableType_t::activeOnState:
-		case ActionOnVariableType_t::pulse:
-			isMemorized = false;
-			break;
-		}
-
-		if (isMemorized == true)
+		if (currentAction->isActionMemorized() == true)
 		{
 			auto memorizedText = new QGraphicsTextItem(this);
 			memorizedText->setHtml("<span style=\"color:black;\">M</span>");

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -53,7 +53,9 @@ public slots:
 	void nextStep();
 
 signals:
-	void prepareForClockEvent();
+	void clockAboutToTickEvent();
+	void clockPrepareActionsEvent();
+	void clockUpdateTimelineEvent();
 	void clockEvent();
 
 	void resetLogicEvent();

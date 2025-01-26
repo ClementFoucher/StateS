@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2016 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -53,7 +53,9 @@ void Clock::stop()
 
 void Clock::nextStep()
 {
-	emit prepareForClockEvent();
+	emit clockAboutToTickEvent();
+	emit clockPrepareActionsEvent();
+	emit clockUpdateTimelineEvent();
 	emit clockEvent();
 }
 

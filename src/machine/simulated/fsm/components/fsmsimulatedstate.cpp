@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,8 +52,8 @@ const QBrush FsmSimulatedState::activeBrush = QBrush(Qt::green, Qt::SolidPattern
 //
 
 FsmSimulatedState::FsmSimulatedState(componentId_t logicComponentId) :
-    FsmGraphicState(logicComponentId),
-    SimulatedActuatorComponent(logicComponentId)
+	FsmGraphicState(logicComponentId),
+	SimulatedComponent(logicComponentId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -97,15 +97,6 @@ void FsmSimulatedState::refreshDisplay()
 void FsmSimulatedState::setActive(bool active)
 {
 	this->isActive = active;
-
-	if (active == true)
-	{
-		this->activateActions();
-	}
-	else
-	{
-		this->deactivateActions();
-	}
 
 	this->refreshDisplay();
 

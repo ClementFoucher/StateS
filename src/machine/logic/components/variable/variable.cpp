@@ -170,11 +170,6 @@ void Variable::reinitialize()
 	emit variableDynamicStateChangedEvent();
 }
 
-void Variable::resetValue()
-{
-	setCurrentValue(LogicValue::getValue0(this->getSize())); // Throws StatesException - Size determined from actual size - ignored
-}
-
 // True concept here only apply to one bit variables
 // A larger variable must never be checked for trueness
 bool Variable::isTrue() const // Throws StatesException

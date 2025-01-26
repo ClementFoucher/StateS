@@ -95,6 +95,7 @@ void Fsm::removeState(componentId_t stateId)
 	auto state = this->getState(stateId);
 	if (state == nullptr) return;
 
+
 	for (auto transitionId : state->getOutgoingTransitionsIds())
 	{
 		this->removeTransition(transitionId);
@@ -113,6 +114,7 @@ void Fsm::removeTransition(componentId_t transitionId)
 {
 	auto transition = this->getTransition(transitionId);
 	if (transition == nullptr) return;
+
 
 	auto sourceState = this->getState(transition->getSourceStateId());
 	auto targetState = this->getState(transition->getTargetStateId());
@@ -135,12 +137,12 @@ shared_ptr<FsmTransition> Fsm::getTransition(componentId_t transitionId) const
 	return dynamic_pointer_cast<FsmTransition>(this->getComponent(transitionId));
 }
 
-QList<componentId_t> Fsm::getAllStatesIds() const
+const QList<componentId_t> Fsm::getAllStatesIds() const
 {
 	return this->states;
 }
 
-QList<componentId_t> Fsm::getAllTransitionsIds() const
+const QList<componentId_t> Fsm::getAllTransitionsIds() const
 {
 	return this->transitions;
 }

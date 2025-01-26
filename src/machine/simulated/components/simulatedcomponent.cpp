@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,11 +19,13 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Current class header
 #include "simulatedcomponent.h"
 
-SimulatedComponent::SimulatedComponent()
-{
 
+SimulatedComponent::SimulatedComponent(componentId_t componentId)
+{
+	this->componentId = componentId;
 }
 
 SimulatedComponent::~SimulatedComponent()

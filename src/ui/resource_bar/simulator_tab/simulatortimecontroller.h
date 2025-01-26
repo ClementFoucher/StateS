@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,36 +19,37 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATEDACTUATORCOMPONENT_H
-#define SIMULATEDACTUATORCOMPONENT_H
+#ifndef SIMULATORTIMECONTROLLER_H
+#define SIMULATORTIMECONTROLLER_H
 
 // Parent
-#include "simulatedcomponent.h"
+#include <QWidget>
 
-// StateS classes
-#include "statestypes.h"
+// Qt classes
+class QPushButton;
+class QLineEdit;
 
 
-class SimulatedActuatorComponent : public SimulatedComponent
+class SimulatorTimeController : public QWidget
 {
+	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedActuatorComponent(componentId_t componentId);
-	virtual ~SimulatedActuatorComponent();
+	explicit SimulatorTimeController(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-public:
-	void activateActions();
-	void deactivateActions();
+private slots:
+	void buttonLauchAutoStepClicked();
 
 	/////
 	// Object variables
 private:
-	componentId_t componentId;
+	QPushButton* buttonTriggerAutoStep = nullptr;
+	QLineEdit*   autoStepValue         = nullptr;
 
 };
 
-#endif // SIMULATEDACTUATORCOMPONENT_H
+#endif // SIMULATORTIMECONTROLLER_H

@@ -35,7 +35,7 @@ InputBitSelector::InputBitSelector(shared_ptr<Variable> variableToCommand, uint 
     QFrame(parent)
 {
 	this->variableToCommand = variableToCommand;
-	this->bitNumber       = bitNumber;
+	this->bitNumber         = bitNumber;
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 

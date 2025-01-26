@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,30 +23,34 @@
 #define INPUTSSELECTOR_H
 
 // Parent
-#include <QScrollArea>
+#include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class Input;
+// Qt classes
+class QScrollArea;
+class QVBoxLayout;
 
 
-class InputsSelector : public QScrollArea
+class InputsSelector : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit InputsSelector(QList<shared_ptr<Input>> inputList, QWidget* parent = nullptr);
+	explicit InputsSelector(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 protected:
 	virtual void resizeEvent(QResizeEvent*) override;
 
+	/////
+	// Object variables
+private:
+	QScrollArea* scrollArea       = nullptr;
+	QWidget*     scrollAreaWidget = nullptr;
+
+	QVBoxLayout* scrollAreaWidgetLayout = nullptr;
 };
 
 #endif // INPUTSSELECTOR_H

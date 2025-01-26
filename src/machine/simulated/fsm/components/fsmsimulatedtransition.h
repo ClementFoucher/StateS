@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,16 +24,13 @@
 
 // Parents
 #include "fsmgraphictransition.h"
-#include "simulatedactuatorcomponent.h"
-
-// Qt classes
-class QAction;
+#include "simulatedcomponent.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class FsmSimulatedTransition : public FsmGraphicTransition, public SimulatedActuatorComponent
+class FsmSimulatedTransition : public FsmGraphicTransition, public SimulatedComponent
 {
 	Q_OBJECT
 

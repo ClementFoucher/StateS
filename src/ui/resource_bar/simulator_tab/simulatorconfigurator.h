@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,51 +16,47 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATORTAB_H
-#define SIMULATORTAB_H
+#ifndef SIMULATORCONFIGURATOR_H
+#define SIMULATORCONFIGURATOR_H
 
 // Parent
 #include <QWidget>
 
 // Qt classes
-class QPushButton;
-class QVBoxLayout;
-class QGroupBox;
+class QComboBox;
 
 // StateS classes
-class SimulatorConfigurator;
+#include <statestypes.h>
 
 
-class SimulatorTab : public QWidget
+class SimulatorConfigurator : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatorTab(QWidget* parent = nullptr);
-	~SimulatorTab();
+	explicit SimulatorConfigurator(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-private slots:
-	void triggerSimulationMode(bool enabled);
+public:
+	SimulationBehavior_t getMemorizedStateActionBehavior()      const;
+	SimulationBehavior_t getContinuousStateActionBehavior()     const;
+	SimulationBehavior_t getMemorizedTransitionActionBehavior() const;
+	SimulationBehavior_t getPulseTransitionActionBehavior()     const;
 
 	/////
 	// Object variables
 private:
-	QVBoxLayout* boxLayout = nullptr;
-
-	QPushButton* buttonTriggerSimulation = nullptr;
-	SimulatorConfigurator* simulatorConfigurator = nullptr;
-
-	QGroupBox* configurationGroup = nullptr;
-	QGroupBox* timeManagerGroup   = nullptr;
-	QGroupBox* inputsGroup        = nullptr;
+	QComboBox* memorizedState      = nullptr;
+	QComboBox* continuousState     = nullptr;
+	QComboBox* memorizedTransition = nullptr;
+	QComboBox* pulseTransition     = nullptr;
 
 };
 
-#endif // SIMULATORTAB_H
+#endif // SIMULATORCONFIGURATOR_H

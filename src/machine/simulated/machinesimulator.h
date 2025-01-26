@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -60,8 +60,13 @@ public:
 	void start(uint period);
 	void suspend();
 
-	QList<SimulatedComponent*> getSimulatedComponents() const;
+	const QList<SimulatedComponent*> getSimulatedComponents() const;
 	SimulatedComponent* getComponent(componentId_t componentId) const;
+
+	void setMemorizedStateActionBehavior     (SimulationBehavior_t behv);
+	void setContinuousStateActionBehavior    (SimulationBehavior_t behv);
+	void setMemorizedTransitionActionBehavior(SimulationBehavior_t behv);
+	void setPulseTransitionActionBehavior    (SimulationBehavior_t behv);
 
 	/////
 	// Object variables
@@ -69,6 +74,11 @@ protected:
 	QMap<componentId_t, SimulatedComponent*> simulatedComponents;
 
 	shared_ptr<Clock> clock;
+
+	SimulationBehavior_t memorizedStateActionBehavior;
+	SimulationBehavior_t continuousStateActionBehavior;
+	SimulationBehavior_t memorizedTransitionActionBehavior;
+	SimulationBehavior_t pulseTransitionActionBehavior;
 
 };
 

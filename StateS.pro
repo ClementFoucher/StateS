@@ -77,7 +77,6 @@ SOURCES += \
 	src/machine/logic/fsm/verifier/fsmverifier.cpp \
 	src/machine/simulated/machinesimulator.cpp \
 	src/machine/simulated/components/simulatedcomponent.cpp \
-	src/machine/simulated/components/simulatedactuatorcomponent.cpp \
 	src/machine/simulated/fsm/fsmsimulator.cpp \
 	src/machine/simulated/fsm/components/fsmsimulatedstate.cpp \
 	src/machine/simulated/fsm/components/fsmsimulatedtransition.cpp \
@@ -127,6 +126,8 @@ SOURCES += \
 	src/ui/resource_bar/simulator_tab/inputbitselector.cpp \
 	src/ui/resource_bar/simulator_tab/inputsselector.cpp \
 	src/ui/resource_bar/simulator_tab/inputvariableselector.cpp \
+	src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp \
+	src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp \
 	src/ui/display_area/displayarea.cpp \
 	src/ui/display_area/maintoolbar.cpp \
 	src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp \
@@ -198,7 +199,6 @@ HEADERS += \
 	src/machine/logic/fsm/verifier/fsmverifier.h \
 	src/machine/simulated/machinesimulator.h \
 	src/machine/simulated/components/simulatedcomponent.h \
-	src/machine/simulated/components/simulatedactuatorcomponent.h \
 	src/machine/simulated/fsm/fsmsimulator.h \
 	src/machine/simulated/fsm/components/fsmsimulatedstate.h \
 	src/machine/simulated/fsm/components/fsmsimulatedtransition.h \
@@ -251,6 +251,8 @@ HEADERS += \
 	src/ui/resource_bar/simulator_tab/inputbitselector.h \
 	src/ui/resource_bar/simulator_tab/inputsselector.h \
 	src/ui/resource_bar/simulator_tab/inputvariableselector.h \
+	src/ui/resource_bar/simulator_tab/simulatorconfigurator.h \
+	src/ui/resource_bar/simulator_tab/simulatortimecontroller.h \
 	src/ui/display_area/displayarea.h \
 	src/ui/display_area/maintoolbar.h \
 	src/ui/display_area/machine_editor_widget/machineeditorwidget.h \

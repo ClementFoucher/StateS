@@ -47,8 +47,10 @@
 FsmSimulator::FsmSimulator() :
     MachineSimulator()
 {
-	connect(this->clock.get(), &Clock::clockEvent,      this, &FsmSimulator::clockEventHandler);
-	connect(this->clock.get(), &Clock::resetLogicEvent, this, &FsmSimulator::resetEventHandler);
+	connect(this->clock.get(), &Clock::clockAboutToTickEvent,    this, &FsmSimulator::clockAboutToTickEventHandler);
+	connect(this->clock.get(), &Clock::clockPrepareActionsEvent, this, &FsmSimulator::clockPrepareActionsEventHandler);
+	connect(this->clock.get(), &Clock::clockEvent,               this, &FsmSimulator::clockEventHandler);
+	connect(this->clock.get(), &Clock::resetLogicEvent,          this, &FsmSimulator::resetEventHandler);
 
 	this->reset();
 }
@@ -61,15 +63,16 @@ void FsmSimulator::build()
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
 
+
 	auto statesIds = fsm->getAllStatesIds();
-	for (auto stateId : statesIds)
+	for (auto& stateId : statesIds)
 	{
 		auto simulatedState = new FsmSimulatedState(stateId);
 		this->simulatedComponents[stateId] = simulatedState;
 	}
 
 	auto transitionsIds = fsm->getAllTransitionsIds();
-	for (auto transitionId : transitionsIds)
+	for (auto& transitionId : transitionsIds)
 	{
 		auto simulatedTransition = new FsmSimulatedTransition(transitionId);
 
@@ -91,7 +94,8 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 	this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
 	this->signalMapper = nullptr;
 
-	this->activateTransition(this->potentialTransitionsIds[i]);
+	this->transitionToBeCrossedId = this->potentialTransitionsIds[i];
+	this->activateTransitionActions(this->transitionToBeCrossedId, true);
 
 	this->potentialTransitionsIds.clear();
 }
@@ -104,6 +108,7 @@ void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 		if (previousActiveState != nullptr)
 		{
 			previousActiveState->setActive(false);
+			this->deactivateStateActions(this->activeStateId);
 		}
 	}
 
@@ -113,6 +118,7 @@ void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
+		this->activateStateActions(this->activeStateId, true);
 	}
 }
 
@@ -126,6 +132,7 @@ void FsmSimulator::resetEventHandler()
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
+
 	this->latestTransitionCrossedId = nullId;
 
 	// Disable any active state
@@ -135,19 +142,20 @@ void FsmSimulator::resetEventHandler()
 		if (previousActiveState != nullptr)
 		{
 			previousActiveState->setActive(false);
+			this->deactivateStateActions(this->activeStateId);
 		}
 	}
 
 	// Reset inputs and variables to their initial value
-	for (shared_ptr<Variable>& sig : fsm->getReadableVariableVariables())
+	for (shared_ptr<Variable>& variable : fsm->getReadableVariableVariables())
 	{
-		sig->reinitialize();
+		variable->reinitialize();
 	}
 
 	// Then compute outputs: first reset all of them...
-	for (shared_ptr<Output>& sig : fsm->getOutputs())
+	for (shared_ptr<Output>& variable : fsm->getOutputs())
 	{
-		sig->resetValue();
+		variable->reinitialize();
 	}
 
 	// ... then enable initial state which activate its actions
@@ -157,26 +165,19 @@ void FsmSimulator::resetEventHandler()
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
+		this->activateStateActions(this->activeStateId, true);
 	}
 }
 
-void FsmSimulator::clockEventHandler()
+void FsmSimulator::clockAboutToTickEventHandler()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
 
-	//
-	// First reset pulse variables
-	auto latestTransitionCrossed = dynamic_cast<FsmSimulatedTransition*>(this->simulatedComponents[this->latestTransitionCrossedId]);
-	if (latestTransitionCrossed != nullptr)
-	{
-		latestTransitionCrossed->deactivateActions();
-		this->latestTransitionCrossedId = nullId;
-	}
+	this->transitionToBeCrossedId = nullId;
 
-	//
-	// Then determine if a transition is to be crossed
+	// Determine if a transition is to be crossed
 	auto currentActiveState = fsm->getState(this->activeStateId);
 	if (currentActiveState != nullptr)
 	{
@@ -217,7 +218,7 @@ void FsmSimulator::clockEventHandler()
 		if (candidateTransitions.count() == 1)
 		{
 			// One available transition, let's activate it.
-			this->activateTransition(candidateTransitions[0]);
+			this->transitionToBeCrossedId = candidateTransitions[0];
 		}
 		else if (candidateTransitions.count() > 1)
 		{
@@ -230,17 +231,12 @@ void FsmSimulator::clockEventHandler()
 			QVBoxLayout* choiceWindowLayout = new QVBoxLayout(this->targetStateSelector);
 
 			QLabel* choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
-			                                             + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
-			                                             + tr("For current simulation, just choose the target state in the following list:"));
+														 + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
+														 + tr("For current simulation, just choose the target state in the following list:"));
 
 			choiceWindowLayout->addWidget(choiceWindowWarningText);
 
 			this->signalMapper = new QSignalMapper();
-			auto newActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
-			if (newActiveState != nullptr)
-			{
-				newActiveState->setActive(true);
-			}
 			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &FsmSimulator::targetStateSelectionMadeEventHandler);
 
 			for (int i = 0 ; i < candidateTransitions.count() ; i++)
@@ -262,27 +258,54 @@ void FsmSimulator::clockEventHandler()
 			this->potentialTransitionsIds = candidateTransitions;
 			this->targetStateSelector->show();
 		}
-		else
-		{
-			// No transition crossed: look for maintained actions in current state
-			for (auto& action : currentActiveState->getActions())
-			{
-				if ( (action->getActionType() == ActionOnVariableType_t::increment) ||
-					 (action->getActionType() == ActionOnVariableType_t::decrement) )
-				{
-					action->beginAction();
-				}
-			}
-		}
 	}
 }
 
-void FsmSimulator::activateTransition(componentId_t transitionId)
+void FsmSimulator::clockPrepareActionsEventHandler()
+{
+	// First reset actions from the previous cycle
+	if (this->latestTransitionCrossedId != nullId)
+	{
+		this->deactivateTransitionActions(this->latestTransitionCrossedId, true);
+	}
+
+	// Then prepare for next actions
+	this->activateTransitionActions(this->transitionToBeCrossedId, true);
+}
+
+void FsmSimulator::clockEventHandler()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+
+	//
+	// First reset pulse variables
+	if (this->latestTransitionCrossedId != nullId)
+	{
+		this->deactivateTransitionActions(this->latestTransitionCrossedId, false);
+		this->latestTransitionCrossedId = nullId;
+	}
+
+	// Look for memorized actions in current state
+	this->activateStateActions(this->activeStateId, false);
+
+	//
+	// Then determine if a transition is to be crossed
+	auto currentActiveState = fsm->getState(this->activeStateId);
+	if (this->transitionToBeCrossedId != nullId)
+	{
+		this->crossTransition(this->transitionToBeCrossedId);
+	}
+}
+
+void FsmSimulator::crossTransition(componentId_t transitionId)
 {
 	auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
 	if (previousActiveState != nullptr)
 	{
 		previousActiveState->setActive(false);
+		this->deactivateStateActions(this->activeStateId);
 	}
 
 	this->latestTransitionCrossedId = transitionId;
@@ -290,7 +313,7 @@ void FsmSimulator::activateTransition(componentId_t transitionId)
 	auto simulatedTransition = dynamic_cast<FsmSimulatedTransition*>(this->simulatedComponents[transitionId]);
 	if (simulatedTransition != nullptr)
 	{
-		simulatedTransition->activateActions();
+		this->activateTransitionActions(transitionId, false);
 		this->activeStateId = simulatedTransition->getTargetStateId();
 	}
 
@@ -298,7 +321,135 @@ void FsmSimulator::activateTransition(componentId_t transitionId)
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
+		this->activateStateActions(this->activeStateId, true);
 	}
 
 	emit stateChangedEvent();
+}
+
+void FsmSimulator::activateStateActions(componentId_t actuatorId, bool isFirstActivation)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuatorComponent = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	if (actuatorComponent == nullptr) return;
+
+
+	auto actionList = actuatorComponent->getActions();
+	for (shared_ptr<ActionOnVariable>& action : actionList)
+	{
+		if (action->isActionMemorized() == true)
+		{
+			if (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately)
+			{
+				action->beginAction();
+			}
+			else if (isFirstActivation == false)
+			{
+				action->beginAction();
+			}
+		}
+		else
+		{
+			if (this->continuousStateActionBehavior == SimulationBehavior_t::immediately)
+			{
+				action->beginAction();
+			}
+			else if (isFirstActivation == false)
+			{
+				action->beginAction();
+			}
+		}
+	}
+}
+
+void FsmSimulator::activateTransitionActions(componentId_t actuatorId, bool isPreparation)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuatorComponent = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	if (actuatorComponent == nullptr) return;
+
+
+	auto actionList = actuatorComponent->getActions();
+	for (shared_ptr<ActionOnVariable>& action : actionList)
+	{
+		if (isPreparation == true)
+		{
+			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			{
+				action->beginAction();
+			}
+			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			{
+				action->beginAction();
+			}
+		}
+		else
+		{
+			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->beginAction();
+			}
+			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->beginAction();
+			}
+		}
+	}
+}
+
+void FsmSimulator::deactivateStateActions(componentId_t actuatorId)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuatorComponent = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	if (actuatorComponent == nullptr) return;
+
+
+	auto actionList = actuatorComponent->getActions();
+	for (shared_ptr<ActionOnVariable>& action : actionList)
+	{
+		action->endAction();
+	}
+}
+
+void FsmSimulator::deactivateTransitionActions(componentId_t actuatorId, bool isPreparation)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuatorComponent = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	if (actuatorComponent == nullptr) return;
+
+
+	auto actionList = actuatorComponent->getActions();
+	for (shared_ptr<ActionOnVariable>& action : actionList)
+	{
+		if (isPreparation == true)
+		{
+			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			{
+				action->endAction();
+			}
+			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			{
+				action->endAction();
+			}
+		}
+		else
+		{
+			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->endAction();
+			}
+			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->endAction();
+			}
+		}
+	}
 }

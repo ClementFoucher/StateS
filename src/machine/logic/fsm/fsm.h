@@ -58,8 +58,8 @@ public:
 	shared_ptr<FsmState>      getState     (componentId_t stateId)      const;
 	shared_ptr<FsmTransition> getTransition(componentId_t transitionId) const;
 
-	QList<componentId_t> getAllStatesIds()      const;
-	QList<componentId_t> getAllTransitionsIds() const;
+	const QList<componentId_t> getAllStatesIds()      const;
+	const QList<componentId_t> getAllTransitionsIds() const;
 
 	// Components edition functions
 

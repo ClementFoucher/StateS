@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Clément Foucher
+ * Copyright © 2024-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -70,8 +70,8 @@ StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
 
 	connect(fsmSimulator.get(), &FsmSimulator::stateChangedEvent, this, &StateTimeLine::updateCurrentValue);
 
-	connect(clock.get(), &Clock::prepareForClockEvent, this, &StateTimeLine::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,    this, &StateTimeLine::resetEventHandler);
+	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &StateTimeLine::clockEventHandler);
+	connect(clock.get(), &Clock::resetGraphicEvent,        this, &StateTimeLine::resetEventHandler);
 }
 
 void StateTimeLine::clockEventHandler()

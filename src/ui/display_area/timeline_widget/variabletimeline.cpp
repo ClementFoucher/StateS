@@ -90,8 +90,8 @@ VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> variab
 
 	connect(variable.get(), &Variable::variableDynamicStateChangedEvent, this, &VariableTimeline::updateCurrentValue);
 
-	connect(clock.get(), &Clock::prepareForClockEvent, this, &VariableTimeline::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,    this, &VariableTimeline::resetEventHandler);
+	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &VariableTimeline::clockEventHandler);
+	connect(clock.get(), &Clock::resetGraphicEvent,        this, &VariableTimeline::resetEventHandler);
 }
 
 // On clock event, duplicate current value:

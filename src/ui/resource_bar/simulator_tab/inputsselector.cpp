@@ -22,35 +22,71 @@
 // Current class header
 #include "inputsselector.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <QStyle>
+#include <QLabel>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "input.h"
 #include "inputvariableselector.h"
 
 
-InputsSelector::InputsSelector(QList<shared_ptr<Input> > inputList, QWidget *parent) :
-    QScrollArea(parent)
+InputsSelector::InputsSelector(QWidget* parent) :
+	QWidget(parent)
 {
-	this->setWidget(new QWidget());
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
-	QVBoxLayout* layout = new QVBoxLayout(this->widget());
 
-	for (shared_ptr<Input> currentInput : inputList)
+	auto mainLayout = new QVBoxLayout();
+	this->setLayout(mainLayout);
+	mainLayout->setAlignment(Qt::AlignTop);
+
+	auto inputList = machine->getInputs();
+	if (inputList.count() != 0)
 	{
-		InputVariableSelector* currentVariableSelector = new InputVariableSelector(currentInput, this);
-		layout->addWidget(currentVariableSelector);
+		auto inputListHint = new QLabel(tr("Click on bits from the list below to switch input value:"));
+		inputListHint->setAlignment(Qt::AlignCenter);
+		inputListHint->setWordWrap(true);
+		mainLayout->addWidget(inputListHint);
+
+		this->scrollArea = new QScrollArea();
+		mainLayout->addWidget(this->scrollArea);
+
+		this->scrollAreaWidget = new QWidget();
+		this->scrollAreaWidgetLayout = new QVBoxLayout(this->scrollAreaWidget);
+		this->scrollArea->setWidget(this->scrollAreaWidget);
+
+		for (shared_ptr<Input>& currentInput : inputList)
+		{
+			auto currentVariableSelector = new InputVariableSelector(currentInput, this);
+			this->scrollAreaWidgetLayout->addWidget(currentVariableSelector);
+		}
+	}
+	else
+	{
+		auto noInputHint = new QLabel("<i>" + tr("No input available on the machine") +"</i>");
+		noInputHint->setAlignment(Qt::AlignCenter);
+		noInputHint->setWordWrap(true);
+		mainLayout->addWidget(noInputHint);
 	}
 }
 
 void InputsSelector::resizeEvent(QResizeEvent*)
 {
-	int width = this->width() - this->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - this->style()->pixelMetric(QStyle::PM_DockWidgetSeparatorExtent);
-	int height = (this->widget()->layout()->itemAt(0)->sizeHint().height() * this->widget()->layout()->count());
+	if (this->scrollAreaWidget != nullptr)
+	{
+		int width  = this->scrollArea->width() - this->scrollArea->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - this->scrollArea->style()->pixelMetric(QStyle::PM_DockWidgetSeparatorExtent);
+		int height = this->scrollAreaWidgetLayout->itemAt(0)->sizeHint().height() * this->scrollAreaWidgetLayout->count();
 
-	this->widget()->resize(width, height);
+		this->scrollAreaWidget->resize(width, height);
+	}
 }
-
-

@@ -335,6 +335,23 @@ bool ActionOnVariable::isActionValueEditable() const
 	}
 }
 
+bool ActionOnVariable::isActionMemorized() const
+{
+	switch (this->actionType)
+	{
+	case ActionOnVariableType_t::set:
+	case ActionOnVariableType_t::reset:
+	case ActionOnVariableType_t::assign:
+	case ActionOnVariableType_t::increment:
+	case ActionOnVariableType_t::decrement:
+		return true;
+		break;
+	case ActionOnVariableType_t::activeOnState:
+	case ActionOnVariableType_t::pulse:
+		return false;
+		break;
+	}
+}
 
 void ActionOnVariable::beginAction()
 {

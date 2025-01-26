@@ -54,8 +54,8 @@ const QPen FsmSimulatedTransition::inactivePen = QPen(QBrush(Qt::red,           
 //
 
 FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
-    FsmGraphicTransition(logicComponentId),
-    SimulatedActuatorComponent(logicComponentId)
+	FsmGraphicTransition(logicComponentId),
+	SimulatedComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;

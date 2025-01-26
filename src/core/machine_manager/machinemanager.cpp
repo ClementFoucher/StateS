@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Clément Foucher
+ * Copyright © 2021-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,10 +39,8 @@
 // Public global object
 unique_ptr<MachineManager> machineManager = make_unique<MachineManager>();
 
-
-/*
- * Constructor/destructor stuff
- */
+/////
+// Constructors/destructors
 
 MachineManager::MachineManager() :
     QObject()
@@ -57,9 +55,8 @@ MachineManager::MachineManager() :
 	connect(this->undoRedoManager.get(), &UndoRedoManager::redoActionAvailabilityChangeEvent, this, &MachineManager::redoActionAvailabilityChangedEvent);
 }
 
-/*
- * Setters
- */
+/////
+// Mutators
 
 void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
@@ -77,9 +74,8 @@ void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<Graph
 	emit this->machineReplacedEvent();
 }
 
-/*
- * Getters
- */
+/////
+// Accessors
 
 /**
  * @brief MachineManager::getMachine
@@ -122,9 +118,8 @@ shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
 	return this->machineSimulator;
 }
 
-/*
- * Actions
- */
+/////
+// Undo/redo management
 
 void MachineManager::undo()
 {
@@ -176,8 +171,14 @@ void MachineManager::endUndoMacro()
 	this->undoRedoManager->endMacro();
 }
 
+/////
+// Simulation management
+
 void MachineManager::setSimulationMode(SimulationMode_t newMode)
 {
+	if (newMode == this->currentSimulationMode) return;
+
+
 	bool changeOk = true;
 
 	if (newMode == SimulationMode_t::editMode)
@@ -215,11 +216,8 @@ SimulationMode_t MachineManager::getCurrentSimulationMode() const
 	return this->currentSimulationMode;
 }
 
-
-
-/*
- * Slots
- */
+/////
+// Slots
 
 void MachineManager::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes)
 {
@@ -255,9 +253,8 @@ void MachineManager::graphicComponentNeedsRefreshEventHandler(componentId_t comp
 	graphicComponent->refreshDisplay();
 }
 
-/*
- * Private
- */
+/////
+// Private functions
 
 void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
