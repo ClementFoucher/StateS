@@ -39,7 +39,7 @@ void FsmState::setName(const QString& newName)
 {
 	this->name = newName;
 	emit this->stateRenamedEvent();
-	emit this->componentNeedsGraphicUpdateEvent(this->id);
+	emit this->componentEditedEvent(this->id);
 }
 
 QString FsmState::getName() const

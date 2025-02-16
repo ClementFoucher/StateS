@@ -43,6 +43,8 @@ FsmTransition::FsmTransition(componentId_t id, componentId_t sourceStateId, comp
 void FsmTransition::setSourceStateId(componentId_t sourceStateId)
 {
 	this->sourceStateId = sourceStateId;
+	// Do not emit componentEditedEvent signal as the graphic
+	// transition is recreated by the caller (FsmScene)
 }
 
 componentId_t FsmTransition::getSourceStateId() const
@@ -53,6 +55,8 @@ componentId_t FsmTransition::getSourceStateId() const
 void FsmTransition::setTargetStateId(componentId_t targetStateId)
 {
 	this->targetStateId = targetStateId;
+	// Do not emit componentEditedEvent signal as the graphic
+	// transition is recreated by the caller (FsmScene)
 }
 
 componentId_t FsmTransition::getTargetStateId() const
@@ -84,7 +88,7 @@ void FsmTransition::setCondition(shared_ptr<Variable> variableNewCondition)
 	}
 
 	emit this->conditionChangedEvent();
-	emit this->componentNeedsGraphicUpdateEvent(this->id);
+	emit this->componentEditedEvent(this->id);
 }
 
 void FsmTransition::clearCondition()
@@ -125,5 +129,5 @@ uint FsmTransition::getAllowedActionTypes() const
 void FsmTransition::conditionChangedEventHandler()
 {
 	emit this->conditionChangedEvent();
-	emit this->componentNeedsGraphicUpdateEvent(this->id);
+	emit this->componentEditedEvent(this->id);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -50,7 +50,7 @@ public:
 	componentId_t getId() const;
 
 signals:
-	void componentNeedsGraphicUpdateEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
+	void componentEditedEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
 
 	/////
 	// Object variables
