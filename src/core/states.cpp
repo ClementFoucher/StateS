@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,8 +44,8 @@
 #include "graphicattributes.h"
 
 
-////
-// Static functions for convenience
+/////
+// Static functions
 
 QString StateS::getVersion()
 {
@@ -57,8 +57,8 @@ QString StateS::getCopyrightYears()
 	return STATES_YEARS;
 }
 
-////
-// Object members
+/////
+// Constructors/destructors
 
 /**
  * @brief StateS::StateS
@@ -118,6 +118,9 @@ StateS::~StateS()
 	delete this->translator;
 }
 
+/////
+// Slots
+
 /**
  * @brief StateS::languageSelected
  * This function is called when language has been chosen and
@@ -153,8 +156,8 @@ void StateS::generateNewFsm()
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
+	machineManager->clearMachine();
 	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
-
 	machineManager->setMachine(newMachine, shared_ptr<GraphicAttributes>(new GraphicAttributes()));
 }
 
@@ -169,7 +172,7 @@ void StateS::clearMachine()
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
-	machineManager->setMachine(nullptr, nullptr);
+	machineManager->clearMachine();
 }
 
 /**
@@ -286,6 +289,9 @@ void StateS::saveCurrentMachineInCurrentFile()
 		}
 	}
 }
+
+/////
+/// Private functions
 
 /**
  * @brief StateS::launchUi

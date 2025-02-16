@@ -74,6 +74,11 @@ void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<Graph
 	emit this->machineReplacedEvent();
 }
 
+void MachineManager::clearMachine()
+{
+	this->setMachine(nullptr, nullptr);
+}
+
 /////
 // Accessors
 

@@ -70,6 +70,7 @@ public:
 
 	// Mutators
 	void setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
+	void clearMachine();
 
 	// Acessors
 	shared_ptr<Machine>          getMachine()          const;
