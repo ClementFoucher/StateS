@@ -67,12 +67,12 @@ public:
 signals:
 	// General events
 	void variableStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
-	void variableDynamicStateChangedEvent();        // Triggered when object "discardable" values are modified
 
 	// Specific events detail
+	void variableInitialValueChangedEvent();
+	void variableCurrentValueChangedEvent();
 	void variableRenamedEvent();
 	void variableResizedEvent();
-	void variableInitialValueChangedEvent();
 
 	// Deletion event
 	void variableDeletedEvent();

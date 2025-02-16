@@ -301,7 +301,7 @@ bool Equation::setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet) /
 			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 			// Local stuff
 			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-			connect(actualNewOperand.get(), &Variable::variableDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+			connect(actualNewOperand.get(), &Variable::variableCurrentValueChangedEvent,        this, &Equation::computeCurrentValue);
 		}
 
 		if (!quiet)
@@ -331,7 +331,7 @@ void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
 		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 		// Local stuff
 		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-		disconnect(oldOperand.get(), &Variable::variableDynamicStateChangedEvent,        this, &Equation::computeCurrentValue);
+		disconnect(oldOperand.get(), &Variable::variableCurrentValueChangedEvent,        this, &Equation::computeCurrentValue);
 
 		if (oldOperand != nullptr)
 		{
@@ -753,7 +753,7 @@ void Equation::computeCurrentValue()
 	}
 
 	if (previousValue != this->currentValue)
-		emit variableDynamicStateChangedEvent();
+		emit variableCurrentValueChangedEvent();
 
 	if (previousValue.getSize() != this->currentValue.getSize())
 	{
