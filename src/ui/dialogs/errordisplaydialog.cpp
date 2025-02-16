@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,7 +59,7 @@ void ErrorDisplayDialog::build(const QString& errorTitle, const QList<QString>& 
 	QListWidget* errorList = new QListWidget();
 	errorList->setWordWrap(true);
 
-	for (QString s : errors)
+	for (const QString& s : errors)
 	{
 		errorList->addItem(s);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,15 +23,16 @@
 #include "machinebuilder.h"
 
 
+/////
+// Constructors/destructors
+
 MachineBuilder::MachineBuilder()
 {
 
 }
 
-MachineBuilderTool_t MachineBuilder::getTool() const
-{
-	return this->currentTool;
-}
+/////
+// Mutators
 
 void MachineBuilder::setTool(MachineBuilderTool_t newTool)
 {
@@ -48,4 +49,12 @@ void MachineBuilder::resetTool()
 {
 	this->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
 	this->setTool(MachineBuilderTool_t::none);
+}
+
+/////
+// Accesors
+
+MachineBuilderTool_t MachineBuilder::getTool() const
+{
+	return this->currentTool;
 }

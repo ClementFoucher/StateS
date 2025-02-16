@@ -190,7 +190,7 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 	        verticalElementsSpacer +
 	        title->boundingRect().height() +
 	        verticalElementsSpacer +
-			maxVariablesHeight +
+	        maxVariablesHeight +
 	        verticalElementsSpacer;
 
 	//
@@ -249,7 +249,7 @@ void GraphicMachine::addComponent(GraphicComponent* graphicComponent)
 	this->map[logicComponentId] = graphicComponent;
 }
 
-QList<GraphicComponent*> GraphicMachine::getGraphicComponents() const
+const QList<GraphicComponent *> GraphicMachine::getGraphicComponents() const
 {
 	return this->map.values();
 }

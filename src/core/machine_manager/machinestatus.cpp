@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2021 Clément Foucher
+ * Copyright © 2020-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,6 +23,9 @@
 #include "machinestatus.h"
 
 
+/////
+// Constructors/destructors
+
 MachineStatus::MachineStatus()
 {
 	this->unsavedFlag     = false;
@@ -31,6 +34,9 @@ MachineStatus::MachineStatus()
 	this->imageExportPath = QFileInfo();
 	this->vhdlExportPath  = QFileInfo();
 }
+
+/////
+// Mutators
 
 void MachineStatus::setUnsavedFlag(bool newUnsavedFlag)
 {
@@ -65,6 +71,9 @@ void MachineStatus::setVhdlExportPath(const QString& newPath)
 {
 	this->vhdlExportPath = QFileInfo(newPath);
 }
+
+/////
+// Accessors
 
 bool MachineStatus::getUnsavedFlag() const
 {

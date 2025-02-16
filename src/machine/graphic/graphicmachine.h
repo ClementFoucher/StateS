@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -71,7 +71,7 @@ public:
 
 protected:
 	void addComponent(GraphicComponent* graphicComponent);
-	QList<GraphicComponent*> getGraphicComponents() const;
+	const QList<GraphicComponent*> getGraphicComponents() const;
 
 	/////
 	// Object variables

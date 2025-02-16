@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -113,7 +113,7 @@ FsmGraphicTransition* GraphicFsm::addTransition(componentId_t logicTransitionId,
 	return graphicTransition;
 }
 
-QList<FsmGraphicState*> GraphicFsm::getStates() const
+const QList<FsmGraphicState*> GraphicFsm::getStates() const
 {
 	QList<FsmGraphicState*> statesList;
 
@@ -126,7 +126,7 @@ QList<FsmGraphicState*> GraphicFsm::getStates() const
 	return statesList;
 }
 
-QList<FsmGraphicTransition*> GraphicFsm::getTransitions() const
+const QList<FsmGraphicTransition*> GraphicFsm::getTransitions() const
 {
 	QList<FsmGraphicTransition*> transitionsList;
 
@@ -214,6 +214,7 @@ void GraphicFsm::buildStates(shared_ptr<GraphicAttributes> configuration)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
+
 	auto logicStatesIds = fsm->getAllStatesIds();
 	for (auto logicStateId : logicStatesIds)
 	{
@@ -249,6 +250,7 @@ void GraphicFsm::buildTransitions(shared_ptr<GraphicAttributes> configuration)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
+
 
 	auto logicTransitionsIds = fsm->getAllTransitionsIds();
 	for (auto logicTransitionId : logicTransitionsIds)
