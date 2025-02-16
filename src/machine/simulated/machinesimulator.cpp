@@ -59,11 +59,13 @@ void MachineSimulator::doStep()
 void MachineSimulator::start(uint period)
 {
 	this->clock->start(period);
+	emit this->autoSimulationToggledEvent(true);
 }
 
 void MachineSimulator::suspend()
 {
 	this->clock->stop();
+	emit this->autoSimulationToggledEvent(false);
 }
 
 const QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const

@@ -641,17 +641,17 @@
 <context>
     <name>FsmSimulator</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="237"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="232"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="238"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="233"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="239"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="234"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -2137,28 +2137,44 @@
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="47"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="50"/>
         <source>Do one step</source>
         <translation>Avancer d&apos;un pas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="50"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
+        <source>or launch a timer to do steps automatically:</source>
+        <translation>ou lancez un chronomètre pour avancer automatiquement:</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
+        <source>Use the </source>
+        <translation>Utilisez le bouton </translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
+        <source> button</source>
+        <translation> </translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="53"/>
         <source>Do one step every</source>
         <translation>Avancer d&apos;un pas toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="52"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="55"/>
         <source>second(s)</source>
         <translation>seconde(s)</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="53"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="88"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="108"/>
         <source>Launch</source>
         <translation>Démarrer</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="83"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="103"/>
         <source>Suspend</source>
         <translation>Suspendre</translation>
     </message>

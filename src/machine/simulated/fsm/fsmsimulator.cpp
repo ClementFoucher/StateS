@@ -94,8 +94,7 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 	this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
 	this->signalMapper = nullptr;
 
-	this->transitionToBeCrossedId = this->potentialTransitionsIds[i];
-	this->activateTransitionActions(this->transitionToBeCrossedId, true);
+	this->crossTransition(this->potentialTransitionsIds[i]);
 
 	this->potentialTransitionsIds.clear();
 }
@@ -225,7 +224,7 @@ void FsmSimulator::clockAboutToTickEventHandler()
 			// If multiple transitions are crossable, ask for wich one to follow.
 			// This is just a small instant patch, user should correct his machine.
 
-			this->clock->stop();
+			this->suspend();
 
 			this->targetStateSelector = new QWidget();
 			QVBoxLayout* choiceWindowLayout = new QVBoxLayout(this->targetStateSelector);
@@ -270,7 +269,10 @@ void FsmSimulator::clockPrepareActionsEventHandler()
 	}
 
 	// Then prepare for next actions
-	this->activateTransitionActions(this->transitionToBeCrossedId, true);
+	if (this->transitionToBeCrossedId != nullId)
+	{
+		this->activateTransitionActions(this->transitionToBeCrossedId, true);
+	}
 }
 
 void FsmSimulator::clockEventHandler()

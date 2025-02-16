@@ -44,6 +44,9 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	this->setLayout(mainLayout);
 
 	auto buttonReset    = new QPushButton(tr("Reset"));
+
+	auto stepLabel = new QLabel(tr("Use the ") + "<b>" + tr("Do one step") + "</b>" + tr(" button") + " " + tr("or launch a timer to do steps automatically:"));
+
 	auto buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
 
 	auto autoStepLayout = new QHBoxLayout();
@@ -61,7 +64,10 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	connect(buttonNextStep,              &QPushButton::clicked, simulator.get(), &MachineSimulator::doStep);
 	connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,            &SimulatorTimeController::buttonLauchAutoStepClicked);
 
+	connect(simulator.get(), &MachineSimulator::autoSimulationToggledEvent, this, &SimulatorTimeController::autoSimulationToggledEventHandler);
+
 	mainLayout->addWidget(buttonReset);
+	mainLayout->addWidget(stepLabel);
 	mainLayout->addWidget(buttonNextStep);
 	mainLayout->addLayout(autoStepLayout);
 }
@@ -76,15 +82,30 @@ void SimulatorTimeController::buttonLauchAutoStepClicked()
 	{
 		float value = this->autoStepValue->text().toFloat() * 1000;
 		if (value != 0)
+		{
 			simulator->start(value);
+		}
 		else
+		{
 			simulator->start(1000);
-
-		this->buttonTriggerAutoStep->setText(tr("Suspend"));
+		}
 	}
 	else
 	{
 		simulator->suspend();
+	}
+}
+
+void SimulatorTimeController::autoSimulationToggledEventHandler(bool started)
+{
+	if (started == true)
+	{
+		this->buttonTriggerAutoStep->setText(tr("Suspend"));
+		this->buttonTriggerAutoStep->setChecked(true);
+	}
+	else
+	{
 		this->buttonTriggerAutoStep->setText(tr("Launch"));
+		this->buttonTriggerAutoStep->setChecked(false);
 	}
 }

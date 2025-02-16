@@ -68,6 +68,9 @@ public:
 	void setMemorizedTransitionActionBehavior(SimulationBehavior_t behv);
 	void setPulseTransitionActionBehavior    (SimulationBehavior_t behv);
 
+signals:
+	void autoSimulationToggledEvent(bool simulating);
+
 	/////
 	// Object variables
 protected:

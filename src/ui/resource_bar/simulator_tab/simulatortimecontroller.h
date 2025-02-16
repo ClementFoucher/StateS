@@ -43,6 +43,7 @@ public:
 	// Object functions
 private slots:
 	void buttonLauchAutoStepClicked();
+	void autoSimulationToggledEventHandler(bool started);
 
 	/////
 	// Object variables
