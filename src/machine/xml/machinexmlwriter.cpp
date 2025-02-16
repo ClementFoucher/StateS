@@ -48,7 +48,7 @@ MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewC
 	this->viewConfiguration = viewConfiguration;
 }
 
-void MachineXmlWriter::writeMachineToFile()
+void MachineXmlWriter::writeMachineToFile() // Throws StatesException
 {
 	this->createSaveFile(); // Throws StatesException
 	this->writeMachineToStream();
@@ -66,7 +66,7 @@ void MachineXmlWriter::writeMachineCommonElements()
 {
 	if (this->mode == MachineXmlWriterMode_t::writeToFile)
 	{
-		this->writeMachineConfiguration();
+		this->writeUiConfiguration();
 	}
 	this->writeMachineVariables();
 }
@@ -78,7 +78,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	if (actions.count() != 0)
 	{
 		this->stream->writeStartElement("Actions");
-		for (shared_ptr<ActionOnVariable> action : actions)
+		for (shared_ptr<ActionOnVariable>& action : actions)
 		{
 			this->stream->writeStartElement("Action");
 
@@ -246,9 +246,10 @@ void MachineXmlWriter::finalizeSaveFile()
 	this->file = nullptr;
 }
 
-void MachineXmlWriter::writeMachineConfiguration()
+void MachineXmlWriter::writeUiConfiguration()
 {
 	if (this->viewConfiguration == nullptr) return;
+
 
 	this->stream->writeStartElement("Configuration");
 
@@ -266,35 +267,62 @@ void MachineXmlWriter::writeMachineConfiguration()
 
 void MachineXmlWriter::writeMachineVariables()
 {
-	this->stream->writeStartElement("Signals");
-
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	for (shared_ptr<Variable> var : machine->getAllVariables())
+
+	this->stream->writeStartElement("Signals");
+
+	for (auto& variable : machine->getInputs())
 	{
-		// Type
-		if (dynamic_pointer_cast<Input>(var) != nullptr)
-			this->stream->writeStartElement("Input");
-		else if (dynamic_pointer_cast<Output>(var) != nullptr)
-			this->stream->writeStartElement("Output");
-		else if (dynamic_pointer_cast<Constant>(var) != nullptr)
-			this->stream->writeStartElement("Constant");
-		else
-			this->stream->writeStartElement("Variable");
-
-		// Name
-		this->stream->writeAttribute("Name", var->getName());
-
-		// Size
-		this->stream->writeAttribute("Size", QString::number(var->getSize()));
-
-		// Initial value (except for outputs)
-		if (dynamic_pointer_cast<Output>(var) == nullptr)
-			this->stream->writeAttribute("Initial_value", var->getInitialValue().toString());
-
-		this->stream->writeEndElement();
+		this->writeMachineVariable(VariableNature_t::input, variable);
 	}
+
+	for (auto& variable : machine->getInternalVariables())
+	{
+		this->writeMachineVariable(VariableNature_t::internal, variable);
+	}
+
+	for (auto& variable : machine->getOutputs())
+	{
+		this->writeMachineVariable(VariableNature_t::output, variable);
+	}
+
+	for (auto& variable : machine->getConstants())
+	{
+		this->writeMachineVariable(VariableNature_t::constant, variable);
+	}
+
+	this->stream->writeEndElement();
+}
+
+void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, shared_ptr<Variable> variable)
+{
+	switch (nature)
+	{
+	case VariableNature_t::input:
+		this->stream->writeStartElement("Input");
+		break;
+	case VariableNature_t::internal:
+		this->stream->writeStartElement("Variable");
+		break;
+	case VariableNature_t::output:
+		this->stream->writeStartElement("Output");
+		break;
+	case VariableNature_t::constant:
+		this->stream->writeStartElement("Constant");
+		break;
+	}
+
+	// Name
+	this->stream->writeAttribute("Name", variable->getName());
+
+	// Size
+	this->stream->writeAttribute("Size", QString::number(variable->getSize()));
+
+	// Initial value (except for outputs)
+	if (nature != VariableNature_t::output)
+		this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
 
 	this->stream->writeEndElement();
 }

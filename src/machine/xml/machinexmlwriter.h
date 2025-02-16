@@ -67,8 +67,9 @@ private:
 	void createSaveString();
 	void finalizeSaveFile();
 
-	void writeMachineConfiguration();
+	void writeUiConfiguration();
 	void writeMachineVariables();
+	void writeMachineVariable(VariableNature_t nature, shared_ptr<Variable> variable);
 
 	/////
 	// Object variables
