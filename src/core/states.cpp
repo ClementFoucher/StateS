@@ -188,41 +188,35 @@ void StateS::loadMachine(const QString& path)
 
 	if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
 	{
-		try
+		// Build file parser
+		shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildFileParser(shared_ptr<QFile>(new QFile(path)));
+		if (parser == nullptr)
 		{
-			// Build file parser
-			shared_ptr<MachineXmlParser> parser =  XmlImportExportBuilder::buildFileParser(shared_ptr<QFile>(new QFile(path)));
-
-			// Parse and check for warnings
-			parser->doParse();
-			QList<QString> warnings = parser->getWarnings();
-			if (!warnings.isEmpty())
-			{
-				this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
-			}
-
-			// If we reached this point, there should have been no exception
-			machineManager->setMachine(parser->getMachine(), parser->getGraphicMachineConfiguration());
-			this->statesUi->setView(parser->getViewConfiguration());
-
-			shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-			machineStatus->setHasSaveFile(true);
-			machineStatus->setUnsavedFlag(false);
-			machineStatus->setSaveFilePath(path);
+			QList<QString> errorToDisplay;
+			errorToDisplay.append(tr("StateS couldn't read the file content."));
+			errorToDisplay.append(tr("The file may not be a correct StateS save file."));
+			this->displayErrorMessages(tr("Issues occured reading the file. StateS was unable to load machine."), errorToDisplay);
+			return;
 		}
-		catch (const StatesException& e)
+
+		// Parse and check for warnings
+		parser->doParse();
+		QList<QString> warnings = parser->getWarnings();
+		if (!warnings.isEmpty())
 		{
-			if (e.getSourceClass() == "FsmSaveFileManager")
-			{
-				this->displayErrorMessage(tr("Unable to load file."), QString(e.what()));
-			}
-			else if (e.getSourceClass() == "MachineSaveFileManager")
-			{
-				this->displayErrorMessage(tr("Unable to load file."), QString(e.what()));
-			}
-			else
-				throw;
+			this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
 		}
+
+		// Update machine
+		machineManager->clearMachine();
+		machineManager->setMachine(parser->getMachine(), parser->getGraphicMachineConfiguration());
+		this->statesUi->setView(parser->getViewConfiguration());
+
+		// Update status
+		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+		machineStatus->setHasSaveFile(true);
+		machineStatus->setUnsavedFlag(false);
+		machineStatus->setSaveFilePath(path);
 	}
 }
 
