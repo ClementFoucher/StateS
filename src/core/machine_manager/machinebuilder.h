@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,6 +29,10 @@
 #include "statestypes.h"
 
 
+/**
+ * @brief The MachineBuilder class stores information
+ * about tools currently in use by the editor.
+ */
 class MachineBuilder : public QObject
 {
 	Q_OBJECT
@@ -41,11 +45,14 @@ public:
 	/////
 	// Object functions
 public:
-	MachineBuilderTool_t getTool() const;
 	void setTool(MachineBuilderTool_t newTool);
 	void setSingleUseTool(MachineBuilderSingleUseTool_t t);
 	void resetTool();
 
+	MachineBuilderTool_t getTool() const;
+
+	/////
+	// Signals
 signals:
 	void changedToolEvent(MachineBuilderTool_t t);
 	void singleUseToolSelected(MachineBuilderSingleUseTool_t t);

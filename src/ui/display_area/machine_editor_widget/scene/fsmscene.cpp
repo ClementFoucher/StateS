@@ -344,7 +344,8 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 			}
 
 			// Transmit event to each state in the list
-			for (QGraphicsItem* item : this->selectedItems())
+			const auto selectedItems = this->selectedItems();
+			for (QGraphicsItem* item : selectedItems)
 			{
 				FsmGraphicState* state = dynamic_cast<FsmGraphicState*>(item);
 
@@ -492,6 +493,7 @@ void FsmScene::stateCallsEditEventHandler(componentId_t stateId)
 	auto graphicState = graphicFsm->getState(stateId);
 	if (graphicState == nullptr) return;
 
+
 	this->clearSelection();
 	graphicState->setSelected(true);
 	emit editSelectedItemEvent();
@@ -504,6 +506,7 @@ void FsmScene::stateCallsRenameEventHandler(componentId_t stateId)
 
 	auto graphicState = graphicFsm->getState(stateId);
 	if (graphicState == nullptr) return;
+
 
 	this->clearSelection();
 	graphicState->setSelected(true);
@@ -581,7 +584,8 @@ void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 	{
 		// Count the number of selected states
 		uint selectedStatesCount = 0;
-		for (QGraphicsItem* item : this->selectedItems())
+		const auto selectedItems = this->selectedItems();
+		for (QGraphicsItem* item : selectedItems)
 		{
 			if (dynamic_cast<FsmGraphicState*>(item) != nullptr)
 			{
@@ -652,6 +656,7 @@ void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transition
 	auto transition = graphicFsm->getTransition(transitionId);
 	if (transition == nullptr) return;
 
+
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
 	this->dummyTransition = new FsmGraphicTransition(transition->getSourceStateId(), nullId, sceneMousePos);
@@ -673,6 +678,7 @@ void FsmScene::transitionCallsEditEventHandler(componentId_t transitionId)
 	auto transition = graphicFsm->getTransition(transitionId);
 	if (transition == nullptr) return;
 
+
 	this->clearSelection();
 	transition->setSelected(true);
 	emit editSelectedItemEvent();
@@ -682,6 +688,7 @@ void FsmScene::transitionCallsDeleteEventHandler(componentId_t transitionId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
+
 
 	fsm->removeTransition(transitionId);
 	machineManager->notifyMachineEdited();
@@ -834,7 +841,7 @@ void FsmScene::displaySimulatedMachine()
 
 void FsmScene::clearScene()
 {
-	auto displayedItems = this->items();
+	const auto displayedItems = this->items();
 	for (auto item : displayedItems)
 	{
 		auto transitionItem = dynamic_cast<FsmGraphicTransition*>(item);
@@ -1004,7 +1011,7 @@ void FsmScene::cancelOngoingAction()
 
 FsmGraphicState* FsmScene::getStateAt(const QPointF& location) const
 {
-	QList<QGraphicsItem*> itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder);
+	const QList<QGraphicsItem*> itemsAtThisPoint = this->items(location, Qt::IntersectsItemShape, Qt::DescendingOrder);
 	// Warning: if using transform on view, the upper line should be adapted!
 
 	for (QGraphicsItem* item : itemsAtThisPoint)

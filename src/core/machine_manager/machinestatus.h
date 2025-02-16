@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,17 +22,24 @@
 #ifndef MACHINESTATUS_H
 #define MACHINESTATUS_H
 
-// Parent class
+// Parent
 #include <QObject>
-
-// Qt classes
-#include <QFileInfo>
 
 // C++ classes
 #include <memory>
 using namespace std;
 
+// Qt classes
+#include <QFileInfo>
 
+
+/**
+ * @brief The MachineStatus class strores meta-information required
+ * during the application life, such as save status and pathes.
+ * Its mutators must only be used by the StateS class (including
+ * its undo-redo manager), with the exception of some pathes that
+ * are only used by StatesUI, thus managed by it.
+ */
 class MachineStatus : public QObject
 {
 	Q_OBJECT
@@ -58,6 +65,8 @@ public:
 	QString getImageExportPath()  const;
 	QString getVhdlExportPath()   const;
 
+	/////
+	// Signals
 signals:
 	void saveFilePathChangedEvent();
 	void unsavedFlagChangedEvent();

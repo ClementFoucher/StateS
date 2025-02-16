@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,8 +59,8 @@ public:
 	FsmGraphicState*      addState     (componentId_t logicStateId,      QPointF position);
 	FsmGraphicTransition* addTransition(componentId_t logicTransitionId, qreal sliderPos);
 
-	QList<FsmGraphicState*>      getStates()      const;
-	QList<FsmGraphicTransition*> getTransitions() const;
+	const QList<FsmGraphicState*>      getStates()      const;
+	const QList<FsmGraphicTransition*> getTransitions() const;
 
 	FsmGraphicState*      getState(componentId_t id)      const;
 	FsmGraphicTransition* getTransition(componentId_t id) const;
