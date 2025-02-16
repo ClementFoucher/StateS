@@ -110,7 +110,7 @@ protected:
 	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)                 override;
 
 private slots:
-	void transitionNeedsRefreshEventHandler();
+	void connectedStateMovedEventHandler();
 	void updateConditionText();
 	void treatMenu(QAction* action);
 

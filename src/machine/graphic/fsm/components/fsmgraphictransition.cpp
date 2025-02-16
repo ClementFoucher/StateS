@@ -103,8 +103,8 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 
 	auto sourceState = graphicFsm->getState(this->sourceStateId);
 	auto targetState = graphicFsm->getState(this->targetStateId);
-	connect(sourceState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
-	connect(targetState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::transitionNeedsRefreshEventHandler);
+	connect(sourceState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::connectedStateMovedEventHandler);
+	connect(targetState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::connectedStateMovedEventHandler);
 
 	this->buildChildren();
 	this->updateConditionText();
@@ -353,7 +353,7 @@ void FsmGraphicTransition::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 	this->setUnderEdit(this->isUnderEdit);
 }
 
-void FsmGraphicTransition::transitionNeedsRefreshEventHandler()
+void FsmGraphicTransition::connectedStateMovedEventHandler()
 {
 	this->refreshDisplay();
 }
