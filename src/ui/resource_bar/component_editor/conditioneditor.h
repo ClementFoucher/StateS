@@ -57,8 +57,6 @@ private slots:
 	void editCondition();
 	void clearCondition();
 
-	void treatMenuSetCondition(QAction*);
-
 	void updateContent();
 
 	void conditionTextPositionSliderChanged(int newValue);
