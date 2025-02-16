@@ -42,7 +42,7 @@ Variable::Variable(const QString &name, uint size) // Throws StatesException
 	connect(this, &Variable::variableInitialValueChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
 
 	// This event also impacts dynamic values
-	connect(this, &Variable::variableResizedEvent, this, &Variable::variableDynamicStateChangedEvent);
+	connect(this, &Variable::variableResizedEvent, this, &Variable::variableCurrentValueChangedEvent);
 }
 
 Variable::Variable(const QString& name) :
@@ -132,7 +132,7 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 
 	if (setOk == true)
 	{
-		emit variableDynamicStateChangedEvent();
+		emit variableCurrentValueChangedEvent();
 	}
 	else
 	{
@@ -167,7 +167,7 @@ void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws Stat
 void Variable::reinitialize()
 {
 	this->currentValue = this->initialValue;
-	emit variableDynamicStateChangedEvent();
+	emit variableCurrentValueChangedEvent();
 }
 
 // True concept here only apply to one bit variables
