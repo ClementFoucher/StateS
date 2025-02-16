@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,10 +24,6 @@
 
 // Parent
 #include "machinesimulator.h"
-
-// C++ classes
-#include <memory>
-using namespace std;
 
 // Qt classes
 #include <QMap>
