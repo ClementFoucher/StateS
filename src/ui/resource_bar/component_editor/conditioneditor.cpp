@@ -147,25 +147,6 @@ void ConditionEditor::clearCondition()
 	machineManager->notifyMachineEdited();
 }
 
-void ConditionEditor::treatMenuSetCondition(QAction* action)
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
-	if (transition == nullptr) return;
-
-
-	for (shared_ptr<Variable> currentVariable : machine->getReadableVariables())
-	{
-		if (currentVariable->getName() == action->text())
-		{
-			transition->setCondition(currentVariable);
-			break;
-		}
-	}
-}
-
 void ConditionEditor::updateContent()
 {
 	delete this->conditionWarningText;
