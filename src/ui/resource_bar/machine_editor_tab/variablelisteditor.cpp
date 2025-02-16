@@ -61,7 +61,7 @@ VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* par
 		headerTexts.append(tr("Input"));
 		headerTexts.append(tr("Initial value"));
 
-		connect(machineManager.get(), &MachineManager::machineInputListChangedEvent, this, &VariableListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineInputVariableListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newVariablesPrefix = tr("Input");
 	}
@@ -71,7 +71,7 @@ VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* par
 
 		headerTexts.append(tr("Output"));
 
-		connect(machineManager.get(), &MachineManager::machineOutputListChangedEvent, this, &VariableListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineOutputVariableListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newVariablesPrefix = tr("Output");
 	}
@@ -82,7 +82,7 @@ VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* par
 		headerTexts.append(tr("Variable"));
 		headerTexts.append(tr("Initial value"));
 
-		connect(machineManager.get(), &MachineManager::machineLocalVariableListChangedEvent, this, &VariableListEditor::updateList);
+		connect(machineManager.get(), &MachineManager::machineInternalVariableListChangedEvent, this, &VariableListEditor::updateList);
 
 		this->newVariablesPrefix = tr("Variable");
 	}

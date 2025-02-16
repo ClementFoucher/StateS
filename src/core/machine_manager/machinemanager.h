@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Clément Foucher
+ * Copyright © 2021-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,7 +22,7 @@
 #ifndef MACHINEMANAGER_H
 #define MACHINEMANAGER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
 // C++ classes
@@ -47,12 +47,13 @@ class MachineUndoCommand;
  *
  * Its purposes are:
  * - handling undo and redo.
- * - building the graphic machine associated to the logic machine.
- * - acting as a relay for the machine signals. This allows
- *   other classes to connect to manager instead of machine
- *   and avoid the necessity for reconnecting all signas
+ * - acting as a proxy for the machine signals. Other classes
+ *   connect their signals to manager instead of machine,
+ *   thus avoiding the necessity for reconnecting all signals
  *   when machine is changed.
- * - stores and makes available the current machine status.
+ * - building the graphic machine associated to the logic machine.
+ * - building the simulated machine when required.
+ * - storing and making the current machine status available.
  */
 class MachineManager : public QObject
 {
@@ -89,8 +90,21 @@ public:
 	void setSimulationMode(SimulationMode_t newMode);
 	SimulationMode_t getCurrentSimulationMode() const;
 
-signals:
+private slots:
+	// Undo/redo
+	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes);
+	void machineUnsavedFlagChangedEventHandler();
+
+	void componentDeletedEventHandler(componentId_t componentId);
+	void componentEditedEventHandler(componentId_t componentId);
+
+private:
+	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
+
 	/////
+	// Signals
+signals:
+	///
 	// Machine manager events
 
 	// Indicates the machine under edit has been replaced by a new one
@@ -103,31 +117,20 @@ signals:
 
 	void simulationModeChangedEvent(SimulationMode_t newMode);
 
-	/////
+	///
 	// Undo/redo manager events propagated by the manager
 
 	void undoActionAvailabilityChangedEvent(bool undoAvailable);
 	void redoActionAvailabilityChangedEvent(bool redoAvailable);
 
-	/////
+	///
 	// Machine events propagated by the manager so that connections can be rerouted in one place when machine changes
 
 	void machineNameChangedEvent();
-	void machineInputListChangedEvent();
-	void machineOutputListChangedEvent();
-	void machineLocalVariableListChangedEvent();
+	void machineInputVariableListChangedEvent();
+	void machineOutputVariableListChangedEvent();
+	void machineInternalVariableListChangedEvent();
 	void machineConstantListChangedEvent();
-
-private slots:
-	// Undo/redo
-	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes);
-	void machineUnsavedFlagChangedEventHandler();
-
-	void logicComponentDeletedEventHandler(componentId_t componentId);
-	void graphicComponentNeedsRefreshEventHandler(componentId_t componentId);
-
-private:
-	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
 
 	/////
 	// Object variables

@@ -270,7 +270,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 
 			connect(menu, &QMenu::triggered, this, &ActionEditor::processContextMenuEventHandler);
 		}
-		catch (StatesException e)
+		catch (StatesException& e)
 		{
 			if ( (e.getSourceClass() != "MachineActuatorComponent") || (e.getEnumValue() != MachineActuatorComponentError_t::out_of_range) )
 				throw;

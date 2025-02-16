@@ -238,14 +238,14 @@ void MachineManager::machineUnsavedFlagChangedEventHandler()
 	}
 }
 
-void MachineManager::logicComponentDeletedEventHandler(componentId_t componentId)
+void MachineManager::componentDeletedEventHandler(componentId_t componentId)
 {
 	if (this->graphicMachine == nullptr) return;
 
 	this->graphicMachine->removeGraphicComponent(componentId);
 }
 
-void MachineManager::graphicComponentNeedsRefreshEventHandler(componentId_t componentId)
+void MachineManager::componentEditedEventHandler(componentId_t componentId)
 {
 	auto graphicComponent = this->graphicMachine->getGraphicComponent(componentId);
 	if (graphicComponent == nullptr) return;
@@ -263,14 +263,14 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 	if (this->machine != nullptr)
 	{
 		// Event propagation
-		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineOutputVariableListChangedEvent,   this, &MachineManager::machineOutputVariableListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineInternalVariableListChangedEvent, this, &MachineManager::machineInternalVariableListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineConstantListChangedEvent,         this, &MachineManager::machineConstantListChangedEvent);
 		// Event handling
-		disconnect(this->machine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
-		disconnect(this->machine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
+		disconnect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
+		disconnect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);
 	}
 
 	// Update machine
@@ -288,13 +288,13 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 	if (this->machine != nullptr)
 	{
 		// Event propagation
-		connect(this->machine.get(), &Machine::machineNameChangedEvent,              this, &MachineManager::machineNameChangedEvent);
-		connect(this->machine.get(), &Machine::machineOutputListChangedEvent,        this, &MachineManager::machineOutputListChangedEvent);
-		connect(this->machine.get(), &Machine::machineLocalVariableListChangedEvent, this, &MachineManager::machineLocalVariableListChangedEvent);
-		connect(this->machine.get(), &Machine::machineConstantListChangedEvent,      this, &MachineManager::machineConstantListChangedEvent);
-		connect(this->machine.get(), &Machine::machineInputListChangedEvent,         this, &MachineManager::machineInputListChangedEvent);
+		connect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
+		connect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);
+		connect(this->machine.get(), &Machine::machineOutputVariableListChangedEvent,   this, &MachineManager::machineOutputVariableListChangedEvent);
+		connect(this->machine.get(), &Machine::machineInternalVariableListChangedEvent, this, &MachineManager::machineInternalVariableListChangedEvent);
+		connect(this->machine.get(), &Machine::machineConstantListChangedEvent,         this, &MachineManager::machineConstantListChangedEvent);
 		// Event handling
-		connect(this->machine.get(), &Machine::graphicComponentNeedsRefreshEvent,    this, &MachineManager::graphicComponentNeedsRefreshEventHandler);
-		connect(this->machine.get(), &Machine::componentDeletedEvent,                this, &MachineManager::logicComponentDeletedEventHandler);
+		connect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
+		connect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);
 	}
 }

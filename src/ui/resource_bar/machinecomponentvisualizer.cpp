@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,9 +45,9 @@ MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 
 	this->updateMachineVisualization();
 
-	connect(machineManager.get(), &MachineManager::machineNameChangedEvent,       this, &MachineComponentVisualizer::updateMachineVisualization);
-	connect(machineManager.get(), &MachineManager::machineInputListChangedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
-	connect(machineManager.get(), &MachineManager::machineOutputListChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineNameChangedEvent,               this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineInputVariableListChangedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineOutputVariableListChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
 shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const

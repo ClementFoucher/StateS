@@ -219,11 +219,11 @@ void Fsm::setInitialState(componentId_t stateId)
 
 	if (previousInitialState != nullptr)
 	{
-		emit this->graphicComponentNeedsRefreshEvent(previousInitialState->getId());
+		emit this->componentEditedEvent(previousInitialState->getId());
 	}
 	if (newInitialState != nullptr)
 	{
-		emit this->graphicComponentNeedsRefreshEvent(newInitialState->getId());
+		emit this->componentEditedEvent(newInitialState->getId());
 	}
 }
 

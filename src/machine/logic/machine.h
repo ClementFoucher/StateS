@@ -55,9 +55,24 @@ public:
 	// Object functions
 public:
 
+	///
+	// Mutators
+
+	bool setName(const QString& newName);
+
+	shared_ptr<Variable> addVariable(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
+	bool deleteVariable(const QString& name);
+	bool renameVariable(const QString& oldName, const QString& newName);
+	void resizeVariable(const QString& name, uint newSize); // Throws StatesException
+	void changeVariableInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
+	bool changeVariableRank(const QString& name, uint newRank);
+
+	///
 	// Accessors
 
 	QString getName() const;
+
+	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
 
 	QList<shared_ptr<Input>>    getInputs()            const; // TODO: throw exception
 	QList<shared_ptr<Output>>   getOutputs()           const; // TODO: throw exception
@@ -72,34 +87,9 @@ public:
 	QList<shared_ptr<Variable>> getReadableVariableVariables() const;
 	QList<shared_ptr<Variable>> getAllVariables()              const;
 
-	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
-
-	// Mutators
-
-	bool setName(const QString& newName);
-
-	shared_ptr<Variable> addVariable(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
-	bool deleteVariable(const QString& name);
-	bool renameVariable(const QString& oldName, const QString& newName);
-	void resizeVariable(const QString& name, uint newSize); // Throws StatesException
-	void changeVariableInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
-	bool changeVariableRank(const QString& name, uint newRank);
-
 	// Other
 
 	QString getUniqueVariableName(const QString& prefix) const;
-
-signals:
-	// Machine changes
-	void machineNameChangedEvent();
-	void machineInputListChangedEvent();
-	void machineOutputListChangedEvent();
-	void machineLocalVariableListChangedEvent();
-	void machineConstantListChangedEvent();
-
-	// Components changes
-	void graphicComponentNeedsRefreshEvent(componentId_t stateId);
-	void componentDeletedEvent(componentId_t componentId);
 
 protected:
 	void registerComponent(shared_ptr<MachineComponent> newComponent);
@@ -118,12 +108,25 @@ private:
 	bool cleanVariableName(QString& nameToClean) const;
 
 	/////
+	// Signals
+signals:
+	// Machine changes
+	void machineNameChangedEvent();
+	void machineInputVariableListChangedEvent();
+	void machineOutputVariableListChangedEvent();
+	void machineInternalVariableListChangedEvent();
+	void machineConstantListChangedEvent();
+
+	// Components changes
+	void componentEditedEvent(componentId_t componentId);
+	void componentDeletedEvent(componentId_t componentId);
+
+	/////
 	// Object variables
 private:
 	// Store all variables as shared_ptr<Variable> for helper functions,
 	// but can actually be shared_ptr<Input/Output/Constant>
 
-	// Mutex required for list edition?
 	QHash<QString, shared_ptr<Variable>> inputs;
 	QHash<QString, shared_ptr<Variable>> outputs;
 	QHash<QString, shared_ptr<Variable>> localVariables;
@@ -134,7 +137,7 @@ private:
 	QHash<QString, uint> localVariablesRanks;
 	QHash<QString, uint> constantsRanks;
 
-	QHash<componentId_t, shared_ptr<MachineComponent> > components;
+	QHash<componentId_t, shared_ptr<MachineComponent>> components;
 
 	QString name;
 
