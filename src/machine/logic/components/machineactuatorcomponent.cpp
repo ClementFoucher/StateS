@@ -67,7 +67,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Vari
 	connect(variable.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
 
 	emit this->actionListChangedEvent();
-	emit this->componentNeedsGraphicUpdateEvent(this->id);
+	emit this->componentEditedEvent(this->id);
 
 	return action;
 }
@@ -84,7 +84,7 @@ void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesExc
 
 		this->actionList.removeAt(actionRank);
 		emit this->actionListChangedEvent();
-		emit this->componentNeedsGraphicUpdateEvent(this->id);
+		emit this->componentEditedEvent(this->id);
 	}
 	else
 	{
@@ -120,7 +120,7 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 			this->actionList.insert(newActionRank, action);
 
 			emit this->actionListChangedEvent();
-			emit this->componentNeedsGraphicUpdateEvent(this->id);
+			emit this->componentEditedEvent(this->id);
 		}
 		else
 		{
@@ -154,12 +154,12 @@ void MachineActuatorComponent::cleanActionList()
 	{
 		this->actionList = newActionList;
 		emit this->actionListChangedEvent();
-		emit this->componentNeedsGraphicUpdateEvent(this->id);
+		emit this->componentEditedEvent(this->id);
 	}
 }
 
 void MachineActuatorComponent::variableInActionListModifiedEventHandler()
 {
 	emit this->actionListChangedEvent();
-	emit this->componentNeedsGraphicUpdateEvent(this->id);
+	emit this->componentEditedEvent(this->id);
 }

@@ -480,7 +480,7 @@ void Machine::registerComponent(shared_ptr<MachineComponent> newComponent)
 {
 	this->components[newComponent->getId()] = newComponent;
 
-	connect(newComponent.get(), &MachineComponent::componentNeedsGraphicUpdateEvent, this, &Machine::componentEditedEvent);
+	connect(newComponent.get(), &MachineComponent::componentEditedEvent, this, &Machine::componentEditedEvent);
 }
 
 void Machine::removeComponent(componentId_t componentId)
