@@ -80,14 +80,13 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 		this->stream->writeStartElement("Actions");
 		for (shared_ptr<ActionOnVariable>& action : actions)
 		{
+			auto variable = action->getVariableActedOn();
+			if (variable == nullptr) continue;
+
+
 			this->stream->writeStartElement("Action");
 
-			if ((dynamic_pointer_cast<Output> (action)) != nullptr)
-				this->stream->writeAttribute("Signal_Type", "Output");
-			else
-				this->stream->writeAttribute("Signal_Type", "Variable");
-
-			this->stream->writeAttribute("Name", action->getVariableActedOn()->getName());
+			this->stream->writeAttribute("Name", variable->getName());
 
 			switch(action->getActionType())
 			{
