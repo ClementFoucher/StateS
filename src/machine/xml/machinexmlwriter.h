@@ -56,9 +56,10 @@ public:
 	QString getMachineXml();
 
 protected:
-	virtual void writeMachineToStream() = 0;
+	void writeMachineToStream();
+	virtual void writeSubmachineToStream() = 0;
+	virtual void writeMachineType() = 0;
 
-	void writeMachineCommonElements();
 	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
 	void writeLogicEquation(shared_ptr<Variable> equation);
 

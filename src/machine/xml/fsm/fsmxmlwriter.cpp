@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,6 @@
 #include <QXmlStreamWriter>
 
 // StateS classes
-#include "states.h"
 #include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"
@@ -42,7 +41,7 @@ FsmXmlWriter::FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfigura
 
 }
 
-void FsmXmlWriter::writeMachineToStream()
+void FsmXmlWriter::writeSubmachineToStream()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -53,15 +52,14 @@ void FsmXmlWriter::writeMachineToStream()
 	auto fsmGraphicAttributes = graphicMachine->getGraphicAttributes();
 	if (fsmGraphicAttributes == nullptr) return;
 
-	this->stream->writeStartElement("FSM");
-	this->stream->writeAttribute("Name", fsm->getName());
-	this->stream->writeAttribute("StateS_version", StateS::getVersion());
 
-	this->writeMachineCommonElements();
 	this->writeFsmStates(fsm, fsmGraphicAttributes);
 	this->writeFsmTransitions(fsm, fsmGraphicAttributes);
+}
 
-	this->stream->writeEndElement(); // End FSM element
+void FsmXmlWriter::writeMachineType()
+{
+	this->stream->writeStartElement("FSM");
 }
 
 void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes)

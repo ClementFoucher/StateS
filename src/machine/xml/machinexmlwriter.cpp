@@ -28,6 +28,7 @@
 #include <QDir>
 
 // StateS classes
+#include "states.h"
 #include "machinemanager.h"
 #include "machine.h"
 #include "viewconfiguration.h"
@@ -62,13 +63,24 @@ QString MachineXmlWriter::getMachineXml()
 	return this->xmlString;
 }
 
-void MachineXmlWriter::writeMachineCommonElements()
+void MachineXmlWriter::writeMachineToStream()
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
+	this->writeMachineType();
+	this->stream->writeAttribute("Name", machine->getName());
+	this->stream->writeAttribute("StateS_version", StateS::getVersion());
+
 	if (this->mode == MachineXmlWriterMode_t::writeToFile)
 	{
 		this->writeUiConfiguration();
 	}
 	this->writeMachineVariables();
+	this->writeSubmachineToStream();
+
+	this->stream->writeEndElement(); // End "Machine" tag (i.e. only FSM currently)
 }
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
