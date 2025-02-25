@@ -70,6 +70,7 @@ SOURCES += \
 	src/machine/logic/components/variable/output.cpp \
 	src/machine/logic/components/variable/constant.cpp \
 	src/machine/logic/components/variable/equation.cpp \
+	src/machine/logic/components/variable/operand.cpp \
 	src/machine/logic/components/variable/variable.cpp \
 	src/machine/logic/fsm/fsm.cpp \
 	src/machine/logic/fsm/components/fsmstate.cpp \
@@ -192,6 +193,7 @@ HEADERS += \
 	src/machine/logic/components/variable/output.h \
 	src/machine/logic/components/variable/constant.h \
 	src/machine/logic/components/variable/equation.h \
+	src/machine/logic/components/variable/operand.h \
 	src/machine/logic/components/variable/variable.h \
 	src/machine/logic/fsm/fsm.h \
 	src/machine/logic/fsm/components/fsmstate.h \

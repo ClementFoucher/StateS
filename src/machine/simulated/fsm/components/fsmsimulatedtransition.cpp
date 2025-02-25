@@ -33,7 +33,7 @@ using namespace std;
 // States classes
 #include "machinemanager.h"
 #include "fsmtransition.h"
-#include "variable.h"
+#include "equation.h"
 #include "fsm.h"
 #include "fsmsimulator.h"
 #include "statesexception.h"
@@ -78,7 +78,7 @@ FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
 	auto condition = logicTransition->getCondition();
 	if (condition != nullptr) // nullptr is still a valid condition
 	{
-		connect(condition.get(), &Variable::variableCurrentValueChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
+		connect(condition.get(), &Equation::equationCurrentValueChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
 	}
 
 	connect(sourceState, &FsmSimulatedState::stateActiveStatusChanged, this, &FsmSimulatedTransition::refreshDisplay);
@@ -106,36 +106,21 @@ void FsmSimulatedTransition::refreshDisplay()
 
 	//
 	// Condition pen
-	shared_ptr<Variable> condition = logicTransition->getCondition();
+	auto condition = logicTransition->getCondition();
 	if (condition != nullptr)
 	{
-		try
+		if (condition->isTrue())
 		{
-			if (condition->isTrue())
-			{
-				this->currentConditionPen = &activePen;
-			}
-			else
-			{
-				this->currentConditionPen = &inactivePen;
-			}
+			this->currentConditionPen = &activePen;
 		}
-		catch (const StatesException& e)
+		else
 		{
-			if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::variable_is_not_bool) )
-			{
-				// Condition is incorrect, considered false
-				this->currentConditionPen = &inactivePen;
-			}
-			else
-			{
-				throw;
-			}
+			this->currentConditionPen = &inactivePen;
 		}
 	}
 	else
 	{
-		// Missing condition is implicitly 1
+		// Empty condition is implicitly always true
 		this->currentConditionPen = &activePen;
 	}
 

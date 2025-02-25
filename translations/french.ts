@@ -335,64 +335,68 @@
 <context>
     <name>ConditionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="67"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="68"/>
         <source>Condition</source>
         <translation>Condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="74"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="75"/>
         <source>Set condition</source>
         <translation>Définir la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="79"/>
         <source>Clear condition</source>
         <translation>Effacer la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="93"/>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="323"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="94"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="305"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="133"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="313"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
+        <source>Warning: the current condition is not valid.</source>
+        <translation>Attention : la condition actuelle est invalide.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="220"/>
+        <source>Thus, this transition will never be crossed.</source>
+        <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="295"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="234"/>
-        <source>Warning: equation representing condition is not valid.</source>
-        <translation>Attention : l&apos;équation représentant la transition est invalide.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="235"/>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="246"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="231"/>
         <source>Thus, the current transition will never be crossed.</source>
         <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="244"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
         <source>Warning: equation representing condition is size</source>
         <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="245"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="230"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="83"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="84"/>
         <source>Condition position</source>
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="236"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="221"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -415,22 +419,22 @@
         <translation>Variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="123"/>
+        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="125"/>
         <source>Logic functions</source>
         <translation>Fonctions logiques</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="186"/>
+        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="188"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="190"/>
+        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="192"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="177"/>
+        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="179"/>
         <source>You can also use right-click on equation members to edit</source>
         <translation>Vous pouvez également utiliser le clic-droit sur un membre de l&apos;équation pour l&apos;éditer</translation>
     </message>
@@ -450,7 +454,7 @@
         <translation>Glissez puis déposez les composants d&apos;équation ci-dessous</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="158"/>
+        <location filename="../src/ui/equation_editor/equationeditor.cpp" line="160"/>
         <source>to here.</source>
         <translation>à cet endroit.</translation>
     </message>
@@ -550,31 +554,31 @@
 <context>
     <name>FsmGraphicTransition</name>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="274"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="275"/>
         <source>Transition</source>
         <translation>Transition</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="276"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="399"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="277"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="397"/>
         <source>Change source</source>
         <translation>Changer de source</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="277"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="403"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="278"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="401"/>
         <source>Change target</source>
         <translation>Changer de cible</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="278"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="407"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="279"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="405"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="279"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="411"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="280"/>
+        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="409"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -583,43 +587,43 @@
     <name>FsmScene</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="241"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="731"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="738"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="242"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="741"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="748"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="525"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="528"/>
         <source>Delete current state?</source>
         <translation>Supprimer l&apos;état courant ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="527"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="530"/>
         <source>The connected transition will be deleted</source>
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="532"/>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="532"/>
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="531"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="534"/>
         <source>User confirmation required</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="594"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="598"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
     </message>
@@ -641,17 +645,17 @@
 <context>
     <name>FsmSimulator</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="232"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="220"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="233"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="221"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="234"/>
+        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="222"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -659,113 +663,131 @@
 <context>
     <name>FsmVerifier</name>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="54"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="55"/>
         <source>No FSM.</source>
         <translation>Aucune FSM.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="61"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="62"/>
         <source>Empty FSM.</source>
         <translation>FSM vide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="71"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="72"/>
         <source>No initial state.</source>
         <translation>Aucun état initial défini.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="112"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="105"/>
         <source>Error on transition condition from state</source>
         <translation>Erreur sur la condition d&apos;une transition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="112"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="105"/>
         <source>Please correct this equation:</source>
         <translation>Veuillez corriger cette équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="122"/>
         <source>Multiple transitions from state</source>
         <translation>Plusieurs transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="122"/>
         <source>have a condition value always true.</source>
         <translation>ont une condition définie comme toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="136"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
         <source>One transition from state</source>
         <translation>Une trnsition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="136"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
         <source>has a condition value always true.</source>
         <translation>a une condition toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="136"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
         <source>Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.</source>
         <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="164"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="157"/>
         <source>Transitions from state</source>
         <translation>Les transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="164"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="157"/>
         <source>are not mutually exclusive.</source>
         <translation>ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="164"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="157"/>
         <source>Two transitions or more can be active at the same time.</source>
         <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="194"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="204"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="214"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="224"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="187"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="197"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="207"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="217"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="196"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="206"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="216"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="226"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="189"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="199"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="209"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="219"/>
         <source>StateS VHDL exporter is currently unable to handle these variables.</source>
         <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="197"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="207"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="217"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="227"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="190"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="200"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="210"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="220"/>
         <source>This variable will be ignored on VHDL export.</source>
         <translation>Cette variable sera ignorée lors de l&apos;export VHDL.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="205"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="198"/>
         <source>has both affectations (remembered value) and temporary (pulse or active on state).</source>
         <translation>est affecté à la fois avec et sans mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="215"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="208"/>
         <source>has range-adressed output generation.</source>
         <translation>génère des sorties sur des bits indépendants.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="225"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="218"/>
         <source>has Mealy outputs affectation (remembered value).</source>
         <translation>est une sortie de Mealy avec mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="195"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="188"/>
         <source>has both Moore and Mealy behaviors.</source>
         <translation>a un comportement à la fois de Moore et de Mealy.</translation>
+    </message>
+</context>
+<context>
+    <name>FsmVhdlExport</name>
+    <message>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="698"/>
+        <source>Error: empty equation</source>
+        <translation>Erreur : équation vide</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="794"/>
+        <source>Error: empty operand</source>
+        <translation>Erreur : opérande vide</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="805"/>
+        <source>Error: empty variable</source>
+        <translation>Erreur : variable vide</translation>
     </message>
 </context>
 <context>
@@ -891,172 +913,190 @@
 <context>
     <name>GraphicEquation</name>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="761"/>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="840"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="440"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="535"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="573"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="805"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="408"/>
         <source>What should I do?</source>
         <translation>Que dois-je faire ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="811"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="414"/>
         <source>Replace existing equation by dropped equation</source>
         <translation>Replacer l&apos;équation actuelle par l&apos;équation déposée</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="757"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="530"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="569"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="833"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="434"/>
         <source>New equation would be: </source>
         <translation>La nouvelle équation serait : </translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="699"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="481"/>
         <source>Add one operand to that operator</source>
         <translation>Ajouter une opérande à cet opérateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="705"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="487"/>
         <source>Remove one operand from that operator</source>
         <translation>Supprimer une opérande de cet opérateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="897"/>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="937"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="633"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="674"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="937"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="674"/>
         <source>Delete last oprand?</source>
         <translation>Supprimer l&apos;opérande de droite ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="682"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="467"/>
         <source>Equation:</source>
         <translation>Équation :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="806"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="409"/>
         <source>Existing equation:</source>
         <translation>Équation actuelle :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="807"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="410"/>
         <source>Dropped equation:</source>
         <translation>Équation déposée :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="812"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="415"/>
         <source>New equation would be:</source>
         <translation>La nouvelle équation serait :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="897"/>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="937"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="633"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="674"/>
         <source>Content is:</source>
         <translation>Son contenu est :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="299"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1049"/>
+        <source>The variable</source>
+        <translation>La variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1195"/>
         <source>This equation</source>
         <translation>Cette équation</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="299"/>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="321"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1049"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1195"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1222"/>
         <source>is size</source>
         <translation>est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="358"/>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="366"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="826"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="831"/>
         <source>Empty operand</source>
         <translation>Opérande vide</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="368"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="833"/>
         <source>One operand is not correct</source>
         <translation>Une opérande n&apos;est pas correcte</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="822"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="423"/>
         <source>Set existing equation as operand of dropped equation</source>
         <translation>Utiliser l&apos;équation actuelle en tant qu&apos;opérande de l&apos;équation déposée</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="897"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="633"/>
         <source>Delete equation?</source>
         <translation>Supprimer l&apos;équation ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="370"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="835"/>
         <source>The sizes of operands do not match between each other</source>
         <translation>Les opérandes sont de tailles différentes</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="321"/>
-        <source>Variable</source>
-        <translation>Variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="372"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="837"/>
         <source>A parameter of the equation is missing value</source>
         <translation>Un paramètre de l&apos;équation est manquant</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="374"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="839"/>
         <source>A parameter of the equation has an invalid value</source>
         <translation>Un paramètre de l&apos;équation à une valeur incorrecte</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="713"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="495"/>
         <source>Edit index</source>
         <translation>Éditer l&apos;index</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="715"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="497"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="722"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="503"/>
         <source>Extract single bit</source>
         <translation>Extraire un seul bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="729"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="510"/>
         <source>Extract range</source>
         <translation>Extraire un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="136"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="556"/>
+        <source>Constant:</source>
+        <translation>Constante :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="566"/>
+        <source>Variable:</source>
+        <translation>Variable :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="964"/>
         <source>Equality</source>
         <translation>Égalité</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="139"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="967"/>
         <source>Difference</source>
         <translation>Différence</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="142"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="970"/>
         <source>Concatenate</source>
         <translation>Concaténation</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="148"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1019"/>
         <source>Custom value</source>
         <translation>Valeur modifiable</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="741"/>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="1222"/>
+        <source>This constant</source>
+        <translation>Cette constante</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/equation_editor/graphicequation.cpp" line="558"/>
         <source>Edit constant value</source>
         <translation>Éditer la valeur de la constante</translation>
     </message>
@@ -1490,7 +1530,7 @@
 <context>
     <name>Machine</name>
     <message>
-        <location filename="../src/machine/logic/machine.cpp" line="36"/>
+        <location filename="../src/machine/logic/machine.cpp" line="40"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
@@ -1581,234 +1621,234 @@
 <context>
     <name>MachineXmlParser</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="88"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="95"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="89"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="96"/>
         <source>Information:</source>
         <translation>Information :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="88"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="95"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="89"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="96"/>
         <source>No name was found for the machine.</source>
         <translation>Aucun nom n&apos;a été trouvé pour la machine.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="89"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="90"/>
         <source>Used file name to name machine:</source>
         <translation>Nom utilisé pour nommer la machine :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="93"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="94"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="96"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="97"/>
         <source>Name defaulted to:</source>
         <translation>Nom par défaut utilisé :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="117"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="142"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="147"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="118"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="143"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="148"/>
         <source>Warning.</source>
         <translation>Attention.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="117"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="118"/>
         <source>Unable to parse zoom level.</source>
         <translation>Imposible de lire le niveau de zoom.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="117"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="118"/>
         <source>Found value was:</source>
         <translation>Valeu lue :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="142"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="143"/>
         <source>Unable to parse view position.</source>
         <translation>Impossible de lire la position de la vue.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="142"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="143"/>
         <source>Found values were:</source>
         <translation>Valeurs lues :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="161"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="187"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="226"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="245"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="162"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="188"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="227"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="246"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="161"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="162"/>
         <source>Unnamed variable encountered while parsing variable list: unable to extract name.</source>
         <translation>Variable sans nom trouvée en lisant la liste des signaux.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="162"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="190"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="163"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="191"/>
         <source>Variable ignored.</source>
         <translation>Variable ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="187"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="188"/>
         <source>Unexpected variable type encountered while parsing variable list:</source>
         <translation>Type de variable inconnu trouvé lors du parcours de la liste des variables :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="189"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="190"/>
         <source>Variable name was:</source>
         <translation>Le nom de la variable était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="214"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="215"/>
         <source>Unable to resize variable</source>
         <translation>Impossible de redimensionner la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="215"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="227"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="216"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="228"/>
         <source>Variable size ignored and defaulted to</source>
         <translation>La taille de la variable a été ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="226"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="227"/>
         <source>Unable to extract variable size for variable</source>
         <translation>Impossible de lire la taille de la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="252"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="253"/>
         <source>The initial value size does not match variable size.</source>
         <translation>La taille de la valeur initiale ne correspond à celle de la variable.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="279"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="280"/>
         <source>Reference to undeclared variable encountered while parsing action list:</source>
         <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="280"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="281"/>
         <source>Variable name was</source>
         <translation>Le nom de la variable était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="336"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="337"/>
         <source>Error in action type for variable</source>
         <translation>Erreur dans le type d&apos;action pour la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="377"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="378"/>
         <source>Error in action range for variable</source>
         <translation>Erreur dans le range de la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="407"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="426"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="408"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="427"/>
         <source>Error in action value for variable</source>
         <translation>Erreur dans la valeur de l&apos;action pour la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="188"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="438"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="189"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="439"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="188"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="189"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="188"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="438"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="189"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="439"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="246"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="247"/>
         <source>Given initial value was</source>
         <translation>La valeur initiale fournie était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="247"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="253"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="248"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="254"/>
         <source>Initial value ignored and defaulted to</source>
         <translation>La valeur initiale a été ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="281"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="321"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="439"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="282"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="322"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="440"/>
         <source>Action ignored.</source>
         <translation>Action ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="319"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="320"/>
         <source>Unexpected action type encountered while parsing action list:</source>
         <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="320"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="321"/>
         <source>Action type was</source>
         <translation>Le type d&apos;action était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="337"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="338"/>
         <source>Default action type used instead.</source>
         <translation>Type d&apos;action par défaut utilisé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="378"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="379"/>
         <source>Range ignored. Default value will be ignored too if present.</source>
         <translation>Le range a été ignoré. La valeur par défaut sera ignorée également si elle existe.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="408"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="427"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="537"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="409"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="428"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="539"/>
         <source>Value ignored and set to</source>
         <translation>Valeur ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="536"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="538"/>
         <source>Error in constant value while parsing equation:</source>
         <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="545"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="547"/>
         <source>Unexpected equation nature encountered while parsing logic equation:</source>
         <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="546"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="548"/>
         <source>Equation nature was:</source>
         <translation>La nature de l&apos;équation était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="547"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="549"/>
         <source>Token ignored. Will retry with other tokens if existing.</source>
         <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="147"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="148"/>
         <source>Unexpected node found while parsing configuration.</source>
         <translation>Nœud inattendu trouvé en lisant la configuration.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="147"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="148"/>
         <source>Node name was:</source>
         <translation>Nom du nœud :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="148"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="149"/>
         <source>Node ignored.</source>
         <translation>Nœud ignoré.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="437"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="438"/>
         <source>Unexpected node encountered while parsing action list:</source>
         <translation>Nœud inattendu trouvé en lisant la liste des actions :</translation>
     </message>
@@ -1816,17 +1856,17 @@
 <context>
     <name>MachineXmlWriter</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="217"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="265"/>
         <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
         <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="221"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="269"/>
         <source>Specified directory doesn&apos;t exist.</source>
         <translation>Le dossier spécifié n&apos;existe pas.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="228"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="276"/>
         <source>Unable to open file in write mode.</source>
         <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>
@@ -1922,22 +1962,22 @@
 <context>
     <name>RangeEditorDialog</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="49"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="50"/>
         <source>Choose extracted bit</source>
         <translation>Choisissez le bit à extraire</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="51"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="54"/>
         <source>Choose range</source>
         <translation>Choisissez le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="65"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="70"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="69"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="74"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -2200,18 +2240,27 @@
 <context>
     <name>StateS</name>
     <message>
+        <location filename="../src/core/states.cpp" line="196"/>
+        <source>StateS couldn&apos;t read the file content.</source>
+        <translation>StateS n&apos;a pas pu lire le contenu du fichier.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="197"/>
+        <source>The file may not be a correct StateS save file.</source>
+        <translation>Le fichier n&apos;est peut-être pas une sauvegarde StateS correcte.</translation>
+    </message>
+    <message>
         <location filename="../src/core/states.cpp" line="198"/>
+        <source>Issues occured reading the file. StateS was unable to load machine.</source>
+        <translation>Des erreurs ont été rencontrées lors de la lecture du fichier. StateS n&apos;a pas été en mesure de charger la machine.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="207"/>
         <source>Issues occured reading the file. StateS still managed to load machine.</source>
         <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="214"/>
-        <location filename="../src/core/states.cpp" line="218"/>
-        <source>Unable to load file.</source>
-        <translation>Impossible de charger le fichier.</translation>
-    </message>
-    <message>
-        <location filename="../src/core/states.cpp" line="281"/>
+        <location filename="../src/core/states.cpp" line="278"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>

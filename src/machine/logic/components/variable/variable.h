@@ -47,45 +47,37 @@ public:
 	QString getName() const;
 	void setName(const QString& value); // TODO: check variable name here and throw StatesException
 
-	virtual uint getSize() const;
-	virtual void resize(uint newSize); // Throws StatesException
+	uint getSize() const;
+	void resize(uint newSize); // Throws StatesException
 
 	LogicValue getInitialValue() const;
 	virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
 	void reinitialize();
 
-	virtual QString getText() const;
-
 	virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
 	virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
 	LogicValue getCurrentValue() const;
 
-	// Concept of true is only applicable to size 1 variables
-	// A variable with size > 1 will never be true
-	bool isTrue() const; // Throws StatesException
+	void notifyVariableAboutToBeDeleted();
 
+	/////
+	// Signals
 signals:
-	// General events
-	void variableStaticConfigurationChangedEvent(); // Triggered when object "savable" values are modified
-
-	// Specific events detail
 	void variableInitialValueChangedEvent();
 	void variableCurrentValueChangedEvent();
 	void variableRenamedEvent();
 	void variableResizedEvent();
-
-	// Deletion event
 	void variableDeletedEvent();
+	void variableAboutToBeDeletedEvent(); // Used to notify operands as they hold a shared_ptr
 
 	/////
 	// Object variables
-protected:
-	// Simulation
-	LogicValue currentValue;
-
 private:
 	QString name;
 	LogicValue initialValue;
+
+	// Simulation
+	LogicValue currentValue;
 
 };
 

@@ -36,13 +36,10 @@ class Variable;
 
 /**
  * @brief The MachineActuatorComponent class represents
- * a machine component with action capabilities.
+ * a machine component that can act on variables.
  *
  * It manages a ranked list of actions and is able to
  * remove an action when the associated variable is deleted.
- *
- * A MachineActuatorComponent triggers the actions activation
- * and deactivation.
  */
 class MachineActuatorComponent : public MachineComponent
 {
@@ -60,18 +57,20 @@ public:
 	shared_ptr<ActionOnVariable> addAction(shared_ptr<Variable> variable);
 	void removeAction(uint actionRank); // Throws StatesException
 	shared_ptr<ActionOnVariable> getAction(uint actionRank) const; // Throws StatesException
-	QList<shared_ptr<ActionOnVariable>> getActions() const;
+	const QList<shared_ptr<ActionOnVariable> > getActions() const;
 
 	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
 
 	virtual uint getAllowedActionTypes() const = 0;
 
-signals:
-	void actionListChangedEvent();
-
 private slots:
 	void cleanActionList();
 	void variableInActionListModifiedEventHandler();
+
+	/////
+	// Signals
+signals:
+	void actionListChangedEvent();
 
 	/////
 	// Object variables

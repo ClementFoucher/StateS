@@ -34,7 +34,7 @@ class QWidget;
 
 // StateS classes
 class GraphicEquation;
-class Variable;
+class Equation;
 
 
 class EquationEditor : public QDialog
@@ -44,15 +44,15 @@ class EquationEditor : public QDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditor(shared_ptr<Variable> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditor(shared_ptr<Equation> initialEquation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	shared_ptr<Variable> getResultEquation() const;
+	shared_ptr<Equation> getResultEquation() const;
 
 protected:
-	virtual void keyPressEvent  (QKeyEvent* event)   override;
+	virtual void keyPressEvent  (QKeyEvent*   event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
 
 	/////

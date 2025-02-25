@@ -44,6 +44,7 @@ using namespace std;
 #include "fsm.h"
 #include "fsmgraphicstate.h"
 #include "actionbox.h"
+#include "operand.h"
 
 
 //
@@ -367,30 +368,27 @@ void FsmGraphicTransition::updateConditionText()
 	if (fsm == nullptr) return;
 
 	auto logicTransition = fsm->getTransition(this->logicComponentId);
+	if (logicTransition == nullptr) return;
 
-	if (logicTransition != nullptr)
+
+	auto condition = logicTransition->getCondition();
+	if (condition == nullptr)
 	{
-		if (logicTransition->getCondition() == nullptr)
-		{
-			this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
-		}
-		else
-		{
-			shared_ptr<Equation> equationCondition = dynamic_pointer_cast<Equation>(logicTransition->getCondition());
-
-			if (equationCondition != nullptr)
-			{
-				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + equationCondition->getColoredText() + "</div>");
-			}
-			else
-			{
-				this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;color:black;\">" + logicTransition->getCondition()->getText() + "</div>");
-			}
-		}
+		// An empty condition is always true
+		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
 	}
-	else
+	else if (condition->getOperatorType() != OperatorType_t::identity)
 	{
-		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">1</div>");
+		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + condition->getColoredText() + "</div>");
+	}
+	else // (condition->getOperatorType() == OperatorType_t::identity)
+	{
+		// Identity represents either a variable or a constant condition
+		auto operand = condition->getOperand(0);
+		if (operand == nullptr) return;
+
+
+		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;color:black;\">" + operand->getText() + "</div>");
 	}
 }
 

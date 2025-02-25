@@ -53,17 +53,20 @@ public:
 	void setTargetStateId(componentId_t targetStateId);
 	componentId_t getTargetStateId() const;
 
-	void setCondition(shared_ptr<Variable> variableNewCondition);
+	void setCondition(shared_ptr<Equation> newCondition);
 	void clearCondition();
-	shared_ptr<Variable> getCondition() const;
+	shared_ptr<Equation> getCondition() const;
 
 	virtual uint getAllowedActionTypes() const override;
 
-signals:
-	void conditionChangedEvent();
-
 private slots:
 	void conditionChangedEventHandler();
+	void conditionAboutToBeInvalidatedEventHandler();
+
+	/////
+	// Signals
+signals:
+	void conditionChangedEvent();
 
 	/////
 	// Object variables

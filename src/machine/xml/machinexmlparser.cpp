@@ -36,6 +36,7 @@
 #include "machineactuatorcomponent.h"
 #include "equation.h"
 #include "exceptiontypes.h"
+#include "operand.h"
 
 
 MachineXmlParser::MachineXmlParser()
@@ -445,15 +446,16 @@ void MachineXmlParser::parseLogicEquation()
 	QXmlStreamAttributes attributes = this->xmlReader->attributes();
 	QString nodeName = this->xmlReader->name().toString();
 
-	shared_ptr<Variable> equation;
+	shared_ptr<Equation> equation;
 
 	if (nodeName == "LogicVariable")
 	{
-		for (shared_ptr<Variable> var : this->machine->getReadableVariables())
+		for (auto& var : this->machine->getReadableVariables())
 		{
 			if (var->getName() == attributes.value("Name"))
 			{
-				equation = var;
+				equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
+				equation->setOperand(0, var);
 				break;
 			}
 		}
@@ -513,7 +515,7 @@ void MachineXmlParser::parseLogicEquation()
 		}
 		else if (valueNature == "constant")
 		{
-			equationType = OperatorType_t::constant;
+			equationType = OperatorType_t::identity;
 
 			try
 			{
@@ -549,26 +551,24 @@ void MachineXmlParser::parseLogicEquation()
 			return;
 		}
 
-		shared_ptr<Equation> newEquation;
 		if (operandCount != 0)
 		{
-			newEquation = shared_ptr<Equation>(new Equation(equationType, operandCount));
+			equation = shared_ptr<Equation>(new Equation(equationType, operandCount));
 		}
 		else
 		{
-			newEquation = shared_ptr<Equation>(new Equation(equationType));
+			equation = shared_ptr<Equation>(new Equation(equationType));
 		}
 
-		if (equationType == OperatorType_t::constant)
+		if (equationType == OperatorType_t::identity)
 		{
-			newEquation->setConstantValue(constantValue); // Throws StatesException - constantValue is built for variable size - ignored
+			// In this context, identity is only used for constants
+			equation->setOperand(0, constantValue);
 		}
 		else if (equationType == OperatorType_t::extractOp)
 		{
-			newEquation->setRange(rangeL, rangeR);
+			equation->setRange(rangeL, rangeR);
 		}
-
-		equation = newEquation;
 	}
 
 	if (this->rootLogicEquation == nullptr)
@@ -581,13 +581,37 @@ void MachineXmlParser::parseLogicEquation()
 
 void MachineXmlParser::treatBeginOperand(uint operandRank)
 {
-	this->equationStack.push(dynamic_pointer_cast<Equation>(this->currentLogicEquation));
+	this->equationStack.push(this->currentLogicEquation);
 	this->operandRankStack.push(operandRank);
 }
 
 void MachineXmlParser::treatEndOperand()
 {
 	shared_ptr<Equation> parentEquation = this->equationStack.pop();
-	parentEquation->setOperand(this->operandRankStack.pop(), this->currentLogicEquation);
+
+	if (this->currentLogicEquation != nullptr)
+	{
+		if (this->currentLogicEquation->getOperatorType() != OperatorType_t::identity)
+		{
+			parentEquation->setOperand(this->operandRankStack.pop(), this->currentLogicEquation);
+		}
+		else // (this->currentLogicEquation->getOperatorType() == OperatorType_t::identity)
+		{
+			// Variable and constant operands are stored using identity equation on the stack: unwrap
+			auto operand = this->currentLogicEquation->getOperand(0);
+			if (operand != nullptr)
+			{
+				if (operand->getSource() == OperandSource_t::variable)
+				{
+					parentEquation->setOperand(this->operandRankStack.pop(), operand->getVariable());
+				}
+				else if (operand->getSource() == OperandSource_t::constant)
+				{
+					parentEquation->setOperand(this->operandRankStack.pop(), operand->getConstant());
+				}
+			}
+		}
+	}
+
 	this->currentLogicEquation = parentEquation;
 }

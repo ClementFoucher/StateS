@@ -50,20 +50,9 @@ typedef enum
 
 typedef enum
 {
-	resized_requested       = 0,
-	out_of_range_access     = 1,
-	set_value_requested     = 2,
-	reduced_operand_while_0 = 3,
-	change_operand_illegal  = 4
-} EquationError_t;
-
-typedef enum
-{
 	building_zero_sized   = 0,
 	variable_resized_to_0 = 1,
-	size_mismatch         = 2,
-	variable_is_not_bool  = 3,
-	value_is_read_only    = 4
+	size_mismatch         = 2
 } VariableError_t;
 
 typedef enum

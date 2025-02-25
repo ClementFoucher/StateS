@@ -24,6 +24,7 @@
 
 // StateS classes
 #include "equation.h"
+#include "operand.h"
 
 
 FsmTransition::FsmTransition(componentId_t sourceStateId, componentId_t targetStateId) :
@@ -64,27 +65,23 @@ componentId_t FsmTransition::getTargetStateId() const
 	return this->targetStateId;
 }
 
-void FsmTransition::setCondition(shared_ptr<Variable> variableNewCondition)
+void FsmTransition::setCondition(shared_ptr<Equation> newCondition)
 {
 	if (this->condition != nullptr)
 	{
-		disconnect(this->condition.get(), &Variable::variableStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationTextChangedEvent,          this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationInitialValueChangedEvent,  this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationAboutToBeInvalidatedEvent, this, &FsmTransition::conditionAboutToBeInvalidatedEventHandler);
 	}
 
-	shared_ptr<Equation> equationNewCondition = dynamic_pointer_cast<Equation>(variableNewCondition);
-	if (equationNewCondition == nullptr)
-	{
-		QVector<shared_ptr<Variable>> operand;
-		operand.append(variableNewCondition);
-		equationNewCondition = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
-	}
-
-	this->condition = equationNewCondition;
+	this->condition = newCondition;
 
 	if (this->condition != nullptr)
 	{
-		// Propagate events
-		connect(this->condition.get(), &Variable::variableStaticConfigurationChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Equation::equationTextChangedEvent,          this, &FsmTransition::conditionChangedEventHandler);
+		// Initial value change needs to be connected in case a signal changes size
+		connect(this->condition.get(), &Equation::equationInitialValueChangedEvent,  this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Equation::equationAboutToBeInvalidatedEvent, this, &FsmTransition::conditionAboutToBeInvalidatedEventHandler);
 	}
 
 	emit this->conditionChangedEvent();
@@ -96,23 +93,9 @@ void FsmTransition::clearCondition()
 	this->setCondition(nullptr);
 }
 
-shared_ptr<Variable> FsmTransition::getCondition() const
+shared_ptr<Equation> FsmTransition::getCondition() const
 {
-	if (this->condition != nullptr)
-	{
-		if (this->condition->getFunction() != OperatorType_t::identity)
-		{
-			return this->condition;
-		}
-		else
-		{
-			return this->condition->getOperand(0); // Throws StatesException - Identity op always has operand 0, even if nullptr - ignored
-		}
-	}
-	else
-	{
-		return nullptr;
-	}
+	return this->condition;
 }
 
 uint FsmTransition::getAllowedActionTypes() const
@@ -130,4 +113,9 @@ void FsmTransition::conditionChangedEventHandler()
 {
 	emit this->conditionChangedEvent();
 	emit this->componentEditedEvent(this->id);
+}
+
+void FsmTransition::conditionAboutToBeInvalidatedEventHandler()
+{
+	this->clearCondition();
 }

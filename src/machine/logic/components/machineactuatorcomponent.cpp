@@ -104,7 +104,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank
 	}
 }
 
-QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
+const QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
 {
 	return this->actionList;
 }

@@ -39,7 +39,6 @@ class Machine;
 class ViewConfiguration;
 class GraphicAttributes;
 class MachineActuatorComponent;
-class Variable;
 class Equation;
 
 
@@ -85,8 +84,8 @@ protected:
 	shared_ptr<Machine> machine;
 
 	shared_ptr<MachineActuatorComponent> currentActuator;
-	shared_ptr<Variable> rootLogicEquation;
-	shared_ptr<Variable> currentLogicEquation;
+	shared_ptr<Equation> rootLogicEquation;
+	shared_ptr<Equation> currentLogicEquation;
 
 	shared_ptr<QXmlStreamReader> xmlReader;
 	shared_ptr<QFile> file; // Keep it just to maintain a reference to the file so that it is not destroyed

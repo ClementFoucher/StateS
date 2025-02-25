@@ -34,14 +34,15 @@
 #include "fsm.h"
 #include "graphicfsm.h"
 #include "fsmstate.h"
+#include "fsmtransition.h"
 #include "variable.h"
 #include "output.h"
-#include "fsmtransition.h"
 #include "fsmsimulatedstate.h"
 #include "fsmsimulatedtransition.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
 #include "actiononvariable.h"
+#include "equation.h"
 
 
 FsmSimulator::FsmSimulator() :
@@ -64,15 +65,13 @@ void FsmSimulator::build()
 	if (graphicFsm == nullptr) return;
 
 
-	auto statesIds = fsm->getAllStatesIds();
-	for (auto& stateId : statesIds)
+	for (const auto& stateId : fsm->getAllStatesIds())
 	{
 		auto simulatedState = new FsmSimulatedState(stateId);
 		this->simulatedComponents[stateId] = simulatedState;
 	}
 
-	auto transitionsIds = fsm->getAllTransitionsIds();
-	for (auto& transitionId : transitionsIds)
+	for (const auto& transitionId : fsm->getAllTransitionsIds())
 	{
 		auto simulatedTransition = new FsmSimulatedTransition(transitionId);
 
@@ -146,13 +145,13 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and variables to their initial value
-	for (shared_ptr<Variable>& variable : fsm->getReadableVariableVariables())
+	for (auto& variable : fsm->getReadableVariableVariables())
 	{
 		variable->reinitialize();
 	}
 
 	// Then compute outputs: first reset all of them...
-	for (shared_ptr<Output>& variable : fsm->getOutputs())
+	for (auto& variable : fsm->getOutputs())
 	{
 		variable->reinitialize();
 	}
@@ -183,28 +182,17 @@ void FsmSimulator::clockAboutToTickEventHandler()
 		//
 		// Look for potential transitions
 		QMap<uint, componentId_t> candidateTransitions;
-		for (auto transitionId : currentActiveState->getOutgoingTransitionsIds())
+		for (const auto& transitionId : currentActiveState->getOutgoingTransitionsIds())
 		{
 			auto transition = fsm->getTransition(transitionId);
 			if (transition == nullptr) continue;
 
-			if (transition->getCondition() != nullptr)
+			auto condition = transition->getCondition();
+			if (condition != nullptr)
 			{
-				try
+				if (condition->isTrue())
 				{
-					if (transition->getCondition()->isTrue())
-					{
-						candidateTransitions.insert(candidateTransitions.count(), transition->getId());
-					}
-				}
-				catch (const StatesException& e)
-				{
-					if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::variable_is_not_bool) )
-					{
-						// Transition condition is incorrect, considered false: nothing to do
-					}
-					else
-						throw;
+					candidateTransitions.insert(candidateTransitions.count(), transition->getId());
 				}
 			}
 			else
@@ -338,8 +326,7 @@ void FsmSimulator::activateStateActions(componentId_t actuatorId, bool isFirstAc
 	if (actuatorComponent == nullptr) return;
 
 
-	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnVariable>& action : actionList)
+	for (const auto& action : actuatorComponent->getActions())
 	{
 		if (action->isActionMemorized() == true)
 		{
@@ -375,8 +362,7 @@ void FsmSimulator::activateTransitionActions(componentId_t actuatorId, bool isPr
 	if (actuatorComponent == nullptr) return;
 
 
-	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnVariable>& action : actionList)
+	for (const auto& action : actuatorComponent->getActions())
 	{
 		if (isPreparation == true)
 		{
@@ -412,8 +398,7 @@ void FsmSimulator::deactivateStateActions(componentId_t actuatorId)
 	if (actuatorComponent == nullptr) return;
 
 
-	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnVariable>& action : actionList)
+	for (const auto& action : actuatorComponent->getActions())
 	{
 		action->endAction();
 	}
@@ -428,8 +413,7 @@ void FsmSimulator::deactivateTransitionActions(componentId_t actuatorId, bool is
 	if (actuatorComponent == nullptr) return;
 
 
-	auto actionList = actuatorComponent->getActions();
-	for (shared_ptr<ActionOnVariable>& action : actionList)
+	for (const auto& action : actuatorComponent->getActions())
 	{
 		if (isPreparation == true)
 		{

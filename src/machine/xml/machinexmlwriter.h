@@ -38,6 +38,7 @@ class QFile;
 class Variable;
 class MachineActuatorComponent;
 class ViewConfiguration;
+class Equation;
 
 
 class MachineXmlWriter : public QObject
@@ -61,7 +62,7 @@ protected:
 	virtual void writeMachineType() = 0;
 
 	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
-	void writeLogicEquation(shared_ptr<Variable> equation);
+	void writeLogicEquation(shared_ptr<Equation> equation);
 
 private:
 	void createSaveFile(); // Throws StatesException

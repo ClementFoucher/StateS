@@ -136,10 +136,11 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 		}
 
 		// Deal with equations
-		if (transition->getCondition() != nullptr)
+		auto condition = transition->getCondition();
+		if (condition != nullptr)
 		{
 			this->stream->writeStartElement("Condition");
-			this->writeLogicEquation(transition->getCondition());
+			this->writeLogicEquation(condition);
 			this->stream->writeEndElement(); // Condition
 		}
 

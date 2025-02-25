@@ -30,9 +30,9 @@
 #include "variable.h"
 #include "equation.h"
 #include "logicvalue.h"
-#include "constant.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
+#include "operand.h"
 
 
 TruthTable::TruthTable(shared_ptr<Equation> equation)
@@ -57,10 +57,10 @@ QVector<shared_ptr<Variable> > TruthTable::getInputs() const // Throws StatesExc
 {
 	QVector<shared_ptr<Variable>> list;
 
-	for (weak_ptr<Variable> sig : this->inputVariablesTable)
+	for (auto& variable : this->inputVariablesTable)
 	{
-		if (! sig.expired())
-			list.append(sig.lock());
+		if (! variable.expired())
+			list.append(variable.lock());
 		else
 			throw StatesException("TruthTable", TruthTableError_t::reference_expired, "Reference to expired variable");
 	}
@@ -139,19 +139,20 @@ QList<shared_ptr<Variable>> TruthTable::extractVariables(shared_ptr<Equation> eq
 {
 	QList<shared_ptr<Variable>> list;
 
-	for (shared_ptr<Variable> sig : equation->getOperands())
+	int operandCount = equation->getOperandCount();
+	for (int i = 0 ; i < operandCount ; i++)
 	{
-		shared_ptr<Equation> complexOperand = dynamic_pointer_cast<Equation>(sig);
+		auto operand = equation->getOperand(i);
+		if (operand == nullptr) continue;
 
-		if (complexOperand != nullptr)
+
+		if (operand->getSource() == OperandSource_t::equation)
 		{
-			if (complexOperand->getFunction() != OperatorType_t::constant)
-				list += extractVariables(complexOperand);
+			list += extractVariables(operand->getEquation());
 		}
-		else
+		else if (operand->getSource() == OperandSource_t::variable)
 		{
-			if (dynamic_pointer_cast<Constant>(sig) == nullptr)
-				list.append(sig);
+			list.append(operand->getVariable());
 		}
 	}
 
@@ -167,7 +168,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 	// Obtain all variables involved in all equations
 	QList<shared_ptr<Variable>> variablesList;
 
-	for (shared_ptr<Equation> equation : equations)
+	for (auto& equation : equations)
 	{
 		variablesList += extractVariables(equation);
 		this->outputEquationsTextsTable.append(equation->getText());
@@ -176,7 +177,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 	// Clean list so each variable only appears once
 	QVector<shared_ptr<Variable>> variablesVector;
 
-	for (shared_ptr<Variable> variable : variablesList)
+	for (auto& variable : variablesList)
 	{
 		if (!variablesVector.contains(variable))
 		{
@@ -187,16 +188,16 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 
 	// Count inputs bit by bit
 	uint inputCount = 0;
-	for (shared_ptr<Variable> sig : variablesVector)
+	for (auto& variable : variablesVector)
 	{
-		inputCount += sig->getSize();
+		inputCount += variable->getSize();
 	}
 
 	// Prepare first row
 	QVector<LogicValue> currentRow;
-	for (shared_ptr<Variable> sig : variablesVector)
+	for (auto& variable : variablesVector)
 	{
-		currentRow.append(LogicValue(sig->getSize(), false));
+		currentRow.append(LogicValue(variable->getSize(), false));
 	}
 
 	for (uint i = 0 ; i < pow(2, inputCount) ; i++)
@@ -211,7 +212,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation> > equations)
 		}
 
 		QVector<LogicValue> currentResultLine;
-		for (shared_ptr<Equation> equation : equations)
+		for (auto& equation : equations)
 		{
 			currentResultLine.append(equation->getCurrentValue());
 		}

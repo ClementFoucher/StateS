@@ -22,60 +22,38 @@
 // Current class header
 #include "equation.h"
 
-// Debug
-#include <QDebug>
-#include <QMetaMethod>
-
 // StateS classes
 #include "statestypes.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
+#include "operand.h"
+#include "variable.h"
 
 
-// Main constructor
 /**
  * @brief Equation::Equation
- * @param function
- * @param operandCount Number of operands. Omitting this value results in a default-sized equation with 2 operands for variable operand functions.
+ * @param operatorType Operator of the equation.
+ * @param operandCount Number of operands. This currentValue is ignored
+ * for operators that have a fixed-size operand count.
+ * Omitting this currentValue for a variable-size operator results in
+ * an equation with 2 operands for variable operand functions.
  */
-Equation::Equation(OperatorType_t function, int operandCount) :
-    Variable("<sub>(equation)</sub>")
+Equation::Equation(OperatorType_t operatorType, int operandCount)
 {
-	this->function = function;
+	this->operatorType = operatorType;
+	this->failureCause = EquationComputationFailureCause_t::nullOperand;
 	this->currentValue = LogicValue::getNullValue();
 
-	// Operand count affectation
-	switch(this->function)
+	// Compute operand count
+	uint actualOperandCount;
+	switch(this->operatorType)
 	{
-	case OperatorType_t::constant:
-		this->allowedOperandCount = 0;
-
-		if ( (operandCount != 0) && (operandCount >= 0) )
-		{
-			qDebug() << "(Equation:) Warning: Trying to create constant equation with size != 0 (requested size is " << QString::number(operandCount) << ").";
-			qDebug() << "Requested size value ignored and set to 0.";
-		}
-		break;
-	case OperatorType_t::extractOp:
 	case OperatorType_t::notOp:
 	case OperatorType_t::identity:
-		this->allowedOperandCount = 1;
-
-		if ( (operandCount != 1) && (operandCount >= 0) )
-		{
-			qDebug() << "(Equation:) Warning: Trying to create a fixed size 1 equation with size != 1 (requested size is " << QString::number(operandCount) << ").";
-			qDebug() << "Requested size value ignored and set to 1.";
-		}
+	case OperatorType_t::extractOp:
+		actualOperandCount = 1;
 		break;
 	case OperatorType_t::equalOp:
 	case OperatorType_t::diffOp:
-		this->allowedOperandCount = 2;
-
-		if ( (operandCount != 2) && (operandCount >= 0) )
-		{
-			qDebug() << "(Equation) Warning: Trying to create a fixed size 2 equation with size != 2 (requested size is " << QString::number(operandCount) << ").";
-			qDebug() << "Requested size value ignored and set to 2.";
-		}
+		actualOperandCount = 2;
 		break;
 	case OperatorType_t::andOp:
 	case OperatorType_t::orOp:
@@ -86,58 +64,41 @@ Equation::Equation(OperatorType_t function, int operandCount) :
 	case OperatorType_t::concatOp:
 		if (operandCount >= 2)
 		{
-			this->allowedOperandCount = operandCount;
-		}
-		else if (operandCount < 0)
-		{
-			this->allowedOperandCount = 2;
+			actualOperandCount = operandCount;
 		}
 		else
 		{
-			this->allowedOperandCount = 2;
-
-			qDebug() << "(Equation) Warning: Trying to create an equation with size < 2 (requested size is " << QString::number(operandCount) << ").";
-			qDebug() << "Requested size value ignored and set to 2.";
+			actualOperandCount = 2;
 		}
+		break;
 	}
 
-	// Default values
-	this->rangeL = -1;
-	this->rangeR = -1;
-	this->constantValue = LogicValue::getNullValue();
-
-	this->variableOperands = QVector<weak_ptr<Variable>>  (this->allowedOperandCount);
-	this->equationOperands = QVector<shared_ptr<Equation>>(this->allowedOperandCount);
-}
-
-Equation::Equation(OperatorType_t function, const QVector<shared_ptr<Variable>>& operandList) :
-    Equation(function, operandList.count())
-{
-	for (int i = 0 ; i < operandList.count() ; i++)
+	// Initialize with null operands
+	for (uint i = 0 ; i < actualOperandCount ; i++)
 	{
-		// Do not compute value as done in a mute way
-		this->setOperand(i, operandList[i], true);
+		this->operands.append(nullptr);
 	}
-
-	// Causes recomputation
-	this->computeCurrentValue();
 }
 
 shared_ptr<Equation> Equation::clone() const
 {
-	shared_ptr<Equation> eq = shared_ptr<Equation>(new Equation(this->function, this->getOperands()));
+	auto clonedEquation = shared_ptr<Equation>(new Equation(this->operatorType, this->operands.count()));
 
-	if (this->function == OperatorType_t::constant)
+	for (uint i = 0 ; i < this->operands.count() ; i++)
 	{
-		eq->setConstantValue(this->constantValue); // Throws StatesException - constantValue is built for variable size - ignored
+		auto operand = this->operands.at(i);
+		if (operand != nullptr)
+		{
+			clonedEquation->setOperand(i, operand->clone());
+		}
 	}
-	else if (this->function == OperatorType_t::extractOp)
+
+	if (this->operatorType == OperatorType_t::extractOp)
 	{
-		eq->setRange(this->rangeL, this->rangeR);
+		clonedEquation->setRange(this->rangeL, this->rangeR);
 	}
 
-
-	return eq;
+	return clonedEquation;
 }
 
 /**
@@ -147,207 +108,17 @@ shared_ptr<Equation> Equation::clone() const
  */
 uint Equation::getSize() const
 {
-	return currentValue.getSize();
+	return this->initialValue.getSize();
 }
 
-void Equation::resize(uint) // Throws StatesException
+LogicValue Equation::getInitialValue() const
 {
-	// Equation size is dynamic (or is 1 for eq and diff).
-	// Can't be resized.
-	throw StatesException("Equation", EquationError_t::resized_requested, "Trying to resize an equation");
+	return this->initialValue;
 }
 
-OperatorType_t Equation::getFunction() const
+LogicValue Equation::getCurrentValue() const
 {
-	return function;
-}
-
-void Equation::setFunction(OperatorType_t newFunction)
-{
-	switch(newFunction)
-	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::extractOp:
-		// Delete operands beyond one
-		while (this->allowedOperandCount > 1)
-		{
-			// Muted: do not causes recomputation
-			decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
-		}
-		break;
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-		// Exactly two operands needed
-
-		// Delete operands beyond two
-		while (this->allowedOperandCount > 2)
-		{
-			decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
-		}
-
-		// Add operand if not enough
-		if (allowedOperandCount == 1)
-		{
-			increaseOperandCountInternal();
-		}
-
-		break;
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
-		// At least two operands for all other equation types
-		if (allowedOperandCount == 1)
-		{
-			increaseOperandCountInternal();
-		}
-		break;
-	case OperatorType_t::constant:
-		// Delete operands
-		while (allowedOperandCount > 0)
-		{
-			decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
-		}
-		break;
-	}
-
-	this->function = newFunction;
-
-	if (this->function == OperatorType_t::extractOp)
-	{
-		this->rangeL = -1;
-		this->rangeR = -1;
-	}
-
-	emit variableStaticConfigurationChangedEvent();
-
-	this->computeCurrentValue();
-}
-
-void Equation::setRange(int rangeL, int rangeR)
-{
-	if (this->function == OperatorType_t::extractOp)
-	{
-		this->rangeL = rangeL;
-		this->rangeR = rangeR;
-
-		emit variableStaticConfigurationChangedEvent();
-
-		this->computeCurrentValue();
-	}
-
-}
-
-shared_ptr<Variable> Equation::getOperand(uint i) const // Throws StatesException
-{
-	if (i < this->allowedOperandCount)
-		return this->getOperands().at(i);
-	else
-		throw StatesException("Equation", EquationError_t::out_of_range_access, "Out of range operand access");
-}
-
-/**
- * @brief Equation::setOperand
- * @param i
- * @param newOperand
- * Equation always owns its own Equation operands.
- * All given operands that are equation will be cloned.
- * @return
- */
-bool Equation::setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet) // Throws StatesException
-{
-	// Do not allow placing an operand outside defined range
-	if (i >= this->allowedOperandCount)
-	{
-		throw StatesException("Equation", EquationError_t::out_of_range_access, "Out of range operand access");
-	}
-
-	// Only proceed to set if new operand is not the same as the current one.
-	// If it is, just return success
-	if (this->getOperand(i) == newOperand) // Throws StatesException - Operand count checked - ignored
-	{
-		return true;
-	}
-	else
-	{
-		// Muted: do not causes recomputation
-		clearOperand(i, true); // Throws StatesException - Operand count checked - ignored
-
-		if (newOperand != nullptr)
-		{
-			// Assign operand
-
-			shared_ptr<Equation> newEquationOperand = dynamic_pointer_cast <Equation> (newOperand);
-			shared_ptr<Variable> actualNewOperand;
-
-			if (newEquationOperand != nullptr)
-			{
-				equationOperands[i] = newEquationOperand->clone();
-				actualNewOperand = dynamic_pointer_cast<Variable>(equationOperands[i]);
-			}
-			else
-			{
-				connect(newOperand.get(), &Variable::variableDeletedEvent, this, &Equation::variableDeletedEventHandler);
-				variableOperands[i] = newOperand;
-				actualNewOperand = newOperand;
-			}
-
-
-			// Structural changes are propagated
-			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
-			// Local stuff
-			connect(actualNewOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-			connect(actualNewOperand.get(), &Variable::variableCurrentValueChangedEvent,        this, &Equation::computeCurrentValue);
-		}
-
-		if (!quiet)
-		{
-			emit variableStaticConfigurationChangedEvent();
-
-			this->computeCurrentValue();
-		}
-
-		return true;
-	}
-}
-
-void Equation::clearOperand(uint i, bool quiet) // Throws StatesException
-{
-	// Chek index
-	if (i >= this->allowedOperandCount)
-	{
-		throw StatesException("Equation", EquationError_t::out_of_range_access, "Out of range operand access");
-	}
-
-	shared_ptr<Variable> oldOperand = this->getOperand(i); // Throws StatesException - Operand count checked - ignored
-
-	if (oldOperand != nullptr)
-	{
-		// Signal propagation
-		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
-		// Local stuff
-		disconnect(oldOperand.get(), &Variable::variableStaticConfigurationChangedEvent, this, &Equation::computeCurrentValue);
-		disconnect(oldOperand.get(), &Variable::variableCurrentValueChangedEvent,        this, &Equation::computeCurrentValue);
-
-		if (oldOperand != nullptr)
-		{
-			disconnect(oldOperand.get(), &Variable::variableDeletedEvent, this, &Equation::variableDeletedEventHandler);
-		}
-
-		equationOperands[i].reset();
-		variableOperands[i].reset();
-
-		if (!quiet)
-		{
-			emit variableStaticConfigurationChangedEvent();
-
-			this->computeCurrentValue();
-		}
-	}
+	return this->currentValue;
 }
 
 QString Equation::getText() const
@@ -370,92 +141,80 @@ QString Equation::getColoredText(bool raw) const
 		}
 	}
 
-	if (this->function == OperatorType_t::constant)
-	{
-		text += this->currentValue.toString();
-	}
-	else
-	{
-		// Inversion oeprator
-		if (this->isInverted())
-			text += '/';
+	uint operandCount = this->getOperandCount();
 
-		if (this->allowedOperandCount > 1)
-			text += "( ";
+	// Inversion oeprator
+	if (this->isInverted())
+		text += '/';
 
-		for (uint i = 0 ; i < this->allowedOperandCount ; i++)
+	if (operandCount > 1)
+		text += "( ";
+
+	for (uint i = 0 ; i < operandCount ; i++)
+	{
+		auto operand = this->getOperand(i);
+		if (operand == nullptr)
 		{
-			shared_ptr<Variable> variableOperand = getOperand(i); // Throws StatesException - Contrained by operand count - ignored
-			shared_ptr<Equation> equationOperand = dynamic_pointer_cast<Equation>(variableOperand);
-
-			if (equationOperand != nullptr)
-			{
-				text += equationOperand->getColoredText(raw);
-			}
-			else if (variableOperand != nullptr)
-			{
-				text += variableOperand->getText();
-			}
-			else
-			{
-				text += "…";
-			}
-
-			// Add operator, except for last operand
-			if (i < this->allowedOperandCount - 1)
-			{
-				switch(function)
-				{
-				case OperatorType_t::andOp:
-				case OperatorType_t::nandOp:
-					text += " • ";
-					break;
-				case OperatorType_t::orOp:
-				case OperatorType_t::norOp:
-					text += " + ";
-					break;
-				case OperatorType_t::xorOp:
-				case OperatorType_t::xnorOp:
-					text += " ⊕ ";
-					break;
-				case OperatorType_t::equalOp:
-					text += " = ";
-					break;
-				case OperatorType_t::diffOp:
-					text += " ≠ ";
-					break;
-				case OperatorType_t::concatOp:
-					text += " : ";
-					break;
-				case OperatorType_t::notOp:
-				case OperatorType_t::identity:
-				case OperatorType_t::extractOp:
-				case OperatorType_t::constant:
-					break;
-				}
-			}
+			text += "…";
+		}
+		else
+		{
+			text += operand->getText();
 		}
 
-		if (this->function == OperatorType_t::extractOp)
+		// Add operator, except for last operand
+		if (i < operandCount - 1)
 		{
-			text += "[";
-
-			if (this->rangeL != -1)
-				text += QString::number(this->rangeL);
-			else
-				text += "…";
-
-			if (this->rangeR != -1)
+			switch(operatorType)
 			{
-				text += ".." + QString::number(this->rangeR);
+			case OperatorType_t::andOp:
+			case OperatorType_t::nandOp:
+				text += " • ";
+				break;
+			case OperatorType_t::orOp:
+			case OperatorType_t::norOp:
+				text += " + ";
+				break;
+			case OperatorType_t::xorOp:
+			case OperatorType_t::xnorOp:
+				text += " ⊕ ";
+				break;
+			case OperatorType_t::equalOp:
+				text += " = ";
+				break;
+			case OperatorType_t::diffOp:
+				text += " ≠ ";
+				break;
+			case OperatorType_t::concatOp:
+				text += " : ";
+				break;
+			case OperatorType_t::notOp:
+			case OperatorType_t::identity:
+			case OperatorType_t::extractOp:
+				break;
 			}
+		}
+	}
 
-			text += "]";
+	if (this->operatorType == OperatorType_t::extractOp)
+	{
+		text += "[";
+
+		if (this->rangeL != -1)
+			text += QString::number(this->rangeL);
+		else
+			text += "…";
+
+		if (this->rangeR != -1)
+		{
+			text += ".." + QString::number(this->rangeR);
 		}
 
-		if (this->allowedOperandCount > 1)
-			text += " )";
+		text += "]";
 	}
+
+	if (operandCount > 1)
+		text += " )";
 
 	if (raw == false)
 	{
@@ -465,36 +224,25 @@ QString Equation::getColoredText(bool raw) const
 	return text;
 }
 
-void Equation::setConstantValue(const LogicValue& value) // Throws StatesException
-{
-	if (this->function == OperatorType_t::constant)
-	{
-		this->constantValue = value;
-
-		this->computeCurrentValue();
-
-		emit Variable::variableStaticConfigurationChangedEvent();
-	}
-	else
-		throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect a value to a dynamically determined equation");
-}
-
 EquationComputationFailureCause_t Equation::getComputationFailureCause() const
 {
 	return this->failureCause;
 }
 
+OperatorType_t Equation::getOperatorType() const
+{
+	return this->operatorType;
+}
+
 bool Equation::isInverted() const
 {
-	bool result = false;
-
-	switch (function)
+	switch (this->operatorType)
 	{
 	case OperatorType_t::notOp:
 	case OperatorType_t::nandOp:
 	case OperatorType_t::norOp:
 	case OperatorType_t::xnorOp:
-		result = true;
+		return true;
 		break;
 	case OperatorType_t::identity:
 	case OperatorType_t::andOp:
@@ -504,11 +252,162 @@ bool Equation::isInverted() const
 	case OperatorType_t::diffOp:
 	case OperatorType_t::extractOp:
 	case OperatorType_t::concatOp:
-	case OperatorType_t::constant:
+		return false;
+		break;
+	}
+}
+
+// True concept here only apply to one bit results
+bool Equation::isTrue() const
+{
+	if (this->getSize() == 1)
+	{
+		if (this->currentValue == LogicValue::getValue1(1))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+shared_ptr<Operand> Equation::getOperand(uint i) const
+{
+	if (i < this->getOperandCount())
+	{
+		return this->operands.at(i);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void Equation::setOperand(uint i, shared_ptr<Variable> newOperand)
+{
+	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	this->setOperand(i, operand);
+}
+
+void Equation::setOperand(uint i, shared_ptr<Equation> newOperand)
+{
+	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	this->setOperand(i, operand);
+}
+
+void Equation::setOperand(uint i, LogicValue newOperand)
+{
+	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	this->setOperand(i, operand);
+}
+
+void Equation::clearOperand(uint i)
+{
+	this->setOperand(i, shared_ptr<Operand>(nullptr));
+}
+
+uint Equation::getOperandCount() const
+{
+	switch(this->operatorType)
+	{
+	case OperatorType_t::notOp:
+	case OperatorType_t::identity:
+	case OperatorType_t::extractOp:
+		return 1;
+		break;
+	case OperatorType_t::equalOp:
+	case OperatorType_t::diffOp:
+		return 2;
+		break;
+	case OperatorType_t::andOp:
+	case OperatorType_t::orOp:
+	case OperatorType_t::xorOp:
+	case OperatorType_t::nandOp:
+	case OperatorType_t::norOp:
+	case OperatorType_t::xnorOp:
+	case OperatorType_t::concatOp:
+		return this->operands.size();
+		break;
+	}
+}
+
+void Equation::increaseOperandCount()
+{
+	bool doIncrease = false;
+
+	switch (this->operatorType)
+	{
+	case OperatorType_t::andOp:
+	case OperatorType_t::orOp:
+	case OperatorType_t::xorOp:
+	case OperatorType_t::nandOp:
+	case OperatorType_t::norOp:
+	case OperatorType_t::xnorOp:
+	case OperatorType_t::concatOp:
+		doIncrease = true;
+		break;
+	case OperatorType_t::extractOp:
+	case OperatorType_t::notOp:
+	case OperatorType_t::identity:
+	case OperatorType_t::equalOp:
+	case OperatorType_t::diffOp:
+		// Do not allow modifying operand count for these fixed-size operators
 		break;
 	}
 
-	return result;
+	if (doIncrease == true)
+	{
+		this->operands.append(nullptr);
+		this->computeInitialValue();
+		emit this->equationTextChangedEvent();
+	}
+}
+
+void Equation::decreaseOperandCount()
+{
+	bool doDecrease = false;
+
+	switch (this->operatorType)
+	{
+	case OperatorType_t::andOp:
+	case OperatorType_t::orOp:
+	case OperatorType_t::xorOp:
+	case OperatorType_t::nandOp:
+	case OperatorType_t::norOp:
+	case OperatorType_t::xnorOp:
+	case OperatorType_t::concatOp:
+		if (this->getOperandCount() > 2)
+		{
+			doDecrease = true;
+		}
+		break;
+	case OperatorType_t::extractOp:
+	case OperatorType_t::notOp:
+	case OperatorType_t::identity:
+	case OperatorType_t::equalOp:
+	case OperatorType_t::diffOp:
+		// Do not allow modifying operand count for these fixed-size operators
+		break;
+	}
+
+	if (doDecrease == true)
+	{
+		this->operands.removeLast();
+		this->computeInitialValue();
+		emit this->equationTextChangedEvent();
+	}
+}
+
+void Equation::setRange(int rangeL, int rangeR)
+{
+	if (this->operatorType == OperatorType_t::extractOp)
+	{
+		this->rangeL = rangeL;
+		this->rangeR = rangeR;
+
+		this->computeInitialValue();
+		emit this->equationTextChangedEvent();
+	}
 }
 
 int Equation::getRangeL() const
@@ -521,53 +420,30 @@ int Equation::getRangeR() const
 	return this->rangeR;
 }
 
-void Equation::setInitialValue(const LogicValue&)
-{
-	throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect an initial value to an equation");
-}
-
-void Equation::setCurrentValue(const LogicValue&)
-{
-	throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect a current value to an equation");
-}
-
-void Equation::setCurrentValueSubRange(const LogicValue&, int, int)
-{
-	throw StatesException("Equation", EquationError_t::set_value_requested, "Trying to affect a current value to an equation");
-}
-
-/**
- * @brief Equation::getOperands
- * Warning: this function returns pointers to Equation operands.
- * This must not be used to take ownership of operands.
- * @return
- */
-QVector<shared_ptr<Variable>> Equation::getOperands() const
-{
-	QVector<shared_ptr<Variable>> operands(this->allowedOperandCount);
-
-	for (uint i = 0 ; i < this->allowedOperandCount ; i++)
-	{
-		if (!variableOperands[i].expired())
-			operands[i] = variableOperands[i].lock();
-		else if (equationOperands[i] != nullptr)
-			operands[i] = equationOperands[i];
-	}
-
-	return operands;
-}
-
 void Equation::computeCurrentValue()
 {
-	// Current value is computed dynamically when operands or
-	// equation change.
-	// It emits change events only if value actually changed
+	if (this->initialValue.isNull() == true)
+	{
+		this->currentValue = LogicValue::getNullValue();
+		return;
+	}
 
+
+	LogicValue previousValue = this->currentValue;
+	this->currentValue = this->computeValue(CurrentOrInitial_t::current);
+
+	if (previousValue != this->currentValue)
+	{
+		emit this->equationCurrentValueChangedEvent();
+	}
+}
+
+void Equation::computeInitialValue()
+{
 	bool doCompute = true;
 
-	uint operandsSize = 0;
-
-	for (shared_ptr<Variable> currentOperand : this->getOperands())
+	// Check for null or incomplete operands
+	for (auto& currentOperand : this->operands)
 	{
 		if (currentOperand == nullptr)
 		{
@@ -575,315 +451,421 @@ void Equation::computeCurrentValue()
 			doCompute = false;
 			break;
 		}
-		else if ( currentOperand->getSize() == 0)
+		else
 		{
-			this->failureCause = EquationComputationFailureCause_t::incompleteOperand;
-			doCompute = false;
-			break;
-		}
-		else if ( (operandsSize != 0) && (currentOperand->getSize() != operandsSize) )
-		{
-			if (this->function != OperatorType_t::concatOp)
+			auto currentOperandValue = currentOperand->getInitialValue();
+			if (currentOperandValue.getSize() == 0)
 			{
-				this->failureCause = EquationComputationFailureCause_t::sizeMismatch;
+				this->failureCause = EquationComputationFailureCause_t::incompleteOperand;
 				doCompute = false;
 				break;
 			}
 		}
-		else if (operandsSize == 0)
-			operandsSize = currentOperand->getSize();
 	}
 
-	LogicValue previousValue = this->currentValue;
-
-	if (doCompute)
+	// Check for size mismatchs between operands
+	if (doCompute == true)
 	{
-		QVector<shared_ptr<Variable>> operands = this->getOperands();
-		this->failureCause = EquationComputationFailureCause_t::nofail;
-
-		switch (this->function)
+		if ( (this->operatorType != OperatorType_t::concatOp)  &&
+		     (this->operatorType != OperatorType_t::extractOp) &&
+		     (this->operatorType != OperatorType_t::notOp)     &&
+		     (this->operatorType != OperatorType_t::identity)  )
 		{
-		case OperatorType_t::notOp:
-			this->currentValue = ! ( operands[0]->getCurrentValue() );
-			break;
-		case OperatorType_t::identity:
-			this->currentValue = operands[0]->getCurrentValue();
-			break;
-		case OperatorType_t::equalOp:
-		case OperatorType_t::diffOp:
-		{
-			LogicValue oneBitResult(1);
-			if (function == OperatorType_t::equalOp)
+			uint operandsSize = 0;
+			for (auto& currentOperand : this->operands)
 			{
-				oneBitResult[0] = ((operands[0]->getCurrentValue() == operands[1]->getCurrentValue()));
+				auto currentOperandValue = currentOperand->getInitialValue();
+				auto currentOperandSize = currentOperandValue.getSize();
+				if ( (operandsSize != 0) && (currentOperandSize != operandsSize) )
+				{
+					this->failureCause = EquationComputationFailureCause_t::sizeMismatch;
+					doCompute = false;
+					break;
+				}
+				else if (operandsSize == 0)
+				{
+					operandsSize = currentOperandSize;
+				}
 			}
-			else if (function == OperatorType_t::diffOp)
-			{
-				oneBitResult[0] = ((operands[0]->getCurrentValue() != operands[1]->getCurrentValue()));
-			}
-
-			this->currentValue = oneBitResult;
 		}
-			break;
-		case OperatorType_t::extractOp:
-			if (this->rangeL != -1)
+	}
+
+	// Check ranges for extract operand
+	if (doCompute == true)
+	{
+		if (this->operatorType == OperatorType_t::extractOp)
+		{
+			if (this->rangeL == -1)
+			{
+				this->failureCause = EquationComputationFailureCause_t::missingParameter;
+				doCompute = false;
+			}
+			else // (this->rangeL != -1)
 			{
 				if (this->rangeR != -1)
 				{
-					if (this->rangeL >= this->rangeR)
+					if (this->rangeL < this->rangeR)
 					{
-						int range = this->rangeL - this->rangeR + 1;
-						LogicValue subVector(range);
-						LogicValue originalValue = operands[0]->getCurrentValue();
-
-						for (int i = 0 ; i < range ; i++)
-						{
-							subVector[i] = originalValue[this->rangeR + i];
-						}
-
-						this->currentValue = subVector;
-
-					}
-					else
-					{
-						this->currentValue = LogicValue::getNullValue();
 						this->failureCause = EquationComputationFailureCause_t::incorrectParameter;
+						doCompute = false;
 					}
 				}
-				else
+
+				auto operand = this->getOperand(0);
+				auto operandValue = operand->getInitialValue();
+				auto operandSize = operandValue.getSize();
+				if ((uint)rangeL >= operandSize)
 				{
-					if ((uint)rangeL < operands[0]->getSize())
-					{
-						LogicValue result(1);
-						result[0] = operands[0]->getCurrentValue()[rangeL];
-						this->currentValue = result;
-					}
-					else
-					{
-						rangeL = -1;
-						this->currentValue = LogicValue::getNullValue();
-						this->failureCause = EquationComputationFailureCause_t::incorrectParameter;
-					}
+					this->failureCause = EquationComputationFailureCause_t::incorrectParameter;
+					doCompute = false;
 				}
+			}
+		}
+	}
+
+	LogicValue previousValue = this->initialValue;
+	if (doCompute == true)
+	{
+		this->initialValue = this->computeValue(CurrentOrInitial_t::initial);
+	}
+	else
+	{
+		this->initialValue = LogicValue::getNullValue();
+	}
+
+	if (previousValue != this->initialValue)
+	{
+		emit this->equationInitialValueChangedEvent();
+	}
+}
+
+void Equation::operandAboutToBeInvalidatedEventHandler()
+{
+	if (this->operatorType != OperatorType_t::identity)
+	{
+		for (int operandNumber = 0 ; operandNumber < this->operands.count() ; operandNumber++)
+		{
+			auto operand = this->getOperand(operandNumber);
+			if (operand == nullptr) continue;
+
+			if (operand->getSource() == OperandSource_t::variable)
+			{
+				auto variable = operand->getVariable();
+				if (variable == nullptr)
+				{
+					this->clearOperand(operandNumber);
+					break;
+				}
+			}
+		}
+
+		this->computeInitialValue();
+		emit this->equationTextChangedEvent();
+	}
+	else // (this->operatorType == OperatorType_t::identity)
+	{
+		// Outside an EquationEditor, identity operands are only used at the equation root
+		// to hold variables and constants. As operands can only be invalidated as the
+		// result of a variable deletion, we know we are outside an EquationEditor.
+		// We thus have to transmit the event to the machine component holding the Equation.
+		emit this->equationAboutToBeInvalidatedEvent();
+	}
+}
+
+void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
+{
+	// Do not allow placing an operand outside defined range
+	if (i >= this->getOperandCount()) return;
+
+
+	auto previousOperand = this->operands.at(i);
+	if (previousOperand != nullptr)
+	{
+		// In case operand still has a valid pointer elsewere
+		disconnect(previousOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
+
+		disconnect(previousOperand.get(), &Operand::operandInitialValueChangedEvent,  this, &Equation::computeInitialValue);
+		disconnect(previousOperand.get(), &Operand::operandCurrentValueChangedEvent,  this, &Equation::computeCurrentValue);
+		disconnect(previousOperand.get(), &Operand::operandAboutToBeInvalidatedEvent, this, &Equation::operandAboutToBeInvalidatedEventHandler);
+
+		// Clean operand
+		this->operands[i] = nullptr;
+	}
+
+	if (newOperand != nullptr)
+	{
+		connect(newOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
+
+		connect(newOperand.get(), &Operand::operandInitialValueChangedEvent,  this, &Equation::computeInitialValue);
+		connect(newOperand.get(), &Operand::operandCurrentValueChangedEvent,  this, &Equation::computeCurrentValue);
+		connect(newOperand.get(), &Operand::operandAboutToBeInvalidatedEvent, this, &Equation::operandAboutToBeInvalidatedEventHandler);
+
+		// Assign operand
+		this->operands[i] = newOperand;
+	}
+
+	this->computeInitialValue();
+	emit this->equationTextChangedEvent();
+
+	// As constants current value never change, their only chance of being evaluated is now
+	if ( (newOperand != nullptr) && (newOperand->getSource() == OperandSource_t::constant) )
+	{
+		this->computeCurrentValue();
+	}
+}
+
+LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
+{
+	this->failureCause = EquationComputationFailureCause_t::nofail;
+
+	LogicValue computedValue;
+	switch (this->operatorType)
+	{
+	case OperatorType_t::notOp:
+		if (currentOrInitial == CurrentOrInitial_t::current)
+		{
+			computedValue = ! ( this->operands[0]->getCurrentValue() );
+		}
+		else
+		{
+			computedValue = ! ( this->operands[0]->getInitialValue() );
+		}
+		break;
+	case OperatorType_t::identity:
+		if (currentOrInitial == CurrentOrInitial_t::current)
+		{
+			computedValue = this->operands[0]->getCurrentValue();
+		}
+		else
+		{
+			computedValue = this->operands[0]->getInitialValue();
+		}
+		break;
+	case OperatorType_t::equalOp:
+	{
+		LogicValue oneBitResult(1);
+		if (currentOrInitial == CurrentOrInitial_t::current)
+		{
+			oneBitResult[0] = ((this->operands[0]->getCurrentValue() == this->operands[1]->getCurrentValue()));
+		}
+		else
+		{
+			oneBitResult[0] = ((this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue()));
+		}
+
+		computedValue = oneBitResult;
+	}
+	break;
+	case OperatorType_t::diffOp:
+	{
+		LogicValue oneBitResult(1);
+		if (currentOrInitial == CurrentOrInitial_t::current)
+		{
+			oneBitResult[0] = ((this->operands[0]->getCurrentValue() != this->operands[1]->getCurrentValue()));
+		}
+		else
+		{
+			oneBitResult[0] = ((this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue()));
+		}
+
+		computedValue = oneBitResult;
+	}
+	break;
+	case OperatorType_t::extractOp:
+		if (this->rangeR != -1)
+		{
+			int range = this->rangeL - this->rangeR + 1;
+			LogicValue subVector(range);
+			LogicValue originalValue;
+			if (currentOrInitial == CurrentOrInitial_t::current)
+			{
+				originalValue = this->operands[0]->getCurrentValue();
 			}
 			else
 			{
-				this->currentValue = LogicValue::getNullValue();
-				this->failureCause = EquationComputationFailureCause_t::missingParameter;
+				originalValue = this->operands[0]->getInitialValue();
 			}
-			break;
-		case OperatorType_t::concatOp:
+
+			for (int i = 0 ; i < range ; i++)
+			{
+				subVector[i] = originalValue[this->rangeR + i];
+			}
+
+			computedValue = subVector;
+		}
+		else
 		{
-			int sizeCount = 0;
-			for (shared_ptr<Variable> currentOperand : this->getOperands())
+			auto operand = this->operands[0];
+			LogicValue operandValue;
+			if (currentOrInitial == CurrentOrInitial_t::current)
 			{
-				sizeCount += currentOperand->getSize();
+				operandValue = operand->getCurrentValue();
+			}
+			else
+			{
+				operandValue = operand->getInitialValue();
 			}
 
-			LogicValue concatVector(sizeCount);
-
-			int currentBit = sizeCount - 1;
-			for (shared_ptr<Variable> currentOperand : this->getOperands())
+			LogicValue result(1);
+			result[0] = operandValue[rangeL];
+			computedValue = result;
+		}
+		break;
+	case OperatorType_t::concatOp:
+	{
+		int sizeCount = 0;
+		for (auto& currentOperand : this->operands)
+		{
+			LogicValue currentOperandValue;
+			if (currentOrInitial == CurrentOrInitial_t::current)
 			{
-				for (int i = currentOperand->getSize()-1 ; i >= 0 ; i--)
+				currentOperandValue = currentOperand->getCurrentValue();
+			}
+			else
+			{
+				currentOperandValue = currentOperand->getInitialValue();
+			}
+
+			sizeCount += currentOperandValue.getSize();
+		}
+
+		LogicValue concatVector(sizeCount);
+
+		int currentBit = sizeCount - 1;
+		for (auto& currentOperand : this->operands)
+		{
+			LogicValue currentOperandValue;
+			if (currentOrInitial == CurrentOrInitial_t::current)
+			{
+				currentOperandValue = currentOperand->getCurrentValue();
+			}
+			else
+			{
+				currentOperandValue = currentOperand->getInitialValue();
+			}
+
+			for (int i = currentOperandValue.getSize()-1 ; i >= 0 ; i--)
+			{
+				if (currentOrInitial == CurrentOrInitial_t::current)
 				{
 					concatVector[currentBit] = currentOperand->getCurrentValue()[i];
-					currentBit--;
 				}
+				else
+				{
+					concatVector[currentBit] = currentOperand->getInitialValue()[i];
+				}
+				currentBit--;
 			}
-
-			this->currentValue = concatVector;
 		}
-			break;
-		case OperatorType_t::andOp:
-		case OperatorType_t::nandOp:
+
+		computedValue = concatVector;
+	}
+	break;
+	case OperatorType_t::andOp:
+	case OperatorType_t::nandOp:
+	{
+		auto operand = this->getOperand(0);
+		uint operandsSize;
+
+		if (currentOrInitial == CurrentOrInitial_t::current)
 		{
-			LogicValue partialResult(operandsSize, true);
-			for (shared_ptr<Variable> operand : operands)
+			operandsSize = operand->getCurrentValue().getSize();
+		}
+		else
+		{
+			operandsSize = operand->getInitialValue().getSize();
+		}
+
+		LogicValue partialResult(operandsSize, true);
+		for (auto& operand : this->operands)
+		{
+			if (currentOrInitial == CurrentOrInitial_t::current)
 			{
 				partialResult &= operand->getCurrentValue();
 			}
-
-			if (this->isInverted())
-				partialResult = !partialResult;
-
-			this->currentValue = partialResult;
+			else
+			{
+				partialResult &= operand->getInitialValue();
+			}
 		}
-			break;
 
-		case OperatorType_t::orOp:
-		case OperatorType_t::norOp:
+		if (this->isInverted())
+			partialResult = !partialResult;
+
+		computedValue = partialResult;
+	}
+	break;
+
+	case OperatorType_t::orOp:
+	case OperatorType_t::norOp:
+	{
+		auto operand = this->getOperand(0);
+		uint operandsSize;
+
+		if (currentOrInitial == CurrentOrInitial_t::current)
 		{
-			LogicValue partialResult(operandsSize);
-			for (shared_ptr<Variable> operand : operands)
+			operandsSize = operand->getCurrentValue().getSize();
+		}
+		else
+		{
+			operandsSize = operand->getInitialValue().getSize();
+		}
+
+		LogicValue partialResult(operandsSize);
+		for (auto& operand : this->operands)
+		{
+			if (currentOrInitial == CurrentOrInitial_t::current)
 			{
 				partialResult |= operand->getCurrentValue();
 			}
-
-			if (this->isInverted())
-				partialResult = !partialResult;
-
-			this->currentValue = partialResult;
+			else
+			{
+				partialResult |= operand->getInitialValue();
+			}
 		}
-			break;
 
-		case OperatorType_t::xorOp:
-		case OperatorType_t::xnorOp:
+		if (this->isInverted())
+			partialResult = !partialResult;
+
+		computedValue = partialResult;
+	}
+	break;
+
+	case OperatorType_t::xorOp:
+	case OperatorType_t::xnorOp:
+	{
+		auto operand = this->getOperand(0);
+		uint operandsSize;
+
+		if (currentOrInitial == CurrentOrInitial_t::current)
 		{
-			LogicValue partialResult(operandsSize);
-			for (shared_ptr<Variable> operand : operands)
+			operandsSize = operand->getCurrentValue().getSize();
+		}
+		else
+		{
+			operandsSize = operand->getInitialValue().getSize();
+		}
+
+		LogicValue partialResult(operandsSize);
+		for (auto& operand : this->operands)
+		{
+			if (currentOrInitial == CurrentOrInitial_t::current)
 			{
 				partialResult ^= operand->getCurrentValue();
 			}
-
-			if (this->isInverted())
-				partialResult = !partialResult;
-
-			this->currentValue = partialResult;
-		}
-			break;
-		case OperatorType_t::constant:
-			this->currentValue = this->constantValue;
-			break;
-		}
-	}
-	else
-	{
-		this->currentValue = LogicValue::getNullValue();
-	}
-
-	if (previousValue != this->currentValue)
-		emit variableCurrentValueChangedEvent();
-
-	if (previousValue.getSize() != this->currentValue.getSize())
-	{
-		try
-		{
-			emit variableResizedEvent();
-		}
-		catch (const std::bad_weak_ptr&)
-		{
-			// It's ok to fail here: it means shared_from_this is illegal to call.
-			// This happens when this function is called from the constructor
-		}
-	}
-}
-
-void Equation::variableDeletedEventHandler()
-{
-	this->computeCurrentValue();
-	emit this->variableStaticConfigurationChangedEvent();
-}
-
-bool Equation::variableHasSize(shared_ptr<Variable> sig)
-{
-	if (sig == nullptr)
-		return false;
-	else if (sig->getSize() == 0)
-		return false;
-	else
-		return true;
-}
-
-/**
- * @brief Equation::decreaseOperandCountInternal Decreases the operand count without
- * checking on the function required operands. It still makes sure the operand count
- * doesn't go below 0.
- * This operation can place the object in a state where function does not have it
- * required count of operand, so the caller has to make sure he replaces the object
- * in a correct state before any call to value computing is made.
- */
-void Equation::decreaseOperandCountInternal() // Throws StatesException
-{
-	// Do not allow placing an operand outside defined range
-	if (this->allowedOperandCount == 0)
-	{
-		throw StatesException("Equation", EquationError_t::reduced_operand_while_0, "Trying to reduce operand count while count is 0");
-	}
-
-	clearOperand(this->allowedOperandCount-1); // Throws StatesException - Operand count checked - ignored
-	this->allowedOperandCount--;
-
-	this->variableOperands.resize(this->allowedOperandCount);
-	this->equationOperands.resize(this->allowedOperandCount);
-}
-
-/**
- * @brief Equation::increaseOperandCountInternal Increases the operand count without
- * checking on the function required operands.
- * This operation can place the object in a state where function does not have it
- * required count of operand, so the caller has to make sure he replaces the object
- * in a correct state before any call to value computing is made.
- */
-void Equation::increaseOperandCountInternal()
-{
-	this->allowedOperandCount++;
-
-	this->variableOperands.resize(this->allowedOperandCount);
-	this->equationOperands.resize(this->allowedOperandCount);
-}
-
-uint Equation::getOperandCount() const
-{
-	return this->allowedOperandCount;
-}
-
-void Equation::increaseOperandCount() // Throws StatesException
-{
-	switch (function)
-	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
-		this->increaseOperandCountInternal();
-
-		emit variableStaticConfigurationChangedEvent();
-
-		this->computeCurrentValue();
-		break;
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::constant:
-		throw StatesException("Equation", EquationError_t::change_operand_illegal, "Trying to change the operand count on a fixed operand count function");
-		break;
-	}
-}
-
-void Equation::decreaseOperandCount() // Throws StatesException
-{
-	switch (function)
-	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
-		if (  (this->allowedOperandCount > 2) )
-		{
-			this->decreaseOperandCountInternal(); // Throws StatesException - Operand count cheked - ignored
-
-			emit variableStaticConfigurationChangedEvent();
-
-			this->computeCurrentValue();
+			else
+			{
+				partialResult ^= operand->getInitialValue();
+			}
 		}
 
-		break;
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::constant:
-		throw StatesException("Equation", EquationError_t::change_operand_illegal, "Trying to change the operand count on a fixed operand count function");
-		break;
+		if (this->isInverted())
+			partialResult = !partialResult;
+
+		computedValue = partialResult;
 	}
+	break;
+	}
+
+	return computedValue;
 }

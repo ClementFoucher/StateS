@@ -30,6 +30,7 @@
 #include "truthtable.h"
 #include "equation.h"
 #include "fsmvhdlexport.h"
+#include "variable.h"
 
 
 FsmVerifier::FsmVerifier() :
@@ -87,21 +88,13 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 				auto transition = fsm->getTransition(transitionId);
 				if (transition == nullptr) continue;
 
-				shared_ptr<Variable> condition = transition->getCondition();
+				auto condition = transition->getCondition();
 				if (condition == nullptr) continue;
+
 
 				if (condition->getSize() != 0)
 				{
-					shared_ptr<Equation> equation = dynamic_pointer_cast<Equation>(condition);
-
-					if (equation == nullptr)
-					{
-						QVector<shared_ptr<Variable>> operand;
-						operand.append(condition);
-						equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity, operand));
-					}
-
-					equations.append(equation);
+					equations.append(condition);
 				}
 				else
 				{
@@ -146,11 +139,11 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					bool detected = false;
 					uint rowcount = 0;
 					shared_ptr<Issue> currentIssue = nullptr;
-					for (QVector<LogicValue> row : result)
+					for (QVector<LogicValue>& row : result)
 					{
 						uint trueCount = 0;
 						LogicValue valueTrue = LogicValue::getValue1(1);
-						for (LogicValue val : row)
+						for (LogicValue& val : row)
 						{
 							if (val == valueTrue)
 								trueCount++;
@@ -188,7 +181,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 			if (!compat->isCompatible())
 			{
-				for (shared_ptr<Variable> variable : compat->bothMooreAndMealy)
+				for (auto& variable : compat->bothMooreAndMealy)
 				{
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
@@ -198,30 +191,30 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (shared_ptr<Variable> sig : compat->bothTempAndKeepValue)
+				for (auto& variable : compat->bothTempAndKeepValue)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
 							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
 							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (shared_ptr<Variable> sig : compat->rangeAdressed)
+				for (auto& variable : compat->rangeAdressed)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has range-adressed output generation.") + " "
 							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
 							+ tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (shared_ptr<Variable> sig : compat->mealyWithKeep)
+				for (auto& variable : compat->mealyWithKeep)
 				{
 					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + sig->getName() + " "
+					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has Mealy outputs affectation (remembered value).") + " "
 							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
 							+ tr("This variable will be ignored on VHDL export.");

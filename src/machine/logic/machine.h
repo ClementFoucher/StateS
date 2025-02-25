@@ -74,18 +74,18 @@ public:
 
 	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
 
-	QList<shared_ptr<Input>>    getInputs()            const; // TODO: throw exception
-	QList<shared_ptr<Output>>   getOutputs()           const; // TODO: throw exception
-	QList<shared_ptr<Variable>> getInternalVariables() const;
-	QList<shared_ptr<Variable>> getConstants()         const;
+	const QList<shared_ptr<Input>>    getInputs()            const; // TODO: throw exception
+	const QList<shared_ptr<Output>>   getOutputs()           const; // TODO: throw exception
+	const QList<shared_ptr<Variable>> getInternalVariables() const;
+	const QList<shared_ptr<Variable>> getConstants()         const;
 
-	QList<shared_ptr<Variable>> getInputsAsVariables()  const;
-	QList<shared_ptr<Variable>> getOutputsAsVariables() const;
+	const QList<shared_ptr<Variable>> getInputsAsVariables()  const;
+	const QList<shared_ptr<Variable>> getOutputsAsVariables() const;
 
-	QList<shared_ptr<Variable>> getWrittableVariables()        const;
-	QList<shared_ptr<Variable>> getReadableVariables()         const;
-	QList<shared_ptr<Variable>> getReadableVariableVariables() const;
-	QList<shared_ptr<Variable>> getAllVariables()              const;
+	const QList<shared_ptr<Variable>> getWrittableVariables()        const;
+	const QList<shared_ptr<Variable>> getReadableVariables()         const;
+	const QList<shared_ptr<Variable>> getReadableVariableVariables() const;
+	const QList<shared_ptr<Variable>> getAllVariables()              const;
 
 	// Other
 
@@ -97,13 +97,13 @@ protected:
 
 private:
 	shared_ptr<Variable> addVariableAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value);
-	QList<shared_ptr<Variable>> getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
+	const QList<shared_ptr<Variable>> getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
 	void addVariableToList(shared_ptr<Variable> variable, uint rank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
 	bool deleteVariableFromList(const QString& name, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
 	bool renameVariableInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
 	bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
 
-	QHash<QString, shared_ptr<Variable>> getAllVariablesMap() const;
+	const QHash<QString, shared_ptr<Variable>> getAllVariablesMap() const;
 
 	bool cleanVariableName(QString& nameToClean) const;
 

@@ -23,6 +23,7 @@
 #include "machine.h"
 
 // StateS classes
+#include "variable.h"
 #include "input.h"
 #include "output.h"
 #include "constant.h"
@@ -341,7 +342,7 @@ shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) co
 	}
 }
 
-QList<shared_ptr<Input> > Machine::getInputs() const
+const QList<shared_ptr<Input> > Machine::getInputs() const
 {
 	QList<shared_ptr<Input> > inputVariables;
 
@@ -361,7 +362,7 @@ QList<shared_ptr<Input> > Machine::getInputs() const
 	return inputVariables;
 }
 
-QList<shared_ptr<Output> > Machine::getOutputs() const
+const QList<shared_ptr<Output> > Machine::getOutputs() const
 {
 	QList<shared_ptr<Output> > outputVariables;
 
@@ -381,27 +382,27 @@ QList<shared_ptr<Output> > Machine::getOutputs() const
 	return outputVariables;
 }
 
-QList<shared_ptr<Variable> > Machine::getInternalVariables() const
+const QList<shared_ptr<Variable> > Machine::getInternalVariables() const
 {
 	return getRankedVariableList(&this->localVariables, &this->localVariablesRanks);
 }
 
-QList<shared_ptr<Variable> > Machine::getConstants() const
+const QList<shared_ptr<Variable> > Machine::getConstants() const
 {
 	return getRankedVariableList(&this->constants, &this->constantsRanks);
 }
 
-QList<shared_ptr<Variable> > Machine::getInputsAsVariables() const
+const QList<shared_ptr<Variable> > Machine::getInputsAsVariables() const
 {
 	return getRankedVariableList(&this->inputs, &this->inputsRanks);
 }
 
-QList<shared_ptr<Variable> > Machine::getOutputsAsVariables() const
+const QList<shared_ptr<Variable> > Machine::getOutputsAsVariables() const
 {
 	return getRankedVariableList(&this->outputs, &this->outputsRanks);
 }
 
-QList<shared_ptr<Variable> > Machine::getWrittableVariables() const
+const QList<shared_ptr<Variable> > Machine::getWrittableVariables() const
 {
 	QList<shared_ptr<Variable>> writtableVariables;
 
@@ -411,7 +412,7 @@ QList<shared_ptr<Variable> > Machine::getWrittableVariables() const
 	return writtableVariables;
 }
 
-QList<shared_ptr<Variable> > Machine::getReadableVariables() const
+const QList<shared_ptr<Variable> > Machine::getReadableVariables() const
 {
 	QList<shared_ptr<Variable>> readableVariables;
 
@@ -422,7 +423,7 @@ QList<shared_ptr<Variable> > Machine::getReadableVariables() const
 	return readableVariables;
 }
 
-QList<shared_ptr<Variable> > Machine::getReadableVariableVariables() const
+const QList<shared_ptr<Variable> > Machine::getReadableVariableVariables() const
 {
 	QList<shared_ptr<Variable>> readableVariables;
 
@@ -432,7 +433,7 @@ QList<shared_ptr<Variable> > Machine::getReadableVariableVariables() const
 	return readableVariables;
 }
 
-QList<shared_ptr<Variable> > Machine::getAllVariables() const
+const QList<shared_ptr<Variable> > Machine::getAllVariables() const
 {
 	QList<shared_ptr<Variable>> allVariables;
 
@@ -459,9 +460,9 @@ QString Machine::getUniqueVariableName(const QString& prefix) const
 		currentName = baseName + QString::number(i);
 
 		nameIsValid = true;
-		for (shared_ptr<Variable> colleage : this->getAllVariables())
+		for (auto& variable : this->getAllVariables())
 		{
-			if (colleage->getName() == currentName)
+			if (variable->getName() == currentName)
 			{
 				nameIsValid = false;
 				i++;
@@ -496,7 +497,7 @@ void Machine::removeComponent(componentId_t componentId)
 shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value)
 {
 	// First check if name doesn't already exist
-	for (shared_ptr<Variable> variable : this->getAllVariables())
+	for (auto& variable : this->getAllVariables())
 	{
 		if (variable->getName() == name)
 			return nullptr;
@@ -570,7 +571,7 @@ shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QSt
 	return variable;
 }
 
-QList<shared_ptr<Variable>> Machine::getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const
+const QList<shared_ptr<Variable> > Machine::getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const
 {
 	QList<shared_ptr<Variable> > rankedList;
 
@@ -617,6 +618,10 @@ bool Machine::deleteVariableFromList(const QString& name, QHash<QString, shared_
 
 	// Store rank
 	uint variableRank = (*rankHash)[name];
+
+	// Notify deletion
+	auto variable = (*variableHash)[name];
+	variable->notifyVariableAboutToBeDeleted();
 
 	// Remove
 	variableHash->remove(name);
@@ -703,11 +708,11 @@ bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString,
 	return true;
 }
 
-QHash<QString, shared_ptr<Variable> > Machine::getAllVariablesMap() const
+const QHash<QString, shared_ptr<Variable> > Machine::getAllVariablesMap() const
 {
 	QHash<QString, shared_ptr<Variable>> allVariables;
 
-	for (shared_ptr<Variable> variable : this->getAllVariables())
+	for (auto& variable : this->getAllVariables())
 	{
 		allVariables[variable->getName()] = variable;
 	}

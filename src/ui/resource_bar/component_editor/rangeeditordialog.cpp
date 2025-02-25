@@ -34,7 +34,7 @@
 
 
 RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent) :
-    QDialog(parent)
+	QDialog(parent)
 {
 	int rangeL = action->getActionRangeL();
 	int rangeR = action->getActionRangeR();
@@ -46,17 +46,22 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidge
 	QLabel* title;
 
 	if (rangeR == -1)
+	{
 		title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>", this);
+	}
 	else
+	{
 		title = new QLabel("<b>" + tr("Choose range") + "</b>", this);
+	}
 	title->setAlignment(Qt::AlignCenter);
 	layout->addWidget(title);
 
 	this->equation = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp, 1));
 	this->equation->setRange(rangeL, rangeR);
-	this->equation->setOperand(0, action->getVariableActedOn()); // Throws StatesException - Extract op aways has operand 0 - ignored
+	this->equation->setOperand(0, action->getVariableActedOn());
 
-	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, false, true, this);
+	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, -1, false, this);
+	graphicEquation->setVariableLock(true);
 	layout->addWidget(graphicEquation);
 
 	QHBoxLayout* buttonsLayout = new QHBoxLayout();

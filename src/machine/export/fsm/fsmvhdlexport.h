@@ -22,6 +22,9 @@
 #ifndef FSMVHDLEXPORT_H
 #define FSMVHDLEXPORT_H
 
+// Parent
+#include <QObject>
+
 // C++ classes
 #include <memory>
 using namespace std;
@@ -36,10 +39,13 @@ class QTextStream;
 class Fsm;
 class Variable;
 class ActionOnVariable;
+class Equation;
+class Operand;
 
 
-class FsmVhdlExport
+class FsmVhdlExport : public QObject
 {
+	Q_OBJECT
 
 	/////
 	// Type declarations
@@ -107,7 +113,8 @@ private:
 	void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
 	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const;
 
-	QString generateEquationText(shared_ptr<Variable> equation, shared_ptr<Fsm> l_machine) const;
+	QString generateEquationText(shared_ptr<Equation> equation, shared_ptr<Fsm> l_machine) const;
+	QString generateOperandText(shared_ptr<Operand> operand, shared_ptr<Fsm> l_machine) const;
 
 	/////
 	// Object variables

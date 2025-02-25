@@ -54,6 +54,12 @@ enum class MachineBuilderTool_t          { none, initialState, state, transition
 enum class MachineBuilderSingleUseTool_t { none, drawTransitionFromScene, editTransitionSource, editTransitionTarget };
 enum class SimulationBehavior_t          { prepare, immediately, after };
 
+enum class OperandSource_t
+{
+	variable, // Operand is a variable defined in the machine (including constants)
+	equation, // Operand is itself an equation
+	constant  // Constant defined on-the-fly in equation editor. Not to confuse with constants defined in the machine, which are variables (try to follow here!).
+};
 
 // This enum must always be treated using a switch in order to obtain
 // a warning when adding a new member in all places it is used.
@@ -70,7 +76,6 @@ enum class OperatorType_t
 	diffOp,  // Diff  equations always have exactly two operand and are size one
 	extractOp, // Extract equations always have exacly one operand
 	concatOp,
-	constant, // To allow dynamically creating constants (which are not machine variables)
 	identity // For internal use only, exactly one operand
 };
 

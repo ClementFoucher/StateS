@@ -27,7 +27,7 @@
 #include "exceptiontypes.h"
 
 
-Variable::Variable(const QString &name, uint size) // Throws StatesException
+Variable::Variable(const QString& name, uint size) // Throws StatesException
 {
 	if (size == 0)
 		throw StatesException("Variable", VariableError_t::building_zero_sized, "Variable size set to 0");
@@ -35,18 +35,10 @@ Variable::Variable(const QString &name, uint size) // Throws StatesException
 	this->name = name;
 	this->initialValue = LogicValue::getValue0(size);
 	this->currentValue = this->initialValue;
-
-	// Link specific events signals to general events
-	connect(this, &Variable::variableRenamedEvent,             this, &Variable::variableStaticConfigurationChangedEvent);
-	connect(this, &Variable::variableResizedEvent,             this, &Variable::variableStaticConfigurationChangedEvent);
-	connect(this, &Variable::variableInitialValueChangedEvent, this, &Variable::variableStaticConfigurationChangedEvent);
-
-	// This event also impacts dynamic values
-	connect(this, &Variable::variableResizedEvent, this, &Variable::variableCurrentValueChangedEvent);
 }
 
 Variable::Variable(const QString& name) :
-    Variable(name, 1) // Size to 1 => no exception to catch - ignored
+	Variable(name, 1) // Size to 1 => no exception to catch - ignored
 {
 
 }
@@ -75,17 +67,15 @@ uint Variable::getSize() const
 void Variable::resize(uint newSize) // Throws StatesException
 {
 	if (newSize == 0)
+	{
 		throw StatesException("Variable", VariableError_t::variable_resized_to_0, "Trying to resize variable with size 0");
+	}
 
 	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
 	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
 
 	emit variableResizedEvent();
-}
-
-QString Variable::getText() const
-{
-	return this->name;
+	emit variableInitialValueChangedEvent();
 }
 
 void Variable::setCurrentValue(const LogicValue& value) // Throws StatesException
@@ -145,6 +135,11 @@ LogicValue Variable::getCurrentValue() const
 	return this->currentValue;
 }
 
+void Variable::notifyVariableAboutToBeDeleted()
+{
+	emit this->variableAboutToBeDeletedEvent();
+}
+
 LogicValue Variable::getInitialValue() const
 {
 	return this->initialValue;
@@ -168,21 +163,4 @@ void Variable::reinitialize()
 {
 	this->currentValue = this->initialValue;
 	emit variableCurrentValueChangedEvent();
-}
-
-// True concept here only apply to one bit variables
-// A larger variable must never be checked for trueness
-bool Variable::isTrue() const // Throws StatesException
-{
-	if (this->getSize() == 1)
-	{
-		if (this->currentValue == LogicValue::getValue1(1))
-			return true;
-		else
-			return false;
-	}
-	else
-	{
-		throw StatesException("Variable", VariableError_t::variable_is_not_bool, "Asking for boolean value on non 1-sized variable");
-	}
 }

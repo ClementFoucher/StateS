@@ -41,6 +41,7 @@
 #include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
+#include "operand.h"
 
 
 MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
@@ -138,41 +139,42 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	}
 }
 
-void MachineXmlWriter::writeLogicEquation(shared_ptr<Variable> equation)
+void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 {
-	shared_ptr<Equation> complexEquation = dynamic_pointer_cast<Equation> (equation);
+	if (equation == nullptr) return;
 
-	if (complexEquation != nullptr)
+
+	if (equation->getOperatorType() != OperatorType_t::identity)
 	{
 		this->stream->writeStartElement("LogicEquation");
-		switch (complexEquation->getFunction())
+		switch (equation->getOperatorType())
 		{
 		case OperatorType_t::andOp:
 			this->stream->writeAttribute("Nature", "and");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::nandOp:
 			this->stream->writeAttribute("Nature", "nand");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::norOp:
 			this->stream->writeAttribute("Nature", "nor");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::notOp:
 			this->stream->writeAttribute("Nature", "not");
 			break;
 		case OperatorType_t::orOp:
 			this->stream->writeAttribute("Nature", "or");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::xnorOp:
 			this->stream->writeAttribute("Nature", "xnor");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::xorOp:
 			this->stream->writeAttribute("Nature", "xor");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::equalOp:
 			this->stream->writeAttribute("Nature", "equals");
@@ -182,41 +184,76 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Variable> equation)
 			break;
 		case OperatorType_t::extractOp:
 			this->stream->writeAttribute("Nature", "extract");
-			this->stream->writeAttribute("RangeL", QString::number(complexEquation->getRangeL()));
-			this->stream->writeAttribute("RangeR", QString::number(complexEquation->getRangeR()));
+			this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));
+			this->stream->writeAttribute("RangeR", QString::number(equation->getRangeR()));
 			break;
 		case OperatorType_t::concatOp:
 			this->stream->writeAttribute("Nature", "concatenate");
-			this->stream->writeAttribute("OperandCount", QString::number(complexEquation->getOperandCount()));
-			break;
-		case OperatorType_t::constant:
-			this->stream->writeAttribute("Nature", "constant");
-			this->stream->writeAttribute("Value", complexEquation->getCurrentValue().toString());
+			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 			break;
 		case OperatorType_t::identity:
-			// Should not happen
+			// Handled in another branch of the if
 			break;
 		}
 
-		for (uint i = 0 ; i < complexEquation->getOperandCount() ; i++)
+		for (uint i = 0 ; i < equation->getOperandCount() ; i++)
 		{
-			shared_ptr<Variable> operand = complexEquation->getOperand(i); // Throws StatesException - Constrained by operand count - ignored
+			auto operand = equation->getOperand(i);
 			if (operand != nullptr)
 			{
 				this->stream->writeStartElement("Operand");
 				this->stream->writeAttribute("Number", QString::number(i));
-				this->writeLogicEquation(operand);
+
+				switch (operand->getSource())
+				{
+				case OperandSource_t::equation:
+					this->writeLogicEquation(operand->getEquation());
+					break;
+				case OperandSource_t::variable:
+					this->stream->writeStartElement("LogicVariable");
+					this->stream->writeAttribute("Name", operand->getVariable()->getName());
+					this->stream->writeEndElement(); // LogicVariable
+					break;
+				case OperandSource_t::constant:
+					this->stream->writeStartElement("LogicEquation");
+					this->stream->writeAttribute("Nature", "constant");
+					this->stream->writeAttribute("Value", operand->getConstant().toString());
+					this->stream->writeEndElement(); // LogicEquation
+					break;
+				}
+
 				this->stream->writeEndElement(); // Operand
 			}
 		}
-	}
-	else
-	{
-		this->stream->writeStartElement("LogicVariable");
-		this->stream->writeAttribute("Name", equation->getName());
-	}
 
-	this->stream->writeEndElement(); // LogicEquation | LogicVariable
+		this->stream->writeEndElement(); // LogicEquation
+	}
+	else // (equation->getOperatorType() == OperatorType_t::identity)
+	{
+		// Identity should only happen aa root equation to carry variables or constants
+		auto operand = equation->getOperand(0);
+		if (operand == nullptr) return;
+
+
+		auto operandSource = operand->getSource();
+		if (operandSource == OperandSource_t::variable)
+		{
+			auto variable = operand->getVariable();
+			if (variable == nullptr) return;
+
+
+			this->stream->writeStartElement("LogicVariable");
+			this->stream->writeAttribute("Name", variable->getName());
+			this->stream->writeEndElement(); // LogicVariable
+		}
+		else if (operandSource == OperandSource_t::constant)
+		{
+			this->stream->writeStartElement("LogicEquation");
+			this->stream->writeAttribute("Nature", "constant");
+			this->stream->writeAttribute("Value", operand->getConstant().toString());
+			this->stream->writeEndElement(); // LogicEquation
+		}
+	}
 }
 
 void MachineXmlWriter::createSaveFile() // Throws StatesException

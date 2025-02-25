@@ -82,7 +82,7 @@ private:
 
 	QPushButton* buttonSetCondition = nullptr;
 
-	QPushButton*       buttonExpandTruthTable = nullptr;
+	QPushButton*       buttonToggleTruthTable = nullptr;
 	TruthTableDisplay* truthTableDisplay      = nullptr;
 
 };

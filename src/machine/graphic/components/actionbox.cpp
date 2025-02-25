@@ -125,7 +125,7 @@ void ActionBox::buildActionBox()
 		// Variable name
 
 		currentActionText = "<span style=\"color:black;\">";
-		currentActionText += currentVariable->getText();
+		currentActionText += currentVariable->getName();
 		currentActionText += "</span>";
 
 		// Variable range

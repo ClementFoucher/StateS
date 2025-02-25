@@ -32,6 +32,7 @@ using namespace std;
 // StateS classes
 #include "logicvalue.h"
 class Variable;
+class Equation;
 class EditableEquation;
 
 
@@ -49,14 +50,18 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicEquation(shared_ptr<Variable> equation, bool isTemplate = false, bool lockVariable = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(shared_ptr<Equation> equation, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(shared_ptr<Variable> variable, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(LogicValue constant,           int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void updateEquation(shared_ptr<Variable> oldOperand, shared_ptr<Variable> newOperand); // TODO: throw exception
+	void replaceOperand(uint operandNumber, shared_ptr<Equation> newOperand);
+	void replaceOperandConstantValue(uint operandNumber, LogicValue newValue);
+	void setVariableLock(bool lock);
 
-	shared_ptr<Variable> getLogicEquation() const;
+	shared_ptr<Equation> getLogicEquation() const;
 
 	void forceCompleteRendering();
 	bool validEdit();
@@ -88,29 +93,31 @@ private slots:
 	void updateBorder();
 
 private:
+	void configure();
 	void setDefaultBorderColor();
 	void setHilightedBorderColor();
 
-	void replaceEquation(shared_ptr<Variable> newEquation);
+	void replaceEquation(shared_ptr<Equation> newEquation);
 	void buildEquation();
 	void buildTemplateEquation();
 	void buildVariableEquation();
 	void buildCompleteEquation();
-
-	void clearEditorWidget();
 
 	GraphicEquation* parentEquation() const;
 
 	/////
 	// Object variables
 private:
-	bool isTemplate = false;
+	bool isTemplate;
+	int operandNumber;
 
-	weak_ptr<Variable> equation;
+	weak_ptr<Equation> equation;
 	// Only top-level GraphicEquation holds root Equation
-	shared_ptr<Variable> rootEquation;
+	shared_ptr<Equation> rootEquation;
+	// Just to not loose the reference for variable/constant equations
+	shared_ptr<Equation> localEquation;
 
-	shared_ptr<Variable> droppedEquation;
+	shared_ptr<Equation> droppedEquation;
 
 	bool completeRendering = false;
 	bool mouseIn = false;
@@ -118,7 +125,7 @@ private:
 	EditableEquation* editorWidget = nullptr;
 
 	bool inMouseEvent = false;
-	bool lockVariable;
+	bool lockVariable = false;
 
 };
 

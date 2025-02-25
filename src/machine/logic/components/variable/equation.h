@@ -23,7 +23,7 @@
 #define EQUATION_H
 
 // Parent
-#include "variable.h"
+#include <QObject>
 
 // C++ classes
 #include <memory>
@@ -31,112 +31,111 @@ using namespace std;
 
 // States classes
 #include "statestypes.h"
+#include "logicvalue.h"
+class Variable;
+class Operand;
 
 
 /**
  * @brief
- * An equation is a gathering of variables and other equations, linked by an operator.
- * Equations are thus "compouned variables", which value is dynamic and depends
- * on the values of operands at each moment.
+ * An equation is a gathering of operands linked by an operator.
+ * Equations are thus "dynamic variables", which value will
+ * depend on the values of its operands.
  *
  * Equation size in bits is also dynamic and depends on operands size,
  * except for equality and difference operators, which size is always 1.
  *
- * An equation can store as operand:
- * - nullptr => operand is not set
- * - machine variables
- * - equations with a size
- * - equations with no size
- *
- * An equation with any of its operands set to nullptr or to unsized equations
- * will have no visible size, and always returns a null logic value.
- * An equation with operands of different sizes will behave the same.
- *
- * An equation store its own copy (cloned at initialization) of Equation operands => shared_ptr.
- * Machine variables are primary held by the machine => weak_ptr.
- *
+ * An equation with any of its operands undefined always returns
+ * an undefined value.
  */
-class Equation : public Variable
+class Equation : public QObject
 {
 	Q_OBJECT
 
 	/////
-	// Static functions
+	// Type declarations
 private:
-	static bool variableHasSize(shared_ptr<Variable> sig);
+	enum class CurrentOrInitial_t
+	{
+		current,
+		initial
+	};
 
 	/////
 	// Constructors/destructors
 public:
-	explicit Equation(OperatorType_t function, int allowedOperandCount = -1);
-	explicit Equation(OperatorType_t function, const QVector<shared_ptr<Variable>>& operandList);
+	explicit Equation(OperatorType_t operatorType, int operandCount = -1);
 
 	/////
 	// Object functions
 public:
 	shared_ptr<Equation> clone() const;
 
-	virtual uint getSize() const override;
-	virtual void resize(uint)    override; // Throws StatesException
+	uint getSize() const;
 
-	virtual QString getText() const override;
+	LogicValue getInitialValue() const;
+	LogicValue getCurrentValue() const;
+
+	QString getText() const;
 	QString getColoredText(bool raw = false) const;
 
 	EquationComputationFailureCause_t getComputationFailureCause() const;
 
-	OperatorType_t getFunction() const;
-	void setFunction(OperatorType_t newFunction);
+	OperatorType_t getOperatorType() const;
 
 	bool isInverted() const;
+	// Concept of true is only applicable to size 1 results
+	// An equation whose result size is > 1 will never be true
+	bool isTrue() const;
 
-	shared_ptr<Variable> getOperand(uint i) const; // Throws StatesException
-	bool setOperand(uint i, shared_ptr<Variable> newOperand, bool quiet = false); // Throws StatesException
-	void clearOperand(uint i, bool quiet = false); // Throws StatesException
-
-	QVector<shared_ptr<Variable>> getOperands() const;
+	shared_ptr<Operand> getOperand(uint i) const;
+	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand
+	void setOperand(uint i, shared_ptr<Equation> newOperand); // Set equation operand
+	void setOperand(uint i, LogicValue newOperand);           // Set constant operand
+	void clearOperand(uint i);
 
 	uint getOperandCount() const;
-	void increaseOperandCount(); // Throws StatesException
-	void decreaseOperandCount(); // Throws StatesException
+	void increaseOperandCount();
+	void decreaseOperandCount();
 
-	// Functions specific to some action types
-	void setConstantValue(const LogicValue& value); // Throws StatesException
-	void setRange(int rangeL, int rangeR = -1); // TODO: throw exception when function is not extract? Or simply qDebug... What about out of range values?
-	int getRangeL() const; // TODO: throw exception when function is not extract?
-	int getRangeR() const; // TODO: throw exception when function is not extract?
-
-	// Override to throw exception
-	virtual void setInitialValue(const LogicValue&)                   override; // Throws StatesException
-	virtual void setCurrentValue(const LogicValue&)                   override; // Throws StatesException
-	virtual void setCurrentValueSubRange(const LogicValue&, int, int) override; // Throws StatesException
+	// Functions specific to Extract operator type
+	void setRange(int rangeL, int rangeR = -1);
+	int getRangeL() const;
+	int getRangeR() const;
 
 private slots:
 	void computeCurrentValue();
-	void variableDeletedEventHandler();
+	void computeInitialValue();
+	void operandAboutToBeInvalidatedEventHandler();
 
 private:
-	void increaseOperandCountInternal();
-	void decreaseOperandCountInternal(); // Throws StatesException
+	void setOperand(uint i, shared_ptr<Operand> newOperand);
+	LogicValue computeValue(CurrentOrInitial_t currentOrInitial);
+
+	/////
+	// Signals
+signals:
+	void equationInitialValueChangedEvent();
+	void equationCurrentValueChangedEvent();
+	void equationTextChangedEvent();
+	void equationAboutToBeInvalidatedEvent();
 
 	/////
 	// Object variables
 private:
-	EquationComputationFailureCause_t failureCause = EquationComputationFailureCause_t::uncomputed;
+	EquationComputationFailureCause_t failureCause;
 
-	OperatorType_t function;
-	// Different storage for different ownership (weak/shared)
-	QVector<weak_ptr<Variable>>   variableOperands;
-	QVector<shared_ptr<Equation>> equationOperands;
+	OperatorType_t operatorType;
+	QList<shared_ptr<Operand>> operands;
 
-	// This size holds the maximum operands count
-	// It can be increased or decreased (min 2 operands)
-	// except for constant size operators (ident, not, eq, diff, constant)
-	uint allowedOperandCount = 0;
+	// Parameters specific to Extract operator type
+	int rangeL = -1;
+	int rangeR = -1;
 
-	// Parameters specific to some action types
-	int rangeL;
-	int rangeR;
-	LogicValue constantValue;
+	LogicValue initialValue;
+
+	// Simulation
+	LogicValue currentValue;
 
 };
 
