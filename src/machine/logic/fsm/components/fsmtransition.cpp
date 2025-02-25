@@ -24,18 +24,17 @@
 
 // StateS classes
 #include "equation.h"
-#include "operand.h"
 
 
 FsmTransition::FsmTransition(componentId_t sourceStateId, componentId_t targetStateId) :
-    MachineActuatorComponent()
+	MachineActuatorComponent()
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;
 }
 
 FsmTransition::FsmTransition(componentId_t id, componentId_t sourceStateId, componentId_t targetStateId) :
-    MachineActuatorComponent(id)
+	MachineActuatorComponent(id)
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;

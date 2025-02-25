@@ -24,13 +24,13 @@
 
 
 FsmState::FsmState(const QString& name) :
-    MachineActuatorComponent()
+	MachineActuatorComponent()
 {
 	this->name = name;
 }
 
 FsmState::FsmState(componentId_t id, const QString& name) :
-    MachineActuatorComponent(id)
+	MachineActuatorComponent(id)
 {
 	this->name = name;
 }
@@ -50,11 +50,15 @@ QString FsmState::getName() const
 void FsmState::addOutgoingTransitionId(componentId_t transitionId)
 {
 	this->outputTransitionsIds.append(transitionId);
+	// Do not emit componentEditedEvent signal as linked transition lists
+	// are just used for easy access and not actually part of the state
 }
 
 void FsmState::removeOutgoingTransitionId(componentId_t transitionId)
 {
 	this->outputTransitionsIds.removeAll(transitionId);
+	// Do not emit componentEditedEvent signal as linked transition lists
+	// are just used for easy access and not actually part of the state
 }
 
 const QList<componentId_t> FsmState::getOutgoingTransitionsIds() const
@@ -65,11 +69,15 @@ const QList<componentId_t> FsmState::getOutgoingTransitionsIds() const
 void FsmState::addIncomingTransitionId(componentId_t transitionId)
 {
 	this->inputTransitionsIds.append(transitionId);
+	// Do not emit componentEditedEvent signal as linked transition lists
+	// are just used for easy access and not actually part of the state
 }
 
 void FsmState::removeIncomingTransitionId(componentId_t transitionId)
 {
 	this->inputTransitionsIds.removeAll(transitionId);
+	// Do not emit componentEditedEvent signal as linked transition lists
+	// are just used for easy access and not actually part of the state
 }
 
 const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
@@ -80,10 +88,10 @@ const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
 uint FsmState::getAllowedActionTypes() const
 {
 	return ((uint)actuatorAllowedActionType_t::continuous |
-			(uint)actuatorAllowedActionType_t::set        |
-			(uint)actuatorAllowedActionType_t::reset      |
-			(uint)actuatorAllowedActionType_t::assign     |
-			(uint)actuatorAllowedActionType_t::increment  |
+	        (uint)actuatorAllowedActionType_t::set        |
+	        (uint)actuatorAllowedActionType_t::reset      |
+	        (uint)actuatorAllowedActionType_t::assign     |
+	        (uint)actuatorAllowedActionType_t::increment  |
 	        (uint)actuatorAllowedActionType_t::decrement
 	       );
 }

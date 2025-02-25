@@ -34,7 +34,7 @@
 
 
 FsmVerifier::FsmVerifier() :
-    QObject()
+	QObject()
 {
 }
 
@@ -186,8 +186,8 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both Moore and Mealy behaviors.") + " "
-							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-							+ tr("This variable will be ignored on VHDL export.");
+					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					        + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
@@ -196,8 +196,8 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
-							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-							+ tr("This variable will be ignored on VHDL export.");
+					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					        + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
@@ -206,8 +206,8 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has range-adressed output generation.") + " "
-							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-							+ tr("This variable will be ignored on VHDL export.");
+					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					        + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
@@ -216,8 +216,8 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has Mealy outputs affectation (remembered value).") + " "
-							+ tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-							+ tr("This variable will be ignored on VHDL export.");
+					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					        + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}

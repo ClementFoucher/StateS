@@ -45,4 +45,3 @@ void GraphicClockTimeLine::resetEventHandler()
 {
 	this->reset(false);
 }
-
