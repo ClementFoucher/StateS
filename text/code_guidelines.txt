@@ -16,6 +16,7 @@ In headers, avoid includes when possible, prefering classes declarations.
   - StateS classes
 * Sources:
   - Current class header
+  - C++ classes
   - Qt classes
   - Third-party classes
   - StateS classes
@@ -50,11 +51,11 @@ All elements from this list are separated by an access modifier.
 - Object functions
   - Public slots
   - Public functions
-  - Signals
   - Protected slots
   - Protected functions
   - Private slots
   - Private functions
+  - Signals
 
 - Object members
   - Protected
@@ -67,7 +68,7 @@ All elements from this list are separated by an access modifier.
 All slots must be declared as private (or protected when necessary), so that connection can only be done by the object itself.
 Exception for overriden slots from Qt API which must respect the base object declaration.
 
-As much as possible, a signal must be named xxxEvent and slot xxxEventHandler or be named according to the action it triggers.
+As much as possible, signals must be named xxxEvent and slots xxxEventHandler, or be named according to the action it triggers.
 
 ----------------
 - Constructors -
@@ -75,7 +76,7 @@ As much as possible, a signal must be named xxxEvent and slot xxxEventHandler or
 
 - All constructors must be set as "explicit", except if required otherwise for basic types.
 - Constructors of classes inheriting QWidget must provide a "parent" parameter (defaulted to nullptr).
-- Constructors of classes inheriting from QObject does not need a "parent" parameter.
+- Constructors of classes inheriting from QObject do not need a "parent" parameter.
   - Exception: classes inheriting from QAbstractTableModel require it.
 
 ------------
