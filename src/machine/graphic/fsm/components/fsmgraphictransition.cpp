@@ -498,7 +498,7 @@ void FsmGraphicTransition::buildRepresentation()
 		auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 		if (graphicFsm == nullptr) return;
 
-		if ( (graphicFsm->getTransitionRank(this->logicComponentId) == nullId) && (currentSourceStateId != currentTargetStateId) )
+		if ( (graphicFsm->getTransitionRank(this->logicComponentId) == 0) && (currentSourceStateId != currentTargetStateId) )
 		{
 			this->drawStraightTransition(currentSourcePoint, currentTargetPoint);
 		}
