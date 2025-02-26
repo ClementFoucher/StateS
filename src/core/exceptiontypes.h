@@ -45,14 +45,8 @@ typedef enum
 
 typedef enum
 {
-	change_current_requested = 0
-} ConstantError_t;
-
-typedef enum
-{
-	building_zero_sized   = 0,
-	variable_resized_to_0 = 1,
-	size_mismatch         = 2
+	variable_resized_to_0 = 0,
+	size_mismatch         = 1
 } VariableError_t;
 
 typedef enum

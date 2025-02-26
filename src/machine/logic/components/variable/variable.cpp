@@ -27,20 +27,11 @@
 #include "exceptiontypes.h"
 
 
-Variable::Variable(const QString& name, uint size) // Throws StatesException
+Variable::Variable(const QString& name)
 {
-	if (size == 0)
-		throw StatesException("Variable", VariableError_t::building_zero_sized, "Variable size set to 0");
-
-	this->name = name;
-	this->initialValue = LogicValue::getValue0(size);
+	this->name         = name;
+	this->initialValue = LogicValue::getValue0(1);
 	this->currentValue = this->initialValue;
-}
-
-Variable::Variable(const QString& name) :
-	Variable(name, 1) // Size to 1 => no exception to catch - ignored
-{
-
 }
 
 Variable::~Variable()

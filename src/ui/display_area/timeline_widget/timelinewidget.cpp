@@ -39,8 +39,7 @@
 #include "variabletimeline.h"
 #include "clocktimeline.h"
 #include "statetimeline.h"
-#include "input.h"
-#include "output.h"
+#include "variable.h"
 #include "machinesimulator.h"
 #include "pixmapgenerator.h"
 
@@ -105,14 +104,15 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	vLayout->addWidget(new ClockTimeLine(clock));
 
 	// Inputs
-	if (machine->getInputs().count() != 0)
+	auto inputs = machine->getInputs();
+	if (inputs.count() != 0)
 	{
 		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
 		titleInputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleInputs);
 
-		for (shared_ptr<Input> var : machine->getInputs())
+		for (auto& var : inputs)
 		{
 			VariableTimeline* varTL = new VariableTimeline(3, var, clock);
 			vLayout->addWidget(varTL);
@@ -126,21 +126,22 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	vLayout->addWidget(new StateTimeLine(clock));
 
-	for (shared_ptr<Variable> var : machine->getInternalVariables())
+	for (auto& var : machine->getInternalVariables())
 	{
 		VariableTimeline* varTL = new VariableTimeline(0, var, clock);
 		vLayout->addWidget(varTL);
 	}
 
 	// Outputs
-	if (machine->getOutputs().count() != 0)
+	auto outputs = machine->getOutputs();
+	if (outputs.count() != 0)
 	{
 		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
 		titleOutputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleOutputs);
 
-		for (shared_ptr<Output> var : machine->getOutputs())
+		for (auto& var : outputs)
 		{
 			VariableTimeline* varTL = new VariableTimeline(0, var, clock);
 			vLayout->addWidget(varTL);
@@ -170,7 +171,6 @@ void TimelineWidget::mouseMoveEvent(QMouseEvent* event)
 	repaint();
 
 	QWidget::mouseMoveEvent(event);
-
 }
 
 void TimelineWidget::paintEvent(QPaintEvent*)
@@ -178,7 +178,6 @@ void TimelineWidget::paintEvent(QPaintEvent*)
 	QPainter painter(this);
 
 	painter.drawLine(this->separatorPosition, 0, this->separatorPosition, this->height());
-
 }
 
 void TimelineWidget::exportToPDF()
@@ -188,7 +187,9 @@ void TimelineWidget::exportToPDF()
 	if (!fileName.isEmpty())
 	{
 		if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+		{
 			fileName += ".pdf";
+		}
 
 		QPrinter printer(QPrinter::HighResolution);
 		printer.setOutputFormat(QPrinter::PdfFormat);

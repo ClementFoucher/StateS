@@ -33,8 +33,7 @@
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "input.h"
-#include "output.h"
+#include "variable.h"
 #include "equation.h"
 #include "actiononvariable.h"
 #include "operand.h"
@@ -340,7 +339,7 @@ void FsmVhdlExport::writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) 
 		stream << ";\n       ";
 	}
 
-	const QList<shared_ptr<Output>> outputs = l_machine->getOutputs();
+	auto outputs = l_machine->getOutputs();
 	for (auto& output : outputs)
 	{
 		stream << this->variableVhdlName[output] << " : out std_logic";
@@ -600,8 +599,8 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_mac
 
 void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const
 {
-	QList<shared_ptr<Input>> inputs = l_machine->getInputs();
-	QList<shared_ptr<Variable>> localVars = l_machine->getInternalVariables();
+	auto inputs    = l_machine->getInputs();
+	auto localVars = l_machine->getInternalVariables();
 
 	for (auto& input : inputs)
 	{

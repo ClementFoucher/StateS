@@ -35,7 +35,7 @@ using namespace std;
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "input.h"
+#include "variable.h"
 #include "inputvariableselector.h"
 
 
@@ -65,7 +65,7 @@ InputsSelector::InputsSelector(QWidget* parent) :
 		this->scrollAreaWidgetLayout = new QVBoxLayout(this->scrollAreaWidget);
 		this->scrollArea->setWidget(this->scrollAreaWidget);
 
-		for (shared_ptr<Input>& currentInput : inputList)
+		for (auto& currentInput : inputList)
 		{
 			auto currentVariableSelector = new InputVariableSelector(currentInput, this);
 			this->scrollAreaWidgetLayout->addWidget(currentVariableSelector);

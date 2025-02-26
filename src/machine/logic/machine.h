@@ -36,8 +36,6 @@ using namespace std;
 #include "statestypes.h"
 #include "logicvalue.h"
 class Variable;
-class Input;
-class Output;
 class MachineComponent;
 
 
@@ -74,18 +72,14 @@ public:
 
 	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
 
-	const QList<shared_ptr<Input>>    getInputs()            const; // TODO: throw exception
-	const QList<shared_ptr<Output>>   getOutputs()           const; // TODO: throw exception
+	const QList<shared_ptr<Variable>> getInputs()            const;
+	const QList<shared_ptr<Variable>> getOutputs()           const;
 	const QList<shared_ptr<Variable>> getInternalVariables() const;
 	const QList<shared_ptr<Variable>> getConstants()         const;
 
-	const QList<shared_ptr<Variable>> getInputsAsVariables()  const;
-	const QList<shared_ptr<Variable>> getOutputsAsVariables() const;
-
-	const QList<shared_ptr<Variable>> getWrittableVariables()        const;
-	const QList<shared_ptr<Variable>> getReadableVariables()         const;
-	const QList<shared_ptr<Variable>> getReadableVariableVariables() const;
-	const QList<shared_ptr<Variable>> getAllVariables()              const;
+	const QList<shared_ptr<Variable>> getWrittableVariables() const;
+	const QList<shared_ptr<Variable>> getReadableVariables()  const;
+	const QList<shared_ptr<Variable>> getAllVariables()       const;
 
 	// Other
 
@@ -124,9 +118,6 @@ signals:
 	/////
 	// Object variables
 private:
-	// Store all variables as shared_ptr<Variable> for helper functions,
-	// but can actually be shared_ptr<Input/Output/Constant>
-
 	QHash<QString, shared_ptr<Variable>> inputs;
 	QHash<QString, shared_ptr<Variable>> outputs;
 	QHash<QString, shared_ptr<Variable>> localVariables;

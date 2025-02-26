@@ -35,7 +35,7 @@
 #include "machine.h"
 #include "equation.h"
 #include "graphicequation.h"
-#include "input.h"
+#include "variable.h"
 #include "pixmapgenerator.h"
 
 
@@ -66,7 +66,8 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 	QWidget* resourcesWidget = new QWidget();
 	QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
 
-	if (machine->getInputs().count() != 0)
+	auto inputs = machine->getInputs();
+	if (inputs.count() != 0)
 	{
 		QVBoxLayout* inputListLayout = new QVBoxLayout();
 		inputListLayout->setAlignment(Qt::AlignTop);
@@ -76,14 +77,15 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 		inputsTitle->setAlignment(Qt::AlignCenter);
 		inputListLayout->addWidget(inputsTitle);
 
-		for (auto& input : machine->getInputs())
+		for (auto& input : inputs)
 		{
 			inputListLayout->addWidget(new GraphicEquation(input, -1, true));
 		}
 	}
 
 	// Variables
-	if (machine->getInternalVariables().count() != 0)
+	auto internalVariables = machine->getInternalVariables();
+	if (internalVariables.count() != 0)
 	{
 		QVBoxLayout* variableListLayout = new QVBoxLayout();
 		variableListLayout->setAlignment(Qt::AlignTop);
@@ -93,7 +95,7 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 		variablesTitle->setAlignment(Qt::AlignCenter);
 		variableListLayout->addWidget(variablesTitle);
 
-		for (auto& variable : machine->getInternalVariables())
+		for (auto& variable : internalVariables)
 		{
 			variableListLayout->addWidget(new GraphicEquation(variable, -1, true));
 		}
@@ -165,9 +167,13 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 	{
 		shared_ptr<Equation> newEquation = dynamic_pointer_cast<Equation>(initialEquation);
 		if (newEquation != nullptr)
+		{
 			this->equationDisplay = new GraphicEquation(newEquation->clone(), false);
+		}
 		else
+		{
 			this->equationDisplay = new GraphicEquation(initialEquation, false);
+		}
 	}
 	else
 	{

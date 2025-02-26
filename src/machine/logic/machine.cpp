@@ -24,9 +24,6 @@
 
 // StateS classes
 #include "variable.h"
-#include "input.h"
-#include "output.h"
-#include "constant.h"
 #include "machinecomponent.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
@@ -342,44 +339,14 @@ shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) co
 	}
 }
 
-const QList<shared_ptr<Input> > Machine::getInputs() const
+const QList<shared_ptr<Variable> > Machine::getInputs() const
 {
-	QList<shared_ptr<Input> > inputVariables;
-
-	if (inputs.count() != inputsRanks.count())
-	{
-		// Return empty list to signify error
-		// TODO: do something better
-		return inputVariables;
-	}
-
-	for (int i = 0 ; i < this->inputs.count() ; i++)
-	{
-		QString variableName = this->inputsRanks.key(i);
-		inputVariables.append(dynamic_pointer_cast<Input>(inputs[variableName]));
-	}
-
-	return inputVariables;
+	return getRankedVariableList(&this->inputs, &this->inputsRanks);
 }
 
-const QList<shared_ptr<Output> > Machine::getOutputs() const
+const QList<shared_ptr<Variable> > Machine::getOutputs() const
 {
-	QList<shared_ptr<Output> > outputVariables;
-
-	if (outputs.count() != outputsRanks.count())
-	{
-		// Return empty list to signify error
-		// TODO: do something better
-		return outputVariables;
-	}
-
-	for (int i = 0 ; i < this->outputs.count() ; i++)
-	{
-		QString variableName = this->outputsRanks.key(i);
-		outputVariables.append(dynamic_pointer_cast<Output>(outputs[variableName]));
-	}
-
-	return outputVariables;
+	return getRankedVariableList(&this->outputs, &this->outputsRanks);
 }
 
 const QList<shared_ptr<Variable> > Machine::getInternalVariables() const
@@ -392,22 +359,12 @@ const QList<shared_ptr<Variable> > Machine::getConstants() const
 	return getRankedVariableList(&this->constants, &this->constantsRanks);
 }
 
-const QList<shared_ptr<Variable> > Machine::getInputsAsVariables() const
-{
-	return getRankedVariableList(&this->inputs, &this->inputsRanks);
-}
-
-const QList<shared_ptr<Variable> > Machine::getOutputsAsVariables() const
-{
-	return getRankedVariableList(&this->outputs, &this->outputsRanks);
-}
-
 const QList<shared_ptr<Variable> > Machine::getWrittableVariables() const
 {
 	QList<shared_ptr<Variable>> writtableVariables;
 
-	writtableVariables += this->getOutputsAsVariables();
 	writtableVariables += this->getInternalVariables();
+	writtableVariables += this->getOutputs();
 
 	return writtableVariables;
 }
@@ -416,19 +373,9 @@ const QList<shared_ptr<Variable> > Machine::getReadableVariables() const
 {
 	QList<shared_ptr<Variable>> readableVariables;
 
-	readableVariables += this->getInputsAsVariables();
+	readableVariables += this->getInputs();
 	readableVariables += this->getInternalVariables();
 	readableVariables += this->getConstants();
-
-	return readableVariables;
-}
-
-const QList<shared_ptr<Variable> > Machine::getReadableVariableVariables() const
-{
-	QList<shared_ptr<Variable>> readableVariables;
-
-	readableVariables += this->getInputsAsVariables();
-	readableVariables += this->getInternalVariables();
 
 	return readableVariables;
 }
@@ -437,9 +384,9 @@ const QList<shared_ptr<Variable> > Machine::getAllVariables() const
 {
 	QList<shared_ptr<Variable>> allVariables;
 
-	allVariables += this->getInputsAsVariables();
-	allVariables += this->getOutputsAsVariables();
+	allVariables += this->getInputs();
 	allVariables += this->getInternalVariables();
+	allVariables += this->getOutputs();
 	allVariables += this->getConstants();
 
 	return allVariables;
@@ -524,7 +471,11 @@ shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QSt
 	switch(type)
 	{
 	case VariableNature_t::input:
-		variable = dynamic_pointer_cast<Variable>(shared_ptr<Input>(new Input(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		variable = shared_ptr<Variable>(new Variable(name));
+		if (size > 1)
+		{
+			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
+		}
 		this->addVariableToList(variable, rank, &this->inputs, &this->inputsRanks);
 
 		if (! value.isNull())
@@ -536,14 +487,22 @@ shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QSt
 
 		break;
 	case VariableNature_t::output:
-		variable = dynamic_pointer_cast<Variable>(shared_ptr<Output>(new Output(name, size)));  // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		variable = shared_ptr<Variable>(new Variable(name));
+		if (size > 1)
+		{
+			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
+		}
 		this->addVariableToList(variable, rank, &this->outputs, &this->outputsRanks);
 
 		emit this->machineOutputVariableListChangedEvent();
 
 		break;
 	case VariableNature_t::internal:
-		variable = shared_ptr<Variable>(new Variable(name, size)); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		variable = shared_ptr<Variable>(new Variable(name));
+		if (size > 1)
+		{
+			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
+		}
 		this->addVariableToList(variable, rank, &this->localVariables, &this->localVariablesRanks);
 
 		if (! value.isNull())
@@ -555,7 +514,11 @@ shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QSt
 
 		break;
 	case VariableNature_t::constant:
-		variable = dynamic_pointer_cast<Variable>(shared_ptr<Constant>(new Constant(name, size))); // Throws StatesException: size checked previously, should not be 0 or value is corrupted - ignored
+		variable = shared_ptr<Variable>(new Variable(name));
+		if (size > 1)
+		{
+			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
+		}
 		this->addVariableToList(variable, rank, &this->constants, &this->constantsRanks);
 
 		if (! value.isNull())

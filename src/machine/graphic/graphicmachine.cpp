@@ -29,8 +29,7 @@
 #include "machine.h"
 #include "machinemanager.h"
 #include "graphiccomponent.h"
-#include "input.h"
-#include "output.h"
+#include "variable.h"
 
 
 GraphicMachine::GraphicMachine() :

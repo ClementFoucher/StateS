@@ -213,7 +213,9 @@ void VariableListEditor::contextMenuEvent(QContextMenuEvent* event)
 			this->currentVariableName = variablesList->item(row, 0);
 			this->currentVariableSize = variablesList->item(row, 1);
 			if (this->variablesList->columnCount() == 3)
+			{
 				this->currentVariableValue = variablesList->item(row, 2);
+			}
 
 			shared_ptr<Variable> currentVariable = associatedVariables[cellUnderMouse].lock();
 
@@ -326,7 +328,7 @@ void VariableListEditor::updateList()
 	// Save previous selection if not overwritten
 	if ( ( this->variableSelectionToRestore.isEmpty() ) && ( this->variablesList->selectedItems().count() != 0 ) )
 	{
-		for (QModelIndex index : this->variablesList->selectionModel()->selectedRows())
+		for (auto& index : this->variablesList->selectionModel()->selectedRows())
 		{
 			this->variableSelectionToRestore.append(this->variablesList->item(index.row(), 0)->text());
 		}
@@ -348,11 +350,11 @@ void VariableListEditor::updateList()
 
 	if (this->editorType == VariableNature_t::input)
 	{
-		variablesToAdd = machine->getInputsAsVariables();
+		variablesToAdd = machine->getInputs();
 	}
 	else if (this->editorType == VariableNature_t::output)
 	{
-		variablesToAdd = machine->getOutputsAsVariables();
+		variablesToAdd = machine->getOutputs();
 	}
 	else if (this->editorType == VariableNature_t::internal)
 	{
@@ -363,36 +365,36 @@ void VariableListEditor::updateList()
 		variablesToAdd = machine->getConstants();
 	}
 
-	for (shared_ptr<Variable> sig : variablesToAdd)
+	for (auto& variable : variablesToAdd)
 	{
 		this->variablesList->insertRow(this->variablesList->rowCount());
 
 		// Variable name
-		QTableWidgetItem* currentItem = new QTableWidgetItem(sig->getName());
+		QTableWidgetItem* currentItem = new QTableWidgetItem(variable->getName());
 		Qt::ItemFlags currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 0, currentItem);
-		this->associatedVariables[currentItem] = sig;
+		this->associatedVariables[currentItem] = variable;
 
 		// Variable size
-		currentItem = new QTableWidgetItem(QString::number(sig->getSize()));
+		currentItem = new QTableWidgetItem(QString::number(variable->getSize()));
 		currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 1, currentItem);
-		this->associatedVariables[currentItem] = sig;
+		this->associatedVariables[currentItem] = variable;
 
 		// Variable (initial) value
 		if (this->variablesList->columnCount() == 3)
 		{
-			currentItem = new QTableWidgetItem(sig->getInitialValue().toString());
+			currentItem = new QTableWidgetItem(variable->getInitialValue().toString());
 			currentFlags = currentItem->flags();
 			currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 			this->variablesList->setItem(this->variablesList->rowCount()-1, 2, currentItem);
-			this->associatedVariables[currentItem] = sig;
+			this->associatedVariables[currentItem] = variable;
 		}
 
 		// Select variable if it was selected before list clear
-		if ( ( ! this->variableSelectionToRestore.isEmpty() ) && ( this->variableSelectionToRestore.contains(sig->getName()) ) )
+		if ( ( ! this->variableSelectionToRestore.isEmpty() ) && ( this->variableSelectionToRestore.contains(variable->getName()) ) )
 		{
 			// Obtain current selection
 			QItemSelection selectedItems = this->variablesList->selectionModel()->selection();
@@ -445,7 +447,9 @@ void VariableListEditor::updateButtonsEnableState()
 			for (int i = 1 ; i < sortedRows.count() ; i++)
 			{
 				if (sortedRows[i] == currentRow+1)
+				{
 					currentRow = sortedRows[i];
+				}
 				else
 				{
 					areSuccesive = false;
@@ -463,10 +467,14 @@ void VariableListEditor::updateButtonsEnableState()
 			{
 				// If single group, check if at top or at bottom
 				if (sortedRows[0] != 0)
+				{
 					this->buttonUp->setEnabled(true);
+				}
 
 				if (sortedRows.last() != this->variablesList->rowCount()-1)
+				{
 					this->buttonDown->setEnabled(true);
+				}
 			}
 		}
 	}
@@ -523,6 +531,7 @@ void VariableListEditor::addingVariableSwitchField(QTableWidgetItem* newItem)
 	// Ignore clicks on disabled cells
 	if ( (newItem->flags() & Qt::ItemIsEnabled) == 0 ) return;
 
+
 	this->variablesList->closePersistentEditor(this->currentTableItem);
 
 	// Resize value if needed
@@ -552,6 +561,7 @@ void VariableListEditor::endAddVariable()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	disconnect(this->variablesList, &QTableWidget::currentItemChanged, this, &VariableListEditor::addingVariableCurrentItemChanged);
 	disconnect(this->variablesList, &QTableWidget::itemClicked,        this, &VariableListEditor::addingVariableSwitchField);
 	this->variablesList->closePersistentEditor(this->currentTableItem);
@@ -579,7 +589,9 @@ void VariableListEditor::endAddVariable()
 			uint size = (uint)this->currentVariableSize->text().toInt();
 
 			if (initialValue.getSize() < size)
+			{
 				initialValue.resize(size); // Throws StatesException
+			}
 		}
 		catch (const StatesException& e)
 		{
@@ -588,7 +600,9 @@ void VariableListEditor::endAddVariable()
 				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
 			}
 			else
+			{
 				throw;
+			}
 		}
 	}
 	else
@@ -641,6 +655,7 @@ void VariableListEditor::endRenameVariable()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
 
 	QString finalName = editor->text();
@@ -675,6 +690,7 @@ void VariableListEditor::endResizeVariable()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	try
 	{
 		DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
@@ -702,7 +718,9 @@ void VariableListEditor::endResizeVariable()
 			this->editCurrentCell(true);
 		}
 		else
+		{
 			throw;
+		}
 	}
 }
 
@@ -710,6 +728,7 @@ void VariableListEditor::endChangeVariableInitialValue()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
+
 
 	try
 	{
@@ -722,7 +741,9 @@ void VariableListEditor::endChangeVariableInitialValue()
 		if ( (currentVariable != nullptr) && (newInitialValue != currentVariable->getInitialValue()) )
 		{
 			if (newInitialValue.getSize() < currentVariable->getSize())
+			{
 				newInitialValue.resize(currentVariable->getSize()); // Throws StatesException
+			}
 
 			machine->changeVariableInitialValue(currentVariable->getName(), newInitialValue); // Throws StatesException
 			machineManager->notifyMachineEdited();
@@ -740,7 +761,9 @@ void VariableListEditor::endChangeVariableInitialValue()
 			this->editCurrentCell(true);
 		}
 		else
+		{
 			throw;
+		}
 	}
 }
 
@@ -784,13 +807,14 @@ void VariableListEditor::raiseSelectedVariables()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	// Update list to make sure selection order matches list order
 	this->updateList();
 
 	QList<int>  variablesRanks;
 
-	QModelIndexList rows = this->variablesList->selectionModel()->selectedRows();
-	for (QModelIndex index : rows)
+	const auto rows = this->variablesList->selectionModel()->selectedRows();
+	for (auto& index : rows)
 	{
 		variablesRanks.append(index.row());
 	}
@@ -814,13 +838,14 @@ void VariableListEditor::lowerSelectedVariables()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	// Update list to make sure selection order matches list order
 	this->updateList();
 
 	QList<int> variablesRanks;
 
-	QModelIndexList rows = this->variablesList->selectionModel()->selectedRows();
-	for (QModelIndex index : rows)
+	const auto rows = this->variablesList->selectionModel()->selectedRows();
+	for (auto& index : rows)
 	{
 		variablesRanks.push_front(index.row());
 	}
@@ -847,20 +872,24 @@ void VariableListEditor::removeSelectedVariables()
 	QStringList selection;
 	int lastSelectionIndex = -1;
 
-	for (QModelIndex index : this->variablesList->selectionModel()->selectedRows())
+	for (auto& index : this->variablesList->selectionModel()->selectedRows())
 	{
 		selection.append(this->variablesList->item(index.row(), 0)->text());
 		if (lastSelectionIndex < index.row())
+		{
 			lastSelectionIndex = index.row();
+		}
 	}
 
 	// Overwrite selection to select next variable in list (if not last)
 	if (lastSelectionIndex < this->variablesList->rowCount()-1)
+	{
 		this->variableSelectionToRestore.append(variablesList->item(lastSelectionIndex+1,0)->text());
+	}
 
 	if (selection.isEmpty() == false)
 	{
-		for (QString variableName : selection)
+		for (QString& variableName : selection)
 		{
 			machine->deleteVariable(variableName);
 		}
@@ -1040,7 +1069,9 @@ void VariableListEditor::fixVariableSize()
 				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
 			}
 			else
+			{
 				throw;
+			}
 		}
 	}
 }
@@ -1049,11 +1080,13 @@ QList<QString> VariableListEditor::getSelectedVariables()
 {
 	QList<QString> selectionString;
 
-	for (QModelIndex index : this->variablesList->selectionModel()->selectedRows())
+	for (auto& index : this->variablesList->selectionModel()->selectedRows())
 	{
 		QTableWidgetItem* currentItem = this->variablesList->item(index.row(), 1);
 		if (currentItem != nullptr)
+		{
 			selectionString.append(currentItem->text());
+		}
 	}
 
 	return selectionString;

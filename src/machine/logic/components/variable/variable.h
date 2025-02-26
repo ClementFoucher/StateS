@@ -36,7 +36,6 @@ class Variable : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit Variable(const QString& name, uint size); // Throws StatesException
 	explicit Variable(const QString& name);
 
 	~Variable();
@@ -51,11 +50,11 @@ public:
 	void resize(uint newSize); // Throws StatesException
 
 	LogicValue getInitialValue() const;
-	virtual void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
+	void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
 	void reinitialize();
 
-	virtual void setCurrentValue(const LogicValue& value); // Throws StatesException
-	virtual void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
+	void setCurrentValue(const LogicValue& value); // Throws StatesException
+	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
 	LogicValue getCurrentValue() const;
 
 	void notifyVariableAboutToBeDeleted();

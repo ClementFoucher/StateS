@@ -36,7 +36,6 @@
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "variable.h"
-#include "output.h"
 #include "fsmsimulatedstate.h"
 #include "fsmsimulatedtransition.h"
 #include "statesexception.h"
@@ -144,8 +143,12 @@ void FsmSimulator::resetEventHandler()
 		}
 	}
 
-	// Reset inputs and variables to their initial value
-	for (auto& variable : fsm->getReadableVariableVariables())
+	// Reset inputs and internal variables to their initial value
+	for (auto& variable : fsm->getInputs())
+	{
+		variable->reinitialize();
+	}
+	for (auto& variable : fsm->getInternalVariables())
 	{
 		variable->reinitialize();
 	}
