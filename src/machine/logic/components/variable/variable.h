@@ -43,19 +43,31 @@ public:
 	/////
 	// Object functions
 public:
-	QString getName() const;
-	void setName(const QString& value); // TODO: check variable name here and throw StatesException
 
-	uint getSize() const;
+	///
+	// Mutators
+
+	void setName(const QString& value);
 	void resize(uint newSize); // Throws StatesException
-
-	LogicValue getInitialValue() const;
 	void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
-	void reinitialize();
 
+	// Simulation
 	void setCurrentValue(const LogicValue& value); // Throws StatesException
 	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
+	void reinitialize();
+
+	///
+	// Accessors
+
+	QString getName() const;
+	uint getSize() const;
+	LogicValue getInitialValue() const;
+
+	// Simulation
 	LogicValue getCurrentValue() const;
+
+	///
+	// Other
 
 	void notifyVariableAboutToBeDeleted();
 
@@ -63,11 +75,13 @@ public:
 	// Signals
 signals:
 	void variableInitialValueChangedEvent();
-	void variableCurrentValueChangedEvent();
 	void variableRenamedEvent();
 	void variableResizedEvent();
 	void variableDeletedEvent();
 	void variableAboutToBeDeletedEvent(); // Used to notify operands as they hold a shared_ptr
+
+	// Simulation
+	void variableCurrentValueChangedEvent();
 
 	/////
 	// Object variables

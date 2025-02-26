@@ -39,20 +39,10 @@ Variable::~Variable()
 	emit variableDeletedEvent();
 }
 
-QString Variable::getName() const
-{
-	return this->name;
-}
-
 void Variable::setName(const QString& value)
 {
 	this->name = value;
 	emit variableRenamedEvent();
-}
-
-uint Variable::getSize() const
-{
-	return this->currentValue.getSize();
 }
 
 void Variable::resize(uint newSize) // Throws StatesException
@@ -67,6 +57,20 @@ void Variable::resize(uint newSize) // Throws StatesException
 
 	emit variableResizedEvent();
 	emit variableInitialValueChangedEvent();
+}
+
+void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
+{
+	if (this->getSize() == newInitialValue.getSize())
+	{
+		this->initialValue = newInitialValue;
+
+		emit variableInitialValueChangedEvent();
+	}
+	else
+	{
+		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size");
+	}
 }
 
 void Variable::setCurrentValue(const LogicValue& value) // Throws StatesException
@@ -121,6 +125,27 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 	}
 }
 
+void Variable::reinitialize()
+{
+	this->currentValue = this->initialValue;
+	emit variableCurrentValueChangedEvent();
+}
+
+QString Variable::getName() const
+{
+	return this->name;
+}
+
+uint Variable::getSize() const
+{
+	return this->currentValue.getSize();
+}
+
+LogicValue Variable::getInitialValue() const
+{
+	return this->initialValue;
+}
+
 LogicValue Variable::getCurrentValue() const
 {
 	return this->currentValue;
@@ -129,29 +154,4 @@ LogicValue Variable::getCurrentValue() const
 void Variable::notifyVariableAboutToBeDeleted()
 {
 	emit this->variableAboutToBeDeletedEvent();
-}
-
-LogicValue Variable::getInitialValue() const
-{
-	return this->initialValue;
-}
-
-void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
-{
-	if (this->getSize() == newInitialValue.getSize())
-	{
-		this->initialValue = newInitialValue;
-
-		emit variableInitialValueChangedEvent();
-	}
-	else
-	{
-		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size");
-	}
-}
-
-void Variable::reinitialize()
-{
-	this->currentValue = this->initialValue;
-	emit variableCurrentValueChangedEvent();
 }
