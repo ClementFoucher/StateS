@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,6 +31,7 @@ StatesGraphicsView::StatesGraphicsView(QWidget* parent) :
 {
 	// Ensure background is white as we do not support dark mode yet
 	this->setBackgroundBrush(Qt::white);
+	this->setRenderHint(QPainter::Antialiasing);
 }
 
 void StatesGraphicsView::dragEnterEvent(QDragEnterEvent* event)
