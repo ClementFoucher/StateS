@@ -26,9 +26,9 @@
 #include <QColor>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "truthtable.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 #include "variable.h"
 
 
@@ -66,7 +66,7 @@ int TruthTableInputTableModel::rowCount(const QModelIndex& parent) const
 
 		if (l_truthTable != nullptr)
 		{
-			rows = l_truthTable->getInputTable().count();
+			rows = l_truthTable->getInputValuesTable().count();
 		}
 	}
 
@@ -87,7 +87,7 @@ QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) con
 			{
 				if (index.column() < (int)l_truthTable->getInputCount())
 				{
-					QVector<QVector<LogicValue>> inputTable = l_truthTable->getInputTable();
+					auto inputTable = l_truthTable->getInputValuesTable();
 
 					variant = QVariant(inputTable[index.row()][index.column()].toString());
 				}
@@ -104,9 +104,13 @@ QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) con
 				else
 				{
 					if ( (index.row() % 2) == 0)
+					{
 						variant = QVariant(QColor(0, 0, 255, 25));
+					}
 					else
+					{
 						variant = QVariant(QColor(0, 0, 255, 50));
+					}
 				}
 			}
 		}
@@ -129,19 +133,20 @@ QVariant TruthTableInputTableModel::headerData(int section, Qt::Orientation orie
 			{
 				if (section < (int)l_truthTable->getInputCount())
 				{
-					try
+					auto inputVariablesIds = l_truthTable->getInputVariablesIds();
+					if (section < inputVariablesIds.count())
 					{
-						variant = QVariant(l_truthTable->getInputs()[section]->getName());
-					}
-					catch (const StatesException& e)
-					{
-						if ( (e.getSourceClass() == "TruthTable") && (e.getEnumValue() == TruthTableError_t::reference_expired) )
+						auto machine = machineManager->getMachine();
+						if (machine != nullptr)
 						{
-							// Truth table is no longer valid: we should invalidate model
-							//this->truthTable.reset();
+							auto inputId = inputVariablesIds.at(section);
+
+							auto input = machine->getVariable(inputId);
+							if (input != nullptr)
+							{
+								variant = QVariant(input->getName());
+							}
 						}
-						else
-							throw;
 					}
 				}
 			}

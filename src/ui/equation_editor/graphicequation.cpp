@@ -30,6 +30,8 @@
 #include <QHBoxLayout>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "equationmimedata.h"
 #include "equation.h"
 #include "contextmenu.h"
@@ -56,11 +58,11 @@ GraphicEquation::GraphicEquation(shared_ptr<Equation> equation, int operandNumbe
 	this->buildEquation();
 }
 
-GraphicEquation::GraphicEquation(shared_ptr<Variable> variable, int operandNumber, bool isTemplate, QWidget* parent) :
+GraphicEquation::GraphicEquation(componentId_t variableId, int operandNumber, bool isTemplate, QWidget* parent) :
 	QFrame(parent)
 {
 	this->localEquation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
-	this->localEquation->setOperand(0, variable);
+	this->localEquation->setOperand(0, variableId);
 
 	this->equation      = this->localEquation;
 	this->isTemplate    = isTemplate;
@@ -110,7 +112,7 @@ void GraphicEquation::replaceOperand(uint operandNumber, shared_ptr<Equation> ne
 		{
 			if (newOperandOperand->getSource() == OperandSource_t::variable)
 			{
-				l_equation->setOperand(operandNumber, newOperandOperand->getVariable());
+				l_equation->setOperand(operandNumber, newOperandOperand->getVariableId());
 			}
 			else if (newOperandOperand->getSource() == OperandSource_t::constant)
 			{
@@ -279,7 +281,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 				auto operandSource = operand->getSource();
 				if (operandSource == OperandSource_t::variable) // This is a simple variable => do not use template
 				{
-					GraphicEquation displayGraphicEquation(l_equation->getOperand(0)->getVariable(), -1);
+					GraphicEquation displayGraphicEquation(l_equation->getOperand(0)->getVariableId(), -1);
 
 					drag->setPixmap(displayGraphicEquation.grab());
 				}
@@ -429,7 +431,7 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
 			// Build tooltip
 			auto newEquation = this->droppedEquation->clone();
-			newEquation->setOperand(0, l_equation); // Throws StatesException - Remaining natures always have operand 0 - ignored
+			newEquation->setOperand(0, l_equation);
 
 			a->setToolTip(tr("New equation would be: ") + "<br /><i>" + newEquation->getText() + "</i>");
 			newEquation.reset();
@@ -1029,6 +1031,9 @@ void GraphicEquation::buildTemplateEquation()
 
 void GraphicEquation::buildVariableEquation()
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
 
@@ -1038,7 +1043,9 @@ void GraphicEquation::buildVariableEquation()
 	auto operand = l_equation->getOperand(0);
 	if (operand == nullptr) return;
 
-	auto variable = operand->getVariable();
+	auto variableId = operand->getVariableId();
+
+	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
 
@@ -1055,7 +1062,7 @@ void GraphicEquation::buildVariableEquation()
 	{
 		// Add a sub-widget to allow directly dragging sub-range from variable
 		shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp));
-		extractor->setOperand(0, variable);
+		extractor->setOperand(0, variableId);
 
 		GraphicEquation* extractorWidget = new GraphicEquation(extractor, -1, true);
 		equationLayout->addWidget(extractorWidget);
@@ -1098,7 +1105,7 @@ void GraphicEquation::buildCompleteEquation()
 					graphicOperand = new GraphicEquation(operand->getEquation(), i, false, this);
 					break;
 				case OperandSource_t::variable:
-					graphicOperand = new GraphicEquation(operand->getVariable(), i, false, this);
+					graphicOperand = new GraphicEquation(operand->getVariableId(), i, false, this);
 					break;
 				case OperandSource_t::constant:
 					graphicOperand = new GraphicEquation(operand->getConstant(), i, false, this);

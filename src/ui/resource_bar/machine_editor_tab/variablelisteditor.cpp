@@ -24,6 +24,8 @@
 
 // C++ classes
 #include <algorithm>
+#include <memory>
+using namespace std;
 
 // Qt classes
 #include <QVBoxLayout>
@@ -31,19 +33,14 @@
 #include <QKeyEvent>
 #include <QHeaderView>
 
-#include <QDebug>
-
 // StateS classes
-#include "statestypes.h"
+#include "machinemanager.h"
+#include "machine.h"
 #include "dynamiclineedit.h"
 #include "variable.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
 #include "contextmenu.h"
-#include "machinemanager.h"
-#include "machine.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
 
 VariableListEditor::VariableListEditor(VariableNature_t editorType, QWidget* parent) :
@@ -199,118 +196,120 @@ void VariableListEditor::keyReleaseEvent(QKeyEvent* event)
 
 void VariableListEditor::contextMenuEvent(QContextMenuEvent* event)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
 	QPoint correctedPos = variablesList->mapFromParent(event->pos());
 	correctedPos.setX(correctedPos.x() - variablesList->verticalHeader()->width());
 	correctedPos.setY(correctedPos.y() - variablesList->horizontalHeader()->height());
 	QTableWidgetItem* cellUnderMouse = variablesList->itemAt(correctedPos);
 
-	if (cellUnderMouse != nullptr)
+	if (cellUnderMouse == nullptr) return;
+
+
+	auto list = this->getSelectedVariables();
+	if (list.count() == 1)
 	{
-		QList<QString> list = this->getSelectedVariables();
-		if (list.count() == 1)
+		auto currentVariableId = associatedVariablesIds[cellUnderMouse];
+		auto currentVariable = machine->getVariable(currentVariableId);
+
+		if (currentVariable == nullptr) return;
+
+
+		int row = cellUnderMouse->row();
+		this->currentVariableName = variablesList->item(row, 0);
+		this->currentVariableSize = variablesList->item(row, 1);
+		if (this->variablesList->columnCount() == 3)
 		{
-			int row = cellUnderMouse->row();
-			this->currentVariableName = variablesList->item(row, 0);
-			this->currentVariableSize = variablesList->item(row, 1);
-			if (this->variablesList->columnCount() == 3)
-			{
-				this->currentVariableValue = variablesList->item(row, 2);
-			}
-
-			shared_ptr<Variable> currentVariable = associatedVariables[cellUnderMouse].lock();
-
-			if (currentVariable != nullptr)
-			{
-				this->currentVariable = currentVariable;
-
-				ContextMenu* menu = new ContextMenu();
-				menu->addTitle(tr("Action on variable") + " <i>" + currentVariable->getName() + "</i>");
-
-				QVariant data;
-				QAction* actionToAdd = nullptr;
-
-				if (cellUnderMouse->row() != 0)
-				{
-					actionToAdd = menu->addAction(tr("Up"));
-					data.setValue((int)ContextAction_t::Up);
-					actionToAdd->setData(data);
-				}
-
-				if (cellUnderMouse->row() != this->variablesList->rowCount()-1)
-				{
-					actionToAdd = menu->addAction(tr("Down"));
-					data.setValue((int)ContextAction_t::Down);
-					actionToAdd->setData(data);
-				}
-
-				menu->addSeparator();
-
-				actionToAdd = menu->addAction(tr("Rename variable"));
-				data.setValue((int)ContextAction_t::RenameVariable);
-				actionToAdd->setData(data);
-
-				actionToAdd = menu->addAction(tr("Resize variable"));
-				data.setValue((int)ContextAction_t::ResizeVariable);
-				actionToAdd->setData(data);
-
-				if (this->editorType != VariableNature_t::output)
-				{
-					actionToAdd = menu->addAction(tr("Change variable value"));
-					data.setValue((int)ContextAction_t::ChangeVariableValue);
-					actionToAdd->setData(data);
-				}
-
-				menu->addSeparator();
-
-				actionToAdd = menu->addAction(tr("Delete variable"));
-				data.setValue((int)ContextAction_t::DeleteVariable);
-				actionToAdd->setData(data);
-
-				actionToAdd = menu->addAction(tr("Cancel"));
-				data.setValue((int)ContextAction_t::Cancel);
-				actionToAdd->setData(data);
-
-				menu->popup(this->mapToGlobal(event->pos()));
-
-				connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
-			}
+			this->currentVariableValue = variablesList->item(row, 2);
 		}
-		else if (list.count() != 0)
+
+		ContextMenu* menu = new ContextMenu();
+		menu->addTitle(tr("Action on variable") + " <i>" + currentVariable->getName() + "</i>");
+
+		QVariant data;
+		QAction* actionToAdd = nullptr;
+
+		if (cellUnderMouse->row() != 0)
 		{
-			ContextMenu* menu = new ContextMenu();
-			menu->addTitle(tr("Action on all selected variables"));
-
-			QVariant data;
-			QAction* actionToAdd = nullptr;
-
-			if (this->buttonUp->isEnabled())
-			{
-				actionToAdd = menu->addAction(tr("Up"));
-				data.setValue((int)ContextAction_t::Up);
-				actionToAdd->setData(data);
-			}
-
-			if (this->buttonDown->isEnabled())
-			{
-				actionToAdd = menu->addAction(tr("Down"));
-				data.setValue((int)ContextAction_t::Down);
-				actionToAdd->setData(data);
-			}
-
-			menu->addSeparator();
-
-			actionToAdd = menu->addAction(tr("Delete variables"));
-			data.setValue((int)ContextAction_t::DeleteVariable);
+			actionToAdd = menu->addAction(tr("Up"));
+			data.setValue((int)ContextAction_t::Up);
 			actionToAdd->setData(data);
-
-			actionToAdd = menu->addAction(tr("Cancel"));
-			data.setValue((int)ContextAction_t::Cancel);
-			actionToAdd->setData(data);
-
-			menu->popup(this->mapToGlobal(event->pos()));
-
-			connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
 		}
+
+		if (cellUnderMouse->row() != this->variablesList->rowCount()-1)
+		{
+			actionToAdd = menu->addAction(tr("Down"));
+			data.setValue((int)ContextAction_t::Down);
+			actionToAdd->setData(data);
+		}
+
+		menu->addSeparator();
+
+		actionToAdd = menu->addAction(tr("Rename variable"));
+		data.setValue((int)ContextAction_t::RenameVariable);
+		actionToAdd->setData(data);
+
+		actionToAdd = menu->addAction(tr("Resize variable"));
+		data.setValue((int)ContextAction_t::ResizeVariable);
+		actionToAdd->setData(data);
+
+		if (this->editorType != VariableNature_t::output)
+		{
+			actionToAdd = menu->addAction(tr("Change variable value"));
+			data.setValue((int)ContextAction_t::ChangeVariableValue);
+			actionToAdd->setData(data);
+		}
+
+		menu->addSeparator();
+
+		actionToAdd = menu->addAction(tr("Delete variable"));
+		data.setValue((int)ContextAction_t::DeleteVariable);
+		actionToAdd->setData(data);
+
+		actionToAdd = menu->addAction(tr("Cancel"));
+		data.setValue((int)ContextAction_t::Cancel);
+		actionToAdd->setData(data);
+
+		menu->popup(this->mapToGlobal(event->pos()));
+
+		connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
+	}
+	else if (list.count() != 0) // (list.count() > 1)
+	{
+		ContextMenu* menu = new ContextMenu();
+		menu->addTitle(tr("Action on all selected variables"));
+
+		QVariant data;
+		QAction* actionToAdd = nullptr;
+
+		if (this->buttonUp->isEnabled())
+		{
+			actionToAdd = menu->addAction(tr("Up"));
+			data.setValue((int)ContextAction_t::Up);
+			actionToAdd->setData(data);
+		}
+
+		if (this->buttonDown->isEnabled())
+		{
+			actionToAdd = menu->addAction(tr("Down"));
+			data.setValue((int)ContextAction_t::Down);
+			actionToAdd->setData(data);
+		}
+
+		menu->addSeparator();
+
+		actionToAdd = menu->addAction(tr("Delete variables"));
+		data.setValue((int)ContextAction_t::DeleteVariable);
+		actionToAdd->setData(data);
+
+		actionToAdd = menu->addAction(tr("Cancel"));
+		data.setValue((int)ContextAction_t::Cancel);
+		actionToAdd->setData(data);
+
+		menu->popup(this->mapToGlobal(event->pos()));
+
+		connect(menu, &QMenu::triggered, this, &VariableListEditor::processMenuEventHandler);
 	}
 }
 
@@ -336,7 +335,7 @@ void VariableListEditor::updateList()
 
 	this->variablesList->clearContents();
 	this->variablesList->setRowCount(0);
-	this->associatedVariables.clear();
+	this->associatedVariablesIds.clear();
 
 	this->switchMode(ListMode_t::standard);
 
@@ -346,27 +345,14 @@ void VariableListEditor::updateList()
 	disconnect(this->variablesList,  &QTableWidget::itemSelectionChanged, this, &VariableListEditor::updateButtonsEnableState);
 
 	// Get variables I have to deal with
-	QList<shared_ptr<Variable>> variablesToAdd;
+	QList<componentId_t> variablesIdsToAdd = machine->getVariablesIds(this->editorType);
 
-	if (this->editorType == VariableNature_t::input)
+	for (auto& variableId : variablesIdsToAdd)
 	{
-		variablesToAdd = machine->getInputs();
-	}
-	else if (this->editorType == VariableNature_t::output)
-	{
-		variablesToAdd = machine->getOutputs();
-	}
-	else if (this->editorType == VariableNature_t::internal)
-	{
-		variablesToAdd = machine->getInternalVariables();
-	}
-	else if (this->editorType == VariableNature_t::constant)
-	{
-		variablesToAdd = machine->getConstants();
-	}
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) continue;
 
-	for (auto& variable : variablesToAdd)
-	{
+
 		this->variablesList->insertRow(this->variablesList->rowCount());
 
 		// Variable name
@@ -374,14 +360,14 @@ void VariableListEditor::updateList()
 		Qt::ItemFlags currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 0, currentItem);
-		this->associatedVariables[currentItem] = variable;
+		this->associatedVariablesIds[currentItem] = variableId;
 
 		// Variable size
 		currentItem = new QTableWidgetItem(QString::number(variable->getSize()));
 		currentFlags = currentItem->flags();
 		currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 		this->variablesList->setItem(this->variablesList->rowCount()-1, 1, currentItem);
-		this->associatedVariables[currentItem] = variable;
+		this->associatedVariablesIds[currentItem] = variableId;
 
 		// Variable (initial) value
 		if (this->variablesList->columnCount() == 3)
@@ -390,7 +376,7 @@ void VariableListEditor::updateList()
 			currentFlags = currentItem->flags();
 			currentItem->setFlags(currentFlags & ~Qt::ItemIsEditable);
 			this->variablesList->setItem(this->variablesList->rowCount()-1, 2, currentItem);
-			this->associatedVariables[currentItem] = variable;
+			this->associatedVariablesIds[currentItem] = variableId;
 		}
 
 		// Select variable if it was selected before list clear
@@ -497,6 +483,7 @@ void VariableListEditor::beginAddVariable()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	QString initialName = machine->getUniqueVariableName(this->newVariablesPrefix);
 
 	this->variablesList->insertRow(variablesList->rowCount());
@@ -580,28 +567,17 @@ void VariableListEditor::endAddVariable()
 
 	// Overwrite selection to select new variable name
 	LogicValue initialValue = LogicValue::getNullValue();
-
+	uint size = 1;
 	if (this->currentVariableValue != nullptr)
 	{
-		try
+		initialValue = LogicValue::fromString(this->currentVariableValue->text());
+		if (initialValue.isNull() == false)
 		{
-			initialValue = LogicValue::fromString(this->currentVariableValue->text()); // Throws StatesException
-			uint size = (uint)this->currentVariableSize->text().toInt();
+			size = (uint)this->currentVariableSize->text().toInt();
 
 			if (initialValue.getSize() < size)
 			{
-				initialValue.resize(size); // Throws StatesException
-			}
-		}
-		catch (const StatesException& e)
-		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
-			{
-				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
-			}
-			else
-			{
-				throw;
+				initialValue.resize(size);
 			}
 		}
 	}
@@ -611,14 +587,28 @@ void VariableListEditor::endAddVariable()
 		initialValue = LogicValue(this->currentVariableSize->text().toInt());
 	}
 
-	// If success, list is reloaded through events,
-	// which resets mode.
-	shared_ptr<Variable> newVariable = machine->addVariable(this->editorType, finalName, initialValue);
-	machineManager->notifyMachineEdited();
-
-	// If adding variable failed, continue editing variable name
-	if (newVariable == nullptr)
+	auto newVariableId = machine->addVariable(this->editorType, finalName);
+	if (newVariableId != nullId)
 	{
+		// If success, list is reloaded through events,
+		// which resets mode.
+
+		auto newVariable = machine->getVariable(newVariableId); // Do not check for nullptr: if addVariable returned an ID, the variable exists
+
+		if (size != 1)
+		{
+			newVariable->resize(size);
+		}
+		if (initialValue.isNull() == false)
+		{
+			newVariable->setInitialValue(initialValue);
+		}
+
+		machineManager->notifyMachineEdited();
+	}
+	else
+	{
+		// If adding variable failed, continue editing variable name
 		this->fixVariableSize();
 
 		this->currentTableItem = this->currentVariableName;
@@ -660,13 +650,13 @@ void VariableListEditor::endRenameVariable()
 
 	QString finalName = editor->text();
 
-	shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
-
+	auto currentVariableId = this->associatedVariablesIds[currentTableItem];
+	auto currentVariable = machine->getVariable(currentVariableId);
 	if ( (currentVariable != nullptr) && (finalName != currentVariable->getName()) )
 	{
 		// Overwrite selection to select new variable name
 		this->variableSelectionToRestore.append(finalName);
-		bool success = machine->renameVariable(currentVariable->getName(), finalName);
+		bool success = machine->renameVariable(currentVariableId, finalName);
 
 		if (success == true)
 		{
@@ -681,7 +671,7 @@ void VariableListEditor::endRenameVariable()
 	else
 	{
 		// Reset list
-		updateList();
+		this->updateList();
 	}
 }
 
@@ -691,36 +681,21 @@ void VariableListEditor::endResizeVariable()
 	if (machine == nullptr) return;
 
 
-	try
+	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+
+	uint finalSize = (uint)editor->text().toInt();
+
+	auto currentVariableId = this->associatedVariablesIds[currentTableItem];
+	auto currentVariable = machine->getVariable(currentVariableId);
+	if ( (currentVariable != nullptr) && (finalSize != currentVariable->getSize()) )
 	{
-		DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-
-		uint finalSize = (uint)editor->text().toInt();
-
-		shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
-
-		if ( (currentVariable != nullptr) && (finalSize != currentVariable->getSize()) )
-		{
-			machine->resizeVariable(currentVariable->getName(), finalSize); // Throws StatesException
-			machineManager->notifyMachineEdited();
-		}
-		else
-		{
-			// Reset list
-			updateList();
-		}
+		currentVariable->resize(finalSize);
+		machineManager->notifyMachineEdited();
 	}
-	catch (const StatesException& e)
+	else
 	{
-		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::resized_to_0) )
-		{
-			qDebug() << "(VariableListEditor:) Info: Wrong input for variable size, change ignored.";
-			this->editCurrentCell(true);
-		}
-		else
-		{
-			throw;
-		}
+		// Reset list
+		this->updateList();
 	}
 }
 
@@ -729,41 +704,35 @@ void VariableListEditor::endChangeVariableInitialValue()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+	auto currentVariableId = this->associatedVariablesIds[currentTableItem];
 
-	try
+	auto currentVariable = machine->getVariable(currentVariableId);
+	if (currentVariable == nullptr) return;
+
+
+	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+
+	LogicValue newInitialValue = LogicValue::fromString(editor->text());
+	if (newInitialValue.isNull() == true)
 	{
-		DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-
-		LogicValue newInitialValue = LogicValue::fromString(editor->text()); // Throws StatesException
-
-		shared_ptr<Variable> currentVariable = this->associatedVariables[currentTableItem].lock();
-
-		if ( (currentVariable != nullptr) && (newInitialValue != currentVariable->getInitialValue()) )
-		{
-			if (newInitialValue.getSize() < currentVariable->getSize())
-			{
-				newInitialValue.resize(currentVariable->getSize()); // Throws StatesException
-			}
-
-			machine->changeVariableInitialValue(currentVariable->getName(), newInitialValue); // Throws StatesException
-			machineManager->notifyMachineEdited();
-		}
-		else
-		{
-			updateList();
-		}
+		this->editCurrentCell(true);
+		return;
 	}
-	catch (const StatesException& e)
+
+	if (newInitialValue.getSize() < currentVariable->getSize())
 	{
-		if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::size_mismatch) )
-		{
-			qDebug() << "(VariableListEditor:) Info: Wrong input for variable initial value, change ignored.";
-			this->editCurrentCell(true);
-		}
-		else
-		{
-			throw;
-		}
+		newInitialValue.resize(currentVariable->getSize());
+	}
+
+	if (newInitialValue == currentVariable->getInitialValue()) return; // Nothing to do
+
+	currentVariable->setInitialValue(newInitialValue);
+
+	// Make sure the new value was taken into account.
+	// If not, this means the value was incorrect: continue editing.
+	if (currentVariable->getInitialValue() != newInitialValue)
+	{
+		this->editCurrentCell(true);
 	}
 }
 
@@ -825,8 +794,10 @@ void VariableListEditor::raiseSelectedVariables()
 		{
 			if ( (variablesRanks.at(i) != 0) && ( ! this->variablesList->item(variablesRanks.at(i)-1, 0)->isSelected() ) )
 			{
-				// Actually lower upper variables rater than raising variable itself
-				machine->changeVariableRank(this->variablesList->item(variablesRanks.at(i)-1, 0)->text(), variablesRanks.at(i));
+				auto variableId = this->associatedVariablesIds[this->variablesList->item(variablesRanks.at(i)-1, 0)];
+
+				// Actually lower upper variables rather than raising variable itself
+				machine->changeVariableRank(variableId, variablesRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -856,8 +827,10 @@ void VariableListEditor::lowerSelectedVariables()
 		{
 			if ( (variablesRanks.at(i) != this->variablesList->rowCount()-1) && ( ! this->variablesList->item(variablesRanks.at(i)+1, 0)->isSelected() ) )
 			{
-				// Actually raise lower variables rater than lowering variable itself
-				machine->changeVariableRank(this->variablesList->item(variablesRanks.at(i)+1, 0)->text(), variablesRanks.at(i));
+				auto variableId = this->associatedVariablesIds[this->variablesList->item(variablesRanks.at(i)+1, 0)];
+
+				// Actually raise lower variables rather than lowering variable itself
+				machine->changeVariableRank(variableId, variablesRanks.at(i));
 			}
 		}
 		machineManager->notifyMachineEdited();
@@ -869,12 +842,13 @@ void VariableListEditor::removeSelectedVariables()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	QStringList selection;
+
+	QList<componentId_t> selection;
 	int lastSelectionIndex = -1;
 
 	for (auto& index : this->variablesList->selectionModel()->selectedRows())
 	{
-		selection.append(this->variablesList->item(index.row(), 0)->text());
+		selection.append(associatedVariablesIds.value(this->variablesList->item(index.row(), 0)));
 		if (lastSelectionIndex < index.row())
 		{
 			lastSelectionIndex = index.row();
@@ -889,9 +863,9 @@ void VariableListEditor::removeSelectedVariables()
 
 	if (selection.isEmpty() == false)
 	{
-		for (QString& variableName : selection)
+		for (auto& variableId : selection)
 		{
-			machine->deleteVariable(variableName);
+			machine->removeVariable(variableId);
 		}
 		machineManager->notifyMachineEdited();
 	}
@@ -986,6 +960,10 @@ void VariableListEditor::switchMode(ListMode_t newMode)
 
 void VariableListEditor::editCurrentCell(bool erroneous)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
 	//
 	// Set validator
 
@@ -995,7 +973,8 @@ void VariableListEditor::editCurrentCell(bool erroneous)
 	}
 	else if (this->currentMode == ListMode_t::changingVariableInitialValue)
 	{
-		shared_ptr<Variable> currentVariable = this->associatedVariables[this->currentTableItem].lock();
+		auto currentVariableId = this->associatedVariablesIds[this->currentTableItem];
+		auto currentVariable = machine->getVariable(currentVariableId);
 
 		if (currentVariable != nullptr)
 		{
@@ -1051,29 +1030,16 @@ void VariableListEditor::editCurrentCell(bool erroneous)
 
 void VariableListEditor::fixVariableSize()
 {
-	if(this->currentVariableValue != nullptr)
-	{
-		try
-		{
-			LogicValue currentInitialValue = LogicValue::fromString(this->currentVariableValue->text()); // Throws StatesException
+	if(this->currentVariableValue == nullptr) return;
 
-			uint newSize = (uint)this->currentVariableSize->text().toInt();
-			currentInitialValue.resize(newSize); // Throws StatesException
+	LogicValue currentInitialValue = LogicValue::fromString(this->currentVariableValue->text());
+	if (currentInitialValue.isNull() == true) return;
 
-			this->currentVariableValue->setText(currentInitialValue.toString());
-		}
-		catch (const StatesException& e)
-		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
-			{
-				qDebug() << "(VariableListEditor:) Info: Wrong input for initial value, change ignored.";
-			}
-			else
-			{
-				throw;
-			}
-		}
-	}
+
+	uint newSize = (uint)this->currentVariableSize->text().toInt();
+	currentInitialValue.resize(newSize);
+
+	this->currentVariableValue->setText(currentInitialValue.toString());
 }
 
 QList<QString> VariableListEditor::getSelectedVariables()

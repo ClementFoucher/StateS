@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,10 +25,6 @@
 // Qt classes
 #include <QString>
 
-// StateS classes
-#include "statesexception.h"
-#include "exceptiontypes.h"
-
 
 LogicValue LogicValue::getValue0(uint size)
 {
@@ -45,18 +41,24 @@ LogicValue LogicValue::getNullValue()
 	return LogicValue();
 }
 
-LogicValue LogicValue::fromString(const QString &textValue) // Throws StatesException
+LogicValue LogicValue::fromString(const QString &textValue)
 {
 	LogicValue realValue;
 
 	for (QChar c : textValue)
 	{
 		if (c == '0')
+		{
 			realValue.prepend(false);
+		}
 		else if (c == '1')
+		{
 			realValue.prepend(true);
+		}
 		else
-			throw StatesException("LogicValue", LogicValueError_t::unsupported_char, "Unsupported character in string");
+		{
+			return LogicValue::getNullValue();
+		}
 	}
 
 	return realValue;
@@ -82,16 +84,14 @@ LogicValue::LogicValue(uint bitCount, bool initialValue) :
 {
 }
 
-void LogicValue::resize(uint newSize) // Throws StatesException
+void LogicValue::resize(uint newSize)
 {
-	if (newSize != 0)
-	{
-		((QVector<bool>*)this)->resize(newSize);
-	}
-	else
-	{
-		throw StatesException("LogicValue", LogicValueError_t::resized_to_0, "Trying to resize to 0-sized vector");
-	}
+	if (newSize == 0) return;
+
+	if (newSize == this->getSize()) return;
+
+
+	((QVector<bool>*)this)->resize(newSize);
 }
 
 uint LogicValue::getSize() const
@@ -207,25 +207,19 @@ LogicValue LogicValue::operator^(const LogicValue& otherValue) const
 
 LogicValue LogicValue::operator=(const LogicValue& otherValue)
 {
-	try
+	if (otherValue.isNull() == false)
 	{
-		this->resize(otherValue.getSize()); // Throws StatesException
-		for(uint i = 0 ; i < this->getSize() ; i++)
-		{
-			(*this)[i] = otherValue[i];
-		}
+		this->resize(otherValue.getSize());
 	}
-	catch (const StatesException& e)
+	else
 	{
-		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::resized_to_0) )
-		{
-			// We are tying to affect null value to this: can't resize to 0 publicly
-			((QVector<bool>*)this)->resize(0);
-		}
-		else
-		{
-			throw;
-		}
+		// We are tying to affect null value to this: can't resize to 0 publicly
+		((QVector<bool>*)this)->resize(0);
+	}
+
+	for(uint i = 0 ; i < this->getSize() ; i++)
+	{
+		(*this)[i] = otherValue[i];
 	}
 
 	return *this;
@@ -325,28 +319,21 @@ bool LogicValue::decrement()
 	}
 }
 
-bool& LogicValue::operator[](uint memberNumber) // Throws StatesException
+bool& LogicValue::operator[](uint memberNumber)
 {
-	if (memberNumber < this->getSize())
-	{
-		return (*((QVector<bool>*)this))[memberNumber];
-	}
-	else
-	{
-		throw StatesException("LogicValue", LogicValueError_t::outside_range, "Outside range access");
-	}
+	static bool garbage = false;
+	if (memberNumber >= this->getSize()) return garbage;
+
+
+	return (*((QVector<bool>*)this))[memberNumber];
 }
 
-bool LogicValue::operator[](uint memberNumber) const // Throws StatesException
+bool LogicValue::operator[](uint memberNumber) const
 {
-	if (memberNumber < this->getSize())
-	{
-		return (*((QVector<bool>*)this))[memberNumber];
-	}
-	else
-	{
-		throw StatesException("LogicValue", LogicValueError_t::outside_range, "Outside range access");
-	}
+	if (memberNumber >= this->getSize()) return false;
+
+
+	return (*((QVector<bool>*)this))[memberNumber];
 }
 
 QString LogicValue::toString() const

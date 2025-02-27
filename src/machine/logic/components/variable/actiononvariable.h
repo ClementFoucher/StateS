@@ -50,7 +50,6 @@ class Variable;
  * For implicit action values, actionValue is null, but the
  * value can still be obtained using public function getActionValue().
  *
- * Action only has a weak link to associated variable.
  * If variable is deleted, Action should be deleted too.
  * But in the meantime, action just doesn't react to any
  * external sollicitation: setters are ignored, action
@@ -65,17 +64,17 @@ class ActionOnVariable : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue = LogicValue::getNullValue(),
-							  int rangeL = -1, int rangeR = -1);
+	explicit ActionOnVariable(componentId_t variableId, ActionOnVariableType_t actionType);
+	explicit ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
 	// Object functions
 public:
-	void setActionType (ActionOnVariableType_t newType); // Throws StatesException
-	void setActionValue(LogicValue newValue);  // Throws StatesException
-	void setActionRange(int newRangeL, int newRangeR, LogicValue newValue = LogicValue::getNullValue()); // Throws StatesException
+	void setActionType (ActionOnVariableType_t newType);
+	void setActionValue(LogicValue newValue);
+	void setActionRange(int newRangeL, int newRangeR);
 
-	shared_ptr<Variable>   getVariableActedOn()    const;
+	componentId_t          getVariableActedOnId()  const;
 	ActionOnVariableType_t getActionType()         const;
 	LogicValue             getActionValue()        const;
 	int                    getActionRangeL()       const;
@@ -83,6 +82,8 @@ public:
 	uint                   getActionSize()         const;
 	bool                   isActionValueEditable() const;
 	bool                   isActionMemorized()     const;
+
+	void checkActionValue();
 
 	void beginAction();
 	void endAction();
@@ -95,16 +96,18 @@ private slots:
 
 private:
 	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
+	void initialize(shared_ptr<Variable> variable, ActionOnVariableType_t actionType);
 
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> variable;
+	componentId_t variableId = nullId;
 
 	ActionOnVariableType_t actionType;
-	LogicValue             actionValue;
-	int                    rangeL;
-	int                    rangeR;
+
+	LogicValue actionValue = LogicValue();
+	int        rangeL      = -1;
+	int        rangeR      = -1;
 
 	bool isActionActing = false;
 

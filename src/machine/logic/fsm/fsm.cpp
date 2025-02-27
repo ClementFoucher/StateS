@@ -25,12 +25,31 @@
 // StateS classes
 #include "fsmstate.h"
 #include "fsmtransition.h"
+#include "equation.h"
 
 
 Fsm::Fsm() :
-    Machine()
+	Machine()
 {
 
+}
+
+void Fsm::finalizeLoading()
+{
+	Machine::finalizeLoading();
+
+	// When machine has just been loaded, all equations are invalid:
+	// recompute all transitions conditions.
+	for (auto transitionId : this->getAllTransitionsIds())
+	{
+		auto transition = this->getTransition(transitionId);
+		auto condition = transition->getCondition();
+
+		if (condition != nullptr)
+		{
+			condition->doFullStackRecomputation();
+		}
+	}
 }
 
 componentId_t Fsm::addState(bool isInitial, QString name, componentId_t id)

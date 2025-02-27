@@ -84,6 +84,10 @@ void MachineXmlWriter::writeMachineToStream()
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
 	QList<shared_ptr<ActionOnVariable>> actions = component->getActions();
 
 	if (actions.count() != 0)
@@ -91,7 +95,9 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 		this->stream->writeStartElement("Actions");
 		for (shared_ptr<ActionOnVariable>& action : actions)
 		{
-			auto variable = action->getVariableActedOn();
+			auto variableId = action->getVariableActedOnId();
+
+			auto variable = machine->getVariable(variableId);
 			if (variable == nullptr) continue;
 
 
@@ -140,6 +146,9 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 {
 	if (equation == nullptr) return;
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
 
 	if (equation->getOperatorType() != OperatorType_t::identity)
@@ -197,31 +206,39 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 		for (uint i = 0 ; i < equation->getOperandCount() ; i++)
 		{
 			auto operand = equation->getOperand(i);
-			if (operand != nullptr)
+			if (operand == nullptr) continue;
+
+
+			this->stream->writeStartElement("Operand");
+			this->stream->writeAttribute("Number", QString::number(i));
+
+			switch (operand->getSource())
 			{
-				this->stream->writeStartElement("Operand");
-				this->stream->writeAttribute("Number", QString::number(i));
+			case OperandSource_t::equation:
+				this->writeLogicEquation(operand->getEquation());
+				break;
+			case OperandSource_t::variable:
+			{
+				auto variableId = operand->getVariableId();
 
-				switch (operand->getSource())
+				auto variable = machine->getVariable(variableId);
+				if (variable != nullptr)
 				{
-				case OperandSource_t::equation:
-					this->writeLogicEquation(operand->getEquation());
-					break;
-				case OperandSource_t::variable:
 					this->stream->writeStartElement("LogicVariable");
-					this->stream->writeAttribute("Name", operand->getVariable()->getName());
+					this->stream->writeAttribute("Name", variable->getName());
 					this->stream->writeEndElement(); // LogicVariable
-					break;
-				case OperandSource_t::constant:
-					this->stream->writeStartElement("LogicEquation");
-					this->stream->writeAttribute("Nature", "constant");
-					this->stream->writeAttribute("Value", operand->getConstant().toString());
-					this->stream->writeEndElement(); // LogicEquation
-					break;
 				}
-
-				this->stream->writeEndElement(); // Operand
+				break;
 			}
+			case OperandSource_t::constant:
+				this->stream->writeStartElement("LogicEquation");
+				this->stream->writeAttribute("Nature", "constant");
+				this->stream->writeAttribute("Value", operand->getConstant().toString());
+				this->stream->writeEndElement(); // LogicEquation
+				break;
+			}
+
+			this->stream->writeEndElement(); // Operand
 		}
 
 		this->stream->writeEndElement(); // LogicEquation
@@ -236,7 +253,9 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 		auto operandSource = operand->getSource();
 		if (operandSource == OperandSource_t::variable)
 		{
-			auto variable = operand->getVariable();
+			auto variableId = operand->getVariableId();
+
+			auto variable = machine->getVariable(variableId);
 			if (variable == nullptr) return;
 
 
@@ -319,31 +338,38 @@ void MachineXmlWriter::writeMachineVariables()
 
 	this->stream->writeStartElement("Signals");
 
-	for (auto& variable : machine->getInputs())
+	for (auto& variableId : machine->getInputVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::input, variable);
+		this->writeMachineVariable(VariableNature_t::input, variableId);
 	}
 
-	for (auto& variable : machine->getInternalVariables())
+	for (auto& variableId : machine->getInternalVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::internal, variable);
+		this->writeMachineVariable(VariableNature_t::internal, variableId);
 	}
 
-	for (auto& variable : machine->getOutputs())
+	for (auto& variableId : machine->getOutputVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::output, variable);
+		this->writeMachineVariable(VariableNature_t::output, variableId);
 	}
 
-	for (auto& variable : machine->getConstants())
+	for (auto& variableId : machine->getConstantsIds())
 	{
-		this->writeMachineVariable(VariableNature_t::constant, variable);
+		this->writeMachineVariable(VariableNature_t::constant, variableId);
 	}
 
 	this->stream->writeEndElement();
 }
 
-void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, shared_ptr<Variable> variable)
+void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId_t variableId)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+
 	switch (nature)
 	{
 	case VariableNature_t::input:
@@ -368,7 +394,15 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, shared_ptr<
 
 	// Initial value (except for outputs)
 	if (nature != VariableNature_t::output)
+	{
 		this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
+	}
+
+	// Id
+	if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+	{
+		this->stream->writeAttribute("Id", QString::number(variableId));
+	}
 
 	this->stream->writeEndElement();
 }

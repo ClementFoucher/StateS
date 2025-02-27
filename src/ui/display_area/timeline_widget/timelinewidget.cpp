@@ -39,7 +39,6 @@
 #include "variabletimeline.h"
 #include "clocktimeline.h"
 #include "statetimeline.h"
-#include "variable.h"
 #include "machinesimulator.h"
 #include "pixmapgenerator.h"
 
@@ -104,17 +103,17 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	vLayout->addWidget(new ClockTimeLine(clock));
 
 	// Inputs
-	auto inputs = machine->getInputs();
-	if (inputs.count() != 0)
+	auto inputIds = machine->getInputVariablesIds();
+	if (inputIds.count() != 0)
 	{
 		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
 		titleInputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleInputs);
 
-		for (auto& var : inputs)
+		for (auto& varId : inputIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(3, var, clock);
+			VariableTimeline* varTL = new VariableTimeline(3, varId, clock);
 			vLayout->addWidget(varTL);
 		}
 	}
@@ -126,24 +125,24 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	vLayout->addWidget(new StateTimeLine(clock));
 
-	for (auto& var : machine->getInternalVariables())
+	for (auto& varId : machine->getInternalVariablesIds())
 	{
-		VariableTimeline* varTL = new VariableTimeline(0, var, clock);
+		VariableTimeline* varTL = new VariableTimeline(0, varId, clock);
 		vLayout->addWidget(varTL);
 	}
 
 	// Outputs
-	auto outputs = machine->getOutputs();
-	if (outputs.count() != 0)
+	auto outputsIds = machine->getOutputVariablesIds();
+	if (outputsIds.count() != 0)
 	{
 		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
 		titleOutputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleOutputs);
 
-		for (auto& var : outputs)
+		for (auto& varId : outputsIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(0, var, clock);
+			VariableTimeline* varTL = new VariableTimeline(0, varId, clock);
 			vLayout->addWidget(varTL);
 		}
 	}

@@ -37,7 +37,7 @@ using namespace std;
 #include "actiononvariable.h"
 
 
-ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget *parent) :
+ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget* parent) :
     QStyledItemDelegate(parent)
 {
 	auto machine = machineManager->getMachine();
@@ -52,17 +52,16 @@ ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget *pare
 
 QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
 {
-	// Editor only applies to colummn 2
-	if (index.column() != 2) return nullptr;
-
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
 
 	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
 	if (actuator == nullptr) return nullptr;
 
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return nullptr;
 
-	shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: list generated from action list
+
 	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
 	return new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);

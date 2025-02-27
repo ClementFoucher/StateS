@@ -23,13 +23,14 @@
 #define VARIABLE_H
 
 // Parent
-#include <QObject>
+#include <machinecomponent.h>
 
 // StateS classes
+#include "statestypes.h"
 #include "logicvalue.h"
 
 
-class Variable : public QObject
+class Variable : public MachineComponent
 {
 	Q_OBJECT
 
@@ -37,8 +38,7 @@ class Variable : public QObject
 	// Constructors/destructors
 public:
 	explicit Variable(const QString& name);
-
-	~Variable();
+	explicit Variable(componentId_t id, const QString& name);
 
 	/////
 	// Object functions
@@ -47,13 +47,13 @@ public:
 	///
 	// Mutators
 
-	void setName(const QString& value);
-	void resize(uint newSize); // Throws StatesException
-	void setInitialValue(const LogicValue& newInitialValue); // Throws StatesException
+	void setName(const QString& newName);
+	void resize(uint newSize);
+	void setInitialValue(const LogicValue& newInitialValue);
 
 	// Simulation
-	void setCurrentValue(const LogicValue& value); // Throws StatesException
-	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR); // Throws StatesException
+	void setCurrentValue(const LogicValue& value);
+	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR);
 	void reinitialize();
 
 	///
@@ -66,19 +66,12 @@ public:
 	// Simulation
 	LogicValue getCurrentValue() const;
 
-	///
-	// Other
-
-	void notifyVariableAboutToBeDeleted();
-
 	/////
 	// Signals
 signals:
 	void variableInitialValueChangedEvent();
 	void variableRenamedEvent();
 	void variableResizedEvent();
-	void variableDeletedEvent();
-	void variableAboutToBeDeletedEvent(); // Used to notify operands as they hold a shared_ptr
 
 	// Simulation
 	void variableCurrentValueChangedEvent();

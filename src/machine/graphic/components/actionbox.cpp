@@ -33,10 +33,10 @@ using namespace std;
 
 // StateS classes
 #include "machinemanager.h"
+#include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "variable.h"
 #include "actiononvariable.h"
-#include "machine.h"
 
 
 //
@@ -87,9 +87,14 @@ void ActionBox::buildActionBox()
 
 	for (int i = 0 ; i < actions.count() ; i++)
 	{
-		shared_ptr<ActionOnVariable> currentAction = actions[i];
-		shared_ptr<Variable> currentVariable = currentAction->getVariableActedOn();
+		auto currentAction = actions[i];
+		if (currentAction == nullptr) continue;
+
+		auto currentVariableId = currentAction->getVariableActedOnId();
+
+		auto currentVariable = machine->getVariable(currentVariableId);
 		if (currentVariable == nullptr) continue;
+
 
 		QString currentActionText;
 		qreal xPos = boxLeft;

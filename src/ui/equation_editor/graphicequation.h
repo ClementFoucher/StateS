@@ -30,8 +30,8 @@
 using namespace std;
 
 // StateS classes
+#include "statestypes.h"
 #include "logicvalue.h"
-class Variable;
 class Equation;
 class EditableEquation;
 
@@ -51,7 +51,7 @@ private:
 	// Constructors/destructors
 public:
 	explicit GraphicEquation(shared_ptr<Equation> equation, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
-	explicit GraphicEquation(shared_ptr<Variable> variable, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit GraphicEquation(componentId_t variableId,      int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
 	explicit GraphicEquation(LogicValue constant,           int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
 
 	/////

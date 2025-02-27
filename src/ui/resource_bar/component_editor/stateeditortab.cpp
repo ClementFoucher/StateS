@@ -67,7 +67,7 @@ StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
 	ActionEditor* actionEditor = new ActionEditor(stateId, tr("Actions triggered at state activation:"), this);
 	this->layout()->addWidget(actionEditor);
 
-	updateContent();
+	this->updateContent();
 }
 
 void StateEditorTab::setEditName()
@@ -93,12 +93,11 @@ void StateEditorTab::updateContent()
 	this->textStateName->resetView();
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr)
-		return;
+	if (fsm == nullptr) return;
 
 	auto state = fsm->getState(this->stateId);
-	if (state == nullptr)
-	    return;
+	if (state == nullptr) return;
+
 
 	this->textStateName->setText(state->getName());
 }
@@ -106,12 +105,10 @@ void StateEditorTab::updateContent()
 void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr)
-		return;
+	if (fsm == nullptr) return;
 
 	auto state = fsm->getState(this->stateId);
-	if (state == nullptr)
-		return;
+	if (state == nullptr) return;
 
 
 	if (name == state->getName()) return; // Must be checked because setting focus triggers this event

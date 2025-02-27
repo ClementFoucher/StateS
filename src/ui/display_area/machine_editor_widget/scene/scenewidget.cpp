@@ -22,9 +22,6 @@
 // Current class header
 #include "scenewidget.h"
 
-// Debug
-#include <QDebug>
-
 // Qt classes
 #include <QResizeEvent>
 #include <QStyle>

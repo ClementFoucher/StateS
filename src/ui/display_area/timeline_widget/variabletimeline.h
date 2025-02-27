@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS classes
-class Variable;
+#include "statestypes.h"
 class Clock;
 class GraphicTimeLine;
 
@@ -42,7 +42,7 @@ class VariableTimeline : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTimeline(uint delay, shared_ptr<Variable> variable, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit VariableTimeline(uint delay, componentId_t variableId, shared_ptr<Clock> clock, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -54,7 +54,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> variable;
+	componentId_t variableId = nullId;
 
 	QList<GraphicTimeLine*> variableLineDisplay;
 

@@ -35,7 +35,6 @@
 #include "machine.h"
 #include "equation.h"
 #include "graphicequation.h"
-#include "variable.h"
 #include "pixmapgenerator.h"
 
 
@@ -66,8 +65,8 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 	QWidget* resourcesWidget = new QWidget();
 	QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
 
-	auto inputs = machine->getInputs();
-	if (inputs.count() != 0)
+	auto inputIds = machine->getInputVariablesIds();
+	if (inputIds.count() != 0)
 	{
 		QVBoxLayout* inputListLayout = new QVBoxLayout();
 		inputListLayout->setAlignment(Qt::AlignTop);
@@ -77,15 +76,15 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 		inputsTitle->setAlignment(Qt::AlignCenter);
 		inputListLayout->addWidget(inputsTitle);
 
-		for (auto& input : inputs)
+		for (auto& inputId : inputIds)
 		{
-			inputListLayout->addWidget(new GraphicEquation(input, -1, true));
+			inputListLayout->addWidget(new GraphicEquation(inputId, -1, true));
 		}
 	}
 
 	// Variables
-	auto internalVariables = machine->getInternalVariables();
-	if (internalVariables.count() != 0)
+	auto internalVariableIds = machine->getInternalVariablesIds();
+	if (internalVariableIds.count() != 0)
 	{
 		QVBoxLayout* variableListLayout = new QVBoxLayout();
 		variableListLayout->setAlignment(Qt::AlignTop);
@@ -95,9 +94,9 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 		variablesTitle->setAlignment(Qt::AlignCenter);
 		variableListLayout->addWidget(variablesTitle);
 
-		for (auto& variable : internalVariables)
+		for (auto& variableId : internalVariableIds)
 		{
-			variableListLayout->addWidget(new GraphicEquation(variable, -1, true));
+			variableListLayout->addWidget(new GraphicEquation(variableId, -1, true));
 		}
 	}
 
@@ -114,9 +113,9 @@ EquationEditor::EquationEditor(shared_ptr<Equation> initialEquation, QWidget* pa
 	constantEquation->setOperand(0, LogicValue::getNullValue());
 	constantListLayout->addWidget(new GraphicEquation(constantEquation, -1, true));
 
-	for (auto& constant : machine->getConstants())
+	for (auto& constantId : machine->getConstantsIds())
 	{
-		constantListLayout->addWidget(new GraphicEquation(constant, -1, true));
+		constantListLayout->addWidget(new GraphicEquation(constantId, -1, true));
 	}
 
 	// Operators

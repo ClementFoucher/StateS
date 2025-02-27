@@ -26,8 +26,8 @@
 #include <QGraphicsItem>
 
 // StateS classes
-#include "machine.h"
 #include "machinemanager.h"
+#include "machine.h"
 #include "graphiccomponent.h"
 #include "variable.h"
 
@@ -65,6 +65,7 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
 
+
 	// /!\ QGraphicsItemGroup bounding box seems not to be updated
 	// if item is added using its constructor's parent parameter
 
@@ -90,8 +91,12 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 	// Lines @ X < 0
 
 	qreal currentInputY = 0;
-	for(auto& input : machine->getInputs())
+	for (auto& inputId : machine->getInputVariablesIds())
 	{
+		auto input = machine->getVariable(inputId);
+		if (input == nullptr) continue;
+
+
 		QGraphicsTextItem* textItem = new QGraphicsTextItem();
 
 		QString text = "<span style=\"color:black;\">" + input->getName() + "</span>";
@@ -127,8 +132,12 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 	// Lines @ X > 0
 
 	qreal currentOutputY = 0;
-	for(auto& output : machine->getOutputs())
+	for (auto& outputId : machine->getOutputVariablesIds())
 	{
+		auto output = machine->getVariable(outputId);
+		if (output == nullptr) continue;
+
+
 		QGraphicsTextItem* textItem = new QGraphicsTextItem();
 
 		QString text = "<span style=\"color:black;\">" + output->getName() + "</span>";
@@ -234,8 +243,11 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 void GraphicMachine::removeGraphicComponent(componentId_t id)
 {
-	this->map[id]->deleteLater();
-	this->map.remove(id);
+	if (this->map.contains(id))
+	{
+		this->map[id]->deleteLater();
+		this->map.remove(id);
+	}
 }
 
 void GraphicMachine::addComponent(GraphicComponent* graphicComponent)

@@ -30,6 +30,7 @@
 using namespace std;
 
 // StateS classes
+#include "statestypes.h"
 class ActionOnVariable;
 class Variable;
 
@@ -54,18 +55,23 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnVariable> addAction(shared_ptr<Variable> variable);
-	void removeAction(uint actionRank); // Throws StatesException
-	shared_ptr<ActionOnVariable> getAction(uint actionRank) const; // Throws StatesException
-	const QList<shared_ptr<ActionOnVariable> > getActions() const;
+	shared_ptr<ActionOnVariable> addAction(componentId_t variableId);
+	void addAction(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable); // Add action when machine is still being parsed
+	void removeAction(uint actionRank);
+	shared_ptr<ActionOnVariable> getAction(uint actionRank) const;
+	const QList<shared_ptr<ActionOnVariable>> getActions() const;
 
-	void changeActionRank(uint oldActionRank, uint newActionRank); // Throws StatesException
+	void changeActionRank(uint oldActionRank, uint newActionRank);
 
 	virtual uint getAllowedActionTypes() const = 0;
 
 private slots:
-	void cleanActionList();
+	void variableDeletedEventHandler(componentId_t);
 	void variableInActionListModifiedEventHandler();
+
+private:
+	void cleanActionList();
+	void addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable);
 
 	/////
 	// Signals

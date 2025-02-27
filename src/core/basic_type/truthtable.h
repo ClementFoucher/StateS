@@ -30,7 +30,7 @@ using namespace std;
 #include <QVector>
 
 // StateS classes
-class Variable;
+#include "statestypes.h"
 class LogicValue;
 class Equation;
 
@@ -47,23 +47,23 @@ public:
 	/////
 	// Object functions
 public:
-	QVector<shared_ptr<Variable>> getInputs()            const; // Throws StatesException
-	QVector<QVector<LogicValue>>  getInputTable()        const;
-	QVector<QString>              getOutputsEquations()  const;
-	QVector<QVector<LogicValue>>  getOutputTable()       const;
-	QVector<LogicValue>           getSingleOutputTable() const;
+	const QVector<componentId_t>        getInputVariablesIds()       const;
+	const QVector<QVector<LogicValue>>  getInputValuesTable()        const;
+	const QVector<QString>              getOutputsEquations()        const;
+	const QVector<QVector<LogicValue>>  getOutputValuesTable()       const;
+	const QVector<LogicValue>           getSingleOutputValuesTable() const;
 
 	uint getInputCount()  const;
 	uint getOutputCount() const;
 
 private:
-	QList<shared_ptr<Variable> > extractVariables(shared_ptr<Equation> equation) const;
+	const QList<componentId_t> extractVariables(shared_ptr<Equation> equation) const;
 	void buildTable(QVector<shared_ptr<Equation>> equations);
 
 	/////
 	// Object variables
 private:
-	QVector<weak_ptr<Variable>>  inputVariablesTable;
+	QVector<componentId_t>       inputVariablesIdsTable;
 	QVector<QString>             outputEquationsTextsTable;
 	QVector<QVector<LogicValue>> inputValuesTable;
 	QVector<QVector<LogicValue>> outputValuesTable;

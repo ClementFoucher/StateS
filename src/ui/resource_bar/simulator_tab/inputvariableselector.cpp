@@ -22,18 +22,31 @@
 // Current class header
 #include "inputvariableselector.h"
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QHBoxLayout>
 #include <QLabel>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "variable.h"
 #include "inputbitselector.h"
 
 
-InputVariableSelector::InputVariableSelector(shared_ptr<Variable> relatedVariable, QWidget *parent) :
+InputVariableSelector::InputVariableSelector(componentId_t relatedVariableId, QWidget *parent) :
     QWidget(parent)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto relatedVariable = machine->getVariable(relatedVariableId);
+	if (relatedVariable == nullptr) return;
+
+
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
 	QLabel* variableName = new QLabel(relatedVariable->getName(), this);
@@ -44,7 +57,7 @@ InputVariableSelector::InputVariableSelector(shared_ptr<Variable> relatedVariabl
 
 	for (int i = (int)relatedVariable->getSize()-1 ; i >= 0 ; i--)
 	{
-		InputBitSelector* currentBit = new InputBitSelector(relatedVariable, i, this);
+		InputBitSelector* currentBit = new InputBitSelector(relatedVariableId, i, this);
 		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
 	}
 }

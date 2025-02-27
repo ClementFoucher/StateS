@@ -30,16 +30,14 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "clock.h"
 #include "fsm.h"
+#include "clock.h"
 #include "graphicfsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "variable.h"
 #include "fsmsimulatedstate.h"
 #include "fsmsimulatedtransition.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 #include "actiononvariable.h"
 #include "equation.h"
 
@@ -144,18 +142,30 @@ void FsmSimulator::resetEventHandler()
 	}
 
 	// Reset inputs and internal variables to their initial value
-	for (auto& variable : fsm->getInputs())
+	for (auto& variableId : fsm->getInputVariablesIds())
 	{
+		auto variable = fsm->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
 		variable->reinitialize();
 	}
-	for (auto& variable : fsm->getInternalVariables())
+	for (auto& variableId : fsm->getInternalVariablesIds())
 	{
+		auto variable = fsm->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
 		variable->reinitialize();
 	}
 
 	// Then compute outputs: first reset all of them...
-	for (auto& variable : fsm->getOutputs())
+	for (auto& variableId : fsm->getOutputVariablesIds())
 	{
+		auto variable = fsm->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
 		variable->reinitialize();
 	}
 

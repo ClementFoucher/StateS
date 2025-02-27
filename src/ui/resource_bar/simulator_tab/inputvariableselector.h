@@ -25,12 +25,8 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class Variable;
+#include "statestypes.h"
 
 
 class InputVariableSelector : public QWidget
@@ -40,7 +36,7 @@ class InputVariableSelector : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit InputVariableSelector(shared_ptr<Variable> relatedVariable, QWidget* parent = nullptr);
+	explicit InputVariableSelector(componentId_t relatedVariableId, QWidget* parent = nullptr);
 
 };
 

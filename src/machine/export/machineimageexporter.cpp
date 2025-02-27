@@ -108,6 +108,7 @@ void MachineImageExporter::doExport(const QString& path, ImageFormat_t format, c
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	if (format == ImageFormat_t::pdf)
 	{
 		this->preparePdfPrinter(path, machine->getName(), creator);
@@ -196,12 +197,16 @@ void MachineImageExporter::generatePrintingRects()
 			this->variablesPrintingRect.translate(0, totalHeight/2 + this->spacer);
 
 			if (this->includeConstant == true)
+			{
 				this->variablesPrintingRect.translate(0, totalHeight/4);
+			}
 		}
 		else
 		{
 			if (this->includeConstant == true)
+			{
 				this->variablesPrintingRect.translate(0, totalHeight/2 + this->spacer);
+			}
 		}
 
 		// Size
@@ -232,7 +237,6 @@ void MachineImageExporter::generatePrintingRects()
 
 	this->painter = shared_ptr<QPainter>(new QPainter());
 }
-
 
 void MachineImageExporter::preparePdfPrinter(const QString& path, const QString& title, const QString& creator)
 {
@@ -292,7 +296,9 @@ void MachineImageExporter::renderOnPainter()
 	if (this->painter != nullptr)
 	{
 		if (this->addBorder == true)
+		{
 			this->border = shared_ptr<QGraphicsScene>(new QGraphicsScene(this->pageRect));
+		}
 
 		this->renderScene();
 		this->renderComponent();
@@ -306,7 +312,9 @@ void MachineImageExporter::renderOnPainter()
 void MachineImageExporter::renderScene()
 {
 	if (this->addBorder == true)
+	{
 		this->prepareBorder(this->scenePrintingRect);
+	}
 
 	QRectF actualPrintingRect = this->getActualPrintedRect(this->scene->sceneRect(), this->scenePrintingRect);
 	this->scene->render(this->painter.get(), actualPrintingRect);
@@ -317,7 +325,9 @@ void MachineImageExporter::renderComponent()
 	if (this->includeComponent == true)
 	{
 		if (this->addBorder == true)
+		{
 			this->prepareBorder(this->componentPrintingRect);
+		}
 
 		shared_ptr<QGraphicsScene> l_component = this->component.lock();
 		if (l_component != nullptr)
@@ -335,6 +345,7 @@ void MachineImageExporter::renderConstants()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	if (this->addBorder == true)
 	{
 		this->prepareBorder(this->constantsPrintingRect);
@@ -345,11 +356,17 @@ void MachineImageExporter::renderConstants()
 	constantScene->addItem(constantsTitle);
 
 	int pos = 0;
-	for(shared_ptr<Variable> constant : machine->getConstants())
+	for (auto constantId : machine->getConstantsIds())
 	{
+		auto constant = machine->getVariable(constantId);
+		if (constant == nullptr) continue;
+
+
 		QString constText = constant->getName();
 		if (constant->getSize() > 1)
+		{
 			constText += "[" + QString::number(constant->getSize()-1) + "..0]";
+		}
 		constText += " = \"" + constant->getInitialValue().toString() + "\"";
 
 		QGraphicsTextItem* constantItem = new QGraphicsTextItem(constText);
@@ -369,6 +386,7 @@ void MachineImageExporter::renderVariables()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	if (this->addBorder == true)
 	{
 		this->prepareBorder(this->variablesPrintingRect);
@@ -379,11 +397,17 @@ void MachineImageExporter::renderVariables()
 	variableScene->addItem(text);
 
 	int pos = 0;
-	for(shared_ptr<Variable> variable : machine->getInternalVariables())
+	for (auto variableId : machine->getInternalVariablesIds())
 	{
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
 		QString varText = variable->getName();
 		if (variable->getSize() > 1)
+		{
 			varText += "[" + QString::number(variable->getSize()-1) + "..0]";
+		}
 		varText += " ( = \"" + variable->getInitialValue().toString() + "\" @ t=0 )";
 
 		QGraphicsTextItem* variableItem = new QGraphicsTextItem(varText);

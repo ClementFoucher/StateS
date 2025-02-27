@@ -36,8 +36,6 @@ class QTextStream;
 
 // StateS classes
 #include "statestypes.h"
-class Fsm;
-class Variable;
 class ActionOnVariable;
 class Equation;
 class Operand;
@@ -53,10 +51,10 @@ public:
 	class ExportCompatibility
 	{
 	public:
-		QList<shared_ptr<Variable>> bothMooreAndMealy;
-		QList<shared_ptr<Variable>> bothTempAndKeepValue;
-		QList<shared_ptr<Variable>> rangeAdressed;
-		QList<shared_ptr<Variable>> mealyWithKeep;
+		QList<componentId_t> bothMooreAndMealy;
+		QList<componentId_t> bothTempAndKeepValue;
+		QList<componentId_t> rangeAdressed;
+		QList<componentId_t> mealyWithKeep;
 
 		bool isCompatible()
 		{
@@ -99,22 +97,22 @@ public:
 	shared_ptr<ExportCompatibility> checkCompatibility();
 
 private:
-	void generateVhdlCharacteristics(shared_ptr<Fsm> l_machine);
-	WrittableVariableCharacteristics_t determineWrittableVariableCharacteristics(shared_ptr<Fsm> l_machine, shared_ptr<Variable> variable, bool storeResults);
+	void generateVhdlCharacteristics();
+	WrittableVariableCharacteristics_t determineWrittableVariableCharacteristics(componentId_t variableId, bool storeResults);
 	QString generateVhdlSignalName(const QString& prefix, const QString& name) const;
 	QString cleanNameForVhdl(const QString& name) const;
 
 	void writeHeader(QTextStream& stream) const;
-	void writeEntity(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-	void writeArchitecture(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-	void writeMooreOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
-	void writeMealyOutputs(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeEntity(QTextStream& stream) const;
+	void writeArchitecture(QTextStream& stream) const;
+	void writeMooreOutputs(QTextStream& stream) const;
+	void writeMealyOutputs(QTextStream& stream) const;
 
-	void writeAsynchronousProcessSensitivityList(QTextStream& stream, shared_ptr<Fsm> l_machine) const;
+	void writeAsynchronousProcessSensitivityList(QTextStream& stream) const;
 	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const;
 
-	QString generateEquationText(shared_ptr<Equation> equation, shared_ptr<Fsm> l_machine) const;
-	QString generateOperandText(shared_ptr<Operand> operand, shared_ptr<Fsm> l_machine) const;
+	QString generateEquationText(shared_ptr<Equation> equation) const;
+	QString generateOperandText(shared_ptr<Operand> operand) const;
 
 	/////
 	// Object variables
@@ -122,7 +120,7 @@ private:
 	bool resetLogicPositive;
 	bool prefixSignals;
 
-	QMap<shared_ptr<Variable>, QString> variableVhdlName;
+	QMap<componentId_t, QString> variableVhdlName;
 	QMap<componentId_t, QString> stateVhdlName;
 	QString machineVhdlName;
 
@@ -132,18 +130,18 @@ private:
 	// - A variable is either Mealy or Moore, not both.
 	// - A variable either keeps its value or has an active-on-state/pulse value, not both.
 
-	QList<shared_ptr<Variable>> mooreVariables;
-	QList<shared_ptr<Variable>> mealyVariables; // TODO: Mealy variables are currently ignored.
+	QList<componentId_t> mooreVariables;
+	QList<componentId_t> mealyVariables; // TODO: Mealy variables are currently ignored.
 
-	QList<shared_ptr<Variable>> tempValueVariables;
-	QList<shared_ptr<Variable>> keepValueVariables;
+	QList<componentId_t> tempValueVariables;
+	QList<componentId_t> keepValueVariables;
 
 	// At first, the variables with range adressing should be treated
 	// as independant bits, each bit acting like a whole variable.
 	// Then maybe determine independant ranges, not alway go @ bit level.
 
 	// TODO: Range adresssed variables are currently ignored.
-	//QList<shared_ptr<Variable>> rangeAdressedVariables;
+	//QList<componentId_t> rangeAdressedVariables;
 
 };
 

@@ -28,9 +28,6 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "machinemanager.h"
 #include "fsm.h"
@@ -135,11 +132,6 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 				ContextMenu* menu = ContextMenu::createErrorMenu(tr("No initial state!"));
 				menu->popup(this->buttonTriggerSimulation->mapToGlobal(QPoint(this->buttonTriggerSimulation->width(), -menu->sizeHint().height())));
 			}
-		}
-		else
-		{
-			qDebug() << "(SimulatorTab:) Warning: Trying to begin simulation while already launched.";
-			qDebug() << "Command ignored.";
 		}
 	}
 	else

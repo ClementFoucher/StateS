@@ -34,7 +34,6 @@ using namespace std;
 
 // StateS classes
 #include "statestypes.h"
-#include "logicvalue.h"
 class Variable;
 class MachineComponent;
 
@@ -47,7 +46,9 @@ class Machine : public QObject
 	// Constructors/destructors
 public:
 	explicit Machine();
-	~Machine();
+
+	// Pseudo-constructor to process post-loading actions
+	virtual void finalizeLoading();
 
 	/////
 	// Object functions
@@ -58,12 +59,10 @@ public:
 
 	bool setName(const QString& newName);
 
-	shared_ptr<Variable> addVariable(VariableNature_t type, const QString& name, const LogicValue& value = LogicValue::getNullValue());
-	bool deleteVariable(const QString& name);
-	bool renameVariable(const QString& oldName, const QString& newName);
-	void resizeVariable(const QString& name, uint newSize); // Throws StatesException
-	void changeVariableInitialValue(const QString& name, LogicValue newValue); // Throws StatesException
-	bool changeVariableRank(const QString& name, uint newRank);
+	componentId_t addVariable(VariableNature_t nature, const QString& name, componentId_t id = nullId);
+	void removeVariable(componentId_t variableId);
+	bool renameVariable(componentId_t variableId, const QString& newName);
+	void changeVariableRank(componentId_t variableId, uint newRank);
 
 	///
 	// Accessors
@@ -72,14 +71,19 @@ public:
 
 	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
 
-	const QList<shared_ptr<Variable>> getInputs()            const;
-	const QList<shared_ptr<Variable>> getOutputs()           const;
-	const QList<shared_ptr<Variable>> getInternalVariables() const;
-	const QList<shared_ptr<Variable>> getConstants()         const;
+	shared_ptr<Variable> getVariable(componentId_t variableId) const;
 
-	const QList<shared_ptr<Variable>> getWrittableVariables() const;
-	const QList<shared_ptr<Variable>> getReadableVariables()  const;
-	const QList<shared_ptr<Variable>> getAllVariables()       const;
+	// Ordered lists for each nature of variable
+	const QList<componentId_t> getInputVariablesIds()    const;
+	const QList<componentId_t> getOutputVariablesIds()   const;
+	const QList<componentId_t> getInternalVariablesIds() const;
+	const QList<componentId_t> getConstantsIds()         const;
+	const QList<componentId_t> getVariablesIds(VariableNature_t nature) const;
+
+	// Unordered lists for categories of variables
+	const QList<componentId_t> getWrittableVariablesIds() const;
+	const QList<componentId_t> getReadableVariablesIds()  const;
+	const QList<componentId_t> getAllVariablesIds()       const;
 
 	// Other
 
@@ -90,15 +94,6 @@ protected:
 	void removeComponent(componentId_t componentId);
 
 private:
-	shared_ptr<Variable> addVariableAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value);
-	const QList<shared_ptr<Variable>> getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const; // TODO: throw exception
-	void addVariableToList(shared_ptr<Variable> variable, uint rank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
-	bool deleteVariableFromList(const QString& name, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
-	bool renameVariableInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
-	bool changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash);
-
-	const QHash<QString, shared_ptr<Variable>> getAllVariablesMap() const;
-
 	bool cleanVariableName(QString& nameToClean) const;
 
 	/////
@@ -118,19 +113,14 @@ signals:
 	/////
 	// Object variables
 private:
-	QHash<QString, shared_ptr<Variable>> inputs;
-	QHash<QString, shared_ptr<Variable>> outputs;
-	QHash<QString, shared_ptr<Variable>> localVariables;
-	QHash<QString, shared_ptr<Variable>> constants;
-
-	QHash<QString, uint> inputsRanks;
-	QHash<QString, uint> outputsRanks;
-	QHash<QString, uint> localVariablesRanks;
-	QHash<QString, uint> constantsRanks;
+	QString name;
 
 	QHash<componentId_t, shared_ptr<MachineComponent>> components;
 
-	QString name;
+	QList<componentId_t> inputVariables;
+	QList<componentId_t> outputVariables;
+	QList<componentId_t> internalVariables;
+	QList<componentId_t> constants;
 
 };
 

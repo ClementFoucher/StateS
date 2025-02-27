@@ -27,16 +27,25 @@
 #include <QVBoxLayout>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "variable.h"
 #include "clock.h"
 #include "graphicbittimeline.h"
 #include "graphicvectortimeline.h"
 
 
-VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> variable, shared_ptr<Clock> clock, QWidget* parent) :
+VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
-	this->variable = variable;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+
+	this->variableId = variableId;
 
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
@@ -98,19 +107,22 @@ VariableTimeline::VariableTimeline(uint outputDelay, shared_ptr<Variable> variab
 // it will be edited dynamically with variable update
 void VariableTimeline::clockEventHandler()
 {
-	shared_ptr<Variable> l_variable = this->variable.lock();
-	if (l_variable == nullptr) return;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
 
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_variable->getSize() > 1) && (i == 0) )
+		if ( (variable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->addPoint(l_variable->getCurrentValue());
+				vectorTimeLine->addPoint(variable->getCurrentValue());
 			}
 		}
 		else
@@ -118,7 +130,7 @@ void VariableTimeline::clockEventHandler()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->addPoint(l_variable->getCurrentValue()[bitNumber]);
+				timeLine->addPoint(variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
@@ -128,18 +140,22 @@ void VariableTimeline::clockEventHandler()
 // Value is updated depending on actions on variable
 void VariableTimeline::updateCurrentValue()
 {
-	shared_ptr<Variable> l_variable = this->variable.lock();
-	if (l_variable == nullptr) return;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_variable->getSize() > 1) && (i == 0) )
+		if ( (variable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->updateLastPoint(l_variable->getCurrentValue());
+				vectorTimeLine->updateLastPoint(variable->getCurrentValue());
 			}
 		}
 		else
@@ -147,7 +163,7 @@ void VariableTimeline::updateCurrentValue()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->updateLastPoint(l_variable->getCurrentValue()[bitNumber]);
+				timeLine->updateLastPoint(variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
@@ -156,18 +172,22 @@ void VariableTimeline::updateCurrentValue()
 
 void VariableTimeline::resetEventHandler()
 {
-	shared_ptr<Variable> l_variable = this->variable.lock();
-	if (l_variable == nullptr) return;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (l_variable->getSize() > 1) && (i == 0) )
+		if ( (variable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->reset(l_variable->getCurrentValue());
+				vectorTimeLine->reset(variable->getCurrentValue());
 			}
 		}
 		else
@@ -175,7 +195,7 @@ void VariableTimeline::resetEventHandler()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->reset(l_variable->getCurrentValue()[bitNumber]);
+				timeLine->reset(variable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}

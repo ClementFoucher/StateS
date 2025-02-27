@@ -22,20 +22,33 @@
 // Current class header
 #include "inputbitselector.h"
 
+// C++classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 #include <QHBoxLayout>
 #include <QStyle>
 #include <QLabel>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "variable.h"
 
 
-InputBitSelector::InputBitSelector(shared_ptr<Variable> variableToCommand, uint bitNumber, QWidget *parent) :
+InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget *parent) :
     QFrame(parent)
 {
-	this->variableToCommand = variableToCommand;
-	this->bitNumber         = bitNumber;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variableToCommand = machine->getVariable(variableToCommandId);
+	if (variableToCommand == nullptr) return;
+
+
+	this->variableToCommandId = variableToCommandId;
+	this->bitNumber           = bitNumber;
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 
@@ -65,15 +78,18 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-	shared_ptr<Variable> l_variableToCommand = this->variableToCommand.lock();
-	if (l_variableToCommand != nullptr)
-	{
-		LogicValue variableValue = l_variableToCommand->getCurrentValue();
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
-		variableValue[this->bitNumber] = !variableValue[this->bitNumber];
+	auto variableToCommand = machine->getVariable(variableToCommandId);
+	if (variableToCommand == nullptr) return;
 
-		l_variableToCommand->setCurrentValue(variableValue);  // Throws StatesException - TODO: what if variableValue[] is incorrect?
-	}
+
+	LogicValue variableValue = variableToCommand->getCurrentValue();
+
+	variableValue[this->bitNumber] = !variableValue[this->bitNumber];
+
+	variableToCommand->setCurrentValue(variableValue);
 }
 
 void InputBitSelector::mouseMoveEvent(QMouseEvent*)
@@ -93,9 +109,12 @@ void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 
 void InputBitSelector::variableValueChangedEventHandler()
 {
-	shared_ptr<Variable> l_variableToCommand = this->variableToCommand.lock();
-	if (l_variableToCommand != nullptr)
-	{
-		this->bitValue->setText(QString::number(l_variableToCommand->getCurrentValue()[this->bitNumber]));
-	}
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variableToCommand = machine->getVariable(variableToCommandId);
+	if (variableToCommand == nullptr) return;
+
+
+	this->bitValue->setText(QString::number(variableToCommand->getCurrentValue()[this->bitNumber]));
 }

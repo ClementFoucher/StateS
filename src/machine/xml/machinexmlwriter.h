@@ -71,7 +71,7 @@ private:
 
 	void writeUiConfiguration();
 	void writeMachineVariables();
-	void writeMachineVariable(VariableNature_t nature, shared_ptr<Variable> variable);
+	void writeMachineVariable(VariableNature_t nature, componentId_t variableId);
 
 	/////
 	// Object variables

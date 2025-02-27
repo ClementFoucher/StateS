@@ -23,25 +23,34 @@
 #include "operand.h"
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "variable.h"
 #include "equation.h"
 
 
-Operand::Operand(shared_ptr<Variable> variable)
+Operand::Operand(componentId_t variableId) :
+	Operand(OperandSource_t::variable)
 {
-	this->source   = OperandSource_t::variable;
-	this->variable = variable;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+
+	this->variableId = variableId;
 
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
 	connect(variable.get(), &Variable::variableCurrentValueChangedEvent, this, &Operand::operandCurrentValueChangedEvent);
 	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
 
-	connect(variable.get(), &Variable::variableAboutToBeDeletedEvent, this, &Operand::variableAboutToBeDeletedEventHandler);
+	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
 }
 
-Operand::Operand(shared_ptr<Equation> equation)
+Operand::Operand(shared_ptr<Equation> equation) :
+	Operand(OperandSource_t::equation)
 {
-	this->source   = OperandSource_t::equation;
 	this->equation = equation;
 
 	connect(equation.get(), &Equation::equationInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
@@ -49,10 +58,33 @@ Operand::Operand(shared_ptr<Equation> equation)
 	connect(equation.get(), &Equation::equationTextChangedEvent,         this, &Operand::operandTextChangedEvent);
 }
 
-Operand::Operand(LogicValue constant)
+Operand::Operand(LogicValue constant) :
+	Operand(OperandSource_t::constant)
 {
-	this->source   = OperandSource_t::constant;
 	this->constant = constant;
+}
+
+Operand::Operand(shared_ptr<Variable> variable) :
+	Operand(OperandSource_t::variable)
+{
+	if (variable == nullptr) return;
+
+
+	this->variableId = variable->getId();
+
+	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
+	connect(variable.get(), &Variable::variableCurrentValueChangedEvent, this, &Operand::operandCurrentValueChangedEvent);
+	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
+
+	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
+}
+
+Operand::Operand(OperandSource_t operandSource)
+{
+	// The source MUST be defined, even if there is a failure on the machine
+	// This private constructor ensures it.
+
+	this->source = operandSource;
 }
 
 shared_ptr<Operand> Operand::clone() const
@@ -60,7 +92,7 @@ shared_ptr<Operand> Operand::clone() const
 	switch (this->source)
 	{
 	case OperandSource_t::variable:
-		return shared_ptr<Operand>(new Operand(this->variable));
+		return shared_ptr<Operand>(new Operand(this->variableId));
 		break;
 	case OperandSource_t::equation:
 		return shared_ptr<Operand>(new Operand(this->equation->clone()));
@@ -81,11 +113,17 @@ LogicValue Operand::getInitialValue() const
 	switch (this->source)
 	{
 	case OperandSource_t::variable:
-		if (this->variable == nullptr) return LogicValue::getNullValue();
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return LogicValue::getNullValue();
+
+		auto variable = machine->getVariable(this->variableId);
+		if (variable == nullptr) return LogicValue::getNullValue();
 
 
-		return this->variable->getInitialValue();
+		return variable->getInitialValue();
 		break;
+	}
 	case OperandSource_t::equation:
 		if (this->equation == nullptr) return LogicValue::getNullValue();
 
@@ -103,11 +141,17 @@ LogicValue Operand::getCurrentValue() const
 	switch (this->source)
 	{
 	case OperandSource_t::variable:
-		if (this->variable == nullptr) return LogicValue::getNullValue();
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return LogicValue::getNullValue();
+
+		auto variable = machine->getVariable(this->variableId);
+		if (variable == nullptr) return LogicValue::getNullValue();
 
 
-		return this->variable->getCurrentValue();
+		return variable->getCurrentValue();
 		break;
+	}
 	case OperandSource_t::equation:
 		if (this->equation == nullptr) return LogicValue::getNullValue();
 
@@ -120,12 +164,12 @@ LogicValue Operand::getCurrentValue() const
 	}
 }
 
-shared_ptr<Variable> Operand::getVariable() const
+componentId_t Operand::getVariableId() const
 {
-	if (this->source != OperandSource_t::variable) return nullptr;
+	if (this->source != OperandSource_t::variable) return nullId;
 
 
-	return this->variable;
+	return this->variableId;
 }
 
 shared_ptr<Equation> Operand::getEquation() const
@@ -149,11 +193,17 @@ QString Operand::getText() const
 	switch (this->source)
 	{
 	case OperandSource_t::variable:
-		if (this->variable == nullptr) return QString();
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return QString();
+
+		auto variable = machine->getVariable(this->variableId);
+		if (variable == nullptr) return QString();
 
 
-		return this->variable->getName();
+		return variable->getName();
 		break;
+	}
 	case OperandSource_t::equation:
 		if (this->equation == nullptr) return QString();
 
@@ -169,8 +219,8 @@ QString Operand::getText() const
 	}
 }
 
-void Operand::variableAboutToBeDeletedEventHandler()
+void Operand::variableDeletedEventHandler(componentId_t)
 {
-	this->variable = nullptr;
-	emit this->operandAboutToBeInvalidatedEvent();
+	this->variableId = nullId;
+	emit this->operandInvalidatedEvent();
 }

@@ -26,9 +26,6 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "machinemanager.h"
 #include "machinebuilder.h"

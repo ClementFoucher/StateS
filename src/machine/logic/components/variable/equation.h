@@ -89,9 +89,10 @@ public:
 	bool isTrue() const;
 
 	shared_ptr<Operand> getOperand(uint i) const;
-	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand
+	void setOperand(uint i, componentId_t newOperand);        // Set variable operand
 	void setOperand(uint i, shared_ptr<Equation> newOperand); // Set equation operand
 	void setOperand(uint i, LogicValue newOperand);           // Set constant operand
+	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand (when machine is still being parsed)
 	void clearOperand(uint i);
 
 	uint getOperandCount() const;
@@ -103,10 +104,12 @@ public:
 	int getRangeL() const;
 	int getRangeR() const;
 
+	void doFullStackRecomputation();
+
 private slots:
 	void computeCurrentValue();
 	void computeInitialValue();
-	void operandAboutToBeInvalidatedEventHandler();
+	void operandInvalidatedEventHandler();
 
 private:
 	void setOperand(uint i, shared_ptr<Operand> newOperand);
@@ -118,7 +121,7 @@ signals:
 	void equationInitialValueChangedEvent();
 	void equationCurrentValueChangedEvent();
 	void equationTextChangedEvent();
-	void equationAboutToBeInvalidatedEvent();
+	void equationInvalidatedEvent();
 
 	/////
 	// Object variables

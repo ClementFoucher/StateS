@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,8 +27,8 @@ componentId_t MachineComponent::getUniqueId()
 {
 	static componentId_t currentId = 0L;
 
-	// ID O will be reserved for special use,
-	// increment before assigning ID.
+	// ID O is reserved for nullId,
+	// increment *before* assigning ID.
 	currentId++;
 	return currentId;
 }
@@ -41,6 +41,11 @@ MachineComponent::MachineComponent()
 MachineComponent::MachineComponent(componentId_t id)
 {
 	this->id = id;
+}
+
+MachineComponent::~MachineComponent()
+{
+	emit this->componentDeletedEvent(this->id);
 }
 
 componentId_t MachineComponent::getId() const

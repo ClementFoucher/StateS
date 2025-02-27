@@ -22,34 +22,35 @@
 // Current class header
 #include "machineactuatorcomponent.h"
 
-// Qt classes
-#include <QDebug>
-
 // StateS classes
-#include "statestypes.h"
+#include "machinemanager.h"
+#include "machine.h"
 #include "variable.h"
 #include "actiononvariable.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
 
 MachineActuatorComponent::MachineActuatorComponent() :
-    MachineComponent()
+	MachineComponent()
 {
 
 }
 
 MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
-    MachineComponent(id)
+	MachineComponent(id)
 {
 
 }
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Variable> variable)
+shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t variableId)
 {
-	// Default action type
-	ActionOnVariableType_t actionType;
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return nullptr;
 
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return nullptr;
+
+
+	ActionOnVariableType_t actionType;
 	if ((this->getAllowedActionTypes() & (uint)actuatorAllowedActionType_t::continuous) != 0)
 	{
 		actionType = ActionOnVariableType_t::activeOnState;
@@ -59,12 +60,9 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Vari
 		actionType = ActionOnVariableType_t::pulse;
 	}
 
-	shared_ptr<ActionOnVariable> action(new ActionOnVariable(variable, actionType));
-	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::variableInActionListModifiedEventHandler);
-	this->actionList.append(action);
+	auto action = shared_ptr<ActionOnVariable>(new ActionOnVariable(variableId, actionType));
 
-	// To remove destroyed variables from the action list
-	connect(variable.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
+	this->addActionInternal(action, variable);
 
 	emit this->actionListChangedEvent();
 	emit this->componentEditedEvent(this->id);
@@ -72,36 +70,38 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(shared_ptr<Vari
 	return action;
 }
 
-void MachineActuatorComponent::removeAction(uint actionRank) // Throws StatesException
+void MachineActuatorComponent::addAction(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable)
 {
-	if (actionRank < (uint)this->actionList.count())
-	{
-		shared_ptr<Variable> variable = actionList.at(actionRank)->getVariableActedOn();
-		if (variable != nullptr)
-		{
-			disconnect(variable.get(), &Variable::variableDeletedEvent, this, &MachineActuatorComponent::cleanActionList);
-		}
-
-		this->actionList.removeAt(actionRank);
-		emit this->actionListChangedEvent();
-		emit this->componentEditedEvent(this->id);
-	}
-	else
-	{
-		throw StatesException("MachineActuatorComponent", MachineActuatorComponentError_t::out_of_range, "Requested action range does not exist");
-	}
+	this->addActionInternal(action, variable);
 }
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const // Throws StatesException
+void MachineActuatorComponent::removeAction(uint actionRank)
 {
-	if (actionRank < (uint)this->actionList.count())
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	if (actionRank >= (uint)this->actionList.count()) return;
+
+
+	auto variableId = actionList.at(actionRank)->getVariableActedOnId();
+	auto variable = machine->getVariable(variableId);
+	if (variable != nullptr)
 	{
-		return this->actionList.at(actionRank);
+		disconnect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler);
 	}
-	else
-	{
-		throw StatesException("MachineActuatorComponent", MachineActuatorComponentError_t::out_of_range, "Requested action with rank #" + QString::number(actionRank) + " but only " + QString::number(this->actionList.count()) + " registered action(s).");
-	}
+
+	this->actionList.removeAt(actionRank);
+
+	emit this->actionListChangedEvent();
+	emit this->componentEditedEvent(this->id);
+}
+
+shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const
+{
+	if (actionRank >= (uint)this->actionList.count()) return nullptr;
+
+
+	return this->actionList.at(actionRank);
 }
 
 const QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
@@ -109,38 +109,55 @@ const QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions(
 	return this->actionList;
 }
 
-void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActionRank) // Throws StatesException
+void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActionRank)
 {
-	if (oldActionRank < (uint)this->actionList.count())
-	{
-		if (newActionRank < (uint)this->actionList.count())
-		{
-			shared_ptr<ActionOnVariable> action = this->actionList.at(oldActionRank);
-			this->actionList.removeAt(oldActionRank);
-			this->actionList.insert(newActionRank, action);
+	if (oldActionRank >= (uint)this->actionList.count()) return;
 
-			emit this->actionListChangedEvent();
-			emit this->componentEditedEvent(this->id);
-		}
-		else
-		{
-			throw StatesException("MachineActuatorComponent", MachineActuatorComponentError_t::out_of_range, "Requested change action rank to rank #" + QString::number(newActionRank) + " but only " + QString::number(this->actionList.count()) + " registered action(s).");
-		}
-	}
-	else
-	{
-		throw StatesException("MachineActuatorComponent", MachineActuatorComponentError_t::out_of_range, "Requested change action rank on action with rank #" + QString::number(oldActionRank) + " but only " + QString::number(this->actionList.count()) + " registered action(s).");
-	}
+	if (newActionRank >= (uint)this->actionList.count()) return;
+
+	if (oldActionRank == newActionRank) return;
+
+
+	shared_ptr<ActionOnVariable> action = this->actionList.at(oldActionRank);
+	this->actionList.removeAt(oldActionRank);
+	this->actionList.insert(newActionRank, action);
+
+	emit this->actionListChangedEvent();
+	emit this->componentEditedEvent(this->id);
+}
+
+void MachineActuatorComponent::variableDeletedEventHandler(componentId_t)
+{
+	this->cleanActionList();
+}
+
+void MachineActuatorComponent::variableInActionListModifiedEventHandler()
+{
+	emit this->actionListChangedEvent();
+	emit this->componentEditedEvent(this->id);
 }
 
 void MachineActuatorComponent::cleanActionList()
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
 	QList<shared_ptr<ActionOnVariable>> newActionList;
 
 	bool listChanged = false;
-	for (shared_ptr<ActionOnVariable> action : this->actionList)
+	for (auto& action : this->actionList)
 	{
-		if (action->getVariableActedOn() != nullptr)
+		if (action == nullptr)
+		{
+			listChanged = true;
+			continue;
+		}
+
+
+		auto variableId = action->getVariableActedOnId();
+		auto variable = machine->getVariable(variableId);
+		if (variable != nullptr)
 		{
 			newActionList.append(action);
 		}
@@ -150,16 +167,25 @@ void MachineActuatorComponent::cleanActionList()
 		}
 	}
 
-	if (listChanged)
+	if (listChanged == true)
 	{
 		this->actionList = newActionList;
+
 		emit this->actionListChangedEvent();
 		emit this->componentEditedEvent(this->id);
 	}
 }
 
-void MachineActuatorComponent::variableInActionListModifiedEventHandler()
+void MachineActuatorComponent::addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable)
 {
-	emit this->actionListChangedEvent();
-	emit this->componentEditedEvent(this->id);
+	if (action == nullptr) return;
+
+	if (variable == nullptr) return;
+
+
+	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::variableInActionListModifiedEventHandler);
+	// To remove destroyed variables from the action list
+	connect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler);
+
+	this->actionList.append(action);
 }

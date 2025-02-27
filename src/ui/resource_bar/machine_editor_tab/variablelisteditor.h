@@ -25,10 +25,6 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QMap>
 class QGridLayout;
@@ -37,7 +33,6 @@ class QTableWidgetItem;
 
 // StateS classes
 #include "statestypes.h"
-class Variable;
 class DynamicTableItemDelegate;
 class TableWidgetWithResizeEvent;
 
@@ -139,7 +134,6 @@ private:
 	// Cell under edition
 	QTableWidgetItem* currentTableItem = nullptr;
 	QStringList variableSelectionToRestore;
-	weak_ptr<Variable> currentVariable;
 
 	// Variable begin created
 	QTableWidgetItem* currentVariableName  = nullptr;
@@ -147,7 +141,7 @@ private:
 	QTableWidgetItem* currentVariableValue = nullptr;
 
 	// Used to know which variable is associated to each cell in table
-	QMap<QTableWidgetItem*, weak_ptr<Variable>> associatedVariables;
+	QMap<QTableWidgetItem*, componentId_t> associatedVariablesIds;
 
 };
 

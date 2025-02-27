@@ -43,10 +43,14 @@ class Fsm : public Machine
 public:
 	explicit Fsm();
 
+	// Pseudo-constructor to process post-loading actions
+	virtual void finalizeLoading() override;
+
 	/////
 	// Object functions
 public:
 
+	///
 	// Components accessors and mutators
 
 	componentId_t addState     (bool isInitial = false, QString name = QString(), componentId_t id = nullId);
@@ -61,12 +65,14 @@ public:
 	const QList<componentId_t> getAllStatesIds()      const;
 	const QList<componentId_t> getAllTransitionsIds() const;
 
+	///
 	// Components edition functions
 
 	bool renameState(componentId_t stateId, const QString& newName);
 
 	void redirectTransition(componentId_t transitionId, componentId_t newSourceStateId, componentId_t newTargetStateId);
 
+	///
 	// Initial state managemment
 
 	void setInitialState(componentId_t stateId);

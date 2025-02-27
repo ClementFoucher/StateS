@@ -22,65 +22,72 @@
 // Current class header
 #include "variable.h"
 
-// StateS classes
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
-
-Variable::Variable(const QString& name)
+Variable::Variable(const QString& name) :
+	MachineComponent()
 {
 	this->name         = name;
 	this->initialValue = LogicValue::getValue0(1);
 	this->currentValue = this->initialValue;
 }
 
-Variable::~Variable()
+Variable::Variable(componentId_t id, const QString& name) :
+	MachineComponent(id)
 {
-	emit variableDeletedEvent();
+	this->name         = name;
+	this->initialValue = LogicValue::getValue0(1);
+	this->currentValue = this->initialValue;
 }
 
-void Variable::setName(const QString& value)
+/**
+ * @brief Variable::setName changes the name of the variable.
+ * Only the Machine is allowed to call this function.
+ * @param newName
+ */
+void Variable::setName(const QString& newName)
 {
-	this->name = value;
-	emit variableRenamedEvent();
+	if (newName.isNull() == true) return;
+
+	if (newName == this->name) return;
+
+
+	this->name = newName;
+
+	emit this->variableRenamedEvent();
 }
 
-void Variable::resize(uint newSize) // Throws StatesException
+void Variable::resize(uint newSize)
 {
-	if (newSize == 0)
-	{
-		throw StatesException("Variable", VariableError_t::variable_resized_to_0, "Trying to resize variable with size 0");
-	}
+	if (newSize == 0) return;
 
-	this->currentValue.resize(newSize); // Throws StatesException - size checked - ignored
-	this->initialValue.resize(newSize); // Throws StatesException - size checked - ignored
+	if (newSize == this->getSize()) return;
 
-	emit variableResizedEvent();
-	emit variableInitialValueChangedEvent();
+
+	this->currentValue.resize(newSize);
+	this->initialValue.resize(newSize);
+
+	emit this->variableResizedEvent();
+	emit this->variableInitialValueChangedEvent();
 }
 
-void Variable::setInitialValue(const LogicValue& newInitialValue) // Throws StatesException
+void Variable::setInitialValue(const LogicValue& newInitialValue)
 {
-	if (this->getSize() == newInitialValue.getSize())
-	{
-		this->initialValue = newInitialValue;
+	if (newInitialValue.getSize() != this->getSize()) return;
 
-		emit variableInitialValueChangedEvent();
-	}
-	else
-	{
-		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size");
-	}
+	if (newInitialValue == this->initialValue) return;
+
+
+	this->initialValue = newInitialValue;
+
+	emit this->variableInitialValueChangedEvent();
 }
 
-void Variable::setCurrentValue(const LogicValue& value) // Throws StatesException
+void Variable::setCurrentValue(const LogicValue& value)
 {
-	// We have to make sure we use this call fuction,
-	// and not the overriding ones:
-	Variable::setCurrentValueSubRange(value, -1, -1); // Throws StatesException - Propagted
+	this->setCurrentValueSubRange(value, -1, -1);
 }
 
-void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR) // Throws StatesException
+void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR)
 {
 	bool setOk = false;
 
@@ -117,18 +124,15 @@ void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int 
 
 	if (setOk == true)
 	{
-		emit variableCurrentValueChangedEvent();
-	}
-	else
-	{
-		throw StatesException("Variable", VariableError_t::size_mismatch, "Trying to set initial value with value whom size does not match variable size or specified rank");
+		emit this->variableCurrentValueChangedEvent();
 	}
 }
 
 void Variable::reinitialize()
 {
 	this->currentValue = this->initialValue;
-	emit variableCurrentValueChangedEvent();
+
+	emit this->variableCurrentValueChangedEvent();
 }
 
 QString Variable::getName() const
@@ -149,9 +153,4 @@ LogicValue Variable::getInitialValue() const
 LogicValue Variable::getCurrentValue() const
 {
 	return this->currentValue;
-}
-
-void Variable::notifyVariableAboutToBeDeleted()
-{
-	emit this->variableAboutToBeDeletedEvent();
 }

@@ -35,7 +35,6 @@ using namespace std;
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "variable.h"
 #include "inputvariableselector.h"
 
 
@@ -50,8 +49,8 @@ InputsSelector::InputsSelector(QWidget* parent) :
 	this->setLayout(mainLayout);
 	mainLayout->setAlignment(Qt::AlignTop);
 
-	auto inputList = machine->getInputs();
-	if (inputList.count() != 0)
+	auto inputIds = machine->getInputVariablesIds();
+	if (inputIds.count() != 0)
 	{
 		auto inputListHint = new QLabel(tr("Click on bits from the list below to switch input value:"));
 		inputListHint->setAlignment(Qt::AlignCenter);
@@ -65,9 +64,9 @@ InputsSelector::InputsSelector(QWidget* parent) :
 		this->scrollAreaWidgetLayout = new QVBoxLayout(this->scrollAreaWidget);
 		this->scrollArea->setWidget(this->scrollAreaWidget);
 
-		for (auto& currentInput : inputList)
+		for (auto& inputId : inputIds)
 		{
-			auto currentVariableSelector = new InputVariableSelector(currentInput, this);
+			auto currentVariableSelector = new InputVariableSelector(inputId, this);
 			this->scrollAreaWidgetLayout->addWidget(currentVariableSelector);
 		}
 	}

@@ -36,8 +36,6 @@ using namespace std;
 #include "equation.h"
 #include "fsm.h"
 #include "fsmsimulator.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 #include "fsmsimulatedstate.h"
 
 

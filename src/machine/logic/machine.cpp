@@ -25,8 +25,8 @@
 // StateS classes
 #include "variable.h"
 #include "machinecomponent.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
+#include "machineactuatorcomponent.h"
+#include "actiononvariable.h"
 
 
 /////
@@ -37,21 +37,21 @@ Machine::Machine()
 	this->name = tr("Machine");
 }
 
-Machine::~Machine()
+void Machine::finalizeLoading()
 {
-	// Force cleaning order
-
-	this->components.clear();
-
-	this->inputsRanks.clear();
-	this->outputsRanks.clear();
-	this->localVariablesRanks.clear();
-	this->constantsRanks.clear();
-
-	this->inputs.clear();
-	this->outputs.clear();
-	this->localVariables.clear();
-	this->constants.clear();
+	// When machine has just been loaded, actions are raw and can
+	// even be erroneous if there was an issue in the save file
+	for (auto& component : this->components)
+	{
+		auto machineActuator = dynamic_pointer_cast<MachineActuatorComponent>(component);
+		if (machineActuator != nullptr)
+		{
+			for (auto& action : machineActuator->getActions())
+			{
+				action->checkActionValue();
+			}
+		}
+	}
 }
 
 /////
@@ -75,247 +75,194 @@ bool Machine::setName(const QString& newName)
 	}
 }
 
-shared_ptr<Variable> Machine::addVariable(VariableNature_t type, const QString& name, const LogicValue& value)
+componentId_t Machine::addVariable(VariableNature_t nature, const QString& name, componentId_t id)
 {
-	uint rank;
+	// Make sure the requested name is correct and unique
+	auto cleanedName = name;
+	this->cleanVariableName(cleanedName);
 
-	switch(type)
+	// Make sure there is actually a name
+	if (cleanedName.isEmpty() == true) return nullId;
+
+	// Then check that name doesn't already exist
+	for (auto existingVariableId : this->getAllVariablesIds())
 	{
-	case VariableNature_t::input:
-		rank = this->inputs.count();
-		break;
-	case VariableNature_t::output:
-		rank = this->outputs.count();
-		break;
-	case VariableNature_t::internal:
-		rank = this->localVariables.count();
-		break;
-	case VariableNature_t::constant:
-		rank = this->constants.count();
-		break;
-	default:
-		return nullptr;
+		auto existingVariable = this->getVariable(existingVariableId);
+		if (existingVariable == nullptr) continue;
+
+
+		if (existingVariable->getName() == cleanedName)
+		{
+			return nullId;
+		}
 	}
 
-	return this->addVariableAtRank(type, name, rank, value);
-}
 
-bool Machine::deleteVariable(const QString& name)
-{
-	bool result;
-
-	if (inputs.contains(name))
+	// Create variable
+	shared_ptr<Variable> variable;
+	componentId_t componentId = id;
+	if (id != nullId)
 	{
-		this->deleteVariableFromList(name, &this->inputs, &this->inputsRanks);
+		variable = shared_ptr<Variable>(new Variable(id, cleanedName));
+	}
+	else
+	{
+		variable = shared_ptr<Variable>(new Variable(cleanedName));
+		componentId = variable->getId();
+	}
+
+	this->registerComponent(variable);
+
+	// Add variable to the relevant list
+	switch(nature)
+	{
+	case VariableNature_t::input:
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineInputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineInputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineInputVariableListChangedEvent);
+
+		this->inputVariables.append(componentId);
 
 		emit this->machineInputVariableListChangedEvent();
 
-		result = true;
-	}
-	else if (outputs.contains(name))
-	{
-		this->deleteVariableFromList(name, &this->outputs, &this->outputsRanks);
+		break;
+	case VariableNature_t::output:
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineOutputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineOutputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineOutputVariableListChangedEvent);
+
+		this->outputVariables.append(componentId);
 
 		emit this->machineOutputVariableListChangedEvent();
 
-		result = true;
-	}
-	else if (localVariables.contains(name))
-	{
-		this->deleteVariableFromList(name, &this->localVariables, &this->localVariablesRanks);
+		break;
+	case VariableNature_t::internal:
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineInternalVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineInternalVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineInternalVariableListChangedEvent);
+
+		this->internalVariables.append(componentId);
 
 		emit this->machineInternalVariableListChangedEvent();
 
-		result = true;
-	}
-	else if (constants.contains(name))
-	{
-		this->deleteVariableFromList(name, &this->constants, &this->constantsRanks);
+		break;
+	case VariableNature_t::constant:
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineConstantListChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineConstantListChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineConstantListChangedEvent);
+
+		this->constants.append(componentId);
 
 		emit this->machineConstantListChangedEvent();
 
-		result = true;
+		break;
 	}
-	else
-		result = false;
 
-	return result;
+	return componentId;
 }
 
-bool Machine::renameVariable(const QString& oldName, const QString& newName)
+void Machine::removeVariable(componentId_t variableId)
 {
-	QHash<QString, shared_ptr<Variable>> allVariables = getAllVariablesMap();
+	auto variable = this->getVariable(variableId);
+	if (variable == nullptr) return;
 
-	QString correctedNewName = newName;
-	this->cleanVariableName(correctedNewName);
 
-	if ( !allVariables.contains(oldName) ) // First check if variable exists
-		return false;
-	else if (oldName == newName) // Rename to same name is always success
-		return true;
-	else if (oldName == correctedNewName)
+	if (this->inputVariables.contains(variableId))
 	{
-		// Just to update any text with false new name...
-		// A little bit heavy
-		if (inputs.contains(oldName))
-		{
-			emit this->machineInputVariableListChangedEvent();
-		}
-		else if (outputs.contains(oldName))
-		{
-			emit this->machineOutputVariableListChangedEvent();
-		}
-		else if (localVariables.contains(oldName))
-		{
-			emit this->machineInternalVariableListChangedEvent();
-		}
-		else if (constants.contains(oldName))
-		{
-			emit this->machineConstantListChangedEvent();
-		}
+		this->inputVariables.removeOne(variableId);
+		this->removeComponent(variableId);
 
-		return true;
+		emit this->machineInputVariableListChangedEvent();
 	}
-	else if ( allVariables.contains(correctedNewName) ) // Do not allow rename to existing name
+	else if (this->outputVariables.contains(variableId))
 	{
-		return false;
+		this->outputVariables.removeOne(variableId);
+		this->removeComponent(variableId);
+
+		emit this->machineOutputVariableListChangedEvent();
 	}
-	else
+	else if (this->internalVariables.contains(variableId))
 	{
-		// Update map
-		if (inputs.contains(oldName))
-		{
-			this->renameVariableInList(oldName, correctedNewName, &this->inputs, &this->inputsRanks);
+		this->internalVariables.removeOne(variableId);
+		this->removeComponent(variableId);
 
-			emit this->machineInputVariableListChangedEvent();
-		}
-		else if (outputs.contains(oldName))
-		{
-			this->renameVariableInList(oldName, correctedNewName, &this->outputs, &this->outputsRanks);
+		emit this->machineInternalVariableListChangedEvent();
+	}
+	else if (this->constants.contains(variableId))
+	{
+		this->constants.removeOne(variableId);
+		this->removeComponent(variableId);
 
-			emit this->machineOutputVariableListChangedEvent();
-		}
-		else if (localVariables.contains(oldName))
-		{
-			this->renameVariableInList(oldName, correctedNewName, &this->localVariables, &this->localVariablesRanks);
+		emit this->machineConstantListChangedEvent();
+	}
+}
 
-			emit this->machineInternalVariableListChangedEvent();
-		}
-		else if (constants.contains(oldName))
-		{
-			this->renameVariableInList(oldName, correctedNewName, &this->constants, &this->constantsRanks);
+bool Machine::renameVariable(componentId_t variableId, const QString &newName)
+{
+	auto variable = this->getVariable(variableId);
+	if (variable == nullptr) return false;
 
-			emit this->machineConstantListChangedEvent();
-		}
-		else // Should not happen as we checked all lists
+	// Clean name
+	QString cleanedNewName = newName;
+	this->cleanVariableName(cleanedNewName);
+
+	// Make sure name is not empty
+	if (cleanedNewName.isEmpty()) return false;
+
+	// Rename to same name is always success
+	QString oldName = variable->getName();
+	if (oldName == cleanedNewName) return true;
+
+	// Check if no other variable already has new name
+	auto variablesIds = this->getAllVariablesIds();
+	for (auto variableId : variablesIds)
+	{
+		auto variable = this->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
+		if (variable->getName() == cleanedNewName)
+		{
 			return false;
-
-		return true;
+		}
 	}
+
+
+	// Do rename
+	variable->setName(cleanedNewName);
+
+	return true;
 }
 
-void Machine::resizeVariable(const QString &name, uint newSize) // Throws StatesException
+void Machine::changeVariableRank(componentId_t variableId, uint newRank)
 {
-	QHash<QString, shared_ptr<Variable>> allVariable = getAllVariablesMap();
-
-	if ( !allVariable.contains(name) ) // First check if variable exists
-		throw StatesException("Machine", MachineError_t::unknown_variable, "Trying to change initial value of unknown variable");
-	else
+	if (inputVariables.contains(variableId))
 	{
-		allVariable[name]->resize(newSize); // Throws StatesException - propagated
+		auto oldRank = this->inputVariables.indexOf(variableId);
+		this->inputVariables.move(oldRank, newRank);
 
-		if (inputs.contains(name))
-		{
-			emit this->machineInputVariableListChangedEvent();
-		}
-		else if (outputs.contains(name))
-		{
-			emit this->machineOutputVariableListChangedEvent();
-		}
-		else if (localVariables.contains(name))
-		{
-			emit this->machineInternalVariableListChangedEvent();
-		}
-		else if (constants.contains(name))
-		{
-			emit this->machineConstantListChangedEvent();
-		}
-		else // Should not happen as we checked all lists
-		{
-			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
-		}
+		emit this->machineInputVariableListChangedEvent();
 	}
-}
-
-void Machine::changeVariableInitialValue(const QString &name, LogicValue newValue) // Throws StatesException
-{
-	QHash<QString, shared_ptr<Variable>> allVariable = getAllVariablesMap();
-
-	if ( !allVariable.contains(name) ) // First check if variable exists
-		throw StatesException("Machine", MachineError_t::unknown_variable, "Trying to change initial value of unknown variable");
-	else
+	else if (outputVariables.contains(variableId))
 	{
-		allVariable[name]->setInitialValue(newValue);// Throws StatesException - propagated
+		auto oldRank = this->outputVariables.indexOf(variableId);
+		this->outputVariables.move(oldRank, newRank);
 
-		if (inputs.contains(name))
-		{
-			emit this->machineInputVariableListChangedEvent();
-		}
-		else if (outputs.contains(name))
-		{
-			emit this->machineOutputVariableListChangedEvent();
-		}
-		else if (localVariables.contains(name))
-		{
-			emit this->machineInternalVariableListChangedEvent();
-		}
-		else if (constants.contains(name))
-		{
-			emit this->machineConstantListChangedEvent();
-		}
-		else // Should not happen as we checked all lists
-			throw StatesException("Machine", MachineError_t::impossible_error, "Unable to emit listChangedEvent");
+		emit this->machineOutputVariableListChangedEvent();
 	}
-}
-
-bool Machine::changeVariableRank(const QString& name, uint newRank)
-{
-	QHash<QString, shared_ptr<Variable>> allVariables = getAllVariablesMap();
-
-	if ( !allVariables.contains(name) ) // First check if variable exists
+	else if (internalVariables.contains(variableId))
 	{
-		return false;
+		auto oldRank = this->internalVariables.indexOf(variableId);
+		this->internalVariables.move(oldRank, newRank);
+
+		emit this->machineInternalVariableListChangedEvent();
 	}
-	else
+	else if (constants.contains(variableId))
 	{
-		if (inputs.contains(name))
-		{
-			this->changeRankInList(name, newRank, &this->inputs, &this->inputsRanks);
+		auto oldRank = this->constants.indexOf(variableId);
+		this->constants.move(oldRank, newRank);
 
-			emit this->machineInputVariableListChangedEvent();
-		}
-		else if (outputs.contains(name))
-		{
-			this->changeRankInList(name, newRank, &this->outputs, &this->outputsRanks);
-
-			emit this->machineOutputVariableListChangedEvent();
-		}
-		else if (localVariables.contains(name))
-		{
-			this->changeRankInList(name, newRank, &this->localVariables, &this->localVariablesRanks);
-
-			emit this->machineInternalVariableListChangedEvent();
-		}
-		else if (constants.contains(name))
-		{
-			this->changeRankInList(name, newRank, &this->constants, &this->constantsRanks);
-
-			emit this->machineConstantListChangedEvent();
-		}
-		else // Should not happen as we checked all lists
-			return false;
-
-		return true;
+		emit this->machineConstantListChangedEvent();
 	}
 }
 
@@ -329,67 +276,87 @@ QString Machine::getName() const
 
 shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) const
 {
-	if (this->components.contains(componentId))
+	if (this->components.contains(componentId) == false) return nullptr;
+
+
+	return this->components[componentId];
+}
+
+shared_ptr<Variable> Machine::getVariable(componentId_t variableId) const
+{
+	return dynamic_pointer_cast<Variable>(this->getComponent(variableId));
+}
+
+const QList<componentId_t> Machine::getInputVariablesIds() const
+{
+	return this->inputVariables;
+}
+
+const QList<componentId_t> Machine::getOutputVariablesIds() const
+{
+	return this->outputVariables;
+}
+
+const QList<componentId_t> Machine::getInternalVariablesIds() const
+{
+	return this->internalVariables;
+}
+
+const QList<componentId_t> Machine::getConstantsIds() const
+{
+	return this->constants;
+}
+
+const QList<componentId_t> Machine::getVariablesIds(VariableNature_t nature) const
+{
+	switch (nature)
 	{
-		return this->components[componentId];
+	case VariableNature_t::input:
+		return this->inputVariables;
+		break;
+	case VariableNature_t::internal:
+		return this->internalVariables;
+		break;
+	case VariableNature_t::output:
+		return this->outputVariables;
+		break;
+	case VariableNature_t::constant:
+		return this->constants;
+		break;
 	}
-	else
-	{
-		return nullptr;
-	}
 }
 
-const QList<shared_ptr<Variable> > Machine::getInputs() const
+const QList<componentId_t> Machine::getWrittableVariablesIds() const
 {
-	return getRankedVariableList(&this->inputs, &this->inputsRanks);
+	QList<componentId_t> writtableVariablesIds;
+
+	writtableVariablesIds += this->getInternalVariablesIds();
+	writtableVariablesIds += this->getOutputVariablesIds();
+
+	return writtableVariablesIds;
 }
 
-const QList<shared_ptr<Variable> > Machine::getOutputs() const
+const QList<componentId_t> Machine::getReadableVariablesIds() const
 {
-	return getRankedVariableList(&this->outputs, &this->outputsRanks);
+	QList<componentId_t> readableVariablesIds;
+
+	readableVariablesIds += this->getInputVariablesIds();
+	readableVariablesIds += this->getInternalVariablesIds();
+	readableVariablesIds += this->getConstantsIds();
+
+	return readableVariablesIds;
 }
 
-const QList<shared_ptr<Variable> > Machine::getInternalVariables() const
+const QList<componentId_t> Machine::getAllVariablesIds() const
 {
-	return getRankedVariableList(&this->localVariables, &this->localVariablesRanks);
-}
+	QList<componentId_t> allVariablesIds;
 
-const QList<shared_ptr<Variable> > Machine::getConstants() const
-{
-	return getRankedVariableList(&this->constants, &this->constantsRanks);
-}
+	allVariablesIds += this->getInputVariablesIds();
+	allVariablesIds += this->getInternalVariablesIds();
+	allVariablesIds += this->getOutputVariablesIds();
+	allVariablesIds += this->getConstantsIds();
 
-const QList<shared_ptr<Variable> > Machine::getWrittableVariables() const
-{
-	QList<shared_ptr<Variable>> writtableVariables;
-
-	writtableVariables += this->getInternalVariables();
-	writtableVariables += this->getOutputs();
-
-	return writtableVariables;
-}
-
-const QList<shared_ptr<Variable> > Machine::getReadableVariables() const
-{
-	QList<shared_ptr<Variable>> readableVariables;
-
-	readableVariables += this->getInputs();
-	readableVariables += this->getInternalVariables();
-	readableVariables += this->getConstants();
-
-	return readableVariables;
-}
-
-const QList<shared_ptr<Variable> > Machine::getAllVariables() const
-{
-	QList<shared_ptr<Variable>> allVariables;
-
-	allVariables += this->getInputs();
-	allVariables += this->getInternalVariables();
-	allVariables += this->getOutputs();
-	allVariables += this->getConstants();
-
-	return allVariables;
+	return allVariablesIds;
 }
 
 QString Machine::getUniqueVariableName(const QString& prefix) const
@@ -402,13 +369,17 @@ QString Machine::getUniqueVariableName(const QString& prefix) const
 	uint i = 0;
 	bool nameIsValid = false;
 
-	while (!nameIsValid)
+	while (nameIsValid == false)
 	{
 		currentName = baseName + QString::number(i);
 
 		nameIsValid = true;
-		for (auto& variable : this->getAllVariables())
+		for (auto& variableId : this->getAllVariablesIds())
 		{
+			auto variable = this->getVariable(variableId);
+			if (variable == nullptr) continue;
+
+
 			if (variable->getName() == currentName)
 			{
 				nameIsValid = false;
@@ -428,260 +399,17 @@ void Machine::registerComponent(shared_ptr<MachineComponent> newComponent)
 {
 	this->components[newComponent->getId()] = newComponent;
 
-	connect(newComponent.get(), &MachineComponent::componentEditedEvent, this, &Machine::componentEditedEvent);
+	connect(newComponent.get(), &MachineComponent::componentEditedEvent,  this, &Machine::componentEditedEvent);
+	connect(newComponent.get(), &MachineComponent::componentDeletedEvent, this, &Machine::componentDeletedEvent);
 }
 
 void Machine::removeComponent(componentId_t componentId)
 {
 	this->components.remove(componentId);
-
-	emit this->componentDeletedEvent(componentId);
 }
 
 /////
 // Private functions
-
-shared_ptr<Variable> Machine::addVariableAtRank(VariableNature_t type, const QString& name, uint rank, const LogicValue& value)
-{
-	// First check if name doesn't already exist
-	for (auto& variable : this->getAllVariables())
-	{
-		if (variable->getName() == name)
-			return nullptr;
-	}
-
-	// Then check for illegal characters
-	QString cleanName = name;
-	if (!this->cleanVariableName(cleanName))
-		return nullptr;
-
-	// Determine size
-	uint size;
-	if (! value.isNull())
-	{
-		size = value.getSize();
-	}
-	else
-	{
-		size = 1;
-	}
-
-	// Determine list to reference variable in
-	shared_ptr<Variable> variable;
-	switch(type)
-	{
-	case VariableNature_t::input:
-		variable = shared_ptr<Variable>(new Variable(name));
-		if (size > 1)
-		{
-			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
-		}
-		this->addVariableToList(variable, rank, &this->inputs, &this->inputsRanks);
-
-		if (! value.isNull())
-		{
-			variable->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
-		}
-
-		emit this->machineInputVariableListChangedEvent();
-
-		break;
-	case VariableNature_t::output:
-		variable = shared_ptr<Variable>(new Variable(name));
-		if (size > 1)
-		{
-			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
-		}
-		this->addVariableToList(variable, rank, &this->outputs, &this->outputsRanks);
-
-		emit this->machineOutputVariableListChangedEvent();
-
-		break;
-	case VariableNature_t::internal:
-		variable = shared_ptr<Variable>(new Variable(name));
-		if (size > 1)
-		{
-			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
-		}
-		this->addVariableToList(variable, rank, &this->localVariables, &this->localVariablesRanks);
-
-		if (! value.isNull())
-		{
-			variable->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
-		}
-
-		emit this->machineInternalVariableListChangedEvent();
-
-		break;
-	case VariableNature_t::constant:
-		variable = shared_ptr<Variable>(new Variable(name));
-		if (size > 1)
-		{
-			variable->resize(size); // Throws StatesException: size checked, can not be 0 - ignored
-		}
-		this->addVariableToList(variable, rank, &this->constants, &this->constantsRanks);
-
-		if (! value.isNull())
-		{
-			variable->setInitialValue(value); // Throws StatesException: size determined from value, should not fail or value is corrupted - ignored
-		}
-
-		emit this->machineConstantListChangedEvent();
-
-		break;
-	}
-
-	return variable;
-}
-
-const QList<shared_ptr<Variable> > Machine::getRankedVariableList(const QHash<QString, shared_ptr<Variable>>* variableHash, const QHash<QString, uint>* rankHash) const
-{
-	QList<shared_ptr<Variable> > rankedList;
-
-	if (variableHash->count() != rankHash->count())
-	{
-		// Return empty list to signify error
-		// TODO: do something better
-		return rankedList;
-	}
-
-	for (int i = 0 ; i < variableHash->count() ; i++)
-	{
-		QString variableName = rankHash->key(i);
-		rankedList.append((*variableHash)[variableName]);
-	}
-
-	return rankedList;
-}
-
-void Machine::addVariableToList(shared_ptr<Variable> variable, uint rank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash)
-{
-	// Fix rank to avoid not-continuous ranks
-	uint actualRank = ((int)rank < variableHash->count()) ? rank : variableHash->count();
-
-	// Shift all upper variables ranks, beginning from top
-	if ((int)rank < variableHash->count())
-	{
-		for (int i = variableHash->count()-1 ; i >= (int)actualRank; i--)
-		{
-			QString variableName = rankHash->key(i);
-			(*rankHash)[variableName]++;
-		}
-	}
-
-	// Add variable to lists
-	(*variableHash)[variable->getName()] = variable;
-	(*rankHash)[variable->getName()]   = actualRank;
-}
-
-bool Machine::deleteVariableFromList(const QString& name, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash)
-{
-	if (!variableHash->contains(name))
-		return false;
-
-	// Store rank
-	uint variableRank = (*rankHash)[name];
-
-	// Notify deletion
-	auto variable = (*variableHash)[name];
-	variable->notifyVariableAboutToBeDeleted();
-
-	// Remove
-	variableHash->remove(name);
-	rankHash->remove(name);
-
-	// Shift upper variables
-	if ((int)variableRank < variableHash->count())
-	{
-		for (int i = variableRank+1 ; i <= variableHash->count(); i++)
-		{
-			QString variableName = rankHash->key(i);
-			(*rankHash)[variableName]--;
-		}
-	}
-
-	// Done
-	return true;
-}
-
-bool Machine::renameVariableInList(const QString& oldName, const QString& newName, QHash<QString, shared_ptr<Variable> > *variableHash, QHash<QString, uint> *rankHash)
-{
-	if (!variableHash->contains(oldName))
-		return false;
-
-	shared_ptr<Variable> itemToRename = (*variableHash)[oldName];
-	itemToRename->setName(newName);
-
-	variableHash->remove(oldName);
-	(*variableHash)[newName] = itemToRename;
-
-	(*rankHash)[newName] = (*rankHash)[oldName];
-	rankHash->remove(oldName);
-
-	return true;
-}
-
-bool Machine::changeRankInList(const QString& name, uint newRank, QHash<QString, shared_ptr<Variable>>* variableHash, QHash<QString, uint>* rankHash)
-{
-	if (!variableHash->contains(name))
-		return false;
-	else if ((int)newRank >= variableHash->count())
-		return false;
-
-	// Store rank
-	uint oldRank = (*rankHash)[name];
-
-	if (oldRank == newRank)
-		return true;
-
-	// Algorithm is a as follows:
-	// The list is divided in 3 parts:
-	// - The lower part, before low(oldRank, newRank) is untouched
-	// - The middle part is all messed up
-	// - The upper part, after high(oldRank, newRank) is untouched
-	// We call lower bound and upper bound the boundaries of the middle part (with boudaries belonging to middle part)
-	uint lowerBound = min(oldRank, newRank);
-	uint upperBound = max(oldRank, newRank);
-
-	// Extract reRanked variable from list (place it at a higher rank than the higest rank)
-	(*rankHash)[name] = variableHash->count();
-
-	// Shift other variables
-	if (oldRank < newRank)
-	{
-		for (int i = (int)lowerBound+1 ; i <= (int)upperBound ; i++)
-		{
-			QString variableName = rankHash->key(i);
-			(*rankHash)[variableName]--;
-		}
-	}
-	else
-	{
-		for (int i = (int)upperBound-1 ; i >= (int)lowerBound ; i--)
-		{
-			QString variableName = rankHash->key(i);
-			(*rankHash)[variableName]++;
-		}
-	}
-
-	// Reintegrate extracted variable
-	(*rankHash)[name] = newRank;
-
-	// Done
-	return true;
-}
-
-const QHash<QString, shared_ptr<Variable> > Machine::getAllVariablesMap() const
-{
-	QHash<QString, shared_ptr<Variable>> allVariables;
-
-	for (auto& variable : this->getAllVariables())
-	{
-		allVariables[variable->getName()] = variable;
-	}
-
-	return allVariables;
-}
 
 /**
  * @brief Machine::cleanVariableName
@@ -715,5 +443,7 @@ bool Machine::cleanVariableName(QString& nameToClean) const
 		return false;
 	}
 	else
+	{
 		return true;
+	}
 }

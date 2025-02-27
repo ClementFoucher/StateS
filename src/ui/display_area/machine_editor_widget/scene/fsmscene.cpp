@@ -28,9 +28,6 @@
 #include <QGraphicsView>
 #include <QMessageBox>
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "machinemanager.h"
 #include "fsmgraphicstate.h"

@@ -22,50 +22,11 @@
 #ifndef EXCEPTIONTYPES_H
 #define EXCEPTIONTYPES_H
 
-
-typedef enum
-{
-	unsupported_char = 0,
-	resized_to_0     = 1,
-	outside_range    = 2
-} LogicValueError_t;
-
-typedef enum
-{
-	out_of_range = 0
-} MachineActuatorComponentError_t;
-
-typedef enum
-{
-	illegal_type              = 0,
-	illegal_value             = 1,
-	illegal_range             = 2,
-	action_value_is_read_only = 3
-} ActionOnVariableError_t;
-
-typedef enum
-{
-	variable_resized_to_0 = 0,
-	size_mismatch         = 1
-} VariableError_t;
-
-typedef enum
-{
-	unknown_variable = 0,
-	impossible_error = 1
-} MachineError_t;
-
 typedef enum
 {
 	unable_to_replace = 0,
 	unkown_directory  = 1,
 	unable_to_open    = 2
 } MachineaveFileManagerError_t;
-
-typedef enum
-{
-	reference_expired = 0
-} TruthTableError_t;
-
 
 #endif // EXCEPTIONTYPES_H

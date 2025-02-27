@@ -43,9 +43,13 @@ class Operand : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit Operand(shared_ptr<Variable> variable); // Defines an operand whose source is a variable
+	explicit Operand(componentId_t variableId);      // Defines an operand whose source is a variable
 	explicit Operand(shared_ptr<Equation> equation); // Defines an operand whose source is an equation
 	explicit Operand(LogicValue constant);           // Defines an operand whose source is a constant
+	explicit Operand(shared_ptr<Variable> variable); // Defines an operand whose source is a variable (when machine is still being parsed)
+
+private:
+	explicit Operand(OperandSource_t operandSource);
 
 	/////
 	// Object functions
@@ -57,14 +61,14 @@ public:
 	LogicValue getInitialValue() const;
 	LogicValue getCurrentValue() const;
 
-	shared_ptr<Variable> getVariable() const;
-	shared_ptr<Equation> getEquation() const;
-	LogicValue           getConstant() const;
+	componentId_t        getVariableId() const;
+	shared_ptr<Equation> getEquation()   const;
+	LogicValue           getConstant()   const;
 
 	QString getText() const;
 
 private slots:
-	void variableAboutToBeDeletedEventHandler();
+	void variableDeletedEventHandler(componentId_t);
 
 	/////
 	// Signals
@@ -72,16 +76,16 @@ signals:
 	void operandInitialValueChangedEvent();
 	void operandCurrentValueChangedEvent();
 	void operandTextChangedEvent();
-	void operandAboutToBeInvalidatedEvent();
+	void operandInvalidatedEvent();
 
 	/////
 	// Object variables
 private:
 	OperandSource_t source;
 
-	shared_ptr<Variable> variable;
+	componentId_t        variableId = nullId;
 	shared_ptr<Equation> equation;
-	LogicValue           constant = LogicValue();
+	LogicValue           constant   = LogicValue();
 
 };
 

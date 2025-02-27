@@ -38,6 +38,7 @@ class QItemSelection;
 #include "statestypes.h"
 class CollapsibleWidgetWithTitle;
 class ActionOnVariable;
+class ActionTableDelegate;
 
 
 /**
@@ -120,6 +121,7 @@ private:
 	QPushButton*                buttonMoveUp       = nullptr;
 	QPushButton*                buttonMoveDown     = nullptr;
 	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
+	ActionTableDelegate*        valueColDelegate   = nullptr;
 
 	QList<weak_ptr<ActionOnVariable>> latestSelection;
 

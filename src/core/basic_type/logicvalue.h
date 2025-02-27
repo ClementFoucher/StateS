@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,7 @@ public:
 	static LogicValue getValue0(uint size);
 	static LogicValue getValue1(uint size);
 	static LogicValue getNullValue();
-	static LogicValue fromString(const QString& textValue); // Throws StatesException
+	static LogicValue fromString(const QString& textValue);
 
 	/////
 	// Constructors/destructors
@@ -47,7 +47,7 @@ public:
 	/////
 	// Object functions
 public:
-	void resize(uint newSize); // Throws StatesException
+	void resize(uint newSize);
 	uint getSize() const;
 
 	bool increment();
@@ -64,19 +64,19 @@ public:
 	bool operator!=(const LogicValue& otherValue) const;
 
 	LogicValue operator!() const;
-	// Logic operators result will be null state is used with different size other value // TODO: Throws StatesException
-	LogicValue operator&(const LogicValue& otherValue) const; // TODO: Throws StatesException
-	LogicValue operator|(const LogicValue& otherValue) const; // TODO: Throws StatesException
-	LogicValue operator^(const LogicValue& otherValue) const; // TODO: Throws StatesException
+	// Logic operators result will be null state is used with different size other value
+	LogicValue operator&(const LogicValue& otherValue) const;
+	LogicValue operator|(const LogicValue& otherValue) const;
+	LogicValue operator^(const LogicValue& otherValue) const;
 
 	LogicValue operator=(const LogicValue& otherValue);
-	// If used with different size state, value will be unchanged, and call will return null state // TODO: Throws StatesException
-	LogicValue operator&=(const LogicValue& otherValue); // TODO: Throws StatesException
-	LogicValue operator|=(const LogicValue& otherValue); // TODO: Throws StatesException
-	LogicValue operator^=(const LogicValue& otherValue); // TODO: Throws StatesException
+	// If used with different size state, value will be unchanged, and call will return null state
+	LogicValue operator&=(const LogicValue& otherValue);
+	LogicValue operator|=(const LogicValue& otherValue);
+	LogicValue operator^=(const LogicValue& otherValue);
 
-	bool& operator[](uint memberNumber);       // Throws StatesException TODO: find uses
-	bool  operator[](uint memberNumber) const; // Throws StatesException TOOD: find uses
+	bool& operator[](uint memberNumber);
+	bool  operator[](uint memberNumber) const;
 
 };
 

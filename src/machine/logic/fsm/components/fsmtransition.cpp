@@ -68,19 +68,19 @@ void FsmTransition::setCondition(shared_ptr<Equation> newCondition)
 {
 	if (this->condition != nullptr)
 	{
-		disconnect(this->condition.get(), &Equation::equationTextChangedEvent,          this, &FsmTransition::conditionChangedEventHandler);
-		disconnect(this->condition.get(), &Equation::equationInitialValueChangedEvent,  this, &FsmTransition::conditionChangedEventHandler);
-		disconnect(this->condition.get(), &Equation::equationAboutToBeInvalidatedEvent, this, &FsmTransition::conditionAboutToBeInvalidatedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationTextChangedEvent,         this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationInitialValueChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		disconnect(this->condition.get(), &Equation::equationInvalidatedEvent,         this, &FsmTransition::conditionInvalidatedEventHandler);
 	}
 
 	this->condition = newCondition;
 
 	if (this->condition != nullptr)
 	{
-		connect(this->condition.get(), &Equation::equationTextChangedEvent,          this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Equation::equationTextChangedEvent,         this, &FsmTransition::conditionChangedEventHandler);
 		// Initial value change needs to be connected in case a signal changes size
-		connect(this->condition.get(), &Equation::equationInitialValueChangedEvent,  this, &FsmTransition::conditionChangedEventHandler);
-		connect(this->condition.get(), &Equation::equationAboutToBeInvalidatedEvent, this, &FsmTransition::conditionAboutToBeInvalidatedEventHandler);
+		connect(this->condition.get(), &Equation::equationInitialValueChangedEvent, this, &FsmTransition::conditionChangedEventHandler);
+		connect(this->condition.get(), &Equation::equationInvalidatedEvent,         this, &FsmTransition::conditionInvalidatedEventHandler);
 	}
 
 	emit this->conditionChangedEvent();
@@ -114,7 +114,7 @@ void FsmTransition::conditionChangedEventHandler()
 	emit this->componentEditedEvent(this->id);
 }
 
-void FsmTransition::conditionAboutToBeInvalidatedEventHandler()
+void FsmTransition::conditionInvalidatedEventHandler()
 {
 	this->clearCondition();
 }

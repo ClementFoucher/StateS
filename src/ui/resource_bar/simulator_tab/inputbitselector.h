@@ -25,15 +25,11 @@
 // Parent
 #include <QFrame>
 
-// C++classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QLabel;
 
 // StateS classes
-class Variable;
+#include "statestypes.h"
 
 
 class InputBitSelector : public QFrame
@@ -43,7 +39,7 @@ class InputBitSelector : public QFrame
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBitSelector(shared_ptr<Variable> variableToCommand, uint bitNumber, QWidget* parent = nullptr);
+	explicit InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -61,10 +57,9 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<Variable> variableToCommand;
+	componentId_t variableToCommandId = nullId;
 	uint bitNumber = 0;
 
-	// QWidget with parent
 	QLabel* bitValue = nullptr;
 
 };

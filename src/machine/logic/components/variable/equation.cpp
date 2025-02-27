@@ -283,7 +283,7 @@ shared_ptr<Operand> Equation::getOperand(uint i) const
 	}
 }
 
-void Equation::setOperand(uint i, shared_ptr<Variable> newOperand)
+void Equation::setOperand(uint i, componentId_t newOperand)
 {
 	auto operand = shared_ptr<Operand>(new Operand(newOperand));
 	this->setOperand(i, operand);
@@ -296,6 +296,12 @@ void Equation::setOperand(uint i, shared_ptr<Equation> newOperand)
 }
 
 void Equation::setOperand(uint i, LogicValue newOperand)
+{
+	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	this->setOperand(i, operand);
+}
+
+void Equation::setOperand(uint i, shared_ptr<Variable> newOperand)
 {
 	auto operand = shared_ptr<Operand>(new Operand(newOperand));
 	this->setOperand(i, operand);
@@ -420,6 +426,26 @@ int Equation::getRangeR() const
 	return this->rangeR;
 }
 
+void Equation::doFullStackRecomputation()
+{
+	for (auto& operand : this->operands)
+	{
+		if (operand == nullptr) continue;
+
+
+		if (operand->getSource() == OperandSource_t::equation)
+		{
+			auto equation = operand->getEquation();
+			if (equation != nullptr)
+			{
+				equation->doFullStackRecomputation();
+			}
+		}
+	}
+
+	this->computeInitialValue();
+}
+
 void Equation::computeCurrentValue()
 {
 	if (this->initialValue.isNull() == true)
@@ -539,7 +565,7 @@ void Equation::computeInitialValue()
 	}
 }
 
-void Equation::operandAboutToBeInvalidatedEventHandler()
+void Equation::operandInvalidatedEventHandler()
 {
 	if (this->operatorType != OperatorType_t::identity)
 	{
@@ -550,8 +576,8 @@ void Equation::operandAboutToBeInvalidatedEventHandler()
 
 			if (operand->getSource() == OperandSource_t::variable)
 			{
-				auto variable = operand->getVariable();
-				if (variable == nullptr)
+				auto variableId = operand->getVariableId();
+				if (variableId == nullId)
 				{
 					this->clearOperand(operandNumber);
 					break;
@@ -568,7 +594,7 @@ void Equation::operandAboutToBeInvalidatedEventHandler()
 		// to hold variables and constants. As operands can only be invalidated as the
 		// result of a variable deletion, we know we are outside an EquationEditor.
 		// We thus have to transmit the event to the machine component holding the Equation.
-		emit this->equationAboutToBeInvalidatedEvent();
+		emit this->equationInvalidatedEvent();
 	}
 }
 
@@ -584,9 +610,9 @@ void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
 		// In case operand still has a valid pointer elsewere
 		disconnect(previousOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
 
-		disconnect(previousOperand.get(), &Operand::operandInitialValueChangedEvent,  this, &Equation::computeInitialValue);
-		disconnect(previousOperand.get(), &Operand::operandCurrentValueChangedEvent,  this, &Equation::computeCurrentValue);
-		disconnect(previousOperand.get(), &Operand::operandAboutToBeInvalidatedEvent, this, &Equation::operandAboutToBeInvalidatedEventHandler);
+		disconnect(previousOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::computeInitialValue);
+		disconnect(previousOperand.get(), &Operand::operandCurrentValueChangedEvent, this, &Equation::computeCurrentValue);
+		disconnect(previousOperand.get(), &Operand::operandInvalidatedEvent,         this, &Equation::operandInvalidatedEventHandler);
 
 		// Clean operand
 		this->operands[i] = nullptr;
@@ -596,9 +622,9 @@ void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
 	{
 		connect(newOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
 
-		connect(newOperand.get(), &Operand::operandInitialValueChangedEvent,  this, &Equation::computeInitialValue);
-		connect(newOperand.get(), &Operand::operandCurrentValueChangedEvent,  this, &Equation::computeCurrentValue);
-		connect(newOperand.get(), &Operand::operandAboutToBeInvalidatedEvent, this, &Equation::operandAboutToBeInvalidatedEventHandler);
+		connect(newOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::computeInitialValue);
+		connect(newOperand.get(), &Operand::operandCurrentValueChangedEvent, this, &Equation::computeCurrentValue);
+		connect(newOperand.get(), &Operand::operandInvalidatedEvent,         this, &Equation::operandInvalidatedEventHandler);
 
 		// Assign operand
 		this->operands[i] = newOperand;

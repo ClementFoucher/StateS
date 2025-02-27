@@ -43,6 +43,7 @@ private:
 public:
 	explicit MachineComponent();
 	explicit MachineComponent(componentId_t id);
+	~MachineComponent();
 
 	/////
 	// Object functions
@@ -51,6 +52,7 @@ public:
 
 signals:
 	void componentEditedEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
+	void componentDeletedEvent(componentId_t componentId);
 
 	/////
 	// Object variables

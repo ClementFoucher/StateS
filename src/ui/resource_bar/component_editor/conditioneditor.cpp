@@ -27,8 +27,6 @@
 #include <QPushButton>
 #include <QGridLayout>
 
-#include <QDebug>
-
 // StateS classes
 #include "fsmtransition.h"
 #include "truthtabledisplay.h"
@@ -112,7 +110,7 @@ void ConditionEditor::editCondition()
 	if (transition == nullptr) return;
 
 
-	if (machine->getReadableVariables().count() != 0)
+	if (machine->getReadableVariablesIds().count() != 0)
 	{
 		EquationEditor* eqEdit = new EquationEditor(transition->getCondition());
 

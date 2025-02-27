@@ -134,7 +134,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 				{
 					shared_ptr<TruthTable> currentTruthTable(new TruthTable(equations));
 
-					QVector<QVector<LogicValue>> result = currentTruthTable->getOutputTable();
+					QVector<QVector<LogicValue>> result = currentTruthTable->getOutputValuesTable();
 
 					bool detected = false;
 					uint rowcount = 0;
@@ -146,7 +146,9 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 						for (LogicValue& val : row)
 						{
 							if (val == valueTrue)
+							{
 								trueCount++;
+							}
 						}
 
 						if (trueCount > 1)
@@ -181,8 +183,12 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 			if (!compat->isCompatible())
 			{
-				for (auto& variable : compat->bothMooreAndMealy)
+				for (auto& variableId : compat->bothMooreAndMealy)
 				{
+					auto variable = fsm->getVariable(variableId);
+					if (variable == nullptr) continue;
+
+
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both Moore and Mealy behaviors.") + " "
@@ -191,8 +197,12 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (auto& variable : compat->bothTempAndKeepValue)
+				for (auto& variableId : compat->bothTempAndKeepValue)
 				{
+					auto variable = fsm->getVariable(variableId);
+					if (variable == nullptr) continue;
+
+
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
@@ -201,8 +211,12 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (auto& variable : compat->rangeAdressed)
+				for (auto& variableId : compat->rangeAdressed)
 				{
+					auto variable = fsm->getVariable(variableId);
+					if (variable == nullptr) continue;
+
+
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has range-adressed output generation.") + " "
@@ -211,8 +225,12 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (auto& variable : compat->mealyWithKeep)
+				for (auto& variableId : compat->mealyWithKeep)
 				{
+					auto variable = fsm->getVariable(variableId);
+					if (variable == nullptr) continue;
+
+
 					shared_ptr<Issue> issue(new Issue());
 					issue->text = tr("Variable") + " " + variable->getName() + " "
 					        + tr("has Mealy outputs affectation (remembered value).") + " "

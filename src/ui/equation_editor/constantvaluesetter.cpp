@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,12 +26,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-#include <QDebug>
-
 // StateS classes
 #include "dynamiclineedit.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
 
 ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
@@ -43,37 +39,33 @@ ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* paren
 
 bool ConstantValueSetter::validEdit()
 {
-	if (this->valueEditor != nullptr)
-	{
-		try
-		{
-			this->currentValue = LogicValue::fromString(this->valueEditor->text()); // Throws StatesException
-			emit valueChanged(this->currentValue);
-			this->setEdited(false);
+	if (this->valueEditor == nullptr) return false;
 
-			return true;
-		}
-		catch (const StatesException& e)
-		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
-			{
-				qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
-				return false;
-			}
-			else
-				throw;
-		}
+
+	this->currentValue = LogicValue::fromString(this->valueEditor->text());
+	if (this->currentValue.isNull() == false)
+	{
+		emit valueChanged(this->currentValue);
+		this->setEdited(false);
+
+		return true;
 	}
-	else
+	else // (this->currentValue.isNull() == true)
+	{
 		return false;
+	}
 }
 
 bool ConstantValueSetter::cancelEdit()
 {
 	if (this->valueEditor != nullptr)
+	{
 		return true;
-
-	else return false;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void ConstantValueSetter::setEdited(bool edited)
@@ -111,18 +103,10 @@ void ConstantValueSetter::setEdited(bool edited)
 
 void ConstantValueSetter::newValueAvailable(const QString& newValue)
 {
-	try
+	LogicValue value = LogicValue::fromString(newValue);
+
+	if (value.isNull() == false)
 	{
-		LogicValue value = LogicValue::fromString(newValue); // Throws StatesException
 		emit valueChanged(value);
-	}
-	catch (const StatesException& e)
-	{
-		if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
-		{
-			qDebug() << "(ConstantValueSetter:) Info: Wrong input for constant value, change ignored.";
-		}
-		else
-			throw;
 	}
 }

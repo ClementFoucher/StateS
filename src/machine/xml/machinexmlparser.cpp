@@ -27,7 +27,6 @@
 
 // StateS classes
 #include "statestypes.h"
-#include "statesexception.h"
 #include "machine.h"
 #include "variable.h"
 #include "viewconfiguration.h"
@@ -35,7 +34,6 @@
 #include "actiononvariable.h"
 #include "machineactuatorcomponent.h"
 #include "equation.h"
-#include "exceptiontypes.h"
 #include "operand.h"
 
 
@@ -165,23 +163,31 @@ void MachineXmlParser::parseVariable()
 		return;
 	}
 
+	// Get ID if it is defined
+	bool ok;
+	componentId_t extractedId = attributes.value("Id").toULong(&ok);
+	if (ok == false)
+	{
+		extractedId = nullId;
+	}
+
 	// Get type
-	shared_ptr<Variable> variable;
+	componentId_t variableId;
 	if (nodeName == "Input")
 	{
-		variable = machine->addVariable(VariableNature_t::input, variableName);
+		variableId = machine->addVariable(VariableNature_t::input, variableName, extractedId);
 	}
 	else if (nodeName == "Output")
 	{
-		variable = machine->addVariable(VariableNature_t::output, variableName);
+		variableId = machine->addVariable(VariableNature_t::output, variableName, extractedId);
 	}
 	else if (nodeName == "Variable")
 	{
-		variable = machine->addVariable(VariableNature_t::internal, variableName);
+		variableId = machine->addVariable(VariableNature_t::internal, variableName, extractedId);
 	}
 	else if (nodeName == "Constant")
 	{
-		variable = machine->addVariable(VariableNature_t::constant, variableName);
+		variableId = machine->addVariable(VariableNature_t::constant, variableName, extractedId);
 	}
 	else
 	{
@@ -193,68 +199,49 @@ void MachineXmlParser::parseVariable()
 		return;
 	}
 
-	// Get size
-	bool ok;
-	uint size = attributes.value("Size").toUInt(&ok);
-
-	if (ok == true)
+	auto variable = machine->getVariable(variableId);
+	if (variable != nullptr)
 	{
-		if (size != 1)
+		// Get size
+		bool ok;
+		uint size = attributes.value("Size").toUInt(&ok);
+
+		if (ok == true)
 		{
-			try
+			if (size != 1)
 			{
-				machine->resizeVariable(variableName, size); // Throws StatesException (Variable, Equation and Machine)
-				// Equation: ignored, this is not an equation,
-				// Machine: ignored, we just created the variable,
-				// Only Variable has to be handled
-			}
-			catch (const StatesException& e)
-			{
-				if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::variable_resized_to_0) )
+				variable->resize(size);
+
+				uint variableNewSize = variable->getSize();
+				if (size != variableNewSize)
 				{
 					this->warnings.append(tr("Unable to resize variable") + " \"" + variableName + "\".");
 					this->warnings.append("    " + tr("Variable size ignored and defaulted to") + " \"1\".");
-
-					return;
 				}
-				else
-					throw;
 			}
 		}
-	}
-	else
-	{
-		this->warnings.append(tr("Error!") + " " + tr("Unable to extract variable size for variable") + " \"" + variableName + "\".");
-		this->warnings.append("    " + tr("Variable size ignored and defaulted to") + " \"1\".");
-
-		return;
-	}
-
-	// Get initial value
-	if (nodeName != "Output")
-	{
-		try
+		else
 		{
-			LogicValue initialValue = LogicValue::fromString(attributes.value("Initial_value").toString()); // Throws StatesException
+			this->warnings.append(tr("Error!") + " " + tr("Unable to extract variable size for variable") + " \"" + variableName + "\".");
+			this->warnings.append("    " + tr("Variable size ignored and defaulted to") + " \"1\".");
 
-			this->machine->changeVariableInitialValue(variableName, initialValue); // Throws StatesException
+			return;
 		}
-		catch (const StatesException& e)
+
+		// Get initial value
+		if (nodeName != "Output")
 		{
-			if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
+			LogicValue initialValue = LogicValue::fromString(attributes.value("Initial_value").toString());
+			if (initialValue.isNull() == false)
+			{
+				variable->setInitialValue(initialValue);
+			}
+			else // (initialValue.isNull() == true)
 			{
 				this->warnings.append(tr("Error!") + " " + "Unable to extract initial value of variable " + variableName + ".");
 				this->warnings.append("    " + tr("Given initial value was") + " \"" + attributes.value("Initial_value").toString() + "\".");
 				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(variable->getSize()) + "\".");
 			}
-			else if ( (e.getSourceClass() == "Variable") && (e.getEnumValue() == VariableError_t::size_mismatch) )
-			{
-				this->warnings.append("Error in initial value of variable " + variableName + ".");
-				this->warnings.append("    " + tr("The initial value size does not match variable size."));
-				this->warnings.append("    " + tr("Initial value ignored and defaulted to") + " \"" + QString::number(variable->getSize()) + "\".");
-			}
-			else
-				throw;
 		}
 	}
 }
@@ -269,10 +256,16 @@ void MachineXmlParser::parseAction()
 		QString variableName = attributes.value("Name").toString();
 
 		shared_ptr<Variable> variable;
-		for (shared_ptr<Variable> var : this->machine->getWrittableVariables())
+		for (auto variableId : this->machine->getWrittableVariablesIds())
 		{
-			if (var->getName() == variableName)
-				variable = var;
+			auto currentVariable = this->machine->getVariable(variableId);
+			if (currentVariable == nullptr) continue;
+
+
+			if (currentVariable->getName() == variableName)
+			{
+				variable = currentVariable;
+			}
 		}
 
 		if (variable == nullptr)
@@ -324,23 +317,6 @@ void MachineXmlParser::parseAction()
 			return;
 		}
 
-		shared_ptr<ActionOnVariable> action = this->currentActuator->addAction(variable);
-
-		try
-		{
-			action->setActionType(actionType); // Throws StatesException
-		}
-		catch (const StatesException& e)
-		{
-			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
-			{
-				this->warnings.append(tr("Error in action type for variable") + " \"" + variableName + "\".");
-				this->warnings.append("    " + tr("Default action type used instead."));
-			}
-			else
-				throw;
-		}
-
 		QString srangel = attributes.value("RangeL").toString();
 		QString sranger = attributes.value("RangeR").toString();
 		QString sactval = attributes.value("Action_Value").toString();
@@ -358,82 +334,50 @@ void MachineXmlParser::parseAction()
 			rangeL = srangel.toInt();
 		}
 		else
+		{
 			rangeL = -1;
+		}
 
 		if (! sranger.isEmpty())
 		{
 			rangeR = sranger.toInt();
 		}
 		else
+		{
 			rangeR = -1;
-
-		try
-		{
-			action->setActionRange(rangeL, rangeR);
-		}
-		catch (const StatesException& e)
-		{
-			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_range) )
-			{
-				this->warnings.append(tr("Error in action range for variable") + " \"" + variableName + "\".");
-				this->warnings.append("    " + tr("Range ignored. Default value will be ignored too if present."));
-
-				return;
-			}
-			else
-				throw;
 		}
 
-		if(! sactval.isEmpty())
+		LogicValue actionValue;
+		if (sactval.isEmpty() == false)
 		{
-			LogicValue actionValue;
-			try
+			actionValue = LogicValue::fromString(sactval);
+			if (actionValue.isNull() == true)
 			{
-				actionValue = LogicValue::fromString(sactval); // Throws StatesException
-			}
-			catch (const StatesException& e)
-			{
-				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
+				uint avsize;
+				if ( (rangeL != -1) && (rangeR == -1) )
 				{
-					uint avsize;
-					if ( (rangeL != -1) && (rangeR == -1) )
-						avsize = 1;
-					else if ( (rangeL != -1) && (rangeR != -1) )
-						avsize = rangeL - rangeR + 1;
-					else
-						avsize = 1; // TODO: determine actual size
-
-					actionValue = LogicValue::getValue0(avsize);
-
-					this->warnings.append(tr("Error in action value for variable") + " \"" + variableName + "\".");
-					this->warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
-
-					return;
+					avsize = 1;
+				}
+				else if ( (rangeL != -1) && (rangeR != -1) )
+				{
+					avsize = rangeL - rangeR + 1;
 				}
 				else
-					throw;
-			}
+				{
+					avsize = variable->getSize();
+				}
 
-			if (action->isActionValueEditable() == true)
-			{
-				try
-				{
-					action->setActionValue(actionValue);
-				}
-				catch (const StatesException& e)
-				{
-					if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_value) )
-					{
-						this->warnings.append(tr("Error in action value for variable") + " \"" + variableName + "\".");
-						this->warnings.append("    " + tr("Value ignored and set to") + " \"" + action->getActionValue().toString() + "\".");
-					}
-					else
-						throw;
-				}
+				actionValue = LogicValue::getValue0(avsize);
+
+				this->warnings.append(tr("Error in action value for variable") + " \"" + variableName + "\".");
+				this->warnings.append("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
 			}
 		}
+
+		auto action = shared_ptr<ActionOnVariable>(new ActionOnVariable(variable, actionType, actionValue, rangeL, rangeR));
+		this->currentActuator->addAction(action, variable);
 	}
-	else
+	else // (nodeName != "Action")
 	{
 		this->warnings.append(tr("Unexpected node encountered while parsing action list:"));
 		this->warnings.append("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + nodeName + "\".");
@@ -450,12 +394,16 @@ void MachineXmlParser::parseLogicEquation()
 
 	if (nodeName == "LogicVariable")
 	{
-		for (auto& var : this->machine->getReadableVariables())
+		for (auto& varId : this->machine->getReadableVariablesIds())
 		{
-			if (var->getName() == attributes.value("Name"))
+			auto currentVariable = this->machine->getVariable(varId);
+			if (currentVariable == nullptr) continue;
+
+
+			if (currentVariable->getName() == attributes.value("Name"))
 			{
 				equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
-				equation->setOperand(0, var);
+				equation->setOperand(0, currentVariable);
 				break;
 			}
 		}
@@ -517,29 +465,27 @@ void MachineXmlParser::parseLogicEquation()
 		{
 			equationType = OperatorType_t::identity;
 
-			try
+			constantValue = LogicValue::fromString(attributes.value("Value").toString());
+			if (constantValue.isNull() == true)
 			{
-				constantValue = LogicValue::fromString(attributes.value("Value").toString()); // Throws StatesException
-			}
-			catch (const StatesException& e)
-			{
-				if ( (e.getSourceClass() == "LogicValue") && (e.getEnumValue() == LogicValueError_t::unsupported_char) )
+				uint constantsize;
+				if ( (rangeL != -1) && (rangeR == -1) )
 				{
-					uint constantsize;
-					if ( (rangeL != -1) && (rangeR == -1) )
-						constantsize = 1;
-					else if ( (rangeL != -1) && (rangeR != -1) )
-						constantsize = rangeL - rangeR + 1;
-					else
-						constantsize = 1; // TODO: determine actual size
-
-					constantValue = LogicValue::getValue0(constantsize);
-
-					this->warnings.append(tr("Error in constant value while parsing equation:"));
-					this->warnings.append("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
+					constantsize = 1;
+				}
+				else if ( (rangeL != -1) && (rangeR != -1) )
+				{
+					constantsize = rangeL - rangeR + 1;
 				}
 				else
-					throw;
+				{
+					constantsize = 1; // TODO: determine actual size
+				}
+
+				constantValue = LogicValue::getValue0(constantsize);
+
+				this->warnings.append(tr("Error in constant value while parsing equation:"));
+				this->warnings.append("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
 			}
 		}
 		else
@@ -603,7 +549,12 @@ void MachineXmlParser::treatEndOperand()
 			{
 				if (operand->getSource() == OperandSource_t::variable)
 				{
-					parentEquation->setOperand(this->operandRankStack.pop(), operand->getVariable());
+					uint operandRank = this->operandRankStack.pop();
+					auto variable = this->machine->getVariable(operand->getVariableId());
+					if (variable != nullptr)
+					{
+						parentEquation->setOperand(operandRank, variable);
+					}
 				}
 				else if (operand->getSource() == OperandSource_t::constant)
 				{

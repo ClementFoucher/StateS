@@ -60,17 +60,20 @@ MachineManager::MachineManager() :
 
 void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
+	// Update the reference to the machine
 	this->setMachineInternal(newMachine, newGraphicAttributes);
 
-	// Build machine builder
+	// Build a new machine builder
 	this->machineBuilder.reset();
 	if (newMachine != nullptr)
 	{
 		this->machineBuilder = make_shared<MachineBuilder>();
 	}
 
-	// Notify machine updated
+	// Reset the undo/redo manager
 	this->undoRedoManager->notifyMachineReplaced();
+
+	// Notify machine updated
 	emit this->machineReplacedEvent();
 }
 
@@ -263,10 +266,11 @@ void MachineManager::componentEditedEventHandler(componentId_t componentId)
 
 void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
-	// Clear old machine connections so that its destruction will be silent
-	this->graphicMachine.reset();
+	// Cleanup
 	if (this->machine != nullptr)
 	{
+		// Clear old machine connections so that its destruction is silent
+
 		// Event propagation
 		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
 		disconnect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);
@@ -276,22 +280,32 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 		// Event handling
 		disconnect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
 		disconnect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);
+
+		// Destroy the old graphic machine
+		this->graphicMachine.reset();
+
+		// Destroy the old machine
+		auto oldMachine = this->machine; // Keep a pointer to the old machine so that it is not destroyed immediately
+		this->machine = nullptr;         // Make sure the old machine is inaccessible using getMachine
+		oldMachine.reset();              // Destroy the old machine
 	}
 
-	// Update machine
-	this->machine = newMachine;
-
-	// Build graphic machine
-	shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
-	if (fsm != nullptr)
+	// Introduce the new machine
+	if (newMachine != nullptr)
 	{
-		this->graphicMachine = make_shared<GraphicFsm>();
-		this->graphicMachine->build(newGraphicAttributes);
-	}
+		this->machine = newMachine;
+		this->machine->finalizeLoading();
 
-	// Connect new machine
-	if (this->machine != nullptr)
-	{
+		// Build graphic machine
+		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
+		if (fsm != nullptr)
+		{
+			this->graphicMachine = make_shared<GraphicFsm>();
+			this->graphicMachine->build(newGraphicAttributes);
+		}
+
+		// Connect new machine
+
 		// Event propagation
 		connect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
 		connect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);

@@ -22,15 +22,10 @@
 // Current class header
 #include "actiontypecombobox.h"
 
-// Debug
-#include <QDebug>
-
 // StateS classes
 #include "statestypes.h"
 #include "pixmapgenerator.h"
 #include "actiononvariable.h"
-#include "statesexception.h"
-#include "exceptiontypes.h"
 
 
 ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent) :
@@ -94,45 +89,33 @@ void ActionTypeComboBox::processIndexChanged(int index)
 
 	if (l_action != nullptr)
 	{
-		try
+		if (this->itemText(index) == tr("Pulse"))
 		{
-			if (this->itemText(index) == tr("Pulse"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::pulse); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Active on state"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::activeOnState); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Set"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::set); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Reset"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::reset); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Assign"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::assign); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Increment"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::increment); // Throws StatesException
-			}
-			else if (this->itemText(index) == tr("Decrement"))
-			{
-				l_action->setActionType(ActionOnVariableType_t::decrement); // Throws StatesException
-			}
+			l_action->setActionType(ActionOnVariableType_t::pulse);
 		}
-		catch (const StatesException& e)
+		else if (this->itemText(index) == tr("Active on state"))
 		{
-			if ( (e.getSourceClass() == "ActionOnVariable") && (e.getEnumValue() == ActionOnVariableError_t::illegal_type) )
-			{
-				qDebug() << "(ActionTypeComboBox:) Warning! An illegal action type was selected. Type change ignored.";
-			}
-			else
-				throw;
+			l_action->setActionType(ActionOnVariableType_t::activeOnState);
+		}
+		else if (this->itemText(index) == tr("Set"))
+		{
+			l_action->setActionType(ActionOnVariableType_t::set);
+		}
+		else if (this->itemText(index) == tr("Reset"))
+		{
+			l_action->setActionType(ActionOnVariableType_t::reset);
+		}
+		else if (this->itemText(index) == tr("Assign"))
+		{
+			l_action->setActionType(ActionOnVariableType_t::assign);
+		}
+		else if (this->itemText(index) == tr("Increment"))
+		{
+			l_action->setActionType(ActionOnVariableType_t::increment);
+		}
+		else if (this->itemText(index) == tr("Decrement"))
+		{
+			l_action->setActionType(ActionOnVariableType_t::decrement);
 		}
 	}
 	else

@@ -105,14 +105,20 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 
 	if (actuator->getActions().count() != 0)
 	{
-		shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
+		auto action = actuator->getAction(index.row());
+		if (action == nullptr) return QVariant();
+
 
 		if (role == Qt::DisplayRole)
 		{
+			auto variableId = action->getVariableActedOnId();
+
+			auto variable = machine->getVariable(variableId);
+			if (variable == nullptr) return QVariant();
+
+
 			if (index.column()  == 1)
 			{
-				shared_ptr<Variable> variable = action->getVariableActedOn();
-
 				// Build name
 				QString nameText = variable->getName();
 
@@ -136,7 +142,7 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 
 				return QVariant(nameText);
 			}
-			else if (index.column()  == 2)
+			else if (index.column() == 2)
 			{
 				switch (action->getActionType())
 				{
@@ -148,10 +154,10 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 					return QVariant(action->getActionValue().toString());
 					break;
 				case ActionOnVariableType_t::increment:
-					return QVariant(action->getVariableActedOn()->getName() + " + 1");
+					return QVariant(variable->getName() + " + 1");
 					break;
 				case ActionOnVariableType_t::decrement:
-					return QVariant(action->getVariableActedOn()->getName() + " - 1");
+					return QVariant(variable->getName() + " - 1");
 					break;
 				}
 			}
@@ -188,18 +194,27 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
 	if (actuator == nullptr) return false;
 
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return false;
 
-	shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
 
 	if (action->isActionValueEditable() == true)
 	{
-		LogicValue newValue = LogicValue::fromString(value.toString());
+		auto newValue = LogicValue::fromString(value.toString());
 
 		// Do not change current value if no new value is provided
 		if (newValue.isNull() == false)
 		{
-			action->setActionValue(newValue); // Throws StatesException - Ignored: A validator ensures correct input value
-			return true;
+			// Make sure new value size fits the action size
+			auto actionValue = action->getActionValue();
+
+			if (actionValue.isNull() == false)
+			{
+				newValue.resize(actionValue.getSize());
+
+				action->setActionValue(newValue);
+				return true;
+			}
 		}
 	}
 
@@ -271,10 +286,14 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 		}
 		else
 		{
-			shared_ptr<ActionOnVariable> action = actuator->getAction(index.row()); // Throws StatesException - Ignored: model generated from action list
+			auto action = actuator->getAction(index.row());
+			if (action == nullptr) return Qt::NoItemFlags;
+
 
 			if (action->isActionValueEditable())
+			{
 				flags |= (Qt::ItemIsEnabled | Qt::ItemIsEditable);
+			}
 		}
 	}
 

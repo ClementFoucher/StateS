@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021 Clément Foucher
+ * Copyright © 2016-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -64,7 +64,7 @@ int TruthTableOutputTableModel::rowCount(const QModelIndex& parent) const
 
 		if (l_truthTable != nullptr)
 		{
-			rows = l_truthTable->getInputTable().count();
+			rows = l_truthTable->getInputValuesTable().count();
 		}
 	}
 
@@ -85,7 +85,7 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 			{
 				if (index.column() < (int)l_truthTable->getOutputCount())
 				{
-					QVector<QVector<LogicValue>> outputTable = l_truthTable->getOutputTable();
+					QVector<QVector<LogicValue>> outputTable = l_truthTable->getOutputValuesTable();
 
 					variant = QVariant(outputTable[index.row()][index.column()].toString());
 				}

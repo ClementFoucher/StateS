@@ -26,9 +26,6 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-#include <QDebug>
-
 // StateS classes
 #include "machinemanager.h"
 #include "machinebuilder.h"
@@ -124,9 +121,6 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 
 		result =  true;
 		break;
-
-	default:
-		qDebug() << "(FsmToolsPanel:) I can't use this tool!";
 	}
 
 	return result;

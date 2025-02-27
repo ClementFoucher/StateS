@@ -61,7 +61,7 @@ public:
 
 private slots:
 	void conditionChangedEventHandler();
-	void conditionAboutToBeInvalidatedEventHandler();
+	void conditionInvalidatedEventHandler();
 
 	/////
 	// Signals
