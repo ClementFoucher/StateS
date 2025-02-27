@@ -56,19 +56,19 @@ SOURCES += \
 	src/machine/export/machineimageexporter.cpp \
 	src/machine/export/fsm/fsmvhdlexport.cpp \
 	src/machine/graphic/graphicmachine.cpp \
-	src/machine/graphic/components/actionbox.cpp \
 	src/machine/graphic/components/graphiccomponent.cpp \
+	src/machine/graphic/components/subcomponents/actionbox.cpp \
 	src/machine/graphic/fsm/graphicfsm.cpp \
-	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.cpp \
 	src/machine/graphic/fsm/components/fsmgraphicstate.cpp \
 	src/machine/graphic/fsm/components/fsmgraphictransition.cpp \
+	src/machine/graphic/fsm/components/helpers/fsmgraphictransitionneighborhood.cpp \
 	src/machine/logic/machine.cpp \
 	src/machine/logic/components/machinecomponent.cpp \
 	src/machine/logic/components/machineactuatorcomponent.cpp \
-	src/machine/logic/components/variable/actiononvariable.cpp \
-	src/machine/logic/components/variable/equation.cpp \
-	src/machine/logic/components/variable/operand.cpp \
-	src/machine/logic/components/variable/variable.cpp \
+	src/machine/logic/components/variable.cpp \
+	src/machine/logic/components/subcomponents/actiononvariable.cpp \
+	src/machine/logic/components/subcomponents/equation.cpp \
+	src/machine/logic/components/subcomponents/operand.cpp \
 	src/machine/logic/fsm/fsm.cpp \
 	src/machine/logic/fsm/components/fsmstate.cpp \
 	src/machine/logic/fsm/components/fsmtransition.cpp \
@@ -176,19 +176,19 @@ HEADERS += \
 	src/machine/export/machineimageexporter.h \
 	src/machine/export/fsm/fsmvhdlexport.h \
 	src/machine/graphic/graphicmachine.h \
-	src/machine/graphic/components/actionbox.h \
 	src/machine/graphic/components/graphiccomponent.h \
+	src/machine/graphic/components/subcomponents/actionbox.h \
 	src/machine/graphic/fsm/graphicfsm.h \
-	src/machine/graphic/fsm/fsmgraphictransitionneighborhood.h \
 	src/machine/graphic/fsm/components/fsmgraphicstate.h \
 	src/machine/graphic/fsm/components/fsmgraphictransition.h \
+	src/machine/graphic/fsm/components/helpers/fsmgraphictransitionneighborhood.h \
 	src/machine/logic/machine.h \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
-	src/machine/logic/components/variable/actiononvariable.h \
-	src/machine/logic/components/variable/equation.h \
-	src/machine/logic/components/variable/operand.h \
-	src/machine/logic/components/variable/variable.h \
+	src/machine/logic/components/variable.h \
+	src/machine/logic/components/subcomponents/actiononvariable.h \
+	src/machine/logic/components/subcomponents/equation.h \
+	src/machine/logic/components/subcomponents/operand.h \
 	src/machine/logic/fsm/fsm.h \
 	src/machine/logic/fsm/components/fsmstate.h \
 	src/machine/logic/fsm/components/fsmtransition.h \
@@ -290,11 +290,13 @@ INCLUDEPATH += \
 	src/machine/export/fsm \
 	src/machine/graphic \
 	src/machine/graphic/components \
+	src/machine/graphic/components/subcomponents \
 	src/machine/graphic/fsm \
 	src/machine/graphic/fsm/components \
+	src/machine/graphic/fsm/components/helpers \
 	src/machine/logic \
 	src/machine/logic/components \
-	src/machine/logic/components/variable \
+	src/machine/logic/components/subcomponents \
 	src/machine/logic/fsm \
 	src/machine/logic/fsm/components \
 	src/machine/logic/fsm/verifier \
