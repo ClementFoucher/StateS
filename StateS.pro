@@ -8,7 +8,7 @@
 # Update these
 VERSION = 0.4.7
 DATE = 2014-2025
-# And remember to update version in readme and other text files
+# Also remember to update version in README.md, known_bugs.txt and AppImageBuilder.yml
 ###
 
 
