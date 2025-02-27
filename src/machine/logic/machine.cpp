@@ -197,7 +197,7 @@ void Machine::removeVariable(componentId_t variableId)
 	}
 }
 
-bool Machine::renameVariable(componentId_t variableId, const QString &newName)
+bool Machine::renameVariable(componentId_t variableId, const QString& newName)
 {
 	auto variable = this->getVariable(variableId);
 	if (variable == nullptr) return false;

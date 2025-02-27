@@ -44,7 +44,7 @@
 
 
 TimelineWidget::TimelineWidget(QWidget* parent) :
-    QMainWindow(parent)
+	QMainWindow(parent)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -51,7 +51,7 @@ void FsmGraphicTransitionNeighborhood::removeTransition(FsmGraphicTransition* tr
 	}
 }
 
-QList<FsmGraphicTransition*> FsmGraphicTransitionNeighborhood::getTransitions() const
+const QList<FsmGraphicTransition *> FsmGraphicTransitionNeighborhood::getTransitions() const
 {
 	return map.values();
 }

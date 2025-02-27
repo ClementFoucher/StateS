@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,7 +48,7 @@ public:
 	void insertTransition(FsmGraphicTransition* transition);
 	void removeTransition(FsmGraphicTransition* transition);
 
-	QList<FsmGraphicTransition*> getTransitions() const;
+	const QList<FsmGraphicTransition*> getTransitions() const;
 
 	FsmGraphicState* getSource() const;
 	FsmGraphicState* getTarget() const;

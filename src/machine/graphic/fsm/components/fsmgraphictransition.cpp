@@ -120,7 +120,7 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 	GraphicComponent(nullId)
 {
 	if ( ( (sourceStateId != nullId) && (targetStateId != nullId) ) ||
-		 ( (sourceStateId == nullId) && (targetStateId == nullId) )
+	     ( (sourceStateId == nullId) && (targetStateId == nullId) )
 	   )
 	{
 		this->currentMode = Mode_t::errorMode;

@@ -56,7 +56,7 @@ enum class SimulationBehavior_t          { prepare, immediately, after };
 
 enum class OperandSource_t
 {
-	variable, // Operand is a variable defined in the machine (including constants)
+	variable, // Reference (using componentId) to a variable defined in the machine (including constants)
 	equation, // Operand is itself an equation
 	constant  // Constant defined on-the-fly in equation editor. Not to confuse with constants defined in the machine, which are variables (try to follow here!).
 };
