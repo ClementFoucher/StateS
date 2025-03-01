@@ -39,6 +39,12 @@ ActionOnVariable::ActionOnVariable(componentId_t variableId, ActionOnVariableTyp
 
 	this->variableId = variableId;
 	this->initialize(variable, actionType);
+
+	if (this->isActionValueEditable() == true)
+	{
+		// Provide a default initial action value
+		this->actionValue = LogicValue::getValue1(this->getActionSize());
+	}
 }
 
 ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
@@ -78,13 +84,21 @@ void ActionOnVariable::setActionType(ActionOnVariableType_t newType)
 			// Check if previous action type had implicit value
 			// and switch to explicit if necessary, preserving
 			// previous action value.
-			if (this->actionType == ActionOnVariableType_t::reset)
+			if (this->actionValue.isNull() == true)
 			{
-				this->actionValue = LogicValue::getValue0(this->getActionSize());
-			}
-			else if (this->actionType == ActionOnVariableType_t::set)
-			{
-				this->actionValue = LogicValue::getValue1(this->getActionSize());
+				if (this->actionType == ActionOnVariableType_t::reset)
+				{
+					this->actionValue = LogicValue::getValue0(this->getActionSize());
+				}
+				else if (this->actionType == ActionOnVariableType_t::set)
+				{
+					this->actionValue = LogicValue::getValue1(this->getActionSize());
+				}
+				else
+				{
+					// Default to all ones
+					this->actionValue = LogicValue::getValue1(this->getActionSize());
+				}
 			}
 			break;
 		}

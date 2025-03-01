@@ -130,12 +130,22 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 				break;
 			}
 
-			if (!action->getActionValue().isNull())
-				this->stream->writeAttribute("Action_Value", action->getActionValue().toString());
+			if (action->isActionValueEditable() == true)
+			{
+				auto actionValue = action->getActionValue();
+				if (actionValue.isNull() == false)
+				{
+					this->stream->writeAttribute("Action_Value", actionValue.toString());
+				}
+			}
 			if (action->getActionRangeL() != -1)
+			{
 				this->stream->writeAttribute("RangeL", QString::number(action->getActionRangeL()));
+			}
 			if (action->getActionRangeR() != -1)
+			{
 				this->stream->writeAttribute("RangeR", QString::number(action->getActionRangeR()));
+			}
 
 			this->stream->writeEndElement(); // Action
 		}
