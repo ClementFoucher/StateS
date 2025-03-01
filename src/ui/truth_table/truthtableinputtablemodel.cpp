@@ -26,10 +26,8 @@
 #include <QColor>
 
 // StateS classes
-#include "machinemanager.h"
-#include "machine.h"
 #include "truthtable.h"
-#include "variable.h"
+#include "logicvalue.h"
 
 
 TruthTableInputTableModel::TruthTableInputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
@@ -66,7 +64,7 @@ int TruthTableInputTableModel::rowCount(const QModelIndex& parent) const
 
 		if (l_truthTable != nullptr)
 		{
-			rows = l_truthTable->getInputValuesTable().count();
+			rows = l_truthTable->getRowsCount();
 		}
 	}
 
@@ -87,9 +85,8 @@ QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) con
 			{
 				if (index.column() < (int)l_truthTable->getInputCount())
 				{
-					auto inputTable = l_truthTable->getInputValuesTable();
-
-					variant = QVariant(inputTable[index.row()][index.column()].toString());
+					auto inputValue = l_truthTable->getInputValue(index.row(), index.column());
+					variant = QVariant(inputValue.toString());
 				}
 			}
 		}
@@ -133,21 +130,8 @@ QVariant TruthTableInputTableModel::headerData(int section, Qt::Orientation orie
 			{
 				if (section < (int)l_truthTable->getInputCount())
 				{
-					auto inputVariablesIds = l_truthTable->getInputVariablesIds();
-					if (section < inputVariablesIds.count())
-					{
-						auto machine = machineManager->getMachine();
-						if (machine != nullptr)
-						{
-							auto inputId = inputVariablesIds.at(section);
-
-							auto input = machine->getVariable(inputId);
-							if (input != nullptr)
-							{
-								variant = QVariant(input->getName());
-							}
-						}
-					}
+					auto inputText = l_truthTable->getInputVariableText(section);
+					variant = QVariant(inputText);
 				}
 			}
 			else

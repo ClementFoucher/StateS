@@ -134,18 +134,17 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 				{
 					shared_ptr<TruthTable> currentTruthTable(new TruthTable(equations));
 
-					QVector<QVector<LogicValue>> result = currentTruthTable->getOutputValuesTable();
-
 					bool detected = false;
 					uint rowcount = 0;
 					shared_ptr<Issue> currentIssue = nullptr;
-					for (QVector<LogicValue>& row : result)
+					for (uint rowRank = 0 ; rowRank < currentTruthTable->getRowsCount() ; rowRank++)
 					{
 						uint trueCount = 0;
 						LogicValue valueTrue = LogicValue::getValue1(1);
-						for (LogicValue& val : row)
+						for (uint columnRank = 0 ; columnRank < currentTruthTable->getOutputCount() ; columnRank++)
 						{
-							if (val == valueTrue)
+							auto value = currentTruthTable->getOutputValue(rowRank, columnRank);
+							if (value == valueTrue)
 							{
 								trueCount++;
 							}

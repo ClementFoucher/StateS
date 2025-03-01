@@ -36,7 +36,7 @@
 
 TruthTable::TruthTable(shared_ptr<Equation> equation)
 {
-	QVector<shared_ptr<Equation>> equations;
+	QList<shared_ptr<Equation>> equations;
 	equations.append(equation);
 
 	this->buildTable(equations);
@@ -47,74 +47,58 @@ TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
 	this->buildTable(equations.toVector());
 }
 
-/**
- * @brief TruthTable::getInputVariablesIds
- * @return Obtain the list of variables representing the
- * inputs of the truth table.
- */
-const QVector<componentId_t> TruthTable::getInputVariablesIds() const
+QString TruthTable::getInputVariableText(uint column) const
 {
-	return this->inputVariablesIdsTable;
+	if (column >= this->inputVariablesTexts.count()) return QString();
+
+
+	return this->inputVariablesTexts.at(column);
 }
 
-/**
- * @brief TruthTable::getOutputsEquations
- * @return The list of equations composing the outputs.
- */
-const QVector<QString> TruthTable::getOutputsEquations() const
+QString TruthTable::getOutputEquationText(uint column) const
 {
-	return this->outputEquationsTextsTable;
+	if (column >= this->outputEquationsTexts.count()) return QString();
+
+
+	return this->outputEquationsTexts.at(column);
 }
 
-/**
- * @brief TruthTable::getInputValuesTable
- * @return The list of inputs: a vector of rows, each row
- * being a vector with each value corresponding to an input variable.
- */
-const QVector<QVector<LogicValue> > TruthTable::getInputValuesTable() const
+LogicValue TruthTable::getInputValue(uint row, uint column) const
 {
-	return this->inputValuesTable;
+	if (row >= this->inputValuesTable.count()) return LogicValue::getNullValue();
+
+	auto selectedRow = this->inputValuesTable.at(row);
+	if (column >= selectedRow.count()) return LogicValue::getNullValue();
+
+
+	return selectedRow.at(column);
 }
 
-/**
- * @brief TruthTable::getOutputValuesTable
- * @return A list of all outputs for each line of the
- * input table. It's a vector of rows, each line being
- * a vector itself containing a column for each output.
- */
-const QVector<QVector<LogicValue> > TruthTable::getOutputValuesTable() const
+LogicValue TruthTable::getOutputValue(uint row, uint column) const
 {
-	return this->outputValuesTable;
+
+	if (row >= this->outputValuesTable.count()) return LogicValue::getNullValue();
+
+	auto selectedRow = this->outputValuesTable.at(row);
+	if (column >= selectedRow.count()) return LogicValue::getNullValue();
+
+
+	return selectedRow.at(column);
 }
 
-/**
- * @brief TruthTable::getSingleOutputValuesTable
- * @return If there is only one output, get a simplified (vertical) vector.
- */
-const QVector<LogicValue> TruthTable::getSingleOutputValuesTable() const
+uint TruthTable::getRowsCount() const
 {
-	QVector<LogicValue> output;
-
-	for (QVector<LogicValue> currentRow : this->outputValuesTable)
-	{
-		output.append(currentRow[0]);
-	}
-
-	return output;
+	return this->inputValuesTable.count();
 }
 
 uint TruthTable::getInputCount() const
 {
-	return this->inputVariablesIdsTable.count();
+	return this->inputVariablesTexts.count();
 }
 
-/**
- * @brief TruthTable::getOutputCount
- * @return The number of outputs.
- */
 uint TruthTable::getOutputCount() const
 {
-	return this->outputEquationsTextsTable.count();
+	return this->outputEquationsTexts.count();
 }
 
 /**
@@ -152,7 +136,7 @@ const QList<componentId_t> TruthTable::extractVariables(shared_ptr<Equation> equ
  * @brief TruthTable::buildTable builds the table.
  * @param equations
  */
-void TruthTable::buildTable(QVector<shared_ptr<Equation>> equations)
+void TruthTable::buildTable(QList<shared_ptr<Equation> > equations)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -164,11 +148,11 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation>> equations)
 	for (auto& equation : equations)
 	{
 		variablesIdsList += extractVariables(equation);
-		this->outputEquationsTextsTable.append(equation->getText());
+		this->outputEquationsTexts.append(equation->getText());
 	}
 
 	// Clean list so each variable only appears once
-	QVector<shared_ptr<Variable>> variablesVector;
+	QList<shared_ptr<Variable>> variablesVector;
 
 	for (auto& variableId : variablesIdsList)
 	{
@@ -179,7 +163,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation>> equations)
 		if (!variablesVector.contains(variable))
 		{
 			variablesVector.append(variable);
-			this->inputVariablesIdsTable.append(variableId);
+			this->inputVariablesTexts.append(variable->getName());
 		}
 	}
 
@@ -191,7 +175,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation>> equations)
 	}
 
 	// Prepare first row
-	QVector<LogicValue> currentRow;
+	QList<LogicValue> currentRow;
 	for (auto& variable : variablesVector)
 	{
 		currentRow.append(LogicValue(variable->getSize(), false));
@@ -208,7 +192,7 @@ void TruthTable::buildTable(QVector<shared_ptr<Equation>> equations)
 			variablesVector[i]->setCurrentValue(currentRow[i]);
 		}
 
-		QVector<LogicValue> currentResultLine;
+		QList<LogicValue> currentResultLine;
 		for (auto& equation : equations)
 		{
 			currentResultLine.append(equation->getCurrentValue());

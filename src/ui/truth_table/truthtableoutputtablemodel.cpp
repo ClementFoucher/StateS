@@ -64,7 +64,7 @@ int TruthTableOutputTableModel::rowCount(const QModelIndex& parent) const
 
 		if (l_truthTable != nullptr)
 		{
-			rows = l_truthTable->getInputValuesTable().count();
+			rows = l_truthTable->getRowsCount();
 		}
 	}
 
@@ -85,9 +85,8 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 			{
 				if (index.column() < (int)l_truthTable->getOutputCount())
 				{
-					QVector<QVector<LogicValue>> outputTable = l_truthTable->getOutputValuesTable();
-
-					variant = QVariant(outputTable[index.row()][index.column()].toString());
+					auto outputValue = l_truthTable->getOutputValue(index.row(), index.column());
+					variant = QVariant(outputValue.toString());
 				}
 			}
 		}
@@ -102,9 +101,13 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 				else
 				{
 					if ( (index.row() % 2) == 0)
+					{
 						variant = QVariant(QColor(0, 255, 0, 25));
+					}
 					else
+					{
 						variant = QVariant(QColor(0, 255, 0, 50));
+					}
 				}
 			}
 		}
@@ -142,9 +145,8 @@ QVariant TruthTableOutputTableModel::headerData(int section, Qt::Orientation ori
 			{
 				if (section < (int)l_truthTable->getOutputCount())
 				{
-					QVector<QString> equationTable = l_truthTable->getOutputsEquations();
-
-					variant = QVariant(equationTable[section]);
+					auto equationText = l_truthTable->getOutputEquationText(section);
+					variant = QVariant(equationText);
 				}
 			}
 			else

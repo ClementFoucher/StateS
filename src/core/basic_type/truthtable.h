@@ -27,7 +27,7 @@
 using namespace std;
 
 // Qt classes
-#include <QVector>
+#include <QList>
 
 // StateS classes
 #include "statestypes.h"
@@ -47,26 +47,28 @@ public:
 	/////
 	// Object functions
 public:
-	const QVector<componentId_t>        getInputVariablesIds()       const;
-	const QVector<QVector<LogicValue>>  getInputValuesTable()        const;
-	const QVector<QString>              getOutputsEquations()        const;
-	const QVector<QVector<LogicValue>>  getOutputValuesTable()       const;
-	const QVector<LogicValue>           getSingleOutputValuesTable() const;
+	QString getInputVariableText (uint column) const;
+	QString getOutputEquationText(uint column) const;
 
+	LogicValue getInputValue (uint row, uint column) const;
+	LogicValue getOutputValue(uint row, uint column) const;
+
+	uint getRowsCount()   const;
 	uint getInputCount()  const;
 	uint getOutputCount() const;
 
 private:
 	const QList<componentId_t> extractVariables(shared_ptr<Equation> equation) const;
-	void buildTable(QVector<shared_ptr<Equation>> equations);
+	void buildTable(QList<shared_ptr<Equation>> equations);
 
 	/////
 	// Object variables
 private:
-	QVector<componentId_t>       inputVariablesIdsTable;
-	QVector<QString>             outputEquationsTextsTable;
-	QVector<QVector<LogicValue>> inputValuesTable;
-	QVector<QVector<LogicValue>> outputValuesTable;
+	QList<QString> inputVariablesTexts;
+	QList<QString> outputEquationsTexts;
+
+	QList<QList<LogicValue>> inputValuesTable;
+	QList<QList<LogicValue>> outputValuesTable;
 
 };
 
