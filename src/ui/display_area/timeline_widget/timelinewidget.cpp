@@ -39,7 +39,7 @@
 #include "variabletimeline.h"
 #include "clocktimeline.h"
 #include "statetimeline.h"
-#include "machinesimulator.h"
+#include "simulatedmachine.h"
 #include "pixmapgenerator.h"
 
 
@@ -49,7 +49,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	shared_ptr<MachineSimulator> simulator = machineManager->getMachineSimulator();
+	shared_ptr<SimulatedMachine> simulator = machineManager->getMachineSimulator();
 	if (simulator == nullptr) return;
 
 

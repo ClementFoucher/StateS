@@ -31,10 +31,10 @@
 // StateS classes
 #include "statestypes.h"
 class GraphicAttributes;
-class FsmGraphicState;
-class FsmGraphicTransition;
+class GraphicFsmState;
+class GraphicFsmTransition;
 class GenericScene;
-class FsmGraphicTransitionNeighborhood;
+class GraphicFsmTransitionNeighborhood;
 
 
 class GraphicFsm : public GraphicMachine
@@ -56,18 +56,18 @@ public:
 
 	virtual void removeGraphicComponent(componentId_t id) override;
 
-	FsmGraphicState*      addState     (componentId_t logicStateId,      QPointF position);
-	FsmGraphicTransition* addTransition(componentId_t logicTransitionId, qreal sliderPos);
+	GraphicFsmState*      addState     (componentId_t logicStateId,      QPointF position);
+	GraphicFsmTransition* addTransition(componentId_t logicTransitionId, qreal sliderPos);
 
-	const QList<FsmGraphicState*>      getStates()      const;
-	const QList<FsmGraphicTransition*> getTransitions() const;
+	const QList<GraphicFsmState*>      getStates()      const;
+	const QList<GraphicFsmTransition*> getTransitions() const;
 
-	FsmGraphicState*      getState(componentId_t id)      const;
-	FsmGraphicTransition* getTransition(componentId_t id) const;
+	GraphicFsmState*      getState(componentId_t id)      const;
+	GraphicFsmTransition* getTransition(componentId_t id) const;
 
 	// Neighborhood
 	int getTransitionRank(componentId_t transitionId) const;
-	shared_ptr<FsmGraphicTransitionNeighborhood> getTransitionNeighborhood(componentId_t transitionId) const;
+	shared_ptr<GraphicFsmTransitionNeighborhood> getTransitionNeighborhood(componentId_t transitionId) const;
 
 private:
 	void buildStates(shared_ptr<GraphicAttributes> configuration);
@@ -81,7 +81,7 @@ private:
 private:
 	// Neighborhoods are stored for each pair of FsmState
 	// First key is the lowest state ID, second key the other state ID.
-	QHash<componentId_t, QHash<componentId_t, shared_ptr<FsmGraphicTransitionNeighborhood>>> neighborhoods;
+	QHash<componentId_t, QHash<componentId_t, shared_ptr<GraphicFsmTransitionNeighborhood>>> neighborhoods;
 
 };
 

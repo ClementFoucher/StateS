@@ -30,11 +30,11 @@
 #include "fsm.h"
 #include "graphicattributes.h"
 #include "fsmstate.h"
-#include "fsmgraphicstate.h"
+#include "graphicfsmstate.h"
 #include "fsmtransition.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmtransition.h"
 #include "fsmscene.h"
-#include "fsmgraphictransitionneighborhood.h"
+#include "graphicfsmtransitionneighborhood.h"
 
 
 GraphicFsm::GraphicFsm() :
@@ -92,9 +92,9 @@ void GraphicFsm::removeGraphicComponent(componentId_t id)
 	GraphicMachine::removeGraphicComponent(id);
 }
 
-FsmGraphicState* GraphicFsm::addState(componentId_t logicStateId, QPointF position)
+GraphicFsmState* GraphicFsm::addState(componentId_t logicStateId, QPointF position)
 {
-	FsmGraphicState* graphicState = new FsmGraphicState(logicStateId);
+	GraphicFsmState* graphicState = new GraphicFsmState(logicStateId);
 	graphicState->setPos(position);
 
 	this->addComponent(graphicState);
@@ -102,9 +102,9 @@ FsmGraphicState* GraphicFsm::addState(componentId_t logicStateId, QPointF positi
 	return graphicState;
 }
 
-FsmGraphicTransition* GraphicFsm::addTransition(componentId_t logicTransitionId, qreal sliderPos)
+GraphicFsmTransition* GraphicFsm::addTransition(componentId_t logicTransitionId, qreal sliderPos)
 {
-	FsmGraphicTransition* graphicTransition = new FsmGraphicTransition(logicTransitionId);
+	GraphicFsmTransition* graphicTransition = new GraphicFsmTransition(logicTransitionId);
 	graphicTransition->setConditionLineSliderPosition(sliderPos);
 
 	this->addComponent(graphicTransition);
@@ -113,42 +113,42 @@ FsmGraphicTransition* GraphicFsm::addTransition(componentId_t logicTransitionId,
 	return graphicTransition;
 }
 
-const QList<FsmGraphicState*> GraphicFsm::getStates() const
+const QList<GraphicFsmState*> GraphicFsm::getStates() const
 {
-	QList<FsmGraphicState*> statesList;
+	QList<GraphicFsmState*> statesList;
 
 	for (GraphicComponent* graphicComponent : this->getGraphicComponents())
 	{
-		FsmGraphicState* s = dynamic_cast<FsmGraphicState*>(graphicComponent);
+		GraphicFsmState* s = dynamic_cast<GraphicFsmState*>(graphicComponent);
 		if (s != nullptr) statesList.append(s);
 	}
 
 	return statesList;
 }
 
-const QList<FsmGraphicTransition*> GraphicFsm::getTransitions() const
+const QList<GraphicFsmTransition*> GraphicFsm::getTransitions() const
 {
-	QList<FsmGraphicTransition*> transitionsList;
+	QList<GraphicFsmTransition*> transitionsList;
 
 	for (GraphicComponent* graphicComponent : this->getGraphicComponents())
 	{
-		FsmGraphicTransition* t = dynamic_cast<FsmGraphicTransition*>(graphicComponent);
+		GraphicFsmTransition* t = dynamic_cast<GraphicFsmTransition*>(graphicComponent);
 		if (t != nullptr) transitionsList.append(t);
 	}
 
 	return transitionsList;
 }
 
-FsmGraphicState* GraphicFsm::getState(componentId_t id) const
+GraphicFsmState* GraphicFsm::getState(componentId_t id) const
 {
 	auto state = this->getGraphicComponent(id);
-	return dynamic_cast<FsmGraphicState*>(state);
+	return dynamic_cast<GraphicFsmState*>(state);
 }
 
-FsmGraphicTransition* GraphicFsm::getTransition(componentId_t id) const
+GraphicFsmTransition* GraphicFsm::getTransition(componentId_t id) const
 {
 	auto transition = this->getGraphicComponent(id);
-	return dynamic_cast<FsmGraphicTransition*>(transition);
+	return dynamic_cast<GraphicFsmTransition*>(transition);
 }
 
 int GraphicFsm::getTransitionRank(componentId_t transitionId) const
@@ -182,7 +182,7 @@ int GraphicFsm::getTransitionRank(componentId_t transitionId) const
 	return rank;
 }
 
-shared_ptr<FsmGraphicTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(componentId_t transitionId) const
+shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(componentId_t transitionId) const
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return nullptr;
@@ -197,7 +197,7 @@ shared_ptr<FsmGraphicTransitionNeighborhood> GraphicFsm::getTransitionNeighborho
 	auto stateId2 = max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood;
+	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))
@@ -286,7 +286,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 	auto stateId2 = max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood;
+	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))
@@ -344,11 +344,11 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 		if (newFriend != nullptr)
 		{
 			// Build neighborhood and act as if it already existed
-			neighborhood = shared_ptr<FsmGraphicTransitionNeighborhood>(new FsmGraphicTransitionNeighborhood(this->getState(stateId1), this->getState(stateId2)));
+			neighborhood = shared_ptr<GraphicFsmTransitionNeighborhood>(new GraphicFsmTransitionNeighborhood(this->getState(stateId1), this->getState(stateId2)));
 
 			if (this->neighborhoods.contains(stateId1) == false)
 			{
-				this->neighborhoods[stateId1] = QHash<componentId_t, shared_ptr<FsmGraphicTransitionNeighborhood>>();
+				this->neighborhoods[stateId1] = QHash<componentId_t, shared_ptr<GraphicFsmTransitionNeighborhood>>();
 			}
 			this->neighborhoods[stateId1][stateId2] = neighborhood;
 
@@ -385,7 +385,7 @@ void GraphicFsm::removeTransitionFromNeighborhood(componentId_t transitionId)
 	auto stateId2 = max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<FsmGraphicTransitionNeighborhood> neighborhood;
+	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))

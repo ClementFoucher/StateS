@@ -59,9 +59,9 @@ SOURCES += \
 	src/machine/graphic/components/graphiccomponent.cpp \
 	src/machine/graphic/components/subcomponents/actionbox.cpp \
 	src/machine/graphic/fsm/graphicfsm.cpp \
-	src/machine/graphic/fsm/components/fsmgraphicstate.cpp \
-	src/machine/graphic/fsm/components/fsmgraphictransition.cpp \
-	src/machine/graphic/fsm/components/helpers/fsmgraphictransitionneighborhood.cpp \
+	src/machine/graphic/fsm/components/graphicfsmstate.cpp \
+	src/machine/graphic/fsm/components/graphicfsmtransition.cpp \
+	src/machine/graphic/fsm/components/helpers/graphicfsmtransitionneighborhood.cpp \
 	src/machine/logic/machine.cpp \
 	src/machine/logic/components/machinecomponent.cpp \
 	src/machine/logic/components/machineactuatorcomponent.cpp \
@@ -73,11 +73,11 @@ SOURCES += \
 	src/machine/logic/fsm/components/fsmstate.cpp \
 	src/machine/logic/fsm/components/fsmtransition.cpp \
 	src/machine/logic/fsm/verifier/fsmverifier.cpp \
-	src/machine/simulated/machinesimulator.cpp \
+	src/machine/simulated/simulatedmachine.cpp \
 	src/machine/simulated/components/simulatedcomponent.cpp \
-	src/machine/simulated/fsm/fsmsimulator.cpp \
-	src/machine/simulated/fsm/components/fsmsimulatedstate.cpp \
-	src/machine/simulated/fsm/components/fsmsimulatedtransition.cpp \
+	src/machine/simulated/fsm/simulatedfsm.cpp \
+	src/machine/simulated/fsm/components/simulatedfsmstate.cpp \
+	src/machine/simulated/fsm/components/simulatedfsmtransition.cpp \
 	src/machine/xml/graphicattributes.cpp \
 	src/machine/xml/machinexmlparser.cpp \
 	src/machine/xml/machinexmlwriter.cpp \
@@ -179,9 +179,9 @@ HEADERS += \
 	src/machine/graphic/components/graphiccomponent.h \
 	src/machine/graphic/components/subcomponents/actionbox.h \
 	src/machine/graphic/fsm/graphicfsm.h \
-	src/machine/graphic/fsm/components/fsmgraphicstate.h \
-	src/machine/graphic/fsm/components/fsmgraphictransition.h \
-	src/machine/graphic/fsm/components/helpers/fsmgraphictransitionneighborhood.h \
+    src/machine/graphic/fsm/components/graphicfsmstate.h \
+    src/machine/graphic/fsm/components/graphicfsmtransition.h \
+    src/machine/graphic/fsm/components/helpers/graphicfsmtransitionneighborhood.h \
 	src/machine/logic/machine.h \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
@@ -193,11 +193,11 @@ HEADERS += \
 	src/machine/logic/fsm/components/fsmstate.h \
 	src/machine/logic/fsm/components/fsmtransition.h \
 	src/machine/logic/fsm/verifier/fsmverifier.h \
-	src/machine/simulated/machinesimulator.h \
+	src/machine/simulated/simulatedmachine.h \
 	src/machine/simulated/components/simulatedcomponent.h \
-	src/machine/simulated/fsm/fsmsimulator.h \
-	src/machine/simulated/fsm/components/fsmsimulatedstate.h \
-	src/machine/simulated/fsm/components/fsmsimulatedtransition.h \
+	src/machine/simulated/fsm/simulatedfsm.h \
+	src/machine/simulated/fsm/components/simulatedfsmstate.h \
+	src/machine/simulated/fsm/components/simulatedfsmtransition.h \
 	src/machine/xml/graphicattributes.h \
 	src/machine/xml/xmlimportexportbuilder.h \
 	src/machine/xml/machinexmlparser.h \

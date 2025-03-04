@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICSTATE_H
-#define FSMGRAPHICSTATE_H
+#ifndef GRAPHICFSMSTATE_H
+#define GRAPHICFSMSTATE_H
 
 // Parents
 #include "graphiccomponent.h"
@@ -34,7 +34,7 @@ class QAction;
 class ActionBox;
 
 
-class FsmGraphicState : public GraphicComponent, public QGraphicsEllipseItem
+class GraphicFsmState : public GraphicComponent, public QGraphicsEllipseItem
 {
 	Q_OBJECT
 
@@ -55,8 +55,8 @@ protected:
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmGraphicState(componentId_t logicComponentId);
-	~FsmGraphicState();
+	explicit GraphicFsmState(componentId_t logicComponentId);
+	~GraphicFsmState();
 
 	/////
 	// Object functions
@@ -106,4 +106,4 @@ private:
 
 };
 
-#endif // FSMGRAPHICSTATE_H
+#endif // GRAPHICFSMSTATE_H

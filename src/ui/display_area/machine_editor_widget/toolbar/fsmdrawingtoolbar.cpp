@@ -29,8 +29,8 @@ using namespace std;
 // StateS classes
 #include "machinemanager.h"
 #include "machinebuilder.h"
-#include "fsmgraphicstate.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmstate.h"
+#include "graphicfsmtransition.h"
 
 
 FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
@@ -46,17 +46,17 @@ FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
 	this->actionMouse->setEnabled(false);
 
 	this->actionAddInitialState = new QAction(this);
-	this->actionAddInitialState->setIcon(QIcon(FsmGraphicState::getPixmap(128, true)));
+	this->actionAddInitialState->setIcon(QIcon(GraphicFsmState::getPixmap(128, true)));
 	this->actionAddInitialState->setText(tr("Add initial state"));
 	this->actionAddInitialState->setCheckable(true);
 
 	this->actionAddState = new QAction(this);
-	this->actionAddState->setIcon(QIcon(FsmGraphicState::getPixmap(128)));
+	this->actionAddState->setIcon(QIcon(GraphicFsmState::getPixmap(128)));
 	this->actionAddState->setText(tr("Add state"));
 	this->actionAddState->setCheckable(true);
 
 	this->actionAddTransition = new QAction(this);
-	this->actionAddTransition->setIcon(QIcon(FsmGraphicTransition::getPixmap(128)));
+	this->actionAddTransition->setIcon(QIcon(GraphicFsmTransition::getPixmap(128)));
 	this->actionAddTransition->setText(tr("Add transition"));
 	this->actionAddTransition->setCheckable(true);
 

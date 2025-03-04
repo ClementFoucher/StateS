@@ -34,8 +34,8 @@ class QAction;
 
 // StateS classes
 #include "statestypes.h"
-class FsmGraphicTransition;
-class FsmGraphicState;
+class GraphicFsmTransition;
+class GraphicFsmState;
 
 
 /**
@@ -128,15 +128,15 @@ private:
 	void clearScene();
 
 	// Add elements
-	void addTransition(FsmGraphicTransition* newTransition, bool connectSignals);
-	void addState(FsmGraphicState* newState, bool connectSignals);
+	void addTransition(GraphicFsmTransition* newTransition, bool connectSignals);
+	void addState(GraphicFsmState* newState, bool connectSignals);
 
 	// Transition adding/editings
-	void beginDrawTransition(FsmGraphicState* source, const QPointF& currentMousePos = QPointF());
+	void beginDrawTransition(GraphicFsmState* source, const QPointF& currentMousePos = QPointF());
 	void cancelOngoingAction();
 
 	// Accessors
-	FsmGraphicState* getStateAt(const QPointF& location) const;
+	GraphicFsmState* getStateAt(const QPointF& location) const;
 
 	/////
 	// Object variables
@@ -146,7 +146,7 @@ private:
 
 	// Transition adding/edition
 	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
-	FsmGraphicTransition* dummyTransition = nullptr;
+	GraphicFsmTransition* dummyTransition = nullptr;
 	componentId_t transitionUnderEditId = nullId;
 
 	// Temporary variables

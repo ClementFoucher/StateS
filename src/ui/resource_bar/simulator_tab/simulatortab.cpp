@@ -31,7 +31,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "fsm.h"
-#include "machinesimulator.h"
+#include "simulatedmachine.h"
 #include "contextmenu.h"
 #include "simulatorconfigurator.h"
 #include "simulatortimecontroller.h"

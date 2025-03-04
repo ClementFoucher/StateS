@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
-#define FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
+#ifndef GRAPHICFSMTRANSITIONNEIGHBORHOOD_H
+#define GRAPHICFSMTRANSITIONNEIGHBORHOOD_H
 
 // Parent
 #include <QObject>
@@ -29,41 +29,41 @@
 #include <QMap>
 
 // StateS classes
-class FsmGraphicTransition;
-class FsmGraphicState;
+class GraphicFsmTransition;
+class GraphicFsmState;
 
 
-class FsmGraphicTransitionNeighborhood : public QObject
+class GraphicFsmTransitionNeighborhood : public QObject
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target);
+	explicit GraphicFsmTransitionNeighborhood(GraphicFsmState* source, GraphicFsmState* target);
 
 	/////
 	// Object functions
 public:
-	void insertTransition(FsmGraphicTransition* transition);
-	void removeTransition(FsmGraphicTransition* transition);
+	void insertTransition(GraphicFsmTransition* transition);
+	void removeTransition(GraphicFsmTransition* transition);
 
-	const QList<FsmGraphicTransition*> getTransitions() const;
+	const QList<GraphicFsmTransition*> getTransitions() const;
 
-	FsmGraphicState* getSource() const;
-	FsmGraphicState* getTarget() const;
+	GraphicFsmState* getSource() const;
+	GraphicFsmState* getTarget() const;
 
 	int count() const;
 
-	int getTransitionNumber(FsmGraphicTransition* transition) const;
+	int getTransitionNumber(GraphicFsmTransition* transition) const;
 
 	/////
 	// Object variables
 private:
-	QMap<int, FsmGraphicTransition*> map;
-	FsmGraphicState* source = nullptr;
-	FsmGraphicState* target = nullptr;
+	QMap<int, GraphicFsmTransition*> map;
+	GraphicFsmState* source = nullptr;
+	GraphicFsmState* target = nullptr;
 
 };
 
-#endif // FSMGRAPHICTRANSITIONNEIGHBORHOOD_H
+#endif // GRAPHICFSMTRANSITIONNEIGHBORHOOD_H

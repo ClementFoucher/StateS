@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,8 +32,8 @@ using namespace std;
 #include "fsm.h"
 #include "fsmstate.h"
 #include "graphicfsm.h"
-#include "fsmgraphicstate.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmstate.h"
+#include "graphicfsmtransition.h"
 
 
 FsmUndoCommand::FsmUndoCommand(UndoCommandId_t undoType, componentId_t componentId) :

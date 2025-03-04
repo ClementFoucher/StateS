@@ -335,68 +335,68 @@
 <context>
     <name>ConditionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="68"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="66"/>
         <source>Condition</source>
         <translation>Condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="73"/>
         <source>Set condition</source>
         <translation>Définir la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="79"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="77"/>
         <source>Clear condition</source>
         <translation>Effacer la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="94"/>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="305"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="92"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="303"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="133"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="131"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="217"/>
         <source>Warning: the current condition is not valid.</source>
         <translation>Attention : la condition actuelle est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="218"/>
         <source>Thus, this transition will never be crossed.</source>
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="295"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="293"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="231"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
         <source>Thus, the current transition will never be crossed.</source>
         <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="227"/>
         <source>Warning: equation representing condition is size</source>
         <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="230"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="228"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="84"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="82"/>
         <source>Condition position</source>
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="221"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -488,176 +488,74 @@
 <context>
     <name>FsmDrawingToolBar</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="45"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="42"/>
         <source>Mouse</source>
         <translation>Souris</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="46"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="43"/>
         <source>Deselect any building tool</source>
         <translation>Déselectionner l&apos;outil actuel</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="53"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="50"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="58"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="55"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="63"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="60"/>
         <source>Add transition</source>
         <translation>Ajouter une transition</translation>
     </message>
 </context>
 <context>
-    <name>FsmGraphicState</name>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="214"/>
-        <source>State</source>
-        <translation>État</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="218"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="286"/>
-        <source>Set initial</source>
-        <translation>Définir comme initial</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="220"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="282"/>
-        <source>Edit</source>
-        <translation>Éditer</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="221"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="299"/>
-        <source>Draw transition from this state</source>
-        <translation>Créer une transition ayant pour origine cet état</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="222"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="290"/>
-        <source>Rename</source>
-        <translation>Renommer</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="223"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphicstate.cpp" line="294"/>
-        <source>Delete</source>
-        <translation>Supprimer</translation>
-    </message>
-</context>
-<context>
-    <name>FsmGraphicTransition</name>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="275"/>
-        <source>Transition</source>
-        <translation>Transition</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="277"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="397"/>
-        <source>Change source</source>
-        <translation>Changer de source</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="278"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="401"/>
-        <source>Change target</source>
-        <translation>Changer de cible</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="279"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="405"/>
-        <source>Edit</source>
-        <translation>Éditer</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="280"/>
-        <location filename="../src/machine/graphic/fsm/components/fsmgraphictransition.cpp" line="409"/>
-        <source>Delete</source>
-        <translation>Supprimer</translation>
-    </message>
-</context>
-<context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="241"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="738"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="238"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="735"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="242"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="748"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="239"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="745"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="528"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="525"/>
         <source>Delete current state?</source>
         <translation>Supprimer l&apos;état courant ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="530"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="527"/>
         <source>The connected transition will be deleted</source>
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="532"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="532"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="534"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="531"/>
         <source>User confirmation required</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="598"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="595"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
-    </message>
-</context>
-<context>
-    <name>FsmSimulatedState</name>
-    <message>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="143"/>
-        <source>State</source>
-        <translation>État</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="147"/>
-        <location filename="../src/machine/simulated/fsm/components/fsmsimulatedstate.cpp" line="164"/>
-        <source>Set active</source>
-        <translation>Activer</translation>
-    </message>
-</context>
-<context>
-    <name>FsmSimulator</name>
-    <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="233"/>
-        <source>Warning! There are multiple active transitions going out the current state!</source>
-        <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="234"/>
-        <source>This means your FSM is wrong by construction. This should be fixed.</source>
-        <translation>Cela signifie que votre FSM est erronée. Ceci devrait être rendu impossible.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/simulated/fsm/fsmsimulator.cpp" line="235"/>
-        <source>For current simulation, just choose the target state in the following list:</source>
-        <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
 </context>
 <context>
@@ -713,61 +611,61 @@
         <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="159"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
         <source>Transitions from state</source>
         <translation>Les transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="159"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
         <source>are not mutually exclusive.</source>
         <translation>ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="159"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
         <source>Two transitions or more can be active at the same time.</source>
         <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="193"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="207"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="221"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="235"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="192"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="206"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="220"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="234"/>
         <source>Variable</source>
         <translation>Variable</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="194"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="208"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="222"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="236"/>
+        <source>StateS VHDL exporter is currently unable to handle these variables.</source>
+        <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
     </message>
     <message>
         <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="195"/>
         <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="209"/>
         <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="223"/>
         <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="237"/>
-        <source>StateS VHDL exporter is currently unable to handle these variables.</source>
-        <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="196"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="210"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="224"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="238"/>
         <source>This variable will be ignored on VHDL export.</source>
         <translation>Cette variable sera ignorée lors de l&apos;export VHDL.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="208"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="207"/>
         <source>has both affectations (remembered value) and temporary (pulse or active on state).</source>
         <translation>est affecté à la fois avec et sans mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="222"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="221"/>
         <source>has range-adressed output generation.</source>
         <translation>génère des sorties sur des bits indépendants.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="236"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="235"/>
         <source>has Mealy outputs affectation (remembered value).</source>
         <translation>est une sortie de Mealy avec mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="194"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="193"/>
         <source>has both Moore and Mealy behaviors.</source>
         <translation>a un comportement à la fois de Moore et de Mealy.</translation>
     </message>
@@ -1097,310 +995,380 @@
     </message>
 </context>
 <context>
+    <name>GraphicFsmState</name>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="214"/>
+        <source>State</source>
+        <translation>État</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="218"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="286"/>
+        <source>Set initial</source>
+        <translation>Définir comme initial</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="220"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="282"/>
+        <source>Edit</source>
+        <translation>Éditer</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="221"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="299"/>
+        <source>Draw transition from this state</source>
+        <translation>Créer une transition ayant pour origine cet état</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="222"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="290"/>
+        <source>Rename</source>
+        <translation>Renommer</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="223"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="294"/>
+        <source>Delete</source>
+        <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
+    <name>GraphicFsmTransition</name>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="275"/>
+        <source>Transition</source>
+        <translation>Transition</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="277"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="397"/>
+        <source>Change source</source>
+        <translation>Changer de source</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="278"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="401"/>
+        <source>Change target</source>
+        <translation>Changer de cible</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="279"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="405"/>
+        <source>Edit</source>
+        <translation>Éditer</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="280"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="409"/>
+        <source>Delete</source>
+        <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
     <name>HintTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="62"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="72"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="59"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="69"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="99"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="149"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="96"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="146"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="101"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="208"/>
         <source>Drawing a transition</source>
         <translation>Dessiner une transition</translation>
     </message>
     <message>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="110"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="121"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="171"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="195"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="168"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="206"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
         <source>Use</source>
         <translation>Utilisez</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="213"/>
         <source>left-click</source>
         <translation>le clic gauche</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
         <source>on a state</source>
         <translation>sur un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="213"/>
         <source>to make it</source>
         <translation>pour en faire</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
         <source>the target</source>
         <translation>la cible</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
         <source>of this transition</source>
         <translation>de cette transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="110"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="121"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="132"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="171"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="195"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="206"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="168"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
         <source>right-click</source>
         <translation>le clic droit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="110"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="121"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
         <source>to cancel</source>
         <translation>pour annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="110"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="107"/>
         <source>transition insertion</source>
         <translation>l&apos;insertion de la transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="126"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="112"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="123"/>
         <source>Editing a transition</source>
         <translation>Éditer une transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="115"/>
         <source>the source</source>
         <translation>la source</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="154"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="151"/>
         <source>Navigation</source>
         <translation>Navigation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="157"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="154"/>
         <source>Use &lt;i&gt;mouse middle button (wheel)&lt;/i&gt; to move scene:</source>
         <translation>Utilisez le &lt;i&gt;bouton central de la souris (molette)&lt;/i&gt; pour déplacer la scène :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="159"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="156"/>
         <source>Press and hold</source>
         <translation>Appuyez et maintenez</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="159"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="161"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="156"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="160"/>
         <source>wheel</source>
         <translation>la molette</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="159"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="156"/>
         <source>for free move</source>
         <translation>pour un déplacement libre</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="161"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="160"/>
         <source>Scroll</source>
         <translation>Faites tourner</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="161"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="158"/>
         <source>to move vertically</source>
         <translation>pour un déplacement vertical</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="160"/>
         <source>while holding</source>
         <translation>tout en maintenant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="160"/>
         <source>shift</source>
         <translation>shift</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="160"/>
         <source>to move horizontally</source>
         <translation>pour un déplacement horizontal</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
         <source>ctrl</source>
         <translation>ctrl</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
         <source>mouse wheel</source>
         <translation>molette de la souris</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="163"/>
         <source>to zoom in/out</source>
         <translation>pour un zoom avant/arrière</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
         <source>a transition</source>
         <translation>une transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="166"/>
         <source>to select it</source>
         <translation>pour le/la sélectionner</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="171"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="168"/>
         <source>to display context menu</source>
         <translation>pour afficher un menu contextuel</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="175"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="172"/>
         <source>Tabs:</source>
         <translation>Onglets :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="179"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="176"/>
         <source>State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)</source>
         <translation>L&apos;onglet État/Transition est utilisé pour éditer l&apos;état ou la transition actuellement selectionné (actions, conditions, etc.)</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="181"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="178"/>
         <source>Simulate tab allows for machine simluation</source>
         <translation>L&apos;onglet Simuler permet de simuler la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="183"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="180"/>
         <source>Verify tab provide tools for machine correctness verification</source>
         <translation>L&apos;onglet Vérifier met à disposition des outils pour vérifier si la machine est correcte</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="184"/>
         <source>Adding an initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
         <source>to add</source>
         <translation>pour ajouter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
         <source>a state</source>
         <translation>un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="187"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
         <source>at mouse position</source>
         <translation>à la position du curseur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="189"/>
         <source>This state will be set as the initial state of this machine</source>
         <translation>Cet état sera défini comme l&apos;état initial de cette machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="195"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="206"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
         <source>to unselect current tool</source>
         <translation>pour désélectionner l&apos;outil actuel</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="200"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="197"/>
         <source>Adding a state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
         <source>to begin</source>
         <translation>pour commencer</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
         <source>drawing a transition</source>
         <translation>à dessiner une transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
         <source>from this state</source>
         <translation>depuis cet état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="121"/>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="118"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="129"/>
         <source>transition edition</source>
         <translation>l&apos;édition de la transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="177"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="174"/>
         <source>Machine tab is used to edit machine name and variables</source>
         <translation>L&apos;onglet Machine est utilisé pour éditer le nom de la machine et ses variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="214"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="211"/>
         <source>on a first state</source>
         <translation>sur un premier état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="213"/>
         <source>Then</source>
         <translation>Puis</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="213"/>
         <source>on a second state</source>
         <translation>sur un second état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="213"/>
         <source>the target of the transition</source>
         <translation>la cible de la transition</translation>
     </message>
@@ -1823,17 +1791,17 @@
 <context>
     <name>MachineXmlWriter</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="282"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="292"/>
         <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
         <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="286"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="296"/>
         <source>Specified directory doesn&apos;t exist.</source>
         <translation>Le dossier spécifié n&apos;existe pas.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="293"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="303"/>
         <source>Unable to open file in write mode.</source>
         <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>
@@ -2007,29 +1975,61 @@
 <context>
     <name>SceneWidget</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="63"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="60"/>
         <source>Zoom</source>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="72"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="69"/>
         <source>Zoom in</source>
         <translation>Zoom avant</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="73"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="70"/>
         <source>Reset zoom</source>
         <translation>Réinitialiser le zoom</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="74"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="71"/>
         <source>Zoom out</source>
         <translation>Zoom arrière</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="75"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="72"/>
         <source>Zoom to fit machine</source>
         <translation>Ajuster le zoom à la taille de la machine</translation>
+    </message>
+</context>
+<context>
+    <name>SimulatedFsm</name>
+    <message>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="233"/>
+        <source>Warning! There are multiple active transitions going out the current state!</source>
+        <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="234"/>
+        <source>This means your FSM is wrong by construction. This should be fixed.</source>
+        <translation>Cela signifie que votre FSM est erronée. Ceci devrait être corrigé.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="235"/>
+        <source>For current simulation, just choose the target state in the following list:</source>
+        <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
+    </message>
+</context>
+<context>
+    <name>SimulatedFsmState</name>
+    <message>
+        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="143"/>
+        <source>State</source>
+        <translation>État</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="147"/>
+        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="164"/>
+        <source>Set active</source>
+        <translation>Activer</translation>
     </message>
 </context>
 <context>
@@ -2100,38 +2100,38 @@
 <context>
     <name>SimulatorTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="53"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="50"/>
         <source>Simulator</source>
         <translation>Simulateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="59"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="157"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="149"/>
         <source>Start simulation</source>
         <translation>Démarrer la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="66"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="63"/>
         <source>Simulation configuration</source>
         <translation>Configuration de la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="135"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="132"/>
         <source>No initial state!</source>
         <translation>Aucun état initial !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="105"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="102"/>
         <source>End simulation</source>
         <translation>Mettre fin à la simulation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="110"/>
         <source>Time manager</source>
         <translation>Gestion du temps</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="123"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortab.cpp" line="120"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
@@ -2532,67 +2532,67 @@
 <context>
     <name>VerifierTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="50"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="48"/>
         <source>Verifier tool</source>
         <translation>Outil de vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="58"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="56"/>
         <source>Check machine</source>
         <translation>Vérifier la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="72"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="70"/>
         <source>No errors!</source>
         <translation>Aucune erreur !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="146"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="144"/>
         <source>Clear verification</source>
         <translation>Effacer la vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="54"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="52"/>
         <source>Check for VHDL export restrictions</source>
         <translation>Vérifier les restrictions d&apos;export VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="81"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="79"/>
         <source>The following issues were found:</source>
         <translation>Les problèmes suivants ont été trouvés :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="130"/>
         <source>Issues in red are blocking for the machine to work.</source>
         <translation>Les problèmes en rouge sont bloquants pour le fonctionnement de la machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="136"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="134"/>
         <source>Issues in green are not machine errors but have restriction in StateS.</source>
         <translation>Les problèmes en vert ne sont pas des erreurs de la machine mais ont des restrictions dans StateS.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="138"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="136"/>
         <source>Yellow highlighted issues can be double-clicked for more details on the error.</source>
         <translation>Vous pouvez double-cliquer sur les erreurs surlignées en jaune pour obtenir plus de détails sur l&apos;erreur.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="143"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="141"/>
         <source>Hint</source>
         <translation>Astuce</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="190"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="188"/>
         <source>Details on error</source>
         <translation>Détails sur l&apos;erreur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="134"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="132"/>
         <source>Issues in blue won&apos;t block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.</source>
         <translation>Les problèmes en bleu ne bloqueront pas le fonctionnement de la machine, mais sont des erreurs structurelles qui mènent à un comportement non défini, et doivent donc être corrigées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="188"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="186"/>
         <source>Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
         <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
     </message>

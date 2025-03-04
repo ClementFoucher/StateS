@@ -35,7 +35,7 @@
 #include "machine.h"
 #include "equationeditor.h"
 #include "contextmenu.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmtransition.h"
 #include "machinemanager.h"
 #include "graphicmachine.h"
 #include "fsmundocommand.h"
@@ -54,7 +54,7 @@ ConditionEditor::ConditionEditor(componentId_t transitionId, QWidget* parent) :
 	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(transitionId));
 	if (transition == nullptr) return;
 
-	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	auto graphicTransition = dynamic_cast<GraphicFsmTransition*>(graphicMachine->getGraphicComponent(transitionId));
 	if (graphicTransition == nullptr) return;
 
 
@@ -171,7 +171,7 @@ void ConditionEditor::updateContent()
 	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
 	if (transition == nullptr) return;
 
-	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	auto graphicTransition = dynamic_cast<GraphicFsmTransition*>(graphicMachine->getGraphicComponent(transitionId));
 	if (graphicTransition == nullptr) return;
 
 
@@ -247,7 +247,7 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 	auto graphicMachine = machineManager->getGraphicMachine();
 	if (graphicMachine == nullptr) return;
 
-	auto graphicTransition = dynamic_cast<FsmGraphicTransition*>(graphicMachine->getGraphicComponent(transitionId));
+	auto graphicTransition = dynamic_cast<GraphicFsmTransition*>(graphicMachine->getGraphicComponent(transitionId));
 	if (graphicTransition == nullptr) return;
 
 

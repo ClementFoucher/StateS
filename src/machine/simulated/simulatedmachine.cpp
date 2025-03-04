@@ -20,19 +20,19 @@
  */
 
 // Current class header
-#include "machinesimulator.h"
+#include "simulatedmachine.h"
 
 // StateS classes
 #include "clock.h"
 #include "simulatedcomponent.h"
 
 
-MachineSimulator::MachineSimulator()
+SimulatedMachine::SimulatedMachine()
 {
 	this->clock = shared_ptr<Clock>(new Clock());
 }
 
-MachineSimulator::~MachineSimulator()
+SimulatedMachine::~SimulatedMachine()
 {
 	auto components = this->simulatedComponents.values();
 	for (auto component : components)
@@ -41,39 +41,39 @@ MachineSimulator::~MachineSimulator()
 	}
 }
 
-shared_ptr<Clock> MachineSimulator::getClock() const
+shared_ptr<Clock> SimulatedMachine::getClock() const
 {
 	return this->clock;
 }
 
-void MachineSimulator::reset()
+void SimulatedMachine::reset()
 {
 	this->clock->reset();
 }
 
-void MachineSimulator::doStep()
+void SimulatedMachine::doStep()
 {
 	this->clock->nextStep();
 }
 
-void MachineSimulator::start(uint period)
+void SimulatedMachine::start(uint period)
 {
 	this->clock->start(period);
 	emit this->autoSimulationToggledEvent(true);
 }
 
-void MachineSimulator::suspend()
+void SimulatedMachine::suspend()
 {
 	this->clock->stop();
 	emit this->autoSimulationToggledEvent(false);
 }
 
-const QList<SimulatedComponent*> MachineSimulator::getSimulatedComponents() const
+const QList<SimulatedComponent*> SimulatedMachine::getSimulatedComponents() const
 {
 	return this->simulatedComponents.values();
 }
 
-SimulatedComponent* MachineSimulator::getComponent(componentId_t componentId) const
+SimulatedComponent* SimulatedMachine::getComponent(componentId_t componentId) const
 {
 	if (this->simulatedComponents.contains(componentId))
 	{
@@ -85,22 +85,22 @@ SimulatedComponent* MachineSimulator::getComponent(componentId_t componentId) co
 	}
 }
 
-void MachineSimulator::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
 {
 	this->memorizedStateActionBehavior = behv;
 }
 
-void MachineSimulator::setContinuousStateActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setContinuousStateActionBehavior(SimulationBehavior_t behv)
 {
 	this->continuousStateActionBehavior = behv;
 }
 
-void MachineSimulator::setMemorizedTransitionActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setMemorizedTransitionActionBehavior(SimulationBehavior_t behv)
 {
 	this->memorizedTransitionActionBehavior = behv;
 }
 
-void MachineSimulator::setPulseTransitionActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setPulseTransitionActionBehavior(SimulationBehavior_t behv)
 {
 	this->pulseTransitionActionBehavior = behv;
 }

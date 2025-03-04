@@ -31,15 +31,15 @@
 #include "graphicvectortimeline.h"
 #include "fsm.h"
 #include "machinemanager.h"
-#include "machinesimulator.h"
-#include "fsmsimulator.h"
+#include "simulatedmachine.h"
+#include "simulatedfsm.h"
 #include "fsmstate.h"
 
 
 StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
     QWidget(parent)
 {
-	auto fsmSimulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 	if (fsmSimulator == nullptr) return;
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -68,7 +68,7 @@ StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
 
 	globalLayout->addLayout(bitsLayout);
 
-	connect(fsmSimulator.get(), &FsmSimulator::stateChangedEvent, this, &StateTimeLine::updateCurrentValue);
+	connect(fsmSimulator.get(), &SimulatedFsm::stateChangedEvent, this, &StateTimeLine::updateCurrentValue);
 
 	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &StateTimeLine::clockEventHandler);
 	connect(clock.get(), &Clock::resetGraphicEvent,        this, &StateTimeLine::resetEventHandler);
@@ -76,7 +76,7 @@ StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
 
 void StateTimeLine::clockEventHandler()
 {
-	auto fsmSimulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 	if (fsmSimulator == nullptr) return;
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -92,7 +92,7 @@ void StateTimeLine::clockEventHandler()
 
 void StateTimeLine::updateCurrentValue()
 {
-	auto fsmSimulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 	if (fsmSimulator == nullptr) return;
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());

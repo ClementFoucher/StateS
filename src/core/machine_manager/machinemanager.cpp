@@ -31,7 +31,7 @@
 #include "graphiccomponent.h"
 #include "fsm.h"
 #include "graphicfsm.h"
-#include "fsmsimulator.h"
+#include "simulatedfsm.h"
 #include "machineundocommand.h"
 
 
@@ -121,7 +121,7 @@ shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
 	return this->graphicMachine;
 }
 
-shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
+shared_ptr<SimulatedMachine> MachineManager::getMachineSimulator() const
 {
 	return this->machineSimulator;
 }
@@ -202,7 +202,7 @@ void MachineManager::setSimulationMode(SimulationMode_t newMode)
 		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
 		if (fsm != nullptr)
 		{
-			this->machineSimulator = make_shared<FsmSimulator>();
+			this->machineSimulator = make_shared<SimulatedFsm>();
 		}
 		else
 		{

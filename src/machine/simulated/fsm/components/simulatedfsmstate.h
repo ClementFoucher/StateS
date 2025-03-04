@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,40 +19,55 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMSIMULATEDTRANSITION_H
-#define FSMSIMULATEDTRANSITION_H
+#ifndef SIMULATEDFSMSTATE_H
+#define SIMULATEDFSMSTATE_H
 
 // Parents
-#include "fsmgraphictransition.h"
+#include "graphicfsmstate.h"
 #include "simulatedcomponent.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class FsmSimulatedTransition : public FsmGraphicTransition, public SimulatedComponent
+class SimulatedFsmState : public GraphicFsmState, public SimulatedComponent
 {
 	Q_OBJECT
 
 	/////
 	// Static variables
 private:
-	static const QPen inactivePen;
-	static const QPen activePen;
+	static const QBrush activeBrush;
 
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmSimulatedTransition(componentId_t logicComponentId);
-
-	virtual ~FsmSimulatedTransition() override;
+	explicit SimulatedFsmState(componentId_t logicComponentId);
+	virtual ~SimulatedFsmState() override;
 
 	/////
 	// Object functions
 public:
 	virtual void refreshDisplay() override;
 
+	void setActive(bool active);
+	bool getIsActive() const;
+
+signals:
+	void stateActiveStatusChanged();
+
+protected:
+	virtual void keyPressEvent(QKeyEvent* event)                         override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+
+private slots:
+	void treatMenu(QAction* action);
+
+	/////
+	// Object variables
+private:
+	bool isActive = false;
+
 };
 
-#endif // FSMSIMULATEDTRANSITION_H
-
+#endif // SIMULATEDFSMSTATE_H

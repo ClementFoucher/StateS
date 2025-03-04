@@ -20,25 +20,25 @@
  */
 
 // Current class header
-#include "fsmgraphictransitionneighborhood.h"
+#include "graphicfsmtransitionneighborhood.h"
 
 // StateS classes
-#include "fsmgraphicstate.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmstate.h"
+#include "graphicfsmtransition.h"
 
 
-FsmGraphicTransitionNeighborhood::FsmGraphicTransitionNeighborhood(FsmGraphicState* source, FsmGraphicState* target)
+GraphicFsmTransitionNeighborhood::GraphicFsmTransitionNeighborhood(GraphicFsmState* source, GraphicFsmState* target)
 {
 	this->source = source;
 	this->target = target;
 }
 
-void FsmGraphicTransitionNeighborhood::insertTransition(FsmGraphicTransition* transition)
+void GraphicFsmTransitionNeighborhood::insertTransition(GraphicFsmTransition* transition)
 {
 	map.insert(map.count(), transition);
 }
 
-void FsmGraphicTransitionNeighborhood::removeTransition(FsmGraphicTransition* transition)
+void GraphicFsmTransitionNeighborhood::removeTransition(GraphicFsmTransition* transition)
 {
 	int removedValueKey = map.key(transition);
 	map.remove(removedValueKey);
@@ -51,27 +51,27 @@ void FsmGraphicTransitionNeighborhood::removeTransition(FsmGraphicTransition* tr
 	}
 }
 
-const QList<FsmGraphicTransition *> FsmGraphicTransitionNeighborhood::getTransitions() const
+const QList<GraphicFsmTransition *> GraphicFsmTransitionNeighborhood::getTransitions() const
 {
 	return map.values();
 }
 
-FsmGraphicState* FsmGraphicTransitionNeighborhood::getSource() const
+GraphicFsmState* GraphicFsmTransitionNeighborhood::getSource() const
 {
 	return this->source;
 }
 
-FsmGraphicState* FsmGraphicTransitionNeighborhood::getTarget() const
+GraphicFsmState* GraphicFsmTransitionNeighborhood::getTarget() const
 {
 	return this->target;
 }
 
-int FsmGraphicTransitionNeighborhood::count() const
+int GraphicFsmTransitionNeighborhood::count() const
 {
 	return map.count();
 }
 
-int FsmGraphicTransitionNeighborhood::getTransitionNumber(FsmGraphicTransition* transition) const
+int GraphicFsmTransitionNeighborhood::getTransitionNumber(GraphicFsmTransition* transition) const
 {
 	return map.key(transition, 0);
 }

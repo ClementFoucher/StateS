@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmgraphictransition.h"
+#include "graphicfsmtransition.h"
 
 // C++ classes
 #include <math.h>
@@ -35,14 +35,14 @@ using namespace std;
 
 // States classes
 #include "machinemanager.h"
-#include "fsmgraphicstate.h"
+#include "graphicfsmstate.h"
 #include "fsmtransition.h"
-#include "fsmgraphictransitionneighborhood.h"
+#include "graphicfsmtransitionneighborhood.h"
 #include "contextmenu.h"
 #include "equation.h"
 #include "graphicfsm.h"
 #include "fsm.h"
-#include "fsmgraphicstate.h"
+#include "graphicfsmstate.h"
 #include "actionbox.h"
 #include "operand.h"
 
@@ -51,23 +51,23 @@ using namespace std;
 // Static elements
 //
 
-const qreal FsmGraphicTransition::arrowEndSize = 10;
-const qreal FsmGraphicTransition::conditionLineLength = 20;
+const qreal GraphicFsmTransition::arrowEndSize = 10;
+const qreal GraphicFsmTransition::conditionLineLength = 20;
 
-const QPen FsmGraphicTransition::defaultPen   = QPen(Qt::SolidPattern, 3);
-const QPen FsmGraphicTransition::drawingPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
-const QPen FsmGraphicTransition::underEditPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
-const QPen FsmGraphicTransition::hoverPen     = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
+const QPen GraphicFsmTransition::defaultPen   = QPen(Qt::SolidPattern, 3);
+const QPen GraphicFsmTransition::drawingPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
+const QPen GraphicFsmTransition::underEditPen = QPen(QBrush(Qt::gray, Qt::SolidPattern), 3);
+const QPen GraphicFsmTransition::hoverPen     = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 
 
-QPixmap FsmGraphicTransition::getPixmap(uint size)
+QPixmap GraphicFsmTransition::getPixmap(uint size)
 {
 	QPixmap pixmap(QSize(size, size));
 	pixmap.fill(Qt::transparent);
 
 	QPainter painter(&pixmap);
 
-	painter.setPen(FsmGraphicTransition::defaultPen);
+	painter.setPen(GraphicFsmTransition::defaultPen);
 	painter.drawLine(0, 0, size, size);
 	painter.drawLine(0, 0, size/3, 0);
 	painter.drawLine(0, 0, 0, size/3);
@@ -79,7 +79,7 @@ QPixmap FsmGraphicTransition::getPixmap(uint size)
 // Class object definition
 //
 
-FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
+GraphicFsmTransition::GraphicFsmTransition(componentId_t logicComponentId) :
     GraphicComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -104,8 +104,8 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 
 	auto sourceState = graphicFsm->getState(this->sourceStateId);
 	auto targetState = graphicFsm->getState(this->targetStateId);
-	connect(sourceState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::connectedStateMovedEventHandler);
-	connect(targetState, &FsmGraphicState::statePositionChangedEvent, this, &FsmGraphicTransition::connectedStateMovedEventHandler);
+	connect(sourceState, &GraphicFsmState::statePositionChangedEvent, this, &GraphicFsmTransition::connectedStateMovedEventHandler);
+	connect(targetState, &GraphicFsmState::statePositionChangedEvent, this, &GraphicFsmTransition::connectedStateMovedEventHandler);
 
 	this->buildChildren();
 	this->updateConditionText();
@@ -116,7 +116,7 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t logicComponentId) :
 	this->repositionChildren();
 }
 
-FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
+GraphicFsmTransition::GraphicFsmTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
 	GraphicComponent(nullId)
 {
 	if ( ( (sourceStateId != nullId) && (targetStateId != nullId) ) ||
@@ -149,13 +149,13 @@ FsmGraphicTransition::FsmGraphicTransition(componentId_t sourceStateId, componen
 	this->buildRepresentation();
 }
 
-FsmGraphicTransition::~FsmGraphicTransition()
+GraphicFsmTransition::~GraphicFsmTransition()
 {
 	delete this->conditionText;
 	delete this->actionBox;
 }
 
-void FsmGraphicTransition::refreshDisplay()
+void GraphicFsmTransition::refreshDisplay()
 {
 	// Clear
 	this->clearRepresentation();
@@ -173,17 +173,17 @@ void FsmGraphicTransition::refreshDisplay()
 	this->repositionChildren();
 }
 
-componentId_t FsmGraphicTransition::getSourceStateId() const
+componentId_t GraphicFsmTransition::getSourceStateId() const
 {
 	return this->sourceStateId;
 }
 
-componentId_t FsmGraphicTransition::getTargetStateId() const
+componentId_t GraphicFsmTransition::getTargetStateId() const
 {
 	return this->targetStateId;
 }
 
-void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
+void GraphicFsmTransition::setConditionLineSliderPosition(qreal position)
 {
 	if ( (position >= 0) && (position <= 1) )
 	{
@@ -192,32 +192,32 @@ void FsmGraphicTransition::setConditionLineSliderPosition(qreal position)
 	}
 }
 
-qreal FsmGraphicTransition::getConditionLineSliderPosition() const
+qreal GraphicFsmTransition::getConditionLineSliderPosition() const
 {
 	return this->conditionLineSliderPos;
 }
 
-QGraphicsTextItem* FsmGraphicTransition::getConditionText() const
+QGraphicsTextItem* GraphicFsmTransition::getConditionText() const
 {
 	return this->conditionText;
 }
 
-QPainterPath FsmGraphicTransition::shape() const
+QPainterPath GraphicFsmTransition::shape() const
 {
 	return this->boundingShape;
 }
 
-QRectF FsmGraphicTransition::boundingRect() const
+QRectF GraphicFsmTransition::boundingRect() const
 {
 	return this->boundingShape.boundingRect();
 }
 
-ActionBox* FsmGraphicTransition::getActionBox() const
+ActionBox* GraphicFsmTransition::getActionBox() const
 {
 	return this->actionBox;
 }
 
-void FsmGraphicTransition::setUnderEdit(bool edit)
+void GraphicFsmTransition::setUnderEdit(bool edit)
 {
 	if (edit == true)
 	{
@@ -234,7 +234,7 @@ void FsmGraphicTransition::setUnderEdit(bool edit)
 	this->repaint();
 }
 
-void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
+void GraphicFsmTransition::setDynamicState(componentId_t newDynamicStateId)
 {
 	if (newDynamicStateId == this->dynamicStateId) return;
 
@@ -243,7 +243,7 @@ void FsmGraphicTransition::setDynamicState(componentId_t newDynamicStateId)
 	this->refreshDisplay();
 }
 
-void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
+void GraphicFsmTransition::setMousePosition(const QPointF& mousePos)
 {
 	this->dynamicStateId = nullId;
 	this->mousePosition = mousePos;
@@ -251,7 +251,7 @@ void FsmGraphicTransition::setMousePosition(const QPointF& mousePos)
 	this->refreshDisplay();
 }
 
-void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+void GraphicFsmTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
 	if (this->boundingShape.contains(event->pos()) == false)
 	{
@@ -280,10 +280,10 @@ void FsmGraphicTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* even
 	menu->addAction(tr("Delete"));
 	menu->popup(event->screenPos());
 
-	connect(menu, &QMenu::triggered, this, &FsmGraphicTransition::treatMenu);
+	connect(menu, &QMenu::triggered, this, &GraphicFsmTransition::treatMenu);
 }
 
-void FsmGraphicTransition::keyPressEvent(QKeyEvent* event)
+void GraphicFsmTransition::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Menu)
 	{
@@ -308,7 +308,7 @@ void FsmGraphicTransition::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void FsmGraphicTransition::mousePressEvent(QGraphicsSceneMouseEvent* ev)
+void GraphicFsmTransition::mousePressEvent(QGraphicsSceneMouseEvent* ev)
 {
 	// We do not need to handle release and other events as mousePressEvent is either:
 	// => passed to parent class, so other events will be so
@@ -319,7 +319,7 @@ void FsmGraphicTransition::mousePressEvent(QGraphicsSceneMouseEvent* ev)
 		ev->ignore();
 }
 
-QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
+QVariant GraphicFsmTransition::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
 {
 	if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
 	{
@@ -339,27 +339,27 @@ QVariant FsmGraphicTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
 	return QGraphicsItemGroup::itemChange(change, value);
 }
 
-void FsmGraphicTransition::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+void GraphicFsmTransition::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
 	// Temporarity override current color
-	this->currentPen          = &FsmGraphicTransition::hoverPen;
-	this->currentConditionPen = &FsmGraphicTransition::hoverPen;
+	this->currentPen          = &GraphicFsmTransition::hoverPen;
+	this->currentConditionPen = &GraphicFsmTransition::hoverPen;
 
 	this->repaint();
 }
 
-void FsmGraphicTransition::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+void GraphicFsmTransition::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
 	// Restore color depending on edit mode
 	this->setUnderEdit(this->isUnderEdit);
 }
 
-void FsmGraphicTransition::connectedStateMovedEventHandler()
+void GraphicFsmTransition::connectedStateMovedEventHandler()
 {
 	this->refreshDisplay();
 }
 
-void FsmGraphicTransition::updateConditionText()
+void GraphicFsmTransition::updateConditionText()
 {
 	// Ignore this call for dummy transactions
 	if (this->currentMode != Mode_t::standardMode) return;
@@ -392,7 +392,7 @@ void FsmGraphicTransition::updateConditionText()
 	}
 }
 
-void FsmGraphicTransition::treatMenu(QAction* action)
+void GraphicFsmTransition::treatMenu(QAction* action)
 {
 	if (action->text() == tr("Change source"))
 	{
@@ -412,7 +412,7 @@ void FsmGraphicTransition::treatMenu(QAction* action)
 	}
 }
 
-void FsmGraphicTransition::clearRepresentation()
+void GraphicFsmTransition::clearRepresentation()
 {
 	delete this->arrowBody;
 	this->arrowBody = nullptr;
@@ -421,7 +421,7 @@ void FsmGraphicTransition::clearRepresentation()
 	this->selectionShape = nullptr;
 }
 
-void FsmGraphicTransition::buildRepresentation()
+void GraphicFsmTransition::buildRepresentation()
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -517,7 +517,7 @@ void FsmGraphicTransition::buildRepresentation()
 	this->repaint();
 }
 
-void FsmGraphicTransition::initializeDefaults()
+void GraphicFsmTransition::initializeDefaults()
 {
 	this->currentPen          = &defaultPen;
 	this->currentConditionPen = &defaultPen;
@@ -529,7 +529,7 @@ void FsmGraphicTransition::initializeDefaults()
 	this->setAcceptHoverEvents(true);
 }
 
-void FsmGraphicTransition::buildChildren()
+void GraphicFsmTransition::buildChildren()
 {
 	//
 	// Arrow end
@@ -552,7 +552,7 @@ void FsmGraphicTransition::buildChildren()
 	}
 }
 
-void FsmGraphicTransition::repositionChildren()
+void GraphicFsmTransition::repositionChildren()
 {
 	this->arrowEnd->setRotation(this->arrowEndAngle);
 	this->arrowEnd->setPos(this->arrowEndPosition);
@@ -574,7 +574,7 @@ void FsmGraphicTransition::repositionChildren()
 	}
 }
 
-void FsmGraphicTransition::repaint()
+void GraphicFsmTransition::repaint()
 {
 	this->arrowEnd->setPen(*this->currentPen);
 
@@ -598,7 +598,7 @@ void FsmGraphicTransition::repaint()
 	}
 }
 
-void FsmGraphicTransition::rebuildBoundingShape()
+void GraphicFsmTransition::rebuildBoundingShape()
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -693,7 +693,7 @@ void FsmGraphicTransition::rebuildBoundingShape()
 	this->boundingShape = t.map(path);
 }
 
-void FsmGraphicTransition::updateSelectionShapeDisplay()
+void GraphicFsmTransition::updateSelectionShapeDisplay()
 {
 	if (this->isSelected() == true)
 	{
@@ -713,7 +713,7 @@ void FsmGraphicTransition::updateSelectionShapeDisplay()
 	}
 }
 
-void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
+void GraphicFsmTransition::drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
 {
 	//
 	// Build arrow body
@@ -724,12 +724,12 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 	if ( ((this->currentMode == Mode_t::dynamicSourceMode) || (this->currentMode == Mode_t::dynamicTargetMode)) && (this->dynamicStateId == nullId) )
 	{
 		// Reduce line length to match space between state center and mouse position
-		straightLine.setLength(straightLine.length() - FsmGraphicState::getRadius());
+		straightLine.setLength(straightLine.length() - GraphicFsmState::getRadius());
 	}
 	else
 	{
 		// Reduce line length to match space between states
-		straightLine.setLength(straightLine.length() - 2*FsmGraphicState::getRadius());
+		straightLine.setLength(straightLine.length() - 2*GraphicFsmState::getRadius());
 	}
 
 	// Create line graphic representation
@@ -742,7 +742,7 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 	{
 		// Translation vector is based on straight line (same vector) and normalized to required translation length
 		QLineF translationVector(straightLine);
-		translationVector.setLength(FsmGraphicState::getRadius());
+		translationVector.setLength(GraphicFsmState::getRadius());
 
 		currentSourcePoint += translationVector.p2();
 	}
@@ -774,7 +774,7 @@ void FsmGraphicTransition::drawStraightTransition(QPointF currentSourcePoint, QP
 	this->setPos(currentSourcePoint);
 }
 
-void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
+void GraphicFsmTransition::drawAutoTransition(QPointF currentSourcePoint)
 {
 	//
 	// Build arrow body
@@ -799,13 +799,13 @@ void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 	}
 
 	QLineF stateCenterToArcStartVector(0, 0, 1, -1);
-	stateCenterToArcStartVector.setLength(FsmGraphicState::getRadius());
+	stateCenterToArcStartVector.setLength(GraphicFsmState::getRadius());
 
 	QLineF stateCenterToArcEndVector(0, 0, -1, -1);
-	stateCenterToArcEndVector.setLength(FsmGraphicState::getRadius());
+	stateCenterToArcEndVector.setLength(GraphicFsmState::getRadius());
 
-	qreal unitaryArcWidth  = 2*FsmGraphicState::getRadius();
-	qreal unitaryArcHeight = 2*FsmGraphicState::getRadius();
+	qreal unitaryArcWidth  = 2*GraphicFsmState::getRadius();
+	qreal unitaryArcHeight = 2*GraphicFsmState::getRadius();
 
 	QLineF stateCenterToUnitaryArcCenterVector(0, 0, 0, 2*stateCenterToArcStartVector.p2().y());
 
@@ -850,7 +850,7 @@ void FsmGraphicTransition::drawAutoTransition(QPointF currentSourcePoint)
 	this->setPos(currentSourcePoint);
 }
 
-void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
+void GraphicFsmTransition::drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -903,10 +903,10 @@ void FsmGraphicTransition::drawCurvedTransition(QPointF currentSourcePoint, QPoi
 	// Use initial C point to calculate new coordinates system
 	// Deltas indicates curve start/end positions wrt. local system (start/ends on states perimeter)
 	QLineF deltaSystemOriginVector(QPointF(0,0), sceneSystemCPoint);
-	deltaSystemOriginVector.setLength(FsmGraphicState::getRadius());
+	deltaSystemOriginVector.setLength(GraphicFsmState::getRadius());
 
 	QLineF deltaTargetVector(QPointF(0,0), sceneSystemCPoint - sceneSystemXVector.p2());
-	deltaTargetVector.setLength(FsmGraphicState::getRadius());
+	deltaTargetVector.setLength(GraphicFsmState::getRadius());
 
 	// Yes, many coordinates systems.
 	QLineF deltaSystemXVector(deltaSystemOriginVector.p2(), sceneSystemXVector.p2() + deltaTargetVector.p2());

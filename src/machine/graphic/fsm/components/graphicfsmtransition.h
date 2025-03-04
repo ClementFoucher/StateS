@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMGRAPHICTRANSITION_H
-#define FSMGRAPHICTRANSITION_H
+#ifndef GRAPHICFSMTRANSITION_H
+#define GRAPHICFSMTRANSITION_H
 
 // Parents
 #include "graphiccomponent.h"
@@ -34,7 +34,7 @@ class QAction;
 class ActionBox;
 
 
-class FsmGraphicTransition : public GraphicComponent, public QGraphicsItemGroup
+class GraphicFsmTransition : public GraphicComponent, public QGraphicsItemGroup
 {
 	Q_OBJECT
 
@@ -65,12 +65,12 @@ private:
 public:
 
 	// For persistent build of transition, we already have a logic element to represent
-	explicit FsmGraphicTransition(componentId_t logicComponentId);
+	explicit GraphicFsmTransition(componentId_t logicComponentId);
 
 	// This constructor toggles dynamic mode on target. This is used to display a temporary transition when adding/editing.
-	explicit FsmGraphicTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition);
+	explicit GraphicFsmTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition);
 
-	~FsmGraphicTransition();
+	~GraphicFsmTransition();
 
 	/////
 	// Object functions
@@ -172,5 +172,5 @@ private:
 
 };
 
-#endif // FSMGRAPHICTRANSITION_H
+#endif // GRAPHICFSMTRANSITION_H
 

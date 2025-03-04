@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmgraphicstate.h"
+#include "graphicfsmstate.h"
 
 // C++ classes
 #include <memory>
@@ -37,7 +37,7 @@ using namespace std;
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "fsmgraphictransition.h"
+#include "graphicfsmtransition.h"
 #include "fsmstate.h"
 #include "contextmenu.h"
 #include "fsm.h"
@@ -48,33 +48,33 @@ using namespace std;
 // Static elements
 //
 
-const qreal FsmGraphicState::radius = 50;
+const qreal GraphicFsmState::radius = 50;
 
-const QBrush FsmGraphicState::defaultBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
+const QBrush GraphicFsmState::defaultBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
 
-const QPen FsmGraphicState::defaultPen = QPen(Qt::SolidPattern, 3);
-const QPen FsmGraphicState::hoverPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
+const QPen GraphicFsmState::defaultPen = QPen(Qt::SolidPattern, 3);
+const QPen GraphicFsmState::hoverPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 
-qreal FsmGraphicState::getRadius()
+qreal GraphicFsmState::getRadius()
 {
-	return FsmGraphicState::radius;
+	return GraphicFsmState::radius;
 }
 
-QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
+QPixmap GraphicFsmState::getPixmap(uint size, bool isInitial, bool addArrow)
 {
 	QPixmap pixmap(QSize(size, size));
 	pixmap.fill(Qt::transparent);
 
 	QPainter painter(&pixmap);
 
-	painter.setPen(FsmGraphicState::defaultPen);
-	painter.setBrush(FsmGraphicState::defaultBrush);
-	painter.drawEllipse(QRectF(FsmGraphicState::defaultPen.width()/2, FsmGraphicState::defaultPen.width()/2, size-FsmGraphicState::defaultPen.width(), size-FsmGraphicState::defaultPen.width()));
+	painter.setPen(GraphicFsmState::defaultPen);
+	painter.setBrush(GraphicFsmState::defaultBrush);
+	painter.drawEllipse(QRectF(GraphicFsmState::defaultPen.width()/2, GraphicFsmState::defaultPen.width()/2, size-GraphicFsmState::defaultPen.width(), size-GraphicFsmState::defaultPen.width()));
 
 	if (isInitial)
 	{
-		qreal space = size/10 + FsmGraphicState::defaultPen.width();
-		painter.drawEllipse(QRectF(FsmGraphicState::defaultPen.width()/2 + space, FsmGraphicState::defaultPen.width()/2 + space, size-FsmGraphicState::defaultPen.width() - space*2, size-FsmGraphicState::defaultPen.width() - space*2));
+		qreal space = size/10 + GraphicFsmState::defaultPen.width();
+		painter.drawEllipse(QRectF(GraphicFsmState::defaultPen.width()/2 + space, GraphicFsmState::defaultPen.width()/2 + space, size-GraphicFsmState::defaultPen.width() - space*2, size-GraphicFsmState::defaultPen.width() - space*2));
 	}
 
 	if (addArrow)
@@ -90,7 +90,7 @@ QPixmap FsmGraphicState::getPixmap(uint size, bool isInitial, bool addArrow)
 // Class object definition
 //
 
-FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
+GraphicFsmState::GraphicFsmState(componentId_t logicComponentId) :
     GraphicComponent(logicComponentId),
     QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
@@ -111,12 +111,12 @@ FsmGraphicState::FsmGraphicState(componentId_t logicComponentId) :
 	this->updateActionBoxPosition();
 }
 
-FsmGraphicState::~FsmGraphicState()
+GraphicFsmState::~GraphicFsmState()
 {
 	delete this->actionBox;
 }
 
-void FsmGraphicState::refreshDisplay()
+void GraphicFsmState::refreshDisplay()
 {
 	// Clear
 	this->clearRepresentation();
@@ -130,7 +130,7 @@ void FsmGraphicState::refreshDisplay()
 	this->updateActionBoxPosition();
 }
 
-QPainterPath FsmGraphicState::shape() const
+QPainterPath GraphicFsmState::shape() const
 {
 	// All states share the same shape:
 	// store shape after building and always return the same.
@@ -152,12 +152,12 @@ QPainterPath FsmGraphicState::shape() const
 	return path;
 }
 
-QRectF FsmGraphicState::boundingRect() const
+QRectF GraphicFsmState::boundingRect() const
 {
 	return this->shape().boundingRect();
 }
 
-void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void GraphicFsmState::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 	// This disables the automatic selection shape.
 	// Thanks to Stephen Chu on StackOverflow for the trick.
@@ -166,12 +166,12 @@ void FsmGraphicState::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	QGraphicsEllipseItem::paint(painter, &myOption, widget);
 }
 
-ActionBox* FsmGraphicState::getActionBox() const
+ActionBox* GraphicFsmState::getActionBox() const
 {
 	return this->actionBox;
 }
 
-void FsmGraphicState::keyPressEvent(QKeyEvent* event)
+void GraphicFsmState::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Delete)
 	{
@@ -201,7 +201,7 @@ void FsmGraphicState::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+void GraphicFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -226,7 +226,7 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	{
 		menu->popup(event->screenPos());
 
-		connect(menu, &QMenu::triggered, this, &FsmGraphicState::treatMenu);
+		connect(menu, &QMenu::triggered, this, &GraphicFsmState::treatMenu);
 	}
 	else
 	{
@@ -234,7 +234,7 @@ void FsmGraphicState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	}
 }
 
-QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& value)
+QVariant GraphicFsmState::itemChange(GraphicsItemChange change, const QVariant& value)
 {
 	if (change == GraphicsItemChange::ItemPositionChange)
 	{
@@ -254,7 +254,7 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 			const auto selectedItems = this->scene()->selectedItems();
 			for (QGraphicsItem* selectedItem : selectedItems)
 			{
-				if (dynamic_cast<FsmGraphicTransition*>(selectedItem) != nullptr)
+				if (dynamic_cast<GraphicFsmTransition*>(selectedItem) != nullptr)
 					return (QVariant)false;
 			}
 		}
@@ -267,17 +267,17 @@ QVariant FsmGraphicState::itemChange(GraphicsItemChange change, const QVariant& 
 	return QGraphicsEllipseItem::itemChange(change, value);
 }
 
-void FsmGraphicState::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+void GraphicFsmState::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-	this->setPen(FsmGraphicState::hoverPen);
+	this->setPen(GraphicFsmState::hoverPen);
 }
 
-void FsmGraphicState::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+void GraphicFsmState::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-	this->setPen(FsmGraphicState::defaultPen);
+	this->setPen(GraphicFsmState::defaultPen);
 }
 
-void FsmGraphicState::treatMenu(QAction* action)
+void GraphicFsmState::treatMenu(QAction* action)
 {
 	if (action->text() == tr("Edit"))
 	{
@@ -302,7 +302,7 @@ void FsmGraphicState::treatMenu(QAction* action)
 	}
 }
 
-void FsmGraphicState::clearRepresentation()
+void GraphicFsmState::clearRepresentation()
 {
 	qDeleteAll(this->childItems());
 
@@ -310,7 +310,7 @@ void FsmGraphicState::clearRepresentation()
 	this->stateName      = nullptr;
 }
 
-void FsmGraphicState::buildRepresentation()
+void GraphicFsmState::buildRepresentation()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -331,7 +331,7 @@ void FsmGraphicState::buildRepresentation()
 	}
 }
 
-void FsmGraphicState::updateSelectionShapeDisplay()
+void GraphicFsmState::updateSelectionShapeDisplay()
 {
 	if (this->isSelected() == true)
 	{
@@ -351,7 +351,7 @@ void FsmGraphicState::updateSelectionShapeDisplay()
 	}
 }
 
-void FsmGraphicState::updateActionBoxPosition()
+void GraphicFsmState::updateActionBoxPosition()
 {
 	auto actionsBoxCenter = this->actionBox->getHeight() / 2;
 

@@ -30,7 +30,7 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "machinesimulator.h"
+#include "simulatedmachine.h"
 
 
 SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
@@ -60,11 +60,11 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	autoStepLayout->addWidget(autoStepUnit);
 	autoStepLayout->addWidget(this->buttonTriggerAutoStep);
 
-	connect(buttonReset,                 &QPushButton::clicked, simulator.get(), &MachineSimulator::reset);
-	connect(buttonNextStep,              &QPushButton::clicked, simulator.get(), &MachineSimulator::doStep);
+	connect(buttonReset,                 &QPushButton::clicked, simulator.get(), &SimulatedMachine::reset);
+	connect(buttonNextStep,              &QPushButton::clicked, simulator.get(), &SimulatedMachine::doStep);
 	connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,            &SimulatorTimeController::buttonLauchAutoStepClicked);
 
-	connect(simulator.get(), &MachineSimulator::autoSimulationToggledEvent, this, &SimulatorTimeController::autoSimulationToggledEventHandler);
+	connect(simulator.get(), &SimulatedMachine::autoSimulationToggledEvent, this, &SimulatorTimeController::autoSimulationToggledEventHandler);
 
 	mainLayout->addWidget(buttonReset);
 	mainLayout->addWidget(stepLabel);

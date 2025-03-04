@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINESIMULATOR_H
-#define MACHINESIMULATOR_H
+#ifndef SIMULATEDMACHINE_H
+#define SIMULATEDMACHINE_H
 
 // Parent
 #include <QObject>
@@ -38,15 +38,15 @@ class Clock;
 class SimulatedComponent;
 
 
-class MachineSimulator : public QObject
+class SimulatedMachine : public QObject
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineSimulator();
-	~MachineSimulator();
+	explicit SimulatedMachine();
+	~SimulatedMachine();
 
 	/////
 	// Object functions
@@ -85,4 +85,4 @@ protected:
 
 };
 
-#endif // MACHINESIMULATOR_H
+#endif // SIMULATEDMACHINE_H

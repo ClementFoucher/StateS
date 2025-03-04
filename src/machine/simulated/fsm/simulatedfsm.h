@@ -19,11 +19,11 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMSIMULATOR_H
-#define FSMSIMULATOR_H
+#ifndef SIMULATEDFSM_H
+#define SIMULATEDFSM_H
 
 // Parent
-#include "machinesimulator.h"
+#include "simulatedmachine.h"
 
 // Qt classes
 #include <QMap>
@@ -34,14 +34,14 @@ class QSignalMapper;
 #include "statestypes.h"
 
 
-class FsmSimulator : public MachineSimulator
+class SimulatedFsm : public SimulatedMachine
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmSimulator();
+	explicit SimulatedFsm();
 
 	/////
 	// Object functions
@@ -83,4 +83,4 @@ private:
 
 };
 
-#endif // FSMSIMULATOR_H
+#endif // SIMULATEDFSM_H

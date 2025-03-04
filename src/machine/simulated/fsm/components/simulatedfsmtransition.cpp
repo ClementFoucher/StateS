@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmsimulatedtransition.h"
+#include "simulatedfsmtransition.h"
 
 // C++ classes
 #include <math.h>
@@ -35,36 +35,36 @@ using namespace std;
 #include "fsmtransition.h"
 #include "equation.h"
 #include "fsm.h"
-#include "fsmsimulator.h"
-#include "fsmsimulatedstate.h"
+#include "simulatedfsm.h"
+#include "simulatedfsmstate.h"
 
 
 //
 // Static elements
 //
 
-const QPen FsmSimulatedTransition::activePen   = QPen(QBrush(QColor(0, 0xB0, 0), Qt::SolidPattern), 3);
-const QPen FsmSimulatedTransition::inactivePen = QPen(QBrush(Qt::red,            Qt::SolidPattern), 3);
+const QPen SimulatedFsmTransition::activePen   = QPen(QBrush(QColor(0, 0xB0, 0), Qt::SolidPattern), 3);
+const QPen SimulatedFsmTransition::inactivePen = QPen(QBrush(Qt::red,            Qt::SolidPattern), 3);
 
 
 //
 // Class object definition
 //
 
-FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
-	FsmGraphicTransition(logicComponentId),
+SimulatedFsmTransition::SimulatedFsmTransition(componentId_t logicComponentId) :
+	GraphicFsmTransition(logicComponentId),
 	SimulatedComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto simulatedFsm = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 	if (simulatedFsm == nullptr) return;
 
 	auto logicTransition = fsm->getTransition(this->logicComponentId);
 	if (logicTransition == nullptr) return;
 
-	auto sourceState = dynamic_cast<FsmSimulatedState*>(simulatedFsm->getComponent(logicTransition->getSourceStateId()));
+	auto sourceState = dynamic_cast<SimulatedFsmState*>(simulatedFsm->getComponent(logicTransition->getSourceStateId()));
 	if (sourceState == nullptr) return;
 
 	this->setFlag(QGraphicsItem::ItemIsSelectable, false);
@@ -76,29 +76,29 @@ FsmSimulatedTransition::FsmSimulatedTransition(componentId_t logicComponentId) :
 	auto condition = logicTransition->getCondition();
 	if (condition != nullptr) // nullptr is still a valid condition
 	{
-		connect(condition.get(), &Equation::equationCurrentValueChangedEvent, this, &FsmSimulatedTransition::refreshDisplay);
+		connect(condition.get(), &Equation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::refreshDisplay);
 	}
 
-	connect(sourceState, &FsmSimulatedState::stateActiveStatusChanged, this, &FsmSimulatedTransition::refreshDisplay);
+	connect(sourceState, &SimulatedFsmState::stateActiveStatusChanged, this, &SimulatedFsmTransition::refreshDisplay);
 }
 
-FsmSimulatedTransition::~FsmSimulatedTransition()
+SimulatedFsmTransition::~SimulatedFsmTransition()
 {
 
 }
 
-void FsmSimulatedTransition::refreshDisplay()
+void SimulatedFsmTransition::refreshDisplay()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto fsmSimulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 	if (fsmSimulator == nullptr) return;
 
 	auto logicTransition = fsm->getTransition(this->logicComponentId);
 	if (logicTransition == nullptr) return;
 
-	auto sourceState = dynamic_cast<FsmSimulatedState*>(fsmSimulator->getComponent(logicTransition->getSourceStateId()));
+	auto sourceState = dynamic_cast<SimulatedFsmState*>(fsmSimulator->getComponent(logicTransition->getSourceStateId()));
 	if (sourceState == nullptr) return;
 
 
@@ -130,8 +130,8 @@ void FsmSimulatedTransition::refreshDisplay()
 	}
 	else
 	{
-		this->currentPen = &FsmGraphicTransition::defaultPen;
+		this->currentPen = &GraphicFsmTransition::defaultPen;
 	}
 
-	FsmGraphicTransition::refreshDisplay();
+	GraphicFsmTransition::refreshDisplay();
 }

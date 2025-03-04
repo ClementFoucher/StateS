@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmsimulatedstate.h"
+#include "simulatedfsmstate.h"
 
 // C++ classes
 #include <memory>
@@ -37,22 +37,22 @@ using namespace std;
 #include "contextmenu.h"
 #include "fsm.h"
 #include "graphicfsm.h"
-#include "fsmsimulator.h"
+#include "simulatedfsm.h"
 
 
 //
 // Static elements
 //
 
-const QBrush FsmSimulatedState::activeBrush = QBrush(Qt::green, Qt::SolidPattern);
+const QBrush SimulatedFsmState::activeBrush = QBrush(Qt::green, Qt::SolidPattern);
 
 
 //
 // Class object definition
 //
 
-FsmSimulatedState::FsmSimulatedState(componentId_t logicComponentId) :
-	FsmGraphicState(logicComponentId),
+SimulatedFsmState::SimulatedFsmState(componentId_t logicComponentId) :
+	GraphicFsmState(logicComponentId),
 	SimulatedComponent(logicComponentId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
@@ -75,12 +75,12 @@ FsmSimulatedState::FsmSimulatedState(componentId_t logicComponentId) :
 	this->setAcceptHoverEvents(false);
 }
 
-FsmSimulatedState::~FsmSimulatedState()
+SimulatedFsmState::~SimulatedFsmState()
 {
 
 }
 
-void FsmSimulatedState::refreshDisplay()
+void SimulatedFsmState::refreshDisplay()
 {
 	if (this->isActive)
 	{
@@ -91,10 +91,10 @@ void FsmSimulatedState::refreshDisplay()
 		this->setBrush(defaultBrush);
 	}
 
-	FsmGraphicState::refreshDisplay();
+	GraphicFsmState::refreshDisplay();
 }
 
-void FsmSimulatedState::setActive(bool active)
+void SimulatedFsmState::setActive(bool active)
 {
 	this->isActive = active;
 
@@ -103,12 +103,12 @@ void FsmSimulatedState::setActive(bool active)
 	emit this->stateActiveStatusChanged();
 }
 
-bool FsmSimulatedState::getIsActive() const
+bool SimulatedFsmState::getIsActive() const
 {
 	return this->isActive;
 }
 
-void FsmSimulatedState::keyPressEvent(QKeyEvent *event)
+void SimulatedFsmState::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Menu)
 	{
@@ -131,7 +131,7 @@ void FsmSimulatedState::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-void FsmSimulatedState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+void SimulatedFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -151,7 +151,7 @@ void FsmSimulatedState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	{
 		menu->popup(event->screenPos());
 
-		connect(menu, &QMenu::triggered, this, &FsmSimulatedState::treatMenu);
+		connect(menu, &QMenu::triggered, this, &SimulatedFsmState::treatMenu);
 	}
 	else
 	{
@@ -159,11 +159,11 @@ void FsmSimulatedState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	}
 }
 
-void FsmSimulatedState::treatMenu(QAction* action)
+void SimulatedFsmState::treatMenu(QAction* action)
 {
 	if (action->text() == tr("Set active"))
 	{
-		shared_ptr<FsmSimulator> simulator = dynamic_pointer_cast<FsmSimulator>(machineManager->getMachineSimulator());
+		shared_ptr<SimulatedFsm> simulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
 		if (simulator != nullptr)
 		{
 			simulator->forceStateActivation(this->logicComponentId);

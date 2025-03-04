@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "fsmsimulator.h"
+#include "simulatedfsm.h"
 
 // Qt classes
 #include <QVBoxLayout>
@@ -36,24 +36,24 @@
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "variable.h"
-#include "fsmsimulatedstate.h"
-#include "fsmsimulatedtransition.h"
+#include "simulatedfsmstate.h"
+#include "simulatedfsmtransition.h"
 #include "actiononvariable.h"
 #include "equation.h"
 
 
-FsmSimulator::FsmSimulator() :
-    MachineSimulator()
+SimulatedFsm::SimulatedFsm() :
+    SimulatedMachine()
 {
-	connect(this->clock.get(), &Clock::clockAboutToTickEvent,    this, &FsmSimulator::clockAboutToTickEventHandler);
-	connect(this->clock.get(), &Clock::clockPrepareActionsEvent, this, &FsmSimulator::clockPrepareActionsEventHandler);
-	connect(this->clock.get(), &Clock::clockEvent,               this, &FsmSimulator::clockEventHandler);
-	connect(this->clock.get(), &Clock::resetLogicEvent,          this, &FsmSimulator::resetEventHandler);
+	connect(this->clock.get(), &Clock::clockAboutToTickEvent,    this, &SimulatedFsm::clockAboutToTickEventHandler);
+	connect(this->clock.get(), &Clock::clockPrepareActionsEvent, this, &SimulatedFsm::clockPrepareActionsEventHandler);
+	connect(this->clock.get(), &Clock::clockEvent,               this, &SimulatedFsm::clockEventHandler);
+	connect(this->clock.get(), &Clock::resetLogicEvent,          this, &SimulatedFsm::resetEventHandler);
 
 	this->reset();
 }
 
-void FsmSimulator::build()
+void SimulatedFsm::build()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -64,13 +64,13 @@ void FsmSimulator::build()
 
 	for (const auto& stateId : fsm->getAllStatesIds())
 	{
-		auto simulatedState = new FsmSimulatedState(stateId);
+		auto simulatedState = new SimulatedFsmState(stateId);
 		this->simulatedComponents[stateId] = simulatedState;
 	}
 
 	for (const auto& transitionId : fsm->getAllTransitionsIds())
 	{
-		auto simulatedTransition = new FsmSimulatedTransition(transitionId);
+		auto simulatedTransition = new SimulatedFsmTransition(transitionId);
 
 		auto graphicTransition = graphicFsm->getTransition(transitionId);
 		if (graphicTransition != nullptr)
@@ -82,7 +82,7 @@ void FsmSimulator::build()
 	}
 }
 
-void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
+void SimulatedFsm::targetStateSelectionMadeEventHandler(int i)
 {
 	delete this->targetStateSelector;
 	this->targetStateSelector = nullptr;
@@ -95,11 +95,11 @@ void FsmSimulator::targetStateSelectionMadeEventHandler(int i)
 	this->potentialTransitionsIds.clear();
 }
 
-void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
+void SimulatedFsm::forceStateActivation(componentId_t stateToActivate)
 {
 	if (this->activeStateId != nullId)
 	{
-		auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+		auto previousActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 		if (previousActiveState != nullptr)
 		{
 			previousActiveState->setActive(false);
@@ -109,7 +109,7 @@ void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 
 	this->activeStateId = stateToActivate;
 
-	auto newActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+	auto newActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
@@ -117,12 +117,12 @@ void FsmSimulator::forceStateActivation(componentId_t stateToActivate)
 	}
 }
 
-componentId_t FsmSimulator::getActiveStateId() const
+componentId_t SimulatedFsm::getActiveStateId() const
 {
 	return this->activeStateId;
 }
 
-void FsmSimulator::resetEventHandler()
+void SimulatedFsm::resetEventHandler()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -133,7 +133,7 @@ void FsmSimulator::resetEventHandler()
 	// Disable any active state
 	if (this->activeStateId != nullId)
 	{
-		auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+		auto previousActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 		if (previousActiveState != nullptr)
 		{
 			previousActiveState->setActive(false);
@@ -172,7 +172,7 @@ void FsmSimulator::resetEventHandler()
 	// ... then enable initial state which activate its actions
 	this->activeStateId = fsm->getInitialStateId();
 
-	auto newActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+	auto newActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
@@ -180,7 +180,7 @@ void FsmSimulator::resetEventHandler()
 	}
 }
 
-void FsmSimulator::clockAboutToTickEventHandler()
+void SimulatedFsm::clockAboutToTickEventHandler()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -237,7 +237,7 @@ void FsmSimulator::clockAboutToTickEventHandler()
 			choiceWindowLayout->addWidget(choiceWindowWarningText);
 
 			this->signalMapper = new QSignalMapper();
-			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &FsmSimulator::targetStateSelectionMadeEventHandler);
+			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &SimulatedFsm::targetStateSelectionMadeEventHandler);
 
 			for (int i = 0 ; i < candidateTransitions.count() ; i++)
 			{
@@ -261,7 +261,7 @@ void FsmSimulator::clockAboutToTickEventHandler()
 	}
 }
 
-void FsmSimulator::clockPrepareActionsEventHandler()
+void SimulatedFsm::clockPrepareActionsEventHandler()
 {
 	// First reset actions from the previous cycle
 	if (this->latestTransitionCrossedId != nullId)
@@ -276,7 +276,7 @@ void FsmSimulator::clockPrepareActionsEventHandler()
 	}
 }
 
-void FsmSimulator::clockEventHandler()
+void SimulatedFsm::clockEventHandler()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -302,9 +302,9 @@ void FsmSimulator::clockEventHandler()
 	}
 }
 
-void FsmSimulator::crossTransition(componentId_t transitionId)
+void SimulatedFsm::crossTransition(componentId_t transitionId)
 {
-	auto previousActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+	auto previousActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 	if (previousActiveState != nullptr)
 	{
 		previousActiveState->setActive(false);
@@ -313,14 +313,14 @@ void FsmSimulator::crossTransition(componentId_t transitionId)
 
 	this->latestTransitionCrossedId = transitionId;
 
-	auto simulatedTransition = dynamic_cast<FsmSimulatedTransition*>(this->simulatedComponents[transitionId]);
+	auto simulatedTransition = dynamic_cast<SimulatedFsmTransition*>(this->simulatedComponents[transitionId]);
 	if (simulatedTransition != nullptr)
 	{
 		this->activateTransitionActions(transitionId, false);
 		this->activeStateId = simulatedTransition->getTargetStateId();
 	}
 
-	auto newActiveState = dynamic_cast<FsmSimulatedState*>(this->simulatedComponents[this->activeStateId]);
+	auto newActiveState = dynamic_cast<SimulatedFsmState*>(this->simulatedComponents[this->activeStateId]);
 	if (newActiveState != nullptr)
 	{
 		newActiveState->setActive(true);
@@ -330,7 +330,7 @@ void FsmSimulator::crossTransition(componentId_t transitionId)
 	emit stateChangedEvent();
 }
 
-void FsmSimulator::activateStateActions(componentId_t actuatorId, bool isFirstActivation)
+void SimulatedFsm::activateStateActions(componentId_t actuatorId, bool isFirstActivation)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -366,7 +366,7 @@ void FsmSimulator::activateStateActions(componentId_t actuatorId, bool isFirstAc
 	}
 }
 
-void FsmSimulator::activateTransitionActions(componentId_t actuatorId, bool isPreparation)
+void SimulatedFsm::activateTransitionActions(componentId_t actuatorId, bool isPreparation)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -402,7 +402,7 @@ void FsmSimulator::activateTransitionActions(componentId_t actuatorId, bool isPr
 	}
 }
 
-void FsmSimulator::deactivateStateActions(componentId_t actuatorId)
+void SimulatedFsm::deactivateStateActions(componentId_t actuatorId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -417,7 +417,7 @@ void FsmSimulator::deactivateStateActions(componentId_t actuatorId)
 	}
 }
 
-void FsmSimulator::deactivateTransitionActions(componentId_t actuatorId, bool isPreparation)
+void SimulatedFsm::deactivateTransitionActions(componentId_t actuatorId, bool isPreparation)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
