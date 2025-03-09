@@ -104,7 +104,6 @@ SOURCES += \
 	src/ui/equation_editor/constantvaluesetter.cpp \
 	src/ui/equation_editor/editableequation.cpp \
 	src/ui/equation_editor/rangeextractorwidget.cpp \
-	src/ui/refined_widget/dynamiclineedit.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
 	src/ui/refined_widget/dynamictableitemdelegate.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
@@ -113,7 +112,8 @@ SOURCES += \
 	src/ui/refined_widget/labelwithclickevent.cpp \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.cpp \
 	src/ui/refined_widget/statesgraphicsview.cpp \
-	src/ui/refined_widget/lineeditwithupdownbuttons.cpp \
+	src/ui/refined_widget/editors/dynamiclineedit.cpp \
+	src/ui/refined_widget/editors/lineeditwithupdownbuttons.cpp \
 	src/ui/resource_bar/hinttab.cpp \
 	src/ui/resource_bar/abouttab.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
@@ -231,7 +231,6 @@ HEADERS += \
 	src/ui/equation_editor/inverterbar.h \
 	src/ui/equation_editor/editableequation.h \
 	src/ui/equation_editor/rangeextractorwidget.h \
-	src/ui/refined_widget/dynamiclineedit.h \
 	src/ui/refined_widget/contextmenu.h \
 	src/ui/refined_widget/dynamictableitemdelegate.h \
 	src/ui/refined_widget/reactivebutton.h \
@@ -240,7 +239,8 @@ HEADERS += \
 	src/ui/refined_widget/labelwithclickevent.h \
 	src/ui/refined_widget/statesgraphicsview.h \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.h \
-	src/ui/refined_widget/lineeditwithupdownbuttons.h \
+	src/ui/refined_widget/editors/dynamiclineedit.h \
+	src/ui/refined_widget/editors/lineeditwithupdownbuttons.h \
 	src/ui/resource_bar/hinttab.h \
 	src/ui/resource_bar/abouttab.h \
 	src/ui/resource_bar/resourcebar.h \
@@ -331,6 +331,7 @@ INCLUDEPATH += \
 	src/ui/display_area/timeline_widget \
 	src/ui/equation_editor \
 	src/ui/refined_widget \
+	src/ui/refined_widget/editors \
 	src/ui/truth_table \
 	src/ui/resource_bar \
 	src/ui/resource_bar/machine_editor_tab \
