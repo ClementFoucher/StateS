@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LINEEDITWITHUPDOWNBUTTONS_H
-#define LINEEDITWITHUPDOWNBUTTONS_H
+#ifndef LINEWITHUPDOWNBUTTONSEDITOR_H
+#define LINEWITHUPDOWNBUTTONSEDITOR_H
 
 // Parent
 #include <QWidget>
@@ -29,17 +29,17 @@
 class QIntValidator;
 
 // StateS classes
-class DynamicLineEdit;
+class DynamicLineEditor;
 
 
-class LineEditWithUpDownButtons : public QWidget
+class LineWithUpDownButtonsEditor : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent = nullptr);
+	explicit LineWithUpDownButtonsEditor(int min, int max, const QString& text, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -57,14 +57,14 @@ private slots:
 	void up();
 	void down();
 
-	void textUpdatedByUsedEventHandler(const QString& newText);
+	void textUpdatedByUserEventHandler(const QString& newText);
 
 	/////
 	// Object variables
 private:
-	DynamicLineEdit* lineEdit  = nullptr;
+	DynamicLineEditor* lineEdit  = nullptr;
 	QIntValidator*   validator = nullptr;
 
 };
 
-#endif // LINEEDITWITHUPDOWNBUTTONS_H
+#endif // LINEWITHUPDOWNBUTTONSEDITOR_H

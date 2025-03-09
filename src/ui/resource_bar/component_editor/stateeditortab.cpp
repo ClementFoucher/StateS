@@ -29,7 +29,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "fsmstate.h"
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 #include "actioneditor.h"
 #include "fsm.h"
 #include "fsmundocommand.h"
@@ -59,9 +59,9 @@ StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
 	nameEditTitle->setWordWrap(true);
 	this->layout()->addWidget(nameEditTitle);
 
-	this->textStateName = new DynamicLineEdit(state->getName(), true, this);
-	connect(this->textStateName, &DynamicLineEdit::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
-	connect(this->textStateName, &DynamicLineEdit::userCancelEvent,       this, &StateEditorTab::updateContent);
+	this->textStateName = new DynamicLineEditor(state->getName(), true, this);
+	connect(this->textStateName, &DynamicLineEditor::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
+	connect(this->textStateName, &DynamicLineEditor::userCancelEvent,       this, &StateEditorTab::updateContent);
 	this->layout()->addWidget(this->textStateName);
 
 	ActionEditor* actionEditor = new ActionEditor(stateId, tr("Actions triggered at state activation:"), this);

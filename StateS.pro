@@ -112,8 +112,8 @@ SOURCES += \
 	src/ui/refined_widget/labelwithclickevent.cpp \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.cpp \
 	src/ui/refined_widget/statesgraphicsview.cpp \
-	src/ui/refined_widget/editors/dynamiclineedit.cpp \
-	src/ui/refined_widget/editors/lineeditwithupdownbuttons.cpp \
+	src/ui/refined_widget/editors/dynamiclineeditor.cpp \
+	src/ui/refined_widget/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/resource_bar/hinttab.cpp \
 	src/ui/resource_bar/abouttab.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
@@ -239,8 +239,8 @@ HEADERS += \
 	src/ui/refined_widget/labelwithclickevent.h \
 	src/ui/refined_widget/statesgraphicsview.h \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.h \
-	src/ui/refined_widget/editors/dynamiclineedit.h \
-	src/ui/refined_widget/editors/lineeditwithupdownbuttons.h \
+	src/ui/refined_widget/editors/dynamiclineeditor.h \
+	src/ui/refined_widget/editors/linewithupdownbuttonseditor.h \
 	src/ui/resource_bar/hinttab.h \
 	src/ui/resource_bar/abouttab.h \
 	src/ui/resource_bar/resourcebar.h \

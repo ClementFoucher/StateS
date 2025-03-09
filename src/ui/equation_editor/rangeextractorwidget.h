@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@ using namespace std;
 class QLabel;
 
 // StateS classes
-class LineEditWithUpDownButtons;
+class LineWithUpDownButtonsEditor;
 class Equation;
 
 
@@ -76,8 +76,8 @@ private:
 	QLabel* rangeLText = nullptr;
 	QLabel* rangeRText = nullptr;
 
-	LineEditWithUpDownButtons* rangeLEditor = nullptr;
-	LineEditWithUpDownButtons* rangeREditor = nullptr;
+	LineWithUpDownButtonsEditor* rangeLEditor = nullptr;
+	LineWithUpDownButtonsEditor* rangeREditor = nullptr;
 
 	bool editMode = false;
 

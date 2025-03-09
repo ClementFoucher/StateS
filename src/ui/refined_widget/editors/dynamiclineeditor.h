@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DYNAMICLINEEDIT_H
-#define DYNAMICLINEEDIT_H
+#ifndef DYNAMICLINEEDITOR_H
+#define DYNAMICLINEEDITOR_H
 
 // Parent
 #include <QLineEdit>
@@ -29,7 +29,7 @@
 class QValidator;
 
 
-class DynamicLineEdit : public QLineEdit
+class DynamicLineEditor : public QLineEdit
 {
 	Q_OBJECT
 
@@ -42,8 +42,8 @@ protected:
 	/////
 	// Constructors/destructors
 public:
-	explicit DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);
-	explicit DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent = nullptr);
+	explicit DynamicLineEditor(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);
+	explicit DynamicLineEditor(const QString& content, bool selfManaged, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -73,4 +73,4 @@ private:
 
 };
 
-#endif // DYNAMICLINEEDIT_H
+#endif // DYNAMICLINEEDITOR_H

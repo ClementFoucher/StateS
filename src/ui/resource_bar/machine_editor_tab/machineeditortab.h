@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@ using namespace std;
 // StateS classes
 class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
-class DynamicLineEdit;
+class DynamicLineEditor;
 
 
 class MachineEditorTab : public QWidget
@@ -62,7 +62,7 @@ private:
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
-	DynamicLineEdit* machineName = nullptr;
+	DynamicLineEditor* machineName = nullptr;
 
 };
 

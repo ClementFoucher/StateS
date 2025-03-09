@@ -34,7 +34,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 #include "variable.h"
 #include "dynamictableitemdelegate.h"
 #include "tablewidgetwithresizeevent.h"
@@ -555,7 +555,7 @@ void VariableListEditor::endAddVariable()
 
 	if (this->currentTableItem == this->currentVariableName)
 	{
-		DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+		DynamicLineEditor* editor = this->listDelegate->getCurentEditor();
 		finalName = editor->text();
 	}
 	else
@@ -644,7 +644,7 @@ void VariableListEditor::endRenameVariable()
 	if (machine == nullptr) return;
 
 
-	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+	DynamicLineEditor* editor = this->listDelegate->getCurentEditor();
 
 	QString finalName = editor->text();
 
@@ -679,7 +679,7 @@ void VariableListEditor::endResizeVariable()
 	if (machine == nullptr) return;
 
 
-	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+	DynamicLineEditor* editor = this->listDelegate->getCurentEditor();
 
 	uint finalSize = (uint)editor->text().toInt();
 
@@ -708,7 +708,7 @@ void VariableListEditor::endChangeVariableInitialValue()
 	if (currentVariable == nullptr) return;
 
 
-	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
+	DynamicLineEditor* editor = this->listDelegate->getCurentEditor();
 
 	LogicValue newInitialValue = LogicValue::fromString(editor->text());
 	if (newInitialValue.isNull() == true)
@@ -1013,8 +1013,8 @@ void VariableListEditor::editCurrentCell(bool erroneous)
 
 	this->variablesList->openPersistentEditor(this->currentTableItem);
 
-	DynamicLineEdit* editor = this->listDelegate->getCurentEditor();
-	connect(editor, &DynamicLineEdit::returnPressed, this, &VariableListEditor::validateCurrentEdit);
+	DynamicLineEditor* editor = this->listDelegate->getCurentEditor();
+	connect(editor, &DynamicLineEditor::returnPressed, this, &VariableListEditor::validateCurrentEdit);
 
 	// Done
 

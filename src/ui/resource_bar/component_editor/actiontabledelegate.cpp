@@ -30,7 +30,7 @@
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "actiononvariable.h"
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 
 
 ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget* parent) :
@@ -53,5 +53,5 @@ QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 
 	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
-	return new DynamicLineEdit(QString(), false, new QRegularExpressionValidator(re), parent);
+	return new DynamicLineEditor(QString(), false, new QRegularExpressionValidator(re), parent);
 }

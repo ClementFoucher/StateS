@@ -32,7 +32,7 @@
 #include "variablelisteditor.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 #include "machineundocommand.h"
 #include "machine.h"
 
@@ -50,11 +50,11 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	machineNameLabel->setAlignment(Qt::AlignCenter);
 	layout->addWidget(machineNameLabel);
 
-	this->machineName = new DynamicLineEdit(QString(), true, this);
+	this->machineName = new DynamicLineEditor(QString(), true, this);
 	this->updateMachineName();
 
-	connect(this->machineName, &DynamicLineEdit::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
-	connect(this->machineName, &DynamicLineEdit::userCancelEvent,       this, &MachineEditorTab::updateMachineName);
+	connect(this->machineName, &DynamicLineEditor::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
+	connect(this->machineName, &DynamicLineEditor::userCancelEvent,       this, &MachineEditorTab::updateMachineName);
 
 	connect(machineManager.get(), &MachineManager::machineNameChangedEvent, this, &MachineEditorTab::updateMachineName);
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,     this, &MachineEditorTab::updateMachineName);

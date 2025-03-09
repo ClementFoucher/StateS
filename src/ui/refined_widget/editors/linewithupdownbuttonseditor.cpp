@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "lineeditwithupdownbuttons.h"
+#include "linewithupdownbuttonseditor.h"
 
 // Qt classes
 #include <QHBoxLayout>
@@ -29,10 +29,10 @@
 #include <QMouseEvent>
 
 // StateS classes
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 
 
-LineEditWithUpDownButtons::LineEditWithUpDownButtons(int min, int max, const QString& text, QWidget* parent) :
+LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const QString& text, QWidget* parent) :
     QWidget(parent)
 {
 	QWidget* buttonWidget = new QWidget(this);
@@ -53,29 +53,29 @@ LineEditWithUpDownButtons::LineEditWithUpDownButtons(int min, int max, const QSt
 	int pos;
 	if (this->validator->validate(initialText, pos) != QValidator::State::Invalid)
 	{
-		this->lineEdit = new DynamicLineEdit(text, true, this);
+		this->lineEdit = new DynamicLineEditor(text, true, this);
 	}
 	else
 	{
-		this->lineEdit = new DynamicLineEdit(QString(), true, this);
+		this->lineEdit = new DynamicLineEditor(QString(), true, this);
 	}
 
 	this->lineEdit->setValidator(validator);
 	this->lineEdit->setMaximumWidth(50);
 
-	connect(buttonUp,   &QPushButton::clicked, this, &LineEditWithUpDownButtons::up);
-	connect(buttonDown, &QPushButton::clicked, this, &LineEditWithUpDownButtons::down);
+	connect(buttonUp,   &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::up);
+	connect(buttonDown, &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::down);
 
-	connect(this->lineEdit, &DynamicLineEdit::textEdited,     this, &LineEditWithUpDownButtons::textUpdatedByUsedEventHandler);
-	connect(this->lineEdit, &DynamicLineEdit::upKeyPressed,   this, &LineEditWithUpDownButtons::up);
-	connect(this->lineEdit, &DynamicLineEdit::downKeyPressed, this, &LineEditWithUpDownButtons::down);
+	connect(this->lineEdit, &DynamicLineEditor::textEdited,     this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
+	connect(this->lineEdit, &DynamicLineEditor::upKeyPressed,   this, &LineWithUpDownButtonsEditor::up);
+	connect(this->lineEdit, &DynamicLineEditor::downKeyPressed, this, &LineWithUpDownButtonsEditor::down);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(buttonWidget);
 	layout->addWidget(this->lineEdit);
 }
 
-void LineEditWithUpDownButtons::updateContent(int min, int max, const QString& text)
+void LineWithUpDownButtonsEditor::updateContent(int min, int max, const QString& text)
 {
 	delete this->validator;
 	this->validator = new QIntValidator(min, max);
@@ -93,12 +93,12 @@ void LineEditWithUpDownButtons::updateContent(int min, int max, const QString& t
 	}
 }
 
-void LineEditWithUpDownButtons::edit()
+void LineWithUpDownButtonsEditor::edit()
 {
 	this->lineEdit->setFocus();
 }
 
-void LineEditWithUpDownButtons::wheelEvent(QWheelEvent* event)
+void LineWithUpDownButtonsEditor::wheelEvent(QWheelEvent* event)
 {
 	if(event->angleDelta().y() > 0)
 	{
@@ -110,7 +110,7 @@ void LineEditWithUpDownButtons::wheelEvent(QWheelEvent* event)
 	}
 }
 
-void LineEditWithUpDownButtons::up()
+void LineWithUpDownButtonsEditor::up()
 {
 	int pos;
 	QString currentText = this->lineEdit->text();
@@ -134,7 +134,7 @@ void LineEditWithUpDownButtons::up()
 	}
 }
 
-void LineEditWithUpDownButtons::down()
+void LineWithUpDownButtonsEditor::down()
 {
 	int pos;
 	QString currentText = this->lineEdit->text();
@@ -158,7 +158,7 @@ void LineEditWithUpDownButtons::down()
 	}
 }
 
-void LineEditWithUpDownButtons::textUpdatedByUsedEventHandler(const QString& newText)
+void LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler(const QString& newText)
 {
 	emit valueChanged(newText.toInt());
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QTableWidgetItem>
 
 // StateS classes
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 
 
 DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
@@ -36,7 +36,7 @@ DynamicTableItemDelegate::DynamicTableItemDelegate(QObject* parent) :
 
 QWidget* DynamicTableItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /* option */, const QModelIndex& index ) const
 {
-	this->latestEditor = new DynamicLineEdit(index.model()->data(index, Qt::EditRole).toString(), false, this->validator.get(), parent);
+	this->latestEditor = new DynamicLineEditor(index.model()->data(index, Qt::EditRole).toString(), false, this->validator.get(), parent);
 
 	return this->latestEditor;
 }
@@ -46,7 +46,7 @@ void DynamicTableItemDelegate::setEditorData(QWidget* editor, const QModelIndex&
 	// Update current editor text when requested: this function prevents losing focus on selection
 	QString content = index.model()->data(index, Qt::EditRole).toString();
 
-	DynamicLineEdit* lineEdit = static_cast<DynamicLineEdit*>(editor);
+	DynamicLineEditor* lineEdit = static_cast<DynamicLineEditor*>(editor);
 	lineEdit->setText(content);
 }
 
@@ -55,7 +55,7 @@ void DynamicTableItemDelegate::setValidator(shared_ptr<QValidator> validator)
 	this->validator = validator;
 }
 
-DynamicLineEdit* DynamicTableItemDelegate::getCurentEditor() const
+DynamicLineEditor* DynamicTableItemDelegate::getCurentEditor() const
 {
 	return this->latestEditor;
 }

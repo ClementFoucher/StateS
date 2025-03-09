@@ -27,7 +27,7 @@
 
 // StateS classes
 #include "statestypes.h"
-class DynamicLineEdit;
+class DynamicLineEditor;
 
 
 class StateEditorTab : public ComponentEditorTab
@@ -56,7 +56,7 @@ private slots:
 private:
 	componentId_t stateId = nullId;
 
-	DynamicLineEdit* textStateName = nullptr;
+	DynamicLineEditor* textStateName = nullptr;
 
 };
 

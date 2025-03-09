@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@ using namespace std;
 class QValidator;
 
 // StateS classes
-class DynamicLineEdit;
+class DynamicLineEditor;
 
 
 class DynamicTableItemDelegate  : public QItemDelegate
@@ -55,7 +55,7 @@ public:
 	// This function takes ownership of the validator
 	void setValidator(shared_ptr<QValidator> validator);
 
-	DynamicLineEdit* getCurentEditor() const;
+	DynamicLineEditor* getCurentEditor() const;
 
 	/////
 	// Object variables
@@ -63,7 +63,7 @@ private:
 	shared_ptr<QValidator> validator;
 
 	// QWidget with a parent
-	mutable DynamicLineEdit* latestEditor = nullptr;
+	mutable DynamicLineEditor* latestEditor = nullptr;
 
 };
 

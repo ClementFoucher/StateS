@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "dynamiclineedit.h"
+#include "dynamiclineeditor.h"
 
 // Qt classes
 #include <QKeyEvent>
@@ -30,22 +30,22 @@
 // Static elements
 //
 
-const QString DynamicLineEdit::editStyle  = QString("background-color: yellow; color: black;");
-const QString DynamicLineEdit::errorStyle = QString("background-color: red; color: black;");
+const QString DynamicLineEditor::editStyle  = QString("background-color: yellow; color: black;");
+const QString DynamicLineEditor::errorStyle = QString("background-color: red; color: black;");
 
 
 //
 // Class object definition
 //
 
-DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
+DynamicLineEditor::DynamicLineEditor(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
     QLineEdit(content, parent)
 {
 	this->selfManaged = selfManaged;
 
 	if (this->selfManaged)
 	{
-		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
 	}
 
 	if (validator != nullptr)
@@ -54,13 +54,13 @@ DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QVali
 	}
 }
 
-DynamicLineEdit::DynamicLineEdit(const QString& content, bool selfManaged, QWidget* parent) :
-    DynamicLineEdit(content, selfManaged, nullptr, parent)
+DynamicLineEditor::DynamicLineEditor(const QString& content, bool selfManaged, QWidget* parent) :
+	DynamicLineEditor(content, selfManaged, nullptr, parent)
 {
 
 }
 
-void DynamicLineEdit::userValidatedEventHandler()
+void DynamicLineEditor::userValidatedEventHandler()
 {
 	// For self-managed lines: go back to normal mode on edit end.
 	this->resetView();
@@ -69,43 +69,43 @@ void DynamicLineEdit::userValidatedEventHandler()
 	emit newTextAvailableEvent(this->text());
 }
 
-void DynamicLineEdit::markAsErroneous()
+void DynamicLineEditor::markAsErroneous()
 {
 	this->erroneous = true;
-	this->setStyleSheet(DynamicLineEdit::errorStyle);
+	this->setStyleSheet(DynamicLineEditor::errorStyle);
 
 	// When erroneous, force focus to continue edit
 	this->setFocus();
 }
 
-void DynamicLineEdit::resetView()
+void DynamicLineEditor::resetView()
 {
 	this->erroneous = false;
 	this->setModified(false);
 	if (this->selfManaged)
 	{
-		disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+		disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
 	}
 	this->clearFocus();
 	if (this->selfManaged)
 	{
-		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEdit::userValidatedEventHandler);
+		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
 	}
 
 	this->setStyleSheet( QString() );
 }
 
-void DynamicLineEdit::focusInEvent(QFocusEvent* event)
+void DynamicLineEditor::focusInEvent(QFocusEvent* event)
 {
 	if (!erroneous)
 	{
-		this->setStyleSheet(DynamicLineEdit::editStyle);
+		this->setStyleSheet(DynamicLineEditor::editStyle);
 	}
 
 	QLineEdit::focusInEvent(event);
 }
 
-void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
+void DynamicLineEditor::keyPressEvent(QKeyEvent* event)
 {
 	bool transmitEvent = true;
 
@@ -129,7 +129,7 @@ void DynamicLineEdit::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void DynamicLineEdit::keyReleaseEvent(QKeyEvent* event)
+void DynamicLineEditor::keyReleaseEvent(QKeyEvent* event)
 {
 	bool transmitEvent = true;
 

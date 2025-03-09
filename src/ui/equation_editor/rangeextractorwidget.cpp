@@ -28,7 +28,7 @@
 #include <QMouseEvent>
 
 // StateS classes
-#include "lineeditwithupdownbuttons.h"
+#include "linewithupdownbuttonseditor.h"
 #include "equation.h"
 #include "operand.h"
 
@@ -294,25 +294,25 @@ void RangeExtractorWidget::reset()
 
 			if (l_equation->getRangeR() != -1)
 			{
-				this->rangeLEditor = new LineEditWithUpDownButtons(l_equation->getRangeR()+1, variableSize-1, text);
+				this->rangeLEditor = new LineWithUpDownButtonsEditor(l_equation->getRangeR()+1, variableSize-1, text);
 				layout->addWidget(this->rangeLEditor);
 
 				label = new QLabel("..");
 				layout->addWidget(label);
 
 				text = QString::number(l_equation->getRangeR());
-				this->rangeREditor = new LineEditWithUpDownButtons(0, l_equation->getRangeL()-1, text);
+				this->rangeREditor = new LineWithUpDownButtonsEditor(0, l_equation->getRangeL()-1, text);
 				layout->addWidget(this->rangeREditor);
 
-				connect(this->rangeREditor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::rangeRChanged);
+				connect(this->rangeREditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeExtractorWidget::rangeRChanged);
 			}
 			else
 			{
-				this->rangeLEditor = new LineEditWithUpDownButtons(0, variableSize-1, text);
+				this->rangeLEditor = new LineWithUpDownButtonsEditor(0, variableSize-1, text);
 				layout->addWidget(this->rangeLEditor);
 			}
 
-			connect(this->rangeLEditor, &LineEditWithUpDownButtons::valueChanged, this, &RangeExtractorWidget::rangeLChanged);
+			connect(this->rangeLEditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeExtractorWidget::rangeLChanged);
 		}
 	}
 	else
