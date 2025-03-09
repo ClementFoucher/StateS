@@ -1,23 +1,20 @@
-
 ***********************************************
 * Expected Features in Future StateS Versions *
 ***********************************************
 
-
 These features will be implemented... some day.
-
 
 ** Interface **
 
-- Full rebuild of simulation window, current behavior is too basic,
-- Support of hexadecimal notation for bit vector signals,
-- Allow complex path for transitions display.
-
+- Full rebuild of simulation timeline, current behavior is too basic,
+- Support hexadecimal notation for bit vector variables,
+- Allow custom path for graphic transitions instead of only straight lines and Bezier.
 
 ** Core **
 
-- Integer type signals support, allowing basic operations like increment,
-- Signal to signal affectation, instead of just constant to values.
+- Apply the notion of memorized variable to the variable itself instead of determining if from the action type,
+- Integer type variables support,
+- Variable to variable affectation, instead of just constant.
 
 
 ** Long-term **
