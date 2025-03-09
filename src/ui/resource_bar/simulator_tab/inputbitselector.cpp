@@ -22,10 +22,6 @@
 // Current class header
 #include "inputbitselector.h"
 
-// C++classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QHBoxLayout>
 #include <QStyle>
@@ -33,17 +29,17 @@ using namespace std;
 
 // StateS classes
 #include "machinemanager.h"
-#include "machine.h"
-#include "variable.h"
+#include "simulatedmachine.h"
+#include "simulatedvariable.h"
 
 
-InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget *parent) :
+InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget* parent) :
     QFrame(parent)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variableToCommand = machine->getVariable(variableToCommandId);
+	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
 	if (variableToCommand == nullptr) return;
 
 
@@ -58,7 +54,7 @@ InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNu
 
 	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
 
-	connect(variableToCommand.get(), &Variable::variableCurrentValueChangedEvent, this, &InputBitSelector::variableValueChangedEventHandler);
+	connect(variableToCommand.get(), &SimulatedVariable::variableCurrentValueChangedEvent, this, &InputBitSelector::variableValueChangedEventHandler);
 }
 
 void InputBitSelector::enterEvent(QEnterEvent* event)
@@ -78,10 +74,10 @@ void InputBitSelector::leaveEvent(QEvent* event)
 
 void InputBitSelector::mousePressEvent(QMouseEvent*)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variableToCommand = machine->getVariable(variableToCommandId);
+	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
 	if (variableToCommand == nullptr) return;
 
 
@@ -109,10 +105,10 @@ void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
 
 void InputBitSelector::variableValueChangedEventHandler()
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variableToCommand = machine->getVariable(variableToCommandId);
+	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
 	if (variableToCommand == nullptr) return;
 
 

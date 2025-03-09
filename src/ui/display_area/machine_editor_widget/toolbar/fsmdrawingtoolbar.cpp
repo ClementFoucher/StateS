@@ -22,10 +22,6 @@
 // Current class header
 #include "fsmdrawingtoolbar.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
 #include "machinemanager.h"
 #include "machinebuilder.h"

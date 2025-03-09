@@ -36,6 +36,7 @@ using namespace std;
 #include "statestypes.h"
 class Variable;
 class MachineComponent;
+class MachineActuatorComponent;
 
 
 class Machine : public QObject
@@ -70,6 +71,7 @@ public:
 	QString getName() const;
 
 	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
+	shared_ptr<MachineActuatorComponent> getActuatorComponent(componentId_t componentId) const;
 
 	shared_ptr<Variable> getVariable(componentId_t variableId) const;
 

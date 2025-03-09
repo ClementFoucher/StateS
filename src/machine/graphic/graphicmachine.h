@@ -57,6 +57,8 @@ public:
 	// Graphic objects creation can't be done in constructor, as their
 	// creation requires access to the graphic machine itself.
 	virtual void build(shared_ptr<GraphicAttributes> graphicAttributes) = 0;
+	virtual void buildSimulation() = 0;
+	void clearSimulation();
 
 	// To produce a graphic scene depending on the specialized type of machine.
 	virtual GenericScene* getGraphicScene() const = 0;
@@ -65,18 +67,21 @@ public:
 	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const = 0;
 
 	GraphicComponent* getGraphicComponent(componentId_t componentId) const;
+	GraphicComponent* getSimulatedGraphicComponent(componentId_t componentId) const;
 	QGraphicsItem* getComponentVisualization() const;
 
 	virtual void removeGraphicComponent(componentId_t id);
 
 protected:
 	void addComponent(GraphicComponent* graphicComponent);
+	void addSimulatedComponent(GraphicComponent* graphicComponent);
 	const QList<GraphicComponent*> getGraphicComponents() const;
 
 	/////
 	// Object variables
 private:
-	QMap<componentId_t, GraphicComponent*> map;
+	QMap<componentId_t, GraphicComponent*> componentsMap;
+	QMap<componentId_t, GraphicComponent*> simulatedComponentsMap;
 
 };
 

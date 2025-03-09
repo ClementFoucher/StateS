@@ -22,10 +22,6 @@
 // Current class header
 #include "actiontabledelegate.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QRegularExpressionValidator>
 
@@ -33,20 +29,13 @@ using namespace std;
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "dynamiclineedit.h"
 #include "actiononvariable.h"
+#include "dynamiclineedit.h"
 
 
 ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget* parent) :
     QStyledItemDelegate(parent)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
-	if (actuator == nullptr) return;
-
-
 	this->actuatorId = actuatorId;
 }
 
@@ -55,7 +44,7 @@ QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return nullptr;
 
 	auto action = actuator->getAction(index.row());

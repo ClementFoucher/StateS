@@ -51,39 +51,25 @@ public:
 	void resize(uint newSize);
 	void setInitialValue(const LogicValue& newInitialValue);
 
-	// Simulation
-	void setCurrentValue(const LogicValue& value);
-	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR);
-	void reinitialize();
-
 	///
 	// Accessors
 
-	QString getName() const;
-	uint getSize() const;
+	QString    getName()         const;
+	uint       getSize()         const;
 	LogicValue getInitialValue() const;
-
-	// Simulation
-	LogicValue getCurrentValue() const;
 
 	/////
 	// Signals
 signals:
-	void variableInitialValueChangedEvent();
 	void variableRenamedEvent();
 	void variableResizedEvent();
-
-	// Simulation
-	void variableCurrentValueChangedEvent();
+	void variableInitialValueChangedEvent();
 
 	/////
 	// Object variables
 private:
-	QString name;
+	QString    name;
 	LogicValue initialValue;
-
-	// Simulation
-	LogicValue currentValue;
 
 };
 

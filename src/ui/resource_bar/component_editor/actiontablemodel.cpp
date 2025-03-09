@@ -22,10 +22,6 @@
 // Current class header
 #include "actiontablemodel.h"
 
-// C++ classes
-using namespace std;
-#include <memory>
-
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
@@ -40,7 +36,7 @@ ActionTableModel::ActionTableModel(componentId_t actuatorId, QObject* parent) :
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	auto actuator = machine->getActuatorComponent(actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -55,7 +51,7 @@ int ActionTableModel::columnCount(const QModelIndex& parent) const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return 0;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return 0;
 
 
@@ -77,7 +73,7 @@ int ActionTableModel::rowCount(const QModelIndex& parent) const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return 0;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return 0;
 
 
@@ -99,7 +95,7 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return QVariant();
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return QVariant();
 
 
@@ -108,16 +104,15 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		auto action = actuator->getAction(index.row());
 		if (action == nullptr) return QVariant();
 
+		auto variableId = action->getVariableActedOnId();
 
-		if (role == Qt::DisplayRole)
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) return QVariant();
+
+
+		if (index.column() == 1)
 		{
-			auto variableId = action->getVariableActedOnId();
-
-			auto variable = machine->getVariable(variableId);
-			if (variable == nullptr) return QVariant();
-
-
-			if (index.column()  == 1)
+			if (role == Qt::DisplayRole)
 			{
 				// Build name
 				QString nameText = variable->getName();
@@ -142,16 +137,30 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 
 				return QVariant(nameText);
 			}
-			else if (index.column() == 2)
+		}
+		else if (index.column() == 2)
+		{
+			if ( (role == Qt::DisplayRole) || (role == Qt::EditRole) )
 			{
 				switch (action->getActionType())
 				{
 				case ActionOnVariableType_t::reset:
+					return QVariant(LogicValue::getValue0(action->getActionSize()).toString());
+					break;
 				case ActionOnVariableType_t::set:
+					return QVariant(LogicValue::getValue1(action->getActionSize()).toString());
+					break;
 				case ActionOnVariableType_t::activeOnState:
 				case ActionOnVariableType_t::pulse:
 				case ActionOnVariableType_t::assign:
-					return QVariant(action->getActionValue().toString());
+					if (action->getActionSize() > 1)
+					{
+						return QVariant(action->getActionValue().toString());
+					}
+					else
+					{
+						return QVariant(LogicValue::getValue1(action->getActionSize()).toString());
+					}
 					break;
 				case ActionOnVariableType_t::increment:
 					return QVariant(variable->getName() + " + 1");
@@ -162,19 +171,12 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 				}
 			}
 		}
-		else if (role == Qt::EditRole)
-		{
-			if (index.column()  == 2)
-			{
-				return QVariant(action->getActionValue().toString());
-			}
-		}
 	}
 	else
 	{
 		if (role == Qt::DisplayRole)
 		{
-			// Sigle "No action" cell
+			// Single "No action" cell
 			return QVariant(tr("No action."));
 		}
 	}
@@ -191,7 +193,7 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return false;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return false;
 
 	auto action = actuator->getAction(index.row());
@@ -206,15 +208,11 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 		if (newValue.isNull() == false)
 		{
 			// Make sure new value size fits the action size
-			auto actionValue = action->getActionValue();
+			uint actionSize = action->getActionSize();
+			newValue.resize(actionSize);
 
-			if (actionValue.isNull() == false)
-			{
-				newValue.resize(actionValue.getSize());
-
-				action->setActionValue(newValue);
-				return true;
-			}
+			action->setActionValue(newValue);
+			return true;
 		}
 	}
 
@@ -228,7 +226,7 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return QVariant();
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return QVariant();
 
 
@@ -272,7 +270,7 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return Qt::NoItemFlags;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return Qt::NoItemFlags;
 
 

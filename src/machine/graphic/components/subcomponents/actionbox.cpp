@@ -22,10 +22,6 @@
 // Current class header
 #include "actionbox.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QBrush>
 #include <QPen>
@@ -74,7 +70,7 @@ void ActionBox::buildActionBox()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 	auto actions = actuator->getActions();
@@ -96,7 +92,6 @@ void ActionBox::buildActionBox()
 		if (currentVariable == nullptr) continue;
 
 
-		QString currentActionText;
 		qreal xPos = boxLeft;
 		qreal currentTextWidth = 0;
 
@@ -127,11 +122,11 @@ void ActionBox::buildActionBox()
 			xPos += memorizedText->boundingRect().width();
 		}
 
-		// Variable name
 
-		currentActionText = "<span style=\"color:black;\">";
+		QString currentActionText = "<span style=\"color:black;\">";
+
+		// Variable name
 		currentActionText += currentVariable->getName();
-		currentActionText += "</span>";
 
 		// Variable range
 
@@ -142,7 +137,6 @@ void ActionBox::buildActionBox()
 
 			if (rangeL != -1)
 			{
-				currentActionText += "<span style=\"color:black;\">";
 				currentActionText += "[";
 				currentActionText += QString::number(rangeL);
 
@@ -153,41 +147,37 @@ void ActionBox::buildActionBox()
 				}
 
 				currentActionText += "]";
-				currentActionText += "</span>";
 			}
 		}
 
 		// Action value
-
 		switch (currentAction->getActionType())
 		{
 		case ActionOnVariableType_t::set:
+			currentActionText += " ← " + LogicValue::getValue1(currentVariable->getSize()).toString();
+			break;
 		case ActionOnVariableType_t::reset:
+			currentActionText += " ← " + LogicValue::getValue0(currentVariable->getSize()).toString();
+			break;
 		case ActionOnVariableType_t::assign:
-			currentActionText += "<span style=\"color:black;\">";
-			currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
-			currentActionText += "</span>";
+			currentActionText += " ← " + currentAction->getActionValue().toString();
 			break;
 		case ActionOnVariableType_t::activeOnState:
 		case ActionOnVariableType_t::pulse:
 			if (currentAction->getActionSize() > 1)
 			{
-				currentActionText += "<span style=\"color:black;\">";
-				currentActionText += " ← " + currentAction->getActionValue().toString(); // + "<sub>b</sub>";
-				currentActionText += "</span>";
+				currentActionText += " ← " + currentAction->getActionValue().toString();
 			}
 			break;
 		case ActionOnVariableType_t::increment:
-			currentActionText += "<span style=\"color:black;\">";
 			currentActionText += " ← " + currentVariable->getName() + " + 1";
-			currentActionText += "</span>";
 			break;
 		case ActionOnVariableType_t::decrement:
-			currentActionText += "<span style=\"color:black;\">";
 			currentActionText += " ← " + currentVariable->getName() + " - 1";
-			currentActionText += "</span>";
 			break;
 		}
+
+		currentActionText += "</span>";
 
 		QGraphicsTextItem* actionText = new QGraphicsTextItem(this);
 		actionText->setHtml(currentActionText);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Clément Foucher
+ * Copyright © 2024-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,7 +40,7 @@ public:
 protected:
 	uint stepLength     = 5;
 	uint pointsPerCycle = 4;
-	uint eventDelay;
+	uint eventDelay     = 0;
 
 };
 

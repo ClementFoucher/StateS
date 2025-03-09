@@ -28,7 +28,7 @@ SimulatedComponent::SimulatedComponent(componentId_t componentId)
 	this->componentId = componentId;
 }
 
-SimulatedComponent::~SimulatedComponent()
+componentId_t SimulatedComponent::getId() const
 {
-
+	return this->componentId;
 }

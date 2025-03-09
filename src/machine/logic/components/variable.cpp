@@ -28,7 +28,6 @@ Variable::Variable(const QString& name) :
 {
 	this->name         = name;
 	this->initialValue = LogicValue::getValue0(1);
-	this->currentValue = this->initialValue;
 }
 
 Variable::Variable(componentId_t id, const QString& name) :
@@ -36,7 +35,6 @@ Variable::Variable(componentId_t id, const QString& name) :
 {
 	this->name         = name;
 	this->initialValue = LogicValue::getValue0(1);
-	this->currentValue = this->initialValue;
 }
 
 /**
@@ -63,7 +61,6 @@ void Variable::resize(uint newSize)
 	if (newSize == this->getSize()) return;
 
 
-	this->currentValue.resize(newSize);
 	this->initialValue.resize(newSize);
 
 	emit this->variableResizedEvent();
@@ -82,59 +79,6 @@ void Variable::setInitialValue(const LogicValue& newInitialValue)
 	emit this->variableInitialValueChangedEvent();
 }
 
-void Variable::setCurrentValue(const LogicValue& value)
-{
-	this->setCurrentValueSubRange(value, -1, -1);
-}
-
-void Variable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR)
-{
-	bool setOk = false;
-
-	if (rangeL < 0)
-	{
-		// Full range affectation
-		if (this->getSize() == value.getSize())
-		{
-			this->currentValue = value;
-			setOk = true;
-		}
-	}
-	else if (rangeR < 0)
-	{
-		// Single bit affectation
-		if ( (value.getSize() == 1) && ((uint)rangeL < this->getSize()) )
-		{
-			this->currentValue[rangeL] = value[0];
-			setOk = true;
-		}
-	}
-	else
-	{
-		// Sub-range affectation
-		if ( ((uint)rangeL < this->getSize()) && (rangeL > rangeR) && (value.getSize() == (uint)rangeR+rangeL+1) )
-		{
-			for (int i = rangeR ; i <= rangeL ; i++)
-			{
-				this->currentValue[i] = value[i-rangeR];
-			}
-			setOk = true;
-		}
-	}
-
-	if (setOk == true)
-	{
-		emit this->variableCurrentValueChangedEvent();
-	}
-}
-
-void Variable::reinitialize()
-{
-	this->currentValue = this->initialValue;
-
-	emit this->variableCurrentValueChangedEvent();
-}
-
 QString Variable::getName() const
 {
 	return this->name;
@@ -142,7 +86,7 @@ QString Variable::getName() const
 
 uint Variable::getSize() const
 {
-	return this->currentValue.getSize();
+	return this->initialValue.getSize();
 }
 
 LogicValue Variable::getInitialValue() const
@@ -150,7 +94,3 @@ LogicValue Variable::getInitialValue() const
 	return this->initialValue;
 }
 
-LogicValue Variable::getCurrentValue() const
-{
-	return this->currentValue;
-}

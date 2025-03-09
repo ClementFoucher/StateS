@@ -56,7 +56,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(actuatorId));
+	auto actuator = machine->getActuatorComponent(actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -165,7 +165,7 @@ void ActionEditor::contextMenuEvent(QContextMenuEvent* event)
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 	QPoint correctedPos = this->actionTable->mapFromParent(event->pos());
@@ -287,7 +287,7 @@ void ActionEditor::selectionChangedEventHandler(const QItemSelection&, const QIt
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -314,7 +314,7 @@ void ActionEditor::displayAddActionMenu() const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -351,7 +351,7 @@ void ActionEditor::removeSelectedActions()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -375,7 +375,7 @@ void ActionEditor::processAddActionMenuEventHandler(QAction* action)
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -401,7 +401,7 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 	int dataValue   = action->data().toInt();
@@ -507,7 +507,7 @@ void ActionEditor::moveSelectedActionsUp()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -553,7 +553,7 @@ void ActionEditor::moveSelectedActionsDown()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -606,7 +606,7 @@ void ActionEditor::fillFirstColumn()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -639,7 +639,7 @@ void ActionEditor::updateButtonsEnableState()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 
@@ -755,7 +755,7 @@ void ActionEditor::restoreSelection()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	auto actuator = dynamic_pointer_cast<MachineActuatorComponent>(machine->getComponent(this->actuatorId));
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
 	if (actuator == nullptr) return;
 
 

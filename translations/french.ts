@@ -221,22 +221,22 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="178"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="180"/>
         <source>No action.</source>
         <translation>Aucune action.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="241"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="239"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="245"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="243"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="249"/>
+        <location filename="../src/ui/resource_bar/component_editor/actiontablemodel.cpp" line="247"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -296,7 +296,7 @@
 <context>
     <name>BlankScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/blankscene.cpp" line="34"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/blankscene.cpp" line="35"/>
         <source>No machine loaded</source>
         <translation>Aucune machine chargée</translation>
     </message>
@@ -488,27 +488,27 @@
 <context>
     <name>FsmDrawingToolBar</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="42"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="38"/>
         <source>Mouse</source>
         <translation>Souris</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="43"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="39"/>
         <source>Deselect any building tool</source>
         <translation>Déselectionner l&apos;outil actuel</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="50"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="46"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="55"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="51"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="60"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="56"/>
         <source>Add transition</source>
         <translation>Ajouter une transition</translation>
     </message>
@@ -516,44 +516,44 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="238"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="735"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="249"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="749"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="239"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="745"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="250"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="753"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="525"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="535"/>
         <source>Delete current state?</source>
         <translation>Supprimer l&apos;état courant ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="527"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="537"/>
         <source>The connected transition will be deleted</source>
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="539"/>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="529"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="539"/>
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="531"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="541"/>
         <source>User confirmation required</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="595"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="605"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
     </message>
@@ -673,12 +673,12 @@
 <context>
     <name>FsmVhdlExport</name>
     <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="821"/>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="820"/>
         <source>Error: empty equation</source>
         <translation>Erreur : équation vide</translation>
     </message>
     <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="917"/>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="916"/>
         <source>Error: empty operand</source>
         <translation>Erreur : opérande vide</translation>
     </message>
@@ -997,37 +997,37 @@
 <context>
     <name>GraphicFsmState</name>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="214"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="207"/>
         <source>State</source>
         <translation>État</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="218"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="286"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="211"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="281"/>
         <source>Set initial</source>
         <translation>Définir comme initial</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="220"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="282"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="213"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="277"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="221"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="299"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="214"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="294"/>
         <source>Draw transition from this state</source>
         <translation>Créer une transition ayant pour origine cet état</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="222"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="290"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="215"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="285"/>
         <source>Rename</source>
         <translation>Renommer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="223"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="294"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="216"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="289"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -1035,33 +1035,47 @@
 <context>
     <name>GraphicFsmTransition</name>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="275"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="269"/>
         <source>Transition</source>
         <translation>Transition</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="277"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="397"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="271"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="391"/>
         <source>Change source</source>
         <translation>Changer de source</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="278"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="401"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="272"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="395"/>
         <source>Change target</source>
         <translation>Changer de cible</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="279"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="405"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="273"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="399"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="280"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="409"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="274"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="403"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+</context>
+<context>
+    <name>GraphicSimulatedFsmState</name>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicsimulatedfsmstate.cpp" line="126"/>
+        <source>State</source>
+        <translation>État</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicsimulatedfsmstate.cpp" line="130"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicsimulatedfsmstate.cpp" line="147"/>
+        <source>Set active</source>
+        <translation>Activer</translation>
     </message>
 </context>
 <context>
@@ -1459,12 +1473,12 @@
 <context>
     <name>InputBitSelector</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="52"/>
         <source>Bit</source>
         <translation>Bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="52"/>
         <source>of variable</source>
         <translation>de la variable</translation>
     </message>
@@ -1472,12 +1486,12 @@
 <context>
     <name>InputsSelector</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="55"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="51"/>
         <source>Click on bits from the list below to switch input value:</source>
         <translation>Cliquez sur les bits dans la liste ci-dessous pour changer leur valeur :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/inputsselector.cpp" line="71"/>
         <source>No input available on the machine</source>
         <translation>Aucune entrée disponible dans la machine</translation>
     </message>
@@ -2003,33 +2017,19 @@
 <context>
     <name>SimulatedFsm</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="233"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="208"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="234"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="209"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être corrigé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="235"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="210"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
-    </message>
-</context>
-<context>
-    <name>SimulatedFsmState</name>
-    <message>
-        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="143"/>
-        <source>State</source>
-        <translation>État</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="147"/>
-        <location filename="../src/machine/simulated/fsm/components/simulatedfsmstate.cpp" line="164"/>
-        <source>Set active</source>
-        <translation>Activer</translation>
     </message>
 </context>
 <context>
@@ -2152,7 +2152,7 @@
     <message>
         <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
         <source>or launch a timer to do steps automatically:</source>
-        <translation>ou lancez un chronomètre pour avancer automatiquement:</translation>
+        <translation>ou lancez un chronomètre pour avancer automatiquement :</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="48"/>
@@ -2176,12 +2176,12 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="56"/>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="108"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="128"/>
         <source>Launch</source>
         <translation>Démarrer</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp" line="121"/>
         <source>Suspend</source>
         <translation>Suspendre</translation>
     </message>
@@ -2235,7 +2235,7 @@
 <context>
     <name>StateTimeLine</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/statetimeline.cpp" line="55"/>
+        <location filename="../src/ui/display_area/timeline_widget/statetimeline.cpp" line="53"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -2317,53 +2317,53 @@
 <context>
     <name>TimelineWidget</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="59"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="56"/>
         <source>StateS timeline visualizer</source>
         <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="63"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="60"/>
         <source>Tools</source>
         <translation>Outils</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="67"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="64"/>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="71"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="231"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="68"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="224"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="99"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="92"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="109"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="102"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="122"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="115"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="138"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="131"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="184"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="177"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="217"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="210"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>
@@ -2407,111 +2407,111 @@
 <context>
     <name>VariableListEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="58"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="63"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="61"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="59"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="80"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="57"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="78"/>
         <source>Initial value</source>
         <translation>Valeur initiale</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="69"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="67"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="71"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="79"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="84"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="77"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="82"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="90"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="95"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="88"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="93"/>
         <source>Constant</source>
         <translation>Constante</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="91"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="89"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="100"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="122"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="120"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="123"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="121"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="228"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="226"/>
         <source>Action on variable</source>
         <translation>Action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="235"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="288"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="233"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="286"/>
         <source>Up</source>
         <translation>Monter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="242"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="295"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="240"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="293"/>
         <source>Down</source>
         <translation>Descendre</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="249"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="247"/>
         <source>Rename variable</source>
         <translation>Renommer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="253"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="251"/>
         <source>Resize variable</source>
         <translation>Modifier la taille de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="259"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="257"/>
         <source>Change variable value</source>
         <translation>Changer la valeur de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="266"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="264"/>
         <source>Delete variable</source>
         <translation>Supprimer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="270"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="306"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="937"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="268"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="304"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="935"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="281"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="279"/>
         <source>Action on all selected variables</source>
         <translation>Action sur la totalité des variables sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="302"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="300"/>
         <source>Delete variables</source>
         <translation>Supprimer les variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="933"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="931"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -2519,12 +2519,12 @@
 <context>
     <name>VariableTimeline</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/variabletimeline.cpp" line="67"/>
+        <location filename="../src/ui/display_area/timeline_widget/variabletimeline.cpp" line="70"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/variabletimeline.cpp" line="86"/>
+        <location filename="../src/ui/display_area/timeline_widget/variabletimeline.cpp" line="89"/>
         <source>Bit</source>
         <translation>Bit</translation>
     </message>

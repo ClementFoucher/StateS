@@ -23,24 +23,22 @@
 #include "equation.h"
 
 // StateS classes
-#include "statestypes.h"
 #include "operand.h"
-#include "variable.h"
 
 
 /**
  * @brief Equation::Equation
  * @param operatorType Operator of the equation.
- * @param operandCount Number of operands. This currentValue is ignored
+ * @param operandCount Number of operands. This value is ignored
  * for operators that have a fixed-size operand count.
- * Omitting this currentValue for a variable-size operator results in
+ * Omitting this value for a variable-size operator results in
  * an equation with 2 operands for variable operand functions.
  */
 Equation::Equation(OperatorType_t operatorType, int operandCount)
 {
 	this->operatorType = operatorType;
 	this->failureCause = EquationComputationFailureCause_t::nullOperand;
-	this->currentValue = LogicValue::getNullValue();
+	this->initialValue = LogicValue::getNullValue();
 
 	// Compute operand count
 	uint actualOperandCount;
@@ -114,11 +112,6 @@ uint Equation::getSize() const
 LogicValue Equation::getInitialValue() const
 {
 	return this->initialValue;
-}
-
-LogicValue Equation::getCurrentValue() const
-{
-	return this->currentValue;
 }
 
 QString Equation::getText() const
@@ -257,20 +250,6 @@ bool Equation::isInverted() const
 	}
 }
 
-// True concept here only apply to one bit results
-bool Equation::isTrue() const
-{
-	if (this->getSize() == 1)
-	{
-		if (this->currentValue == LogicValue::getValue1(1))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 shared_ptr<Operand> Equation::getOperand(uint i) const
 {
 	if (i < this->getOperandCount())
@@ -364,7 +343,7 @@ void Equation::increaseOperandCount()
 	if (doIncrease == true)
 	{
 		this->operands.append(nullptr);
-		this->computeInitialValue();
+		this->checkAndComputeInitialValue();
 		emit this->equationTextChangedEvent();
 	}
 }
@@ -399,7 +378,7 @@ void Equation::decreaseOperandCount()
 	if (doDecrease == true)
 	{
 		this->operands.removeLast();
-		this->computeInitialValue();
+		this->checkAndComputeInitialValue();
 		emit this->equationTextChangedEvent();
 	}
 }
@@ -411,7 +390,7 @@ void Equation::setRange(int rangeL, int rangeR)
 		this->rangeL = rangeL;
 		this->rangeR = rangeR;
 
-		this->computeInitialValue();
+		this->checkAndComputeInitialValue();
 		emit this->equationTextChangedEvent();
 	}
 }
@@ -443,28 +422,10 @@ void Equation::doFullStackRecomputation()
 		}
 	}
 
-	this->computeInitialValue();
+	this->checkAndComputeInitialValue();
 }
 
-void Equation::computeCurrentValue()
-{
-	if (this->initialValue.isNull() == true)
-	{
-		this->currentValue = LogicValue::getNullValue();
-		return;
-	}
-
-
-	LogicValue previousValue = this->currentValue;
-	this->currentValue = this->computeValue(CurrentOrInitial_t::current);
-
-	if (previousValue != this->currentValue)
-	{
-		emit this->equationCurrentValueChangedEvent();
-	}
-}
-
-void Equation::computeInitialValue()
+void Equation::checkAndComputeInitialValue()
 {
 	bool doCompute = true;
 
@@ -552,7 +513,8 @@ void Equation::computeInitialValue()
 	LogicValue previousValue = this->initialValue;
 	if (doCompute == true)
 	{
-		this->initialValue = this->computeValue(CurrentOrInitial_t::initial);
+		this->failureCause = EquationComputationFailureCause_t::nofail;
+		this->initialValue = this->computeInitialValue();
 	}
 	else
 	{
@@ -585,7 +547,7 @@ void Equation::operandInvalidatedEventHandler()
 			}
 		}
 
-		this->computeInitialValue();
+		this->checkAndComputeInitialValue();
 		emit this->equationTextChangedEvent();
 	}
 	else // (this->operatorType == OperatorType_t::identity)
@@ -610,8 +572,7 @@ void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
 		// In case operand still has a valid pointer elsewere
 		disconnect(previousOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
 
-		disconnect(previousOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::computeInitialValue);
-		disconnect(previousOperand.get(), &Operand::operandCurrentValueChangedEvent, this, &Equation::computeCurrentValue);
+		disconnect(previousOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::checkAndComputeInitialValue);
 		disconnect(previousOperand.get(), &Operand::operandInvalidatedEvent,         this, &Equation::operandInvalidatedEventHandler);
 
 		// Clean operand
@@ -622,62 +583,30 @@ void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
 	{
 		connect(newOperand.get(), &Operand::operandTextChangedEvent, this, &Equation::equationTextChangedEvent);
 
-		connect(newOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::computeInitialValue);
-		connect(newOperand.get(), &Operand::operandCurrentValueChangedEvent, this, &Equation::computeCurrentValue);
+		connect(newOperand.get(), &Operand::operandInitialValueChangedEvent, this, &Equation::checkAndComputeInitialValue);
 		connect(newOperand.get(), &Operand::operandInvalidatedEvent,         this, &Equation::operandInvalidatedEventHandler);
 
 		// Assign operand
 		this->operands[i] = newOperand;
 	}
 
-	this->computeInitialValue();
+	this->checkAndComputeInitialValue();
 	emit this->equationTextChangedEvent();
-
-	// As constants current value never change, their only chance of being evaluated is now
-	if ( (newOperand != nullptr) && (newOperand->getSource() == OperandSource_t::constant) )
-	{
-		this->computeCurrentValue();
-	}
 }
 
-LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
+LogicValue Equation::computeInitialValue()
 {
-	this->failureCause = EquationComputationFailureCause_t::nofail;
-
 	LogicValue computedValue;
 	switch (this->operatorType)
 	{
 	case OperatorType_t::notOp:
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			computedValue = ! ( this->operands[0]->getCurrentValue() );
-		}
-		else
-		{
-			computedValue = ! ( this->operands[0]->getInitialValue() );
-		}
-		break;
 	case OperatorType_t::identity:
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			computedValue = this->operands[0]->getCurrentValue();
-		}
-		else
-		{
-			computedValue = this->operands[0]->getInitialValue();
-		}
+		computedValue = this->operands[0]->getInitialValue();
 		break;
 	case OperatorType_t::equalOp:
 	{
 		LogicValue oneBitResult(1);
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			oneBitResult[0] = ((this->operands[0]->getCurrentValue() == this->operands[1]->getCurrentValue()));
-		}
-		else
-		{
-			oneBitResult[0] = ((this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue()));
-		}
+		oneBitResult[0] = ((this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue()));
 
 		computedValue = oneBitResult;
 	}
@@ -685,14 +614,7 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 	case OperatorType_t::diffOp:
 	{
 		LogicValue oneBitResult(1);
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			oneBitResult[0] = ((this->operands[0]->getCurrentValue() != this->operands[1]->getCurrentValue()));
-		}
-		else
-		{
-			oneBitResult[0] = ((this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue()));
-		}
+		oneBitResult[0] = ((this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue()));
 
 		computedValue = oneBitResult;
 	}
@@ -702,15 +624,7 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 		{
 			int range = this->rangeL - this->rangeR + 1;
 			LogicValue subVector(range);
-			LogicValue originalValue;
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				originalValue = this->operands[0]->getCurrentValue();
-			}
-			else
-			{
-				originalValue = this->operands[0]->getInitialValue();
-			}
+			LogicValue originalValue = this->operands[0]->getInitialValue();
 
 			for (int i = 0 ; i < range ; i++)
 			{
@@ -722,18 +636,11 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 		else
 		{
 			auto operand = this->operands[0];
-			LogicValue operandValue;
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				operandValue = operand->getCurrentValue();
-			}
-			else
-			{
-				operandValue = operand->getInitialValue();
-			}
+			LogicValue operandValue = operand->getInitialValue();
 
 			LogicValue result(1);
 			result[0] = operandValue[rangeL];
+
 			computedValue = result;
 		}
 		break;
@@ -742,15 +649,7 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 		int sizeCount = 0;
 		for (auto& currentOperand : this->operands)
 		{
-			LogicValue currentOperandValue;
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				currentOperandValue = currentOperand->getCurrentValue();
-			}
-			else
-			{
-				currentOperandValue = currentOperand->getInitialValue();
-			}
+			LogicValue currentOperandValue = currentOperand->getInitialValue();
 
 			sizeCount += currentOperandValue.getSize();
 		}
@@ -760,26 +659,11 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 		int currentBit = sizeCount - 1;
 		for (auto& currentOperand : this->operands)
 		{
-			LogicValue currentOperandValue;
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				currentOperandValue = currentOperand->getCurrentValue();
-			}
-			else
-			{
-				currentOperandValue = currentOperand->getInitialValue();
-			}
+			LogicValue currentOperandValue = currentOperand->getInitialValue();
 
 			for (int i = currentOperandValue.getSize()-1 ; i >= 0 ; i--)
 			{
-				if (currentOrInitial == CurrentOrInitial_t::current)
-				{
-					concatVector[currentBit] = currentOperand->getCurrentValue()[i];
-				}
-				else
-				{
-					concatVector[currentBit] = currentOperand->getInitialValue()[i];
-				}
+				concatVector[currentBit] = currentOperand->getInitialValue()[i];
 				currentBit--;
 			}
 		}
@@ -791,32 +675,13 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 	case OperatorType_t::nandOp:
 	{
 		auto operand = this->getOperand(0);
-		uint operandsSize;
-
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			operandsSize = operand->getCurrentValue().getSize();
-		}
-		else
-		{
-			operandsSize = operand->getInitialValue().getSize();
-		}
+		uint operandsSize = operand->getInitialValue().getSize();
 
 		LogicValue partialResult(operandsSize, true);
 		for (auto& operand : this->operands)
 		{
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				partialResult &= operand->getCurrentValue();
-			}
-			else
-			{
-				partialResult &= operand->getInitialValue();
-			}
+			partialResult &= operand->getInitialValue();
 		}
-
-		if (this->isInverted())
-			partialResult = !partialResult;
 
 		computedValue = partialResult;
 	}
@@ -826,32 +691,13 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 	case OperatorType_t::norOp:
 	{
 		auto operand = this->getOperand(0);
-		uint operandsSize;
-
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			operandsSize = operand->getCurrentValue().getSize();
-		}
-		else
-		{
-			operandsSize = operand->getInitialValue().getSize();
-		}
+		uint operandsSize = operand->getInitialValue().getSize();
 
 		LogicValue partialResult(operandsSize);
 		for (auto& operand : this->operands)
 		{
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				partialResult |= operand->getCurrentValue();
-			}
-			else
-			{
-				partialResult |= operand->getInitialValue();
-			}
+			partialResult |= operand->getInitialValue();
 		}
-
-		if (this->isInverted())
-			partialResult = !partialResult;
 
 		computedValue = partialResult;
 	}
@@ -861,36 +707,22 @@ LogicValue Equation::computeValue(CurrentOrInitial_t currentOrInitial)
 	case OperatorType_t::xnorOp:
 	{
 		auto operand = this->getOperand(0);
-		uint operandsSize;
-
-		if (currentOrInitial == CurrentOrInitial_t::current)
-		{
-			operandsSize = operand->getCurrentValue().getSize();
-		}
-		else
-		{
-			operandsSize = operand->getInitialValue().getSize();
-		}
+		uint operandsSize = operand->getInitialValue().getSize();
 
 		LogicValue partialResult(operandsSize);
 		for (auto& operand : this->operands)
 		{
-			if (currentOrInitial == CurrentOrInitial_t::current)
-			{
-				partialResult ^= operand->getCurrentValue();
-			}
-			else
-			{
-				partialResult ^= operand->getInitialValue();
-			}
+			partialResult ^= operand->getInitialValue();
 		}
-
-		if (this->isInverted())
-			partialResult = !partialResult;
 
 		computedValue = partialResult;
 	}
 	break;
+	}
+
+	if (this->isInverted())
+	{
+		computedValue = !computedValue;
 	}
 
 	return computedValue;

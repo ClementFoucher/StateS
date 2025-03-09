@@ -79,7 +79,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 		{
 			auto state = fsm->getState(stateId);
 
-			QList<shared_ptr<Equation>> equations;
+			QList<shared_ptr<const Equation>> equations;
 
 			bool errorOnTransition = false;
 

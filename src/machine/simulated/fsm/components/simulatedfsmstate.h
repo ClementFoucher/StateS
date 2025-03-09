@@ -22,51 +22,38 @@
 #ifndef SIMULATEDFSMSTATE_H
 #define SIMULATEDFSMSTATE_H
 
-// Parents
-#include "graphicfsmstate.h"
-#include "simulatedcomponent.h"
+// Parent
+#include "simulatedactuatorcomponent.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class SimulatedFsmState : public GraphicFsmState, public SimulatedComponent
+class SimulatedFsmState : public SimulatedActuatorComponent
 {
 	Q_OBJECT
-
-	/////
-	// Static variables
-private:
-	static const QBrush activeBrush;
 
 	/////
 	// Constructors/destructors
 public:
 	explicit SimulatedFsmState(componentId_t logicComponentId);
-	virtual ~SimulatedFsmState() override;
 
 	/////
 	// Object functions
 public:
-	virtual void refreshDisplay() override;
-
 	void setActive(bool active);
 	bool getIsActive() const;
 
-signals:
-	void stateActiveStatusChanged();
-
-protected:
-	virtual void keyPressEvent(QKeyEvent* event)                         override;
-	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-
-private slots:
-	void treatMenu(QAction* action);
+	QString getName() const;
+	const QList<componentId_t> getOutgoingTransitionsIds() const;
 
 	/////
 	// Object variables
 private:
 	bool isActive = false;
+
+	QString name;
+	QList<componentId_t> outgoingTransitionsIds;
 
 };
 

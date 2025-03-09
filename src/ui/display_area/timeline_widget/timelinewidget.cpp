@@ -49,9 +49,6 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	shared_ptr<SimulatedMachine> simulator = machineManager->getMachineSimulator();
-	if (simulator == nullptr) return;
-
 
 	/////
 	// Configure window
@@ -75,10 +72,6 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	this->toolBar->addAction(this->actionDetach);
 
 	/////
-	// Build clock
-	shared_ptr<Clock> clock = simulator->getClock();
-
-	/////
 	// Add timelines in a scroll area
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidgetResizable(true);
@@ -100,7 +93,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	titleClock->setAlignment(Qt::AlignCenter);
 
 	vLayout->addWidget(titleClock);
-	vLayout->addWidget(new ClockTimeLine(clock));
+	vLayout->addWidget(new ClockTimeLine());
 
 	// Inputs
 	auto inputIds = machine->getInputVariablesIds();
@@ -113,7 +106,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (auto& varId : inputIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(3, varId, clock);
+			VariableTimeline* varTL = new VariableTimeline(3, varId);
 			vLayout->addWidget(varTL);
 		}
 	}
@@ -123,11 +116,11 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	titleVariables->setAlignment(Qt::AlignCenter);
 	vLayout->addWidget(titleVariables);
 
-	vLayout->addWidget(new StateTimeLine(clock));
+	vLayout->addWidget(new StateTimeLine());
 
 	for (auto& varId : machine->getInternalVariablesIds())
 	{
-		VariableTimeline* varTL = new VariableTimeline(0, varId, clock);
+		VariableTimeline* varTL = new VariableTimeline(0, varId);
 		vLayout->addWidget(varTL);
 	}
 
@@ -142,7 +135,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 		for (auto& varId : outputsIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(0, varId, clock);
+			VariableTimeline* varTL = new VariableTimeline(0, varId);
 			vLayout->addWidget(varTL);
 		}
 	}

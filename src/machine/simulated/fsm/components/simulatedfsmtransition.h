@@ -22,35 +22,45 @@
 #ifndef SIMULATEDFSMTRANSITION_H
 #define SIMULATEDFSMTRANSITION_H
 
-// Parents
-#include "graphicfsmtransition.h"
-#include "simulatedcomponent.h"
+// Parent
+#include "simulatedactuatorcomponent.h"
+
+// C++ classes
+#include <memory>
+using namespace std;
 
 // StateS classes
 #include "statestypes.h"
+class SimulatedEquation;
 
 
-class SimulatedFsmTransition : public GraphicFsmTransition, public SimulatedComponent
+class SimulatedFsmTransition : public SimulatedActuatorComponent
 {
 	Q_OBJECT
-
-	/////
-	// Static variables
-private:
-	static const QPen inactivePen;
-	static const QPen activePen;
 
 	/////
 	// Constructors/destructors
 public:
 	explicit SimulatedFsmTransition(componentId_t logicComponentId);
 
-	virtual ~SimulatedFsmTransition() override;
-
 	/////
 	// Object functions
 public:
-	virtual void refreshDisplay() override;
+	shared_ptr<SimulatedEquation> getCondition();
+
+	componentId_t getSourceStateId() const;
+	componentId_t getTargetStateId() const;
+
+private slots:
+	void conditionChangedEventHandler();
+
+	/////
+	// Object variable
+private:
+	componentId_t sourceStateId = nullId;
+	componentId_t targetStateId = nullId;
+
+	shared_ptr<SimulatedEquation> condition;
 
 };
 

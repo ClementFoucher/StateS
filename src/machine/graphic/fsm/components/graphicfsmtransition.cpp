@@ -22,11 +22,6 @@
 // Current class header
 #include "graphicfsmtransition.h"
 
-// C++ classes
-#include <math.h>
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QGraphicsSceneContextMenuEvent>
 #include <QKeyEvent>
@@ -35,16 +30,15 @@ using namespace std;
 
 // States classes
 #include "machinemanager.h"
-#include "graphicfsmstate.h"
-#include "fsmtransition.h"
-#include "graphicfsmtransitionneighborhood.h"
-#include "contextmenu.h"
-#include "equation.h"
-#include "graphicfsm.h"
 #include "fsm.h"
+#include "graphicfsm.h"
+#include "fsmtransition.h"
 #include "graphicfsmstate.h"
-#include "actionbox.h"
+#include "graphicfsmtransitionneighborhood.h"
+#include "equation.h"
 #include "operand.h"
+#include "actionbox.h"
+#include "contextmenu.h"
 
 
 //

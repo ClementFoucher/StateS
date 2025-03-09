@@ -22,10 +22,6 @@
 // Current class header
 #include "inputvariableselector.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QHBoxLayout>
 #include <QLabel>

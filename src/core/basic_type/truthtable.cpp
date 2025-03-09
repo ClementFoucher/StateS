@@ -22,29 +22,26 @@
 // Current class header
 #include "truthtable.h"
 
-// C++ classes
-#include <math.h>
-
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"
 #include "equation.h"
-#include "logicvalue.h"
 #include "operand.h"
+#include "logicvalue.h"
 
 
-TruthTable::TruthTable(shared_ptr<Equation> equation)
+TruthTable::TruthTable(shared_ptr<const Equation> equation)
 {
-	QList<shared_ptr<Equation>> equations;
+	QList<shared_ptr<const Equation>> equations;
 	equations.append(equation);
 
 	this->buildTable(equations);
 }
 
-TruthTable::TruthTable(QList<shared_ptr<Equation> > equations)
+TruthTable::TruthTable(QList<shared_ptr<const Equation>> equations)
 {
-	this->buildTable(equations.toVector());
+	this->buildTable(equations);
 }
 
 QString TruthTable::getInputVariableText(uint column) const
@@ -108,9 +105,11 @@ uint TruthTable::getOutputCount() const
  * constants. Note that a variable can have multiple instances
  * in output list if it is present at multiple times in the equation.
  */
-const QList<componentId_t> TruthTable::extractVariables(shared_ptr<Equation> equation) const
+const QList<componentId_t> TruthTable::extractVariables(shared_ptr<const Equation> equation) const
 {
 	QList<componentId_t> list;
+	if (equation == nullptr) return list;
+
 
 	int operandCount = equation->getOperandCount();
 	for (int i = 0 ; i < operandCount ; i++)
@@ -132,77 +131,110 @@ const QList<componentId_t> TruthTable::extractVariables(shared_ptr<Equation> equ
 	return list;
 }
 
-/**
- * @brief TruthTable::buildTable builds the table.
- * @param equations
- */
-void TruthTable::buildTable(QList<shared_ptr<Equation> > equations)
+void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const
+{
+	if (equation == nullptr) return;
+
+
+	for (uint i = 0 ; i < equation->getOperandCount() ; i++)
+	{
+		auto operand = equation->getOperand(i);
+		if (operand == nullptr) continue;
+
+
+		auto operandSource = operand->getSource();
+		if (operandSource == OperandSource_t::variable)
+		{
+			if (operand->getVariableId() == variableId)
+			{
+				equation->setOperand(i, constantValue);
+			}
+		}
+		else if (operandSource == OperandSource_t::equation)
+		{
+			this->replaceVariableByConstant(operand->getEquation(), variableId, constantValue);
+		}
+	}
+}
+
+void TruthTable::buildTable(QList<shared_ptr<const Equation>> equations)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+	if (equations.count() == 0) return;
 
-	// Obtain all variables involved in all equations
+
+	// Obtain IDs of all variables involved in all equations
+	// and build output texts table
 	QList<componentId_t> variablesIdsList;
-
 	for (auto& equation : equations)
 	{
+		if (equation == nullptr) continue;
+
+
 		variablesIdsList += extractVariables(equation);
 		this->outputEquationsTexts.append(equation->getText());
 	}
 
-	// Clean list so each variable only appears once
-	QList<shared_ptr<Variable>> variablesVector;
-
+	// Get a list of variables involved in the equation
+	// and build input texts table
+	QList<shared_ptr<Variable>> variablesList;
 	for (auto& variableId : variablesIdsList)
 	{
 		auto variable = machine->getVariable(variableId);
 		if (variable == nullptr) continue;
 
 
-		if (!variablesVector.contains(variable))
+		if (variablesList.contains(variable) == false) // Make sure a variable is listed only once
 		{
-			variablesVector.append(variable);
+			variablesList.append(variable);
 			this->inputVariablesTexts.append(variable->getName());
 		}
 	}
 
-	// Count inputs bit by bit
-	uint inputCount = 0;
-	for (auto& variable : variablesVector)
+	// Compute total bits count from all inputs
+	uint inputBitsCount = 0;
+	for (auto& variable : variablesList)
 	{
-		inputCount += variable->getSize();
+		inputBitsCount += variable->getSize();
 	}
 
-	// Prepare first row
-	QList<LogicValue> currentRow;
-	for (auto& variable : variablesVector)
+	// Prepare input values table first row
+	QList<LogicValue> currentInputRow;
+	for (auto& variable : variablesList)
 	{
-		currentRow.append(LogicValue(variable->getSize(), false));
+		currentInputRow.append(LogicValue(variable->getSize(), false));
 	}
 
-	for (uint i = 0 ; i < pow(2, inputCount) ; i++)
+	// Build input and output values tables
+	for (uint currentRowRank = 0 ; currentRowRank < pow(2, inputBitsCount) ; currentRowRank++)
 	{
-		// Add current row
-		this->inputValuesTable.append(currentRow);
+		// Register current input values row
+		this->inputValuesTable.append(currentInputRow);
 
-		// Compute outputs for this row
-		for (int i = 0 ; i < variablesVector.count() ; i++)
-		{
-			variablesVector[i]->setCurrentValue(currentRow[i]);
-		}
-
-		QList<LogicValue> currentResultLine;
+		// Compute outputs values for this row
+		QList<LogicValue> currentOutputRow;
 		for (auto& equation : equations)
 		{
-			currentResultLine.append(equation->getCurrentValue());
-		}
-		this->outputValuesTable.append(currentResultLine);
+			// Build an equation in which we replace variables with constants
+			// whose value is given by the current input values row
+			auto clonedEquation = equation->clone();
+			for (int inputRank = 0 ; inputRank < variablesList.count() ; inputRank++)
+			{
+				auto variableId = variablesList.at(inputRank)->getId();
+				auto variableCurrentValue = currentInputRow[inputRank];
 
-		// Prepare next row
-		for (int i = currentRow.count() - 1 ; i >= 0 ; i--)
+				this->replaceVariableByConstant(clonedEquation, variableId, variableCurrentValue);
+			}
+			currentOutputRow.append(clonedEquation->getInitialValue());
+		}
+		this->outputValuesTable.append(currentOutputRow);
+
+		// Prepare input values table next row
+		for (int inputRank = currentInputRow.count() - 1 ; inputRank >= 0 ; inputRank--)
 		{
-			bool carry = currentRow[i].increment();
+			bool carry = currentInputRow[inputRank].increment();
 			if (carry == false)
 			{
 				break;

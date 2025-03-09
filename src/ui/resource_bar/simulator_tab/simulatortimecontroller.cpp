@@ -30,14 +30,14 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "simulatedmachine.h"
+#include "machinesimulator.h"
 
 
 SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	QWidget(parent)
 {
-	auto simulator = machineManager->getMachineSimulator();
-	if (simulator == nullptr) return;
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
 
 
 	auto mainLayout = new QVBoxLayout();
@@ -47,7 +47,7 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 
 	auto stepLabel = new QLabel(tr("Use the ") + "<b>" + tr("Do one step") + "</b>" + tr(" button") + " " + tr("or launch a timer to do steps automatically:"));
 
-	auto buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
+	this->buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
 
 	auto autoStepLayout = new QHBoxLayout();
 	auto autoStepBeginText = new QLabel(">> " + tr("Do one step every"));
@@ -60,22 +60,40 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	autoStepLayout->addWidget(autoStepUnit);
 	autoStepLayout->addWidget(this->buttonTriggerAutoStep);
 
-	connect(buttonReset,                 &QPushButton::clicked, simulator.get(), &SimulatedMachine::reset);
-	connect(buttonNextStep,              &QPushButton::clicked, simulator.get(), &SimulatedMachine::doStep);
-	connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this,            &SimulatorTimeController::buttonLauchAutoStepClicked);
+	connect(buttonReset,                 &QPushButton::clicked, this, &SimulatorTimeController::buttonResetClicked);
+	connect(this->buttonNextStep,        &QPushButton::clicked, this, &SimulatorTimeController::buttonNextStepClicked);
+	connect(this->buttonTriggerAutoStep, &QPushButton::clicked, this, &SimulatorTimeController::buttonLauchAutoStepClicked);
 
-	connect(simulator.get(), &SimulatedMachine::autoSimulationToggledEvent, this, &SimulatorTimeController::autoSimulationToggledEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::autoSimulationToggledEvent, this, &SimulatorTimeController::autoSimulationToggledEventHandler);
 
 	mainLayout->addWidget(buttonReset);
 	mainLayout->addWidget(stepLabel);
-	mainLayout->addWidget(buttonNextStep);
+	mainLayout->addWidget(this->buttonNextStep);
 	mainLayout->addLayout(autoStepLayout);
+}
+
+void SimulatorTimeController::buttonResetClicked()
+{
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
+
+
+	machineSimulator->reset();
+}
+
+void SimulatorTimeController::buttonNextStepClicked()
+{
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
+
+
+	machineSimulator->doStep();
 }
 
 void SimulatorTimeController::buttonLauchAutoStepClicked()
 {
-	auto simulator = machineManager->getMachineSimulator();
-	if (simulator == nullptr) return;
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
 
 
 	if (this->buttonTriggerAutoStep->isChecked())
@@ -83,16 +101,16 @@ void SimulatorTimeController::buttonLauchAutoStepClicked()
 		float value = this->autoStepValue->text().toFloat() * 1000;
 		if (value != 0)
 		{
-			simulator->start(value);
+			machineSimulator->start(value);
 		}
 		else
 		{
-			simulator->start(1000);
+			machineSimulator->start(1000);
 		}
 	}
 	else
 	{
-		simulator->suspend();
+		machineSimulator->suspend();
 	}
 }
 
@@ -102,10 +120,14 @@ void SimulatorTimeController::autoSimulationToggledEventHandler(bool started)
 	{
 		this->buttonTriggerAutoStep->setText(tr("Suspend"));
 		this->buttonTriggerAutoStep->setChecked(true);
+		this->buttonNextStep->setEnabled(false);
+		this->autoStepValue->setEnabled(false);
 	}
 	else
 	{
 		this->buttonTriggerAutoStep->setText(tr("Launch"));
 		this->buttonTriggerAutoStep->setChecked(false);
+		this->buttonNextStep->setEnabled(true);
+		this->autoStepValue->setEnabled(true);
 	}
 }

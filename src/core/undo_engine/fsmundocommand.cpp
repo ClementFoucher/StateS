@@ -19,10 +19,6 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Current class header
 #include "fsmundocommand.h"
 

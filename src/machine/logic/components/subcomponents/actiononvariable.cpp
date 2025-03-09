@@ -166,50 +166,10 @@ ActionOnVariableType_t ActionOnVariable::getActionType() const
 
 LogicValue ActionOnVariable::getActionValue() const
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return LogicValue::getNullValue();
-
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return LogicValue::getNullValue();
+	if (this->isActionValueEditable() == false) return LogicValue::getNullValue();
 
 
-	LogicValue publicActionValue = LogicValue::getNullValue();
-	if (this->isActionValueEditable() == true)
-	{
-		publicActionValue = this->actionValue;
-	}
-	else // (this->isActionValueEditable() == false)
-	{
-		// Implicit values
-		switch (this->actionType)
-		{
-		case ActionOnVariableType_t::reset:
-			publicActionValue = LogicValue::getValue0(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::set:
-			publicActionValue = LogicValue::getValue1(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::activeOnState: // May be implicit on one-bit variables
-			publicActionValue = LogicValue::getValue1(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::pulse: // May be implicit on one-bit variables
-			publicActionValue = LogicValue::getValue1(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::increment:
-			publicActionValue = variable->getCurrentValue();
-			publicActionValue.increment();
-			break;
-		case ActionOnVariableType_t::decrement:
-			publicActionValue = variable->getCurrentValue();
-			publicActionValue.decrement();
-			break;
-		case ActionOnVariableType_t::assign:
-			// Should not happen: only explicit values here
-			break;
-		}
-	}
-
-	return publicActionValue;
+	return this->actionValue;
 }
 
 int ActionOnVariable::getActionRangeL() const
@@ -254,16 +214,18 @@ uint ActionOnVariable::getActionSize() const
 
 bool ActionOnVariable::isActionValueEditable() const
 {
-	if (this->getActionSize() == 1)
+	switch (this->actionType)
 	{
+	case ActionOnVariableType_t::set:
+	case ActionOnVariableType_t::reset:
+	case ActionOnVariableType_t::increment:
+	case ActionOnVariableType_t::decrement:
 		return false;
-	}
-	else
-	{
-		if ( (this->actionType == ActionOnVariableType_t::set)      ||
-		     (this->actionType == ActionOnVariableType_t::reset)    ||
-		     (this->actionType == ActionOnVariableType_t::increment)||
-		     (this->actionType == ActionOnVariableType_t::decrement) )
+		break;
+	case ActionOnVariableType_t::activeOnState:
+	case ActionOnVariableType_t::pulse:
+	case ActionOnVariableType_t::assign:
+		if (this->getActionSize() == 1)
 		{
 			return false;
 		}
@@ -271,6 +233,7 @@ bool ActionOnVariable::isActionValueEditable() const
 		{
 			return true;
 		}
+		break;
 	}
 }
 
@@ -371,49 +334,6 @@ void ActionOnVariable::checkActionValue()
 	     (previousRangeR      != this->rangeR)      )
 	{
 		emit this->actionChangedEvent();
-	}
-}
-
-void ActionOnVariable::beginAction()
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
-
-
-	variable->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
-
-	switch (this->actionType)
-	{
-	case ActionOnVariableType_t::pulse:
-	case ActionOnVariableType_t::activeOnState:
-		this->isActionActing = true;
-		break;
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::assign:
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
-		// Do not register, value change is definitive
-		break;
-	}
-}
-
-void ActionOnVariable::endAction()
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
-
-
-	if (this->isActionActing == true)
-	{
-		variable->setCurrentValueSubRange(LogicValue::getValue0(this->getActionSize()), this->rangeL, this->rangeR);
-		this->isActionActing = false;
 	}
 }
 

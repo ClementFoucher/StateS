@@ -27,27 +27,25 @@
 #include <QVBoxLayout>
 
 // StateS classes
-#include "clock.h"
-#include "graphicvectortimeline.h"
-#include "fsm.h"
 #include "machinemanager.h"
-#include "simulatedmachine.h"
+#include "machinesimulator.h"
 #include "simulatedfsm.h"
-#include "fsmstate.h"
+#include "simulatedfsmstate.h"
+#include "graphicvectortimeline.h"
 
 
-StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
+StateTimeLine::StateTimeLine(QWidget* parent) :
     QWidget(parent)
 {
-	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-	if (fsmSimulator == nullptr) return;
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
 
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
+	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
+	if (simulatedFsm == nullptr) return;
 
-	auto initialStateId = fsm->getInitialStateId();
-	auto initialState = fsm->getState(initialStateId);
-	if (initialState == nullptr) return;
+	auto initialStateId = simulatedFsm->getInitialStateId();
+	auto initialSimulatedState = simulatedFsm->getSimulatedState(initialStateId);
+	if (initialSimulatedState == nullptr) return;
 
 
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
@@ -58,7 +56,7 @@ StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
 	QVBoxLayout* bitsLayout = new QVBoxLayout();
 	QHBoxLayout* innerLayout = new QHBoxLayout();
 
-	this->stateDisplay = new GraphicVectorTimeLine(0, initialState->getName());
+	this->stateDisplay = new GraphicVectorTimeLine(0, initialSimulatedState->getName());
 	this->stateDisplay->setMinimumHeight(30);
 	this->stateDisplay->setMaximumHeight(30);
 	innerLayout->addWidget(this->stateDisplay);
@@ -68,53 +66,47 @@ StateTimeLine::StateTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
 
 	globalLayout->addLayout(bitsLayout);
 
-	connect(fsmSimulator.get(), &SimulatedFsm::stateChangedEvent, this, &StateTimeLine::updateCurrentValue);
+	connect(simulatedFsm.get(), &SimulatedFsm::stateChangedEvent, this, &StateTimeLine::updateCurrentValue);
 
-	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &StateTimeLine::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,        this, &StateTimeLine::resetEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::timelineDoStepEvent, this, &StateTimeLine::doStepEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::timelineResetEvent,  this, &StateTimeLine::resetEventHandler);
 }
 
-void StateTimeLine::clockEventHandler()
+void StateTimeLine::doStepEventHandler()
 {
-	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-	if (fsmSimulator == nullptr) return;
+	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
+	if (simulatedFsm == nullptr) return;
 
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
-
-	auto currentStateId = fsmSimulator->getActiveStateId();
-	auto currentState = fsm->getState(currentStateId);
-	if (currentState == nullptr) return;
+	auto currentStateId = simulatedFsm->getActiveStateId();
+	auto currentSimulatedState = simulatedFsm->getSimulatedState(currentStateId);
+	if (currentSimulatedState == nullptr) return;
 
 
-	this->stateDisplay->addPoint(currentState->getName());
+	this->stateDisplay->addPoint(currentSimulatedState->getName());
 }
 
 void StateTimeLine::updateCurrentValue()
 {
-	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-	if (fsmSimulator == nullptr) return;
+	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
+	if (simulatedFsm == nullptr) return;
 
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
-
-	auto currentStateId = fsmSimulator->getActiveStateId();
-	auto currentState = fsm->getState(currentStateId);
-	if (currentState == nullptr) return;
+	auto currentStateId = simulatedFsm->getActiveStateId();
+	auto currentSimulatedState = simulatedFsm->getSimulatedState(currentStateId);
+	if (currentSimulatedState == nullptr) return;
 
 
-	this->stateDisplay->updateLastPoint(currentState->getName());
+	this->stateDisplay->updateLastPoint(currentSimulatedState->getName());
 }
 
 void StateTimeLine::resetEventHandler()
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
+	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
+	if (simulatedFsm == nullptr) return;
 
-	auto initialStateId = fsm->getInitialStateId();
-	auto initialState = fsm->getState(initialStateId);
-	if (initialState == nullptr) return;
+	auto initialStateId = simulatedFsm->getInitialStateId();
+	auto initialSimulatedState = simulatedFsm->getSimulatedState(initialStateId);
+	if (initialSimulatedState == nullptr) return;
 
 
-	this->stateDisplay->reset(initialState->getName());
+	this->stateDisplay->reset(initialSimulatedState->getName());
 }

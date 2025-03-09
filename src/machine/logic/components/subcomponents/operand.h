@@ -59,7 +59,6 @@ public:
 	OperandSource_t getSource() const;
 
 	LogicValue getInitialValue() const;
-	LogicValue getCurrentValue() const;
 
 	componentId_t        getVariableId() const;
 	shared_ptr<Equation> getEquation()   const;
@@ -74,7 +73,6 @@ private slots:
 	// Signals
 signals:
 	void operandInitialValueChangedEvent();
-	void operandCurrentValueChangedEvent();
 	void operandTextChangedEvent();
 	void operandInvalidatedEvent();
 

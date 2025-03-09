@@ -31,8 +31,10 @@
 #include "graphicattributes.h"
 #include "fsmstate.h"
 #include "graphicfsmstate.h"
+#include "graphicsimulatedfsmstate.h"
 #include "fsmtransition.h"
 #include "graphicfsmtransition.h"
+#include "graphicsimulatedfsmtransition.h"
 #include "fsmscene.h"
 #include "graphicfsmtransitionneighborhood.h"
 
@@ -47,8 +49,28 @@ void GraphicFsm::build(shared_ptr<GraphicAttributes> graphicAttributes)
 {
 	if (graphicAttributes == nullptr) return;
 
+
 	this->buildStates(graphicAttributes);
 	this->buildTransitions(graphicAttributes);
+}
+
+void GraphicFsm::buildSimulation()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+
+	for (const auto& stateId : fsm->getAllStatesIds())
+	{
+		auto simulatedState = new GraphicSimulatedFsmState(stateId);
+		this->addSimulatedComponent(simulatedState);
+	}
+
+	for (const auto& transitionId : fsm->getAllTransitionsIds())
+	{
+		auto simulatedTransition = new GraphicSimulatedFsmTransition(transitionId);
+		this->addSimulatedComponent(simulatedTransition);
+	}
 }
 
 shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
@@ -151,16 +173,26 @@ GraphicFsmTransition* GraphicFsm::getTransition(componentId_t id) const
 	return dynamic_cast<GraphicFsmTransition*>(transition);
 }
 
+GraphicSimulatedFsmState* GraphicFsm::getSimulatedState(componentId_t id) const
+{
+	auto state = this->getSimulatedGraphicComponent(id);
+	return dynamic_cast<GraphicSimulatedFsmState*>(state);
+}
+
+GraphicSimulatedFsmTransition* GraphicFsm::getSimulatedTransition(componentId_t id) const
+{
+	auto transition = this->getSimulatedGraphicComponent(id);
+	return dynamic_cast<GraphicSimulatedFsmTransition*>(transition);
+}
+
 int GraphicFsm::getTransitionRank(componentId_t transitionId) const
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return 0;
-
 	auto graphicTransition = this->getTransition(transitionId);
 	if (graphicTransition == nullptr) return 0;
 
 	auto neighborhood = this->getTransitionNeighborhood(transitionId);
 	if (neighborhood == nullptr) return 0;
+
 
 	int transitionNumber = neighborhood->getTransitionNumber(graphicTransition);
 
@@ -184,11 +216,9 @@ int GraphicFsm::getTransitionRank(componentId_t transitionId) const
 
 shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(componentId_t transitionId) const
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return nullptr;
-
 	auto graphicTransition = this->getTransition(transitionId);
 	if (graphicTransition == nullptr) return nullptr;
+
 
 	auto sourceStateId = graphicTransition->getSourceStateId();
 	auto targetStateId = graphicTransition->getTargetStateId();
@@ -276,6 +306,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
+
 
 	auto graphicTransition = this->getTransition(transitionId);
 
@@ -373,9 +404,6 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 
 void GraphicFsm::removeTransitionFromNeighborhood(componentId_t transitionId)
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
-
 	auto graphicTransition = this->getTransition(transitionId);
 
 	auto sourceStateId = graphicTransition->getSourceStateId();

@@ -28,34 +28,37 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "machine.h"
-#include "variable.h"
-#include "clock.h"
+#include "machinesimulator.h"
+#include "simulatedmachine.h"
+#include "simulatedvariable.h"
 #include "graphicbittimeline.h"
 #include "graphicvectortimeline.h"
 
 
-VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, shared_ptr<Clock> clock, QWidget* parent) :
+VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, QWidget* parent) :
     QWidget(parent)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
 
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
+
+	auto simulatedVariable = simulatedMachine->getSimulatedVariable(variableId);
+	if (simulatedVariable == nullptr) return;
 
 
 	this->variableId = variableId;
 
 	QHBoxLayout* globalLayout = new QHBoxLayout(this);
 
-	QLabel* varName = new QLabel(variable->getName());
+	QLabel* varName = new QLabel(simulatedVariable->getName());
 	globalLayout->addWidget(varName);
 
 	QVBoxLayout* bitsLayout = new QVBoxLayout();
 
 	// Global value display for vectors
-	if (variable->getSize() > 1)
+	if (simulatedVariable->getSize() > 1)
 	{
 		auto line = new QFrame();
 		line->setFrameShape(QFrame::VLine);
@@ -67,7 +70,7 @@ VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, s
 		QLabel* valueLabel = new QLabel(tr("Value"));
 		innerLayout->addWidget(valueLabel);
 
-		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, variable->getInitialValue());
+		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, simulatedVariable->getCurrentValue());
 		timeLineDisplay->setMinimumHeight(30);
 		timeLineDisplay->setMaximumHeight(30);
 		this->variableLineDisplay.append(timeLineDisplay);
@@ -77,17 +80,17 @@ VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, s
 	}
 
 	// Individual bits display
-	for (uint i = 0 ; i < variable->getSize() ; i++)
+	for (uint i = 0 ; i < simulatedVariable->getSize() ; i++)
 	{
 		QHBoxLayout* innerLayout = new QHBoxLayout();
 
-		if (variable->getSize() > 1)
+		if (simulatedVariable->getSize() > 1)
 		{
 			QLabel* bitNumberLabel = new QLabel(tr("Bit") + " #" + QString::number(i));
 			innerLayout->addWidget(bitNumberLabel);
 		}
 
-		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, variable->getInitialValue()[i]);
+		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, simulatedVariable->getCurrentValue()[i]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
 		this->variableLineDisplay.append(timeLineDisplay);
@@ -97,32 +100,32 @@ VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, s
 	}
 	globalLayout->addLayout(bitsLayout);
 
-	connect(variable.get(), &Variable::variableCurrentValueChangedEvent, this, &VariableTimeline::updateCurrentValue);
+	connect(simulatedVariable.get(), &SimulatedVariable::variableCurrentValueChangedEvent, this, &VariableTimeline::updateCurrentValue);
 
-	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &VariableTimeline::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,        this, &VariableTimeline::resetEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::timelineDoStepEvent, this, &VariableTimeline::doStepEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::timelineResetEvent,  this, &VariableTimeline::resetEventHandler);
 }
 
 // On clock event, duplicate current value:
 // it will be edited dynamically with variable update
-void VariableTimeline::clockEventHandler()
+void VariableTimeline::doStepEventHandler()
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
+	auto simulatedVariable = simulatedMachine->getSimulatedVariable(variableId);
+	if (simulatedVariable == nullptr) return;
 
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (variable->getSize() > 1) && (i == 0) )
+		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->addPoint(variable->getCurrentValue());
+				vectorTimeLine->addPoint(simulatedVariable->getCurrentValue());
 			}
 		}
 		else
@@ -130,7 +133,7 @@ void VariableTimeline::clockEventHandler()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->addPoint(variable->getCurrentValue()[bitNumber]);
+				timeLine->addPoint(simulatedVariable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
@@ -140,22 +143,22 @@ void VariableTimeline::clockEventHandler()
 // Value is updated depending on actions on variable
 void VariableTimeline::updateCurrentValue()
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
+	auto simulatedVariable = simulatedMachine->getSimulatedVariable(variableId);
+	if (simulatedVariable == nullptr) return;
 
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (variable->getSize() > 1) && (i == 0) )
+		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->updateLastPoint(variable->getCurrentValue());
+				vectorTimeLine->updateLastPoint(simulatedVariable->getCurrentValue());
 			}
 		}
 		else
@@ -163,7 +166,7 @@ void VariableTimeline::updateCurrentValue()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->updateLastPoint(variable->getCurrentValue()[bitNumber]);
+				timeLine->updateLastPoint(simulatedVariable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}
@@ -172,22 +175,22 @@ void VariableTimeline::updateCurrentValue()
 
 void VariableTimeline::resetEventHandler()
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return;
+	auto simulatedVariable = simulatedMachine->getSimulatedVariable(variableId);
+	if (simulatedVariable == nullptr) return;
 
 
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (variable->getSize() > 1) && (i == 0) )
+		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
 		{
 			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->reset(variable->getCurrentValue());
+				vectorTimeLine->reset(simulatedVariable->getCurrentValue());
 			}
 		}
 		else
@@ -195,7 +198,7 @@ void VariableTimeline::resetEventHandler()
 			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->reset(variable->getCurrentValue()[bitNumber]);
+				timeLine->reset(simulatedVariable->getCurrentValue()[bitNumber]);
 			}
 			bitNumber++;
 		}

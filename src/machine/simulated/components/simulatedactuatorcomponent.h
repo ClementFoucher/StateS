@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,56 +16,45 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CLOCK_H
-#define CLOCK_H
+#ifndef SIMULATEDACTUATORCOMPONENT_H
+#define SIMULATEDACTUATORCOMPONENT_H
 
 // Parent
-#include <QObject>
+#include "simulatedcomponent.h"
 
 // C++ classes
 #include <memory>
 using namespace std;
 
 // Qt classes
-class QTimer;
+#include <QList>
+
+// StateS classes
+class SimulatedActionOnVariable;
 
 
-class Clock : public QObject
+class SimulatedActuatorComponent : public SimulatedComponent
 {
-	Q_OBJECT
-
 	/////
 	// Constructors/destructors
 public:
-	explicit Clock();
+	explicit SimulatedActuatorComponent(componentId_t componentId);
 
 	/////
 	// Object functions
 public:
-	void start(uint intervalms);
-	void stop();
-	void reset();
+	const QList<shared_ptr<SimulatedActionOnVariable>> getActions() const;
 
-public slots:
-	void nextStep();
-
-signals:
-	void clockAboutToTickEvent();
-	void clockPrepareActionsEvent();
-	void clockUpdateTimelineEvent();
-	void clockEvent();
-
-	void resetLogicEvent();
-	void resetGraphicEvent();
+	void resetActions();
 
 	/////
 	// Object variables
 private:
-	shared_ptr<QTimer> timer;
+	QList<shared_ptr<SimulatedActionOnVariable>> actionList;
 
 };
 
-#endif // CLOCK_H
+#endif // SIMULATEDACTUATORCOMPONENT_H

@@ -42,7 +42,6 @@ Operand::Operand(componentId_t variableId) :
 	this->variableId = variableId;
 
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
-	connect(variable.get(), &Variable::variableCurrentValueChangedEvent, this, &Operand::operandCurrentValueChangedEvent);
 	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
 
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
@@ -54,7 +53,6 @@ Operand::Operand(shared_ptr<Equation> equation) :
 	this->equation = equation;
 
 	connect(equation.get(), &Equation::equationInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
-	connect(equation.get(), &Equation::equationCurrentValueChangedEvent, this, &Operand::operandCurrentValueChangedEvent);
 	connect(equation.get(), &Equation::equationTextChangedEvent,         this, &Operand::operandTextChangedEvent);
 }
 
@@ -73,7 +71,6 @@ Operand::Operand(shared_ptr<Variable> variable) :
 	this->variableId = variable->getId();
 
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
-	connect(variable.get(), &Variable::variableCurrentValueChangedEvent, this, &Operand::operandCurrentValueChangedEvent);
 	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
 
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
@@ -129,34 +126,6 @@ LogicValue Operand::getInitialValue() const
 
 
 		return this->equation->getInitialValue();
-		break;
-	case OperandSource_t::constant:
-		return this->constant;
-		break;
-	}
-}
-
-LogicValue Operand::getCurrentValue() const
-{
-	switch (this->source)
-	{
-	case OperandSource_t::variable:
-	{
-		auto machine = machineManager->getMachine();
-		if (machine == nullptr) return LogicValue::getNullValue();
-
-		auto variable = machine->getVariable(this->variableId);
-		if (variable == nullptr) return LogicValue::getNullValue();
-
-
-		return variable->getCurrentValue();
-		break;
-	}
-	case OperandSource_t::equation:
-		if (this->equation == nullptr) return LogicValue::getNullValue();
-
-
-		return this->equation->getCurrentValue();
 		break;
 	case OperandSource_t::constant:
 		return this->constant;

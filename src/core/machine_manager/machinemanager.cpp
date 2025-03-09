@@ -23,15 +23,17 @@
 #include "machinemanager.h"
 
 // StateS classes
+#include "machine.h"
+#include "fsm.h"
 #include "machinestatus.h"
 #include "undoredomanager.h"
 #include "machinebuilder.h"
+#include "machinesimulator.h"
 #include "graphicmachine.h"
+#include "simulatedmachine.h"
 #include "graphicattributes.h"
 #include "graphiccomponent.h"
-#include "fsm.h"
 #include "graphicfsm.h"
-#include "simulatedfsm.h"
 #include "machineundocommand.h"
 
 
@@ -60,6 +62,12 @@ MachineManager::MachineManager() :
 
 void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
+	// Close simulation mode before changing the machine
+	if (this->currentSimulationMode == SimulationMode_t::simulateMode)
+	{
+		this->setSimulationMode(SimulationMode_t::editMode);
+	}
+
 	// Update the reference to the machine
 	this->setMachineInternal(newMachine, newGraphicAttributes);
 
@@ -95,11 +103,24 @@ shared_ptr<Machine> MachineManager::getMachine() const
 	return this->machine;
 }
 
+shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
+{
+	return this->graphicMachine;
+}
+
+shared_ptr<SimulatedMachine> MachineManager::getSimulatedMachine() const
+{
+	if (this->machineSimulator == nullptr) return nullptr;
+
+
+	return this->machineSimulator->getSimulatedMachine();
+}
+
 /**
  * @brief MachineManager::getMachineStatus
  * @return The current machine status.
- * Is never null. However, content may be irrelevent if
- * current machine is null.
+ * Is never null. However, its values may be
+ * irrelevent if current machine is null.
  */
 shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
 {
@@ -116,12 +137,7 @@ shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
 	return this->machineBuilder;
 }
 
-shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
-{
-	return this->graphicMachine;
-}
-
-shared_ptr<SimulatedMachine> MachineManager::getMachineSimulator() const
+shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
 {
 	return this->machineSimulator;
 }
@@ -131,18 +147,12 @@ shared_ptr<SimulatedMachine> MachineManager::getMachineSimulator() const
 
 void MachineManager::undo()
 {
-	if (this->undoRedoManager != nullptr)
-	{
-		this->undoRedoManager->undo();
-	}
+	this->undoRedoManager->undo();
 }
 
 void MachineManager::redo()
 {
-	if (this->undoRedoManager != nullptr)
-	{
-		this->undoRedoManager->redo();
-	}
+	this->undoRedoManager->redo();
 }
 
 void MachineManager::notifyMachineEdited(MachineUndoCommand* undoCommand)
@@ -187,35 +197,35 @@ void MachineManager::setSimulationMode(SimulationMode_t newMode)
 	if (newMode == this->currentSimulationMode) return;
 
 
-	bool changeOk = true;
-
-	if (newMode == SimulationMode_t::editMode)
+	switch (newMode)
 	{
+	case SimulationMode_t::editMode:
 		this->machineSimulator.reset();
-	}
-	else
+		this->graphicMachine->clearSimulation();
+
+		this->currentSimulationMode = SimulationMode_t::editMode;
+		emit this->simulationModeChangedEvent(SimulationMode_t::editMode);
+		break;
+	case SimulationMode_t::simulateMode:
 	{
 		// Reset tool when quitting edit mode
 		this->machineBuilder->resetTool();
 
 		// Build simulator
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(this->machine);
-		if (fsm != nullptr)
-		{
-			this->machineSimulator = make_shared<SimulatedFsm>();
-		}
-		else
-		{
-			changeOk = false;
-		}
+		this->machineSimulator = make_shared<MachineSimulator>();
+		this->machineSimulator->initialize();
 
-		this->machineSimulator->build();
+		// Build graphic simulated machine
+		this->graphicMachine->buildSimulation();
+
+		// Connect simulated machine
+		auto simulatedMachine = this->machineSimulator->getSimulatedMachine();
+		connect(simulatedMachine.get(), &SimulatedMachine::simulatedComponentUpdatedEvent, this, &MachineManager::simulatedComponentUpdatedEventHandler);
+
+		this->currentSimulationMode = SimulationMode_t::simulateMode;
+		emit this->simulationModeChangedEvent(SimulationMode_t::simulateMode);
+		break;
 	}
-
-	if (changeOk == true)
-	{
-		this->currentSimulationMode = newMode;
-		emit this->simulationModeChangedEvent(newMode);
 	}
 }
 
@@ -258,7 +268,17 @@ void MachineManager::componentEditedEventHandler(componentId_t componentId)
 	auto graphicComponent = this->graphicMachine->getGraphicComponent(componentId);
 	if (graphicComponent == nullptr) return;
 
+
 	graphicComponent->refreshDisplay();
+}
+
+void MachineManager::simulatedComponentUpdatedEventHandler(componentId_t componentId)
+{
+	auto simulatedGraphicComponent = this->graphicMachine->getSimulatedGraphicComponent(componentId);
+	if (simulatedGraphicComponent == nullptr) return;
+
+
+	simulatedGraphicComponent->refreshDisplay();
 }
 
 /////

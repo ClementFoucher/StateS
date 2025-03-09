@@ -41,8 +41,8 @@ class TruthTable
 	/////
 	// Constructors/destructors
 public:
-	explicit TruthTable(shared_ptr<Equation> equation);
-	explicit TruthTable(QList<shared_ptr<Equation>> equations);
+	explicit TruthTable(shared_ptr<const Equation> equation);
+	explicit TruthTable(QList<shared_ptr<const Equation>> equations);
 
 	/////
 	// Object functions
@@ -58,8 +58,10 @@ public:
 	uint getOutputCount() const;
 
 private:
-	const QList<componentId_t> extractVariables(shared_ptr<Equation> equation) const;
-	void buildTable(QList<shared_ptr<Equation>> equations);
+	const QList<componentId_t> extractVariables(shared_ptr<const Equation> equation) const;
+	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const;
+
+	void buildTable(QList<shared_ptr<const Equation>> equations);
 
 	/////
 	// Object variables

@@ -25,10 +25,6 @@
 // Parent
 #include "genericscene.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QAction;
 
@@ -116,7 +112,7 @@ private slots:
 
 	// Others
 	void handleSelection();
-	void treatMenu(QAction* action);
+	void menuAddStateTriggeredEventHandler(QAction* action);
 
 private:
 	// Scene mode

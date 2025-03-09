@@ -25,13 +25,8 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
 #include "statestypes.h"
-class Clock;
 class GraphicTimeLine;
 
 
@@ -42,12 +37,12 @@ class VariableTimeline : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTimeline(uint delay, componentId_t variableId, shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit VariableTimeline(uint delay, componentId_t variableId, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 private slots:
-	void clockEventHandler();
+	void doStepEventHandler();
 	void resetEventHandler();
 	void updateCurrentValue();
 

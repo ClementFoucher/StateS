@@ -40,19 +40,44 @@ GraphicMachine::GraphicMachine() :
 
 GraphicMachine::~GraphicMachine()
 {
-	auto graphicComponents = this->getGraphicComponents();
+	auto graphicComponents = this->componentsMap.values();
+	graphicComponents += this->simulatedComponentsMap.values();
 
-	for (auto graphicComponent : graphicComponents)
+	for (auto& graphicComponent : graphicComponents)
 	{
 		delete graphicComponent;
 	}
 }
 
+void GraphicMachine::clearSimulation()
+{
+	auto graphicSimulatedComponents = this->simulatedComponentsMap.values();
+
+	for (auto& component : graphicSimulatedComponents)
+	{
+		delete component;
+	}
+
+	this->simulatedComponentsMap.clear();
+}
+
 GraphicComponent* GraphicMachine::getGraphicComponent(componentId_t componentId) const
 {
-	if (this->map.contains(componentId))
+	if (this->componentsMap.contains(componentId))
 	{
-		return this->map[componentId];
+		return this->componentsMap[componentId];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+GraphicComponent* GraphicMachine::getSimulatedGraphicComponent(componentId_t componentId) const
+{
+	if (this->simulatedComponentsMap.contains(componentId))
+	{
+		return this->simulatedComponentsMap[componentId];
 	}
 	else
 	{
@@ -243,20 +268,26 @@ QGraphicsItem* GraphicMachine::getComponentVisualization() const
 
 void GraphicMachine::removeGraphicComponent(componentId_t id)
 {
-	if (this->map.contains(id))
+	if (this->componentsMap.contains(id))
 	{
-		this->map[id]->deleteLater();
-		this->map.remove(id);
+		this->componentsMap[id]->deleteLater();
+		this->componentsMap.remove(id);
 	}
 }
 
 void GraphicMachine::addComponent(GraphicComponent* graphicComponent)
 {
 	auto logicComponentId = graphicComponent->getLogicComponentId();
-	this->map[logicComponentId] = graphicComponent;
+	this->componentsMap[logicComponentId] = graphicComponent;
 }
 
-const QList<GraphicComponent *> GraphicMachine::getGraphicComponents() const
+void GraphicMachine::addSimulatedComponent(GraphicComponent* graphicComponent)
 {
-	return this->map.values();
+	auto logicComponentId = graphicComponent->getLogicComponentId();
+	this->simulatedComponentsMap[logicComponentId] = graphicComponent;
+}
+
+const QList<GraphicComponent*> GraphicMachine::getGraphicComponents() const
+{
+	return this->componentsMap.values();
 }

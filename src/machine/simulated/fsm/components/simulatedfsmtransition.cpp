@@ -22,29 +22,11 @@
 // Current class header
 #include "simulatedfsmtransition.h"
 
-// C++ classes
-#include <math.h>
-#include <memory>
-using namespace std;
-
-// Qt classes
-#include <QPen>
-
 // States classes
 #include "machinemanager.h"
-#include "fsmtransition.h"
-#include "equation.h"
 #include "fsm.h"
-#include "simulatedfsm.h"
-#include "simulatedfsmstate.h"
-
-
-//
-// Static elements
-//
-
-const QPen SimulatedFsmTransition::activePen   = QPen(QBrush(QColor(0, 0xB0, 0), Qt::SolidPattern), 3);
-const QPen SimulatedFsmTransition::inactivePen = QPen(QBrush(Qt::red,            Qt::SolidPattern), 3);
+#include "fsmtransition.h"
+#include "simulatedequation.h"
 
 
 //
@@ -52,86 +34,39 @@ const QPen SimulatedFsmTransition::inactivePen = QPen(QBrush(Qt::red,           
 //
 
 SimulatedFsmTransition::SimulatedFsmTransition(componentId_t logicComponentId) :
-	GraphicFsmTransition(logicComponentId),
-	SimulatedComponent(logicComponentId)
+	SimulatedActuatorComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-	if (simulatedFsm == nullptr) return;
-
-	auto logicTransition = fsm->getTransition(this->logicComponentId);
+	auto logicTransition = fsm->getTransition(this->componentId);
 	if (logicTransition == nullptr) return;
 
-	auto sourceState = dynamic_cast<SimulatedFsmState*>(simulatedFsm->getComponent(logicTransition->getSourceStateId()));
-	if (sourceState == nullptr) return;
 
-	this->setFlag(QGraphicsItem::ItemIsSelectable, false);
-	this->setFlag(QGraphicsItem::ItemIsFocusable,  false);
-	this->setFlag(QGraphicsItem::ItemClipsToShape, false);
+	this->sourceStateId = logicTransition->getSourceStateId();
+	this->targetStateId = logicTransition->getTargetStateId();
 
-	this->setAcceptHoverEvents(false);
+	this->condition = shared_ptr<SimulatedEquation>(new SimulatedEquation(logicTransition->getCondition()));
 
-	auto condition = logicTransition->getCondition();
-	if (condition != nullptr) // nullptr is still a valid condition
-	{
-		connect(condition.get(), &Equation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::refreshDisplay);
-	}
-
-	connect(sourceState, &SimulatedFsmState::stateActiveStatusChanged, this, &SimulatedFsmTransition::refreshDisplay);
+	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);
 }
 
-SimulatedFsmTransition::~SimulatedFsmTransition()
+shared_ptr<SimulatedEquation> SimulatedFsmTransition::getCondition()
 {
-
+	return this->condition;
 }
 
-void SimulatedFsmTransition::refreshDisplay()
+componentId_t SimulatedFsmTransition::getSourceStateId() const
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
+	return this->sourceStateId;
+}
 
-	auto fsmSimulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-	if (fsmSimulator == nullptr) return;
+componentId_t SimulatedFsmTransition::getTargetStateId() const
+{
+	return this->targetStateId;
+}
 
-	auto logicTransition = fsm->getTransition(this->logicComponentId);
-	if (logicTransition == nullptr) return;
-
-	auto sourceState = dynamic_cast<SimulatedFsmState*>(fsmSimulator->getComponent(logicTransition->getSourceStateId()));
-	if (sourceState == nullptr) return;
-
-
-	//
-	// Condition pen
-	auto condition = logicTransition->getCondition();
-	if (condition != nullptr)
-	{
-		if (condition->isTrue())
-		{
-			this->currentConditionPen = &activePen;
-		}
-		else
-		{
-			this->currentConditionPen = &inactivePen;
-		}
-	}
-	else
-	{
-		// Empty condition is implicitly always true
-		this->currentConditionPen = &activePen;
-	}
-
-	//
-	// Main pen
-	if (sourceState->getIsActive() == true)
-	{
-		this->currentPen = this->currentConditionPen;
-	}
-	else
-	{
-		this->currentPen = &GraphicFsmTransition::defaultPen;
-	}
-
-	GraphicFsmTransition::refreshDisplay();
+void SimulatedFsmTransition::conditionChangedEventHandler()
+{
+	emit this->simulatedComponentUpdatedEvent(this->componentId);
 }

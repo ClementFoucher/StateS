@@ -22,10 +22,6 @@
 // Current class header
 #include "inputsselector.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QScrollArea>
 #include <QVBoxLayout>

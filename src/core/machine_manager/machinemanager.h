@@ -33,10 +33,11 @@ using namespace std;
 #include "statestypes.h"
 #include "undoredomanager.h"
 class Machine;
-class MachineStatus;
-class MachineBuilder;
 class GraphicMachine;
 class SimulatedMachine;
+class MachineStatus;
+class MachineBuilder;
+class MachineSimulator;
 class GraphicAttributes;
 class MachineUndoCommand;
 
@@ -74,10 +75,12 @@ public:
 
 	// Acessors
 	shared_ptr<Machine>          getMachine()          const;
+	shared_ptr<GraphicMachine>   getGraphicMachine()   const;
+	shared_ptr<SimulatedMachine> getSimulatedMachine() const;
+
 	shared_ptr<MachineStatus>    getMachineStatus()    const;
 	shared_ptr<MachineBuilder>   getMachineBuilder()   const;
-	shared_ptr<GraphicMachine>   getGraphicMachine()   const;
-	shared_ptr<SimulatedMachine> getMachineSimulator() const;
+	shared_ptr<MachineSimulator> getMachineSimulator() const;
 
 	// Undo/redo
 	void undo();
@@ -98,6 +101,7 @@ private slots:
 
 	void componentDeletedEventHandler(componentId_t componentId);
 	void componentEditedEventHandler(componentId_t componentId);
+	void simulatedComponentUpdatedEventHandler(componentId_t componentId);
 
 private:
 	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
@@ -141,10 +145,10 @@ private:
 	shared_ptr<MachineStatus>    machineStatus;
 	shared_ptr<MachineBuilder>   machineBuilder;
 	shared_ptr<GraphicMachine>   graphicMachine;
-	shared_ptr<SimulatedMachine> machineSimulator;
+	shared_ptr<MachineSimulator> machineSimulator;
 
 	// Internal
-	unique_ptr<UndoRedoManager> undoRedoManager;
+	unique_ptr<UndoRedoManager> undoRedoManager = nullptr;
 	bool undoRedoMode = false;
 	SimulationMode_t currentSimulationMode = SimulationMode_t::editMode;
 

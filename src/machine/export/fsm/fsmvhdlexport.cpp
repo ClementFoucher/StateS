@@ -690,6 +690,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream) const
 						{
 							if (variable->getSize() > 1)
 							{
+								// Currently, the only case leading here is for ActionOnVariableType_t::pulse
 								stream << "\"" << action->getActionValue().toString() << "\"";
 							}
 							else
@@ -793,6 +794,7 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 		{
 		case ActionOnVariableType_t::activeOnState:
 		case ActionOnVariableType_t::pulse:
+		case ActionOnVariableType_t::assign:
 			stream << "\"" <<  action->getActionValue().toString() << "\"";
 			break;
 		case ActionOnVariableType_t::set:
@@ -800,9 +802,6 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 			break;
 		case ActionOnVariableType_t::reset:
 			stream << "\"" << LogicValue::getValue0(variable->getSize()).toString() << "\"";
-			break;
-		case ActionOnVariableType_t::assign:
-			stream << "\"" << action->getActionValue().toString() << "\"";
 			break;
 		case ActionOnVariableType_t::increment:
 			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variableId] << " + 1)";

@@ -35,6 +35,8 @@ class GraphicFsmState;
 class GraphicFsmTransition;
 class GenericScene;
 class GraphicFsmTransitionNeighborhood;
+class GraphicSimulatedFsmState;
+class GraphicSimulatedFsmTransition;
 
 
 class GraphicFsm : public GraphicMachine
@@ -50,6 +52,7 @@ public:
 	// Object functions
 public:
 	virtual void build(shared_ptr<GraphicAttributes> graphicAttributes) override;
+	virtual void buildSimulation() override;
 
 	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const override;
 	virtual GenericScene* getGraphicScene() const override;
@@ -64,6 +67,9 @@ public:
 
 	GraphicFsmState*      getState(componentId_t id)      const;
 	GraphicFsmTransition* getTransition(componentId_t id) const;
+
+	GraphicSimulatedFsmState*      getSimulatedState(componentId_t id)      const;
+	GraphicSimulatedFsmTransition* getSimulatedTransition(componentId_t id) const;
 
 	// Neighborhood
 	int getTransitionRank(componentId_t transitionId) const;

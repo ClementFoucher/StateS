@@ -27,11 +27,13 @@
 
 // Qt classes
 #include <QMap>
-class QWidget;
+class QDialog;
 class QSignalMapper;
 
 // StateS classes
 #include "statestypes.h"
+class SimulatedFsmState;
+class SimulatedFsmTransition;
 
 
 class SimulatedFsm : public SimulatedMachine
@@ -48,17 +50,23 @@ public:
 public:
 	virtual void build() override;
 
-	void targetStateSelectionMadeEventHandler(int i);
+	shared_ptr<SimulatedFsmState>      getSimulatedState     (componentId_t componentId) const;
+	shared_ptr<SimulatedFsmTransition> getSimulatedTransition(componentId_t componentId) const;
+
 	void forceStateActivation(componentId_t stateToActivate);
-	componentId_t getActiveStateId() const;
+
+	componentId_t getInitialStateId() const;
+	componentId_t getActiveStateId()  const;
 
 private slots:
-	void resetEventHandler();
-	void clockAboutToTickEventHandler();
-	void clockPrepareActionsEventHandler();
-	void clockEventHandler();
+	void targetStateSelectionMadeEventHandler(int i);
 
 private:
+	virtual void subcomponentReset()          override;
+	virtual void subcomponentPrepareStep()    override;
+	virtual void subcomponentPrepareActions() override;
+	virtual void subcomponentDoStep()         override;
+
 	void crossTransition(componentId_t transitionId);
 
 	void activateStateActions(componentId_t actuatorId, bool isFirstActivation);
@@ -67,19 +75,22 @@ private:
 	void deactivateStateActions(componentId_t actuatorId);
 	void deactivateTransitionActions(componentId_t actuatorId, bool isPreparation);
 
+	/////
+	// Signals
 signals:
 	void stateChangedEvent();
 
 	/////
 	// Object variables
 private:
+	componentId_t initialStateId            = nullId;
 	componentId_t activeStateId             = nullId;
 	componentId_t latestTransitionCrossedId = nullId;
 	componentId_t transitionToBeCrossedId   = nullId;
 	QMap<uint, componentId_t> potentialTransitionsIds;
 
-	QWidget* targetStateSelector = nullptr;
-	QSignalMapper* signalMapper  = nullptr; // Use pointer because we need a deleteLater instruction
+	QDialog* targetStateSelector = nullptr;
+	QSignalMapper* signalMapper  = nullptr;
 
 };
 

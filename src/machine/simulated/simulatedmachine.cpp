@@ -23,66 +23,100 @@
 #include "simulatedmachine.h"
 
 // StateS classes
-#include "clock.h"
-#include "simulatedcomponent.h"
+#include "machinemanager.h"
+#include "machine.h"
+#include "simulatedactuatorcomponent.h"
+#include "simulatedvariable.h"
 
 
 SimulatedMachine::SimulatedMachine()
 {
-	this->clock = shared_ptr<Clock>(new Clock());
+
 }
 
-SimulatedMachine::~SimulatedMachine()
+void SimulatedMachine::build()
 {
-	auto components = this->simulatedComponents.values();
-	for (auto component : components)
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
+	auto variablesIds = machine->getAllVariablesIds();
+	for (auto variableId : variablesIds)
 	{
-		delete component;
+		auto simulatedVariable = shared_ptr<SimulatedVariable>(new SimulatedVariable(variableId));
+		this->registerSimulatedComponent(variableId, simulatedVariable);
 	}
 }
 
-shared_ptr<Clock> SimulatedMachine::getClock() const
+shared_ptr<SimulatedActuatorComponent> SimulatedMachine::getSimulatedActuatorComponent(componentId_t actuatorId) const
 {
-	return this->clock;
+	return dynamic_pointer_cast<SimulatedActuatorComponent>(this->getSimulatedComponent(actuatorId));
+}
+
+shared_ptr<SimulatedVariable> SimulatedMachine::getSimulatedVariable(componentId_t variableId) const
+{
+	return dynamic_pointer_cast<SimulatedVariable>(this->getSimulatedComponent(variableId));
 }
 
 void SimulatedMachine::reset()
 {
-	this->clock->reset();
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
+	// Reset all machine variables
+	for (auto& inputId : machine->getInputVariablesIds())
+	{
+		auto simulatedInput = this->getSimulatedVariable(inputId);
+		if (simulatedInput == nullptr) continue;
+
+
+		simulatedInput->reinitialize();
+	}
+	for (auto& variableId : machine->getInternalVariablesIds())
+	{
+		auto simulatedVariable = this->getSimulatedVariable(variableId);
+		if (simulatedVariable == nullptr) continue;
+
+
+		simulatedVariable->reinitialize();
+	}
+	for (auto& outputId : machine->getOutputVariablesIds())
+	{
+		auto simulatedOutput = this->getSimulatedVariable(outputId);
+		if (simulatedOutput == nullptr) continue;
+
+
+		simulatedOutput->reinitialize();
+	}
+
+	// Reset actions
+	auto componentsIds = this->simulatedComponents.keys();
+	for (auto& componentId : componentsIds)
+	{
+		auto simulatedActuator = this->getSimulatedActuatorComponent(componentId);
+		if (simulatedActuator == nullptr) continue;
+
+
+		simulatedActuator->resetActions();
+	}
+
+	this->subcomponentReset();
+}
+
+void SimulatedMachine::prepareStep()
+{
+	this->subcomponentPrepareStep();
+}
+
+void SimulatedMachine::prepareActions()
+{
+	this->subcomponentPrepareActions();
 }
 
 void SimulatedMachine::doStep()
 {
-	this->clock->nextStep();
-}
-
-void SimulatedMachine::start(uint period)
-{
-	this->clock->start(period);
-	emit this->autoSimulationToggledEvent(true);
-}
-
-void SimulatedMachine::suspend()
-{
-	this->clock->stop();
-	emit this->autoSimulationToggledEvent(false);
-}
-
-const QList<SimulatedComponent*> SimulatedMachine::getSimulatedComponents() const
-{
-	return this->simulatedComponents.values();
-}
-
-SimulatedComponent* SimulatedMachine::getComponent(componentId_t componentId) const
-{
-	if (this->simulatedComponents.contains(componentId))
-	{
-		return this->simulatedComponents[componentId];
-	}
-	else
-	{
-		return nullptr;
-	}
+	this->subcomponentDoStep();
 }
 
 void SimulatedMachine::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
@@ -103,4 +137,19 @@ void SimulatedMachine::setMemorizedTransitionActionBehavior(SimulationBehavior_t
 void SimulatedMachine::setPulseTransitionActionBehavior(SimulationBehavior_t behv)
 {
 	this->pulseTransitionActionBehavior = behv;
+}
+
+void SimulatedMachine::registerSimulatedComponent(componentId_t componentId, shared_ptr<SimulatedComponent> component)
+{
+	this->simulatedComponents[componentId] = component;
+
+	connect(component.get(), &SimulatedComponent::simulatedComponentUpdatedEvent, this, &SimulatedMachine::simulatedComponentUpdatedEvent);
+}
+
+shared_ptr<SimulatedComponent> SimulatedMachine::getSimulatedComponent(componentId_t componentId) const
+{
+	if (this->simulatedComponents.contains(componentId) == false) return nullptr;
+
+
+	return this->simulatedComponents[componentId];
 }

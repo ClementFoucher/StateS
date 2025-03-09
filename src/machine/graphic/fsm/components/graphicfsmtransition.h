@@ -80,7 +80,7 @@ public:
 	componentId_t getSourceStateId() const;
 	componentId_t getTargetStateId() const;
 
-	void setConditionLineSliderPosition(qreal position); // Todo: throw exception
+	void setConditionLineSliderPosition(qreal position);
 	qreal getConditionLineSliderPosition() const;
 
 	QGraphicsTextItem* getConditionText() const;

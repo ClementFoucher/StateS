@@ -43,19 +43,11 @@ class Variable;
  * If both are valid, the action acts on the [rangeL..rangeR] sub-vector.
  *
  * If variable is size 1 or action acts on a single bit
- *   => action value is always implicit and assign type is illegal.
+ *   => action value is always implicit and assigning it is illegal.
  * Else (vector variable with whole range or sub-range action)
- *   => action value is implicit for set and reset types, explicit for others.
- *
- * For implicit action values, actionValue is null, but the
- * value can still be obtained using public function getActionValue().
- *
- * If variable is deleted, Action should be deleted too.
- * But in the meantime, action just doesn't react to any
- * external sollicitation: setters are ignored, action
- * value getter returns null value, action size getter
- * returns 0 and other getters return meaningless values.
- * Begin and end actions have no effect.
+ *   => action value is explicit for ActiveOnState, Pulse and Assign
+ *      types, implicit for others.
+ * For implicit action values, actionValue is null.
  */
 class ActionOnVariable : public QObject
 {
@@ -85,18 +77,17 @@ public:
 
 	void checkActionValue();
 
-	void beginAction();
-	void endAction();
-
-signals:
-	void actionChangedEvent();
-
 private slots:
 	void variableResizedEventHandler();
 
 private:
 	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
 	void initialize(shared_ptr<Variable> variable, ActionOnVariableType_t actionType);
+
+	/////
+	// Signals
+signals:
+	void actionChangedEvent();
 
 	/////
 	// Object variables
@@ -108,8 +99,6 @@ private:
 	LogicValue actionValue = LogicValue();
 	int        rangeL      = -1;
 	int        rangeR      = -1;
-
-	bool isActionActing = false;
 
 };
 

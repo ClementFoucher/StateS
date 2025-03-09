@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,13 +25,6 @@
 // Parent
 #include "graphicbittimeline.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class Clock;
-
 
 class GraphicClockTimeLine : public GraphicBitTimeLine
 {
@@ -40,12 +33,12 @@ class GraphicClockTimeLine : public GraphicBitTimeLine
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit GraphicClockTimeLine(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 private slots:
-	void clockEventHandler();
+	void doStepEventHandler();
 	void resetEventHandler();
 
 };

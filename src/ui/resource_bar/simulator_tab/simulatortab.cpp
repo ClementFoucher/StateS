@@ -31,7 +31,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "fsm.h"
-#include "simulatedmachine.h"
+#include "machinesimulator.h"
 #include "contextmenu.h"
 #include "simulatorconfigurator.h"
 #include "simulatortimecontroller.h"
@@ -88,22 +88,22 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			{
 				// Enable simulation mode
 				machineManager->setSimulationMode(SimulationMode_t::simulateMode);
-				auto simulator = machineManager->getMachineSimulator();
-				if (simulator == nullptr) return;
+				auto machineSimulator = machineManager->getMachineSimulator();
+				if (machineSimulator == nullptr) return;
 
 
 				// Set simulator configuration
-				simulator->setMemorizedStateActionBehavior(this->simulatorConfigurator->getMemorizedStateActionBehavior());
-				simulator->setContinuousStateActionBehavior(this->simulatorConfigurator->getContinuousStateActionBehavior());
-				simulator->setMemorizedTransitionActionBehavior(this->simulatorConfigurator->getMemorizedTransitionActionBehavior());
-				simulator->setPulseTransitionActionBehavior(this->simulatorConfigurator->getPulseTransitionActionBehavior());
+				machineSimulator->setMemorizedStateActionBehavior     (this->simulatorConfigurator->getMemorizedStateActionBehavior());
+				machineSimulator->setContinuousStateActionBehavior    (this->simulatorConfigurator->getContinuousStateActionBehavior());
+				machineSimulator->setMemorizedTransitionActionBehavior(this->simulatorConfigurator->getMemorizedTransitionActionBehavior());
+				machineSimulator->setPulseTransitionActionBehavior    (this->simulatorConfigurator->getPulseTransitionActionBehavior());
 
 				// Update button text and hide configuration
 				this->buttonTriggerSimulation->setText(tr("End simulation"));
 				this->configurationGroup->setVisible(false);
 
-				// Reset simulator to reset graphic part which have been created when setSimulator emited mode change event
-				simulator->reset();
+				// Reset simulator to reset graphic part which have been created when setSimulationMode emited mode change event
+				machineSimulator->reset();
 
 
 				// Build time manager

@@ -22,25 +22,18 @@
 // Current class header
 #include "graphicfsmstate.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QGraphicsSceneContextMenuEvent>
-#include <QMessageBox>
-#include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QStyleOptionGraphicsItem>
 
 // StateS classes
 #include "machinemanager.h"
-#include "machine.h"
+#include "fsm.h"
 #include "graphicfsmtransition.h"
 #include "fsmstate.h"
 #include "contextmenu.h"
-#include "fsm.h"
 #include "actionbox.h"
 
 
@@ -182,7 +175,7 @@ void GraphicFsmState::keyPressEvent(QKeyEvent* event)
 	{
 		QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
 
-		QGraphicsView * view = scene()->views()[0];
+		QGraphicsView* view = scene()->views()[0];
 
 		QPoint posOnParent = view->mapFromScene(this->scenePos());
 
@@ -213,7 +206,7 @@ void GraphicFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	ContextMenu* menu = new ContextMenu();
 	menu->addTitle(tr("State") + " <i>" + logicState->getName() + "</i>");
 
-	if (fsm->getInitialStateId() != logicState->getId())
+	if (fsm->getInitialStateId() != this->logicComponentId)
 	{
 		menu->addAction(tr("Set initial"));
 	}
@@ -255,7 +248,9 @@ QVariant GraphicFsmState::itemChange(GraphicsItemChange change, const QVariant& 
 			for (QGraphicsItem* selectedItem : selectedItems)
 			{
 				if (dynamic_cast<GraphicFsmTransition*>(selectedItem) != nullptr)
+				{
 					return (QVariant)false;
+				}
 			}
 		}
 	}
@@ -324,7 +319,7 @@ void GraphicFsmState::buildRepresentation()
 
 	this->stateName->setPos(-this->stateName->boundingRect().width()/2, -this->stateName->boundingRect().height()/2);
 
-	if (fsm->getInitialStateId() == logicState->getId())
+	if (fsm->getInitialStateId() == this->logicComponentId)
 	{
 		QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
 		insideCircle->setPen(defaultPen);

@@ -42,6 +42,8 @@ public:
 	/////
 	// Object functions
 private slots:
+	void buttonResetClicked();
+	void buttonNextStepClicked();
 	void buttonLauchAutoStepClicked();
 	void autoSimulationToggledEventHandler(bool started);
 
@@ -49,6 +51,7 @@ private slots:
 	// Object variables
 private:
 	QPushButton* buttonTriggerAutoStep = nullptr;
+	QPushButton* buttonNextStep        = nullptr;
 	QLineEdit*   autoStepValue         = nullptr;
 
 };

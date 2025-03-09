@@ -34,8 +34,9 @@ using namespace std;
 
 // SateS classes
 #include "statestypes.h"
-class Clock;
 class SimulatedComponent;
+class SimulatedActuatorComponent;
+class SimulatedVariable;
 
 
 class SimulatedMachine : public QObject
@@ -46,42 +47,51 @@ class SimulatedMachine : public QObject
 	// Constructors/destructors
 public:
 	explicit SimulatedMachine();
-	~SimulatedMachine();
 
 	/////
 	// Object functions
 public:
-	virtual void build() = 0;
+	virtual void build();
 
-	shared_ptr<Clock> getClock() const;
+	shared_ptr<SimulatedActuatorComponent> getSimulatedActuatorComponent(componentId_t actuatorId) const;
+	shared_ptr<SimulatedVariable>          getSimulatedVariable         (componentId_t variableId) const;
 
 	void reset();
+	void prepareStep();
+	void prepareActions();
 	void doStep();
-	void start(uint period);
-	void suspend();
-
-	const QList<SimulatedComponent*> getSimulatedComponents() const;
-	SimulatedComponent* getComponent(componentId_t componentId) const;
 
 	void setMemorizedStateActionBehavior     (SimulationBehavior_t behv);
 	void setContinuousStateActionBehavior    (SimulationBehavior_t behv);
 	void setMemorizedTransitionActionBehavior(SimulationBehavior_t behv);
 	void setPulseTransitionActionBehavior    (SimulationBehavior_t behv);
 
+protected:
+	void registerSimulatedComponent(componentId_t componentId, shared_ptr<SimulatedComponent> component);
+	shared_ptr<SimulatedComponent> getSimulatedComponent(componentId_t componentId) const;
+
+private:
+	virtual void subcomponentReset()          = 0;
+	virtual void subcomponentPrepareStep()    = 0;
+	virtual void subcomponentPrepareActions() = 0;
+	virtual void subcomponentDoStep()         = 0;
+
+	/////
+	// Signals
 signals:
-	void autoSimulationToggledEvent(bool simulating);
+	void simulatedComponentUpdatedEvent(componentId_t componentId);
+	void emergencyShutDownEvent();
 
 	/////
 	// Object variables
 protected:
-	QMap<componentId_t, SimulatedComponent*> simulatedComponents;
-
-	shared_ptr<Clock> clock;
-
 	SimulationBehavior_t memorizedStateActionBehavior;
 	SimulationBehavior_t continuousStateActionBehavior;
 	SimulationBehavior_t memorizedTransitionActionBehavior;
 	SimulationBehavior_t pulseTransitionActionBehavior;
+
+private:
+	QMap<componentId_t, shared_ptr<SimulatedComponent>> simulatedComponents;
 
 };
 

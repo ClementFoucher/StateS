@@ -44,8 +44,8 @@ SOURCES += \
 	src/core/basic_type/truthtable.cpp \
 	src/core/machine_manager/machinebuilder.cpp \
 	src/core/machine_manager/machinemanager.cpp \
+	src/core/machine_manager/machinesimulator.cpp \
 	src/core/machine_manager/machinestatus.cpp \
-	src/core/simulation/clock.cpp \
 	src/core/exceptions/statesexception.cpp \
 	src/core/undo_engine/fsmundocommand.cpp \
 	src/core/undo_engine/diffundocommand.cpp \
@@ -61,6 +61,8 @@ SOURCES += \
 	src/machine/graphic/fsm/graphicfsm.cpp \
 	src/machine/graphic/fsm/components/graphicfsmstate.cpp \
 	src/machine/graphic/fsm/components/graphicfsmtransition.cpp \
+	src/machine/graphic/fsm/components/graphicsimulatedfsmstate.cpp \
+	src/machine/graphic/fsm/components/graphicsimulatedfsmtransition.cpp \
 	src/machine/graphic/fsm/components/helpers/graphicfsmtransitionneighborhood.cpp \
 	src/machine/logic/machine.cpp \
 	src/machine/logic/components/machinecomponent.cpp \
@@ -74,7 +76,12 @@ SOURCES += \
 	src/machine/logic/fsm/components/fsmtransition.cpp \
 	src/machine/logic/fsm/verifier/fsmverifier.cpp \
 	src/machine/simulated/simulatedmachine.cpp \
+	src/machine/simulated/components/simulatedactuatorcomponent.cpp \
 	src/machine/simulated/components/simulatedcomponent.cpp \
+	src/machine/simulated/components/simulatedvariable.cpp \
+	src/machine/simulated/components/subcomponents/simulatedactiononvariable.cpp \
+	src/machine/simulated/components/subcomponents/simulatedequation.cpp \
+	src/machine/simulated/components/subcomponents/simulatedoperand.cpp \
 	src/machine/simulated/fsm/simulatedfsm.cpp \
 	src/machine/simulated/fsm/components/simulatedfsmstate.cpp \
 	src/machine/simulated/fsm/components/simulatedfsmtransition.cpp \
@@ -164,8 +171,8 @@ HEADERS += \
 	src/core/basic_type/truthtable.h \
 	src/core/machine_manager/machinebuilder.h \
 	src/core/machine_manager/machinemanager.h \
+	src/core/machine_manager/machinesimulator.h \
 	src/core/machine_manager/machinestatus.h \
-	src/core/simulation/clock.h \
 	src/core/exceptions/statesexception.h \
 	src/core/undo_engine/fsmundocommand.h \
 	src/core/undo_engine/diffundocommand.h \
@@ -179,9 +186,11 @@ HEADERS += \
 	src/machine/graphic/components/graphiccomponent.h \
 	src/machine/graphic/components/subcomponents/actionbox.h \
 	src/machine/graphic/fsm/graphicfsm.h \
-    src/machine/graphic/fsm/components/graphicfsmstate.h \
-    src/machine/graphic/fsm/components/graphicfsmtransition.h \
-    src/machine/graphic/fsm/components/helpers/graphicfsmtransitionneighborhood.h \
+	src/machine/graphic/fsm/components/graphicfsmstate.h \
+	src/machine/graphic/fsm/components/graphicfsmtransition.h \
+	src/machine/graphic/fsm/components/graphicsimulatedfsmstate.h \
+	src/machine/graphic/fsm/components/graphicsimulatedfsmtransition.h \
+	src/machine/graphic/fsm/components/helpers/graphicfsmtransitionneighborhood.h \
 	src/machine/logic/machine.h \
 	src/machine/logic/components/machinecomponent.h \
 	src/machine/logic/components/machineactuatorcomponent.h \
@@ -194,7 +203,12 @@ HEADERS += \
 	src/machine/logic/fsm/components/fsmtransition.h \
 	src/machine/logic/fsm/verifier/fsmverifier.h \
 	src/machine/simulated/simulatedmachine.h \
+	src/machine/simulated/components/simulatedactuatorcomponent.h \
 	src/machine/simulated/components/simulatedcomponent.h \
+	src/machine/simulated/components/simulatedvariable.h \
+	src/machine/simulated/components/subcomponents/simulatedactiononvariable.h \
+	src/machine/simulated/components/subcomponents/simulatedequation.h \
+	src/machine/simulated/components/subcomponents/simulatedoperand.h \
 	src/machine/simulated/fsm/simulatedfsm.h \
 	src/machine/simulated/fsm/components/simulatedfsmstate.h \
 	src/machine/simulated/fsm/components/simulatedfsmtransition.h \
@@ -302,6 +316,7 @@ INCLUDEPATH += \
 	src/machine/logic/fsm/verifier \
 	src/machine/simulated \
 	src/machine/simulated/components \
+	src/machine/simulated/components/subcomponents \
 	src/machine/simulated/fsm \
 	src/machine/simulated/fsm/components \
 	src/machine/xml \

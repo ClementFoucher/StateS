@@ -22,29 +22,10 @@
 // Current class header
 #include "simulatedfsmstate.h"
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// Qt classes
-#include <QGraphicsSceneContextMenuEvent>
-#include <QGraphicsView>
-#include <QKeyEvent>
-
 // StateS classes
 #include "machinemanager.h"
-#include "fsmstate.h"
-#include "contextmenu.h"
 #include "fsm.h"
-#include "graphicfsm.h"
-#include "simulatedfsm.h"
-
-
-//
-// Static elements
-//
-
-const QBrush SimulatedFsmState::activeBrush = QBrush(Qt::green, Qt::SolidPattern);
+#include "fsmstate.h"
 
 
 //
@@ -52,55 +33,24 @@ const QBrush SimulatedFsmState::activeBrush = QBrush(Qt::green, Qt::SolidPattern
 //
 
 SimulatedFsmState::SimulatedFsmState(componentId_t logicComponentId) :
-	GraphicFsmState(logicComponentId),
-	SimulatedComponent(logicComponentId)
+	SimulatedActuatorComponent(logicComponentId)
 {
-	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
-	if (graphicFsm == nullptr) return;
-
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto graphicState = graphicFsm->getState(logicComponentId);
-	if (graphicState == nullptr) return;
+	auto logicState = fsm->getState(this->componentId);
+	if (logicState == nullptr) return;
 
-	this->setPos(graphicState->pos());
 
-	this->setFlag(QGraphicsItem::ItemIsMovable,                 false);
-	this->setFlag(QGraphicsItem::ItemIsSelectable,              false);
-	this->setFlag(QGraphicsItem::ItemIsFocusable,               false);
-	this->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-	this->setFlag(QGraphicsItem::ItemClipsToShape,              false);
-
-	this->setAcceptHoverEvents(false);
-}
-
-SimulatedFsmState::~SimulatedFsmState()
-{
-
-}
-
-void SimulatedFsmState::refreshDisplay()
-{
-	if (this->isActive)
-	{
-		this->setBrush(activeBrush);
-	}
-	else
-	{
-		this->setBrush(defaultBrush);
-	}
-
-	GraphicFsmState::refreshDisplay();
+	this->name = logicState->getName();
+	this->outgoingTransitionsIds = logicState->getOutgoingTransitionsIds();
 }
 
 void SimulatedFsmState::setActive(bool active)
 {
 	this->isActive = active;
 
-	this->refreshDisplay();
-
-	emit this->stateActiveStatusChanged();
+	emit this->simulatedComponentUpdatedEvent(this->componentId);
 }
 
 bool SimulatedFsmState::getIsActive() const
@@ -108,65 +58,12 @@ bool SimulatedFsmState::getIsActive() const
 	return this->isActive;
 }
 
-void SimulatedFsmState::keyPressEvent(QKeyEvent *event)
+QString SimulatedFsmState::getName() const
 {
-	if (event->key() == Qt::Key_Menu)
-	{
-		QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
-
-		QGraphicsView* view = scene()->views()[0];
-
-		QPoint posOnParent = view->mapFromScene(this->scenePos());
-
-		QPoint posOnScreen = view->mapToGlobal(posOnParent);
-		contextEvent->setScreenPos(posOnScreen);
-
-		this->contextMenuEvent(contextEvent);
-
-		event->accept();
-	}
-	else
-	{
-		event->ignore();
-	}
+	return this->name;
 }
 
-void SimulatedFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+const QList<componentId_t> SimulatedFsmState::getOutgoingTransitionsIds() const
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
-
-	auto logicState = fsm->getState(this->logicComponentId);
-	if (logicState == nullptr) return;
-
-	ContextMenu* menu = new ContextMenu();
-	menu->addTitle(tr("State") + " <i>" + logicState->getName() + "</i>");
-
-	if (this->isActive == false)
-	{
-		menu->addAction(tr("Set active"));
-	}
-
-	if (menu->actions().count() > 1) // > 1 because title is always here
-	{
-		menu->popup(event->screenPos());
-
-		connect(menu, &QMenu::triggered, this, &SimulatedFsmState::treatMenu);
-	}
-	else
-	{
-		delete menu;
-	}
-}
-
-void SimulatedFsmState::treatMenu(QAction* action)
-{
-	if (action->text() == tr("Set active"))
-	{
-		shared_ptr<SimulatedFsm> simulator = dynamic_pointer_cast<SimulatedFsm>(machineManager->getMachineSimulator());
-		if (simulator != nullptr)
-		{
-			simulator->forceStateActivation(this->logicComponentId);
-		}
-	}
+	return this->outgoingTransitionsIds;
 }

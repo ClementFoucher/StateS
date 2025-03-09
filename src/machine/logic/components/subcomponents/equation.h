@@ -45,21 +45,12 @@ class Operand;
  * Equation size in bits is also dynamic and depends on operands size,
  * except for equality and difference operators, which size is always 1.
  *
- * An equation with any of its operands undefined always returns
- * an undefined value.
+ * An equation with any of its operands undefined or erroneous
+ * always returns a null value.
  */
 class Equation : public QObject
 {
 	Q_OBJECT
-
-	/////
-	// Type declarations
-private:
-	enum class CurrentOrInitial_t
-	{
-		current,
-		initial
-	};
 
 	/////
 	// Constructors/destructors
@@ -74,7 +65,6 @@ public:
 	uint getSize() const;
 
 	LogicValue getInitialValue() const;
-	LogicValue getCurrentValue() const;
 
 	QString getText() const;
 	QString getColoredText(bool raw = false) const;
@@ -84,9 +74,6 @@ public:
 	OperatorType_t getOperatorType() const;
 
 	bool isInverted() const;
-	// Concept of true is only applicable to size 1 results
-	// An equation whose result size is > 1 will never be true
-	bool isTrue() const;
 
 	shared_ptr<Operand> getOperand(uint i) const;
 	void setOperand(uint i, componentId_t newOperand);        // Set variable operand
@@ -107,13 +94,12 @@ public:
 	void doFullStackRecomputation();
 
 private slots:
-	void computeCurrentValue();
-	void computeInitialValue();
+	void checkAndComputeInitialValue();
 	void operandInvalidatedEventHandler();
 
 private:
 	void setOperand(uint i, shared_ptr<Operand> newOperand);
-	LogicValue computeValue(CurrentOrInitial_t currentOrInitial);
+	LogicValue computeInitialValue();
 
 	/////
 	// Signals
@@ -126,8 +112,7 @@ signals:
 	/////
 	// Object variables
 private:
-	EquationComputationFailureCause_t failureCause;
-
+	// Equation parameters
 	OperatorType_t operatorType;
 	QList<shared_ptr<Operand>> operands;
 
@@ -135,10 +120,9 @@ private:
 	int rangeL = -1;
 	int rangeR = -1;
 
+	// Equation state recomputed dynamically
 	LogicValue initialValue;
-
-	// Simulation
-	LogicValue currentValue;
+	EquationComputationFailureCause_t failureCause;
 
 };
 

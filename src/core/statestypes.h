@@ -81,14 +81,12 @@ enum class OperatorType_t
 
 enum class EquationComputationFailureCause_t
 {
-	uncomputed,
 	nofail,
 	nullOperand,
 	incompleteOperand,
 	sizeMismatch,
 	missingParameter,
-	incorrectParameter,
-	notImplemented
+	incorrectParameter
 };
 
 enum class actuatorAllowedActionType_t : uint
@@ -119,6 +117,5 @@ enum class UndoCommandId_t : int32_t
 	fsmUndoTransitionConditionSliderPositionChangeId = 11,
 	fsmUndoStateRenamedId = 12
 };
-
 
 #endif // STATESTYPES_H

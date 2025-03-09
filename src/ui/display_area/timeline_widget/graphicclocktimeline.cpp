@@ -23,19 +23,24 @@
 #include "graphicclocktimeline.h"
 
 // StateS classes
-#include "clock.h"
+#include "machinemanager.h"
+#include "machinesimulator.h"
 
 
-GraphicClockTimeLine::GraphicClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
+GraphicClockTimeLine::GraphicClockTimeLine(QWidget* parent) :
 	GraphicBitTimeLine(0, false, parent)
 {
-	connect(clock.get(), &Clock::clockUpdateTimelineEvent, this, &GraphicClockTimeLine::clockEventHandler);
-	connect(clock.get(), &Clock::resetGraphicEvent,        this, &GraphicClockTimeLine::resetEventHandler);
+	auto machineSimulator = machineManager->getMachineSimulator();
+	if (machineSimulator == nullptr) return;
+
+
+	connect(machineSimulator.get(), &MachineSimulator::timelineDoStepEvent, this, &GraphicClockTimeLine::doStepEventHandler);
+	connect(machineSimulator.get(), &MachineSimulator::timelineResetEvent,  this, &GraphicClockTimeLine::resetEventHandler);
 
 	this->pointsPerCycle = 2;
 }
 
-void GraphicClockTimeLine::clockEventHandler()
+void GraphicClockTimeLine::doStepEventHandler()
 {
 	this->addPoint(true);
 	this->addPoint(false);

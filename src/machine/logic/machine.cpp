@@ -282,6 +282,11 @@ shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) co
 	return this->components[componentId];
 }
 
+shared_ptr<MachineActuatorComponent> Machine::getActuatorComponent(componentId_t componentId) const
+{
+	return dynamic_pointer_cast<MachineActuatorComponent>(this->getComponent(componentId));
+}
+
 shared_ptr<Variable> Machine::getVariable(componentId_t variableId) const
 {
 	return dynamic_pointer_cast<Variable>(this->getComponent(variableId));

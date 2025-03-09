@@ -22,18 +22,31 @@
 #ifndef SIMULATEDCOMPONENT_H
 #define SIMULATEDCOMPONENT_H
 
+// Parent
+#include <QObject>
+
 // StateS classes
 #include "statestypes.h"
 
 
-class SimulatedComponent
+class SimulatedComponent : public QObject
 {
+	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
 	explicit SimulatedComponent(componentId_t componentId);
-	virtual ~SimulatedComponent();
+
+	/////
+	// Object functions
+public:
+	componentId_t getId() const;
+
+	/////
+	// Signals
+signals:
+	void simulatedComponentUpdatedEvent(componentId_t componentId);
 
 	/////
 	// Object variables

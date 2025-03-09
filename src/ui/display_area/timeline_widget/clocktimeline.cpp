@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,12 +30,12 @@
 #include "graphicclocktimeline.h"
 
 
-ClockTimeLine::ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent) :
+ClockTimeLine::ClockTimeLine(QWidget* parent) :
     QWidget(parent)
 {
 	QLabel* title = new QLabel(tr("Clock"));
 
-	GraphicClockTimeLine* timeLineDisplay = new GraphicClockTimeLine(clock);
+	GraphicClockTimeLine* timeLineDisplay = new GraphicClockTimeLine();
 	timeLineDisplay->setMinimumHeight(20);
 	timeLineDisplay->setMaximumHeight(20);
 

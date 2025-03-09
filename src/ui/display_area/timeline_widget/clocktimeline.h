@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,13 +25,6 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
-// StateS classes
-class Clock;
-
 
 class ClockTimeLine : public QWidget
 {
@@ -40,7 +33,7 @@ class ClockTimeLine : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit ClockTimeLine(shared_ptr<Clock> clock, QWidget* parent = nullptr);
+	explicit ClockTimeLine(QWidget* parent = nullptr);
 
 };
 

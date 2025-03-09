@@ -24,8 +24,6 @@
 
 // C++ classes
 #include <algorithm>
-#include <memory>
-using namespace std;
 
 // Qt classes
 #include <QVBoxLayout>
