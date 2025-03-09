@@ -25,10 +25,13 @@
 // Parent
 #include <QLineEdit>
 
-// Qt classes
-class QValidator;
 
-
+/**
+ * @brief The DynamicLineEditor class provides a line edit
+ * which is highlighted when edition starts, can be marked
+ * as erroneous and provides a signal when user cancels
+ * edit using the escape key.
+ */
 class DynamicLineEditor : public QLineEdit
 {
 	Q_OBJECT
@@ -42,34 +45,27 @@ protected:
 	/////
 	// Constructors/destructors
 public:
-	explicit DynamicLineEditor(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent = nullptr);
-	explicit DynamicLineEditor(const QString& content, bool selfManaged, QWidget* parent = nullptr);
+	explicit DynamicLineEditor(const QString& content, QWidget* parent = nullptr);
+	explicit DynamicLineEditor(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void markAsErroneous();
-	void resetView();
+	void setErroneous(bool erroneous);
+	bool getIsErroneous() const;
 
 signals:
-	void newTextAvailableEvent(const QString& text);
 	void userCancelEvent();
-	void upKeyPressed();
-	void downKeyPressed();
 
 protected:
 	virtual void focusInEvent   (QFocusEvent* event) override;
 	virtual void keyPressEvent  (QKeyEvent*   event) override;
 	virtual void keyReleaseEvent(QKeyEvent*   event) override;
 
-private slots:
-	void userValidatedEventHandler();
-
 	/////
 	// Object variables
-private:
+protected:
 	bool erroneous = false;
-	bool selfManaged = false;
 
 };
 

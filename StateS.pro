@@ -114,6 +114,7 @@ SOURCES += \
 	src/ui/refined_widget/statesgraphicsview.cpp \
 	src/ui/refined_widget/editors/dynamiclineeditor.cpp \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.cpp \
+	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.cpp \
 	src/ui/resource_bar/hinttab.cpp \
 	src/ui/resource_bar/abouttab.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
@@ -241,6 +242,7 @@ HEADERS += \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.h \
 	src/ui/refined_widget/editors/dynamiclineeditor.h \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.h \
+	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.h \
 	src/ui/resource_bar/hinttab.h \
 	src/ui/resource_bar/abouttab.h \
 	src/ui/resource_bar/resourcebar.h \

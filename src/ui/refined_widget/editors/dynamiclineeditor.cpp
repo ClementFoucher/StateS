@@ -30,69 +30,43 @@
 // Static elements
 //
 
-const QString DynamicLineEditor::editStyle  = QString("background-color: yellow; color: black;");
-const QString DynamicLineEditor::errorStyle = QString("background-color: red; color: black;");
-
+const QString DynamicLineEditor::editStyle  = QString("QLineEdit {background-color: yellow; color: black;}");
+const QString DynamicLineEditor::errorStyle = QString("QLineEdit {background-color: red; color: black;}");
 
 //
 // Class object definition
 //
 
-DynamicLineEditor::DynamicLineEditor(const QString& content, bool selfManaged, QValidator* validator, QWidget* parent) :
+DynamicLineEditor::DynamicLineEditor(const QString& content, QWidget* parent) :
     QLineEdit(content, parent)
 {
-	this->selfManaged = selfManaged;
+}
 
-	if (this->selfManaged)
+DynamicLineEditor::DynamicLineEditor(QWidget* parent) :
+	QLineEdit(parent)
+{
+}
+
+void DynamicLineEditor::setErroneous(bool erroneous)
+{
+	this->erroneous = erroneous;
+
+	if (this->erroneous == true)
 	{
-		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
+		this->setStyleSheet(DynamicLineEditor::errorStyle);
+
+		// When erroneous, force focus to continue edit
+		this->setFocus();
 	}
-
-	if (validator != nullptr)
+	else
 	{
-		this->setValidator(validator);
+		this->setStyleSheet( QString() );
 	}
 }
 
-DynamicLineEditor::DynamicLineEditor(const QString& content, bool selfManaged, QWidget* parent) :
-	DynamicLineEditor(content, selfManaged, nullptr, parent)
+bool DynamicLineEditor::getIsErroneous() const
 {
-
-}
-
-void DynamicLineEditor::userValidatedEventHandler()
-{
-	// For self-managed lines: go back to normal mode on edit end.
-	this->resetView();
-
-	// Refused mode will be triggered if text is incorrect
-	emit newTextAvailableEvent(this->text());
-}
-
-void DynamicLineEditor::markAsErroneous()
-{
-	this->erroneous = true;
-	this->setStyleSheet(DynamicLineEditor::errorStyle);
-
-	// When erroneous, force focus to continue edit
-	this->setFocus();
-}
-
-void DynamicLineEditor::resetView()
-{
-	this->erroneous = false;
-	this->setModified(false);
-	if (this->selfManaged)
-	{
-		disconnect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
-	}
-	this->clearFocus();
-	if (this->selfManaged)
-	{
-		connect(this, &QLineEdit::editingFinished, this, &DynamicLineEditor::userValidatedEventHandler);
-	}
-
-	this->setStyleSheet( QString() );
+	return this->erroneous;
 }
 
 void DynamicLineEditor::focusInEvent(QFocusEvent* event)
@@ -114,16 +88,8 @@ void DynamicLineEditor::keyPressEvent(QKeyEvent* event)
 		emit userCancelEvent();
 		transmitEvent = false;
 	}
-	else if (event->key() == Qt::Key::Key_Up)
-	{
-		emit upKeyPressed();
-	}
-	else if (event->key() == Qt::Key::Key_Down)
-	{
-		emit downKeyPressed();
-	}
 
-	if (transmitEvent)
+	if (transmitEvent == true)
 	{
 		QLineEdit::keyPressEvent(event);
 	}

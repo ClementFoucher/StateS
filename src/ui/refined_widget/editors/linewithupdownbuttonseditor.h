@@ -29,7 +29,7 @@
 class QIntValidator;
 
 // StateS classes
-class DynamicLineEditor;
+class SelfManagedDynamicLineEditor;
 
 
 class LineWithUpDownButtonsEditor : public QWidget
@@ -62,8 +62,8 @@ private slots:
 	/////
 	// Object variables
 private:
-	DynamicLineEditor* lineEdit  = nullptr;
-	QIntValidator*   validator = nullptr;
+	SelfManagedDynamicLineEditor* lineEdit  = nullptr;
+	QIntValidator*                validator = nullptr;
 
 };
 

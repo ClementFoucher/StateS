@@ -32,7 +32,7 @@ using namespace std;
 // StateS classes
 class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
-class DynamicLineEditor;
+class SelfManagedDynamicLineEditor;
 
 
 class MachineEditorTab : public QWidget
@@ -62,7 +62,7 @@ private:
 	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
-	DynamicLineEditor* machineName = nullptr;
+	SelfManagedDynamicLineEditor* machineName = nullptr;
 
 };
 

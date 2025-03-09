@@ -1018,9 +1018,9 @@ void VariableListEditor::editCurrentCell(bool erroneous)
 
 	// Done
 
-	if (erroneous)
+	if (erroneous == true)
 	{
-		editor->markAsErroneous();
+		editor->setErroneous(true);
 	}
 
 	editor->setFocus();

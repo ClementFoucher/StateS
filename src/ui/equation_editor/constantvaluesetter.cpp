@@ -27,7 +27,7 @@
 #include <QLabel>
 
 // StateS classes
-#include "dynamiclineeditor.h"
+#include "selfmanageddynamiclineeditor.h"
 
 
 ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
@@ -86,9 +86,9 @@ void ConstantValueSetter::setEdited(bool edited)
 		if (!this->currentValue.isNull())
 			value = this->currentValue.toString();
 
-		this->valueEditor = new DynamicLineEditor(value, true);
+		this->valueEditor = new SelfManagedDynamicLineEditor(value);
 
-		connect(this->valueEditor, &DynamicLineEditor::newTextAvailableEvent, this, &ConstantValueSetter::newValueAvailable);
+		connect(this->valueEditor, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &ConstantValueSetter::newValueAvailable);
 
 		layout->addWidget(this->valueEditor);
 		this->valueEditor->setFocus();

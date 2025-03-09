@@ -53,5 +53,8 @@ QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionVi
 
 	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
-	return new DynamicLineEditor(QString(), false, new QRegularExpressionValidator(re), parent);
+	auto editor = new DynamicLineEditor(parent);
+	editor->setValidator(new QRegularExpressionValidator(re));
+
+	return editor;
 }

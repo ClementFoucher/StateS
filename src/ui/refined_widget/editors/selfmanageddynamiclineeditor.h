@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,48 +16,43 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STATEEDITORTAB_H
-#define STATEEDITORTAB_H
+#ifndef SELFMANAGEDDYNAMICLINEEDITOR_H
+#define SELFMANAGEDDYNAMICLINEEDITOR_H
 
 // Parent
-#include "componenteditortab.h"
-
-// StateS classes
-#include "statestypes.h"
-class SelfManagedDynamicLineEditor;
+#include "dynamiclineeditor.h"
 
 
-class StateEditorTab : public ComponentEditorTab
+class SelfManagedDynamicLineEditor : public DynamicLineEditor
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit StateEditorTab(componentId_t stateId, QWidget* parent = nullptr);
+	explicit SelfManagedDynamicLineEditor(const QString& content, QWidget* parent = nullptr);
+	explicit SelfManagedDynamicLineEditor(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void setEditName();
+	void resetView();
+
+signals:
+	void newTextAvailableEvent(const QString& text);
+	void upKeyPressed();
+	void downKeyPressed();
 
 protected:
-	virtual void mousePressEvent(QMouseEvent* e) override;
+	virtual void keyPressEvent  (QKeyEvent* event) override;
+	virtual void keyReleaseEvent(QKeyEvent* event) override;
 
 private slots:
-	void updateContent();
-	void nameTextChangedEventHandler(const QString& name);
-
-	/////
-	// Object variables
-private:
-	componentId_t stateId = nullId;
-
-	SelfManagedDynamicLineEditor* textStateName = nullptr;
+	void userValidatedEventHandler();
 
 };
 
-#endif // STATEEDITORTAB_H
+#endif // SELFMANAGEDDYNAMICLINEEDITOR_H

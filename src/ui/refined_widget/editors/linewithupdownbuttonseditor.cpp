@@ -29,7 +29,7 @@
 #include <QMouseEvent>
 
 // StateS classes
-#include "dynamiclineeditor.h"
+#include "selfmanageddynamiclineeditor.h"
 
 
 LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const QString& text, QWidget* parent) :
@@ -53,11 +53,11 @@ LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const
 	int pos;
 	if (this->validator->validate(initialText, pos) != QValidator::State::Invalid)
 	{
-		this->lineEdit = new DynamicLineEditor(text, true, this);
+		this->lineEdit = new SelfManagedDynamicLineEditor(text, this);
 	}
 	else
 	{
-		this->lineEdit = new DynamicLineEditor(QString(), true, this);
+		this->lineEdit = new SelfManagedDynamicLineEditor(this);
 	}
 
 	this->lineEdit->setValidator(validator);
@@ -66,9 +66,9 @@ LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const
 	connect(buttonUp,   &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::up);
 	connect(buttonDown, &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::down);
 
-	connect(this->lineEdit, &DynamicLineEditor::textEdited,     this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
-	connect(this->lineEdit, &DynamicLineEditor::upKeyPressed,   this, &LineWithUpDownButtonsEditor::up);
-	connect(this->lineEdit, &DynamicLineEditor::downKeyPressed, this, &LineWithUpDownButtonsEditor::down);
+	connect(this->lineEdit, &SelfManagedDynamicLineEditor::textEdited,     this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
+	connect(this->lineEdit, &SelfManagedDynamicLineEditor::upKeyPressed,   this, &LineWithUpDownButtonsEditor::up);
+	connect(this->lineEdit, &SelfManagedDynamicLineEditor::downKeyPressed, this, &LineWithUpDownButtonsEditor::down);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(buttonWidget);

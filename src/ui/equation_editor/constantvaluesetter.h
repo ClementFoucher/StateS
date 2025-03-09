@@ -30,7 +30,7 @@ class QLabel;
 
 // StateS classes
 #include "logicvalue.h"
-class DynamicLineEditor;
+class SelfManagedDynamicLineEditor;
 
 
 class ConstantValueSetter : public EditableEquation
@@ -60,8 +60,8 @@ private slots:
 private:
 	LogicValue currentValue;
 
-	DynamicLineEditor* valueEditor = nullptr;
-	QLabel*            valueText   = nullptr;
+	SelfManagedDynamicLineEditor* valueEditor = nullptr;
+	QLabel*                       valueText   = nullptr;
 
 };
 
