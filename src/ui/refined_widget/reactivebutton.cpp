@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2021 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,11 +22,6 @@
 // Current class header
 #include "reactivebutton.h"
 
-
-ReactiveButton::ReactiveButton(QWidget* parent) :
-    QPushButton(parent)
-{
-}
 
 ReactiveButton::ReactiveButton(const QString& text, QWidget* parent) :
     QPushButton(text, parent)
