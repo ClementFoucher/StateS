@@ -37,7 +37,8 @@ public:
 
 	/////
 	// Static variables
-public:
+private:
+	static const QString defaultStyle;
 	static const QString errorStyle;
 	static const QString listStyle;
 

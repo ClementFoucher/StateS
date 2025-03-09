@@ -29,8 +29,9 @@
 #include <QWidgetAction>
 
 
-const QString ContextMenu::errorStyle("border: 3px solid red; color: red");
-const QString ContextMenu::listStyle("border: 3px double");
+const QString ContextMenu::defaultStyle("QMenu {border: 1px solid}");
+const QString ContextMenu::errorStyle("QMenu {background-color: lightgrey; border: 3px solid red; color: red}");
+const QString ContextMenu::listStyle("QMenu {border: 3px double}");
 
 
 ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)
@@ -49,7 +50,7 @@ ContextMenu::ContextMenu(QWidget* parent) :
     QMenu(parent)
 {
 	connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
-	this->setStyleSheet( QString( "border: 1px solid"));
+	this->setStyleSheet(defaultStyle);
 	this->setToolTipsVisible(true);
 }
 
