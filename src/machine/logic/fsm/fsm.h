@@ -53,7 +53,7 @@ public:
 	///
 	// Components accessors and mutators
 
-	componentId_t addState     (bool isInitial = false, QString name = QString(), componentId_t id = nullId);
+	componentId_t addState     (const QString& name, componentId_t id = nullId);
 	componentId_t addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id = nullId);
 
 	void removeState     (componentId_t stateId);
@@ -77,9 +77,6 @@ public:
 
 	void setInitialState(componentId_t stateId);
 	componentId_t getInitialStateId() const;
-
-private:
-	QString getUniqueStateName(QString nameProposal);
 
 	/////
 	// Object variables

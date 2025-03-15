@@ -97,11 +97,12 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 	{
 		if (this->sceneMode == SceneMode_t::addingInitialState)
 		{
-			// Create state
-			auto logicStateId = fsm->addState(true);
+			// Create logic state & update FSM
+			auto logicStateId = fsm->addState(this->getUniqueStateName());
+			fsm->setInitialState(logicStateId);
 
-			GraphicFsmState* graphicState = graphicFsm->addState(logicStateId, me->scenePos());
-			machineManager->notifyMachineEdited();
+			// Create graphic state
+			auto graphicState = graphicFsm->addState(logicStateId, me->scenePos());
 
 			// Add graphic state to scene
 			this->addState(graphicState, true);
@@ -109,19 +110,25 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 			// Only one initial state in a FSM, switch to regular state tool
 			machineBuilder->setTool(MachineBuilderTool_t::state);
 
+			// Machine has been edited
+			machineManager->notifyMachineEdited();
+
 			// Transmitting event so that new state is selected
 			// and can be moved within the same click
 		}
 		else if (this->sceneMode == SceneMode_t::addingState)
 		{
-			// Create state
-			auto logicStateId = fsm->addState();
+			// Create logic state
+			auto logicStateId = fsm->addState(this->getUniqueStateName());
 
-			GraphicFsmState* graphicState = graphicFsm->addState(logicStateId, me->scenePos());
-			machineManager->notifyMachineEdited();
+			// Create graphic state
+			auto graphicState = graphicFsm->addState(logicStateId, me->scenePos());
 
 			// Add graphic state to scene
 			this->addState(graphicState, true);
+
+			// Machine has been edited
+			machineManager->notifyMachineEdited();
 
 			// Transmitting event so that new state is selected
 			// and can be moved within the same click
@@ -145,15 +152,16 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 					delete this->dummyTransition;
 					this->dummyTransition = nullptr;
 
-					// Build new transition
+					// Create logic transition
 					auto logicTransitionId = fsm->addTransition(sourceStateId, targetStateId);
 
-					GraphicFsmTransition* graphicTransition = graphicFsm->addTransition(logicTransitionId, 0.5);
-					machineManager->notifyMachineEdited();
+					// Create graphic transition
+					auto graphicTransition = graphicFsm->addTransition(logicTransitionId, 0.5);
 
 					// Add graphic transition to scene
 					this->addTransition(graphicTransition, true);
 
+					// Update mode or tool
 					if (this->sceneMode == SceneMode_t::addingTransition)
 					{
 						// Get ready for next transition
@@ -164,6 +172,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 						// Single-use tool: terminate transition adding mode
 						machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
 					}
+
+					// Machine has been edited
+					machineManager->notifyMachineEdited();
 				}
 
 				this->transmitMouseEvent = false;
@@ -204,6 +215,8 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 							auto sliderPosition = graphicTransition->getConditionLineSliderPosition();
 
 							// Update logic transition and replace graphic transition
+							// It is easier to just delete and rebuild the graphic transition
+							// so that nighborhood is automatically updated
 							graphicFsm->removeGraphicComponent(this->transitionUnderEditId);
 
 							if (this->sceneMode == SceneMode_t::editingTransitionTarget)
@@ -552,7 +565,10 @@ void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
 
 	if (doDelete == true)
 	{
+		// Update FSM
 		fsm->removeState(stateId);
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 	}
 }
@@ -562,7 +578,11 @@ void FsmScene::stateCallsSetInitialStateEventHandler(componentId_t stateId)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
+
+	// Update FSM
 	fsm->setInitialState(stateId);
+
+	// Machine has been edited
 	machineManager->notifyMachineEdited();
 }
 
@@ -748,19 +768,26 @@ void FsmScene::menuAddStateTriggeredEventHandler(QAction* action)
 	auto logicStateId = nullId;
 	if (action->text() == tr("Add state"))
 	{
-		logicStateId = fsm->addState();
+		// Create logic state
+		logicStateId = fsm->addState(this->getUniqueStateName());
 	}
 	else if (action->text() == tr("Add initial state"))
 	{
-		logicStateId = fsm->addState(true);
+		// Create logic state & update FSM
+		logicStateId = fsm->addState(this->getUniqueStateName());
+		fsm->setInitialState(logicStateId);
 	}
 
 	if (logicStateId != nullId)
 	{
+		// Create graphic state
 		GraphicFsmState* graphicState = graphicFsm->addState(logicStateId, this->menuMousePos);
-		machineManager->notifyMachineEdited();
 
+		// Update scene
 		this->addState(graphicState, true);
+
+		// Machine has been edited
+		machineManager->notifyMachineEdited();
 	}
 }
 
@@ -1043,4 +1070,34 @@ GraphicFsmState* FsmScene::getStateAt(const QPointF& location) const
 	}
 
 	return nullptr;
+}
+
+QString FsmScene::getUniqueStateName()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return QString();
+
+
+	QString baseName = tr("State");
+	QString currentName = baseName + " #0";
+	uint i = 0;
+
+	bool nameIsValid = false;
+	while (nameIsValid == false)
+	{
+		nameIsValid = true;
+		for (auto stateId : fsm->getAllStatesIds())
+		{
+			auto state = fsm->getState(stateId);
+			if (state->getName() == currentName)
+			{
+				i++;
+				currentName = baseName + " #" + QString::number(i);
+				nameIsValid = false;
+				break;
+			}
+		}
+	}
+
+	return currentName;
 }

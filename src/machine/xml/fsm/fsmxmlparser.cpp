@@ -323,12 +323,18 @@ void FsmXmlParser::parseState()
 		componentId_t stateId;
 		if (extractedId != nullId)
 		{
-			stateId = fsm->addState(isInitial, stateName, extractedId);
+			stateId = fsm->addState(stateName, extractedId);
 		}
 		else
 		{
-			stateId = fsm->addState(isInitial, stateName);
+			stateId = fsm->addState(stateName);
 		}
+
+		if (isInitial == true)
+		{
+			fsm->setInitialState(stateId);
+		}
+
 		auto state = fsm->getState(stateId);
 
 		// Get position

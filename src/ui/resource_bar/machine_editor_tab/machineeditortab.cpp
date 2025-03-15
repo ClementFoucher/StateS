@@ -24,6 +24,7 @@
 
 // Qt classes
 #include <QLabel>
+#include <QGroupBox>
 #include <QVBoxLayout>
 #include <QTabWidget>
 
@@ -42,73 +43,86 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 {
 	this->machineComponentView = machineComponentView;
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
-
-	//
-	// Machine name
-	QLabel* machineNameLabel = new QLabel("<b>" + tr("Machine name")  + "</b>", this);
-	machineNameLabel->setAlignment(Qt::AlignCenter);
-	layout->addWidget(machineNameLabel);
-
-	this->machineName = new SelfManagedDynamicLineEditor(QString(), this);
-	this->updateMachineName();
-
-	connect(this->machineName, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
-	connect(this->machineName, &SelfManagedDynamicLineEditor::userCancelEvent,       this, &MachineEditorTab::updateMachineName);
+	////
+	// Build object
 
 	connect(machineManager.get(), &MachineManager::machineNameChangedEvent, this, &MachineEditorTab::updateMachineName);
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,     this, &MachineEditorTab::updateMachineName);
 
-	layout->addWidget(this->machineName);
+	////
+	// Visual rendering
 
 	//
 	// Title
 
-	QLabel* title = new QLabel("<b>" + tr("Variable editor")  + "</b>", this);
+	QLabel* title = new QLabel("<b>" + tr("Machine editor") + "</b>");
 	title->setAlignment(Qt::AlignCenter);
-	layout->addWidget(title);
 
 	//
-	// Variables
+	// Machine name
+	auto machineNameEditor = new QGroupBox(tr("Machine name"));
+	auto machineNameEditorLayout = new QVBoxLayout(machineNameEditor);
 
-	QTabWidget* variablesTabs = new QTabWidget(this);
-	layout->addWidget(variablesTabs);
+	this->machineName = new SelfManagedDynamicLineEditor();
+	connect(this->machineName, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &MachineEditorTab::nameTextChangedEventHandler);
+	connect(this->machineName, &SelfManagedDynamicLineEditor::userCancelEvent,       this, &MachineEditorTab::updateMachineName);
+	machineNameEditorLayout->addWidget(this->machineName);
 
+	//
+	// Machine variables
+	auto variablesEditor = new QGroupBox(tr("Variable editor"));
+	auto variablesEditorLayout = new QVBoxLayout(variablesEditor);
+
+	auto variablesTabs = new QTabWidget();
 	variablesTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
 	variablesTabs->insertTab(1, new VariableListEditor(VariableNature_t::output),   tr("Outputs"));
 	variablesTabs->insertTab(2, new VariableListEditor(VariableNature_t::internal), tr("Variables"));
 	variablesTabs->insertTab(3, new VariableListEditor(VariableNature_t::constant), tr("Constants"));
-
 	variablesTabs->setCurrentIndex(0);
+	variablesEditorLayout->addWidget(variablesTabs);
 
 	//
 	// Hint
+	QString hintTitle = tr("Hint:") + " " + tr("Machine editor");
 
-	QLabel* hintText = new QLabel(tr("Switch between variable types using tabs.")
-	                              + "<br />"
-	                              + tr("Variable length can not exceed 64 bits.")
-	                              + "<br />"
-	                              + tr("Allowed characters are alphanumerical ones, space and")
+	QLabel* hintText = new QLabel("<p><b>" + tr("Names:") + "</b></p>"
+	                              + "<p>"
+	                              + tr("Allowed characters for machine and variables names are alphanumerical ones, space and")
 	                              + " {'_', '@', '#', '-'}."
-	                              + "<br />"
-	                              + tr("Double-click on a value to edit it.")
+	                              + "</p>"
+	                              + "<p><b>" + tr("Variables editor:") + "</b></p>"
+	                              + "<p>"
+	                              + tr("Switch between variable natures using tabs.")
+	                              + "<br>"
+	                              + tr("Double-click on a field to edit it.")
+	                              + "</p>"
 	                              );
 	hintText->setAlignment(Qt::AlignCenter);
 	hintText->setWordWrap(true);
 
-	QString hintTitle = tr("Hint:") + " " + tr("Variable editor");
-	this->hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText, this);
-	layout->addWidget(this->hintDisplay);
+	auto hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText);
 
 	//
 	// Machine visualization
-
-	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
-	layout->addWidget(this->machineDisplay);
+	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
 
 	//
-	// Set tab focus order to prevent machine name being edited by default
-	this->setTabOrder(variablesTabs, this->machineName);
+	// Build complete rendering
+	auto mainLayout = new QVBoxLayout(this);
+
+	mainLayout->addWidget(title);
+	mainLayout->addWidget(machineNameEditor);
+	mainLayout->addWidget(variablesEditor);
+	mainLayout->addWidget(hintDisplay);
+	mainLayout->addWidget(this->machineDisplay);
+
+	////
+	// Fill content
+
+	this->updateMachineName();
+
+	// Set focus to variable editor in order to prevent machine name being edited by default
+	variablesTabs->setFocus();
 }
 
 void MachineEditorTab::showEvent(QShowEvent* e)
@@ -127,7 +141,8 @@ void MachineEditorTab::showEvent(QShowEvent* e)
 /**
  * @brief MachineEditorTab::mousePressEvent
  * Used to allow validation of machine name wherever we click,
- * otherwise clicks inside this widget won't validate input.
+ * otherwise clicks inside this widget that don't give focus to
+ * another widget won't validate input.
  */
 void MachineEditorTab::mousePressEvent(QMouseEvent* e)
 {
@@ -148,8 +163,13 @@ void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)
 
 	if (accepted == true)
 	{
-		MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
-		machineManager->notifyMachineEdited(undoCommand);
+		// Name gets cleaned by machine: make sure the new name is
+		// different from the old one before building an undo command.
+		if (machine->getName() != oldName)
+		{
+			MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
+			machineManager->notifyMachineEdited(undoCommand);
+		}
 	}
 	else
 	{
@@ -159,10 +179,13 @@ void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)
 
 void MachineEditorTab::updateMachineName()
 {
+	this->machineName->resetView();
+
 	auto machine = machineManager->getMachine();
 	if (machine != nullptr)
 	{
 		this->machineName->setText(machine->getName());
+		this->machineName->setEnabled(true);
 	}
 	else
 	{

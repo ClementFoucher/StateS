@@ -482,7 +482,28 @@ void VariableListEditor::beginAddVariable()
 	if (machine == nullptr) return;
 
 
-	QString initialName = machine->getUniqueVariableName(this->newVariablesPrefix);
+	QString initialName;
+	uint suffix = 0;
+	auto variablesIds = machine->getAllVariablesIds();
+	bool nameIsValid;
+	do
+	{
+		initialName = this->newVariablesPrefix + QString::number(suffix);
+		nameIsValid = true;
+		for (auto existingVariableId : variablesIds)
+		{
+			auto existingVariable = machine->getVariable(existingVariableId);
+			if (existingVariable == nullptr) continue;
+
+
+			if (existingVariable->getName() == initialName)
+			{
+				suffix++;
+				nameIsValid = false;
+				break;
+			}
+		}
+	} while (nameIsValid == false);
 
 	this->variablesList->insertRow(variablesList->rowCount());
 

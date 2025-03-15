@@ -59,7 +59,6 @@ private slots:
 private:
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 
-	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	SelfManagedDynamicLineEditor* machineName = nullptr;

@@ -59,27 +59,30 @@ void Machine::finalizeLoading()
 
 bool Machine::setName(const QString& newName)
 {
-	QString correctedName = newName.trimmed();
+	// Clean name
+	auto cleanedName = newName;
+	this->cleanName(cleanedName);
 
-	if (correctedName.length() != 0)
-	{
-		this->name = correctedName;
+	// Make sure there is actually a name
+	if (cleanedName.isEmpty() == true) return false;
 
-		emit this->machineNameChangedEvent();
+	// If new name is identical to current name, nothing to do
+	if (this->name == cleanedName) return true;
 
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+
+	// Set new name
+	this->name = cleanedName;
+
+	emit this->machineNameChangedEvent();
+
+	return true;
 }
 
 componentId_t Machine::addVariable(VariableNature_t nature, const QString& name, componentId_t id)
 {
-	// Make sure the requested name is correct and unique
+	// First clean name
 	auto cleanedName = name;
-	this->cleanVariableName(cleanedName);
+	this->cleanName(cleanedName);
 
 	// Make sure there is actually a name
 	if (cleanedName.isEmpty() == true) return nullId;
@@ -96,7 +99,6 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 			return nullId;
 		}
 	}
-
 
 	// Create variable
 	shared_ptr<Variable> variable;
@@ -204,7 +206,7 @@ bool Machine::renameVariable(componentId_t variableId, const QString& newName)
 
 	// Clean name
 	QString cleanedNewName = newName;
-	this->cleanVariableName(cleanedNewName);
+	this->cleanName(cleanedNewName);
 
 	// Make sure name is not empty
 	if (cleanedNewName.isEmpty()) return false;
@@ -364,39 +366,6 @@ const QList<componentId_t> Machine::getAllVariablesIds() const
 	return allVariablesIds;
 }
 
-QString Machine::getUniqueVariableName(const QString& prefix) const
-{
-	QString baseName = prefix;
-	this->cleanVariableName(baseName);
-
-	QString currentName;
-
-	uint i = 0;
-	bool nameIsValid = false;
-
-	while (nameIsValid == false)
-	{
-		currentName = baseName + QString::number(i);
-
-		nameIsValid = true;
-		for (auto& variableId : this->getAllVariablesIds())
-		{
-			auto variable = this->getVariable(variableId);
-			if (variable == nullptr) continue;
-
-
-			if (variable->getName() == currentName)
-			{
-				nameIsValid = false;
-				i++;
-				break;
-			}
-		}
-	}
-
-	return currentName;
-}
-
 /////
 // Protected functions
 
@@ -413,17 +382,7 @@ void Machine::removeComponent(componentId_t componentId)
 	this->components.remove(componentId);
 }
 
-/////
-// Private functions
-
-/**
- * @brief Machine::cleanVariableName
- * @param nameToClean
- * @return
- *  True if name was clean,
- *  False if string has been cleaned.
- */
-bool Machine::cleanVariableName(QString& nameToClean) const
+void Machine::cleanName(QString& nameToClean) const
 {
 	QString nameBeingCleaned = nameToClean.trimmed();
 	QString cleanName;
@@ -442,13 +401,5 @@ bool Machine::cleanVariableName(QString& nameToClean) const
 		}
 	}
 
-	if (cleanName != nameToClean)
-	{
-		nameToClean = cleanName;
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	nameToClean = cleanName;
 }

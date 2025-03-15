@@ -148,7 +148,7 @@ private:
 	shared_ptr<MachineSimulator> machineSimulator;
 
 	// Internal
-	unique_ptr<UndoRedoManager> undoRedoManager = nullptr;
+	unique_ptr<UndoRedoManager> undoRedoManager;
 	bool undoRedoMode = false;
 	SimulationMode_t currentSimulationMode = SimulationMode_t::editMode;
 

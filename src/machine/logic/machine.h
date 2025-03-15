@@ -87,16 +87,11 @@ public:
 	const QList<componentId_t> getReadableVariablesIds()  const;
 	const QList<componentId_t> getAllVariablesIds()       const;
 
-	// Other
-
-	QString getUniqueVariableName(const QString& prefix) const;
-
 protected:
 	void registerComponent(shared_ptr<MachineComponent> newComponent);
 	void removeComponent(componentId_t componentId);
 
-private:
-	bool cleanVariableName(QString& nameToClean) const;
+	void cleanName(QString& nameToClean) const;
 
 	/////
 	// Signals

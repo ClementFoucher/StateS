@@ -52,29 +52,42 @@ void Fsm::finalizeLoading()
 	}
 }
 
-componentId_t Fsm::addState(bool isInitial, QString name, componentId_t id)
+componentId_t Fsm::addState(const QString& name, componentId_t id)
 {
+	// Clean name
+	QString cleanedName = name;
+	this->cleanName(cleanedName);
+
+	// Make sure there is actually a name
+	if (cleanedName.isEmpty() == true) return nullId;
+
+	// Check if name doesn't already exist
+	for (auto existingStateId : as_const(this->states))
+	{
+		auto existingState = this->getState(existingStateId);
+		if (existingState->getName() == cleanedName)
+		{
+			return nullId;
+		}
+	}
+
+
+	// Build state
 	shared_ptr<FsmState> state = nullptr;
 	componentId_t stateId;
-
 	if (id != nullId)
 	{
-		state = shared_ptr<FsmState>(new FsmState(id, this->getUniqueStateName(name)));
+		state = shared_ptr<FsmState>(new FsmState(id, cleanedName));
 		stateId = id;
 	}
 	else
 	{
-		state = shared_ptr<FsmState>(new FsmState(this->getUniqueStateName(name)));
+		state = shared_ptr<FsmState>(new FsmState(cleanedName));
 		stateId = state->getId();
 	}
 
 	this->states.append(stateId);
 	this->registerComponent(state);
-
-	if (isInitial)
-	{
-		this->setInitialState(stateId);
-	}
 
 	return stateId;
 }
@@ -85,6 +98,7 @@ componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targ
 	auto target = this->getState(targetStateId);
 
 	if ( (source == nullptr) || (target == nullptr) ) return nullId;
+
 
 	shared_ptr<FsmTransition> transition;
 	componentId_t transitionId;
@@ -171,26 +185,31 @@ bool Fsm::renameState(componentId_t stateId, const QString& newName)
 	auto state = this->getState(stateId);
 	if (state == nullptr) return false;
 
-	QString cleanedName = newName.trimmed();
+	// Clean name
+	QString cleanedName = newName;
+	this->cleanName(cleanedName);
 
-	if (state->getName() == cleanedName)
+	// If new name is identical to current name, nothing to do
+	if (state->getName() == cleanedName) return true;
+
+	// Make sure name is not empty
+	if (cleanedName.isEmpty() == true) return false;
+
+	// Check if name doesn't already exist
+	for (auto otherStateId : as_const(this->states))
 	{
-		// Nothing to do
-		return true;
+		auto otherState = this->getState(otherStateId);
+		if (otherState->getName() == cleanedName)
+		{
+			return false;
+		}
 	}
 
-	// By this point, we know the new name is at least different from current
-	QString actualName = getUniqueStateName(cleanedName);
 
-	if (actualName == cleanedName)
-	{
-		state->setName(actualName);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	// Set new name
+	state->setName(cleanedName);
+
+	return true;
 }
 
 void Fsm::redirectTransition(componentId_t transitionId, componentId_t newSourceStateId, componentId_t newTargetStateId)
@@ -249,43 +268,4 @@ void Fsm::setInitialState(componentId_t stateId)
 componentId_t Fsm::getInitialStateId() const
 {
 	return this->initialStateId;
-}
-
-QString Fsm::getUniqueStateName(QString nameProposal)
-{
-	QString baseName;
-	QString currentName;
-	uint i;
-
-	if (nameProposal.isEmpty())
-	{
-		baseName = tr("State");
-		currentName = baseName + " #0";
-		i = 0;
-	}
-	else
-	{
-		baseName = nameProposal;
-		currentName = nameProposal;
-		i = 1;
-	}
-
-	bool nameIsValid = false;
-	while (!nameIsValid)
-	{
-		nameIsValid = true;
-		for (auto colleagueId : this->states)
-		{
-			auto colleague = this->getState(colleagueId);
-			if (colleague->getName() == currentName)
-			{
-				nameIsValid = false;
-				i++;
-				currentName = baseName + " #" + QString::number(i);
-				break;
-			}
-		}
-	}
-
-	return currentName;
 }

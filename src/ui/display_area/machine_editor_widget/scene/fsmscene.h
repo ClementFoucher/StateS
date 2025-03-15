@@ -134,6 +134,9 @@ private:
 	// Accessors
 	GraphicFsmState* getStateAt(const QPointF& location) const;
 
+	// Helper functions
+	QString getUniqueStateName();
+
 	/////
 	// Object variables
 private:
