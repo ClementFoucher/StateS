@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,8 +37,8 @@ class LangSelectionDialog;
 /**
  * @brief The StateS class is the root object of this application.
  *
- * At application launch, it builds builds and displays
- * the language selection dialog before building the UI.
+ * At application launch, it builds and displays the
+ * language selection dialog before building the UI.
  *
  * During application run, it is in charge of machine replacements
  * (clear, new) and save files (load, save).
@@ -86,8 +86,9 @@ private:
 	/////
 	// Object variables
 private:
-	// Transient member: only used during initialization
+	// Transient members: only used during initialization
 	LangSelectionDialog* languageSelectionWindow = nullptr;
+	QString initialFilePath;
 
 	// Pointers to objects persistent throughout the application life
 	QTranslator* translator = nullptr; // Translator will be nullptr if English is chosen

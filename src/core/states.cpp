@@ -69,6 +69,8 @@ QString StateS::getCopyrightYears()
  */
 StateS::StateS(QApplication* app, const QString& initialFilePath)
 {
+	this->initialFilePath = initialFilePath;
+
 	// Build and show language selection dialog
 	this->languageSelectionWindow = new LangSelectionDialog(app);
 	connect(this->languageSelectionWindow, &LangSelectionDialog::languageSelected, this, &StateS::languageSelected);
@@ -90,16 +92,6 @@ StateS::StateS(QApplication* app, const QString& initialFilePath)
 	}
 
 	this->languageSelectionWindow->show();
-
-	// Set initial machine
-	if (initialFilePath.isEmpty() == false)
-	{
-		this->loadMachine(initialFilePath);
-	}
-	else
-	{
-		this->generateNewFsm();
-	}
 }
 
 /**
@@ -322,6 +314,17 @@ void StateS::launchUi()
 		                    );
 	}
 
+	// Set initial machine
+	if (this->initialFilePath.isEmpty() == false)
+	{
+		this->loadMachine(this->initialFilePath);
+		this->initialFilePath.clear();
+	}
+	else
+	{
+		this->generateNewFsm();
+	}
+
 	// Display UI
 	this->statesUi->show();
 }
@@ -345,9 +348,10 @@ void StateS::displayErrorMessages(const QString& errorTitle, const QList<QString
 	{
 		parent = this->languageSelectionWindow;
 	}
+
 	ErrorDisplayDialog* errorDialog = new ErrorDisplayDialog(errorTitle, errorList, parent);
-	errorDialog->setModal(true);
 	connect(errorDialog, &ErrorDisplayDialog::accepted, errorDialog, &ErrorDisplayDialog::deleteLater);
+
 	errorDialog->open();
 }
 
@@ -370,8 +374,9 @@ void StateS::displayErrorMessage(const QString& errorTitle, const QString& error
 	{
 		parent = this->languageSelectionWindow;
 	}
+
 	ErrorDisplayDialog* errorDialog = new ErrorDisplayDialog(errorTitle, error, parent);
-	errorDialog->setModal(true);
 	connect(errorDialog, &ErrorDisplayDialog::accepted, errorDialog, &ErrorDisplayDialog::deleteLater);
+
 	errorDialog->open();
 }
