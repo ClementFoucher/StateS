@@ -478,14 +478,6 @@
     </message>
 </context>
 <context>
-    <name>Fsm</name>
-    <message>
-        <location filename="../src/machine/logic/fsm/fsm.cpp" line="262"/>
-        <source>State</source>
-        <translation>État</translation>
-    </message>
-</context>
-<context>
     <name>FsmDrawingToolBar</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/toolbar/fsmdrawingtoolbar.cpp" line="38"/>
@@ -516,46 +508,51 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="249"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="749"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="262"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="769"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="250"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="753"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="263"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="774"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="535"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="548"/>
         <source>Delete current state?</source>
         <translation>Supprimer l&apos;état courant ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="537"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="550"/>
         <source>The connected transition will be deleted</source>
         <translation>La transition connectée sera supprimée</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="539"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="552"/>
         <source>All</source>
         <translation>Toutes les</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="539"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="552"/>
         <source>connected transitions will be deleted</source>
         <translation>transitions connectées seront supprimées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="541"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="554"/>
         <source>User confirmation required</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="605"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="625"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1081"/>
+        <source>State</source>
+        <translation>État</translation>
     </message>
 </context>
 <context>
@@ -709,8 +706,8 @@
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="163"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="181"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="204"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="369"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="428"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="375"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="434"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
@@ -720,8 +717,8 @@
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="163"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="181"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="204"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="369"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="428"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="375"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="434"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
@@ -741,13 +738,13 @@
         <translation>Impossible de lire le nom de l&apos;état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="361"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="419"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="367"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="425"/>
         <source>Warning!</source>
         <translation>Attention !</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="361"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="367"/>
         <source>Unable to extract state position for state </source>
         <translation>Impossible de lire la position de l&apos;état </translation>
     </message>
@@ -762,29 +759,29 @@
     </message>
     <message>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="306"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="370"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="429"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="376"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="435"/>
         <source>Node ignored.</source>
         <translation>Nœud ignoré.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="368"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="427"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="374"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="433"/>
         <source>Unexpected node encountered while parsing</source>
         <translation>Nœud non supporté trouvé en lisant</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="368"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="374"/>
         <source>state list:</source>
         <translation>liste d&apos;états:</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="419"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="425"/>
         <source>Unable to extract slider position for a transition</source>
         <translation>Impossible de lire la position du slider pour une transition</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="427"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="433"/>
         <source>transition list:</source>
         <translation>liste de transitions:</translation>
     </message>
@@ -1515,7 +1512,7 @@
 <context>
     <name>MachineEditorTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="49"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="63"/>
         <source>Machine name</source>
         <translation>Nom de la machine</translation>
     </message>
@@ -1540,44 +1537,54 @@
         <translation>Constantes</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="67"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="99"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="73"/>
         <source>Variable editor</source>
         <translation>Éditeur de variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="87"/>
-        <source>Switch between variable types using tabs.</source>
-        <translation>Naviguez entre les types de variables à l&apos;aide des onglets.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="89"/>
-        <source>Variable length can not exceed 64 bits.</source>
-        <translation>La taille des variables ne peut excéder 64 bits.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="91"/>
-        <source>Allowed characters are alphanumerical ones, space and</source>
-        <translation>Les caractères autorisés sont les caractères alphanumériques, l&apos;espace et</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="94"/>
-        <source>Double-click on a value to edit it.</source>
-        <translation>Double-cliquez sur une valeur pour la modifier.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="99"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="86"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="106"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="121"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="58"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="86"/>
+        <source>Machine editor</source>
+        <translation>Éditeur de machine</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="88"/>
+        <source>Names:</source>
+        <translation>Noms :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="90"/>
+        <source>Allowed characters for machine and variables names are alphanumerical ones, space and</source>
+        <translation>Les caractères autorisés pour la machine et les variables sont les caractères alphanumériques, l&apos;espace et</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="93"/>
+        <source>Variables editor:</source>
+        <translation>Éditeur de variables :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="95"/>
+        <source>Switch between variable natures using tabs.</source>
+        <translation>Naviguez entre les natures de variables à l&apos;aide des onglets.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="97"/>
+        <source>Double-click on a field to edit it.</source>
+        <translation>Double-cliquez sur un champ pour le modifier.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="107"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="135"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="192"/>
         <source>No machine</source>
         <translation>Aucune machine</translation>
     </message>
@@ -2407,113 +2414,114 @@
 <context>
     <name>VariableListEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="56"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="61"/>
-        <source>Input</source>
-        <translation>Entrée</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="57"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="78"/>
-        <source>Initial value</source>
-        <translation>Valeur initiale</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="67"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="71"/>
-        <source>Output</source>
-        <translation>Sortie</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="77"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="82"/>
-        <source>Variable</source>
-        <translation>Variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="93"/>
-        <source>Constant</source>
-        <translation>Constante</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="89"/>
-        <source>Value</source>
-        <translation>Valeur</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="100"/>
-        <source>Size</source>
-        <translation>Taille</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="120"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="51"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="121"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="52"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
+</context>
+<context>
+    <name>VariableTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="226"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="338"/>
+        <source>Input</source>
+        <translation>Entrée</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="344"/>
+        <source>Variable</source>
+        <translation>Variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="81"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="341"/>
+        <source>Output</source>
+        <translation>Sortie</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="84"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="347"/>
+        <source>Constant</source>
+        <translation>Constante</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="89"/>
+        <source>Size</source>
+        <translation>Taille</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="95"/>
+        <source>Initial value in simulator</source>
+        <translation>Valeur initiale dans le simulateur</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="99"/>
+        <source>Initial value</source>
+        <translation>Valeur initiale</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="102"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
+    </message>
+</context>
+<context>
+    <name>VariableTableView</name>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="154"/>
         <source>Action on variable</source>
         <translation>Action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="233"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="286"/>
-        <source>Up</source>
-        <translation>Monter</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="240"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="293"/>
-        <source>Down</source>
-        <translation>Descendre</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="247"/>
-        <source>Rename variable</source>
-        <translation>Renommer la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="251"/>
-        <source>Resize variable</source>
-        <translation>Modifier la taille de la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="257"/>
-        <source>Change variable value</source>
-        <translation>Changer la valeur de la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="264"/>
-        <source>Delete variable</source>
-        <translation>Supprimer la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="268"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="304"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="935"/>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="279"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="158"/>
         <source>Action on all selected variables</source>
         <translation>Action sur la totalité des variables sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="300"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="164"/>
+        <source>Move up</source>
+        <translation>Déplacer vers le haut</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="171"/>
+        <source>Move down</source>
+        <translation>Déplacer vers le bas</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="183"/>
+        <source>Rename variable</source>
+        <translation>Renommer la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="187"/>
+        <source>Change bit vector size</source>
+        <translation>Changer la taille du vecteur de bits</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="191"/>
+        <source>Change variable value</source>
+        <translation>Changer la valeur de la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="197"/>
+        <source>Delete variable</source>
+        <translation>Supprimer la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="203"/>
         <source>Delete variables</source>
         <translation>Supprimer les variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="931"/>
-        <source>OK</source>
-        <translation>OK</translation>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="210"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>

@@ -87,6 +87,9 @@ public:
 	const QList<componentId_t> getReadableVariablesIds()  const;
 	const QList<componentId_t> getAllVariablesIds()       const;
 
+	// Single ID using rank
+	componentId_t getVariableId(VariableNature_t nature, uint rank) const;
+
 protected:
 	void registerComponent(shared_ptr<MachineComponent> newComponent);
 	void removeComponent(componentId_t componentId);

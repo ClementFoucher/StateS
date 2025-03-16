@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,33 +16,32 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABLEWIDGETWITHRESIZEEVENT_H
-#define TABLEWIDGETWITHRESIZEEVENT_H
+#ifndef VARIABLETABLESIZEDELEGATE_H
+#define VARIABLETABLESIZEDELEGATE_H
 
 // Parent
-#include <QTableWidget>
+#include <QStyledItemDelegate>
 
 
-class TableWidgetWithResizeEvent : public QTableWidget
+class VariableTableSizeDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit TableWidgetWithResizeEvent(int rows, int columns, QWidget* parent = nullptr);
+	explicit VariableTableSizeDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-signals:
-	void resized();
-
-protected:
-	virtual void resizeEvent(QResizeEvent*) override;
+public:
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
+	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
+	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 };
 
-#endif // TABLEWIDGETWITHRESIZEEVENT_H
+#endif // VARIABLETABLESIZEDELEGATE_H

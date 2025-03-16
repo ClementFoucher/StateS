@@ -36,7 +36,7 @@
 
 
 MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
-    StatesGraphicsView(parent)
+	StatesGraphicsView(parent)
 {
 	this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
 
@@ -45,6 +45,7 @@ MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 
 	this->updateMachineVisualization();
 
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,                   this, &MachineComponentVisualizer::updateMachineVisualization);
 	connect(machineManager.get(), &MachineManager::machineNameChangedEvent,               this, &MachineComponentVisualizer::updateMachineVisualization);
 	connect(machineManager.get(), &MachineManager::machineInputVariableListChangedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
 	connect(machineManager.get(), &MachineManager::machineOutputVariableListChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);

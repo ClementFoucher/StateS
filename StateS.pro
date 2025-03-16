@@ -105,9 +105,7 @@ SOURCES += \
 	src/ui/equation_editor/editableequation.cpp \
 	src/ui/equation_editor/rangeextractorwidget.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
-	src/ui/refined_widget/dynamictableitemdelegate.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
-	src/ui/refined_widget/tablewidgetwithresizeevent.cpp \
 	src/ui/refined_widget/checkboxhtml.cpp \
 	src/ui/refined_widget/labelwithclickevent.cpp \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.cpp \
@@ -122,6 +120,11 @@ SOURCES += \
 	src/ui/resource_bar/machinecomponentvisualizer.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablesizedelegate.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.cpp \
 	src/ui/resource_bar/component_editor/transitioneditortab.cpp \
 	src/ui/resource_bar/component_editor/stateeditortab.cpp \
 	src/ui/resource_bar/component_editor/actioneditor.cpp \
@@ -233,9 +236,7 @@ HEADERS += \
 	src/ui/equation_editor/editableequation.h \
 	src/ui/equation_editor/rangeextractorwidget.h \
 	src/ui/refined_widget/contextmenu.h \
-	src/ui/refined_widget/dynamictableitemdelegate.h \
 	src/ui/refined_widget/reactivebutton.h \
-	src/ui/refined_widget/tablewidgetwithresizeevent.h \
 	src/ui/refined_widget/checkboxhtml.h \
 	src/ui/refined_widget/labelwithclickevent.h \
 	src/ui/refined_widget/statesgraphicsview.h \
@@ -259,6 +260,11 @@ HEADERS += \
 	src/ui/resource_bar/component_editor/actiontabledelegate.h \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablesizedelegate.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.h \
 	src/ui/resource_bar/simulator_tab/simulatortab.h \
 	src/ui/resource_bar/simulator_tab/inputbitselector.h \
 	src/ui/resource_bar/simulator_tab/inputsselector.h \
@@ -337,6 +343,8 @@ INCLUDEPATH += \
 	src/ui/truth_table \
 	src/ui/resource_bar \
 	src/ui/resource_bar/machine_editor_tab \
+	src/ui/resource_bar/machine_editor_tab/variable_table \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates \
 	src/ui/resource_bar/component_editor \
 	src/ui/resource_bar/simulator_tab \
 	src/ui/static \

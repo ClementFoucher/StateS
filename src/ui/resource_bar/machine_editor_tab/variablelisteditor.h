@@ -26,15 +26,11 @@
 #include <QWidget>
 
 // Qt classes
-#include <QMap>
-class QGridLayout;
 class QPushButton;
-class QTableWidgetItem;
 
 // StateS classes
 #include "statestypes.h"
-class DynamicTableItemDelegate;
-class TableWidgetWithResizeEvent;
+class VariableTableView;
 
 
 class VariableListEditor : public QWidget
@@ -42,106 +38,35 @@ class VariableListEditor : public QWidget
 	Q_OBJECT
 
 	/////
-	// Type declarations
-private:
-	enum class ListMode_t
-	{
-		initMode,
-		standard,
-		addingVariable,
-		renamingVariable,
-		resizingVariable,
-		changingVariableInitialValue
-	};
-	enum class ContextAction_t : int
-	{
-		Cancel              = 0,
-		DeleteVariable      = 1,
-		Up                  = 2,
-		Down                = 3,
-		RenameVariable      = 4,
-		ResizeVariable      = 5,
-		ChangeVariableValue = 6
-	};
-
-	/////
 	// Constructors/destructors
 public:
-	explicit VariableListEditor(VariableNature_t editorType, QWidget* parent = nullptr);
+	explicit VariableListEditor(VariableNature_t editorNature, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 protected:
-	virtual void keyPressEvent   (QKeyEvent*         event) override;
-	virtual void keyReleaseEvent (QKeyEvent*         event) override;
-	virtual void contextMenuEvent(QContextMenuEvent* event) override;
+	virtual void keyPressEvent  (QKeyEvent* event) override;
+	virtual void keyReleaseEvent(QKeyEvent* event) override;
 
 private slots:
-	// General
-	void updateList();
 	void updateButtonsEnableState();
-	void handleListResizedEvent();
 
-	// Handle variable add
-	void beginAddVariable();
-	void addingVariableSwitchField(QTableWidgetItem* newItem);
-	void addingVariableCurrentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
-	void endAddVariable();
-
-	// Handle variable edit
-	void beginEditVariable(QTableWidgetItem* characteristicToEdit);
-	void endRenameVariable();
-	void endResizeVariable();
-	void endChangeVariableInitialValue();
-
-	// Add/edit common
-	void validateCurrentEdit();
-	void cancelCurrentEdit();
-
-	// Other
-	void raiseSelectedVariables();
-	void lowerSelectedVariables();
-	void removeSelectedVariables();
-	void processMenuEventHandler(QAction* action);
-
-private:
-	void switchMode(ListMode_t newMode);
-	void editCurrentCell(bool erroneous = false);
-	void fixVariableSize();
-	QList<QString> getSelectedVariables();
+	void buttonAddPressedEventHandler();
+	void buttonRemovePressedEventHandler();
+	void buttonUpPressedEventHandler();
+	void buttonDownPressedEventHandler();
 
 	/////
 	// Object variables
 private:
-	VariableNature_t editorType;
-	QString newVariablesPrefix;
+	VariableNature_t editorNature;
 
-	ListMode_t currentMode = ListMode_t::initMode;
-
-	// Widgets
-	QGridLayout* buttonLayout = nullptr;
-
-	TableWidgetWithResizeEvent* variablesList = nullptr;
-	DynamicTableItemDelegate*   listDelegate  = nullptr;
+	VariableTableView* tableView = nullptr;
 
 	QPushButton* buttonAdd    = nullptr;
 	QPushButton* buttonRemove = nullptr;
-	QPushButton* buttonCancel = nullptr;
-	QPushButton* buttonOK     = nullptr;
 	QPushButton* buttonUp     = nullptr;
 	QPushButton* buttonDown   = nullptr;
-
-	// Cell under edition
-	QTableWidgetItem* currentTableItem = nullptr;
-	QStringList variableSelectionToRestore;
-
-	// Variable begin created
-	QTableWidgetItem* currentVariableName  = nullptr;
-	QTableWidgetItem* currentVariableSize  = nullptr;
-	QTableWidgetItem* currentVariableValue = nullptr;
-
-	// Used to know which variable is associated to each cell in table
-	QMap<QTableWidgetItem*, componentId_t> associatedVariablesIds;
 
 };
 

@@ -1,4 +1,3 @@
-
 ********************************
 * StateS v. 0.4.7 Known Issues *
 ********************************
@@ -7,7 +6,7 @@
 ** The following behaviors are known: **
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-- Pressing F2 key on a signal in signal editor allows to edit content, but edition is actually ignored,
+- Pressing F2 key on a variable in variable editor allows to edit content, but edition is actually ignored (fixed in next release),
 - Export to PDF has incorrect margins.
 
 

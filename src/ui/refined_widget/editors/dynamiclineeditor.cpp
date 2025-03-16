@@ -22,9 +22,6 @@
 // Current class header
 #include "dynamiclineeditor.h"
 
-// Qt classes
-#include <QKeyEvent>
-
 
 //
 // Static elements
@@ -38,7 +35,7 @@ const QString DynamicLineEditor::errorStyle = QString("QLineEdit {background-col
 //
 
 DynamicLineEditor::DynamicLineEditor(const QString& content, QWidget* parent) :
-    QLineEdit(content, parent)
+	QLineEdit(content, parent)
 {
 }
 
@@ -60,7 +57,7 @@ void DynamicLineEditor::setErroneous(bool erroneous)
 	}
 	else
 	{
-		this->setStyleSheet( QString() );
+		this->setStyleSheet(QString());
 	}
 }
 
@@ -71,7 +68,7 @@ bool DynamicLineEditor::getIsErroneous() const
 
 void DynamicLineEditor::focusInEvent(QFocusEvent* event)
 {
-	if (!erroneous)
+	if (this->erroneous == false)
 	{
 		this->setStyleSheet(DynamicLineEditor::editStyle);
 	}
@@ -79,33 +76,12 @@ void DynamicLineEditor::focusInEvent(QFocusEvent* event)
 	QLineEdit::focusInEvent(event);
 }
 
-void DynamicLineEditor::keyPressEvent(QKeyEvent* event)
+void DynamicLineEditor::focusOutEvent(QFocusEvent* event)
 {
-	bool transmitEvent = true;
-
-	if (event->key() == Qt::Key::Key_Escape)
+	if (this->erroneous == false)
 	{
-		emit userCancelEvent();
-		transmitEvent = false;
+		this->setStyleSheet(QString());
 	}
 
-	if (transmitEvent == true)
-	{
-		QLineEdit::keyPressEvent(event);
-	}
-}
-
-void DynamicLineEditor::keyReleaseEvent(QKeyEvent* event)
-{
-	bool transmitEvent = true;
-
-	if (event->key() == Qt::Key::Key_Escape)
-	{
-		transmitEvent = false;
-	}
-
-	if (transmitEvent == true)
-	{
-		QLineEdit::keyReleaseEvent(event);
-	}
+	QLineEdit::focusOutEvent(event);
 }

@@ -27,7 +27,7 @@
 
 
 SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(const QString& content, QWidget* parent) :
-    DynamicLineEditor(content, parent)
+	DynamicLineEditor(content, parent)
 {
 	// The widget will automatically reset
 	// its visual style and yield focus on user validation.
@@ -37,7 +37,7 @@ SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(const QString& conten
 }
 
 SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(QWidget* parent) :
-    SelfManagedDynamicLineEditor(nullptr, parent)
+	SelfManagedDynamicLineEditor(nullptr, parent)
 {
 }
 
@@ -58,13 +58,15 @@ void SelfManagedDynamicLineEditor::resetView()
 	this->clearFocus();
 	connect(this, &QLineEdit::editingFinished, this, &SelfManagedDynamicLineEditor::userValidatedEventHandler);
 
-	this->setStyleSheet( QString() );
+	this->setStyleSheet(QString());
 }
 
 void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 {
-	bool transmitEvent = true;
-
+	if (event->key() == Qt::Key::Key_Escape)
+	{
+		emit userCancelEvent();
+	}
 	if (event->key() == Qt::Key::Key_Up)
 	{
 		emit upKeyPressed();
@@ -73,8 +75,7 @@ void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 	{
 		emit downKeyPressed();
 	}
-
-	if (transmitEvent == true)
+	else
 	{
 		DynamicLineEditor::keyPressEvent(event);
 	}
@@ -82,18 +83,19 @@ void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 
 void SelfManagedDynamicLineEditor::keyReleaseEvent(QKeyEvent* event)
 {
-	bool transmitEvent = true;
-
-	if (event->key() == Qt::Key::Key_Up)
+	if (event->key() == Qt::Key::Key_Escape)
 	{
-		transmitEvent = false;
+		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
+	}
+	else if (event->key() == Qt::Key::Key_Up)
+	{
+		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
 	}
 	else if (event->key() == Qt::Key::Key_Down)
 	{
-		transmitEvent = false;
+		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
 	}
-
-	if (transmitEvent == true)
+	else
 	{
 		DynamicLineEditor::keyReleaseEvent(event);
 	}

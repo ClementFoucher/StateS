@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -82,9 +82,16 @@ void UndoRedoManager::addUndoCommand(MachineUndoCommand* undoCommand)
 void UndoRedoManager::buildAndAddDiffUndoCommand()
 {
 	DiffUndoCommand* undoCommand = new DiffUndoCommand();
-	connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &UndoRedoManager::freshMachineAvailableEvent);
 
-	this->addUndoCommand(undoCommand);
+	if (undoCommand->isEmpty() == false)
+	{
+		connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &UndoRedoManager::freshMachineAvailableEvent);
+		this->addUndoCommand(undoCommand);
+	}
+	else
+	{
+		delete undoCommand;
+	}
 }
 
 void UndoRedoManager::notifyMachineReplaced()

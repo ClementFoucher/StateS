@@ -28,9 +28,8 @@
 
 /**
  * @brief The DynamicLineEditor class provides a line edit
- * which is highlighted when edition starts, can be marked
- * as erroneous and provides a signal when user cancels
- * edit using the escape key.
+ * which is highlighted when edition starts and can be
+ * marked as erroneous.
  */
 class DynamicLineEditor : public QLineEdit
 {
@@ -54,13 +53,9 @@ public:
 	void setErroneous(bool erroneous);
 	bool getIsErroneous() const;
 
-signals:
-	void userCancelEvent();
-
 protected:
-	virtual void focusInEvent   (QFocusEvent* event) override;
-	virtual void keyPressEvent  (QKeyEvent*   event) override;
-	virtual void keyReleaseEvent(QKeyEvent*   event) override;
+	virtual void focusInEvent (QFocusEvent* event) override;
+	virtual void focusOutEvent(QFocusEvent* event) override;
 
 	/////
 	// Object variables

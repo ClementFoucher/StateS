@@ -366,6 +366,16 @@ const QList<componentId_t> Machine::getAllVariablesIds() const
 	return allVariablesIds;
 }
 
+componentId_t Machine::getVariableId(VariableNature_t nature, uint rank) const
+{
+	auto variablesIds = this->getVariablesIds(nature);
+
+	if (rank >= variablesIds.count()) return nullId;
+
+
+	return variablesIds.at(rank);
+}
+
 /////
 // Protected functions
 

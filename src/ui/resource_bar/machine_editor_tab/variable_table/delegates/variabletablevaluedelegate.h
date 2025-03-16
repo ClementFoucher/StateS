@@ -19,44 +19,29 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELFMANAGEDDYNAMICLINEEDITOR_H
-#define SELFMANAGEDDYNAMICLINEEDITOR_H
+#ifndef VARIABLETABLEVALUEDELEGATE_H
+#define VARIABLETABLEVALUEDELEGATE_H
 
 // Parent
-#include "dynamiclineeditor.h"
+#include <QStyledItemDelegate>
 
 
-class SelfManagedDynamicLineEditor : public DynamicLineEditor
+class VariableTableValueDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SelfManagedDynamicLineEditor(const QString& content, QWidget* parent = nullptr);
-	explicit SelfManagedDynamicLineEditor(QWidget* parent = nullptr);
+	explicit VariableTableValueDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void resetView();
-
-protected:
-	virtual void keyPressEvent  (QKeyEvent* event) override;
-	virtual void keyReleaseEvent(QKeyEvent* event) override;
-
-private slots:
-	void userValidatedEventHandler();
-
-	/////
-	// Signals
-signals:
-	void newTextAvailableEvent(const QString& text);
-	void userCancelEvent();
-
-	void upKeyPressed();
-	void downKeyPressed();
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                             const override;
+	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)   const override;
 
 };
 
-#endif // SELFMANAGEDDYNAMICLINEEDITOR_H
+#endif // VARIABLETABLEVALUEDELEGATE_H

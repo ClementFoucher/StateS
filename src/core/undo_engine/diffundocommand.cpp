@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -63,6 +63,18 @@ DiffUndoCommand::DiffUndoCommand()
 		// Compute diff
 		diff_match_patch diffComputer = diff_match_patch();
 		this->undoPatch = diffComputer.patch_make(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
+	}
+}
+
+bool DiffUndoCommand::isEmpty()
+{
+	if (this->undoPatch.isEmpty() == true)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
