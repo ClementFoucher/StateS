@@ -23,9 +23,7 @@
 #include "contextmenu.h"
 
 // Qt classes
-#include <QHelpEvent>
 #include <QLabel>
-#include <QToolTip>
 #include <QWidgetAction>
 
 
@@ -36,18 +34,29 @@ const QString ContextMenu::listStyle("QMenu {border: 3px double}");
 
 ContextMenu* ContextMenu::createErrorMenu(const QString& text, QWidget* parent)
 {
+	auto textList = QStringList();
+	textList.append(text);
+
+	return ContextMenu::createErrorMenu(textList, parent);
+}
+
+ContextMenu* ContextMenu::createErrorMenu(const QStringList& texts, QWidget* parent)
+{
 	ContextMenu* newMenu = new ContextMenu(parent);
-	newMenu->setStyleSheet("");
+	newMenu->setStyleSheet(errorStyle);
 
-	newMenu->addAction(text);
-
-	newMenu[0].setStyleSheet(errorStyle);
+	for (auto& actionText : texts)
+	{
+		QWidgetAction* a = new QWidgetAction(newMenu);
+		a->setText(actionText);
+		newMenu->addAction(a);
+	}
 
 	return newMenu;
 }
 
 ContextMenu::ContextMenu(QWidget* parent) :
-    QMenu(parent)
+	QMenu(parent)
 {
 	connect(this, &ContextMenu::aboutToHide, this, &ContextMenu::deleteLater);
 	this->setStyleSheet(defaultStyle);

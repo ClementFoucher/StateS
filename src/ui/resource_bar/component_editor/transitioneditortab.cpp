@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,6 +25,7 @@
 // Qt classes
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QGroupBox>
 
 // StateS classes
 #include "machinemanager.h"
@@ -34,7 +35,7 @@
 
 
 TransitionEditorTab::TransitionEditorTab(componentId_t transitionId, QWidget* parent) :
-    ComponentEditorTab(parent)
+	ComponentEditorTab(parent)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -43,15 +44,38 @@ TransitionEditorTab::TransitionEditorTab(componentId_t transitionId, QWidget* pa
 	if (transition == nullptr) return;
 
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
+	//
+	// Title
 
-	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>", this);
+	QLabel* title = new QLabel("<b>" + tr("Transition editor") + "</b>");
 	title->setAlignment(Qt::AlignCenter);
-	layout->addWidget(title);
 
-	ConditionEditor* conditionEditor = new ConditionEditor(transitionId, this);
-	layout->addWidget(conditionEditor);
+	//
+	// Transition condition
 
-	ActionEditor* actionEditor = new ActionEditor(transitionId, tr("Actions triggered when transition is crossed:"), this);
-	layout->addWidget(actionEditor);
+	ConditionEditor* conditionEditor = new ConditionEditor(transitionId);
+
+	// Package in a group
+	auto conditionGroup = new QGroupBox(tr("Condition"));
+	auto conditionLayout = new QVBoxLayout(conditionGroup);
+	conditionLayout->addWidget(conditionEditor);
+
+	//
+	// Transition actions
+
+	ActionEditor* actionEditor = new ActionEditor(transitionId);
+
+	// Package in a group
+	auto actionGroup = new QGroupBox(tr("Actions triggered when transition is crossed"));
+	auto actionLayout = new QVBoxLayout(actionGroup);
+	actionLayout->addWidget(actionEditor);
+
+	//
+	// Build complete rendering
+
+	auto* mainLayout = new QVBoxLayout(this);
+
+	mainLayout->addWidget(title);
+	mainLayout->addWidget(conditionGroup);
+	mainLayout->addWidget(actionGroup);
 }

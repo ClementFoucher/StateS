@@ -78,7 +78,7 @@ protected:
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionEditor(componentId_t actuatorId, QString title, QWidget* parent = nullptr);
+	explicit ActionEditor(componentId_t actuatorId, QWidget* parent = nullptr);
 
 	~ActionEditor();
 

@@ -108,119 +108,124 @@
 <context>
     <name>ActionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="88"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="80"/>
         <source>Add action</source>
         <translation>Ajouter une action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="89"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="81"/>
         <source>Remove action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="255"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="247"/>
         <source>Edit affected bit</source>
         <translation>Éditer le bit affecté</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="259"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="251"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="270"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="262"/>
         <source>Delete action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="275"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="267"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="95"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="105"/>
         <source>Right-click</source>
         <translation>Faites un clic-droit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="95"/>
         <source>Editing actions</source>
         <translation>Éditer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="111"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="103"/>
         <source>Double-click</source>
         <translation>Double-cliquez</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="111"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="103"/>
         <source>on an affected value</source>
         <translation>sur une valeur d&apos;affectation</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="111"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="103"/>
         <source>to edit it.</source>
         <translation>pour l&apos;éditer.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="105"/>
         <source>to display range options.</source>
         <translation>pour afficher les options de sous-vecteur.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="105"/>
         <source>on a vector variable</source>
         <translation>sur une variable de type vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="188"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="180"/>
         <source>Action on variable</source>
         <translation>Action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="195"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="187"/>
         <source>Edit value</source>
         <translation>Éditer la valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="195"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="211"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="203"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="221"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="213"/>
         <source>Affect whole variable</source>
         <translation>Affecter la totalité de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="231"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="223"/>
         <source>Affect variable single bit</source>
         <translation>Affecter un seul bit de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="241"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="233"/>
         <source>Affect variable range</source>
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="329"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="321"/>
         <source>Availables variables:</source>
         <translation>Variables disponibles :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="343"/>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="336"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/actioneditor.cpp" line="337"/>
+        <source>First declare the machine variables in Machine tab.</source>
+        <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
 </context>
 <context>
@@ -340,68 +345,68 @@
 <context>
     <name>ConditionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="66"/>
-        <source>Condition</source>
-        <translation>Condition</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="69"/>
         <source>Set condition</source>
         <translation>Définir la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="77"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="73"/>
         <source>Clear condition</source>
         <translation>Effacer la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="92"/>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="303"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="88"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="304"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="131"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="128"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="217"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="129"/>
+        <source>First declare the machine variables in Machine tab.</source>
+        <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="218"/>
         <source>Warning: the current condition is not valid.</source>
         <translation>Attention : la condition actuelle est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="218"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
         <source>Thus, this transition will never be crossed.</source>
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="293"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="294"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="230"/>
         <source>Thus, the current transition will never be crossed.</source>
         <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="227"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="228"/>
         <source>Warning: equation representing condition is size</source>
         <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="228"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="82"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="78"/>
         <source>Condition position</source>
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="220"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -2201,19 +2206,19 @@
 <context>
     <name>StateEditorTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="53"/>
+        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="61"/>
         <source>State editor</source>
         <translation>Éditeur d&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="57"/>
+        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="72"/>
         <source>State name</source>
         <translation>Nom de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="67"/>
-        <source>Actions triggered at state activation:</source>
-        <translation>Actions déclenchées à l&apos;activation de l&apos;état :</translation>
+        <location filename="../src/ui/resource_bar/component_editor/stateeditortab.cpp" line="82"/>
+        <source>Actions triggered on state activation</source>
+        <translation>Actions déclenchées à l&apos;activation de l&apos;état</translation>
     </message>
 </context>
 <context>
@@ -2383,14 +2388,19 @@
 <context>
     <name>TransitionEditorTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/transitioneditortab.cpp" line="48"/>
+        <location filename="../src/ui/resource_bar/component_editor/transitioneditortab.cpp" line="50"/>
         <source>Transition editor</source>
         <translation>Éditeur de transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/transitioneditortab.cpp" line="55"/>
-        <source>Actions triggered when transition is crossed:</source>
-        <translation>Actions déclenchées au franchissement de la transition :</translation>
+        <location filename="../src/ui/resource_bar/component_editor/transitioneditortab.cpp" line="59"/>
+        <source>Condition</source>
+        <translation>Condition</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor/transitioneditortab.cpp" line="69"/>
+        <source>Actions triggered when transition is crossed</source>
+        <translation>Actions déclenchées au franchissement de la transition</translation>
     </message>
 </context>
 <context>

@@ -63,20 +63,16 @@ ConditionEditor::ConditionEditor(componentId_t transitionId, QWidget* parent) :
 
 	this->layout = new QGridLayout(this);
 
-	QLabel* conditionTitle = new QLabel(tr("Condition"), this);
-	conditionTitle->setAlignment(Qt::AlignCenter);
-	this->layout->addWidget(conditionTitle, 0, 0, 1, 2);
-
 	this->conditionText = new QLabel("…", this);
-	this->layout->addWidget(this->conditionText, 1, 0, 1, 2);
+	this->layout->addWidget(this->conditionText, 0, 0, 1, 2);
 
 	this->buttonSetCondition = new QPushButton(tr("Set condition"), this);
 	connect(this->buttonSetCondition, &QAbstractButton::clicked, this, &ConditionEditor::editCondition);
-	this->layout->addWidget(this->buttonSetCondition, 3, 0, 1, 1);
+	this->layout->addWidget(this->buttonSetCondition, 2, 0, 1, 1);
 
 	QPushButton* buttonClearCondition = new QPushButton(tr("Clear condition"), this);
 	connect(buttonClearCondition, &QAbstractButton::clicked, this, &ConditionEditor::clearCondition);
-	this->layout->addWidget(buttonClearCondition, 3, 1, 1, 1);
+	this->layout->addWidget(buttonClearCondition, 2, 1, 1, 1);
 
 	QHBoxLayout* positionLayout = new QHBoxLayout();
 	QLabel* positionLabel = new QLabel(tr("Condition position"), this);
@@ -87,18 +83,18 @@ ConditionEditor::ConditionEditor(componentId_t transitionId, QWidget* parent) :
 	this->conditionTextPositionSlider->setValue(graphicTransition->getConditionLineSliderPosition()*100);
 	connect(this->conditionTextPositionSlider, &QSlider::valueChanged, this, &ConditionEditor::conditionTextPositionSliderChanged);
 	positionLayout->addWidget(this->conditionTextPositionSlider);
-	this->layout->addLayout(positionLayout, 4, 0, 1, 2);
+	this->layout->addLayout(positionLayout, 3, 0, 1, 2);
 
 	this->buttonToggleTruthTable = new QPushButton(tr("Display truth table"), this);
 	connect(this->buttonToggleTruthTable, &QAbstractButton::clicked, this, &ConditionEditor::expandTruthTable);
-	this->layout->addWidget(this->buttonToggleTruthTable, 5, 0, 1, 2);
+	this->layout->addWidget(this->buttonToggleTruthTable, 4, 0, 1, 2);
 
 	this->updateContent();
 }
 
 ConditionEditor::~ConditionEditor()
 {
-	delete truthTableDisplay; // In case not shown
+	delete this->truthTableDisplay; // In case not shown
 }
 
 void ConditionEditor::editCondition()
@@ -128,7 +124,10 @@ void ConditionEditor::editCondition()
 	}
 	else
 	{
-		ContextMenu* menu = ContextMenu::createErrorMenu(tr("No compatible variable!"));
+		auto textList = QStringList();
+		textList.append(tr("No compatible variable!"));
+		textList.append(tr("First declare the machine variables in Machine tab."));
+		auto menu = ContextMenu::createErrorMenu(textList);
 		menu->popup(buttonSetCondition->mapToGlobal(QPoint(buttonSetCondition->width(), -menu->sizeHint().height())));
 	}
 }
@@ -152,8 +151,10 @@ void ConditionEditor::updateContent()
 	this->conditionWarningText = nullptr;
 
 	bool truthTableDisplayed = this->isTruthTableDisplayed();
-	if (truthTableDisplayed)
+	if (truthTableDisplayed == true)
+	{
 		this->collapseTruthTable();
+	}
 
 	delete this->truthTableDisplay;
 	this->truthTableDisplay = nullptr;
@@ -233,7 +234,7 @@ void ConditionEditor::updateContent()
 			}
 
 			this->conditionWarningText->setAlignment(Qt::AlignCenter);
-			this->layout->addWidget(conditionWarningText, 2, 0, 1, 2);
+			this->layout->addWidget(conditionWarningText, 1, 0, 1, 2);
 		}
 	}
 	else
@@ -286,7 +287,7 @@ void ConditionEditor::expandTruthTable()
 			this->truthTable = shared_ptr<TruthTable>(new TruthTable(condition));
 
 			this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
-			this->layout->addWidget(this->truthTableDisplay, 6, 0, 1, 2);
+			this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
 		}
 	}
 
@@ -309,6 +310,11 @@ void ConditionEditor::collapseTruthTable()
 bool ConditionEditor::isTruthTableDisplayed()
 {
 	if ( (this->truthTableDisplay != nullptr) && (this->truthTableDisplay->isVisible()) )
+	{
 		return true;
-	else return false;
+	}
+	else
+	{
+		return false;
+	}
 }

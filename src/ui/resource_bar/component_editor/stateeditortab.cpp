@@ -25,6 +25,7 @@
 // Qt classes
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QGroupBox>
 
 // StateS classes
 #include "machinemanager.h"
@@ -36,7 +37,7 @@
 
 
 StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
-    ComponentEditorTab(parent)
+	ComponentEditorTab(parent)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -45,27 +46,54 @@ StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
 	if (state == nullptr) return;
 
 
+	////
+	// Build object
+
 	this->stateId = stateId;
 	connect(state.get(), &FsmState::stateRenamedEvent, this, &StateEditorTab::updateContent);
 
-	this->setLayout(new QVBoxLayout());
+	////
+	// Visual rendering
 
-	QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>", this);
+	//
+	// Title
+
+	QLabel* title = new QLabel("<b>" + tr("State editor") + "</b>");
 	title->setAlignment(Qt::AlignCenter);
-	this->layout()->addWidget(title);
 
-	QLabel* nameEditTitle = new QLabel(tr("State name"), this);
-	nameEditTitle->setAlignment(Qt::AlignCenter);
-	nameEditTitle->setWordWrap(true);
-	this->layout()->addWidget(nameEditTitle);
+	//
+	// State name
 
-	this->textStateName = new SelfManagedDynamicLineEditor(state->getName(), this);
+	this->textStateName = new SelfManagedDynamicLineEditor(state->getName());
 	connect(this->textStateName, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &StateEditorTab::nameTextChangedEventHandler);
 	connect(this->textStateName, &SelfManagedDynamicLineEditor::userCancelEvent,       this, &StateEditorTab::updateContent);
-	this->layout()->addWidget(this->textStateName);
 
-	ActionEditor* actionEditor = new ActionEditor(stateId, tr("Actions triggered at state activation:"), this);
-	this->layout()->addWidget(actionEditor);
+	// Package in a group
+	auto nameEditGroup = new QGroupBox(tr("State name"));
+	auto nameEditLayout = new QVBoxLayout(nameEditGroup);
+	nameEditLayout->addWidget(this->textStateName);
+
+	//
+	// State actions
+
+	ActionEditor* actionEditor = new ActionEditor(stateId);
+
+	// Package in a group
+	auto actionGroup = new QGroupBox(tr("Actions triggered on state activation"));
+	auto actionLayout = new QVBoxLayout(actionGroup);
+	actionLayout->addWidget(actionEditor);
+
+	//
+	// Build complete rendering
+
+	auto* mainLayout = new QVBoxLayout(this);
+
+	mainLayout->addWidget(title);
+	mainLayout->addWidget(nameEditGroup);
+	mainLayout->addWidget(actionGroup);
+
+	////
+	// Fill content
 
 	this->updateContent();
 }
@@ -110,8 +138,8 @@ void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 	auto state = fsm->getState(this->stateId);
 	if (state == nullptr) return;
 
-
 	if (name == state->getName()) return; // Must be checked because setting focus triggers this event
+
 
 	QString previousName = state->getName();
 	bool result = fsm->renameState(this->stateId, name);

@@ -50,8 +50,8 @@
 bool ActionEditor::hintCollapsed = false;
 
 
-ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* parent) :
-    QWidget(parent)
+ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
+	QWidget(parent)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -64,14 +64,6 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 
 	QGridLayout* layout = new QGridLayout(this);
 
-	if (title.size() != 0)
-	{
-		QLabel* actionListTitle = new QLabel(title, this);
-		actionListTitle->setAlignment(Qt::AlignCenter);
-		actionListTitle->setWordWrap(true);
-		layout->addWidget(actionListTitle, 0, 0, 1, 4);
-	}
-
 	this->actionTable = new QTableView(this);
 	ActionTableModel* tableModel = new ActionTableModel(actuatorId, this->actionTable);
 	this->actionTable->setModel(tableModel);
@@ -81,7 +73,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 	this->actionTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	connect(this->actionTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
 	connect(tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);
-	layout->addWidget(this->actionTable, 1, 0, 1, 4);
+	layout->addWidget(this->actionTable, 0, 0, 1, 4);
 
 	this->buttonMoveUp       = new QPushButton("↥",                 this);
 	this->buttonMoveDown     = new QPushButton("↧",                 this);
@@ -93,10 +85,10 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 	connect(this->buttonAddAction,    &QPushButton::clicked, this, &ActionEditor::displayAddActionMenu);
 	connect(this->buttonRemoveAction, &QPushButton::clicked, this, &ActionEditor::removeSelectedActions);
 
-	layout->addWidget(this->buttonMoveUp,       3, 0, 1, 1);
-	layout->addWidget(this->buttonMoveDown,     3, 1, 1, 1);
-	layout->addWidget(this->buttonAddAction,    3, 2, 1, 1);
-	layout->addWidget(this->buttonRemoveAction, 3, 3, 1, 1);
+	layout->addWidget(this->buttonMoveUp,       1, 2, 1, 1);
+	layout->addWidget(this->buttonMoveDown,     1, 3, 1, 1);
+	layout->addWidget(this->buttonAddAction,    1, 0, 1, 1);
+	layout->addWidget(this->buttonRemoveAction, 1, 1, 1, 1);
 
 
 	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
@@ -115,7 +107,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QString title, QWidget* par
 
 	this->hintDisplay->setContent(hintTitle, hint, true);
 
-	layout->addWidget(this->hintDisplay, 4, 0, 1, 4);
+	layout->addWidget(this->hintDisplay, 2, 0, 1, 4);
 
 	connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this->actionTable, &QTableView::resizeColumnsToContents);
 
@@ -340,7 +332,10 @@ void ActionEditor::displayAddActionMenu() const
 	}
 	else
 	{
-		menu = ContextMenu::createErrorMenu(tr("No compatible variable!"));
+		auto textList = QStringList();
+		textList.append(tr("No compatible variable!"));
+		textList.append(tr("First declare the machine variables in Machine tab."));
+		menu = ContextMenu::createErrorMenu(textList);
 	}
 
 	menu->popup(this->buttonAddAction->mapToGlobal(QPoint(0, -menu->sizeHint().height())));
