@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,11 +33,12 @@ using namespace std;
 #include "statestypes.h"
 class ResourceBar;
 class DisplayArea;
-class MachineComponent;
 class MainToolBar;
 class MachineEditorWidget;
 class TimelineWidget;
 class ViewConfiguration;
+class ImageExportDialog;
+class VhdlExportDialog;
 
 
 /**
@@ -64,6 +65,8 @@ public:
 public:
 	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
 	shared_ptr<ViewConfiguration> getView() const;
+
+	QDialog* getModalDialog();
 
 signals:
 	void newFsmRequestEvent();
@@ -107,6 +110,9 @@ private slots:
 	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
 	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
+	void imageExportDialogClosedEventHandler(int result);
+	void vhdlExportDialogClosedEventHandler(int result);
+
 private:
 	void resetUi();
 	void updateTitle();
@@ -118,10 +124,15 @@ private:
 	// Top level widgets
 	DisplayArea* displayArea = nullptr;
 	ResourceBar* resourceBar = nullptr;
+
 	// Widgets displayed in the display area
 	MainToolBar*         toolbar  = nullptr;
 	MachineEditorWidget* editor   = nullptr;
 	TimelineWidget*      timeline = nullptr;
+
+	// Dialogs
+	ImageExportDialog* imageExportDialog = nullptr;
+	VhdlExportDialog*  vhdlExportDialog  = nullptr;
 
 };
 

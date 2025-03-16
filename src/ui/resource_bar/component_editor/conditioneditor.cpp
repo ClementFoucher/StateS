@@ -108,19 +108,10 @@ void ConditionEditor::editCondition()
 
 	if (machine->getReadableVariablesIds().count() != 0)
 	{
-		EquationEditor* eqEdit = new EquationEditor(transition->getCondition());
+		this->equationEditor = new EquationEditor(transition->getCondition(), this);
+		connect(this->equationEditor, &EquationEditor::finished, this, &ConditionEditor::equationEditorClosedEventHandler);
 
-		int result = eqEdit->exec();
-
-		if (result == QDialog::DialogCode::Accepted)
-		{
-			auto newEquation = eqEdit->getResultEquation();
-
-			transition->setCondition(newEquation);
-			machineManager->notifyMachineEdited();
-		}
-
-		delete eqEdit;
+		this->equationEditor->open();
 	}
 	else
 	{
@@ -257,6 +248,29 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 
 	FsmUndoCommand* undoCommand = new FsmUndoCommand(UndoCommandId_t::fsmUndoTransitionConditionSliderPositionChangeId, graphicTransition->getLogicComponentId());
 	machineManager->notifyMachineEdited(undoCommand);
+}
+
+void ConditionEditor::equationEditorClosedEventHandler(int result)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto transition = dynamic_pointer_cast<FsmTransition>(machine->getComponent(this->transitionId));
+	if (transition == nullptr) return;
+
+	if (this->equationEditor == nullptr) return;
+
+
+	if (result == QDialog::DialogCode::Accepted)
+	{
+		auto newEquation = this->equationEditor->getResultEquation();
+
+		transition->setCondition(newEquation);
+		machineManager->notifyMachineEdited();
+	}
+
+	delete this->equationEditor;
+	this->equationEditor = nullptr;
 }
 
 void ConditionEditor::expandTruthTable()

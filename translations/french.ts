@@ -356,47 +356,47 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="304"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="318"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="128"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="119"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="129"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="120"/>
         <source>First declare the machine variables in Machine tab.</source>
         <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="218"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="209"/>
         <source>Warning: the current condition is not valid.</source>
         <translation>Attention : la condition actuelle est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="210"/>
         <source>Thus, this transition will never be crossed.</source>
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="294"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="308"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="230"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="221"/>
         <source>Thus, the current transition will never be crossed.</source>
         <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="228"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="219"/>
         <source>Warning: equation representing condition is size</source>
         <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="220"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
     </message>
@@ -406,7 +406,7 @@
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor/conditioneditor.cpp" line="211"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -1407,22 +1407,22 @@
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="153"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="166"/>
         <source>Export machine to Pdf</source>
         <translation>Exporter la machine en Pdf</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="159"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="174"/>
         <source>Export machine to Svg</source>
         <translation>Exporter la machine en Svg</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="165"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="182"/>
         <source>Export machine to Png</source>
         <translation>Exporter la machine en Png</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="171"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="190"/>
         <source>Export machine to Jpeg</source>
         <translation>Exporter la machine en Jpeg</translation>
     </message>
@@ -1928,27 +1928,27 @@
 <context>
     <name>RangeEditorDialog</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="50"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="51"/>
         <source>Choose extracted bit</source>
         <translation>Choisissez le bit à extraire</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="54"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="55"/>
         <source>Choose range</source>
         <translation>Choisissez le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="70"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="71"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="74"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="75"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="42"/>
+        <location filename="../src/ui/resource_bar/component_editor/rangeeditordialog.cpp" line="43"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
@@ -2034,17 +2034,17 @@
 <context>
     <name>SimulatedFsm</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="208"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="212"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="209"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="213"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être corrigé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="210"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="214"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>
@@ -2224,27 +2224,27 @@
 <context>
     <name>StateS</name>
     <message>
-        <location filename="../src/core/states.cpp" line="196"/>
+        <location filename="../src/core/states.cpp" line="188"/>
         <source>StateS couldn&apos;t read the file content.</source>
         <translation>StateS n&apos;a pas pu lire le contenu du fichier.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="197"/>
+        <location filename="../src/core/states.cpp" line="189"/>
         <source>The file may not be a correct StateS save file.</source>
         <translation>Le fichier n&apos;est peut-être pas une sauvegarde StateS correcte.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="198"/>
+        <location filename="../src/core/states.cpp" line="190"/>
         <source>Issues occured reading the file. StateS was unable to load machine.</source>
         <translation>Des erreurs ont été rencontrées lors de la lecture du fichier. StateS n&apos;a pas été en mesure de charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="207"/>
+        <location filename="../src/core/states.cpp" line="199"/>
         <source>Issues occured reading the file. StateS still managed to load machine.</source>
         <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="278"/>
+        <location filename="../src/core/states.cpp" line="270"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>
@@ -2260,62 +2260,62 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="286"/>
+        <location filename="../src/ui/statesui.cpp" line="292"/>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="313"/>
+        <location filename="../src/ui/statesui.cpp" line="318"/>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="576"/>
+        <location filename="../src/ui/statesui.cpp" line="609"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="324"/>
+        <location filename="../src/ui/statesui.cpp" line="329"/>
         <source>Clear current machine?</source>
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="334"/>
+        <location filename="../src/ui/statesui.cpp" line="339"/>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="576"/>
+        <location filename="../src/ui/statesui.cpp" line="609"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="549"/>
+        <location filename="../src/ui/statesui.cpp" line="582"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="362"/>
+        <location filename="../src/ui/statesui.cpp" line="513"/>
         <source>Created with</source>
         <translation>Créé avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="128"/>
+        <location filename="../src/ui/statesui.cpp" line="133"/>
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="245"/>
+        <location filename="../src/ui/statesui.cpp" line="250"/>
         <source>Load file</source>
         <translation>Charger un fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="245"/>
+        <location filename="../src/ui/statesui.cpp" line="250"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="305"/>
+        <location filename="../src/ui/statesui.cpp" line="310"/>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
     </message>
@@ -2325,8 +2325,8 @@
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="454"/>
-        <location filename="../src/ui/statesui.cpp" line="494"/>
+        <location filename="../src/ui/statesui.cpp" line="440"/>
+        <location filename="../src/ui/statesui.cpp" line="481"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -2623,77 +2623,77 @@
 <context>
     <name>VhdlExportDialog</name>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="49"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="58"/>
         <source>Please run machine verifier to identify affected variables.</source>
         <translation>Veuillez utiliser le vérificateur pour identifier les variables affectées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="54"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="63"/>
         <source>Choose export options:</source>
         <translation>Choisissez les options pour l&apos;export :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="62"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="71"/>
         <source>Positive</source>
         <translation>Positive</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="63"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="72"/>
         <source>Negative</source>
         <translation>Négative</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="64"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="73"/>
         <source>Reset logic:</source>
         <translation>Logique du reset :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="67"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="76"/>
         <source>No</source>
         <translation>Non</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="68"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="77"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="69"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="78"/>
         <source>Prefix inputs and outputs with &apos;I_&apos; and &apos;O_&apos; respectively:</source>
         <translation>Ajouter un préfixe &apos;I_&apos; ou &apos;O_&apos; respectivement aux entrées et aux sorties :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="74"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="83"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="78"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="87"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="116"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="138"/>
         <source>Export machine to VHDL</source>
         <translation>Exporter la machine en VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="46"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="55"/>
         <source>Warning! Experimental feature.</source>
         <translation>Attention ! Fonctionnalité expériementale.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="47"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="56"/>
         <source>Output generation has strong restrictions:</source>
-        <translation>La génération des sorties ne gère pas toutes les possibilités:</translation>
+        <translation>La génération des sorties ne gère pas toutes les possibilités :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="48"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="57"/>
         <source>some of the current machine&apos;s outputs won&apos;t be correctly handled.</source>
-        <translation>certaines sorties de la machine actuelle ne seront pas correctement générés.</translation>
+        <translation>certaines sorties de la machine actuelle ne seront pas correctement générées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="39"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="46"/>
         <source>VHDL export</source>
         <translation>Exporter en VHDL</translation>
     </message>

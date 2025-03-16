@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QDialog>
 
 // C++ classes
-#include <exception>
+#include <memory>
 using namespace std;
 
 // Qt classes
@@ -55,8 +55,10 @@ public slots:
 	virtual void accept() override;
 
 public:
-	ImageFormat_t getImageFormat();
-	QString getFilePath();
+	ImageFormat_t getImageFormat() const;
+	QString getFilePath() const;
+
+	shared_ptr<MachineImageExporter> getImageExporter() const;
 
 protected slots:
 	virtual void resizeEvent(QResizeEvent*) override;

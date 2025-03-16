@@ -39,6 +39,7 @@ class QItemSelection;
 class CollapsibleWidgetWithTitle;
 class ActionOnVariable;
 class ActionTableDelegate;
+class RangeEditorDialog;
 
 
 /**
@@ -103,6 +104,8 @@ private slots:
 
 	void tableChangedEventHandler();
 
+	void rangeEditorClosedEventHandler(int result);
+
 private:
 	void fillFirstColumn();
 	void updateButtonsEnableState();
@@ -122,6 +125,8 @@ private:
 	QPushButton*                buttonMoveDown     = nullptr;
 	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
 	ActionTableDelegate*        valueColDelegate   = nullptr;
+
+	RangeEditorDialog* rangeEditorDialog = nullptr;
 
 	QList<weak_ptr<ActionOnVariable>> latestSelection;
 

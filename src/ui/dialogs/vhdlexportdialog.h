@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,8 +25,15 @@
 // Parent
 #include <QDialog>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // Qt classes
 class QComboBox;
+
+// StateS classes
+class FsmVhdlExport;
 
 
 class VhdlExportDialog : public QDialog
@@ -36,7 +43,7 @@ class VhdlExportDialog : public QDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent = nullptr);
+	explicit VhdlExportDialog(const QString& baseFileName, const QString& searchPath, shared_ptr<FsmVhdlExport> fsmVhdlExport, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -44,9 +51,11 @@ public slots:
 	virtual void accept() override;
 
 public:
-	bool isResetPositive();
-	bool prefixIOs();
-	QString getFilePath();
+	bool isResetPositive() const;
+	bool prefixIOs() const;
+	QString getFilePath() const;
+
+	shared_ptr<FsmVhdlExport> getFsmVhdlExport() const;
 
 	/////
 	// Object variables
@@ -57,6 +66,8 @@ private:
 	QString baseFileName;
 	QString searchPath;
 	QString filePath;
+
+	shared_ptr<FsmVhdlExport> fsmVhdlExport;
 
 };
 

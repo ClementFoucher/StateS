@@ -23,6 +23,7 @@
 #include "simulatedfsm.h"
 
 // Qt classes
+#include <QApplication>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QSignalMapper>
@@ -37,6 +38,7 @@
 #include "simulatedfsmtransition.h"
 #include "simulatedequation.h"
 #include "simulatedactiononvariable.h"
+#include "statesui.h"
 
 
 SimulatedFsm::SimulatedFsm() :
@@ -201,7 +203,9 @@ void SimulatedFsm::subcomponentPrepareStep()
 
 			emit this->emergencyShutDownEvent();
 
-			this->targetStateSelector = new QDialog();
+			auto statesUi = static_cast<StatesUi*>(QApplication::activeWindow());
+			if (statesUi == nullptr) return;
+			this->targetStateSelector = statesUi->getModalDialog();
 
 			QVBoxLayout* choiceWindowLayout = new QVBoxLayout(this->targetStateSelector);
 
@@ -232,8 +236,7 @@ void SimulatedFsm::subcomponentPrepareStep()
 
 			this->potentialTransitionsIds = candidateTransitions;
 
-			this->targetStateSelector->setModal(true);
-			this->targetStateSelector->show();
+			this->targetStateSelector->open();
 		}
 	}
 }

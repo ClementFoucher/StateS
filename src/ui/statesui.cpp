@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -121,6 +121,11 @@ void StatesUi::setView(shared_ptr<ViewConfiguration> viewConfiguration)
 shared_ptr<ViewConfiguration> StatesUi::getView() const
 {
 	return this->editor->getView();
+}
+
+QDialog* StatesUi::getModalDialog()
+{
+	return new QDialog(this);
 }
 
 void StatesUi::closeEvent(QCloseEvent* event)
@@ -258,40 +263,40 @@ void StatesUi::machineReplacedEventHandler()
 void StatesUi::beginSaveAsProcedure()
 {
 	auto machine = machineManager->getMachine();
-	if (machine != nullptr)
-	{
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	if (machine == nullptr) return;
 
-		// Try to build the best possible file name
-		// depending on current knowledge of paths
-		QString filePath;
-		if (machineStatus->getHasSaveFile() == true)
+
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+
+	// Try to build the best possible file name
+	// depending on current knowledge of paths
+	QString filePath;
+	if (machineStatus->getHasSaveFile() == true)
+	{
+		filePath = machineStatus->getSaveFileFullPath();
+	}
+	else
+	{
+		QString fileName = machine->getName() + ".SfsmS";
+
+		if (machineStatus->getSaveFilePath().isEmpty() == false)
 		{
-			filePath = machineStatus->getSaveFileFullPath();
+			filePath = QFileInfo(machineStatus->getSaveFilePath() + "/" + fileName).filePath();
 		}
 		else
 		{
-			QString fileName = machine->getName() + ".SfsmS";
-
-			if (machineStatus->getSaveFilePath().isEmpty() == false)
-			{
-				filePath = QFileInfo(machineStatus->getSaveFilePath() + "/" + fileName).filePath();
-			}
-			else
-			{
-				filePath += fileName;
-			}
+			filePath += fileName;
 		}
+	}
 
-		QString finalFilePath = QFileDialog::getSaveFileName(this, tr("Save machine"), filePath, "*.SfsmS");
+	QString finalFilePath = QFileDialog::getSaveFileName(this, tr("Save machine"), filePath, "*.SfsmS");
 
-		if (! finalFilePath.isEmpty())
-		{
-			if (!finalFilePath.endsWith(".SfsmS", Qt::CaseInsensitive))
-				finalFilePath += ".SfsmS";
+	if (! finalFilePath.isEmpty())
+	{
+		if (!finalFilePath.endsWith(".SfsmS", Qt::CaseInsensitive))
+			finalFilePath += ".SfsmS";
 
-			emit this->saveMachineRequestEvent(finalFilePath);
-		}
+		emit this->saveMachineRequestEvent(finalFilePath);
 	}
 }
 
@@ -304,7 +309,7 @@ void StatesUi::beginLoadProcedure()
 {
 	bool doLoad = this->displayUnsavedConfirmation(tr("Discard current machine?"));
 
-	if (doLoad)
+	if (doLoad == true)
 	{
 		QString filePath;
 		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
@@ -314,7 +319,7 @@ void StatesUi::beginLoadProcedure()
 
 		if (! finalFilePath.isEmpty())
 		{
-			emit loadMachineRequestEvent(finalFilePath);
+			emit this->loadMachineRequestEvent(finalFilePath);
 		}
 	}
 }
@@ -323,9 +328,9 @@ void StatesUi::beginNewMachineProcedure()
 {
 	bool doNew = this->displayUnsavedConfirmation(tr("Clear current machine?"));
 
-	if (doNew)
+	if (doNew == true)
 	{
-		emit newFsmRequestEvent();
+		emit this->newFsmRequestEvent();
 	}
 }
 
@@ -333,9 +338,9 @@ void StatesUi::beginClearMachineProcedure()
 {
 	bool doClear = this->displayUnsavedConfirmation(tr("Delete current machine?"));
 
-	if (doClear)
+	if (doClear == true)
 	{
-		emit clearMachineRequestEvent();
+		emit this->clearMachineRequestEvent();
 	}
 }
 
@@ -344,26 +349,17 @@ void StatesUi::beginExportImageProcedure()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 
 	this->editor->clearSelection();
 
-	shared_ptr<MachineImageExporter> exporter(new MachineImageExporter(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene()));
+	auto exporter = shared_ptr<MachineImageExporter>(new MachineImageExporter(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene()));
 
-	unique_ptr<ImageExportDialog> exportOptions(new ImageExportDialog(machine->getName(), exporter, machineStatus->getImageExportPath(), this));
-	exportOptions->setModal(true);
+	this->imageExportDialog = new ImageExportDialog(machine->getName(), exporter, machineStatus->getImageExportPath(), this);
+	connect(this->imageExportDialog, &ImageExportDialog::finished, this, &StatesUi::imageExportDialogClosedEventHandler);
 
-	exportOptions->exec();
-
-	if (exportOptions->result() == QDialog::Accepted)
-	{
-		QString filePath = exportOptions->getFilePath();
-
-		QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
-		exporter->doExport(filePath, exportOptions->getImageFormat(), comment);
-
-		machineStatus->setImageExportPath(filePath);
-	}
+	this->imageExportDialog->open();
 }
 
 void StatesUi::beginExportVhdlProcedure()
@@ -371,25 +367,15 @@ void StatesUi::beginExportVhdlProcedure()
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
+
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 
-	unique_ptr<FsmVhdlExport> exporter(new FsmVhdlExport());
-	shared_ptr<FsmVhdlExport::ExportCompatibility> compat = exporter->checkCompatibility();
+	auto exporter = shared_ptr<FsmVhdlExport>(new FsmVhdlExport());
 
-	unique_ptr<VhdlExportDialog> exportOptions(new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportPath(), !compat->isCompatible(), this));
-	exportOptions->setModal(true);
+	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportPath(), exporter, this);
+	connect(this->vhdlExportDialog, &VhdlExportDialog::finished, this, &StatesUi::vhdlExportDialogClosedEventHandler);
 
-	exportOptions->exec();
-
-	if (exportOptions->result() == QDialog::Accepted)
-	{
-		QString filePath = exportOptions->getFilePath();
-
-		exporter->setOptions(exportOptions->isResetPositive(), exportOptions->prefixIOs());
-		exporter->writeToFile(filePath);
-
-		machineStatus->setVhdlExportPath(filePath);
-	}
+	this->vhdlExportDialog->open();
 }
 
 void StatesUi::undo()
@@ -482,17 +468,17 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 
 void StatesUi::setTimelineDetachedState(bool detach)
 {
-	if (this->timeline != nullptr)
+	if (this->timeline == nullptr) return;
+
+
+	if (detach == true)
 	{
-		if (detach)
-		{
-			this->displayArea->removeWidget(this->timeline);
-			this->timeline->show();
-		}
-		else
-		{
-			this->displayArea->addWidget(this->timeline, tr("Timeline"));
-		}
+		this->displayArea->removeWidget(this->timeline);
+		this->timeline->show();
+	}
+	else
+	{
+		this->displayArea->addWidget(this->timeline, tr("Timeline"));
 	}
 }
 
@@ -510,6 +496,53 @@ void StatesUi::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
 	{
 		this->toolbar->setRedoActionEnabled(redoAvailable);
 	}
+}
+
+void StatesUi::imageExportDialogClosedEventHandler(int result)
+{
+	if (this->imageExportDialog == nullptr) return;
+
+	auto exporter = this->imageExportDialog->getImageExporter();
+	if (exporter == nullptr) return;
+
+
+	if (result == QDialog::Accepted)
+	{
+		QString filePath = this->imageExportDialog->getFilePath();
+
+		QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
+
+		exporter->doExport(filePath, this->imageExportDialog->getImageFormat(), comment);
+
+		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+		machineStatus->setImageExportPath(filePath);
+	}
+
+	delete this->imageExportDialog;
+	this->imageExportDialog = nullptr;
+}
+
+void StatesUi::vhdlExportDialogClosedEventHandler(int result)
+{
+	if (this->vhdlExportDialog == nullptr) return;
+
+	auto exporter = this->vhdlExportDialog->getFsmVhdlExport();
+	if (exporter == nullptr) return;
+
+
+	if (result == QDialog::Accepted)
+	{
+		QString filePath = this->vhdlExportDialog->getFilePath();
+
+		exporter->setOptions(this->vhdlExportDialog->isResetPositive(), this->vhdlExportDialog->prefixIOs());
+		exporter->writeToFile(filePath);
+
+		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+		machineStatus->setVhdlExportPath(filePath);
+	}
+
+	delete this->vhdlExportDialog;
+	this->vhdlExportDialog = nullptr;
 }
 
 void StatesUi::resetUi()

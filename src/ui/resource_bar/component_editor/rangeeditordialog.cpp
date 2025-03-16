@@ -36,6 +36,7 @@
 RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent) :
 	QDialog(parent)
 {
+	this->action = action;
 	int rangeL = action->getActionRangeL();
 	int rangeR = action->getActionRangeR();
 
@@ -84,4 +85,9 @@ int RangeEditorDialog::getRangeL() const
 int RangeEditorDialog::getRangeR() const
 {
 	return this->equation->getRangeR();
+}
+
+shared_ptr<ActionOnVariable> RangeEditorDialog::getAction() const
+{
+	return this->action;
 }

@@ -29,18 +29,27 @@
 #include <QPushButton>
 #include <QFileDialog>
 
+// StateS classes
+#include "fsmvhdlexport.h"
 
-VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, bool isIncompatible, QWidget* parent) :
-    QDialog(parent)
+
+VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, shared_ptr<FsmVhdlExport> fsmVhdlExport, QWidget* parent) :
+	QDialog(parent)
 {
-	this->baseFileName = baseFileName;
-	this->searchPath   = searchPath;
+	if (fsmVhdlExport == nullptr) return;
+
+
+	this->baseFileName  = baseFileName;
+	this->searchPath    = searchPath;
+	this->fsmVhdlExport = fsmVhdlExport;
 
 	this->setWindowTitle(tr("VHDL export"));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	if (isIncompatible)
+	auto compatChecker = fsmVhdlExport->checkCompatibility();
+	bool isCompatible = compatChecker->isCompatible();
+	if (isCompatible == false)
 	{
 		QLabel* warning = new QLabel("<span style=\"color:red;\">"
 		                             + tr("Warning! Experimental feature.") + "<br />"
@@ -80,32 +89,45 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 	buttonsLayout->addWidget(buttonCancel);
 }
 
-bool VhdlExportDialog::isResetPositive()
+bool VhdlExportDialog::isResetPositive() const
 {
 	if (this->resetLogicSelectionBox->currentIndex() == 0)
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-bool VhdlExportDialog::prefixIOs()
+bool VhdlExportDialog::prefixIOs() const
 {
 	if (this->addPrefixSelectionBox->currentIndex() == 0)
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-QString VhdlExportDialog::getFilePath()
+QString VhdlExportDialog::getFilePath() const
 {
 	return this->filePath;
+}
+
+shared_ptr<FsmVhdlExport> VhdlExportDialog::getFsmVhdlExport() const
+{
+	return this->fsmVhdlExport;
 }
 
 void VhdlExportDialog::accept()
 {
 	QString defaultFilePath;
 
-	if (! this->searchPath.isEmpty())
+	if (this->searchPath.isEmpty() == false)
 	{
 		defaultFilePath += this->searchPath;
 		defaultFilePath += "/"; // TODO: check if environment dependant!
@@ -115,9 +137,13 @@ void VhdlExportDialog::accept()
 
 	this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), defaultFilePath + ".vhdl", "*.vhdl");
 
-	if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
+	if ( (this->filePath.isEmpty() == false) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
+	{
 		this->filePath += ".vhdl";
+	}
 
-	if (! this->filePath.isEmpty())
+	if (this->filePath.isEmpty() == false)
+	{
 		QDialog::accept();
+	}
 }

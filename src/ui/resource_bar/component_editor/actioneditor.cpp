@@ -479,15 +479,10 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::AffectEditRange:
-		unique_ptr<RangeEditorDialog>rangeEditor = unique_ptr<RangeEditorDialog>(new RangeEditorDialog(actionOnVariable));
-		rangeEditor->exec();
+		this->rangeEditorDialog = new RangeEditorDialog(actionOnVariable, this);
+		connect(this->rangeEditorDialog, &RangeEditorDialog::finished, this, &ActionEditor::rangeEditorClosedEventHandler);
 
-		if (rangeEditor->result() == QDialog::Accepted)
-		{
-			newRangeL = rangeEditor->getRangeL();
-			newRangeR = rangeEditor->getRangeR();
-			setRange = true;
-		}
+		this->rangeEditorDialog->open();
 		break;
 	}
 
@@ -594,6 +589,26 @@ void ActionEditor::tableChangedEventHandler()
 	this->fillFirstColumn();
 	this->restoreSelection();
 	this->updateButtonsEnableState();
+}
+
+void ActionEditor::rangeEditorClosedEventHandler(int result)
+{
+	if (this->rangeEditorDialog == nullptr) return;
+
+	shared_ptr<ActionOnVariable> actionOnVariable = this->rangeEditorDialog->getAction();
+	if (actionOnVariable == nullptr) return;
+
+
+	if (result == QDialog::Accepted)
+	{
+		int newRangeL = this->rangeEditorDialog->getRangeL();
+		int newRangeR = this->rangeEditorDialog->getRangeR();
+
+		actionOnVariable->setActionRange(newRangeL, newRangeR);
+	}
+
+	delete this->rangeEditorDialog;
+	this->rangeEditorDialog = nullptr;
 }
 
 void ActionEditor::fillFirstColumn()

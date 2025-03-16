@@ -39,6 +39,7 @@ class QSlider;
 #include "statestypes.h"
 class TruthTable;
 class TruthTableDisplay;
+class EquationEditor;
 
 
 class ConditionEditor : public QWidget
@@ -61,6 +62,8 @@ private slots:
 
 	void conditionTextPositionSliderChanged(int newValue);
 
+	void equationEditorClosedEventHandler(int result);
+
 private:
 	void expandTruthTable();
 	void collapseTruthTable();
@@ -72,7 +75,7 @@ private:
 	componentId_t transitionId = nullId;
 	shared_ptr<TruthTable> truthTable;
 
-	// QWidgets with parent
+	// Widgets
 	QGridLayout* layout = nullptr;
 
 	QLabel* conditionText        = nullptr;
@@ -84,6 +87,8 @@ private:
 
 	QPushButton*       buttonToggleTruthTable = nullptr;
 	TruthTableDisplay* truthTableDisplay      = nullptr;
+
+	EquationEditor* equationEditor = nullptr;
 
 };
 

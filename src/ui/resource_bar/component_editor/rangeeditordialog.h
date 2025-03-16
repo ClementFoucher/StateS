@@ -49,10 +49,14 @@ public:
 	int getRangeL() const;
 	int getRangeR() const;
 
+	shared_ptr<ActionOnVariable> getAction() const;
+
 	/////
 	// Object variables
 private:
 	shared_ptr<Equation> equation;
+
+	shared_ptr<ActionOnVariable> action;
 
 };
 

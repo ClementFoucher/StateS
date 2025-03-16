@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,7 @@
 
 
 ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent) :
-    QDialog(parent)
+	QDialog(parent)
 {
 	this->baseFileName = baseFileName;
 	this->searchPath   = searchPath;
@@ -114,21 +114,34 @@ ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<Mac
 	buttonsLayout->addWidget(buttonCancel);
 }
 
-ImageFormat_t ImageExportDialog::getImageFormat()
+ImageFormat_t ImageExportDialog::getImageFormat() const
 {
 	if (this->imageFormatSelectionBox->currentText() == "Pdf")
+	{
 		return ImageFormat_t::pdf;
+	}
 	else if (this->imageFormatSelectionBox->currentText() == "Svg")
+	{
 		return ImageFormat_t::svg;
+	}
 	else if (this->imageFormatSelectionBox->currentText() == "Png")
+	{
 		return ImageFormat_t::png;
+	}
 	else // if (this->imageFormatSelectionBox->currentText() == "Jpeg")
+	{
 		return ImageFormat_t::jpg;
+	}
 }
 
-QString ImageExportDialog::getFilePath()
+QString ImageExportDialog::getFilePath() const
 {
 	return this->filePath;
+}
+
+shared_ptr<MachineImageExporter> ImageExportDialog::getImageExporter() const
+{
+	return this->previewManager;
 }
 
 void ImageExportDialog::accept()
@@ -137,7 +150,7 @@ void ImageExportDialog::accept()
 
 	QString defaultFilePath;
 
-	if (! this->searchPath.isEmpty())
+	if (this->searchPath.isEmpty() == false)
 	{
 		defaultFilePath += this->searchPath;
 		defaultFilePath += "/"; // TODO: check if environment dependant!
@@ -153,31 +166,40 @@ void ImageExportDialog::accept()
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Pdf"), defaultFilePath + ".pdf", "*.pdf");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".pdf", Qt::CaseInsensitive)) )
+		{
 			this->filePath += ".pdf";
+		}
 		break;
 	case ImageFormat_t::svg:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Svg"), defaultFilePath + ".svg", "*.svg");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".svg", Qt::CaseInsensitive)) )
+		{
 			this->filePath += ".svg";
+		}
 		break;
 	case ImageFormat_t::png:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Png"), defaultFilePath + ".png", "*.png");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".png", Qt::CaseInsensitive)) )
+		{
 			this->filePath += ".png";
+		}
 		break;
 	case ImageFormat_t::jpg:
 		this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), defaultFilePath + ".jpg", "*.jpg");
 
 		if ( (! this->filePath.isEmpty()) && (! this->filePath.endsWith(".jpg", Qt::CaseInsensitive)) )
+		{
 			this->filePath += ".jpg";
-
+		}
 		break;
 	}
 
-	if (! this->filePath.isEmpty())
+	if (this->filePath.isEmpty() == false)
+	{
 		QDialog::accept();
+	}
 }
 
 void ImageExportDialog::resizeEvent(QResizeEvent*)
