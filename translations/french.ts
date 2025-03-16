@@ -4,98 +4,103 @@
 <context>
     <name>AboutTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="152"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="166"/>
         <source>Suggestion? Feature request?</source>
         <translation>Une suggestion ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="58"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="52"/>
         <source>Version</source>
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="140"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="153"/>
         <source>Found a bug?</source>
         <translation>Vous avez trouvé un bug ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="142"/>
-        <source>known bugs list</source>
-        <translation>la liste des bugs connus</translation>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="154"/>
+        <source>(Please consult the</source>
+        <translation>(Merci de consulter la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="156"/>
+        <source>known bugs list</source>
+        <translation>liste des bugs connus</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="69"/>
         <source>Distributed under the terms of the</source>
         <translation>Distribué selon les termes de la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="78"/>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="94"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="71"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
         <source>version</source>
         <translation>version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="124"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
+        <source>This application was compiled with and runs on</source>
+        <translation>Cette application a été compilée avec et utilise actuellement</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="134"/>
         <source>StateS sources:</source>
         <translation>Sources de StateS :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="141"/>
-        <source>(Please consult</source>
-        <translation>(Merci de consulter</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="143"/>
-        <source>before submitting a ticket)</source>
-        <translation>avant de soumettre un ticket)</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="116"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="124"/>
         <source>Contact:</source>
         <translation>Contact :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
         <source>This application was compiled using</source>
         <translation>Cette application a été compilée avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="68"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="113"/>
         <source>Copyright and technical information</source>
         <translation>Informations techniques et de copyright</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
         <source>Currently running on</source>
         <translation>Version actuellement utilisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="112"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="158"/>
+        <source>before filling an issue)</source>
+        <translation>avant de soumettre un ticket)</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="174"/>
         <source>Contact and links</source>
         <translation>Contact et liens</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="71"/>
         <source>GNU General Public Licence</source>
         <translation>Licence publique générale GNU</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="86"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="79"/>
         <source>See</source>
-        <translation>Voir</translation>
+        <translation>Voir les</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="86"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="81"/>
         <source>credits for art used in StateS</source>
-        <translation>les crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
+        <translation>crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="94"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="89"/>
         <source>This software includes third-party work licensed under the</source>
         <translation>Ce logiciel utilise du travail provenant de sources tierces licenciées sous la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="94"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
         <source>Apache License</source>
         <translation>licence Apache</translation>
     </message>
