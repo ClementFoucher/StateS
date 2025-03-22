@@ -11,11 +11,11 @@
         <Input Name="start" Size="1" Initial_value="0"/>
         <Input Name="suspend" Size="1" Initial_value="0"/>
         <Input Name="error" Size="1" Initial_value="0"/>
-        <Output Name="boot" Size="1"/>
-        <Output Name="checkOK" Size="1"/>
-        <Output Name="leds" Size="2"/>
-        <Output Name="alarm" Size="1"/>
-        <Output Name="power" Size="1"/>
+        <Output Name="boot" Size="1" Initial_value="0"/>
+        <Output Name="checkOK" Size="1" Initial_value="0"/>
+        <Output Name="leds" Size="2" Initial_value="00"/>
+        <Output Name="alarm" Size="1" Initial_value="0"/>
+        <Output Name="power" Size="1" Initial_value="0"/>
         <Variable Name="error counter" Size="4" Initial_value="0000"/>
         <Variable Name="init duration" Size="4" Initial_value="0000"/>
     </Signals>

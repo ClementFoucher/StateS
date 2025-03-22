@@ -693,119 +693,209 @@
 <context>
     <name>FsmXmlParser</name>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="98"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="135"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="150"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="162"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="180"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="196"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="69"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="88"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="103"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="126"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="144"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="159"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="189"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="203"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="305"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="233"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="241"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="346"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="363"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="435"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="451"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="120"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="213"/>
-        <source>Ignored node</source>
-        <translation>Nœud ignoré</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="136"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="151"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="163"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="181"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="70"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="89"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="104"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="127"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="145"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="160"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="190"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="204"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="375"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="434"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="234"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="136"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="151"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="163"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="181"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="70"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="89"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="104"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="127"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="145"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="160"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="190"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="204"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="375"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="434"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="234"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="196"/>
-        <source>Unable to parse operand rank for an equation.</source>
-        <translation>Impossible de lire le numéro de l&apos;opérande dans une l&apos;équation.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="197"/>
-        <source>Operand will be set in position 0, erasing popential existing operand.</source>
-        <translation>L&apos;opérande sera placée à la position 0, écrasant toute opérande déjà à cette position.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="305"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="346"/>
         <source>Unable to extract state name.</source>
         <translation>Impossible de lire le nom de l&apos;état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="367"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="425"/>
-        <source>Warning!</source>
-        <translation>Attention !</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="367"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="417"/>
         <source>Unable to extract state position for state </source>
         <translation>Impossible de lire la position de l&apos;état </translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="135"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="150"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="162"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="180"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="126"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="144"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="159"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="203"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="233"/>
         <source>node.</source>
         <translation>nœud.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="306"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="376"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="435"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="49"/>
+        <source>due to previous errors.</source>
+        <translation>en raison d&apos;erreurs précédentes.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="69"/>
+        <source>Unexpected node found while parsing machine.</source>
+        <translation>Nœud non supporté trouvé lors de la lecture de la machine.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="70"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="190"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="234"/>
+        <source>or</source>
+        <translation>ou</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="71"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="90"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="105"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="128"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="146"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="243"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="347"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="437"/>
         <source>Node ignored.</source>
         <translation>Nœud ignoré.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="374"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="433"/>
-        <source>Unexpected node encountered while parsing</source>
-        <translation>Nœud non supporté trouvé en lisant</translation>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="88"/>
+        <source>Unexpected node found while parsing machine states.</source>
+        <translation>Nœud non supporté trouvé lors de la lecture des états.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="374"/>
-        <source>state list:</source>
-        <translation>liste d&apos;états:</translation>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="103"/>
+        <source>Unexpected node found while parsing machine transitions.</source>
+        <translation>Nœud non supporté trouvé lors de la lecture des transitions.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="425"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="189"/>
+        <source>node</source>
+        <translation>nœud</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="49"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="109"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="246"/>
+        <source>Ignoring node</source>
+        <translation>Nœud ignoré :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="241"/>
+        <source>Unexpected node found in a node that doesn&apos;t accept subnodes.</source>
+        <translation>Nœud non supporté trouvé dans un nœud qui n&apos;accepte pas de sous-nœud.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="242"/>
+        <source>Found node was:</source>
+        <translation>Le nœud trouvé était :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="363"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="377"/>
+        <source>The state named</source>
+        <translation>L&apos;état nommé</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="363"/>
+        <source>in save file couldn&apos;t be added.</source>
+        <translation>dans le fichier de sauvegarde n&apos;a pas pu être ajouté.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="364"/>
+        <source>This may be due to a duplicated name.</source>
+        <translation>Cela peut être du à un nom dupliqué.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="365"/>
+        <source>State ignored.</source>
+        <translation>État ignoré.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="377"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="417"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="472"/>
+        <source>Warning:</source>
+        <translation>Attention :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="377"/>
+        <source>in save file was added under name</source>
+        <translation>dans le fichier de sauvegarde a été ajouté sous le nom</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="378"/>
+        <source>This is probably due to an ill-formed name.</source>
+        <translation>Cela est probablement du à un nom mal formé.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="379"/>
+        <source>This may trigger further errors if other components (e.g. transitions) were linked to that state.</source>
+        <translation>Cela risque de causer des erreurs par la suite si d&apos;autre composants (p.e. des transitions) étaient lies à cet état.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="435"/>
+        <source>Unable to parse a transition: either source or target state do not exist.</source>
+        <translation>Impossible de lire une transition : l&apos;état source ou l&apos;état cible n&apos;existe pas.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="436"/>
+        <source>Source state was:</source>
+        <translation>L&apos;était source était :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="436"/>
+        <source>target state was</source>
+        <translation>l&apos;état cible était</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="451"/>
+        <source>A transition in save file couldn&apos;t be added.</source>
+        <translation>Une transition présente dans le fichier de sauvegarne n&apos;a pas pu être ajoutée.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="452"/>
+        <source>Transition ignored.</source>
+        <translation>Transition ignorée.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="472"/>
         <source>Unable to extract slider position for a transition</source>
         <translation>Impossible de lire la position du slider pour une transition</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="433"/>
-        <source>transition list:</source>
-        <translation>liste de transitions:</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="98"/>
-        <source>Unexpected node found:</source>
-        <translation>Nœud non supporté trouvé :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="135"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="150"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="162"/>
-        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="180"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="126"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="144"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="159"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="189"/>
         <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="203"/>
+        <location filename="../src/machine/xml/fsm/fsmxmlparser.cpp" line="233"/>
         <source>Unexpected node found while parsing</source>
         <translation>Nœud non supporté trouvé en lisant</translation>
     </message>
@@ -1615,208 +1705,345 @@
 <context>
     <name>MachineXmlParser</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="87"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="94"/>
-        <source>Information:</source>
-        <translation>Information :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="87"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="94"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="727"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="734"/>
         <source>No name was found for the machine.</source>
         <translation>Aucun nom n&apos;a été trouvé pour la machine.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="88"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="728"/>
         <source>Used file name to name machine:</source>
         <translation>Nom utilisé pour nommer la machine :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="92"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="732"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="735"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="95"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="735"/>
         <source>Name defaulted to:</source>
         <translation>Nom par défaut utilisé :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="116"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="141"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="146"/>
-        <source>Warning.</source>
-        <translation>Attention.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="116"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="745"/>
         <source>Unable to parse zoom level.</source>
         <translation>Imposible de lire le niveau de zoom.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="116"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="746"/>
         <source>Found value was:</source>
-        <translation>Valeu lue :</translation>
+        <translation>Valeur lue :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="141"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="772"/>
         <source>Unable to parse view position.</source>
         <translation>Impossible de lire la position de la vue.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="141"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="773"/>
         <source>Found values were:</source>
         <translation>Valeurs lues :</translation>
     </message>
     <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="119"/>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="160"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="194"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="225"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="241"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="313"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="360"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="574"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="607"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="637"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="653"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="787"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="810"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="825"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="160"/>
-        <source>Unnamed variable encountered while parsing variable list: unable to extract name.</source>
-        <translation>Variable sans nom trouvée en lisant la liste des signaux.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="161"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="197"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="639"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="788"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="827"/>
         <source>Variable ignored.</source>
         <translation>Variable ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="194"/>
-        <source>Unexpected variable type encountered while parsing variable list:</source>
-        <translation>Type de variable inconnu trouvé lors du parcours de la liste des variables :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="196"/>
-        <source>Variable name was:</source>
-        <translation>Le nom de la variable était :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="218"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="852"/>
         <source>Unable to resize variable</source>
         <translation>Impossible de redimensionner la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="219"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="226"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="335"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="372"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="404"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="476"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="727"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="734"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="745"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="772"/>
+        <source>Info:</source>
+        <translation>Info :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="335"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="372"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="404"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="476"/>
+        <source>node due to previous errors.</source>
+        <translation>a été ignoré en raison d&apos;erreurs précédentes.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="119"/>
+        <source>Reference to undeclared variable encountered while parsing action list.</source>
+        <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="225"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="345"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="396"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="835"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="852"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="860"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="876"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="883"/>
+        <source>Warning:</source>
+        <translation>Attention :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="313"/>
+        <source>Unexpected equation nature encountered while parsing logic equation.</source>
+        <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="360"/>
+        <source>Reference to undeclared variable encountered while parsing an equation.</source>
+        <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="396"/>
+        <source>Error in constant value while parsing equation.</source>
+        <translation>Erreur dans la valeur d&apos;une constante trouvée lors du parcours d&apos;une équation.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="556"/>
+        <source>due to previous errors.</source>
+        <translation>en raison d&apos;erreurs précédentes.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="637"/>
+        <source>Unexpected variable nature encountered while parsing variable list.</source>
+        <translation>Nature de variable inconnue trouvée lors du parcours de la liste des variables.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="787"/>
+        <source>Name missing for a variable.</source>
+        <translation>Nom manquant pour une variable.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="825"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="835"/>
+        <source>The variable named</source>
+        <translation>La variable nommée</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="826"/>
+        <source>This may be due to a duplicated name.</source>
+        <translation>Cela peut être du à un nom dupliqué.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="835"/>
+        <source>in save file was added under name</source>
+        <translation>dans le fichier de sauvegarde a été ajoutée sous le nom</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="836"/>
+        <source>This can be due to an ill-formed name.</source>
+        <translation>Cela peut être du à un nom mal formé.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="837"/>
+        <source>This may trigger further errors if other components were referencing this variable.</source>
+        <translation>Cela risque de causer des erreurs par la suite si d&apos;autre composants utilisent cette variable.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="853"/>
+        <source>Requested size was:</source>
+        <translation>La taille demandée était :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="854"/>
         <source>Variable size ignored and defaulted to</source>
         <translation>La taille de la variable a été ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="225"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="860"/>
         <source>Unable to extract variable size for variable</source>
         <translation>Impossible de lire la taille de la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="273"/>
-        <source>Reference to undeclared variable encountered while parsing action list:</source>
-        <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions :</translation>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="876"/>
+        <source>The extracted initial value for variable</source>
+        <translation>La valeur initiale lue pour la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="274"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="876"/>
+        <source>was incorrect.</source>
+        <translation>était incorrecte.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="335"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="372"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="404"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="476"/>
+        <source>Ignoring</source>
+        <translation>Le nœud</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="120"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="361"/>
         <source>Variable name was</source>
         <translation>Le nom de la variable était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="372"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="160"/>
+        <source>Unexpected action type encountered while parsing action list.</source>
+        <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="225"/>
         <source>Error in action value for variable</source>
         <translation>Erreur dans la valeur de l&apos;action pour la variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="195"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="383"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="345"/>
+        <source>Unable to parse operand rank for an equation.</source>
+        <translation>Impossible de lire le numéro de l&apos;opérande dans une l&apos;équation.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="346"/>
+        <source>Operand will be placed in position 0, potentially erasing existing operand.</source>
+        <translation>L&apos;opérande sera placée à la position 0, écrasant toute opérande déjà à cette position.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="362"/>
+        <source>Operand ignored.</source>
+        <translation>Opérande ignorée.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="556"/>
+        <source>Ignoring node</source>
+        <translation>Nœud ignoré :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="574"/>
+        <source>Unexpected root node.</source>
+        <translation>Nœud racine mal nommé.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="574"/>
+        <source>Root node should be</source>
+        <translation>Le nœud racine est normalement</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="574"/>
+        <source>but found</source>
+        <translation>mais il était nommé</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="608"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="638"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="195"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="608"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="638"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="195"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="383"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="608"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="638"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="242"/>
-        <source>Given initial value was</source>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="653"/>
+        <source>Unexpected node found in a node that doesn&apos;t accept subnodes.</source>
+        <translation>Nœud non supporté trouvé dans un nœud qui n&apos;accepte pas de sous-nœud.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="654"/>
+        <source>Found node was:</source>
+        <translation>Le nœud trouvé était :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="825"/>
+        <source>couldn&apos;t be added.</source>
+        <translation>n&apos;a pas pu être ajoutée.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="861"/>
+        <source>Variable size defaulted to</source>
+        <translation>La taille de la variable a été ignorée et forcée à</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="877"/>
+        <source>Requested initial value was</source>
         <translation>La valeur initiale fournie était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="243"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="883"/>
+        <source>No value was defined for variable:</source>
+        <translation>Aucune valeur n&apos;a été définie pour la variable :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="884"/>
+        <source>Value defaulted to</source>
+        <translation>Valeur par défaut appliquée :</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="878"/>
         <source>Initial value ignored and defaulted to</source>
         <translation>La valeur initiale a été ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="275"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="315"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="384"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="121"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="162"/>
         <source>Action ignored.</source>
         <translation>Action ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="313"/>
-        <source>Unexpected action type encountered while parsing action list:</source>
-        <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="314"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="161"/>
         <source>Action type was</source>
         <translation>Le type d&apos;action était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="373"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="488"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="226"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="397"/>
         <source>Value ignored and set to</source>
         <translation>Valeur ignorée et forcée à</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="487"/>
-        <source>Error in constant value while parsing equation:</source>
-        <translation>Erreur dans la valeur d&apos;un constant trouvée lors du parcours d&apos;une équation :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="493"/>
-        <source>Unexpected equation nature encountered while parsing logic equation:</source>
-        <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="494"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="314"/>
         <source>Equation nature was:</source>
         <translation>La nature de l&apos;équation était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="495"/>
-        <source>Token ignored. Will retry with other tokens if existing.</source>
-        <translation>Clé ignorée. Réessaye avec la clé suivante si elle existe.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="146"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="607"/>
         <source>Unexpected node found while parsing configuration.</source>
         <translation>Nœud inattendu trouvé en lisant la configuration.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="146"/>
-        <source>Node name was:</source>
-        <translation>Nom du nœud :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="147"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="315"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="609"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="655"/>
         <source>Node ignored.</source>
         <translation>Nœud ignoré.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
-        <source>Unexpected node encountered while parsing action list:</source>
-        <translation>Nœud inattendu trouvé en lisant la liste des actions :</translation>
     </message>
 </context>
 <context>

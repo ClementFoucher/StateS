@@ -402,11 +402,8 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 	// Size
 	this->stream->writeAttribute("Size", QString::number(variable->getSize()));
 
-	// Initial value (except for outputs)
-	if (nature != VariableNature_t::output)
-	{
-		this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
-	}
+	// Initial value
+	this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
 
 	// Id
 	if (this->mode == MachineXmlWriterMode_t::writeToUndo)

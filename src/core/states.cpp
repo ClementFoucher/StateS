@@ -193,10 +193,10 @@ void StateS::loadMachine(const QString& path)
 
 		// Parse and check for warnings
 		parser->doParse();
-		QList<QString> warnings = parser->getWarnings();
-		if (!warnings.isEmpty())
+		QList<QString> issues = parser->getIssues();
+		if (issues.isEmpty() == false)
 		{
-			this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), warnings);
+			this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), issues);
 		}
 
 		// Update machine

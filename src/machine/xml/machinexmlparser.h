@@ -35,11 +35,13 @@ class QFile;
 class QXmlStreamReader;
 
 // StateS classes
+#include "statestypes.h"
 class Machine;
 class ViewConfiguration;
 class GraphicAttributes;
-class MachineActuatorComponent;
+class MachineComponent;
 class Equation;
+class Variable;
 
 
 class MachineXmlParser : public QObject
@@ -47,9 +49,48 @@ class MachineXmlParser : public QObject
 	Q_OBJECT
 
 	/////
-	// Constructors/destructors
+	// Type declarations
 protected:
+	enum class IsRoot_t : bool
+	{
+		yes = true,
+		no  = false
+	};
+
+	enum class IsSubmachineEnd_t : bool
+	{
+		yes = true,
+		no  = false
+	};
+
+private:
+	enum class Tag_t
+	{
+		none,
+		// Level 0
+		machine, // Currently, tag is named FSM => TODO rename
+		// Level 1
+		configuration,
+		variables, // Currently, tag is named Signals => TODO rename
+		// Level 2
+		configurationViewScale,
+		configurationViewCentralPoint,
+		variablesInput,
+		variablesOutput,
+		variablesInternal, // Currently, tag is named Variable => TODO rename
+		variablesConstant,
+		// Other tag in machine: passed to submachine parser
+		submachineTag
+	};
+
+	/////
+	// Constructors/destructors
+private:
 	explicit MachineXmlParser();
+
+protected:
+	explicit MachineXmlParser(const QString& xmlString);
+	explicit MachineXmlParser(shared_ptr<QFile> file);
 
 	/////
 	// Object functions
@@ -59,41 +100,71 @@ public:
 	shared_ptr<Machine>           getMachine();
 	shared_ptr<GraphicAttributes> getGraphicMachineConfiguration();
 	shared_ptr<ViewConfiguration> getViewConfiguration();
-	QList<QString>                getWarnings();
+	QList<QString>                getIssues();
 
 protected:
+	void parseActionNode();
+	void parseLogicEquationNode();
+	void parseOperandNode();
+	void parseOperandVariableNode();
+	void parseOperandConstantNode();
 
-	void parseMachineName(const QString& fileName);
-	void parseConfiguration();
-	void parseVariable();
-	void parseAction();
-	void parseLogicEquation();
+	IsRoot_t processEndLogicVariableNode();
+	IsRoot_t processEndLogicEquationNode();
 
-	void treatBeginOperand(uint operandRank);
-	void treatEndOperand();
+	virtual void              parseSubmachineStartElement() = 0;
+	virtual IsSubmachineEnd_t parseSubmachineEndElement()   = 0;
+
+	QString getCurrentNodeName() const;
+	QString getCurrentNodeStringAttribute(const QString& name) const;
+	uint getCurrentNodeUintAttribute(const QString& name, bool* ok) const;
+	int getCurrentNodeIntAttribute(const QString& name, bool* ok) const;
+	float getCurrentNodeFloatAttribute(const QString& name, bool* ok) const;
+	componentId_t getCurrentNodeIdAttribute() const;
+
+	shared_ptr<Equation> getCurrentEquation();
+
+	void addGraphicAttribute(uint componentId, QString name, QString value);
+
+	void addIssue(const QString& warning);
 
 private:
-	virtual void buildMachineFromXml() = 0;
+	void parseStartElement();
+	void parseEndElement();
+
+	void parseMachineName();
+
+	void parseConfigurationViewScale();
+	void parseConfigurationViewCentralPoint();
+	void parseVariableNode();
+
+	shared_ptr<Variable> getVariableByName(const QString& variableName) const;
 
 	/////
 	// Object variables
 protected:
-	shared_ptr<GraphicAttributes> graphicAttributes;
-
-	QList<QString> warnings;
 	shared_ptr<Machine> machine;
 
-	shared_ptr<MachineActuatorComponent> currentActuator;
-	shared_ptr<Equation> rootLogicEquation;
-	shared_ptr<Equation> currentLogicEquation;
-
-	shared_ptr<QXmlStreamReader> xmlReader;
-	shared_ptr<QFile> file; // Keep it just to maintain a reference to the file so that it is not destroyed
+	componentId_t currentComponentId;
 
 private:
+	shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed
+	shared_ptr<QXmlStreamReader> xmlReader;
+
 	shared_ptr<ViewConfiguration> viewConfiguration;
+	shared_ptr<GraphicAttributes> graphicAttributes;
+
 	QStack<shared_ptr<Equation>> equationStack;
 	QStack<uint> operandRankStack;
+
+	QList<QString> issues;
+
+	// Remember position in file
+	Tag_t currentTag = Tag_t::none;
+	int unexpectedTagLevel = 0;
+
+	// Temporary workaround to identify constant parsing
+	bool isParsingConstantOperand = false;
 
 };
 

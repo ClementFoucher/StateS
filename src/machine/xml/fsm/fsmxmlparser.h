@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS classes
-class Fsm;
 class FsmState;
 
 
@@ -41,20 +40,26 @@ class FsmXmlParser : public MachineXmlParser
 	/////
 	// Type declarations
 private:
-	enum class Group_t
+	enum class MainTag_t
 	{
 		none,
-		configuration_group,
-		variables_group,
 		states_group,
 		transitions_group
 	};
-	enum class Subgroup_t
+	enum class SubTag_t
 	{
 		none,
-		state, transition,
-		actions_group, action,
-		condition, logicVariable, logicEquation, operand
+		// First level subtags
+		state,
+		transition,
+		// Second level subtags
+		actions_group,
+		condition,
+		// Sublevel subtags
+		action,
+		logicVariable,
+		logicEquation,
+		operand
 	};
 
 	/////
@@ -65,30 +70,25 @@ public:
 
 	/////
 	// Object functions
-public:
-	void treatStartElement();
-	void treatEndElement();
+protected:
+	virtual void              parseSubmachineStartElement() override;
+	virtual IsSubmachineEnd_t parseSubmachineEndElement()   override;
 
 private:
-	explicit FsmXmlParser();
+	void parseStateNode();
+	void parseTransitionNode();
 
-	virtual void buildMachineFromXml() override;
-
-	void parseState();
-	void parseTransition();
+	void processEndCondition();
 
 	shared_ptr<FsmState> getStateByName(const QString& name) const;
 
 	/////
 	// Object variables
 private:
-	QString fileName;
-
 	// Remember position in file
-	Group_t    currentGroup;
-	Subgroup_t currentSubGroup;
-
-	int currentLevel;
+	MainTag_t currentMainTag = MainTag_t::none;
+	SubTag_t  currentSubTag  = SubTag_t::none;
+	int unexpectedTagLevel = 0;
 
 };
 

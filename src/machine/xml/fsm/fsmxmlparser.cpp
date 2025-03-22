@@ -22,426 +22,478 @@
 // Current class header
 #include "fsmxmlparser.h"
 
-// Qt classes
-#include <QPointF>
-#include <QXmlStreamReader>
-#include <QFile>
-
 // StateS classes
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "graphicattributes.h"
 
-
-FsmXmlParser::FsmXmlParser()
-{
-	this->currentGroup = Group_t::none;
-	this->currentSubGroup = Subgroup_t::none;
-	this->currentLevel = 0;
-}
 
 FsmXmlParser::FsmXmlParser(const QString& xmlString) :
-    FsmXmlParser()
+	MachineXmlParser(xmlString)
 {
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlString));
+	this->machine = shared_ptr<Fsm>(new Fsm());
 }
 
 FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
-    FsmXmlParser()
+	MachineXmlParser(file)
 {
-	this->file = file;
-	if (file->isOpen() == false)
-	{
-		file->open(QIODevice::ReadOnly);
-	}
-	else
-	{
-		file->reset();
-	}
-
-	this->fileName = file->fileName();
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
+	this->machine = shared_ptr<Fsm>(new Fsm());
 }
 
-void FsmXmlParser::treatStartElement()
+void FsmXmlParser::parseSubmachineStartElement()
 {
-	this->currentLevel++;
+	auto nodeName = this->getCurrentNodeName();
 
-	QXmlStreamAttributes attributes = this->xmlReader->attributes();
-	QString nodeName = this->xmlReader->name().toString();
-
-	if (this->currentLevel == 1) // Root: extract name
+	if (this->unexpectedTagLevel != 0)
 	{
-		this->parseMachineName(this->fileName);
+		this->addIssue("    "  + tr("Ignoring node") + " " + nodeName + " " + tr("due to previous errors."));
+		this->unexpectedTagLevel++;
+		return;
 	}
-	else if (this->currentLevel == 2) // Enter main group
+
+
+	if (this->currentMainTag == MainTag_t::none) // Enter main group
 	{
-		if (nodeName == "Configuration")
+		if (nodeName == "States")
 		{
-			this->currentGroup = Group_t::configuration_group;
-		}
-		else if (nodeName == "Signals")
-		{
-			this->currentGroup = Group_t::variables_group;
-		}
-		else if (nodeName == "States")
-		{
-			this->currentGroup = Group_t::states_group;
+			this->currentMainTag = MainTag_t::states_group;
 		}
 		else if (nodeName == "Transitions")
 		{
-			this->currentGroup = Group_t::transitions_group;
+			this->currentMainTag = MainTag_t::transitions_group;
 		}
 		else
 		{
-			this->warnings.append(tr("Error!") + " " + tr("Unexpected node found:") + " " + nodeName);
+			this->unexpectedTagLevel++;
+
+			this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing machine."));
+			this->addIssue("    " + tr("Expected") + " \"States\" " + tr("or") + " \"Transitions\", " + tr("got") + " \"" + nodeName + "\".");
+			this->addIssue("    " + tr("Node ignored."));
 		}
 	}
-	else if (this->currentLevel == 3) // Inside group
+	else if (this->currentSubTag == SubTag_t::none) // Inside group
 	{
-		switch (this->currentGroup)
+		switch (this->currentMainTag)
 		{
-		case Group_t::configuration_group:
-			this->parseConfiguration();
+		case MainTag_t::states_group:
+			if (nodeName == "State")
+			{
+				this->currentSubTag = SubTag_t::state;
+				this->parseStateNode();
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing machine states."));
+				this->addIssue("    " + tr("Expected") + " \"State\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Node ignored."));
+			}
 			break;
-		case Group_t::variables_group:
-			this->parseVariable();
+		case MainTag_t::transitions_group:
+			if (nodeName == "Transition")
+			{
+				this->currentSubTag = SubTag_t::transition;
+				this->parseTransitionNode();
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing machine transitions."));
+				this->addIssue("    " + tr("Expected") + " \"Transition\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Node ignored."));
+			}
 			break;
-		case Group_t::states_group:
-			this->currentSubGroup = Subgroup_t::state;
-			this->parseState();
-			break;
-		case Group_t::transitions_group:
-			this->currentSubGroup = Subgroup_t::transition;
-			this->parseTransition();
-			break;
-		case Group_t::none:
-			this->warnings.append("    "  + tr("Ignored node") + " " + nodeName);
+		case MainTag_t::none:
+			this->addIssue("    " + tr("Ignoring node") + " \"" + nodeName + "\".");
 			break;
 		}
 	}
 	else // Sub-group
 	{
-		switch (this->currentSubGroup)
+		switch (this->currentSubTag)
 		{
-		case Subgroup_t::state:
+		case SubTag_t::state:
 			if (nodeName == "Actions")
 			{
-				this->currentSubGroup = Subgroup_t::actions_group;
+				this->currentSubTag = SubTag_t::actions_group;
 			}
 			else
 			{
-				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"State\"" + tr("node."));
-				this->warnings.append("    " + tr("Expected") + " \"Actions\", " + tr("got") + " \"" + nodeName + "\".");
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"State\"" + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Actions\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Node ignored."));
 			}
 			break;
-		case Subgroup_t::transition:
+		case SubTag_t::transition:
 			if (nodeName == "Actions")
 			{
-				this->currentSubGroup = Subgroup_t::actions_group;
+				this->currentSubTag = SubTag_t::actions_group;
 			}
 			else if (nodeName == "Condition")
 			{
-				this->currentSubGroup = Subgroup_t::condition;
+				this->currentSubTag = SubTag_t::condition;
 			}
 			else
 			{
-				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Transition\"" + tr("node."));
-				this->warnings.append("    " + tr("Expected") + " \"Actions\" or \"Condition\", " + tr("got") + " \"" + nodeName + "\".");
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Transition\"" + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Actions\" or \"Condition\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Node ignored."));
 			}
 			break;
-		case Subgroup_t::actions_group:
+		case SubTag_t::actions_group:
 			if (nodeName == "Action")
 			{
-				this->currentSubGroup = Subgroup_t::action;
-				this->parseAction();
+				this->currentSubTag = SubTag_t::action;
+				this->parseActionNode();
 			}
 			else
 			{
-				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Actions\"" + tr("node."));
-				this->warnings.append("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + nodeName + "\".");
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Actions\"" + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case Subgroup_t::condition:
-		case Subgroup_t::operand:
+		case SubTag_t::condition:
 			if (nodeName == "LogicVariable")
 			{
-				this->currentSubGroup = Subgroup_t::logicVariable;
-				this->parseLogicEquation();
+				this->currentSubTag = SubTag_t::logicVariable;
+				this->parseOperandVariableNode();
 			}
 			else if (nodeName == "LogicEquation")
 			{
-				this->currentSubGroup = Subgroup_t::logicEquation;
-				this->parseLogicEquation();
-			}
-			else
-			{
-				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Operand\" or \"Condition\"" + tr("node."));
-				this->warnings.append("    " + tr("Expected") + " \"LogicVariable\" or \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
-			}
-			break;
-		case Subgroup_t::logicEquation:
-			if (nodeName == "Operand")
-			{
-				bool ok;
-				uint operandRank = attributes.value("Number").toUInt(&ok);
+				this->currentSubTag = SubTag_t::logicEquation;
 
-				if (ok == true)
+				QString valueNature = this->getCurrentNodeStringAttribute("Nature");
+				if (valueNature != "constant")
 				{
-					this->treatBeginOperand(operandRank);
+					this->parseLogicEquationNode();
 				}
 				else
 				{
-					this->warnings.append(tr("Error!") + " " + tr("Unable to parse operand rank for an equation."));
-					this->warnings.append("    " + tr("Operand will be set in position 0, erasing popential existing operand."));
-					this->treatBeginOperand(0);
+					// Constant is a special case as we removed the operator type,
+					// but it is still used in save files.
+					this->parseOperandConstantNode();
 				}
 			}
 			else
 			{
-				this->warnings.append(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"LogicEquation\"" + tr("node."));
-				this->warnings.append("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + nodeName + "\".");
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Condition\" " + tr("node") + ".");
+				this->addIssue("    " + tr("Expected") + " \"LogicVariable\" " + tr("or") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
-			this->currentSubGroup = Subgroup_t::operand;
 			break;
-		case Subgroup_t::action:
-		case Subgroup_t::logicVariable:
-			// Nothing to do: these nodes does not have children
-			break;
-		case Subgroup_t::none:
-			this->warnings.append("    "  + tr("Ignored node") + " " + nodeName);
-			break;
-		}
-	}
-}
-
-void FsmXmlParser::treatEndElement()
-{
-	this->currentLevel--;
-
-	shared_ptr<FsmTransition> transition;
-	switch (this->currentSubGroup)
-	{
-	case Subgroup_t::action:
-		this->currentSubGroup = Subgroup_t::actions_group;
-		break;
-	case Subgroup_t::actions_group:
-		if (this->currentGroup == Group_t::states_group)
-		{
-			this->currentSubGroup = Subgroup_t::state;
-		}
-		else if (this->currentGroup == Group_t::transitions_group)
-		{
-			this->currentSubGroup = Subgroup_t::transition;
-		}
-		break;
-	case Subgroup_t::condition:
-		this->currentSubGroup = Subgroup_t::transition;
-		transition = dynamic_pointer_cast<FsmTransition>(this->currentActuator);
-		transition->setCondition(this->rootLogicEquation);
-		this->rootLogicEquation = nullptr;
-		break;
-	case Subgroup_t::state:
-	case Subgroup_t::transition:
-		this->currentActuator = nullptr;
-		this->currentSubGroup = Subgroup_t::none;
-		break;
-	case Subgroup_t::logicEquation:
-	case Subgroup_t::logicVariable:
-		if (this->currentLevel == 4)
-		{
-			this->currentSubGroup = Subgroup_t::condition;
-		}
-		else
-		{
-			this->currentSubGroup = Subgroup_t::operand;
-		}
-		break;
-	case Subgroup_t::operand:
-		this->currentSubGroup = Subgroup_t::logicEquation;
-		this->treatEndOperand();
-		break;
-	case Subgroup_t::none:
-		if (this->currentLevel == 1)
-		{
-			this->currentGroup = Group_t::none;
-		}
-		break;
-	}
-}
-
-void FsmXmlParser::buildMachineFromXml()
-{
-	this->machine = shared_ptr<Fsm>(new Fsm());
-
-	while (this->xmlReader->atEnd() == false)
-	{
-		this->xmlReader->readNext();
-
-		if (this->xmlReader->isStartElement())
-		{
-			this->treatStartElement();
-		}
-		else if (this->xmlReader->isEndElement())
-		{
-			this->treatEndElement();
-		}
-	}
-}
-
-void FsmXmlParser::parseState()
-{
-	QXmlStreamAttributes attributes = this->xmlReader->attributes();
-	QString nodeName = this->xmlReader->name().toString();
-
-	if (nodeName == "State")
-	{
-		// Get state name
-		QString stateName = attributes.value("Name").toString();
-
-		if (stateName.isNull())
-		{
-			this->warnings.append(tr("Error!") + " " + tr("Unable to extract state name."));
-			this->warnings.append("    " + tr("Node ignored."));
-			return;
-		}
-
-		// Get initial status (true if IsInitial property exists)
-		bool isInitial = attributes.value("IsInitial").isNull() ? false : true;
-
-		// Get ID if it is defined
-		bool ok;
-		componentId_t extractedId = attributes.value("Id").toULong(&ok);
-		if (ok == false)
-		{
-			extractedId = nullId;
-		}
-
-		// Build state
-		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
-		componentId_t stateId;
-		if (extractedId != nullId)
-		{
-			stateId = fsm->addState(stateName, extractedId);
-		}
-		else
-		{
-			stateId = fsm->addState(stateName);
-		}
-
-		if (isInitial == true)
-		{
-			fsm->setInitialState(stateId);
-		}
-
-		auto state = fsm->getState(stateId);
-
-		// Get position
-		bool positionOk = true;
-
-		QString xStr = attributes.value("X").toString();
-		xStr.toDouble(&ok);
-		if (ok == true)
-		{
-			this->graphicAttributes->addAttribute(stateId, "X", xStr);
-		}
-		else
-		{
-			positionOk = false;
-		}
-
-		QString yStr = attributes.value("Y").toString();
-		yStr.toDouble(&ok);
-		if (ok == true)
-		{
-			this->graphicAttributes->addAttribute(stateId, "Y", yStr);
-		}
-		else
-		{
-			positionOk = false;
-		}
-
-		if (positionOk == false)
-		{
-			this->warnings.append(tr("Warning!") + " " + tr("Unable to extract state position for state ") + stateName);
-		}
-
-		this->currentActuator = state;
-	}
-	else
-	{
-		this->warnings.append(tr("Unexpected node encountered while parsing") + " " + tr("state list:"));
-		this->warnings.append("    " + tr("Expected") + " \"State\", " + tr("got") + " \"" + nodeName + "\".");
-		this->warnings.append("    " + tr("Node ignored."));
-	}
-}
-
-void FsmXmlParser::parseTransition()
-{
-	QXmlStreamAttributes attributes = this->xmlReader->attributes();
-	QString nodeName = this->xmlReader->name().toString();
-
-	if (nodeName == "Transition")
-	{
-		QString sourceName = attributes.value("Source").toString();
-		QString targetName = attributes.value("Target").toString();
-
-		// TODO: check if states exist
-		shared_ptr<FsmState> source = this->getStateByName(sourceName);
-		shared_ptr<FsmState> target = this->getStateByName(targetName);
-
-		// Get ID if it is defined
-		bool ok;
-		componentId_t extractedId = attributes.value("Id").toULong(&ok);
-		if (ok == false)
-		{
-			extractedId = nullId;
-		}
-
-		auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
-		componentId_t transitionId;
-		if (extractedId != nullId)
-		{
-			transitionId = fsm->addTransition(source->getId(), target->getId(), extractedId);
-		}
-		else
-		{
-			transitionId = fsm->addTransition(source->getId(), target->getId());
-		}
-		auto transition = fsm->getTransition(transitionId);
-
-		// Get slider position
-		QString sliderPosStr = attributes.value("SliderPos").toString();
-		if (sliderPosStr.isNull() == false)
-		{
-			sliderPosStr.toDouble(&ok);
-			if (ok == true)
+		case SubTag_t::logicEquation:
+			if (nodeName == "Operand")
 			{
-				this->graphicAttributes->addAttribute(transitionId, "SliderPos", sliderPosStr);
+				this->currentSubTag = SubTag_t::operand;
+				this->parseOperandNode();
 			}
 			else
 			{
-				this->warnings.append(tr("Warning!") + " " + tr("Unable to extract slider position for a transition"));
-			}
-		}
+				this->unexpectedTagLevel++;
 
-		this->currentActuator = transition;
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"LogicEquation\"" + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + nodeName + "\".");
+			}
+			break;
+		case SubTag_t::operand:
+			if (nodeName == "LogicVariable")
+			{
+				this->currentSubTag = SubTag_t::logicVariable;
+				this->parseOperandVariableNode();
+			}
+			else if (nodeName == "LogicEquation")
+			{
+				this->currentSubTag = SubTag_t::logicEquation;
+
+				QString valueNature = this->getCurrentNodeStringAttribute("Nature");
+				if (valueNature != "constant")
+				{
+					this->parseLogicEquationNode();
+				}
+				else
+				{
+					// Constant is a special case as we removed the operator type,
+					// but it is still used in save files.
+					this->parseOperandConstantNode();
+				}
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Operand\" " + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"LogicVariable\" " + tr("or") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+			}
+			break;
+		case SubTag_t::action:
+		case SubTag_t::logicVariable:
+			this->unexpectedTagLevel++;
+
+			this->addIssue(tr("Error!") + " " + tr("Unexpected node found in a node that doesn't accept subnodes."));
+			this->addIssue("    " + tr("Found node was:") + " \"" + nodeName + "\".");
+			this->addIssue("    " + tr("Node ignored."));
+			break;
+		case SubTag_t::none:
+			this->addIssue("    "  + tr("Ignoring node") + " \"" + nodeName + "\".");
+			break;
+		}
+	}
+}
+
+MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
+{
+	if (this->unexpectedTagLevel != 0)
+	{
+		this->unexpectedTagLevel--;
+		return IsSubmachineEnd_t::no;
+	}
+
+
+	if (this->currentSubTag != SubTag_t::none)
+	{
+		switch (this->currentSubTag)
+		{
+		case SubTag_t::action:
+			this->currentSubTag = SubTag_t::actions_group;
+			break;
+		case SubTag_t::actions_group:
+			if (this->currentMainTag == MainTag_t::states_group)
+			{
+				this->currentSubTag = SubTag_t::state;
+			}
+			else if (this->currentMainTag == MainTag_t::transitions_group)
+			{
+				this->currentSubTag = SubTag_t::transition;
+			}
+			break;
+		case SubTag_t::condition:
+			this->processEndCondition();
+			this->currentSubTag = SubTag_t::transition;
+			break;
+		case SubTag_t::state:
+		case SubTag_t::transition:
+			this->currentComponentId = nullId;
+			this->currentSubTag = SubTag_t::none;
+			break;
+		case SubTag_t::logicEquation:
+		{
+			auto isRoot = this->processEndLogicEquationNode();
+
+			switch (isRoot)
+			{
+			case IsRoot_t::yes:
+				this->currentSubTag = SubTag_t::condition;
+				break;
+			case IsRoot_t::no:
+				this->currentSubTag = SubTag_t::operand;
+				break;
+			}
+			break;
+		}
+		case SubTag_t::logicVariable:
+		{
+			auto isRoot = this->processEndLogicVariableNode();
+
+			switch (isRoot)
+			{
+			case IsRoot_t::yes:
+				this->currentSubTag = SubTag_t::condition;
+				break;
+			case IsRoot_t::no:
+				this->currentSubTag = SubTag_t::operand;
+				break;
+			}
+			break;
+		}
+		case SubTag_t::operand:
+			this->currentSubTag = SubTag_t::logicEquation;
+			break;
+		case SubTag_t::none:
+			// Will not happen
+			break;
+		}
+	}
+	else if (this->currentMainTag != MainTag_t::none)
+	{
+		this->currentMainTag = MainTag_t::none;
+
+		return IsSubmachineEnd_t::yes;
+	}
+
+	return IsSubmachineEnd_t::no;
+}
+
+void FsmXmlParser::parseStateNode()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	if (fsm == nullptr) return;
+
+
+	// Get state name
+	QString stateName = this->getCurrentNodeStringAttribute("Name");
+
+	if (stateName.isNull() == true)
+	{
+		this->addIssue(tr("Error!") + " " + tr("Unable to extract state name."));
+		this->addIssue("    " + tr("Node ignored."));
+
+		return;
+	}
+
+
+	// Get ID if it is defined
+	auto extractedId = this->getCurrentNodeIdAttribute();
+
+	// Build state
+	auto stateId = fsm->addState(stateName, extractedId);
+
+	// Check if state was successfully added
+	auto state = fsm->getState(stateId);
+	if (state == nullptr)
+	{
+		this->addIssue(tr("Error!") + " " + tr("The state named") + " \"" + stateName + "\" " + tr("in save file couldn't be added."));
+		this->addIssue("    " + tr("This may be due to a duplicated name."));
+		this->addIssue("    " + tr("State ignored."));
+
+		return;
+	}
+
+	// Remember current component
+	this->currentComponentId = stateId;
+
+	// Check state name
+	QString actualStateName = state->getName();
+	if (actualStateName != stateName)
+	{
+		this->addIssue(tr("Warning:") + " " + tr("The state named") + " \"" + stateName + "\" " + tr("in save file was added under name") + " \"" + actualStateName + "\".");
+		this->addIssue("    " + tr("This is probably due to an ill-formed name."));
+		this->addIssue("    " + tr("This may trigger further errors if other components (e.g. transitions) were linked to that state."));
+	}
+
+	// Set initial status
+	bool isInitial = this->getCurrentNodeStringAttribute("IsInitial").isNull() ? false : true;
+	if (isInitial == true)
+	{
+		fsm->setInitialState(stateId);
+	}
+
+	// Get position
+	bool positionOk = true;
+
+	bool ok;
+	QString xStr = this->getCurrentNodeStringAttribute("X");
+	xStr.toDouble(&ok);
+	if (ok == true)
+	{
+		this->addGraphicAttribute(stateId, "X", xStr);
 	}
 	else
 	{
-		this->warnings.append(tr("Unexpected node encountered while parsing") + " " + tr("transition list:"));
-		this->warnings.append("    " + tr("Expected") + " \"Transition\", " + tr("got") + " \"" + nodeName + "\".");
-		this->warnings.append("    " + tr("Node ignored."));
+		positionOk = false;
 	}
+
+	QString yStr = this->getCurrentNodeStringAttribute("Y");
+	yStr.toDouble(&ok);
+	if (ok == true)
+	{
+		this->addGraphicAttribute(stateId, "Y", yStr);
+	}
+	else
+	{
+		positionOk = false;
+	}
+
+	if (positionOk == false)
+	{
+		this->addIssue(tr("Warning:") + " " + tr("Unable to extract state position for state ") + "\"" + stateName + "\".");
+	}
+}
+
+void FsmXmlParser::parseTransitionNode()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	if (fsm == nullptr) return;
+
+
+	QString sourceName = this->getCurrentNodeStringAttribute("Source");
+	QString targetName = this->getCurrentNodeStringAttribute("Target");
+
+	// Check if states exist
+	shared_ptr<FsmState> source = this->getStateByName(sourceName);
+	shared_ptr<FsmState> target = this->getStateByName(targetName);
+	if ( (source == nullptr) || (target == nullptr) )
+	{
+		this->addIssue(tr("Error!") + " " + tr("Unable to parse a transition: either source or target state do not exist."));
+		this->addIssue("    " + tr("Source state was:") + " \"" + sourceName + "\", " + tr("target state was") + "\"" + targetName + "\".");
+		this->addIssue("    " + tr("Node ignored."));
+
+		return;
+	}
+
+	// Get ID if it is defined
+	auto extractedId = this->getCurrentNodeIdAttribute();
+
+	// Build transition
+	auto transitionId = fsm->addTransition(source->getId(), target->getId(), extractedId);
+
+	// Check if transition was successfully added
+	if (fsm->getTransition(transitionId) == nullptr)
+	{
+		this->addIssue(tr("Error!") + " " + tr("A transition in save file couldn't be added."));
+		this->addIssue("    " + tr("Transition ignored."));
+
+		return;
+	}
+
+	// Remember current component
+	this->currentComponentId = transitionId;
+
+	// Get slider position
+	QString sliderPosStr = this->getCurrentNodeStringAttribute("SliderPos");
+	if (sliderPosStr.isNull() == false)
+	{
+		bool ok;
+		sliderPosStr.toDouble(&ok);
+		if (ok == true)
+		{
+			this->addGraphicAttribute(transitionId, "SliderPos", sliderPosStr);
+		}
+		else
+		{
+			this->addIssue(tr("Warning:") + " " + tr("Unable to extract slider position for a transition"));
+		}
+	}
+}
+
+void FsmXmlParser::processEndCondition()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	if (fsm == nullptr) return;
+
+	auto transition = fsm->getTransition(this->currentComponentId);
+	if (transition == nullptr) return;
+
+
+	transition->setCondition(this->getCurrentEquation());
 }
 
 shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
+	if (fsm == nullptr) return nullptr;
+
 
 	shared_ptr<FsmState> ret = nullptr;
-	for (auto stateId : fsm->getAllStatesIds())
+	for (auto& stateId : fsm->getAllStatesIds())
 	{
 		auto state = fsm->getState(stateId);
 		if (state->getName() == name)

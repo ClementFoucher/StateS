@@ -35,7 +35,6 @@ class QFile;
 
 // StateS classes
 #include "statestypes.h"
-class Variable;
 class MachineActuatorComponent;
 class ViewConfiguration;
 class Equation;
