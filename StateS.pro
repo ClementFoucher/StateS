@@ -97,12 +97,12 @@ SOURCES += \
 	src/ui/dialogs/langselectiondialog.cpp \
 	src/ui/dialogs/vhdlexportdialog.cpp \
 	src/ui/dialogs/errordisplaydialog.cpp \
-	src/ui/equation_editor/inverterbar.cpp \
-	src/ui/equation_editor/equationeditor.cpp \
-	src/ui/equation_editor/graphicequation.cpp \
-	src/ui/equation_editor/equationmimedata.cpp \
-	src/ui/equation_editor/constantvaluesetter.cpp \
+	src/ui/equation_editor/constanteditorwidget.cpp \
 	src/ui/equation_editor/editableequation.cpp \
+	src/ui/equation_editor/equationeditordialog.cpp \
+	src/ui/equation_editor/equationeditorwidget.cpp \
+	src/ui/equation_editor/equationpartmimedata.cpp \
+	src/ui/equation_editor/inverterbarwidget.cpp \
 	src/ui/equation_editor/rangeextractorwidget.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
@@ -228,12 +228,12 @@ HEADERS += \
 	src/ui/dialogs/langselectiondialog.h \
 	src/ui/dialogs/errordisplaydialog.h \
 	src/ui/dialogs/imageexportdialog.h \
-	src/ui/equation_editor/equationeditor.h \
-	src/ui/equation_editor/graphicequation.h \
-	src/ui/equation_editor/equationmimedata.h \
-	src/ui/equation_editor/constantvaluesetter.h \
-	src/ui/equation_editor/inverterbar.h \
+	src/ui/equation_editor/constanteditorwidget.h \
 	src/ui/equation_editor/editableequation.h \
+	src/ui/equation_editor/equationeditordialog.h \
+	src/ui/equation_editor/equationeditorwidget.h \
+	src/ui/equation_editor/equationpartmimedata.h \
+	src/ui/equation_editor/inverterbarwidget.h \
 	src/ui/equation_editor/rangeextractorwidget.h \
 	src/ui/refined_widget/contextmenu.h \
 	src/ui/refined_widget/reactivebutton.h \

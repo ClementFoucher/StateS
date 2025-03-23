@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "graphicequation.h"
+#include "equationeditorwidget.h"
 
 // Qt classes
 #include <QDrag>
@@ -32,13 +32,13 @@
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
-#include "equationmimedata.h"
+#include "equationpartmimedata.h"
 #include "equation.h"
 #include "contextmenu.h"
-#include "inverterbar.h"
-#include "equationeditor.h"
+#include "inverterbarwidget.h"
+#include "equationeditordialog.h"
 #include "rangeextractorwidget.h"
-#include "constantvaluesetter.h"
+#include "constanteditorwidget.h"
 #include "logicvalue.h"
 #include "variable.h"
 #include "operand.h"
@@ -47,7 +47,7 @@
 // A graphic equation can either represent
 // a logic equation, a logic variable or a constant
 
-GraphicEquation::GraphicEquation(shared_ptr<Equation> equation, int operandNumber, bool isTemplate, QWidget* parent) :
+EquationEditorWidget::EquationEditorWidget(shared_ptr<Equation> equation, int operandNumber, bool isTemplate, QWidget* parent) :
 	QFrame(parent)
 {
 	this->equation      = equation;
@@ -58,7 +58,7 @@ GraphicEquation::GraphicEquation(shared_ptr<Equation> equation, int operandNumbe
 	this->buildEquation();
 }
 
-GraphicEquation::GraphicEquation(componentId_t variableId, int operandNumber, bool isTemplate, QWidget* parent) :
+EquationEditorWidget::EquationEditorWidget(componentId_t variableId, int operandNumber, bool isTemplate, QWidget* parent) :
 	QFrame(parent)
 {
 	this->localEquation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
@@ -72,7 +72,7 @@ GraphicEquation::GraphicEquation(componentId_t variableId, int operandNumber, bo
 	this->buildEquation();
 }
 
-GraphicEquation::GraphicEquation(LogicValue constant, int operandNumber, bool isTemplate, QWidget* parent) :
+EquationEditorWidget::EquationEditorWidget(LogicValue constant, int operandNumber, bool isTemplate, QWidget* parent) :
 	QFrame(parent)
 {
 	this->localEquation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
@@ -87,9 +87,9 @@ GraphicEquation::GraphicEquation(LogicValue constant, int operandNumber, bool is
 }
 
 // Replaces one operand with the given one in logic equation.
-// This function is called by children GraphicEquation to replace themselves.
+// This function is called by children EquationEditorWidget to replace themselves.
 // Graphic equation is rebuilt after logic equation update.
-void GraphicEquation::replaceOperand(uint operandNumber, shared_ptr<Equation> newOperand)
+void EquationEditorWidget::replaceOperand(uint operandNumber, shared_ptr<Equation> newOperand)
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -125,7 +125,7 @@ void GraphicEquation::replaceOperand(uint operandNumber, shared_ptr<Equation> ne
 }
 
 // Register the new constant value of a child without replacing it
-void GraphicEquation::replaceOperandConstantValue(uint operandNumber, LogicValue newValue)
+void EquationEditorWidget::replaceOperandConstantValue(uint operandNumber, LogicValue newValue)
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -136,7 +136,7 @@ void GraphicEquation::replaceOperandConstantValue(uint operandNumber, LogicValue
 	l_equation->setOperand(operandNumber, newValue);
 }
 
-void GraphicEquation::setVariableLock(bool lock)
+void EquationEditorWidget::setVariableLock(bool lock)
 {
 	this->lockVariable = lock;
 	// We have to rebuild the equation to pass the value to the children
@@ -146,7 +146,7 @@ void GraphicEquation::setVariableLock(bool lock)
 // Returns the equation currently represented by the graphic object.
 // This is typically a pointer to a part of a logic equation,
 // unless we are top level, then the whole equation is returned.
-shared_ptr<Equation> GraphicEquation::getLogicEquation() const
+shared_ptr<Equation> EquationEditorWidget::getLogicEquation() const
 {
 	if (rootEquation != nullptr)
 	{
@@ -159,17 +159,17 @@ shared_ptr<Equation> GraphicEquation::getLogicEquation() const
 }
 
 /**
- * @brief GraphicEquation::forceCompleteRendering is for the case
+ * @brief EquationEditorWidget::forceCompleteRendering is for the case
  * where template equation differs from grab display.
  * Setting this changes the display.
  */
-void GraphicEquation::forceCompleteRendering()
+void EquationEditorWidget::forceCompleteRendering()
 {
 	this->completeRendering = true;
 	this->buildEquation();
 }
 
-bool GraphicEquation::validEdit()
+bool EquationEditorWidget::validEdit()
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return false;
@@ -184,7 +184,7 @@ bool GraphicEquation::validEdit()
 	{
 		for (QObject* child : this->children())
 		{
-			GraphicEquation* operand = dynamic_cast<GraphicEquation*>(child);
+			EquationEditorWidget* operand = dynamic_cast<EquationEditorWidget*>(child);
 			if (operand != nullptr)
 			{
 				result = operand->validEdit();
@@ -196,7 +196,7 @@ bool GraphicEquation::validEdit()
 	return result;
 }
 
-bool GraphicEquation::cancelEdit()
+bool EquationEditorWidget::cancelEdit()
 {
 	shared_ptr<Equation> l_equation = dynamic_pointer_cast<Equation>(this->equation.lock());
 	if (l_equation == nullptr) return false;
@@ -211,7 +211,7 @@ bool GraphicEquation::cancelEdit()
 	{
 		for (QObject* child : this->children())
 		{
-			GraphicEquation* operand = dynamic_cast<GraphicEquation*>(child);
+			EquationEditorWidget* operand = dynamic_cast<EquationEditorWidget*>(child);
 			if (operand != nullptr)
 			{
 				result = operand->cancelEdit();
@@ -224,9 +224,9 @@ bool GraphicEquation::cancelEdit()
 }
 
 // Triggered when mouse enters widget
-void GraphicEquation::enterEvent(QEnterEvent*)
+void EquationEditorWidget::enterEvent(QEnterEvent*)
 {
-	GraphicEquation* parentEquation = this->parentEquation();
+	EquationEditorWidget* parentEquation = this->parentEquation();
 
 	if (parentEquation != nullptr)
 	{
@@ -238,9 +238,9 @@ void GraphicEquation::enterEvent(QEnterEvent*)
 
 // Triggered when mouse leaves widget
 // (not trigerred when children is entered)
-void GraphicEquation::leaveEvent(QEvent*)
+void EquationEditorWidget::leaveEvent(QEvent*)
 {
-	GraphicEquation* parentEquation = this->parentEquation();
+	EquationEditorWidget* parentEquation = this->parentEquation();
 
 	if (parentEquation != nullptr)
 	{
@@ -251,14 +251,14 @@ void GraphicEquation::leaveEvent(QEvent*)
 }
 
 // Generate drag-n-drop image when mouse is pressed
-void GraphicEquation::mousePressEvent(QMouseEvent* event)
+void EquationEditorWidget::mousePressEvent(QMouseEvent* event)
 {
 	if (this->isTemplate == true)
 	{
 		if (event->button() == Qt::LeftButton)
 		{
 			QDrag* drag = new QDrag(this);
-			QMimeData* mimeData = new EquationMimeData(this);
+			QMimeData* mimeData = new EquationPartMimeData(this);
 
 			drag->setMimeData(mimeData);
 
@@ -267,7 +267,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 			// Drag image may not match template display: create a correct equation
 			if ( (l_equation != nullptr) && (l_equation->getOperatorType() == OperatorType_t::extractOp) )
 			{
-				GraphicEquation displayGraphicEquation(l_equation->clone(), true);
+				EquationEditorWidget displayGraphicEquation(l_equation->clone(), true);
 				displayGraphicEquation.forceCompleteRendering();
 
 				drag->setPixmap(displayGraphicEquation.grab());
@@ -281,7 +281,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 				auto operandSource = operand->getSource();
 				if (operandSource == OperandSource_t::variable) // This is a simple variable => do not use template
 				{
-					GraphicEquation displayGraphicEquation(l_equation->getOperand(0)->getVariableId(), -1);
+					EquationEditorWidget displayGraphicEquation(l_equation->getOperand(0)->getVariableId(), -1);
 
 					drag->setPixmap(displayGraphicEquation.grab());
 				}
@@ -331,7 +331,7 @@ void GraphicEquation::mousePressEvent(QMouseEvent* event)
 	}
 }
 
-void GraphicEquation::mouseMoveEvent(QMouseEvent* event)
+void EquationEditorWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	if (this->inMouseEvent == false)
 	{
@@ -339,7 +339,7 @@ void GraphicEquation::mouseMoveEvent(QMouseEvent* event)
 	}
 }
 
-void GraphicEquation::mouseReleaseEvent(QMouseEvent* event)
+void EquationEditorWidget::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (this->inMouseEvent == false)
 	{
@@ -351,7 +351,7 @@ void GraphicEquation::mouseReleaseEvent(QMouseEvent* event)
 	}
 }
 
-void GraphicEquation::mouseDoubleClickEvent(QMouseEvent* event)
+void EquationEditorWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	if (this->inMouseEvent == false)
 	{
@@ -360,14 +360,14 @@ void GraphicEquation::mouseDoubleClickEvent(QMouseEvent* event)
 }
 
 // Triggered when mouse enters widget while dragging an object
-void GraphicEquation::dragEnterEvent(QDragEnterEvent* event)
+void EquationEditorWidget::dragEnterEvent(QDragEnterEvent* event)
 {
 	if (this->isTemplate == false)
 	{
 		this->setHilightedBorderColor();
 
 		// Check if object is actually a graphic equation
-		const EquationMimeData* mimeData = dynamic_cast<const EquationMimeData*>(event->mimeData());
+		const EquationPartMimeData* mimeData = dynamic_cast<const EquationPartMimeData*>(event->mimeData());
 		if (mimeData != nullptr)
 		{
 			event->acceptProposedAction();
@@ -377,14 +377,14 @@ void GraphicEquation::dragEnterEvent(QDragEnterEvent* event)
 
 // Trigerred when mouse leaves widget while dragging an object
 // (also trigerred when child is entered)
-void GraphicEquation::dragLeaveEvent(QDragLeaveEvent*)
+void EquationEditorWidget::dragLeaveEvent(QDragLeaveEvent*)
 {
 	this->setDefaultBorderColor();
 }
 
-void GraphicEquation::dropEvent(QDropEvent* event)
+void EquationEditorWidget::dropEvent(QDropEvent* event)
 {
-	const EquationMimeData* mimeData = dynamic_cast<const EquationMimeData*>(event->mimeData());
+	const EquationPartMimeData* mimeData = dynamic_cast<const EquationPartMimeData*>(event->mimeData());
 	if (mimeData == nullptr) return;
 
 	auto droppedGraphicEquation = mimeData->getEquation();
@@ -445,14 +445,14 @@ void GraphicEquation::dropEvent(QDropEvent* event)
 
 		menu->popup(this->mapToGlobal(event->position().toPoint()));
 
-		connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
+		connect(menu, &QMenu::triggered, this, &EquationEditorWidget::treatMenuEventHandler);
 	}
 
 	event->acceptProposedAction();
 }
 
 // Triggerd by right-click
-void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
+void EquationEditorWidget::contextMenuEvent(QContextMenuEvent* event)
 {
 	if (this->isTemplate == true) return;
 
@@ -540,7 +540,7 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 
 		menu->popup(this->mapToGlobal(event->pos()));
 
-		connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
+		connect(menu, &QMenu::triggered, this, &EquationEditorWidget::treatMenuEventHandler);
 	}
 	else // (operatorType == OperatorType_t::identity)
 	{
@@ -578,21 +578,21 @@ void GraphicEquation::contextMenuEvent(QContextMenuEvent* event)
 
 		menu->popup(this->mapToGlobal(event->pos()));
 
-		connect(menu, &QMenu::triggered, this, &GraphicEquation::treatMenuEventHandler);
+		connect(menu, &QMenu::triggered, this, &EquationEditorWidget::treatMenuEventHandler);
 	}
 }
 
-void GraphicEquation::enterChildrenEvent()
+void EquationEditorWidget::enterChildrenEvent()
 {
 	this->setDefaultBorderColor();
 }
 
-void GraphicEquation::leaveChildrenEvent()
+void EquationEditorWidget::leaveChildrenEvent()
 {
 	this->setHilightedBorderColor();
 }
 
-void GraphicEquation::treatMenuEventHandler(QAction* action)
+void EquationEditorWidget::treatMenuEventHandler(QAction* action)
 {
 	auto l_equation  = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -722,7 +722,7 @@ void GraphicEquation::treatMenuEventHandler(QAction* action)
 	}
 }
 
-void GraphicEquation::treatRangeLeftBoundChanged(int newIndex)
+void EquationEditorWidget::treatRangeLeftBoundChanged(int newIndex)
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -734,7 +734,7 @@ void GraphicEquation::treatRangeLeftBoundChanged(int newIndex)
 	}
 }
 
-void GraphicEquation::treatRangeRightBoundChanged(int newIndex)
+void EquationEditorWidget::treatRangeRightBoundChanged(int newIndex)
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -746,7 +746,7 @@ void GraphicEquation::treatRangeRightBoundChanged(int newIndex)
 	}
 }
 
-void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
+void EquationEditorWidget::treatConstantValueChanged(LogicValue newValue)
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -762,7 +762,7 @@ void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
 
 	l_equation->setOperand(0, newValue);
 
-	GraphicEquation* parentEquation = this->parentEquation();
+	EquationEditorWidget* parentEquation = this->parentEquation();
 	if (parentEquation != nullptr)
 	{
 		// Register constant value change in parent equation
@@ -770,7 +770,7 @@ void GraphicEquation::treatConstantValueChanged(LogicValue newValue)
 	}
 }
 
-void GraphicEquation::updateBorder()
+void EquationEditorWidget::updateBorder()
 {
 	if (this->mouseIn == true)
 	{
@@ -782,7 +782,7 @@ void GraphicEquation::updateBorder()
 	}
 }
 
-void GraphicEquation::configure()
+void EquationEditorWidget::configure()
 {
 	if (this->isTemplate == false)
 	{
@@ -801,19 +801,19 @@ void GraphicEquation::configure()
 
 	if (this->isTemplate == false)
 	{
-		connect(l_equation.get(), &Equation::equationInitialValueChangedEvent, this, &GraphicEquation::updateBorder);
+		connect(l_equation.get(), &Equation::equationInitialValueChangedEvent, this, &EquationEditorWidget::updateBorder);
 	}
 }
 
 // Set passive border color:
 // neutral unless current equation is incorrect
-void GraphicEquation::setDefaultBorderColor()
+void EquationEditorWidget::setDefaultBorderColor()
 {
 	this->mouseIn = false;
 
 	if (this->isTemplate == true)
 	{
-		this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
+		this->setStyleSheet("EquationEditorWidget {border: 1px solid lightgrey; border-radius: 10px}");
 	}
 	else
 	{
@@ -821,7 +821,7 @@ void GraphicEquation::setDefaultBorderColor()
 
 		if ( (l_equation == nullptr) || (l_equation->getInitialValue().isNull()) )
 		{
-			this->setStyleSheet("GraphicEquation {border: 1px solid red; border-radius: 10px}");
+			this->setStyleSheet("EquationEditorWidget {border: 1px solid red; border-radius: 10px}");
 
 			if (l_equation == nullptr)
 			{
@@ -843,16 +843,16 @@ void GraphicEquation::setDefaultBorderColor()
 		}
 		else
 		{
-			this->setStyleSheet("GraphicEquation {border: 1px solid lightgrey; border-radius: 10px}");
+			this->setStyleSheet("EquationEditorWidget {border: 1px solid lightgrey; border-radius: 10px}");
 		}
 	}
 }
 
 // Set active border color
-void GraphicEquation::setHilightedBorderColor()
+void EquationEditorWidget::setHilightedBorderColor()
 {
 	this->mouseIn = true;
-	this->setStyleSheet("GraphicEquation {border: 1px solid blue; border-radius: 10px}");
+	this->setStyleSheet("EquationEditorWidget {border: 1px solid blue; border-radius: 10px}");
 }
 
 // Handle user input to replace equation.
@@ -860,7 +860,7 @@ void GraphicEquation::setHilightedBorderColor()
 // new equation, unless we are top level.
 // Graphic equation is rebuilt by parent, which destoys
 // current object.
-void GraphicEquation::replaceEquation(shared_ptr<Equation> newEquation)
+void EquationEditorWidget::replaceEquation(shared_ptr<Equation> newEquation)
 {
 	// Find equation parent
 	auto parentEquation = this->parentEquation();
@@ -871,7 +871,7 @@ void GraphicEquation::replaceEquation(shared_ptr<Equation> newEquation)
 
 		if (l_equation != nullptr)
 		{
-			disconnect(l_equation.get(), &Equation::equationInitialValueChangedEvent, this, &GraphicEquation::updateBorder);
+			disconnect(l_equation.get(), &Equation::equationInitialValueChangedEvent, this, &EquationEditorWidget::updateBorder);
 		}
 
 		// We are top level
@@ -882,7 +882,7 @@ void GraphicEquation::replaceEquation(shared_ptr<Equation> newEquation)
 
 		if (newEquation != nullptr)
 		{
-			connect(newEquation.get(), &Equation::equationInitialValueChangedEvent, this, &GraphicEquation::updateBorder);
+			connect(newEquation.get(), &Equation::equationInitialValueChangedEvent, this, &EquationEditorWidget::updateBorder);
 		}
 
 		this->buildEquation();
@@ -896,7 +896,7 @@ void GraphicEquation::replaceEquation(shared_ptr<Equation> newEquation)
 
 // Builds graphic representation of equation
 // based on current logic equation pointer
-void GraphicEquation::buildEquation()
+void EquationEditorWidget::buildEquation()
 {
 	// Clear previous content
 	QObjectList toDelete = this->children();
@@ -927,7 +927,7 @@ void GraphicEquation::buildEquation()
 	this->setDefaultBorderColor();
 }
 
-void GraphicEquation::buildTemplateEquation()
+void EquationEditorWidget::buildTemplateEquation()
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -1029,7 +1029,7 @@ void GraphicEquation::buildTemplateEquation()
 	}
 }
 
-void GraphicEquation::buildVariableEquation()
+void EquationEditorWidget::buildVariableEquation()
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -1064,14 +1064,14 @@ void GraphicEquation::buildVariableEquation()
 		shared_ptr<Equation> extractor = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp));
 		extractor->setOperand(0, variableId);
 
-		GraphicEquation* extractorWidget = new GraphicEquation(extractor, -1, true);
+		EquationEditorWidget* extractorWidget = new EquationEditorWidget(extractor, -1, true);
 		equationLayout->addWidget(extractorWidget);
 	}
 
 	this->setLayout(equationLayout);
 }
 
-void GraphicEquation::buildCompleteEquation()
+void EquationEditorWidget::buildCompleteEquation()
 {
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr) return;
@@ -1092,23 +1092,23 @@ void GraphicEquation::buildCompleteEquation()
 			auto operand = l_equation->getOperand(i);
 
 			// Add operand
-			GraphicEquation* graphicOperand = nullptr;
+			EquationEditorWidget* graphicOperand = nullptr;
 			if (operand == nullptr)
 			{
-				graphicOperand = new GraphicEquation(shared_ptr<Equation>(nullptr), i, false, this);
+				graphicOperand = new EquationEditorWidget(shared_ptr<Equation>(nullptr), i, false, this);
 			}
 			else // (operand != nullptr)
 			{
 				switch (operand->getSource())
 				{
 				case OperandSource_t::equation:
-					graphicOperand = new GraphicEquation(operand->getEquation(), i, false, this);
+					graphicOperand = new EquationEditorWidget(operand->getEquation(), i, false, this);
 					break;
 				case OperandSource_t::variable:
-					graphicOperand = new GraphicEquation(operand->getVariableId(), i, false, this);
+					graphicOperand = new EquationEditorWidget(operand->getVariableId(), i, false, this);
 					break;
 				case OperandSource_t::constant:
-					graphicOperand = new GraphicEquation(operand->getConstant(), i, false, this);
+					graphicOperand = new EquationEditorWidget(operand->getConstant(), i, false, this);
 					break;
 				}
 			}
@@ -1174,8 +1174,8 @@ void GraphicEquation::buildCompleteEquation()
 
 			if (this->isTemplate == false)
 			{
-				connect(rangeExtractor, &RangeExtractorWidget::rangeLChanged, this, &GraphicEquation::treatRangeLeftBoundChanged);
-				connect(rangeExtractor, &RangeExtractorWidget::rangeRChanged, this, &GraphicEquation::treatRangeRightBoundChanged);
+				connect(rangeExtractor, &RangeExtractorWidget::rangeLChanged, this, &EquationEditorWidget::treatRangeLeftBoundChanged);
+				connect(rangeExtractor, &RangeExtractorWidget::rangeRChanged, this, &EquationEditorWidget::treatRangeRightBoundChanged);
 			}
 
 			equationLayout->addWidget(rangeExtractor);
@@ -1191,7 +1191,7 @@ void GraphicEquation::buildCompleteEquation()
 		{
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
 
-			InverterBar* inverterBar = new InverterBar();
+			InverterBarWidget* inverterBar = new InverterBarWidget();
 
 			verticalLayout->addWidget(inverterBar);
 			verticalLayout->addLayout(equationLayout);
@@ -1215,12 +1215,12 @@ void GraphicEquation::buildCompleteEquation()
 		else if (operandSource == OperandSource_t::constant)
 		{
 			QHBoxLayout* equationLayout = new QHBoxLayout();
-			ConstantValueSetter* constantSetter = new ConstantValueSetter(l_equation->getInitialValue(), this);
+			ConstantEditorWidget* constantSetter = new ConstantEditorWidget(l_equation->getInitialValue(), this);
 			equationLayout->addWidget(constantSetter);
 
 			if (!this->isTemplate)
 			{
-				connect(constantSetter, &ConstantValueSetter::valueChanged, this, &GraphicEquation::treatConstantValueChanged);
+				connect(constantSetter, &ConstantEditorWidget::valueChanged, this, &EquationEditorWidget::treatConstantValueChanged);
 			}
 
 			this->editorWidget = constantSetter;
@@ -1231,20 +1231,20 @@ void GraphicEquation::buildCompleteEquation()
 	}
 }
 
-// Scans QWidget hierarchy to find closest GraphicEquation parent.
+// Scans QWidget hierarchy to find closest EquationEditorWidget parent.
 // Returns nullptr if we are top level in this hierarchy.
-GraphicEquation* GraphicEquation::parentEquation() const
+EquationEditorWidget* EquationEditorWidget::parentEquation() const
 {
-	GraphicEquation* parentEquation = nullptr;
+	EquationEditorWidget* parentEquation = nullptr;
 
 	QWidget* parentWidget = this->parentWidget();
 	while (parentWidget != nullptr)
 	{
-		parentEquation = dynamic_cast<GraphicEquation*>(parentWidget);
+		parentEquation = dynamic_cast<EquationEditorWidget*>(parentWidget);
 		if (parentEquation != nullptr) break; // Found
 
 		// No need to go beyond equation editor
-		EquationEditor* editor = dynamic_cast<EquationEditor*>(parentWidget);
+		auto editor = dynamic_cast<EquationEditorDialog*>(parentWidget);
 		if (editor != nullptr) break; // Not found
 
 		parentWidget = parentWidget->parentWidget();

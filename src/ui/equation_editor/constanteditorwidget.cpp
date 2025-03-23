@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "constantvaluesetter.h"
+#include "constanteditorwidget.h"
 
 // Qt classes
 #include <QVBoxLayout>
@@ -30,14 +30,14 @@
 #include "selfmanageddynamiclineeditor.h"
 
 
-ConstantValueSetter::ConstantValueSetter(LogicValue initialValue, QWidget* parent) :
-    EditableEquation(parent)
+ConstantEditorWidget::ConstantEditorWidget(LogicValue initialValue, QWidget* parent) :
+	EditableEquation(parent)
 {
 	this->currentValue = initialValue;
-	ConstantValueSetter::setEdited(false);
+	ConstantEditorWidget::setEdited(false);
 }
 
-bool ConstantValueSetter::validEdit()
+bool ConstantEditorWidget::validEdit()
 {
 	if (this->valueEditor == nullptr) return false;
 
@@ -56,7 +56,7 @@ bool ConstantValueSetter::validEdit()
 	}
 }
 
-bool ConstantValueSetter::cancelEdit()
+bool ConstantEditorWidget::cancelEdit()
 {
 	if (this->valueEditor != nullptr)
 	{
@@ -68,7 +68,7 @@ bool ConstantValueSetter::cancelEdit()
 	}
 }
 
-void ConstantValueSetter::setEdited(bool edited)
+void ConstantEditorWidget::setEdited(bool edited)
 {
 	delete this->valueEditor;
 	delete this->valueText;
@@ -88,7 +88,7 @@ void ConstantValueSetter::setEdited(bool edited)
 
 		this->valueEditor = new SelfManagedDynamicLineEditor(value);
 
-		connect(this->valueEditor, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &ConstantValueSetter::newValueAvailable);
+		connect(this->valueEditor, &SelfManagedDynamicLineEditor::newTextAvailableEvent, this, &ConstantEditorWidget::newValueAvailable);
 
 		layout->addWidget(this->valueEditor);
 		this->valueEditor->setFocus();
@@ -101,7 +101,7 @@ void ConstantValueSetter::setEdited(bool edited)
 	}
 }
 
-void ConstantValueSetter::newValueAvailable(const QString& newValue)
+void ConstantEditorWidget::newValueAvailable(const QString& newValue)
 {
 	LogicValue value = LogicValue::fromString(newValue);
 

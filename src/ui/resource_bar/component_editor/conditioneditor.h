@@ -39,7 +39,7 @@ class QSlider;
 #include "statestypes.h"
 class TruthTable;
 class TruthTableDisplay;
-class EquationEditor;
+class EquationEditorDialog;
 
 
 class ConditionEditor : public QWidget
@@ -88,7 +88,7 @@ private:
 	QPushButton*       buttonToggleTruthTable = nullptr;
 	TruthTableDisplay* truthTableDisplay      = nullptr;
 
-	EquationEditor* equationEditor = nullptr;
+	EquationEditorDialog* equationEditor = nullptr;
 
 };
 

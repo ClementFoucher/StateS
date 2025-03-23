@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,27 +19,35 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INVERTERBAR_H
-#define INVERTERBAR_H
+#ifndef EQUATIONPARTMIMEDATA_H
+#define EQUATIONPARTMIMEDATA_H
 
 // Parent
-#include <QWidget>
+#include <QMimeData>
+
+// StateS classes
+class EquationEditorWidget;
 
 
-class InverterBar : public QWidget
+class EquationPartMimeData : public QMimeData
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit InverterBar(QWidget* parent = nullptr);
+	explicit EquationPartMimeData(EquationEditorWidget* equation);
 
 	/////
 	// Object functions
-protected:
-	virtual void paintEvent(QPaintEvent*) override;
+public:
+	EquationEditorWidget* getEquation() const;
+
+	/////
+	// Object variables
+private:
+	EquationEditorWidget* equation = nullptr;
 
 };
 
-#endif // INVERTERBAR_H
+#endif // EQUATIONPARTMIMEDATA_H

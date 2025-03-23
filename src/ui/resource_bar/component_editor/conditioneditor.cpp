@@ -33,7 +33,7 @@
 #include "equation.h"
 #include "truthtable.h"
 #include "machine.h"
-#include "equationeditor.h"
+#include "equationeditordialog.h"
 #include "contextmenu.h"
 #include "graphicfsmtransition.h"
 #include "machinemanager.h"
@@ -108,8 +108,8 @@ void ConditionEditor::editCondition()
 
 	if (machine->getReadableVariablesIds().count() != 0)
 	{
-		this->equationEditor = new EquationEditor(transition->getCondition(), this);
-		connect(this->equationEditor, &EquationEditor::finished, this, &ConditionEditor::equationEditorClosedEventHandler);
+		this->equationEditor = new EquationEditorDialog(transition->getCondition(), this);
+		connect(this->equationEditor, &EquationEditorDialog::finished, this, &ConditionEditor::equationEditorClosedEventHandler);
 
 		this->equationEditor->open();
 	}

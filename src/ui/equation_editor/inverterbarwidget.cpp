@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,20 +20,20 @@
  */
 
 // Current class header
-#include "inverterbar.h"
+#include "inverterbarwidget.h"
 
 // Qt classes
 #include <QPainter>
 
 
-InverterBar::InverterBar(QWidget* parent) :
-    QWidget(parent)
+InverterBarWidget::InverterBarWidget(QWidget* parent) :
+	QWidget(parent)
 {
 	this->setMinimumHeight(10);
 	this->setMaximumHeight(10);
 }
 
-void InverterBar::paintEvent(QPaintEvent*)
+void InverterBarWidget::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 

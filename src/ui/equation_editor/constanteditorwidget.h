@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSTANTVALUESETTER_H
-#define CONSTANTVALUESETTER_H
+#ifndef CONSTANTEDITORWIDGET_H
+#define CONSTANTEDITORWIDGET_H
 
 // Parent
 #include "editableequation.h"
@@ -33,14 +33,14 @@ class QLabel;
 class SelfManagedDynamicLineEditor;
 
 
-class ConstantValueSetter : public EditableEquation
+class ConstantEditorWidget : public EditableEquation
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ConstantValueSetter(LogicValue initialValue, QWidget* parent = nullptr);
+	explicit ConstantEditorWidget(LogicValue initialValue, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -65,4 +65,4 @@ private:
 
 };
 
-#endif // CONSTANTVALUESETTER_H
+#endif // CONSTANTEDITORWIDGET_H

@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICEQUATION_H
-#define GRAPHICEQUATION_H
+#ifndef EQUATIONEDITORWIDGET_H
+#define EQUATIONEDITORWIDGET_H
 
 // Parent
 #include <QFrame>
@@ -36,7 +36,7 @@ class Equation;
 class EditableEquation;
 
 
-class GraphicEquation : public QFrame
+class EquationEditorWidget : public QFrame
 {
 	Q_OBJECT
 
@@ -50,9 +50,9 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicEquation(shared_ptr<Equation> equation, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
-	explicit GraphicEquation(componentId_t variableId,      int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
-	explicit GraphicEquation(LogicValue constant,           int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit EquationEditorWidget(shared_ptr<Equation> equation, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit EquationEditorWidget(componentId_t variableId,      int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit EquationEditorWidget(LogicValue constant,           int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -103,7 +103,7 @@ private:
 	void buildVariableEquation();
 	void buildCompleteEquation();
 
-	GraphicEquation* parentEquation() const;
+	EquationEditorWidget* parentEquation() const;
 
 	/////
 	// Object variables
@@ -129,4 +129,4 @@ private:
 
 };
 
-#endif // GRAPHICEQUATION_H
+#endif // EQUATIONEDITORWIDGET_H

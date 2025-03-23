@@ -29,7 +29,7 @@
 
 // StateS classes
 #include "equation.h"
-#include "graphicequation.h"
+#include "equationeditorwidget.h"
 #include "actiononvariable.h"
 
 
@@ -61,7 +61,7 @@ RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidge
 	this->equation->setRange(rangeL, rangeR);
 	this->equation->setOperand(0, action->getVariableActedOnId());
 
-	GraphicEquation* graphicEquation = new GraphicEquation(this->equation, -1, false, this);
+	auto graphicEquation = new EquationEditorWidget(this->equation, -1, false, this);
 	graphicEquation->setVariableLock(true);
 	layout->addWidget(graphicEquation);
 

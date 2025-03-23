@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,35 +19,16 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUATIONMIMEDATA_H
-#define EQUATIONMIMEDATA_H
-
-// Parent
-#include <QMimeData>
-
-// StateS classes
-class GraphicEquation;
+// Current class header
+#include "equationpartmimedata.h"
 
 
-class EquationMimeData : public QMimeData
+EquationPartMimeData::EquationPartMimeData(EquationEditorWidget* equation)
 {
-	Q_OBJECT
+	this->equation = equation;
+}
 
-	/////
-	// Constructors/destructors
-public:
-	explicit EquationMimeData(GraphicEquation* equation);
-
-	/////
-	// Object functions
-public:
-	GraphicEquation* getEquation() const;
-
-	/////
-	// Object variables
-private:
-	GraphicEquation* equation = nullptr;
-
-};
-
-#endif // EQUATIONMIMEDATA_H
+EquationEditorWidget* EquationPartMimeData::getEquation() const
+{
+	return equation;
+}

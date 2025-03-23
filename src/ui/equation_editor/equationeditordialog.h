@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUATIONEDITOR_H
-#define EQUATIONEDITOR_H
+#ifndef EQUATIONEDITORDIALOG_H
+#define EQUATIONEDITORDIALOG_H
 
 // Parent
 #include <QDialog>
@@ -33,18 +33,18 @@ using namespace std;
 class QWidget;
 
 // StateS classes
-class GraphicEquation;
+class EquationEditorWidget;
 class Equation;
 
 
-class EquationEditor : public QDialog
+class EquationEditorDialog : public QDialog
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditor(shared_ptr<Equation> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditorDialog(shared_ptr<Equation> initialEquation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -58,9 +58,9 @@ protected:
 	/////
 	// Object variables
 private:
-	GraphicEquation* equationDisplay = nullptr;
+	EquationEditorWidget* equationDisplay = nullptr;
 
 };
 
-#endif // EQUATIONEDITOR_H
+#endif // EQUATIONEDITORDIALOG_H
 
