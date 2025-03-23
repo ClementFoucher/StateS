@@ -104,6 +104,7 @@ SOURCES += \
 	src/ui/equation_editor/equationpartmimedata.cpp \
 	src/ui/equation_editor/inverterbarwidget.cpp \
 	src/ui/equation_editor/rangeextractorwidget.cpp \
+	src/ui/equation_editor/templateequationpartswidget.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
 	src/ui/refined_widget/checkboxhtml.cpp \
@@ -235,6 +236,7 @@ HEADERS += \
 	src/ui/equation_editor/equationpartmimedata.h \
 	src/ui/equation_editor/inverterbarwidget.h \
 	src/ui/equation_editor/rangeextractorwidget.h \
+	src/ui/equation_editor/templateequationpartswidget.h \
 	src/ui/refined_widget/contextmenu.h \
 	src/ui/refined_widget/reactivebutton.h \
 	src/ui/refined_widget/checkboxhtml.h \

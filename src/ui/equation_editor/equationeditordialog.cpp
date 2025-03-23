@@ -29,166 +29,65 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QKeyEvent>
+#include <QScrollBar>
 
 // StateS classes
-#include "machinemanager.h"
-#include "machine.h"
 #include "equation.h"
 #include "equationeditorwidget.h"
 #include "pixmapgenerator.h"
+#include "templateequationpartswidget.h"
 
 
-EquationEditorDialog::EquationEditorDialog(shared_ptr<Equation> initialEquation, QWidget* parent) :
+EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEquation, QWidget* parent) :
 	QDialog(parent)
 {
+	//
+	// Window properties
 	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
-	this->setWindowTitle(tr("StateS equation editor"));
-
-	QVBoxLayout* mainLayout = new QVBoxLayout(this);
+	this->setWindowTitle(tr("Equation editor"));
 
 	//
-	// Title
-	QLabel* title = new QLabel("<b>" + tr("Equation editor") + "</b>");
-	title->setAlignment(Qt::AlignCenter);
-	mainLayout->addWidget(title);
+	// Templates
 
-	//
-	// Resources
-	QLabel* resourcesTitle = new QLabel("<i>" + tr("Drag and drop equation components from here") + "…</i>");
-	resourcesTitle->setAlignment(Qt::AlignCenter);
-	mainLayout->addWidget(resourcesTitle);
+	// Title text
+	auto templatesTitle = new QLabel("<i>" + tr("Drag and drop equation components from here") + "…</i>");
 
-	// Variables
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	// Widget
+	auto templatesWidget = new TemplateEquationPartsWidget();
 
-	QWidget* resourcesWidget = new QWidget();
-	QHBoxLayout* resourcesLayout = new QHBoxLayout(resourcesWidget);
+	// Scroll area
+	auto templatesScrollArea = new QScrollArea();
+	templatesScrollArea->setWidgetResizable(true);
+	templatesScrollArea->setWidget(templatesWidget);
 
-	auto inputIds = machine->getInputVariablesIds();
-	if (inputIds.count() != 0)
-	{
-		QVBoxLayout* inputListLayout = new QVBoxLayout();
-		inputListLayout->setAlignment(Qt::AlignTop);
-		resourcesLayout->addLayout(inputListLayout);
-
-		QLabel* inputsTitle = new QLabel("<b>" + tr("Inputs") + "</b>");
-		inputsTitle->setAlignment(Qt::AlignCenter);
-		inputListLayout->addWidget(inputsTitle);
-
-		for (auto& inputId : inputIds)
-		{
-			inputListLayout->addWidget(new EquationEditorWidget(inputId, -1, true));
-		}
-	}
-
-	// Variables
-	auto internalVariableIds = machine->getInternalVariablesIds();
-	if (internalVariableIds.count() != 0)
-	{
-		QVBoxLayout* variableListLayout = new QVBoxLayout();
-		variableListLayout->setAlignment(Qt::AlignTop);
-		resourcesLayout->addLayout(variableListLayout);
-
-		QLabel* variablesTitle = new QLabel("<b>" + tr("Variables")+ "</b>");
-		variablesTitle->setAlignment(Qt::AlignCenter);
-		variableListLayout->addWidget(variablesTitle);
-
-		for (auto& variableId : internalVariableIds)
-		{
-			variableListLayout->addWidget(new EquationEditorWidget(variableId, -1, true));
-		}
-	}
-
-	// Constants
-	QVBoxLayout* constantListLayout = new QVBoxLayout();
-	constantListLayout->setAlignment(Qt::AlignTop);
-	resourcesLayout->addLayout(constantListLayout);
-
-	QLabel* constantsTitle = new QLabel("<b>" + tr("Constants")+ "</b>");
-	constantsTitle->setAlignment(Qt::AlignCenter);
-	constantListLayout->addWidget(constantsTitle);
-
-	auto constantEquation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
-	constantEquation->setOperand(0, LogicValue::getNullValue());
-	constantListLayout->addWidget(new EquationEditorWidget(constantEquation, -1, true));
-
-	for (auto& constantId : machine->getConstantsIds())
-	{
-		constantListLayout->addWidget(new EquationEditorWidget(constantId, -1, true));
-	}
-
-	// Operators
-	QGridLayout* operatorListLayout = new QGridLayout();
-	operatorListLayout->setAlignment(Qt::AlignTop);
-	resourcesLayout->addLayout(operatorListLayout);
-
-	QLabel* operatorsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
-	operatorsTitle->setAlignment(Qt::AlignCenter);
-	operatorListLayout->addWidget(operatorsTitle, 0, 0, 1, 2);
-
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::notOp     )), -1, true), 1, 0, 1, 2);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::concatOp  )), -1, true), 2, 0, 1, 2);
-
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::equalOp   )), -1, true), 3, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::diffOp    )), -1, true), 3, 1, 1, 1);
-
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::andOp,   2)), -1, true), 4, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::orOp,    2)), -1, true), 5, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::xorOp,   2)), -1, true), 6, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::nandOp,  2)), -1, true), 7, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::norOp,   2)), -1, true), 8, 0, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::xnorOp,  2)), -1, true), 9, 0, 1, 1);
-
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::andOp,   3)), -1, true), 4, 1, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::orOp,    3)), -1, true), 5, 1, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::xorOp,   3)), -1, true), 6, 1, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::nandOp,  3)), -1, true), 7, 1, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::norOp,   3)), -1, true), 8, 1, 1, 1);
-	operatorListLayout->addWidget(new EquationEditorWidget(shared_ptr<Equation>(new Equation(OperatorType_t::xnorOp,  3)), -1, true), 9, 1, 1, 1);
-
-	// Add resources in a scroll area
-	QScrollArea* scrollArea = new QScrollArea();
-	scrollArea->setAlignment(Qt::AlignHCenter);
-	scrollArea->setWidgetResizable(true);
-	scrollArea->setFrameShape(QFrame::NoFrame);
-	scrollArea->setWidget(resourcesWidget);
-	mainLayout->addWidget(scrollArea);
-
+	// Ensure width is always sufficient to avoid showing an horizontal scroll bar
+	auto templatesScrollAreaWidth = templatesWidget->width();
+	templatesScrollAreaWidth += templatesScrollArea->verticalScrollBar()->sizeHint().width();
+	templatesScrollAreaWidth += 2*templatesScrollArea->frameWidth();
+	templatesScrollArea->setMinimumWidth(templatesScrollAreaWidth);
 
 	//
 	// Equation
-	QLabel* equationTitle = new QLabel("<i>… " + tr("to here.") + "</i>");
-	equationTitle->setAlignment(Qt::AlignCenter);
-	mainLayout->addWidget(equationTitle);
 
+	// Title text
+	QLabel* equationTitle = new QLabel("<i>… " + tr("to here.") + "</i>");
+
+	// Widget
 	if (initialEquation != nullptr)
 	{
-		shared_ptr<Equation> newEquation = dynamic_pointer_cast<Equation>(initialEquation);
-		if (newEquation != nullptr)
-		{
-			this->equationDisplay = new EquationEditorWidget(newEquation->clone(), false);
-		}
-		else
-		{
-			this->equationDisplay = new EquationEditorWidget(initialEquation, false);
-		}
+		this->equationDisplay = new EquationEditorWidget(initialEquation->clone(), false);
 	}
 	else
 	{
 		this->equationDisplay = new EquationEditorWidget(shared_ptr<Equation>(nullptr), false);
 	}
 
-	mainLayout->addWidget(this->equationDisplay, 0, Qt::AlignHCenter);
-
+	// Bottom text
 	QLabel* equationInfo= new QLabel(tr("You can also use right-click on equation members to edit"));
-	equationInfo->setAlignment(Qt::AlignCenter);
-	mainLayout->addWidget(equationInfo);
 
 	//
 	// Buttons
 	QHBoxLayout* buttonsLayout = new QHBoxLayout();
-	mainLayout->addLayout(buttonsLayout);
 
 	QPushButton* buttonOK = new QPushButton(tr("OK"));
 	buttonsLayout->addWidget(buttonOK);
@@ -197,6 +96,17 @@ EquationEditorDialog::EquationEditorDialog(shared_ptr<Equation> initialEquation,
 	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
 	buttonsLayout->addWidget(buttonCancel);
 	connect(buttonCancel, &QAbstractButton::clicked, this, &EquationEditorDialog::reject);
+
+	//
+	// Build complete rendering
+	QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+	mainLayout->addWidget(templatesTitle, 0, Qt::AlignHCenter);
+	mainLayout->addWidget(templatesScrollArea);
+	mainLayout->addWidget(equationTitle, 0, Qt::AlignHCenter);
+	mainLayout->addWidget(this->equationDisplay, 0, Qt::AlignHCenter);
+	mainLayout->addWidget(equationInfo, 0, Qt::AlignHCenter);
+	mainLayout->addLayout(buttonsLayout);
 }
 
 shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
@@ -231,6 +141,10 @@ void EquationEditorDialog::keyPressEvent(QKeyEvent* event)
 
 void EquationEditorDialog::mousePressEvent(QMouseEvent* event)
 {
-	this->equationDisplay->validEdit();
+	if (event->button() == Qt::LeftButton)
+	{
+		this->equationDisplay->validEdit();
+	}
+
 	QDialog::mousePressEvent(event);
 }

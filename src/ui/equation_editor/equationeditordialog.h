@@ -44,7 +44,7 @@ class EquationEditorDialog : public QDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditorDialog(shared_ptr<Equation> initialEquation, QWidget* parent = nullptr);
+	explicit EquationEditorDialog(shared_ptr<const Equation> initialEquation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
