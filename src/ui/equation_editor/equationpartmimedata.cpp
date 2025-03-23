@@ -23,12 +23,12 @@
 #include "equationpartmimedata.h"
 
 
-EquationPartMimeData::EquationPartMimeData(EquationEditorWidget* equation)
+EquationPartMimeData::EquationPartMimeData(shared_ptr<Equation> equation)
 {
 	this->equation = equation;
 }
 
-EquationEditorWidget* EquationPartMimeData::getEquation() const
+shared_ptr<Equation> EquationPartMimeData::getEquation() const
 {
-	return equation;
+	return this->equation;
 }

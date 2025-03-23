@@ -258,7 +258,8 @@ void EquationEditorWidget::mousePressEvent(QMouseEvent* event)
 		if (event->button() == Qt::LeftButton)
 		{
 			QDrag* drag = new QDrag(this);
-			QMimeData* mimeData = new EquationPartMimeData(this);
+			auto equation = this->getLogicEquation();
+			QMimeData* mimeData = new EquationPartMimeData(equation->clone());
 
 			drag->setMimeData(mimeData);
 
@@ -387,15 +388,9 @@ void EquationEditorWidget::dropEvent(QDropEvent* event)
 	const EquationPartMimeData* mimeData = dynamic_cast<const EquationPartMimeData*>(event->mimeData());
 	if (mimeData == nullptr) return;
 
-	auto droppedGraphicEquation = mimeData->getEquation();
-	if (droppedGraphicEquation == nullptr) return;
+	this->droppedEquation = mimeData->getEquation();
+	if (this->droppedEquation == nullptr) return;
 
-	auto droppedLogicEquation = droppedGraphicEquation->getLogicEquation();
-	if (droppedLogicEquation == nullptr) return;
-
-
-	// Obtain new equation
-	this->droppedEquation = droppedLogicEquation->clone();
 
 	auto l_equation = this->equation.lock();
 	if (l_equation == nullptr)

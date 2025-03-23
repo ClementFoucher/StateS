@@ -25,8 +25,12 @@
 // Parent
 #include <QMimeData>
 
+// C++ classes
+#include <memory>
+using namespace std;
+
 // StateS classes
-class EquationEditorWidget;
+class Equation;
 
 
 class EquationPartMimeData : public QMimeData
@@ -36,17 +40,17 @@ class EquationPartMimeData : public QMimeData
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationPartMimeData(EquationEditorWidget* equation);
+	explicit EquationPartMimeData(shared_ptr<Equation> equation);
 
 	/////
 	// Object functions
 public:
-	EquationEditorWidget* getEquation() const;
+	shared_ptr<Equation> getEquation() const;
 
 	/////
 	// Object variables
 private:
-	EquationEditorWidget* equation = nullptr;
+	shared_ptr<Equation> equation;
 
 };
 
