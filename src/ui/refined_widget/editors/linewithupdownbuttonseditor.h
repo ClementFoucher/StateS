@@ -29,7 +29,7 @@
 class QIntValidator;
 
 // StateS classes
-class SelfManagedDynamicLineEditor;
+class DynamicLineEditor;
 
 
 class LineWithUpDownButtonsEditor : public QWidget
@@ -47,23 +47,29 @@ public:
 	void updateContent(int min, int max, const QString& text);
 	void edit();
 
-signals:
-	void valueChanged(int newValue);
-
 protected:
 	virtual void wheelEvent(QWheelEvent* event) override;
 
+	virtual void keyPressEvent  (QKeyEvent* event) override;
+	virtual void keyReleaseEvent(QKeyEvent* event) override;
+
 private slots:
+	void textUpdatedByUserEventHandler(const QString& newText);
+
+private:
 	void up();
 	void down();
 
-	void textUpdatedByUserEventHandler(const QString& newText);
+	/////
+	// Signals
+signals:
+	void valueChanged(int newValue);
 
 	/////
 	// Object variables
 private:
-	SelfManagedDynamicLineEditor* lineEdit  = nullptr;
-	QIntValidator*                validator = nullptr;
+	DynamicLineEditor* lineEdit  = nullptr;
+	QIntValidator*     validator = nullptr;
 
 };
 

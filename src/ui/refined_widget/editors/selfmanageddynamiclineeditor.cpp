@@ -65,15 +65,7 @@ void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key::Key_Escape)
 	{
-		emit userCancelEvent();
-	}
-	if (event->key() == Qt::Key::Key_Up)
-	{
-		emit upKeyPressed();
-	}
-	else if (event->key() == Qt::Key::Key_Down)
-	{
-		emit downKeyPressed();
+		emit this->userCancelEvent();
 	}
 	else
 	{
@@ -84,14 +76,6 @@ void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 void SelfManagedDynamicLineEditor::keyReleaseEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key::Key_Escape)
-	{
-		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
-	}
-	else if (event->key() == Qt::Key::Key_Up)
-	{
-		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
-	}
-	else if (event->key() == Qt::Key::Key_Down)
 	{
 		// KeyPressEvent handled, so we have to handle keyReleaseEvent too.
 	}

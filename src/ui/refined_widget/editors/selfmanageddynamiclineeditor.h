@@ -54,9 +54,6 @@ signals:
 	void newTextAvailableEvent(const QString& text);
 	void userCancelEvent();
 
-	void upKeyPressed();
-	void downKeyPressed();
-
 };
 
 #endif // SELFMANAGEDDYNAMICLINEEDITOR_H

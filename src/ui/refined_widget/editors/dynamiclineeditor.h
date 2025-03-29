@@ -37,7 +37,7 @@ class DynamicLineEditor : public QLineEdit
 
 	/////
 	// Static variables
-protected:
+private:
 	static const QString editStyle;
 	static const QString errorStyle;
 
