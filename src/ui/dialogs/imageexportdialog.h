@@ -23,7 +23,7 @@
 #define IMAGEEXPORTDIALOG_H
 
 // Parent
-#include <QDialog>
+#include "statesdialog.h"
 
 // C++ classes
 #include <memory>
@@ -40,7 +40,7 @@ class MachineImageExporter;
 class CheckBoxHtml;
 
 
-class ImageExportDialog : public QDialog
+class ImageExportDialog : public StatesDialog
 {
 	Q_OBJECT
 

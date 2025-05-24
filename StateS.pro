@@ -110,7 +110,9 @@ SOURCES += \
 	src/ui/refined_widget/checkboxhtml.cpp \
 	src/ui/refined_widget/labelwithclickevent.cpp \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.cpp \
+	src/ui/refined_widget/statesdialog.cpp \
 	src/ui/refined_widget/statesgraphicsview.cpp \
+	src/ui/refined_widget/statesmainwindow.cpp \
 	src/ui/refined_widget/editors/dynamiclineeditor.cpp \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.cpp \
@@ -241,7 +243,9 @@ HEADERS += \
 	src/ui/refined_widget/reactivebutton.h \
 	src/ui/refined_widget/checkboxhtml.h \
 	src/ui/refined_widget/labelwithclickevent.h \
+	src/ui/refined_widget/statesdialog.h \
 	src/ui/refined_widget/statesgraphicsview.h \
+	src/ui/refined_widget/statesmainwindow.h \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.h \
 	src/ui/refined_widget/editors/dynamiclineeditor.h \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.h \

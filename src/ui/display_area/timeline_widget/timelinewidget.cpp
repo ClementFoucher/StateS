@@ -44,7 +44,7 @@
 
 
 TimelineWidget::TimelineWidget(QWidget* parent) :
-	QMainWindow(parent)
+	StatesMainWindow(parent)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -52,7 +52,6 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	/////
 	// Configure window
-	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle(tr("StateS timeline visualizer"));
 
 	/////

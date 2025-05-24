@@ -23,7 +23,7 @@
 #define STATESUI_H
 
 // Parent
-#include <QMainWindow>
+#include "statesmainwindow.h"
 
 // C++ classes
 #include <memory>
@@ -51,7 +51,7 @@ class VhdlExportDialog;
  *
  * This object can request some actions on the currently edited machine (save, load, new, ...)
  */
-class StatesUi : public QMainWindow
+class StatesUi : public StatesMainWindow
 {
 	Q_OBJECT
 

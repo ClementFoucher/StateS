@@ -30,13 +30,13 @@
 
 
 ErrorDisplayDialog::ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent) :
-    QDialog(parent)
+	StatesDialog(parent)
 {
 	this->build(errorTitle, errors);
 }
 
 ErrorDisplayDialog::ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent) :
-    QDialog(parent)
+	StatesDialog(parent)
 {
 	QList<QString> singleErrorList = QList<QString>();
 	singleErrorList.append(error);

@@ -35,7 +35,7 @@
 
 
 ImageExportDialog::ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent) :
-	QDialog(parent)
+	StatesDialog(parent)
 {
 	this->baseFileName = baseFileName;
 	this->searchPath   = searchPath;

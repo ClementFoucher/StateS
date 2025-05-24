@@ -23,7 +23,7 @@
 #define EQUATIONEDITORDIALOG_H
 
 // Parent
-#include <QDialog>
+#include "statesdialog.h"
 
 // C++ classes
 #include <memory>
@@ -37,7 +37,7 @@ class EquationEditorWidget;
 class Equation;
 
 
-class EquationEditorDialog : public QDialog
+class EquationEditorDialog : public StatesDialog
 {
 	Q_OBJECT
 

@@ -22,8 +22,8 @@
 #ifndef RANGEEDITORDIALOG_H
 #define RANGEEDITORDIALOG_H
 
-// Base class
-#include <QDialog>
+// Parent
+#include "statesdialog.h"
 
 // C++ classes
 #include <memory>
@@ -34,7 +34,7 @@ class Equation;
 class ActionOnVariable;
 
 
-class RangeEditorDialog : public QDialog
+class RangeEditorDialog : public StatesDialog
 {
 	Q_OBJECT
 

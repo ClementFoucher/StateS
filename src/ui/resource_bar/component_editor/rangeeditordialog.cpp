@@ -34,7 +34,7 @@
 
 
 RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent) :
-	QDialog(parent)
+	StatesDialog(parent)
 {
 	this->action = action;
 	int rangeL = action->getActionRangeL();

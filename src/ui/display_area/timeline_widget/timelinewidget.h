@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #define TIMELINEWIDGET_H
 
 // Parent
-#include <QMainWindow>
+#include "statesmainwindow.h"
 
 // Qt classes
 class QWidget;
@@ -31,7 +31,7 @@ class QToolBar;
 class QAction;
 
 
-class TimelineWidget : public QMainWindow
+class TimelineWidget : public StatesMainWindow
 {
 	Q_OBJECT
 

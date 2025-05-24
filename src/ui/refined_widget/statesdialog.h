@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,31 +16,25 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ERRORDISPLAYDIALOG_H
-#define ERRORDISPLAYDIALOG_H
+#ifndef STATESDIALOG_H
+#define STATESDIALOG_H
 
 // Parent
-#include "statesdialog.h"
+#include <QDialog>
 
 
-class ErrorDisplayDialog : public StatesDialog
+class StatesDialog : public QDialog
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ErrorDisplayDialog(const QString& errorTitle, const QList<QString>& errors, QWidget* parent = nullptr);
-	explicit ErrorDisplayDialog(const QString& errorTitle, const QString& error, QWidget* parent = nullptr);
-
-	/////
-	// Object functions
-private:
-	void build(const QString& errorTitle, const QList<QString>& errors);
+	explicit StatesDialog(QWidget* parent = nullptr);
 
 };
 
-#endif // ERRORDISPLAYDIALOG_H
+#endif // STATESDIALOG_H

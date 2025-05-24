@@ -34,7 +34,7 @@
 
 
 VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, shared_ptr<FsmVhdlExport> fsmVhdlExport, QWidget* parent) :
-	QDialog(parent)
+	StatesDialog(parent)
 {
 	if (fsmVhdlExport == nullptr) return;
 

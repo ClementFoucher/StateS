@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #define LANGSELECTIONDIALOG_H
 
 // Parent
-#include <QMainWindow>
+#include "statesmainwindow.h"
 
 // Qt classes
 class QLabel;
@@ -31,7 +31,7 @@ class QApplication;
 class QTranslator;
 
 
-class LangSelectionDialog : public QMainWindow
+class LangSelectionDialog : public StatesMainWindow
 {
 	Q_OBJECT
 

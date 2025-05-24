@@ -23,7 +23,7 @@
 #define VHDLEXPORTDIALOG_H
 
 // Parent
-#include <QDialog>
+#include "statesdialog.h"
 
 // C++ classes
 #include <memory>
@@ -36,7 +36,7 @@ class QComboBox;
 class FsmVhdlExport;
 
 
-class VhdlExportDialog : public QDialog
+class VhdlExportDialog : public StatesDialog
 {
 	Q_OBJECT
 

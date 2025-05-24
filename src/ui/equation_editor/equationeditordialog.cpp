@@ -34,16 +34,14 @@
 // StateS classes
 #include "equation.h"
 #include "equationeditorwidget.h"
-#include "pixmapgenerator.h"
 #include "templateequationpartswidget.h"
 
 
 EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEquation, QWidget* parent) :
-	QDialog(parent)
+	StatesDialog(parent)
 {
 	//
 	// Window properties
-	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->setWindowTitle(tr("Equation editor"));
 
 	//

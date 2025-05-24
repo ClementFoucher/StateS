@@ -39,14 +39,14 @@
 #include "vhdlexportdialog.h"
 #include "imageexportdialog.h"
 #include "fsmvhdlexport.h"
-#include "pixmapgenerator.h"
 #include "machinestatus.h"
 #include "machineeditorwidget.h"
 #include "timelinewidget.h"
 #include "machineimageexporter.h"
 
 
-StatesUi::StatesUi()
+StatesUi::StatesUi() :
+	StatesMainWindow()
 {
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent,               this, &StatesUi::machineReplacedEventHandler);
 	connect(machineManager.get(), &MachineManager::undoActionAvailabilityChangedEvent, this, &StatesUi::undoActionAvailabilityChangeEventHandler);
@@ -61,7 +61,6 @@ StatesUi::StatesUi()
 	 * Build window
 	 ***/
 
-	this->setWindowIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
 	this->updateTitle();
 
 	// Allow dropping on window
