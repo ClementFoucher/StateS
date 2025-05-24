@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "rangeextractorwidget.h"
+#include "rangeeditor.h"
 
 // Qt classes
 #include <QHBoxLayout>
@@ -33,17 +33,17 @@
 #include "operand.h"
 
 
-RangeExtractorWidget::RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent) :
+RangeEditor::RangeEditor(shared_ptr<Equation> equation, QWidget* parent) :
     EditableEquation(parent)
 {
 	this->equation = equation;
 
-	connect(equation.get(), &Equation::equationTextChangedEvent, this, &RangeExtractorWidget::update);
+	connect(equation.get(), &Equation::equationTextChangedEvent, this, &RangeEditor::update);
 
 	this->reset();
 }
 
-bool RangeExtractorWidget::validEdit()
+bool RangeEditor::validEdit()
 {
 	if (this->editMode == true)
 	{
@@ -54,7 +54,7 @@ bool RangeExtractorWidget::validEdit()
 		return false;
 }
 
-bool RangeExtractorWidget::cancelEdit()
+bool RangeEditor::cancelEdit()
 {
 	if (this->editMode == true)
 	{
@@ -65,7 +65,7 @@ bool RangeExtractorWidget::cancelEdit()
 		return false;
 }
 
-void RangeExtractorWidget::setEdited(bool edited)
+void RangeEditor::setEdited(bool edited)
 {
 	if (this->editMode != edited)
 	{
@@ -75,7 +75,7 @@ void RangeExtractorWidget::setEdited(bool edited)
 	}
 }
 
-void RangeExtractorWidget::mousePressEvent(QMouseEvent* event)
+void RangeEditor::mousePressEvent(QMouseEvent* event)
 {
 	bool transmitEvent = true;
 
@@ -95,19 +95,19 @@ void RangeExtractorWidget::mousePressEvent(QMouseEvent* event)
 		QWidget::mousePressEvent(event);
 }
 
-void RangeExtractorWidget::mouseDoubleClickEvent(QMouseEvent* event)
+void RangeEditor::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	if (!this->inMouseEvent)
 		QWidget::mouseDoubleClickEvent(event);
 }
 
-void RangeExtractorWidget::mouseMoveEvent(QMouseEvent* event)
+void RangeEditor::mouseMoveEvent(QMouseEvent* event)
 {
 	if (!this->inMouseEvent)
 		QWidget::mouseDoubleClickEvent(event);
 }
 
-void RangeExtractorWidget::mouseReleaseEvent(QMouseEvent* event)
+void RangeEditor::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (!this->inMouseEvent)
 	{
@@ -119,7 +119,7 @@ void RangeExtractorWidget::mouseReleaseEvent(QMouseEvent* event)
 	}
 }
 
-void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
+void RangeEditor::wheelEvent(QWheelEvent* event)
 {
 	shared_ptr<Equation> l_equation = this->equation.lock();
 
@@ -194,7 +194,7 @@ void RangeExtractorWidget::wheelEvent(QWheelEvent* event)
 	}
 }
 
-void RangeExtractorWidget::update()
+void RangeEditor::update()
 {
 	shared_ptr<Equation> l_equation = this->equation.lock();
 	QString text;
@@ -262,7 +262,7 @@ void RangeExtractorWidget::update()
 	}
 }
 
-void RangeExtractorWidget::reset()
+void RangeEditor::reset()
 {
 	qDeleteAll(this->children());
 	delete this->layout();
@@ -304,7 +304,7 @@ void RangeExtractorWidget::reset()
 				this->rangeREditor = new LineWithUpDownButtonsEditor(0, l_equation->getRangeL()-1, text);
 				layout->addWidget(this->rangeREditor);
 
-				connect(this->rangeREditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeExtractorWidget::rangeRChanged);
+				connect(this->rangeREditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::rangeRChanged);
 			}
 			else
 			{
@@ -312,7 +312,7 @@ void RangeExtractorWidget::reset()
 				layout->addWidget(this->rangeLEditor);
 			}
 
-			connect(this->rangeLEditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeExtractorWidget::rangeLChanged);
+			connect(this->rangeLEditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::rangeLChanged);
 		}
 	}
 	else

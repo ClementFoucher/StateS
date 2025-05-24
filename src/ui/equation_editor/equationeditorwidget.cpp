@@ -37,7 +37,7 @@
 #include "contextmenu.h"
 #include "inverterbarwidget.h"
 #include "equationeditordialog.h"
-#include "rangeextractorwidget.h"
+#include "rangeeditor.h"
 #include "constanteditorwidget.h"
 #include "logicvalue.h"
 #include "variable.h"
@@ -1165,12 +1165,12 @@ void EquationEditorWidget::buildCompleteEquation()
 
 		if (operatorType == OperatorType_t::extractOp)
 		{
-			auto rangeExtractor = new RangeExtractorWidget(l_equation, this);
+			auto rangeExtractor = new RangeEditor(l_equation, this);
 
 			if (this->isTemplate == false)
 			{
-				connect(rangeExtractor, &RangeExtractorWidget::rangeLChanged, this, &EquationEditorWidget::treatRangeLeftBoundChanged);
-				connect(rangeExtractor, &RangeExtractorWidget::rangeRChanged, this, &EquationEditorWidget::treatRangeRightBoundChanged);
+				connect(rangeExtractor, &RangeEditor::rangeLChanged, this, &EquationEditorWidget::treatRangeLeftBoundChanged);
+				connect(rangeExtractor, &RangeEditor::rangeRChanged, this, &EquationEditorWidget::treatRangeRightBoundChanged);
 			}
 
 			equationLayout->addWidget(rangeExtractor);

@@ -103,7 +103,6 @@ SOURCES += \
 	src/ui/equation_editor/equationeditorwidget.cpp \
 	src/ui/equation_editor/equationpartmimedata.cpp \
 	src/ui/equation_editor/inverterbarwidget.cpp \
-	src/ui/equation_editor/rangeextractorwidget.cpp \
 	src/ui/equation_editor/templateequationpartswidget.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
@@ -115,6 +114,7 @@ SOURCES += \
 	src/ui/refined_widget/statesmainwindow.cpp \
 	src/ui/refined_widget/editors/dynamiclineeditor.cpp \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.cpp \
+	src/ui/refined_widget/editors/rangeeditor.cpp \
 	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.cpp \
 	src/ui/resource_bar/hinttab.cpp \
 	src/ui/resource_bar/abouttab.cpp \
@@ -237,7 +237,6 @@ HEADERS += \
 	src/ui/equation_editor/equationeditorwidget.h \
 	src/ui/equation_editor/equationpartmimedata.h \
 	src/ui/equation_editor/inverterbarwidget.h \
-	src/ui/equation_editor/rangeextractorwidget.h \
 	src/ui/equation_editor/templateequationpartswidget.h \
 	src/ui/refined_widget/contextmenu.h \
 	src/ui/refined_widget/reactivebutton.h \
@@ -249,6 +248,7 @@ HEADERS += \
 	src/ui/refined_widget/collapsiblewidgetwithtitle.h \
 	src/ui/refined_widget/editors/dynamiclineeditor.h \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.h \
+	src/ui/refined_widget/editors/rangeeditor.h \
 	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.h \
 	src/ui/resource_bar/hinttab.h \
 	src/ui/resource_bar/abouttab.h \

@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RANGEEXTRACTORWIDGET_H
-#define RANGEEXTRACTORWIDGET_H
+#ifndef RANGEEDITOR_H
+#define RANGEEDITOR_H
 
 // Parent
 #include "editableequation.h"
@@ -37,14 +37,14 @@ class LineWithUpDownButtonsEditor;
 class Equation;
 
 
-class RangeExtractorWidget : public EditableEquation
+class RangeEditor : public EditableEquation
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit RangeExtractorWidget(shared_ptr<Equation> equation, QWidget* parent = nullptr);
+	explicit RangeEditor(shared_ptr<Equation> equation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -85,4 +85,4 @@ private:
 
 };
 
-#endif // RANGEEXTRACTORWIDGET_H
+#endif // RANGEEDITOR_H
