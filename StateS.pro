@@ -93,10 +93,11 @@ SOURCES += \
 	src/machine/xml/fsm/fsmxmlwriter.cpp \
 	# UI
 	src/ui/statesui.cpp \
+	src/ui/dialogs/errordisplaydialog.cpp \
 	src/ui/dialogs/imageexportdialog.cpp \
 	src/ui/dialogs/langselectiondialog.cpp \
+	src/ui/dialogs/rangeeditordialog.cpp \
 	src/ui/dialogs/vhdlexportdialog.cpp \
-	src/ui/dialogs/errordisplaydialog.cpp \
 	src/ui/equation_editor/constanteditorwidget.cpp \
 	src/ui/equation_editor/editableequation.cpp \
 	src/ui/equation_editor/equationeditordialog.cpp \
@@ -132,7 +133,6 @@ SOURCES += \
 	src/ui/resource_bar/component_editor/stateeditortab.cpp \
 	src/ui/resource_bar/component_editor/actioneditor.cpp \
 	src/ui/resource_bar/component_editor/componenteditortab.cpp \
-	src/ui/resource_bar/component_editor/rangeeditordialog.cpp \
 	src/ui/resource_bar/component_editor/conditioneditor.cpp \
 	src/ui/resource_bar/simulator_tab/simulatortab.cpp \
 	src/ui/resource_bar/simulator_tab/inputbitselector.cpp \
@@ -227,10 +227,11 @@ HEADERS += \
 	src/machine/xml/fsm/fsmxmlwriter.h \
 	# UI
 	src/ui/statesui.h \
-	src/ui/dialogs/vhdlexportdialog.h \
-	src/ui/dialogs/langselectiondialog.h \
 	src/ui/dialogs/errordisplaydialog.h \
 	src/ui/dialogs/imageexportdialog.h \
+	src/ui/dialogs/langselectiondialog.h \
+	src/ui/dialogs/rangeeditordialog.h \
+	src/ui/dialogs/vhdlexportdialog.h \
 	src/ui/equation_editor/constanteditorwidget.h \
 	src/ui/equation_editor/editableequation.h \
 	src/ui/equation_editor/equationeditordialog.h \
@@ -258,7 +259,6 @@ HEADERS += \
 	src/ui/resource_bar/component_editor/stateeditortab.h \
 	src/ui/resource_bar/component_editor/transitioneditortab.h \
 	src/ui/resource_bar/component_editor/componenteditortab.h \
-	src/ui/resource_bar/component_editor/rangeeditordialog.h \
 	src/ui/resource_bar/component_editor/actioneditor.h \
 	src/ui/resource_bar/component_editor/conditioneditor.h \
 	src/ui/resource_bar/component_editor/actiontypecombobox.h \
