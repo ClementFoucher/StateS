@@ -30,9 +30,10 @@
 using namespace std;
 
 // Qt classes
-class QWidget;
+class QScrollArea;
 
 // StateS classes
+class TemplateEquationPartsWidget;
 class EquationEditorWidget;
 class Equation;
 
@@ -55,10 +56,18 @@ protected:
 	virtual void keyPressEvent  (QKeyEvent*   event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
 
+	virtual void showEvent(QShowEvent* event) override;
+
+private:
+	shared_ptr<Equation> buildRootEquation(shared_ptr<const Equation> initialEquation);
+
 	/////
 	// Object variables
 private:
 	EquationEditorWidget* equationDisplay = nullptr;
+
+	TemplateEquationPartsWidget* templatesWidget = nullptr;
+	QScrollArea* templatesScrollArea = nullptr;
 
 };
 

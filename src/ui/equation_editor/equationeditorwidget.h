@@ -23,109 +23,72 @@
 #define EQUATIONEDITORWIDGET_H
 
 // Parent
-#include <QFrame>
-
-// C++ classes
-#include <memory>
-using namespace std;
+#include "equationparteditorwidget.h"
 
 // StateS classes
-#include "statestypes.h"
-#include "logicvalue.h"
-class Equation;
-class EditableEquation;
+class RangeEditor;
 
 
-class EquationEditorWidget : public QFrame
+class EquationEditorWidget : public EquationPartEditorWidget
 {
 	Q_OBJECT
 
 	/////
-	// Type declarations
-private:
-	enum CommonAction_t { Cancel = 0 };
-	enum DropAction_t { ReplaceExisting = 1, ExistingAsOperand = 2};
-	enum ContextAction_t { DeleteEquation = 3, IncrementOperandCount = 4, DecrementOperandCount = 5, ExtractSwitchSingle = 6, ExtractSwitchRange = 7, EditRange = 8, EditValue = 9};
-
-	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditorWidget(shared_ptr<Equation> equation, int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
-	explicit EquationEditorWidget(componentId_t variableId,      int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
-	explicit EquationEditorWidget(LogicValue constant,           int operandNumber, bool isTemplate = false, QWidget* parent = nullptr);
+	explicit EquationEditorWidget(shared_ptr<Equation> equation, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
 
 	/////
 	// Object functions
 public:
-	void replaceOperand(uint operandNumber, shared_ptr<Equation> newOperand);
-	void replaceOperandConstantValue(uint operandNumber, LogicValue newValue);
-	void setVariableLock(bool lock);
+	void replaceOperand(uint operandRank, shared_ptr<Equation> newOperand);
+	void replaceOperand(uint operandRank, LogicValue newConstant, bool isProcessingDrop = false);
+	void replaceOperand(uint operandRank, componentId_t newVariable);
+	void clearOperand(uint operandRank);
 
 	shared_ptr<Equation> getLogicEquation() const;
 
-	void forceCompleteRendering();
-	bool validEdit();
-	bool cancelEdit();
+	void closeOpenEditors();
+
+	virtual void beginEdit()  override;
+	virtual bool validEdit()  override;
+	virtual bool cancelEdit() override;
 
 protected:
-	virtual void enterEvent(QEnterEvent*) override;
-	virtual void leaveEvent(QEvent*)      override;
+	virtual uint    getAllowedMenuActions()   const override;
+	virtual uint    getAllowedDropActions()   const override;
+	virtual QString getText()                 const override;
+	virtual QString getToolTipText()          const override;
+	virtual bool    getReplaceWithoutAsking() const override;
+	virtual bool    getIsErroneous()          const override;
 
-	virtual void mousePressEvent      (QMouseEvent* event) override;
-	virtual void mouseMoveEvent       (QMouseEvent* event) override;
-	virtual void mouseReleaseEvent    (QMouseEvent* event) override;
-	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
+	virtual QDrag* buildDrag() override;
 
-	virtual void dragEnterEvent(QDragEnterEvent* event) override;
-	virtual void dragLeaveEvent(QDragLeaveEvent* event) override;
-	virtual void dropEvent     (QDropEvent*      event) override;
-
-	virtual void contextMenuEvent(QContextMenuEvent* event) override;
-
-	void enterChildrenEvent();
-	void leaveChildrenEvent();
+	virtual void processSpecificMenuAction(ContextAction_t action) override;
+	virtual void processSpecificDropAction(DropAction_t    action) override;
 
 private slots:
-	void treatMenuEventHandler(QAction* action);
-	void treatRangeLeftBoundChanged(int newIndex);
-	void treatRangeRightBoundChanged(int newIndex);
-	void treatConstantValueChanged(LogicValue newValue);
-	void updateBorder();
+	void rangeEditorBeginEditEventHandler();
+	void equationChangedEventHandler();
 
 private:
-	void configure();
-	void setDefaultBorderColor();
-	void setHilightedBorderColor();
-
-	void replaceEquation(shared_ptr<Equation> newEquation);
-	void buildEquation();
+	void clear();
 	void buildTemplateEquation();
-	void buildVariableEquation();
 	void buildCompleteEquation();
+	void updateOperandWidget(uint operandRank);
+	void setInverted(bool invert);
+	void fixExtractorRange();
+	EquationPartEditorWidget* buildOperandEditorWidget(uint operandRank);
 
-	EquationEditorWidget* parentEquation() const;
+	QString getTemplateText() const;
 
 	/////
 	// Object variables
 private:
-	bool isTemplate;
-	int operandNumber;
+	shared_ptr<Equation> equation;
 
-	weak_ptr<Equation> equation;
-	// Only top-level GraphicEquation holds root Equation
-	shared_ptr<Equation> rootEquation;
-	// Just to not loose the reference for variable/constant equations
-	shared_ptr<Equation> localEquation;
-
-	shared_ptr<Equation> droppedEquation;
-
-	bool completeRendering = false;
-	bool mouseIn = false;
-
-	EditableEquation* editorWidget = nullptr;
-
-	bool inMouseEvent = false;
-	bool lockVariable = false;
+	QList<EquationPartEditorWidget*> operands;
+	RangeEditor* rangeEditor = nullptr;
 
 };
 

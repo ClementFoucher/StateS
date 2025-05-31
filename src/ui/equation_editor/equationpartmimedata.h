@@ -30,6 +30,8 @@
 using namespace std;
 
 // StateS classes
+#include "statestypes.h"
+#include "logicvalue.h"
 class Equation;
 
 
@@ -40,17 +42,33 @@ class EquationPartMimeData : public QMimeData
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationPartMimeData(shared_ptr<Equation> equation);
+	explicit EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation);
+	explicit EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId);
+	explicit EquationPartMimeData(const QString& text, uint availableActions, LogicValue constant);
 
 	/////
 	// Object functions
 public:
-	shared_ptr<Equation> getEquation() const;
+	OperandSource_t getSource() const;
+	uint getAvailableActions() const;
+
+	shared_ptr<Equation> getEquation()   const;
+	componentId_t        getVariableId() const;
+	LogicValue           getConstant()   const;
+
+	QString getText() const;
 
 	/////
 	// Object variables
 private:
+	OperandSource_t source;
+	uint availableActions;
+
 	shared_ptr<Equation> equation;
+	componentId_t        variableId = nullId;
+	LogicValue           constant   = LogicValue();
+
+	QString text;
 
 };
 

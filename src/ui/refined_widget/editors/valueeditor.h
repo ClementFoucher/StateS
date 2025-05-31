@@ -19,38 +19,55 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEMPLATEEQUATIONPARTSWIDGET_H
-#define TEMPLATEEQUATIONPARTSWIDGET_H
+#ifndef VALUEEDITOR_H
+#define VALUEEDITOR_H
 
 // Parent
 #include <QWidget>
 
-// Qt classes
-class QVBoxLayout;
-
 // StateS classes
-#include "statestypes.h"
+class LogicValue;
+class DynamicLineEditor;
 
 
-class TemplateEquationPartsWidget : public QWidget
+class ValueEditor : public QWidget
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit TemplateEquationPartsWidget(QWidget* parent = nullptr);
+	explicit ValueEditor(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-private:
-	QWidget* getInputs()            const;
-	QWidget* getInternalVariables() const;
-	QWidget* getConstants()         const;
-	QWidget* getOperators()         const;
+public:
+	void setFocusOnShow(bool autoFocusOnNextShow);
 
-	void buildVariableList(QVBoxLayout* layout, QList<componentId_t> variableList) const;
+	void setBitVectorValue(LogicValue value, uint size = 0); // Size 0 means no constraint on size
+	LogicValue getBitVectorValue() const;
+
+protected:
+	void showEvent(QShowEvent* event) override;
+
+	virtual void focusInEvent(QFocusEvent* event) override;
+
+	virtual void keyPressEvent(QKeyEvent* event) override;
+
+	/////
+	// Signals
+signals:
+	void valueChangedEvent();
+	void cancelEditEvent();
+
+	/////
+	// Object variables
+private:
+	DynamicLineEditor* lineEdit = nullptr;
+
+	uint bitVectorSize = 0;
+	bool autoFocusOnNextShow = true;
 
 };
 
-#endif // TEMPLATEEQUATIONPARTSWIDGET_H
+#endif // VALUEEDITOR_H

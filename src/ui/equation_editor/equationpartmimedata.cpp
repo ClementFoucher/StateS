@@ -23,12 +23,59 @@
 #include "equationpartmimedata.h"
 
 
-EquationPartMimeData::EquationPartMimeData(shared_ptr<Equation> equation)
+EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation)
 {
+	this->text = text;
+	this->availableActions = availableActions;
+
+	this->source = OperandSource_t::equation;
 	this->equation = equation;
+}
+
+EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId)
+{
+	this->text = text;
+	this->availableActions = availableActions;
+
+	this->source = OperandSource_t::variable;
+	this->variableId = variableId;
+}
+
+EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, LogicValue constant)
+{
+	this->text = text;
+	this->availableActions = availableActions;
+
+	this->source = OperandSource_t::constant;
+	this->constant = constant;
+}
+
+OperandSource_t EquationPartMimeData::getSource() const
+{
+	return this->source;
+}
+
+uint EquationPartMimeData::getAvailableActions() const
+{
+	return this->availableActions;
 }
 
 shared_ptr<Equation> EquationPartMimeData::getEquation() const
 {
 	return this->equation;
+}
+
+componentId_t EquationPartMimeData::getVariableId() const
+{
+	return this->variableId;
+}
+
+LogicValue EquationPartMimeData::getConstant() const
+{
+	return this->constant;
+}
+
+QString EquationPartMimeData::getText() const
+{
+	return this->text;
 }

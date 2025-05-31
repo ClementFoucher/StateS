@@ -24,15 +24,15 @@
 
 // Qt classes
 #include <QLabel>
-#include <QIcon>
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QKeyEvent>
-#include <QScrollBar>
+#include <QStyle>
 
 // StateS classes
 #include "equation.h"
+#include "operand.h"
 #include "equationeditorwidget.h"
 #include "templateequationpartswidget.h"
 
@@ -51,56 +51,49 @@ EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEqu
 	auto templatesTitle = new QLabel("<i>" + tr("Drag and drop equation components from here") + "…</i>");
 
 	// Widget
-	auto templatesWidget = new TemplateEquationPartsWidget();
+	this->templatesWidget = new TemplateEquationPartsWidget();
 
 	// Scroll area
-	auto templatesScrollArea = new QScrollArea();
-	templatesScrollArea->setWidgetResizable(true);
-	templatesScrollArea->setWidget(templatesWidget);
-
-	// Ensure width is always sufficient to avoid showing an horizontal scroll bar
-	auto templatesScrollAreaWidth = templatesWidget->width();
-	templatesScrollAreaWidth += templatesScrollArea->verticalScrollBar()->sizeHint().width();
-	templatesScrollAreaWidth += 2*templatesScrollArea->frameWidth();
-	templatesScrollArea->setMinimumWidth(templatesScrollAreaWidth);
+	this->templatesScrollArea = new QScrollArea();
+	this->templatesScrollArea->setWidgetResizable(true);
+	this->templatesScrollArea->setWidget(this->templatesWidget);
 
 	//
 	// Equation
 
 	// Title text
-	QLabel* equationTitle = new QLabel("<i>… " + tr("to here.") + "</i>");
+	auto equationTitle = new QLabel("<i>… " + tr("to here.") + "</i>");
 
 	// Widget
-	if (initialEquation != nullptr)
-	{
-		this->equationDisplay = new EquationEditorWidget(initialEquation->clone(), false);
-	}
-	else
-	{
-		this->equationDisplay = new EquationEditorWidget(shared_ptr<Equation>(nullptr), false);
-	}
+	auto rootEquation = this->buildRootEquation(initialEquation);
+	this->equationDisplay = new EquationEditorWidget(rootEquation, 0, false);
 
 	// Bottom text
-	QLabel* equationInfo= new QLabel(tr("You can also use right-click on equation members to edit"));
+	auto equationInfoText = tr("Members outlined in green can be edited by clicking on them")
+	                         + "<br>"
+	                         + tr("Right-click on any equation members to edit");
+	auto equationInfo = new QLabel(equationInfoText);
+	equationInfo->setAlignment(Qt::AlignCenter);
 
 	//
 	// Buttons
-	QHBoxLayout* buttonsLayout = new QHBoxLayout();
+	auto buttonsLayout = new QHBoxLayout();
 
-	QPushButton* buttonOK = new QPushButton(tr("OK"));
+	auto buttonOK     = new QPushButton(tr("OK"));
+	auto buttonCancel = new QPushButton(tr("Cancel"));
+
 	buttonsLayout->addWidget(buttonOK);
-	connect(buttonOK, &QAbstractButton::clicked, this, &EquationEditorDialog::accept);
-
-	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
 	buttonsLayout->addWidget(buttonCancel);
-	connect(buttonCancel, &QAbstractButton::clicked, this, &EquationEditorDialog::reject);
+
+	connect(buttonOK,     &QPushButton::clicked, this, &EquationEditorDialog::accept);
+	connect(buttonCancel, &QPushButton::clicked, this, &EquationEditorDialog::reject);
 
 	//
 	// Build complete rendering
-	QVBoxLayout* mainLayout = new QVBoxLayout(this);
+	auto mainLayout = new QVBoxLayout(this);
 
 	mainLayout->addWidget(templatesTitle, 0, Qt::AlignHCenter);
-	mainLayout->addWidget(templatesScrollArea);
+	mainLayout->addWidget(this->templatesScrollArea);
 	mainLayout->addWidget(equationTitle, 0, Qt::AlignHCenter);
 	mainLayout->addWidget(this->equationDisplay, 0, Qt::AlignHCenter);
 	mainLayout->addWidget(equationInfo, 0, Qt::AlignHCenter);
@@ -109,7 +102,25 @@ EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEqu
 
 shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
 {
-	return this->equationDisplay->getLogicEquation();
+	auto rootEquation = this->equationDisplay->getLogicEquation();
+
+	// Root equation is supposed to be an identity
+	if (rootEquation->getOperatorType() != OperatorType_t::identity) return nullptr;
+
+	// Make sure the operand is valid: it may have been deleted
+	auto rootEquationOperand = rootEquation->getOperand(0);
+	if (rootEquationOperand == nullptr) return nullptr;
+
+
+	if (rootEquationOperand->getSource() == OperandSource_t::equation)
+	{
+		// Unwrap the equation
+		return rootEquationOperand->getEquation();
+	}
+	else
+	{
+		return rootEquation;
+	}
 }
 
 void EquationEditorDialog::keyPressEvent(QKeyEvent* event)
@@ -131,7 +142,7 @@ void EquationEditorDialog::keyPressEvent(QKeyEvent* event)
 		}
 	}
 
-	if (transmitEvent)
+	if (transmitEvent == true)
 	{
 		QDialog::keyPressEvent(event);
 	}
@@ -141,8 +152,87 @@ void EquationEditorDialog::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
 	{
-		this->equationDisplay->validEdit();
+		bool editValidated = this->equationDisplay->validEdit();
+
+		if (editValidated == false)
+		{
+			event->ignore();
+		}
+	}
+	else
+	{
+		event->ignore();
+	}
+}
+
+void EquationEditorDialog::showEvent(QShowEvent* event)
+{
+	QDialog::showEvent(event);
+
+	//
+	// Scroll area size
+
+	// Scroll area minimal width
+	int templatesScrollAreaMinWidth = this->templatesWidget->width();
+	templatesScrollAreaMinWidth += this->templatesScrollArea->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+	templatesScrollAreaMinWidth += 2 * this->templatesScrollArea->frameWidth();
+	templatesScrollAreaMinWidth += 12; // TODO: what am I missing that I still have to add 12 here for certain screens???
+	this->templatesScrollArea->setMinimumWidth(templatesScrollAreaMinWidth);
+
+	// Scroll area maximal height
+	int templatesScrollAreaMaxHeight = this->templatesWidget->height();
+	templatesScrollAreaMaxHeight += 2 * this->templatesScrollArea->frameWidth();
+	this->templatesScrollArea->setMaximumHeight(templatesScrollAreaMaxHeight);
+
+	// Make sure the initial height is at least 25% of the screen
+	auto templatesScrollAreaMinHeight = 0.25 * this->screen()->size().height();
+	if (templatesScrollAreaMinHeight > templatesScrollAreaMaxHeight)
+	{
+		templatesScrollAreaMinHeight = templatesScrollAreaMaxHeight;
+	}
+	this->templatesScrollArea->setMinimumHeight(templatesScrollAreaMinHeight);
+
+	//
+	// Window size
+
+	// Try to set the window size so that we can display everything
+	int windowHeightWithoutScrollArea = this->frameGeometry().height() - this->templatesScrollArea->height();
+	int windowHeightWithFullScrollArea = windowHeightWithoutScrollArea + templatesScrollAreaMaxHeight;
+	int screenAvailableHeight = this->screen()->availableGeometry().height();
+	if (windowHeightWithFullScrollArea <= 0.9 * screenAvailableHeight)
+	{
+		this->setMinimumHeight(windowHeightWithFullScrollArea);
+	}
+	else
+	{
+		this->setMinimumHeight(0.9 * screenAvailableHeight);
+	}
+}
+
+shared_ptr<Equation> EquationEditorDialog::buildRootEquation(shared_ptr<const Equation> initialEquation)
+{
+	// The root equation will *always* be an identity equation,
+	// so that equation parts always have a parent equation.
+	shared_ptr<Equation> rootEquation;
+	if (initialEquation != nullptr)
+	{
+		if (initialEquation->getOperatorType() == OperatorType_t::identity)
+		{
+			// Equation is already an identity (either variable or constant)
+			rootEquation = initialEquation->clone();
+		}
+		else
+		{
+			// This is a standard equation: add identity wrapper
+			rootEquation = make_shared<Equation>(OperatorType_t::identity);
+			rootEquation->setOperand(0, initialEquation->clone());
+		}
+	}
+	else
+	{
+		// The equation is currently undefined: define an empty identity
+		rootEquation = make_shared<Equation>(OperatorType_t::identity);
 	}
 
-	QDialog::mousePressEvent(event);
+	return rootEquation;
 }

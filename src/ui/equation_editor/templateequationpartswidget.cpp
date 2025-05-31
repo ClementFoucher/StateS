@@ -24,13 +24,16 @@
 
 // Qt classes
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QBoxLayout>
 
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
 #include "equation.h"
+#include "variable.h"
+#include "constanteditorwidget.h"
 #include "equationeditorwidget.h"
+#include "variableeditorwidget.h"
 
 
 TemplateEquationPartsWidget::TemplateEquationPartsWidget(QWidget* parent) :
@@ -93,10 +96,7 @@ QWidget* TemplateEquationPartsWidget::getInputs() const
 	inputsLayout->addWidget(inputsTitle, 0, Qt::AlignHCenter);
 
 	// Machine inputs
-	for (auto& inputId : inputIds)
-	{
-		inputsLayout->addWidget(new EquationEditorWidget(inputId, -1, true));
-	}
+	this->buildVariableList(inputsLayout, inputIds);
 
 	return inputsWidget;
 }
@@ -120,10 +120,7 @@ QWidget* TemplateEquationPartsWidget::getInternalVariables() const
 	internalVariablesLayout->addWidget(internalVariablesTitle, 0, Qt::AlignHCenter);
 
 	// Machine internal variables
-	for (auto& variableId : internalVariableIds)
-	{
-		internalVariablesLayout->addWidget(new EquationEditorWidget(variableId, -1, true));
-	}
+	this->buildVariableList(internalVariablesLayout, internalVariableIds);
 
 	return internalVariablesWidget;
 }
@@ -144,15 +141,11 @@ QWidget* TemplateEquationPartsWidget::getConstants() const
 	constantsLayout->addWidget(constantsTitle, 0, Qt::AlignHCenter);
 
 	// Custom constant for bit vectors
-	auto constantEquation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
-	constantEquation->setOperand(0, LogicValue::getNullValue());
-	constantsLayout->addWidget(new EquationEditorWidget(constantEquation, -1, true));
+	auto bitVectorConstant = new ConstantEditorWidget(LogicValue::getValue0(1), 0, true, constantsWidget);
+	constantsLayout->addWidget(bitVectorConstant);
 
 	// Machine constants (which are actually variables)
-	for (auto& constantId : machine->getConstantsIds())
-	{
-		constantsLayout->addWidget(new EquationEditorWidget(constantId, -1, true));
-	}
+	this->buildVariableList(constantsLayout, machine->getConstantsIds());
 
 	return constantsWidget;
 }
@@ -169,24 +162,24 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	operatorsLayout->addWidget(operatorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
 
 	// Operators
-	auto notOperator    = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::notOp),    -1, true, operatorsWidget);
-	auto concatOperator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::concatOp), -1, true, operatorsWidget);
-	auto equalOperator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::equalOp),  -1, true, operatorsWidget);
-	auto diffOperator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::diffOp),   -1, true, operatorsWidget);
+	auto notOperator    = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::notOp),    0, true, operatorsWidget);
+	auto concatOperator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::concatOp), 0, true, operatorsWidget);
+	auto equalOperator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::equalOp),  0, true, operatorsWidget);
+	auto diffOperator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::diffOp),   0, true, operatorsWidget);
 
-	auto and2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  2), -1, true, operatorsWidget);
-	auto or2Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   2), -1, true, operatorsWidget);
-	auto xor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  2), -1, true, operatorsWidget);
-	auto nand2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 2), -1, true, operatorsWidget);
-	auto nor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  2), -1, true, operatorsWidget);
-	auto xnor2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 2), -1, true, operatorsWidget);
+	auto and2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  2), 0, true, operatorsWidget);
+	auto or2Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   2), 0, true, operatorsWidget);
+	auto xor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  2), 0, true, operatorsWidget);
+	auto nand2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 2), 0, true, operatorsWidget);
+	auto nor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  2), 0, true, operatorsWidget);
+	auto xnor2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 2), 0, true, operatorsWidget);
 
-	auto and3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  3), -1, true, operatorsWidget);
-	auto or3Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   3), -1, true, operatorsWidget);
-	auto xor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  3), -1, true, operatorsWidget);
-	auto nand3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 3), -1, true, operatorsWidget);
-	auto nor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  3), -1, true, operatorsWidget);
-	auto xnor3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 3), -1, true, operatorsWidget);
+	auto and3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  3), 0, true, operatorsWidget);
+	auto or3Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   3), 0, true, operatorsWidget);
+	auto xor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  3), 0, true, operatorsWidget);
+	auto nand3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 3), 0, true, operatorsWidget);
+	auto nor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  3), 0, true, operatorsWidget);
+	auto xnor3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 3), 0, true, operatorsWidget);
 
 	// 1 per row
 	operatorsLayout->addWidget(notOperator,    1, 0, 1, 2);
@@ -211,4 +204,35 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	operatorsLayout->addWidget(xnor3Operator,  9, 1, 1, 1);
 
 	return operatorsWidget;
+}
+
+void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<componentId_t> variableList) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+
+	for (auto varId : variableList)
+	{
+		auto variableEditorWidget = new VariableEditorWidget(varId, 0, true);
+
+		auto variable = machine->getVariable(varId);
+		if (variable->getSize() > 1)
+		{
+			auto hLayout = new QHBoxLayout();
+			hLayout->addWidget(variableEditorWidget);
+
+			auto rangeEquation = make_shared<Equation>(OperatorType_t::extractOp);
+			rangeEquation->setOperand(0, varId);
+			rangeEquation->setRange(0);
+			auto rangeEditorWidget = new EquationEditorWidget(rangeEquation, 0, true);
+			hLayout->addWidget(rangeEditorWidget);
+
+			layout->addLayout(hLayout);
+		}
+		else
+		{
+			layout->addWidget(variableEditorWidget);
+		}
+	}
 }

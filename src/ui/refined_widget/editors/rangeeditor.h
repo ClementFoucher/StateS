@@ -23,7 +23,7 @@
 #define RANGEEDITOR_H
 
 // Parent
-#include "editableequation.h"
+#include <QWidget>
 
 // C++ classes
 #include <memory>
@@ -37,9 +37,18 @@ class LineWithUpDownButtonsEditor;
 class Equation;
 
 
-class RangeEditor : public EditableEquation
+class RangeEditor : public QWidget
 {
 	Q_OBJECT
+
+	/////
+	// Type declarations
+public:
+	enum class Mode_t
+	{
+		compact_mode,
+		editor_mode
+	};
 
 	/////
 	// Constructors/destructors
@@ -49,29 +58,39 @@ public:
 	/////
 	// Object functions
 public:
-	virtual bool validEdit()            override;
-	virtual bool cancelEdit()           override;
-	virtual void setEdited(bool edited) override;
+	bool setMode(Mode_t newMode, bool saveChanges = false);
 
-signals:
-	void rangeLChanged(int newValue);
-	void rangeRChanged(int newValue);
+	void setExtractSingleBit();
+	void setExtractRange();
+
+	void refresh();
 
 protected:
-	virtual void mousePressEvent      (QMouseEvent* event) override;
-	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
-	virtual void mouseMoveEvent       (QMouseEvent* event) override;
-	virtual void mouseReleaseEvent    (QMouseEvent* event) override;
-	virtual void wheelEvent           (QWheelEvent* event) override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
+	virtual void wheelEvent     (QWheelEvent* event) override;
+
+	virtual void keyPressEvent(QKeyEvent* event) override;
+
+private slots:
+	void setRangeL(uint newValue);
+	void setRangeR(uint newValue);
+
+	void lEditorValueChangedEventHandler(int newValue);
+	void rEditorValueChangedEventHandler(int newValue);
 
 private:
-	void update();
-	void reset();
+	void clear();
+	void build();
+
+	/////
+	// Signals
+signals:
+	void beginEditEvent();
 
 	/////
 	// Object variables
 private:
-	weak_ptr<Equation> equation;
+	shared_ptr<Equation> equation;
 
 	QLabel* rangeLText = nullptr;
 	QLabel* rangeRText = nullptr;
@@ -79,9 +98,7 @@ private:
 	LineWithUpDownButtonsEditor* rangeLEditor = nullptr;
 	LineWithUpDownButtonsEditor* rangeREditor = nullptr;
 
-	bool editMode = false;
-
-	bool inMouseEvent = false;
+	Mode_t mode = Mode_t::compact_mode;
 
 };
 

@@ -83,7 +83,7 @@ enum class EquationComputationFailureCause_t
 {
 	nofail,
 	nullOperand,
-	incompleteOperand,
+	invalidOperand,
 	sizeMismatch,
 	missingParameter,
 	incorrectParameter

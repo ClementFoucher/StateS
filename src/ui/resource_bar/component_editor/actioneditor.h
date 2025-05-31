@@ -129,6 +129,7 @@ private:
 	RangeEditorDialog* rangeEditorDialog = nullptr;
 
 	QList<weak_ptr<ActionOnVariable>> latestSelection;
+	shared_ptr<ActionOnVariable> actionBeingEdited;
 
 };
 

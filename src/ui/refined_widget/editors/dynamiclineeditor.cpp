@@ -57,7 +57,14 @@ void DynamicLineEditor::setErroneous(bool erroneous)
 	}
 	else
 	{
-		this->setStyleSheet(QString());
+		if (this->hasFocus() == true)
+		{
+			this->setStyleSheet(DynamicLineEditor::editStyle);
+		}
+		else
+		{
+			this->setStyleSheet(QString());
+		}
 	}
 }
 

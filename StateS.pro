@@ -99,12 +99,14 @@ SOURCES += \
 	src/ui/dialogs/rangeeditordialog.cpp \
 	src/ui/dialogs/vhdlexportdialog.cpp \
 	src/ui/equation_editor/constanteditorwidget.cpp \
-	src/ui/equation_editor/editableequation.cpp \
 	src/ui/equation_editor/equationeditordialog.cpp \
 	src/ui/equation_editor/equationeditorwidget.cpp \
+	src/ui/equation_editor/equationparteditorwidget.cpp \
 	src/ui/equation_editor/equationpartmimedata.cpp \
 	src/ui/equation_editor/inverterbarwidget.cpp \
+	src/ui/equation_editor/nulleditorwidget.cpp \
 	src/ui/equation_editor/templateequationpartswidget.cpp \
+	src/ui/equation_editor/variableeditorwidget.cpp \
 	src/ui/refined_widget/contextmenu.cpp \
 	src/ui/refined_widget/reactivebutton.cpp \
 	src/ui/refined_widget/checkboxhtml.cpp \
@@ -117,6 +119,7 @@ SOURCES += \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/refined_widget/editors/rangeeditor.cpp \
 	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.cpp \
+	src/ui/refined_widget/editors/valueeditor.cpp \
 	src/ui/resource_bar/hinttab.cpp \
 	src/ui/resource_bar/abouttab.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
@@ -233,12 +236,14 @@ HEADERS += \
 	src/ui/dialogs/rangeeditordialog.h \
 	src/ui/dialogs/vhdlexportdialog.h \
 	src/ui/equation_editor/constanteditorwidget.h \
-	src/ui/equation_editor/editableequation.h \
 	src/ui/equation_editor/equationeditordialog.h \
 	src/ui/equation_editor/equationeditorwidget.h \
+	src/ui/equation_editor/equationparteditorwidget.h \
 	src/ui/equation_editor/equationpartmimedata.h \
 	src/ui/equation_editor/inverterbarwidget.h \
+	src/ui/equation_editor/nulleditorwidget.h \
 	src/ui/equation_editor/templateequationpartswidget.h \
+	src/ui/equation_editor/variableeditorwidget.h \
 	src/ui/refined_widget/contextmenu.h \
 	src/ui/refined_widget/reactivebutton.h \
 	src/ui/refined_widget/checkboxhtml.h \
@@ -251,6 +256,7 @@ HEADERS += \
 	src/ui/refined_widget/editors/linewithupdownbuttonseditor.h \
 	src/ui/refined_widget/editors/rangeeditor.h \
 	src/ui/refined_widget/editors/selfmanageddynamiclineeditor.h \
+	src/ui/refined_widget/editors/valueeditor.h \
 	src/ui/resource_bar/hinttab.h \
 	src/ui/resource_bar/abouttab.h \
 	src/ui/resource_bar/resourcebar.h \

@@ -71,6 +71,7 @@ public:
 
 	EquationComputationFailureCause_t getComputationFailureCause() const;
 
+	void setOperatorType(OperatorType_t newOperator);
 	OperatorType_t getOperatorType() const;
 
 	bool isInverted() const;

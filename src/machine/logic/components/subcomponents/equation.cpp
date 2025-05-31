@@ -222,6 +222,14 @@ EquationComputationFailureCause_t Equation::getComputationFailureCause() const
 	return this->failureCause;
 }
 
+void Equation::setOperatorType(OperatorType_t newOperator)
+{
+	this->operatorType = newOperator;
+
+	this->checkAndComputeInitialValue();
+	emit this->equationTextChangedEvent();
+}
+
 OperatorType_t Equation::getOperatorType() const
 {
 	return this->operatorType;
@@ -443,7 +451,7 @@ void Equation::checkAndComputeInitialValue()
 			auto currentOperandValue = currentOperand->getInitialValue();
 			if (currentOperandValue.getSize() == 0)
 			{
-				this->failureCause = EquationComputationFailureCause_t::incompleteOperand;
+				this->failureCause = EquationComputationFailureCause_t::invalidOperand;
 				doCompute = false;
 				break;
 			}

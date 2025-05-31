@@ -90,30 +90,23 @@ LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const
 	connect(buttonUp,   &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::up);
 	connect(buttonDown, &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::down);
 
-	connect(this->lineEdit, &DynamicLineEditor::textEdited, this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
+	connect(this->lineEdit, &DynamicLineEditor::textChanged, this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
 }
 
-void LineWithUpDownButtonsEditor::updateContent(int min, int max, const QString& text)
+int LineWithUpDownButtonsEditor::getValue() const
 {
-	delete this->validator;
-	this->validator = new QIntValidator(min, max);
-	this->lineEdit->setValidator(this->validator);
-
-	QString initialText = text;
-	int pos;
-	if (this->validator->validate(initialText, pos) != QValidator::State::Invalid)
-	{
-		this->lineEdit->setText(text);
-	}
-	else
-	{
-		this->lineEdit->setText(QString());
-	}
+	auto currentText = this->lineEdit->text();
+	return currentText.toInt();
 }
 
-void LineWithUpDownButtonsEditor::edit()
+void LineWithUpDownButtonsEditor::setMinValue(int min)
 {
-	this->lineEdit->setFocus();
+	this->validator->setBottom(min);
+}
+
+void LineWithUpDownButtonsEditor::setMaxValue(int max)
+{
+	this->validator->setTop(max);
 }
 
 void LineWithUpDownButtonsEditor::wheelEvent(QWheelEvent* event)
@@ -160,9 +153,29 @@ void LineWithUpDownButtonsEditor::keyReleaseEvent(QKeyEvent* event)
 	}
 }
 
+void LineWithUpDownButtonsEditor::focusInEvent(QFocusEvent*)
+{
+	if (this->lineEdit == nullptr) return;
+
+	this->lineEdit->setFocus();
+}
+
 void LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler(const QString& newText)
 {
-	emit this->valueChanged(newText.toInt());
+	int pos;
+	QString text2 = newText;
+	auto valid = this->validator->validate(text2, pos);
+
+	if (valid == QValidator::State::Acceptable)
+	{
+		this->lineEdit->setErroneous(false);
+
+		emit this->valueChanged(newText.toInt());
+	}
+	else
+	{
+		this->lineEdit->setErroneous(true);
+	}
 }
 
 void LineWithUpDownButtonsEditor::up()
@@ -173,7 +186,6 @@ void LineWithUpDownButtonsEditor::up()
 	if (this->validator->validate(currentText, pos) != QValidator::State::Acceptable)
 	{
 		this->lineEdit->setText(QString::number(this->validator->bottom()));
-		emit this->valueChanged(this->validator->bottom());
 	}
 	else
 	{
@@ -184,7 +196,6 @@ void LineWithUpDownButtonsEditor::up()
 		if (this->validator->validate(newText, pos) == QValidator::State::Acceptable)
 		{
 			this->lineEdit->setText(newText);
-			emit this->valueChanged(currentValue);
 		}
 	}
 }
@@ -197,7 +208,6 @@ void LineWithUpDownButtonsEditor::down()
 	if (this->validator->validate(currentText, pos) != QValidator::State::Acceptable)
 	{
 		this->lineEdit->setText(QString::number(this->validator->top()));
-		emit this->valueChanged(this->validator->top());
 	}
 	else
 	{
@@ -208,7 +218,6 @@ void LineWithUpDownButtonsEditor::down()
 		if (this->validator->validate(newText, pos) == QValidator::State::Acceptable)
 		{
 			this->lineEdit->setText(QString::number(currentValue));
-			emit this->valueChanged(currentValue);
 		}
 	}
 }

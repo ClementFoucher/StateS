@@ -51,8 +51,7 @@ public:
 	/////
 	// Object functions
 public:
-	void addTitle(const QString& titleText);
-	void addSubTitle(const QString& titleText);
+	void addTitle(const QString& titleText, const QStringList& subtitlesText = QStringList());
 	void setListStyle();
 
 };

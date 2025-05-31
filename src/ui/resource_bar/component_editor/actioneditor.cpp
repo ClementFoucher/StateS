@@ -408,7 +408,6 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 
 	int oldRangeL = actionOnVariable->getActionRangeL();
 	int oldRangeR = actionOnVariable->getActionRangeR();
-	QModelIndex index;
 
 	int newRangeL = -1;
 	int newRangeR = -1;
@@ -419,12 +418,14 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	case ContextAction::Cancel:
 		break;
 	case ContextAction::EditValue:
-		index = this->actionTable->model()->index(actionRank, 2);
+	{
+		auto index = this->actionTable->model()->index(actionRank, 2);
 
 		this->actionTable->setCurrentIndex(index);
 		this->actionTable->edit(index);
 
 		break;
+	}
 	case ContextAction::DeleteAction:
 		actuator->removeAction(actionRank);
 		machineManager->notifyMachineEdited();
@@ -479,7 +480,8 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::AffectEditRange:
-		this->rangeEditorDialog = new RangeEditorDialog(actionOnVariable, this);
+		this->actionBeingEdited = actionOnVariable;
+		this->rangeEditorDialog = new RangeEditorDialog(actionOnVariable->getVariableActedOnId(), oldRangeL, oldRangeR, this);
 		connect(this->rangeEditorDialog, &RangeEditorDialog::finished, this, &ActionEditor::rangeEditorClosedEventHandler);
 
 		this->rangeEditorDialog->open();
@@ -595,8 +597,7 @@ void ActionEditor::rangeEditorClosedEventHandler(int result)
 {
 	if (this->rangeEditorDialog == nullptr) return;
 
-	shared_ptr<ActionOnVariable> actionOnVariable = this->rangeEditorDialog->getAction();
-	if (actionOnVariable == nullptr) return;
+	if (this->actionBeingEdited == nullptr) return;
 
 
 	if (result == QDialog::Accepted)
@@ -604,8 +605,11 @@ void ActionEditor::rangeEditorClosedEventHandler(int result)
 		int newRangeL = this->rangeEditorDialog->getRangeL();
 		int newRangeR = this->rangeEditorDialog->getRangeR();
 
-		actionOnVariable->setActionRange(newRangeL, newRangeR);
+		this->actionBeingEdited->setActionRange(newRangeL, newRangeR);
+		machineManager->notifyMachineEdited();
 	}
+
+	this->actionBeingEdited = nullptr;
 
 	delete this->rangeEditorDialog;
 	this->rangeEditorDialog = nullptr;

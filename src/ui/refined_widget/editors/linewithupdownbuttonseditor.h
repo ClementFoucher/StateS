@@ -44,14 +44,18 @@ public:
 	/////
 	// Object functions
 public:
-	void updateContent(int min, int max, const QString& text);
-	void edit();
+	int getValue() const;
+
+	void setMinValue(int min);
+	void setMaxValue(int max);
 
 protected:
 	virtual void wheelEvent(QWheelEvent* event) override;
 
 	virtual void keyPressEvent  (QKeyEvent* event) override;
 	virtual void keyReleaseEvent(QKeyEvent* event) override;
+
+	virtual void focusInEvent(QFocusEvent*) override;
 
 private slots:
 	void textUpdatedByUserEventHandler(const QString& newText);

@@ -25,6 +25,7 @@
 // Qt classes
 #include <QLabel>
 #include <QWidgetAction>
+#include <QVBoxLayout>
 
 
 const QString ContextMenu::defaultStyle("QMenu {border: 1px solid}");
@@ -63,28 +64,39 @@ ContextMenu::ContextMenu(QWidget* parent) :
 	this->setToolTipsVisible(true);
 }
 
-void ContextMenu::addTitle(const QString& titleText)
+void ContextMenu::addTitle(const QString& titleText, const QStringList& subtitlesText)
 {
-	QLabel* title = new QLabel("<b>" + titleText + "</b>");
+	auto action = new QWidgetAction(this);
+
+	auto title = new QLabel("<b>" + titleText + "</b>");
 	title->setAlignment(Qt::AlignCenter);
-	title->setMinimumHeight(50);
-	title->setMargin(10);
 
-	QWidgetAction* a = new QWidgetAction(this);
-	a->setDefaultWidget(title);
-	this->addAction(a);
-}
+	if (subtitlesText.isEmpty() == true)
+	{
+		title->setMinimumHeight(50);
+		action->setDefaultWidget(title);
+	}
+	else
+	{
+		title->setMinimumHeight(30);
 
-void ContextMenu::addSubTitle(const QString& titleText)
-{
-	QLabel* subtitle = new QLabel(titleText);
-	subtitle->setAlignment(Qt::AlignCenter);
-	subtitle->setMinimumHeight(40);
-	subtitle->setMargin(10);
+		auto titleContainer = new QWidget();
+		auto titleLayout = new QVBoxLayout(titleContainer);
+		titleLayout->addWidget(title);
 
-	QWidgetAction* a = new QWidgetAction(this);
-	a->setDefaultWidget(subtitle);
-	this->addAction(a);
+		for (auto& subtitleText : subtitlesText)
+		{
+			auto subtitle = new QLabel(subtitleText);
+			subtitle->setAlignment(Qt::AlignCenter);
+			subtitle->setMinimumHeight(10);
+			titleLayout->addWidget(subtitle);
+		}
+
+		action->setDefaultWidget(titleContainer);
+	}
+
+	this->addAction(action);
+	this->addSeparator();
 }
 
 void ContextMenu::setListStyle()

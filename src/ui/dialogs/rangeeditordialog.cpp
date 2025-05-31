@@ -24,57 +24,102 @@
 
 // Qt classes
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include <QPushButton>
+#include <QRadioButton>
 
 // StateS classes
+#include "machinemanager.h"
+#include "machine.h"
 #include "equation.h"
-#include "equationeditorwidget.h"
-#include "actiononvariable.h"
+#include "variable.h"
+#include "rangeeditor.h"
 
 
-RangeEditorDialog::RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent) :
+RangeEditorDialog::RangeEditorDialog(componentId_t variableId, int rangeL, int rangeR, QWidget* parent) :
 	StatesDialog(parent)
 {
-	this->action = action;
-	int rangeL = action->getActionRangeL();
-	int rangeR = action->getActionRangeR();
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
 
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+
+	//
+	// Build object
 	this->setWindowTitle(tr("Edit range"));
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
+	this->equation = make_shared<Equation>(OperatorType_t::extractOp, 1);
+	this->equation->setOperand(0, variableId);
+	this->equation->setRange(rangeL, rangeR);
 
-	QLabel* title;
-
+	//
+	// Title
 	if (rangeR == -1)
 	{
-		title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>", this);
+		this->title = new QLabel("<b>" + tr("Choose extracted bit") + "</b>");
 	}
 	else
 	{
-		title = new QLabel("<b>" + tr("Choose range") + "</b>", this);
+		this->title = new QLabel("<b>" + tr("Choose extracted range") + "</b>");
 	}
-	title->setAlignment(Qt::AlignCenter);
+	this->title->setAlignment(Qt::AlignCenter);
+
+	//
+	// Equation
+	auto variableName = new QLabel(variable->getName());
+	variableName->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+
+	this->rangeExtractor = new RangeEditor(this->equation);
+
+	auto extractorLayout = new QHBoxLayout();
+	extractorLayout->addStretch();
+	extractorLayout->addWidget(variableName);
+	extractorLayout->addWidget(this->rangeExtractor);
+	extractorLayout->addStretch();
+
+	//
+	// Extractor type
+	auto extractSingleRadioButton = new QRadioButton(tr("Extract single bit"));
+	auto extractRangeRadioButton  = new QRadioButton(tr("Extract range"));
+
+	if (rangeR == -1)
+	{
+		extractSingleRadioButton->setChecked(true);
+	}
+	else
+	{
+		extractRangeRadioButton->setChecked(true);
+	}
+
+	connect(extractSingleRadioButton, &QRadioButton::toggled, this, &RangeEditorDialog::extractSingleBitSelectedEventHandler);
+	connect(extractRangeRadioButton,  &QRadioButton::toggled, this, &RangeEditorDialog::extractRangeSelectedEventHandler);
+
+	auto extractorTypeLayout = new QHBoxLayout();
+	extractorTypeLayout->addWidget(extractSingleRadioButton);
+	extractorTypeLayout->addWidget(extractRangeRadioButton);
+
+	//
+	// Buttons
+	auto okButton     = new QPushButton(tr("OK"));
+	auto cancelButton = new QPushButton(tr("Cancel"));
+
+	connect(okButton,     &QPushButton::clicked, this, &QDialog::accept);
+	connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
+
+	auto buttonsLayout = new QHBoxLayout();
+	buttonsLayout->addWidget(okButton);
+	buttonsLayout->addWidget(cancelButton);
+
+	//
+	// Build complete rendering
+	auto layout = new QVBoxLayout(this);
+
 	layout->addWidget(title);
-
-	this->equation = shared_ptr<Equation>(new Equation(OperatorType_t::extractOp, 1));
-	this->equation->setRange(rangeL, rangeR);
-	this->equation->setOperand(0, action->getVariableActedOnId());
-
-	auto graphicEquation = new EquationEditorWidget(this->equation, -1, false, this);
-	graphicEquation->setVariableLock(true);
-	layout->addWidget(graphicEquation);
-
-	QHBoxLayout* buttonsLayout = new QHBoxLayout();
+	layout->addLayout(extractorLayout);
+	layout->addLayout(extractorTypeLayout);
 	layout->addLayout(buttonsLayout);
-
-	QPushButton* buttonOK = new QPushButton(tr("OK"), this);
-	connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
-	buttonsLayout->addWidget(buttonOK);
-
-	QPushButton* buttonCancel = new QPushButton(tr("Cancel"), this);
-	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
-	buttonsLayout->addWidget(buttonCancel);
 }
 
 int RangeEditorDialog::getRangeL() const
@@ -87,7 +132,22 @@ int RangeEditorDialog::getRangeR() const
 	return this->equation->getRangeR();
 }
 
-shared_ptr<ActionOnVariable> RangeEditorDialog::getAction() const
+void RangeEditorDialog::extractSingleBitSelectedEventHandler(bool checked)
 {
-	return this->action;
+	if (checked == true)
+	{
+		this->rangeExtractor->setExtractSingleBit();
+
+		this->title->setText("<b>" + tr("Choose extracted bit") + "</b>");
+	}
+}
+
+void RangeEditorDialog::extractRangeSelectedEventHandler(bool checked)
+{
+	if (checked == true)
+	{
+		this->rangeExtractor->setExtractRange();
+
+		this->title->setText("<b>" + tr("Choose extracted range") + "</b>");
+	}
 }

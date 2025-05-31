@@ -29,9 +29,13 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+class QLabel;
+
 // StateS classes
+#include <statestypes.h>
 class Equation;
-class ActionOnVariable;
+class RangeEditor;
 
 
 class RangeEditorDialog : public StatesDialog
@@ -41,7 +45,7 @@ class RangeEditorDialog : public StatesDialog
 	/////
 	// Constructors/destructors
 public:
-	RangeEditorDialog(shared_ptr<ActionOnVariable> action, QWidget* parent = nullptr);
+	RangeEditorDialog(componentId_t variableId, int rangeL, int rangeR, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -49,14 +53,17 @@ public:
 	int getRangeL() const;
 	int getRangeR() const;
 
-	shared_ptr<ActionOnVariable> getAction() const;
+private slots:
+	void extractSingleBitSelectedEventHandler(bool checked);
+	void extractRangeSelectedEventHandler(bool checked);
 
 	/////
 	// Object variables
 private:
 	shared_ptr<Equation> equation;
 
-	shared_ptr<ActionOnVariable> action;
+	QLabel* title = nullptr;
+	RangeEditor* rangeExtractor = nullptr;
 
 };
 
