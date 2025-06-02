@@ -49,7 +49,7 @@
 
 QString StateS::getVersion()
 {
-	return STATES_VERSION;
+	return QString(STATES_VERSION_MAJOR) + "." + QString(STATES_VERSION_MINOR) + "." + QString(STATES_VERSION_PATCH);
 }
 
 QString StateS::getCopyrightYears()

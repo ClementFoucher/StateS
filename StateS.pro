@@ -6,8 +6,10 @@
 
 ###
 # Update these
-VERSION = 0.4.7
-DATE = 2014-2025
+VERSION_MAJOR = 0
+VERSION_MINOR = 4
+VERSION_PATCH = 7
+DATE          = 2014-2025
 # Also remember to update version in README.md, known_bugs.txt and AppImageBuilder.yml
 ###
 
@@ -28,9 +30,12 @@ win32: RC_ICONS = art/ico/StateS.ico
 TARGET = StateS
 TEMPLATE = app
 
+VERSION = $$VERSION_MAJOR.$$VERSION_MINOR.$$VERSION_PATCH
 QMAKE_TARGET_COPYRIGHT = copyright $$DATE Clément Foucher
 
-DEFINES += STATES_VERSION=\\\"$$VERSION\\\"
+DEFINES += STATES_VERSION_MAJOR=\\\"$$VERSION_MAJOR\\\"
+DEFINES += STATES_VERSION_MINOR=\\\"$$VERSION_MINOR\\\"
+DEFINES += STATES_VERSION_PATCH=\\\"$$VERSION_PATCH\\\"
 DEFINES += STATES_YEARS=\\\"$$DATE\\\"
 
 CONFIG += c++17
