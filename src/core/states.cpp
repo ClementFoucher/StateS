@@ -42,6 +42,7 @@
 #include "xmlimportexportbuilder.h"
 #include "machinestatus.h"
 #include "graphicattributes.h"
+#include "statesxmlanalyzer.h"
 
 
 /////
@@ -176,40 +177,89 @@ void StateS::clearMachine()
  */
 void StateS::loadMachine(const QString& path)
 {
-	QFileInfo file(path);
+	QFileInfo fileInfo(path);
+	QList<QString> issues;
 
-	if ( (file.exists()) && ( (file.permissions() & QFileDevice::ReadUser) != 0) )
+	if (fileInfo.exists() == false)
 	{
-		// Build file parser
-		shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildFileParser(shared_ptr<QFile>(new QFile(path)));
-		if (parser == nullptr)
-		{
-			QList<QString> errorToDisplay;
-			errorToDisplay.append(tr("StateS couldn't read the file content."));
-			errorToDisplay.append(tr("The file may not be a correct StateS save file."));
-			this->displayErrorMessages(tr("Issues occured reading the file. StateS was unable to load machine."), errorToDisplay);
-			return;
-		}
-
-		// Parse and check for warnings
-		parser->doParse();
-		QList<QString> issues = parser->getIssues();
-		if (issues.isEmpty() == false)
-		{
-			this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), issues);
-		}
-
-		// Update machine
-		machineManager->clearMachine();
-		machineManager->setMachine(parser->getMachine(), parser->getGraphicMachineConfiguration());
-		this->statesUi->setView(parser->getViewConfiguration());
-
-		// Update status
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-		machineStatus->setHasSaveFile(true);
-		machineStatus->setUnsavedFlag(false);
-		machineStatus->setSaveFilePath(path);
+		issues.append(tr("Error!") + " " + tr("StateS couldn't find the selected file."));
+		this->displayErrorMessages(tr("Issues occured reading the file. StateS was unable to load machine."), issues);
+		return;
 	}
+
+	if ( (fileInfo.permissions() & QFileDevice::ReadUser) == 0)
+	{
+		issues.append(tr("Error!") + " " + tr("StateS couldn't read the selected file."));
+		issues.append("    " + tr("Please check file permissions and make sure you have enough privileges to read it."));
+		this->displayErrorMessages(tr("Issues occured reading the file. StateS was unable to load machine."), issues);
+		return;
+	}
+
+	if ( (fileInfo.permissions() & QFileDevice::WriteUser) == 0)
+	{
+		issues.append(tr("Warning!") + " " + tr("This file seems to be read only. You may not be able to save your changes."));
+		issues.append("    " + tr("If you encounter an error when saving, try using \"save as\" instead of \"save\"."));
+	}
+
+	// Build file parser
+	auto file = make_shared<QFile>(path);
+	auto analyzer = make_shared<StateSXmlAnalyzer>(file);
+	shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildFileParser(file, analyzer);
+	if (parser == nullptr)
+	{
+		issues.append(tr("Error!") + " " + tr("StateS couldn't read the selected file."));
+
+		if (analyzer->getHasVersion() == true)
+		{
+			issues.append("    " + tr("While this file seems to be a valid StateS save, StateS was unable to read the file content."));
+			auto versionCompatibility = analyzer->getVersionCompatibility();
+			switch (versionCompatibility)
+			{
+			case StateSXmlAnalyzer::VersionCompatibility_t::same_version:
+				issues.append("    " + tr("The file may have been altered or is not a StateS save."));
+				break;
+			case StateSXmlAnalyzer::VersionCompatibility_t::major_newer:
+			case StateSXmlAnalyzer::VersionCompatibility_t::minor_newer:
+			case StateSXmlAnalyzer::VersionCompatibility_t::patch_newer:
+				issues.append("    " + tr("This file has been created with a newer version of StateS and is probably incompatible with this version."));
+				issues.append("    " + tr("Please use a newer version of StateS to open this file."));
+				issues.append("    " + tr("File version:") + " " + analyzer->getStateSVersion() + " - " + tr("StateS version:") + " " + StateS::getVersion());
+				break;
+			case StateSXmlAnalyzer::VersionCompatibility_t::major_older:
+			case StateSXmlAnalyzer::VersionCompatibility_t::minor_older:
+			case StateSXmlAnalyzer::VersionCompatibility_t::patch_older:
+				issues.append("    " + tr("This file has been created with an ancient version of StateS and is probably incompatible with this version."));
+				issues.append("    " + tr("File version:") + " " + analyzer->getStateSVersion() + " - " + tr("StateS version:") + " " + StateS::getVersion());
+				break;
+			}
+		}
+		else // (analyzer->getHasVersion() == false)
+		{
+			issues.append("    " + tr("This file does not seems to be a StateS save."));
+		}
+
+		this->displayErrorMessages(tr("Issues occured reading the file. StateS was unable to load machine."), issues);
+		return;
+	}
+
+	// Parse and check for warnings
+	parser->doParse();
+	issues += parser->getIssues();
+	if (issues.isEmpty() == false)
+	{
+		this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), issues);
+	}
+
+	// Update machine
+	machineManager->clearMachine();
+	machineManager->setMachine(parser->getMachine(), parser->getGraphicMachineConfiguration());
+	this->statesUi->setView(parser->getViewConfiguration());
+
+	// Update status
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	machineStatus->setHasSaveFile(true);
+	machineStatus->setUnsavedFlag(false);
+	machineStatus->setSaveFilePath(path);
 }
 
 /**

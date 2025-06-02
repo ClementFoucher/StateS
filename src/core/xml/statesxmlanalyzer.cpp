@@ -27,8 +27,7 @@
 #include <QFile>
 
 
-StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file) :
-    StateSXmlAnalyzer()
+StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file)
 {
 	if (file->isOpen() == false)
 	{
@@ -43,33 +42,76 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file) :
 	this->parse();
 }
 
-StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource) :
-    StateSXmlAnalyzer()
+StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource)
 {
 	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlSource));
 	this->parse();
 }
 
-StateSXmlAnalyzer::StateSXmlAnalyzer()
-{
-	this->type         = MachineType_t::none;
-	this->version      = "Unknown version";
-	this->xmlIsCorrect = true;
-}
-
-MachineType_t StateSXmlAnalyzer::getMachineType()
+MachineType_t StateSXmlAnalyzer::getMachineType() const
 {
 	return this->type;
 }
 
-QString StateSXmlAnalyzer::getStateSVersion()
+bool StateSXmlAnalyzer::getHasVersion() const
 {
-	return this->version;
+	if ( (this->saveVersionMajor != 0) ||
+		 (this->saveVersionMinor != 0) ||
+		 (this->saveVersionPatch != 0)
+	   )
+	{
+		return true;
+	}
+
+	return false;
 }
 
-bool StateSXmlAnalyzer::getXmlIsCorrect()
+QString StateSXmlAnalyzer::getStateSVersion() const
 {
-	return this->xmlIsCorrect;
+	return QString::number(this->saveVersionMajor, 16) + "." + QString::number(this->saveVersionMinor, 16) + "." + QString::number(this->saveVersionPatch, 16);
+}
+
+StateSXmlAnalyzer::VersionCompatibility_t StateSXmlAnalyzer::getVersionCompatibility() const
+{
+	bool ok;
+	uint current_major = QString(STATES_VERSION_MAJOR).toUInt(&ok, 16);
+	uint current_minor = QString(STATES_VERSION_MINOR).toUInt(&ok, 16);
+	uint current_patch = QString(STATES_VERSION_PATCH).toUInt(&ok, 16);
+
+	if (this->saveVersionMajor == current_major)
+	{
+		if (this->saveVersionMinor == current_minor)
+		{
+			if (this->saveVersionPatch == current_patch)
+			{
+				return VersionCompatibility_t::same_version;
+			}
+			else if (this->saveVersionPatch > current_patch)
+			{
+				return VersionCompatibility_t::patch_newer;
+			}
+			else
+			{
+				return VersionCompatibility_t::patch_older;
+			}
+		}
+		else if (this->saveVersionMinor > current_minor)
+		{
+			return VersionCompatibility_t::minor_newer;
+		}
+		else
+		{
+			return VersionCompatibility_t::minor_older;
+		}
+	}
+	else if (this->saveVersionMajor > current_major)
+	{
+		return VersionCompatibility_t::major_newer;
+	}
+	else
+	{
+		return VersionCompatibility_t::major_older;
+	}
 }
 
 void StateSXmlAnalyzer::parse()
@@ -83,11 +125,27 @@ void StateSXmlAnalyzer::parse()
 			if (this->xmlReader->name() == QString("FSM"))
 			{
 				this->type = MachineType_t::fsm;
-				QString extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
 
-				if (! extractedVersion.isNull())
+				auto extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
+
+				if (extractedVersion.isNull() == false)
 				{
-					this->version = extractedVersion;
+					auto versionParts = extractedVersion.split(".");
+					if (versionParts.count() >= 3)
+					{
+						bool ok;
+						this->saveVersionMajor = QString(versionParts[0]).toUInt(&ok, 16);
+						this->saveVersionMinor = QString(versionParts[1]).toUInt(&ok, 16);
+						this->saveVersionPatch = QString(versionParts[2]).toUInt(&ok, 16);
+					}
+				}
+				else
+				{
+					// Default version number: before 0.4,
+					// version was not written in save.
+					this->saveVersionMajor = 0;
+					this->saveVersionMinor = 3;
+					this->saveVersionPatch = 0;
 				}
 
 				break;

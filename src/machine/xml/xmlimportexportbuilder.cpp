@@ -54,7 +54,7 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRe
 /**
  * @brief XmlImportExportBuilder::buildMachineWriterForSaveFile
  * Builds a machine writer that produces XML for save files.
- * It includes view configuration as loading a file recovers view.s
+ * It includes view configuration as loading a file recovers view.
  * @param machineManager
  * @param viewConfiguration
  * @return
@@ -98,11 +98,12 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
  * @param file
  * @return
  */
-shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<QFile> file)
+shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<QFile> file, shared_ptr<StateSXmlAnalyzer> analyzer)
 {
-	shared_ptr<MachineXmlParser> machineParser;
+	if (analyzer == nullptr) return nullptr;
 
-	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(file));
+
+	shared_ptr<MachineXmlParser> machineParser;
 
 	if (analyzer->getMachineType() == MachineType_t::fsm)
 	{

@@ -322,22 +322,22 @@
 <context>
     <name>CollapsibleWidgetWithTitle</name>
     <message>
-        <location filename="../src/ui/refined_widget/collapsiblewidgetwithtitle.cpp" line="103"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="103"/>
         <source>no content</source>
         <translation>aucun contenu</translation>
     </message>
     <message>
-        <location filename="../src/ui/refined_widget/collapsiblewidgetwithtitle.cpp" line="142"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="142"/>
         <source>Show</source>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="../src/ui/refined_widget/collapsiblewidgetwithtitle.cpp" line="153"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="153"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
     <message>
-        <location filename="../src/ui/refined_widget/collapsiblewidgetwithtitle.cpp" line="97"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="97"/>
         <source>no title</source>
         <translation>aucun titre</translation>
     </message>
@@ -414,13 +414,13 @@
 <context>
     <name>ConstantEditorWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/constanteditorwidget.cpp" line="117"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="117"/>
         <source>Constant:</source>
         <translation>Constante :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/constanteditorwidget.cpp" line="141"/>
-        <location filename="../src/ui/equation_editor/constanteditorwidget.cpp" line="254"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="141"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="254"/>
         <source>Custom constant</source>
         <translation>Constante personnalisée</translation>
     </message>
@@ -428,37 +428,37 @@
 <context>
     <name>EquationEditorDialog</name>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="45"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="45"/>
         <source>Equation editor</source>
         <translation>Éditeur d&apos;équations</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="51"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="51"/>
         <source>Drag and drop equation components from here</source>
         <translation>Glissez puis déposez les composants d&apos;équation ci-dessous</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="65"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="65"/>
         <source>to here.</source>
         <translation>à cet endroit.</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="72"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="72"/>
         <source>Members outlined in green can be edited by clicking on them</source>
         <translation>Les membres encadrés en vert peuvent être modifiés en cliquant dessus</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="74"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="74"/>
         <source>Right-click on any equation members to edit</source>
         <translation>Faites un clic droit sur n&apos;importe quel membre de l&apos;équation pour l&apos;éditer</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="82"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="82"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditordialog.cpp" line="83"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="83"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -466,111 +466,111 @@
 <context>
     <name>EquationEditorWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="431"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="431"/>
         <source>Rightmost operand deletion requested, but it is not empty.</source>
         <translation>La suppression de l&apos;opérande la plus à droite a été demandée, mais celle-ci n&apos;est pas vide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="435"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="435"/>
         <source>Delete rightmost operand?</source>
         <translation>Supprimer l&apos;opérande de droite ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="907"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="907"/>
         <source>not</source>
         <translation>non</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="910"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="910"/>
         <source>and</source>
         <translation>et</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="913"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="913"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="916"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="916"/>
         <source>xor</source>
         <translation>xor</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="919"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="919"/>
         <source>nand</source>
         <translation>non et</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="922"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="922"/>
         <source>nor</source>
         <translation>non ou</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="925"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="925"/>
         <source>xnor</source>
         <translation>xnor</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="928"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="928"/>
         <source>Equality</source>
         <translation>Égalité</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="931"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="931"/>
         <source>Difference</source>
         <translation>Différence</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="934"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="934"/>
         <source>Concatenate</source>
         <translation>Concaténation</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="325"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="325"/>
         <source>Equation:</source>
         <translation>Équation :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="328"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="328"/>
         <source>One of the operands is empty</source>
         <translation>L&apos;une des opérandes est vide</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="328"/>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="331"/>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="334"/>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="337"/>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="340"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="328"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="331"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="334"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="337"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="340"/>
         <source>Error:</source>
         <translation>Erreur :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="331"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="331"/>
         <source>One of the operands is invalid</source>
         <translation>L&apos;une des opérandes est invalide</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="334"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="334"/>
         <source>The sizes of the operands do not match between each other</source>
         <translation>Les opérandes sont de taille différente</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="337"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="337"/>
         <source>A parameter is missing its value</source>
         <translation>Il manque la valeur d&apos;un paramètre</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="340"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="340"/>
         <source>The value of a parameter is incorrect</source>
         <translation>La valeur d&apos;un paramètre est incorrecte</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="433"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="433"/>
         <source>Its content is:</source>
         <translation>Son contenu est :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationeditorwidget.cpp" line="436"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="436"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
@@ -578,93 +578,93 @@
 <context>
     <name>EquationPartEditorWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="141"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="141"/>
         <source>Operand:</source>
         <translation>Opérande :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="150"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="150"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="164"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="164"/>
         <source>Extract single bit</source>
         <translation>Extraire un seul bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="171"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="171"/>
         <source>Extract sub-vector</source>
         <translation>Extraire un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="185"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="185"/>
         <source>Add one operand to that operator</source>
         <translation>Ajouter une opérande à cet opérateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="192"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="192"/>
         <source>Remove one operand from that operator</source>
         <translation>Supprimer une opérande de cet opérateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="157"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="157"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="178"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="178"/>
         <source>Extract sub-vector or single bit</source>
         <translation>Extraire un sous-vecteur ou un bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="199"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="199"/>
         <source>Invert</source>
         <translation>Inverser</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="206"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="206"/>
         <source>Remove the inverter</source>
         <translation>Supprimer l&apos;inverseur</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="211"/>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="319"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="211"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="319"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="281"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="281"/>
         <source>Current element:</source>
         <translation>Élément actuel :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="282"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="282"/>
         <source>Dropped element:</source>
         <translation>Élément déposé :</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="286"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="286"/>
         <source>What do you want to do?</source>
         <translation>Que souhaitez-vous faire ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="290"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="290"/>
         <source>Do you want to replace that element?</source>
         <translation>Souhaitez-vous remplacer cet élément ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="298"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="298"/>
         <source>Replace current element by dropped element</source>
         <translation>Remplacer l&apos;élément actuel par l&apos;élément déposé</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="305"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="305"/>
         <source>Make current element an operand of dropped equation</source>
         <translation>Faire de l&apos;élément actuel une opérande de l&apos;équation déposée</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/equationparteditorwidget.cpp" line="312"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="312"/>
         <source>Remove inverter from current element</source>
         <translation>Supprimer l&apos;inverseur de l&apos;élément actuel</translation>
     </message>
@@ -2164,8 +2164,8 @@
 <context>
     <name>NullEditorWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/nulleditorwidget.cpp" line="51"/>
-        <location filename="../src/ui/equation_editor/nulleditorwidget.cpp" line="56"/>
+        <location filename="../src/ui/dialogs/equation_editor/nulleditorwidget.cpp" line="51"/>
+        <location filename="../src/ui/dialogs/equation_editor/nulleditorwidget.cpp" line="56"/>
         <source>null operand</source>
         <translation>opérande vide</translation>
     </message>
@@ -2481,27 +2481,99 @@
 <context>
     <name>StateS</name>
     <message>
-        <location filename="../src/core/states.cpp" line="188"/>
-        <source>StateS couldn&apos;t read the file content.</source>
-        <translation>StateS n&apos;a pas pu lire le contenu du fichier.</translation>
+        <location filename="../src/core/states.cpp" line="185"/>
+        <location filename="../src/core/states.cpp" line="192"/>
+        <location filename="../src/core/states.cpp" line="210"/>
+        <source>Error!</source>
+        <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="189"/>
-        <source>The file may not be a correct StateS save file.</source>
-        <translation>Le fichier n&apos;est peut-être pas une sauvegarde StateS correcte.</translation>
+        <location filename="../src/core/states.cpp" line="185"/>
+        <source>StateS couldn&apos;t find the selected file.</source>
+        <translation>StateS n&apos;a pas trouvé le fichier sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="190"/>
+        <location filename="../src/core/states.cpp" line="186"/>
+        <location filename="../src/core/states.cpp" line="194"/>
+        <location filename="../src/core/states.cpp" line="241"/>
         <source>Issues occured reading the file. StateS was unable to load machine.</source>
         <translation>Des erreurs ont été rencontrées lors de la lecture du fichier. StateS n&apos;a pas été en mesure de charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="199"/>
+        <location filename="../src/core/states.cpp" line="192"/>
+        <location filename="../src/core/states.cpp" line="210"/>
+        <source>StateS couldn&apos;t read the selected file.</source>
+        <translation>StateS n&apos;a pas pu lire le fichier sélectionné.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="193"/>
+        <source>Please check file permissions and make sure you have enough privileges to read it.</source>
+        <translation>Vérifiez les permissions du fichier et assurez-vous que vos droits utilisateur sont suffisants pour le lire.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="200"/>
+        <source>Warning!</source>
+        <translation>Attention !</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="200"/>
+        <source>This file seems to be read only. You may not be able to save your changes.</source>
+        <translation>Ce fichier semble être en lecture seule. Vous risquez de ne pas pouvoir enregistrer vos modifications.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="201"/>
+        <source>If you encounter an error when saving, try using &quot;save as&quot; instead of &quot;save&quot;.</source>
+        <translation>Si vous rencontrez une erreur en enregistrant, essayez d&apos;utiliser &quot;enregistrer sous&quot; plutôt que &quot;enregistrer&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="214"/>
+        <source>While this file seems to be a valid StateS save, StateS was unable to read the file content.</source>
+        <translation>Bien que ce fichier semble être une sauvegarde StateS valide, StateS n&apos;a pas été en mesure de lire le contenu du fichier.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="219"/>
+        <source>The file may have been altered or is not a StateS save.</source>
+        <translation>Ce fichier peut avoir été altéré ou n&apos;est pas une sauvegarde StateS.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="224"/>
+        <source>This file has been created with a newer version of StateS and is probably incompatible with this version.</source>
+        <translation>Ce fichier a été créé avec une version de StateS plus récente et est probablement incompatible avec cette version.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="225"/>
+        <source>Please use a newer version of StateS to open this file.</source>
+        <translation>Merci d&apos;utiliser une version de StateS plus récente pour ouvrir ce fichier.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="226"/>
+        <location filename="../src/core/states.cpp" line="232"/>
+        <source>File version:</source>
+        <translation>Version du fichier :</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="226"/>
+        <location filename="../src/core/states.cpp" line="232"/>
+        <source>StateS version:</source>
+        <translation>Version de StateS :</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="231"/>
+        <source>This file has been created with an ancient version of StateS and is probably incompatible with this version.</source>
+        <translation>Ce fichier a été créé avec une version de StateS plus ancienne et est problablement incompatible avec cette version.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="238"/>
+        <source>This file does not seems to be a StateS save.</source>
+        <translation>Ce fichier ne semble pas être une sauvegarde StateS.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="250"/>
         <source>Issues occured reading the file. StateS still managed to load machine.</source>
         <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="270"/>
+        <location filename="../src/core/states.cpp" line="320"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>
@@ -2591,22 +2663,22 @@
 <context>
     <name>TemplateEquationPartsWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/templateequationpartswidget.cpp" line="95"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="95"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/templateequationpartswidget.cpp" line="119"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="119"/>
         <source>Variables</source>
         <translation>Variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/templateequationpartswidget.cpp" line="140"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="140"/>
         <source>Constants</source>
         <translation>Constantes</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/templateequationpartswidget.cpp" line="161"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="161"/>
         <source>Logic functions</source>
         <translation>Fonctions logiques</translation>
     </message>
@@ -2686,22 +2758,22 @@
 <context>
     <name>TruthTableDisplay</name>
     <message>
-        <location filename="../src/ui/truth_table/truthtabledisplay.cpp" line="76"/>
+        <location filename="../src/ui/common/truth_table/truthtabledisplay.cpp" line="76"/>
         <source>Result</source>
         <translation>Résultat</translation>
     </message>
     <message>
-        <location filename="../src/ui/truth_table/truthtabledisplay.cpp" line="70"/>
+        <location filename="../src/ui/common/truth_table/truthtabledisplay.cpp" line="70"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/truth_table/truthtabledisplay.cpp" line="72"/>
+        <location filename="../src/ui/common/truth_table/truthtabledisplay.cpp" line="72"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/truth_table/truthtabledisplay.cpp" line="74"/>
+        <location filename="../src/ui/common/truth_table/truthtabledisplay.cpp" line="74"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
@@ -2709,32 +2781,32 @@
 <context>
     <name>VariableEditorWidget</name>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="104"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="104"/>
         <source>Variable</source>
         <translation>La variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="104"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="104"/>
         <source>has type</source>
         <translation>est de type</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="109"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="109"/>
         <source>bit vector</source>
         <translation>vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="109"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="109"/>
         <source>of</source>
         <translation>de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="113"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="113"/>
         <source>bit</source>
         <translation>bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/equation_editor/variableeditorwidget.cpp" line="109"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="109"/>
         <source>bits</source>
         <translation>bits</translation>
     </message>

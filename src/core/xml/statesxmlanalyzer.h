@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,20 +42,33 @@ class StateSXmlAnalyzer : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class VersionCompatibility_t
+	{
+		same_version,
+		patch_older,
+		patch_newer,
+		minor_older,
+		minor_newer,
+		major_older,
+		major_newer
+	};
+
+	/////
 	// Constructors/destructors
 public:
 	explicit StateSXmlAnalyzer(shared_ptr<QFile> file);
 	explicit StateSXmlAnalyzer(const QString& xmlSource);
 
-private:
-	explicit StateSXmlAnalyzer();
-
 	/////
 	// Object functions
 public:
-	MachineType_t getMachineType();
-	QString       getStateSVersion();
-	bool          getXmlIsCorrect();
+	MachineType_t getMachineType() const;
+
+	bool                   getHasVersion()           const;
+	QString                getStateSVersion()        const;
+	VersionCompatibility_t getVersionCompatibility() const;
 
 private:
 	void parse();
@@ -65,9 +78,11 @@ private:
 private:
 	shared_ptr<QXmlStreamReader> xmlReader;
 
-	MachineType_t type;
-	QString       version;
-	bool          xmlIsCorrect;
+	MachineType_t type = MachineType_t::none;
+
+	uint saveVersionMajor = 0;
+	uint saveVersionMinor = 0;
+	uint saveVersionPatch = 0;
 
 };
 

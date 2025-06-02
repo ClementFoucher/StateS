@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Clément Foucher
+ * Copyright © 2021-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,6 +36,7 @@ class QFile;
 class MachineXmlWriter;
 class MachineXmlParser;
 class ViewConfiguration;
+class StateSXmlAnalyzer;
 
 
 class XmlImportExportBuilder : public QObject
@@ -51,7 +52,7 @@ public:
 
 	// Parser
 	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
-	static shared_ptr<MachineXmlParser> buildFileParser  (shared_ptr<QFile> file);
+	static shared_ptr<MachineXmlParser> buildFileParser(shared_ptr<QFile> file, shared_ptr<StateSXmlAnalyzer> analyzer);
 
 };
 
