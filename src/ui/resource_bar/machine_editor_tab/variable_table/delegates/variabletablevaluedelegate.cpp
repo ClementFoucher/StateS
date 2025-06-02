@@ -23,7 +23,8 @@
 #include "variabletablevaluedelegate.h"
 
 // StateS classes
-#include "dynamiclineeditor.h"
+#include "logicvalue.h"
+#include "valueeditor.h"
 
 
 VariableTableValueDelegate::VariableTableValueDelegate(QWidget* parent) :
@@ -32,43 +33,33 @@ VariableTableValueDelegate::VariableTableValueDelegate(QWidget* parent) :
 
 }
 
-QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
+QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	auto valueAsString = index.data(Qt::EditRole).toString();
-	auto stringBits = valueAsString.split(":");
-
-	if (stringBits.length() < 2) return nullptr;
-
-	bool ok;
-	int variableSize = stringBits.at(1).toInt(&ok);
-
-	if (ok == false) return nullptr;
-
-
-	auto re = QRegularExpression("[01]{0," + QString::number(variableSize) + "}");
-	auto editor = new DynamicLineEditor(parent);
-	editor->setValidator(new QRegularExpressionValidator(re));
-
-	return editor;
+	return new ValueEditor(parent);
 }
 
 void VariableTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto valueEditor = dynamic_cast<DynamicLineEditor*>(editor);
+	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
 	if (valueEditor == nullptr) return;
-
 
 	auto valueAsString = index.data(Qt::EditRole).toString();
 	auto stringBits = valueAsString.split(":");
+	if (stringBits.length() < 2) return;
 
-	valueEditor->setText(stringBits.at(0));
+
+	auto initialValue = LogicValue::fromString(stringBits.at(0));
+	int variableSize = stringBits.at(1).toInt();
+
+	valueEditor->setBitVectorValue(initialValue, variableSize);
 }
 
 void VariableTableValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto valueEditor = dynamic_cast<DynamicLineEditor*>(editor);
+	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
 	if (valueEditor == nullptr) return;
 
 
-	model->setData(index, valueEditor->text(), Qt::EditRole);
+	auto newValue = valueEditor->getBitVectorValue();
+	model->setData(index, newValue.toString(), Qt::EditRole);
 }
