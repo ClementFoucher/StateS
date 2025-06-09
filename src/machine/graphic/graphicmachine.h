@@ -36,6 +36,7 @@ class QGraphicsItem;
 // StateS classes
 #include "statestypes.h"
 class GraphicComponent;
+class GraphicSimulatedComponent;
 class GraphicAttributes;
 class GenericScene;
 
@@ -47,7 +48,7 @@ class GraphicMachine : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicMachine();
+	explicit GraphicMachine() = default;
 	~GraphicMachine();
 
 	/////
@@ -67,21 +68,21 @@ public:
 	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const = 0;
 
 	GraphicComponent* getGraphicComponent(componentId_t componentId) const;
-	GraphicComponent* getSimulatedGraphicComponent(componentId_t componentId) const;
+	GraphicSimulatedComponent* getSimulatedGraphicComponent(componentId_t componentId) const;
 	QGraphicsItem* getComponentVisualization() const;
 
 	virtual void removeGraphicComponent(componentId_t id);
 
 protected:
 	void addComponent(GraphicComponent* graphicComponent);
-	void addSimulatedComponent(GraphicComponent* graphicComponent);
+	void addSimulatedComponent(GraphicSimulatedComponent* simulatedGraphicComponent);
 	const QList<GraphicComponent*> getGraphicComponents() const;
 
 	/////
 	// Object variables
 private:
 	QMap<componentId_t, GraphicComponent*> componentsMap;
-	QMap<componentId_t, GraphicComponent*> simulatedComponentsMap;
+	QMap<componentId_t, GraphicSimulatedComponent*> simulatedComponentsMap;
 
 };
 

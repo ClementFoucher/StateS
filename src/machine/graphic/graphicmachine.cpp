@@ -29,20 +29,19 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "graphiccomponent.h"
+#include "graphicsimulatedcomponent.h"
 #include "variable.h"
 
 
-GraphicMachine::GraphicMachine() :
-    QObject()
-{
-
-}
-
 GraphicMachine::~GraphicMachine()
 {
-	auto graphicComponents = this->componentsMap.values();
-	graphicComponents += this->simulatedComponentsMap.values();
+	auto simulatedGraphicComponents = this->simulatedComponentsMap.values();
+	for (auto& graphicComponent : simulatedGraphicComponents)
+	{
+		delete graphicComponent;
+	}
 
+	auto graphicComponents = this->componentsMap.values();
 	for (auto& graphicComponent : graphicComponents)
 	{
 		delete graphicComponent;
@@ -73,7 +72,7 @@ GraphicComponent* GraphicMachine::getGraphicComponent(componentId_t componentId)
 	}
 }
 
-GraphicComponent* GraphicMachine::getSimulatedGraphicComponent(componentId_t componentId) const
+GraphicSimulatedComponent* GraphicMachine::getSimulatedGraphicComponent(componentId_t componentId) const
 {
 	if (this->simulatedComponentsMap.contains(componentId))
 	{
@@ -281,10 +280,14 @@ void GraphicMachine::addComponent(GraphicComponent* graphicComponent)
 	this->componentsMap[logicComponentId] = graphicComponent;
 }
 
-void GraphicMachine::addSimulatedComponent(GraphicComponent* graphicComponent)
+void GraphicMachine::addSimulatedComponent(GraphicSimulatedComponent* simulatedGraphicComponent)
 {
+	auto graphicComponent = dynamic_cast<GraphicComponent*>(simulatedGraphicComponent);
+	if (graphicComponent == nullptr) return;
+
+
 	auto logicComponentId = graphicComponent->getLogicComponentId();
-	this->simulatedComponentsMap[logicComponentId] = graphicComponent;
+	this->simulatedComponentsMap[logicComponentId] = simulatedGraphicComponent;
 }
 
 const QList<GraphicComponent*> GraphicMachine::getGraphicComponents() const

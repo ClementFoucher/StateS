@@ -26,7 +26,6 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
-#include <QStyleOptionGraphicsItem>
 
 // StateS classes
 #include "machinemanager.h"
@@ -38,15 +37,11 @@
 
 
 //
-// Static elements
+// Static members
 //
 
 const qreal GraphicFsmState::radius = 50;
 
-const QBrush GraphicFsmState::defaultBrush = QBrush(QColor(230,230,230), Qt::SolidPattern);
-
-const QPen GraphicFsmState::defaultPen = QPen(Qt::SolidPattern, 3);
-const QPen GraphicFsmState::hoverPen   = QPen(QBrush(Qt::blue, Qt::SolidPattern), 3);
 
 qreal GraphicFsmState::getRadius()
 {
@@ -59,18 +54,19 @@ QPixmap GraphicFsmState::getPixmap(uint size, bool isInitial, bool addArrow)
 	pixmap.fill(Qt::transparent);
 
 	QPainter painter(&pixmap);
+	int defaultPenWidth = GraphicComponent::defaultPen.width();
 
-	painter.setPen(GraphicFsmState::defaultPen);
-	painter.setBrush(GraphicFsmState::defaultBrush);
-	painter.drawEllipse(QRectF(GraphicFsmState::defaultPen.width()/2, GraphicFsmState::defaultPen.width()/2, size-GraphicFsmState::defaultPen.width(), size-GraphicFsmState::defaultPen.width()));
+	painter.setPen(GraphicComponent::defaultPen);
+	painter.setBrush(GraphicComponent::defaultBrush);
+	painter.drawEllipse(QRectF(defaultPenWidth/2, defaultPenWidth/2, size-defaultPenWidth, size-defaultPenWidth));
 
-	if (isInitial)
+	if (isInitial == true)
 	{
-		qreal space = size/10 + GraphicFsmState::defaultPen.width();
-		painter.drawEllipse(QRectF(GraphicFsmState::defaultPen.width()/2 + space, GraphicFsmState::defaultPen.width()/2 + space, size-GraphicFsmState::defaultPen.width() - space*2, size-GraphicFsmState::defaultPen.width() - space*2));
+		qreal space = size/10 + defaultPenWidth;
+		painter.drawEllipse(QRectF(defaultPenWidth/2 + space, defaultPenWidth/2 + space, size-defaultPenWidth - space*2, size-defaultPenWidth - space*2));
 	}
 
-	if (addArrow)
+	if (addArrow == true)
 	{
 		painter.drawLine(0, 0, size/3, 0);
 		painter.drawLine(0, 0, 0, size/3);
@@ -84,12 +80,16 @@ QPixmap GraphicFsmState::getPixmap(uint size, bool isInitial, bool addArrow)
 //
 
 GraphicFsmState::GraphicFsmState(componentId_t logicComponentId) :
-    GraphicComponent(logicComponentId),
-    QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
+	GraphicComponent(logicComponentId)
 {
-	this->setPen(defaultPen);
-	this->setBrush(defaultBrush);
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
 
+	auto logicState = fsm->getState(this->getLogicComponentId());
+	if (logicState == nullptr) return;
+
+
+	// Initialize
 	this->setFlag(QGraphicsItem::ItemIsMovable);
 	this->setFlag(QGraphicsItem::ItemIsSelectable);
 	this->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -98,9 +98,16 @@ GraphicFsmState::GraphicFsmState(componentId_t logicComponentId) :
 
 	this->setAcceptHoverEvents(true);
 
-	this->buildRepresentation();
-	// Build action box separately as it is not a child of this (scene stacking issues)
+	// Build children items
+	this->circle = new QGraphicsEllipseItem(-GraphicFsmState::radius, -GraphicFsmState::radius, 2*GraphicFsmState::radius, 2*GraphicFsmState::radius, this);
+	this->setBorderColor(defaultBorderColor);
+	this->setFillingColor(defaultFillingColor);
+
+	this->refreshChildrenItems();
+
+	// Build external items
 	this->actionBox = new ActionBox(logicComponentId, true);
+
 	this->updateActionBoxPosition();
 }
 
@@ -111,30 +118,22 @@ GraphicFsmState::~GraphicFsmState()
 
 void GraphicFsmState::refreshDisplay()
 {
-	// Clear
-	this->clearRepresentation();
-
-	// Rebuild
-	this->buildRepresentation();
-	this->updateSelectionShapeDisplay();
-	this->actionBox->refreshDisplay();
-
-	// Reposition
-	this->updateActionBoxPosition();
+	this->refreshChildrenItems();
+	this->refreshExternalItems();
 }
 
 QPainterPath GraphicFsmState::shape() const
 {
 	// All states share the same shape:
-	// store shape after building and always return the same.
+	// store shape after first build then always return the same.
 	static QPainterPath path;
 
-	if (path.isEmpty())
+	if (path.isEmpty() == true)
 	{
 		QPainterPathStroker* stroker;
 
-		stroker = new QPainterPathStroker(defaultPen);
-		path.addEllipse(QRect(-(radius), -(radius), 2*(radius), 2*(radius)));
+		stroker = new QPainterPathStroker(GraphicComponent::defaultPen);
+		path.addEllipse(QRect(-GraphicFsmState::radius, -GraphicFsmState::radius, 2*GraphicFsmState::radius, 2*GraphicFsmState::radius));
 
 		path.setFillRule(Qt::WindingFill);
 		path = path.united(stroker->createStroke(path));
@@ -150,15 +149,6 @@ QRectF GraphicFsmState::boundingRect() const
 	return this->shape().boundingRect();
 }
 
-void GraphicFsmState::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-{
-	// This disables the automatic selection shape.
-	// Thanks to Stephen Chu on StackOverflow for the trick.
-	QStyleOptionGraphicsItem myOption(*option);
-	myOption.state &= ~QStyle::State_Selected;
-	QGraphicsEllipseItem::paint(painter, &myOption, widget);
-}
-
 ActionBox* GraphicFsmState::getActionBox() const
 {
 	return this->actionBox;
@@ -169,7 +159,7 @@ void GraphicFsmState::keyPressEvent(QKeyEvent* event)
 	if (event->key() == Qt::Key_Delete)
 	{
 		// This call may destroy the current object
-		emit this->deleteStateCalledEvent(this->logicComponentId);
+		emit this->deleteStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (event->key() == Qt::Key_Menu)
 	{
@@ -186,7 +176,7 @@ void GraphicFsmState::keyPressEvent(QKeyEvent* event)
 	}
 	else if (event->key() == Qt::Key_F2)
 	{
-		emit renameStateCalledEvent(this->logicComponentId);
+		emit renameStateCalledEvent(this->getLogicComponentId());
 	}
 	else
 	{
@@ -199,14 +189,14 @@ void GraphicFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto logicState = fsm->getState(this->logicComponentId);
+	auto logicState = fsm->getState(this->getLogicComponentId());
 	if (logicState == nullptr) return;
 
 
 	ContextMenu* menu = new ContextMenu();
 	menu->addTitle(tr("State") + " <i>" + logicState->getName() + "</i>");
 
-	if (fsm->getInitialStateId() != this->logicComponentId)
+	if (fsm->getInitialStateId() != this->getLogicComponentId())
 	{
 		menu->addAction(tr("Set initial"));
 	}
@@ -231,12 +221,12 @@ QVariant GraphicFsmState::itemChange(GraphicsItemChange change, const QVariant& 
 {
 	if (change == GraphicsItemChange::ItemPositionChange)
 	{
-		emit statePositionAboutToChangeEvent(this->logicComponentId);
+		emit statePositionAboutToChangeEvent(this->getLogicComponentId());
 	}
 	if (change == GraphicsItemChange::ItemPositionHasChanged)
 	{
 		this->updateActionBoxPosition();
-		emit statePositionChangedEvent(this->logicComponentId);
+		emit statePositionChangedEvent(this->getLogicComponentId());
 	}
 	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedChange)
 	{
@@ -254,102 +244,110 @@ QVariant GraphicFsmState::itemChange(GraphicsItemChange change, const QVariant& 
 			}
 		}
 	}
-	else if (change == QGraphicsItem::GraphicsItemChange::ItemSelectedHasChanged)
-	{
-		this->updateSelectionShapeDisplay();
-	}
 
-	return QGraphicsEllipseItem::itemChange(change, value);
+	return GraphicComponent::itemChange(change, value);
 }
 
 void GraphicFsmState::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-	this->setPen(GraphicFsmState::hoverPen);
+	this->setBorderColor(GraphicComponent::hoverBorderColor);
 }
 
 void GraphicFsmState::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-	this->setPen(GraphicFsmState::defaultPen);
+	this->setBorderColor(GraphicComponent::defaultBorderColor);
+}
+
+void GraphicFsmState::setBorderColor(QColor color)
+{
+	this->circle->setPen(QPen(QBrush(color, Qt::SolidPattern), GraphicComponent::defaultLineThickness));
+}
+
+void GraphicFsmState::setFillingColor(QColor color)
+{
+	this->circle->setBrush(QBrush(color, Qt::SolidPattern));
 }
 
 void GraphicFsmState::treatMenu(QAction* action)
 {
 	if (action->text() == tr("Edit"))
 	{
-		emit this->editStateCalledEvent(this->logicComponentId);
+		emit this->editStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (action->text() == tr("Set initial"))
 	{
-		emit this->setInitialStateCalledEvent(this->logicComponentId);
+		emit this->setInitialStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (action->text() == tr("Rename"))
 	{
-		emit this->renameStateCalledEvent(this->logicComponentId);
+		emit this->renameStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (action->text() == tr("Delete"))
 	{
 		// This call may destroy the current object
-		emit this->deleteStateCalledEvent(this->logicComponentId);
+		emit this->deleteStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (action->text() == tr("Draw transition from this state"))
 	{
-		emit this->beginDrawTransitionFromThisState(this->logicComponentId);
+		emit this->beginDrawTransitionFromThisState(this->getLogicComponentId());
 	}
 }
 
-void GraphicFsmState::clearRepresentation()
+QAbstractGraphicsShapeItem* GraphicFsmState::buildSelectionShape()
 {
-	qDeleteAll(this->childItems());
-
-	this->selectionShape = nullptr;
-	this->stateName      = nullptr;
+	return new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
 }
 
-void GraphicFsmState::buildRepresentation()
+void GraphicFsmState::refreshChildrenItems()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto logicState = fsm->getState(this->logicComponentId);
+	auto logicState = fsm->getState(this->getLogicComponentId());
 	if (logicState == nullptr) return;
 
 
-	this->stateName = new QGraphicsTextItem(this);
-	this->stateName->setHtml("<span style=\"color:black;\">" + logicState->getName() + "</span>");
+	// State name
+	if (this->stateName == nullptr)
+	{
+		this->stateName = new QGraphicsTextItem(this);
+	}
 
+	this->stateName->setHtml("<span style=\"color:black;\">" + logicState->getName() + "</span>");
 	this->stateName->setPos(-this->stateName->boundingRect().width()/2, -this->stateName->boundingRect().height()/2);
 
-	if (fsm->getInitialStateId() == this->logicComponentId)
+	// Inner circle
+	if (fsm->getInitialStateId() == this->getLogicComponentId())
 	{
-		QGraphicsEllipseItem* insideCircle = new QGraphicsEllipseItem(QRect(-(radius-10), -(radius-10), 2*(radius-10), 2*(radius-10)), this);
-		insideCircle->setPen(defaultPen);
+		if (this->innerCircle == nullptr)
+		{
+			this->innerCircle = new QGraphicsEllipseItem(QRect(-(GraphicFsmState::radius-10), -(GraphicFsmState::radius-10), 2*(GraphicFsmState::radius-10), 2*(GraphicFsmState::radius-10)), this);
+			this->innerCircle->setPen(GraphicComponent::defaultPen);
+		}
+	}
+	else
+	{
+		delete this->innerCircle;
+		this->innerCircle = nullptr;
 	}
 }
 
-void GraphicFsmState::updateSelectionShapeDisplay()
+void GraphicFsmState::refreshExternalItems()
 {
-	if (this->isSelected() == true)
+	if (this->actionBox != nullptr)
 	{
-		if (this->selectionShape == nullptr)
-		{
-			this->selectionShape = new QGraphicsEllipseItem(QRect(-(radius+10), -(radius+10), 2*(radius+10), 2*(radius+10)), this);
-			this->selectionShape->setPen(selectionPen);
-		}
-		else
-		{
-			this->selectionShape->setVisible(true);
-		}
-	}
-	else if ( (this->isSelected() == false) && (this->selectionShape != nullptr) )
-	{
-		this->selectionShape->setVisible(false);
+		this->actionBox->refreshDisplay();
+		this->updateActionBoxPosition();
 	}
 }
 
 void GraphicFsmState::updateActionBoxPosition()
 {
+	if (this->actionBox == nullptr) return;
+
+
 	auto actionsBoxCenter = this->actionBox->getHeight() / 2;
 
 	// Position is expressed in scene coordinates, as action box is not a child of this (scene stacking issues)
-	this->actionBox->setPos(mapToScene(radius, -actionsBoxCenter));
+	this->actionBox->setPos(mapToScene(GraphicFsmState::radius, -actionsBoxCenter));
 }

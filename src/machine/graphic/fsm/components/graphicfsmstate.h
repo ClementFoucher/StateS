@@ -22,9 +22,8 @@
 #ifndef GRAPHICFSMSTATE_H
 #define GRAPHICFSMSTATE_H
 
-// Parents
+// Parent
 #include "graphiccomponent.h"
-#include <QGraphicsEllipseItem>
 
 // Qt classes
 class QAction;
@@ -34,7 +33,7 @@ class QAction;
 class ActionBox;
 
 
-class GraphicFsmState : public GraphicComponent, public QGraphicsEllipseItem
+class GraphicFsmState : public GraphicComponent
 {
 	Q_OBJECT
 
@@ -47,16 +46,13 @@ public:
 	/////
 	// Static variables
 protected:
-	static const qreal  radius;
-	static const QBrush defaultBrush;
-	static const QPen   defaultPen;
-	static const QPen   hoverPen;
+	static const qreal radius;
 
 	/////
 	// Constructors/destructors
 public:
 	explicit GraphicFsmState(componentId_t logicComponentId);
-	~GraphicFsmState();
+	virtual ~GraphicFsmState();
 
 	/////
 	// Object functions
@@ -66,10 +62,31 @@ public:
 	virtual QPainterPath shape()  const override;
 	virtual QRectF boundingRect() const override;
 
-	virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-
 	ActionBox* getActionBox() const;
 
+protected:
+	virtual void keyPressEvent(QKeyEvent* event)                                  override;
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event)                 override;
+	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event)                 override;
+
+	void setBorderColor(QColor color);
+	void setFillingColor(QColor color);
+
+private slots:
+	void treatMenu(QAction* action);
+
+private:
+	virtual QAbstractGraphicsShapeItem* buildSelectionShape() override;
+
+	void refreshChildrenItems();
+	void refreshExternalItems();
+
+	void updateActionBoxPosition();
+
+	/////
+	// Signals
 signals:
 	void statePositionAboutToChangeEvent(componentId_t stateId);
 	void statePositionChangedEvent(componentId_t stateId);
@@ -80,29 +97,16 @@ signals:
 	void setInitialStateCalledEvent(componentId_t stateId);
 	void beginDrawTransitionFromThisState(componentId_t stateId);
 
-protected:
-	virtual void keyPressEvent(QKeyEvent* event)                                  override;
-	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
-	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event)                 override;
-	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)                 override;
-
-private slots:
-	void treatMenu(QAction* action);
-
-private:
-	void clearRepresentation();
-	void buildRepresentation();
-	void updateSelectionShapeDisplay();
-
-	void updateActionBoxPosition();
-
 	/////
 	// Object variables
 private:
-	QGraphicsTextItem*    stateName      = nullptr;
-	QGraphicsEllipseItem* selectionShape = nullptr;
-	ActionBox*            actionBox      = nullptr;
+	// Children items
+	QGraphicsEllipseItem* circle      = nullptr;
+	QGraphicsEllipseItem* innerCircle = nullptr;
+	QGraphicsTextItem*    stateName   = nullptr;
+
+	// External items (not children to avoid stacking issues)
+	ActionBox* actionBox = nullptr;
 
 };
 

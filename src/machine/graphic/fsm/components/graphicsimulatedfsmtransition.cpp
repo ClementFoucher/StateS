@@ -22,9 +22,6 @@
 // Current class header
 #include "graphicsimulatedfsmtransition.h"
 
-// Qt classes
-#include <QPen>
-
 // States classes
 #include "machinemanager.h"
 #include "graphicfsm.h"
@@ -35,31 +32,19 @@
 #include "graphicsimulatedfsmstate.h"
 
 
-//
-// Static elements
-//
-
-const QPen GraphicSimulatedFsmTransition::activePen   = QPen(QBrush(QColor(0, 0xB0, 0), Qt::SolidPattern), 3);
-const QPen GraphicSimulatedFsmTransition::inactivePen = QPen(QBrush(Qt::red,            Qt::SolidPattern), 3);
-
-
-//
-// Class object definition
-//
-
 GraphicSimulatedFsmTransition::GraphicSimulatedFsmTransition(componentId_t logicComponentId) :
 	GraphicFsmTransition(logicComponentId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
 
-	auto graphicTransition = graphicFsm->getTransition(this->logicComponentId);
+	auto graphicTransition = graphicFsm->getTransition(this->getLogicComponentId());
 	if (graphicTransition == nullptr) return;
 
 	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
 	if (simulatedFsm == nullptr) return;
 
-	auto simulatedTransition = simulatedFsm->getSimulatedTransition(this->logicComponentId);
+	auto simulatedTransition = simulatedFsm->getSimulatedTransition(this->getLogicComponentId());
 	if (simulatedTransition == nullptr) return;
 
 	auto graphicSimulatedSourceState = graphicFsm->getSimulatedState(simulatedTransition->getSourceStateId());
@@ -74,51 +59,52 @@ GraphicSimulatedFsmTransition::GraphicSimulatedFsmTransition(componentId_t logic
 
 	this->setConditionLineSliderPosition(graphicTransition->getConditionLineSliderPosition());
 
-	connect(graphicSimulatedSourceState, &GraphicSimulatedFsmState::componentRefreshedEvent, this, &GraphicSimulatedFsmTransition::refreshDisplay);
+	connect(graphicSimulatedSourceState, &GraphicSimulatedFsmState::componentRefreshedEvent, this, &GraphicSimulatedFsmTransition::refreshSimulatedDisplay);
 }
 
-void GraphicSimulatedFsmTransition::refreshDisplay()
+void GraphicSimulatedFsmTransition::refreshSimulatedDisplay()
 {
 	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
 	if (simulatedFsm == nullptr) return;
 
-	auto simulatedTransition = simulatedFsm->getSimulatedTransition(this->logicComponentId);
+	auto simulatedTransition = simulatedFsm->getSimulatedTransition(this->getLogicComponentId());
 	if (simulatedTransition == nullptr) return;
 
 	auto simulatedSourceState = simulatedFsm->getSimulatedState(simulatedTransition->getSourceStateId());
 	if (simulatedSourceState == nullptr) return;
 
 
-	//
-	// Condition pen
+	// Determine new color
+	QColor newColor;
+
 	auto condition = simulatedTransition->getCondition();
 	if (condition != nullptr)
 	{
 		if (condition->isTrue() == true)
 		{
-			this->currentConditionPen = &activePen;
+			newColor = GraphicSimulatedComponent::simuActiveBorderColor;
 		}
 		else
 		{
-			this->currentConditionPen = &inactivePen;
+			newColor = GraphicSimulatedComponent::simuInactiveBorderColor;
 		}
 	}
 	else
 	{
 		// Empty condition is implicitly always true
-		this->currentConditionPen = &activePen;
+		newColor = GraphicSimulatedComponent::simuActiveBorderColor;
 	}
 
-	//
-	// Main pen
+	// Set arrow pen
 	if (simulatedSourceState->getIsActive() == true)
 	{
-		this->currentPen = this->currentConditionPen;
+		this->setArrowColor(newColor);
 	}
 	else
 	{
-		this->currentPen = &GraphicFsmTransition::defaultPen;
+		this->setArrowColor(GraphicComponent::defaultBorderColor);
 	}
 
-	GraphicFsmTransition::refreshDisplay();
+	// Set condition line pen
+	this->setConditionColor(newColor);
 }

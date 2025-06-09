@@ -33,6 +33,7 @@
 #include "simulatedmachine.h"
 #include "graphicattributes.h"
 #include "graphiccomponent.h"
+#include "graphicsimulatedcomponent.h"
 #include "graphicfsm.h"
 #include "machineundocommand.h"
 
@@ -278,7 +279,7 @@ void MachineManager::simulatedComponentUpdatedEventHandler(componentId_t compone
 	if (simulatedGraphicComponent == nullptr) return;
 
 
-	simulatedGraphicComponent->refreshDisplay();
+	simulatedGraphicComponent->refreshSimulatedDisplay();
 }
 
 /////

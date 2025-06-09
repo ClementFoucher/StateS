@@ -19,32 +19,33 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GRAPHICSIMULATEDFSMTRANSITION_H
-#define GRAPHICSIMULATEDFSMTRANSITION_H
+#ifndef GRAPHICSIMULATEDCOMPONENT_H
+#define GRAPHICSIMULATEDCOMPONENT_H
 
-// Parents
-#include "graphicfsmtransition.h"
-#include "graphicsimulatedcomponent.h"
-
-// StateS classes
-#include "statestypes.h"
+// Qt classes
+class QColor;
 
 
-class GraphicSimulatedFsmTransition : public GraphicFsmTransition, public GraphicSimulatedComponent
+class GraphicSimulatedComponent
 {
-	Q_OBJECT
+	/////
+	// Static variables
+protected:
+	static const QColor simuActiveFillingColor;
+	static const QColor simuInactiveBorderColor;
+	static const QColor simuActiveBorderColor;
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicSimulatedFsmTransition(componentId_t logicComponentId);
+	explicit GraphicSimulatedComponent() = default;
+	virtual ~GraphicSimulatedComponent() = default;
 
 	/////
 	// Object functions
 public:
-	virtual void refreshSimulatedDisplay() override;
+	virtual void refreshSimulatedDisplay() = 0;
 
 };
 
-#endif // GRAPHICSIMULATEDFSMTRANSITION_H
-
+#endif // GRAPHICSIMULATEDCOMPONENT_H

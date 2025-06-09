@@ -22,9 +22,8 @@
 #ifndef GRAPHICFSMTRANSITION_H
 #define GRAPHICFSMTRANSITION_H
 
-// Parents
+// Parent
 #include "graphiccomponent.h"
-#include <QGraphicsItemGroup>
 
 // Qt classes
 class QAction;
@@ -34,7 +33,7 @@ class QAction;
 class ActionBox;
 
 
-class GraphicFsmTransition : public GraphicComponent, public QGraphicsItemGroup
+class GraphicFsmTransition : public GraphicComponent
 {
 	Q_OBJECT
 
@@ -50,15 +49,9 @@ public:
 
 	/////
 	// Static variables
-protected:
-	static const QPen defaultPen;
-
 private:
 	static const qreal arrowEndSize;
 	static const qreal conditionLineLength;
-	static const QPen  drawingPen;
-	static const QPen  underEditPen;
-	static const QPen  hoverPen;
 
 	/////
 	// Constructors/destructors
@@ -70,7 +63,7 @@ public:
 	// This constructor toggles dynamic mode on target. This is used to display a temporary transition when adding/editing.
 	explicit GraphicFsmTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition);
 
-	~GraphicFsmTransition();
+	virtual ~GraphicFsmTransition();
 
 	/////
 	// Object functions
@@ -95,19 +88,15 @@ public:
 	void setDynamicState(componentId_t newDynamicStateId);
 	void setMousePosition(const QPointF& mousePos);
 
-signals:
-	void editTransitionCalledEvent  (componentId_t transitionId);
-	void dynamicSourceCalledEvent   (componentId_t transitionId);
-	void dynamicTargetCalledEvent   (componentId_t transitionId);
-	void deleteTransitionCalledEvent(componentId_t transitionId);
-
 protected:
 	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event)          override;
 	virtual void keyPressEvent(QKeyEvent* event)                                  override;
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev)                    override;
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event)                 override;
-	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event)                 override;
+	virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event)                 override;
+	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event)                 override;
+
+	void setArrowColor(QColor color);
+	void setConditionColor(QColor color);
 
 private slots:
 	void connectedStateMovedEventHandler();
@@ -115,46 +104,58 @@ private slots:
 	void treatMenu(QAction* action);
 
 private:
-	void clearRepresentation();
-	void buildRepresentation();
+	virtual QAbstractGraphicsShapeItem* buildSelectionShape() override;
+
+	void clearArrowBody();
+
+	void buildArrowBody();
+	void buildArrowEnd();
+
+	void refreshChildrenItems();
+	void refreshExternalItems();
+
 	void initializeDefaults();
-	void buildChildren();
-	void repositionChildren();
 	void repaint();
 	void rebuildBoundingShape();
-	void updateSelectionShapeDisplay();
 
 	void drawStraightTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
 	void drawAutoTransition(QPointF currentSourcePoint);
 	void drawCurvedTransition(QPointF currentSourcePoint, QPointF currentTargetPoint);
 
 	/////
-	// Object variables
-protected:
-	const QPen* currentPen          = nullptr;
-	const QPen* currentConditionPen = nullptr;
+	// Signals
+signals:
+	void editTransitionCalledEvent  (componentId_t transitionId);
+	void dynamicSourceCalledEvent   (componentId_t transitionId);
+	void dynamicTargetCalledEvent   (componentId_t transitionId);
+	void deleteTransitionCalledEvent(componentId_t transitionId);
 
+	/////
+	// Object variables
 private:
+	QPen* currentPen          = nullptr;
+	QPen* currentConditionPen = nullptr;
+
 	// A FSM graphic transition must always have at least a source (may not have a target when drawing)
 	componentId_t sourceStateId = nullId;
 	componentId_t targetStateId = nullId;
 
 	// Dynamic mode
-	Mode_t currentMode;
+	Mode_t currentMode = Mode_t::errorMode;
 	// This will be used if one of the linked state is missing in dynamic mode
 	QPointF mousePosition;
 	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
 	componentId_t dynamicStateId = nullId;
 	bool isUnderEdit = false;
 
-	// Components of the arrow
-	QGraphicsItem*     arrowBody      = nullptr;
-	QGraphicsPathItem* arrowEnd       = nullptr;
-	QGraphicsLineItem* conditionLine  = nullptr;
-	QGraphicsTextItem* conditionText  = nullptr;
-	QGraphicsPathItem* selectionShape = nullptr;
+	// Children items
+	QGraphicsItem*     arrowBody     = nullptr;
+	QGraphicsPathItem* arrowEnd      = nullptr;
+	QGraphicsLineItem* conditionLine = nullptr;
 
-	ActionBox* actionBox = nullptr;
+	// External items (not children to avoid stacking issues)
+	QGraphicsTextItem* conditionText = nullptr;
+	ActionBox*         actionBox     = nullptr;
 
 	// Parameters for components
 	qreal sceneAngle = 0;
@@ -168,7 +169,7 @@ private:
 	QPainterPath boundingShape;
 
 	// Position of the condition line in %
-	qreal conditionLineSliderPos;
+	qreal conditionLineSliderPos = 0.5;
 
 };
 

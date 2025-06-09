@@ -62,6 +62,7 @@ SOURCES += \
 	src/machine/export/fsm/fsmvhdlexport.cpp \
 	src/machine/graphic/graphicmachine.cpp \
 	src/machine/graphic/components/graphiccomponent.cpp \
+	src/machine/graphic/components/graphicsimulatedcomponent.cpp \
 	src/machine/graphic/components/subcomponents/actionbox.cpp \
 	src/machine/graphic/fsm/graphicfsm.cpp \
 	src/machine/graphic/fsm/components/graphicfsmstate.cpp \
@@ -199,6 +200,7 @@ HEADERS += \
 	src/machine/export/fsm/fsmvhdlexport.h \
 	src/machine/graphic/graphicmachine.h \
 	src/machine/graphic/components/graphiccomponent.h \
+	src/machine/graphic/components/graphicsimulatedcomponent.h \
 	src/machine/graphic/components/subcomponents/actionbox.h \
 	src/machine/graphic/fsm/graphicfsm.h \
 	src/machine/graphic/fsm/components/graphicfsmstate.h \

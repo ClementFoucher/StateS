@@ -22,21 +22,17 @@
 #ifndef GRAPHICSIMULATEDFSMSTATE_H
 #define GRAPHICSIMULATEDFSMSTATE_H
 
-// Parent
+// Parents
 #include "graphicfsmstate.h"
+#include "graphicsimulatedcomponent.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class GraphicSimulatedFsmState : public GraphicFsmState
+class GraphicSimulatedFsmState : public GraphicFsmState, public GraphicSimulatedComponent
 {
 	Q_OBJECT
-
-	/////
-	// Static variables
-private:
-	static const QBrush activeBrush;
 
 	/////
 	// Constructors/destructors
@@ -46,7 +42,7 @@ public:
 	/////
 	// Object functions
 public:
-	virtual void refreshDisplay() override;
+	virtual void refreshSimulatedDisplay() override;
 
 protected:
 	virtual void keyPressEvent(QKeyEvent* event)                         override;

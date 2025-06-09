@@ -26,25 +26,14 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
-//
-//// StateS classes
+
+// StateS classes
 #include "machinemanager.h"
 #include "graphicfsm.h"
 #include "simulatedfsm.h"
 #include "simulatedfsmstate.h"
 #include "contextmenu.h"
 
-
-//
-// Static elements
-//
-
-const QBrush GraphicSimulatedFsmState::activeBrush = QBrush(Qt::green, Qt::SolidPattern);
-
-
-//
-// Class object definition
-//
 
 GraphicSimulatedFsmState::GraphicSimulatedFsmState(componentId_t logicComponentId) :
 	GraphicFsmState(logicComponentId)
@@ -67,25 +56,23 @@ GraphicSimulatedFsmState::GraphicSimulatedFsmState(componentId_t logicComponentI
 	this->setAcceptHoverEvents(false);
 }
 
-void GraphicSimulatedFsmState::refreshDisplay()
+void GraphicSimulatedFsmState::refreshSimulatedDisplay()
 {
 	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
 	if (simulatedFsm == nullptr) return;
 
-	auto simulatedState = simulatedFsm->getSimulatedState(logicComponentId);
+	auto simulatedState = simulatedFsm->getSimulatedState(this->getLogicComponentId());
 	if (simulatedState == nullptr) return;
 
 
 	if (simulatedState->getIsActive() == true)
 	{
-		this->setBrush(activeBrush);
+		this->setFillingColor(GraphicSimulatedComponent::simuActiveFillingColor);
 	}
 	else
 	{
-		this->setBrush(defaultBrush);
+		this->setFillingColor(GraphicComponent::defaultFillingColor);
 	}
-
-	GraphicFsmState::refreshDisplay();
 
 	emit this->componentRefreshedEvent();
 }
@@ -118,7 +105,7 @@ void GraphicSimulatedFsmState::contextMenuEvent(QGraphicsSceneContextMenuEvent* 
 	auto simulatedFsm = dynamic_pointer_cast<SimulatedFsm>(machineManager->getSimulatedMachine());
 	if (simulatedFsm == nullptr) return;
 
-	auto simulatedState = simulatedFsm->getSimulatedState(logicComponentId);
+	auto simulatedState = simulatedFsm->getSimulatedState(this->getLogicComponentId());
 	if (simulatedState == nullptr) return;
 
 
@@ -150,6 +137,6 @@ void GraphicSimulatedFsmState::menuSetActiveTriggeredEventHandler(QAction* actio
 		if (simulatedFsm == nullptr) return;
 
 
-		simulatedFsm->forceStateActivation(this->logicComponentId);
+		simulatedFsm->forceStateActivation(this->getLogicComponentId());
 	}
 }
