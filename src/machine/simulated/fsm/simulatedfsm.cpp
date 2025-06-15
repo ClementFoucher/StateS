@@ -32,12 +32,14 @@
 
 // StateS classes
 #include "machinemanager.h"
+#include "graphicfsm.h"
 #include "fsm.h"
 #include "simulatedactuatorcomponent.h"
 #include "simulatedfsmstate.h"
 #include "simulatedfsmtransition.h"
 #include "simulatedequation.h"
 #include "simulatedactiononvariable.h"
+#include "graphicsimulatedfsmtransition.h"
 #include "statesui.h"
 
 
@@ -127,6 +129,13 @@ void SimulatedFsm::targetStateSelectionMadeEventHandler(int i)
 
 void SimulatedFsm::subcomponentReset()
 {
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
+	if (graphicFsm == nullptr) return;
+
+
 	// Clean any remaining internal state
 	this->latestTransitionCrossedId = nullId;
 	this->transitionToBeCrossedId   = nullId;
@@ -156,6 +165,16 @@ void SimulatedFsm::subcomponentReset()
 	{
 		newActiveState->setActive(true);
 		this->activateStateActions(this->activeStateId, true);
+	}
+
+	// Refresh all transitions to ensure they all have a color on condition line
+	for (auto transitionId : fsm->getAllTransitionsIds())
+	{
+		auto simulatedTransition = graphicFsm->getSimulatedTransition(transitionId);
+		if (simulatedTransition == nullptr) continue;
+
+
+		simulatedTransition->refreshSimulatedDisplay();
 	}
 }
 
