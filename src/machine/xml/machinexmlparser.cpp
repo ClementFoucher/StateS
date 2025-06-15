@@ -429,6 +429,13 @@ void MachineXmlParser::parseOperandConstantNode()
  */
 MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicVariableNode()
 {
+	if (this->equationStack.count() == 0)
+	{
+		// This is an error case, but we should declare
+		// this is root to fall back in the correct tag.
+		return IsRoot_t::yes;
+	}
+
 	if (this->equationStack.count() == 1)
 	{
 		auto equation = this->equationStack.top();
