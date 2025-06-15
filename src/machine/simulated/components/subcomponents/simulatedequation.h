@@ -87,6 +87,7 @@ private:
 	// Equation parameters
 	OperatorType_t operatorType;
 	QList<shared_ptr<SimulatedOperand>> operands;
+	bool isValid = true;
 
 	// Parameters specific to Extract operator type
 	int rangeL = -1;

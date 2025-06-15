@@ -39,17 +39,31 @@ SimulatedEquation::SimulatedEquation(shared_ptr<const Equation> sourceEquation)
 		this->rangeL = sourceEquation->getRangeL();
 		this->rangeR = sourceEquation->getRangeR();
 	}
+	if (sourceEquation->getComputationFailureCause() != EquationComputationFailureCause_t::nofail)
+	{
+		this->isValid = false;
+	}
 
 	for (uint i = 0 ; i < sourceEquation->getOperandCount() ; i++)
 	{
-		auto newOperand = shared_ptr<SimulatedOperand>(new SimulatedOperand(sourceEquation->getOperand(i)));
+		auto logicOperand = sourceEquation->getOperand(i);
+		if (logicOperand == nullptr) continue;
 
-		connect(newOperand.get(), &SimulatedOperand::operandCurrentValueChangedEvent, this, &SimulatedEquation::computeCurrentValue);
 
-		this->operands.append(newOperand);
+		auto simulatedOperand = shared_ptr<SimulatedOperand>(new SimulatedOperand(sourceEquation->getOperand(i)));
+
+		if (this->isValid == true)
+		{
+			connect(simulatedOperand.get(), &SimulatedOperand::operandCurrentValueChangedEvent, this, &SimulatedEquation::computeCurrentValue);
+		}
+
+		this->operands.append(simulatedOperand);
 	}
 
-	this->computeCurrentValue();
+	if (this->isValid == true)
+	{
+		this->computeCurrentValue();
+	}
 }
 
 LogicValue SimulatedEquation::getCurrentValue() const

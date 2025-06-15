@@ -46,7 +46,11 @@ SimulatedFsmTransition::SimulatedFsmTransition(componentId_t logicComponentId) :
 	this->sourceStateId = logicTransition->getSourceStateId();
 	this->targetStateId = logicTransition->getTargetStateId();
 
-	this->condition = shared_ptr<SimulatedEquation>(new SimulatedEquation(logicTransition->getCondition()));
+	auto logicCondition = logicTransition->getCondition();
+	if (logicCondition != nullptr)
+	{
+		this->condition = shared_ptr<SimulatedEquation>(new SimulatedEquation(logicCondition));
+	}
 
 	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);
 }
