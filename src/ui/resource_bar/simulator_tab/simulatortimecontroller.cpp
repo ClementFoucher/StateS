@@ -46,6 +46,7 @@ SimulatorTimeController::SimulatorTimeController(QWidget* parent) :
 	auto buttonReset    = new QPushButton(tr("Reset"));
 
 	auto stepLabel = new QLabel(tr("Use the ") + "<b>" + tr("Do one step") + "</b>" + tr(" button") + " " + tr("or launch a timer to do steps automatically:"));
+	stepLabel->setWordWrap(true);
 
 	this->buttonNextStep = new QPushButton("> " + tr("Do one step") + " >");
 
