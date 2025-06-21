@@ -8,7 +8,7 @@
 # Update these
 VERSION_MAJOR = 0
 VERSION_MINOR = 4
-VERSION_PATCH = 7
+VERSION_PATCH = 8
 DATE          = 2014-2025
 # Also remember to update version in README.md, known_bugs.txt and AppImageBuilder.yml
 ###

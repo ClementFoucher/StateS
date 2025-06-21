@@ -2,6 +2,7 @@
 * StateS v. 0.4 *
 *****************
 
+- 2025-06-21 - V 0.4.8 - Rewrote the variable editor and the equation editor.
 - 2025-01-26 - V 0.4.7 - Remove all references to "signal" in favor of "variable". Add a visual marker to identify memorized actions ("M"). Allow to configure actions behavior in simulation.
 - 2025-01-22 - V 0.4.6 - Fix the action box position not being updated when deleting actions. Fix selection shape of states and transition disapearing when an edition was done through the resource bar.
 - 2025-01-02 - V 0.4.5 - Add increment/decrement actions. Many small enhancements to the graphical representation of the FSM. Many under-the-hood improvements. Moved from Qt 5 to Qt 6. Moved from SourceForge to GitHub.
