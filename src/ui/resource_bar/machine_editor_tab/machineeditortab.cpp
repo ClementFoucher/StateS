@@ -33,6 +33,7 @@
 #include "variablelisteditor.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "hintwidget.h"
 #include "selfmanageddynamiclineeditor.h"
 #include "machineundocommand.h"
 #include "machine.h"
@@ -85,22 +86,19 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	// Hint
 	QString hintTitle = tr("Hint:") + " " + tr("Machine editor");
 
-	QLabel* hintText = new QLabel("<p><b>" + tr("Names:") + "</b></p>"
-	                              + "<p>"
-	                              + tr("Allowed characters for machine and variables names are alphanumerical ones, space and")
-	                              + " {'_', '@', '#', '-'}."
-	                              + "</p>"
-	                              + "<p><b>" + tr("Variables editor:") + "</b></p>"
-	                              + "<p>"
-	                              + tr("Switch between variable natures using tabs.")
-	                              + "<br>"
-	                              + tr("Double-click on a field to edit it.")
-	                              + "</p>"
-	                              );
-	hintText->setAlignment(Qt::AlignCenter);
-	hintText->setWordWrap(true);
+	QString hintText = "<p><b>" + tr("Names:") + "</b></p>"
+	                 + "<p>"
+	                 + tr("Allowed characters for machine and variables names are alphanumerical ones, space and")
+	                 + " {'_', '@', '#', '-'}."
+	                 + "</p>"
+	                 + "<p><b>" + tr("Variables editor:") + "</b></p>"
+	                 + "<p>"
+	                 + tr("Switch between variable natures using tabs.")
+	                 + "<br>"
+	                 + tr("Double-click on a field to edit it.")
+	                 + "</p>";
 
-	auto hintDisplay = new CollapsibleWidgetWithTitle(hintTitle, hintText);
+	auto hintDisplay = new HintWidget(hintTitle, hintText, this);
 
 	//
 	// Machine visualization

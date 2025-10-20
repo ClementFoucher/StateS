@@ -41,7 +41,7 @@
 #include "contextmenu.h"
 #include "variable.h"
 #include "rangeeditordialog.h"
-#include "collapsiblewidgetwithtitle.h"
+#include "hintwidget.h"
 #include "actiontablemodel.h"
 #include "actiontabledelegate.h"
 #include "actiononvariable.h"
@@ -91,12 +91,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	layout->addWidget(this->buttonRemoveAction, 1, 1, 1, 1);
 
 
-	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
 	QString hintTitle = tr("Hint:") + " " + tr("Editing actions");
-	if (ActionEditor::hintCollapsed == true)
-	{
-		this->hintDisplay->setCollapsed(true);
-	}
 
 	QString hint;
 	hint += "<br />";
@@ -105,7 +100,11 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	hint += tr("Right-click") + " " + tr("on a vector variable") + " " + tr("to display range options.");
 	hint += "<br />";
 
-	this->hintDisplay->setContent(hintTitle, hint, true);
+	this->hintDisplay = new HintWidget(hintTitle, hint, this);
+	if (ActionEditor::hintCollapsed == true)
+	{
+		this->hintDisplay->setCollapsed(true);
+	}
 
 	layout->addWidget(this->hintDisplay, 2, 0, 1, 4);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2020 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 
 
 CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWidget* content, QWidget* parent) :
-    QFrame(parent)
+	QFrame(parent)
 {
 	this->layout         = new QGridLayout(this);
 	this->buttonCollapse = new QPushButton(this);
@@ -57,9 +57,8 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
 }
 
 CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(QWidget* parent) :
-    CollapsibleWidgetWithTitle(QString(), nullptr, parent)
+	CollapsibleWidgetWithTitle(QString(), nullptr, parent)
 {
-
 }
 
 void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* content, bool deletePreviousContent)
@@ -106,15 +105,6 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* conte
 	}
 }
 
-void CollapsibleWidgetWithTitle::setContent(const QString& title, const QString& textContent, bool deletePreviousContent)
-{
-	QLabel* newContent = new QLabel(textContent, this);
-	newContent->setAlignment(Qt::AlignCenter);
-	newContent->setWordWrap(true);
-
-	this->setContent(title, newContent, deletePreviousContent);
-}
-
 void CollapsibleWidgetWithTitle::setCollapsed(bool collapse)
 {
 	if (collapse)
@@ -158,4 +148,3 @@ void CollapsibleWidgetWithTitle::extend()
 		this->content->setVisible(true);
 	}
 }
-

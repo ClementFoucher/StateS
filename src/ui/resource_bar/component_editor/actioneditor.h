@@ -36,7 +36,7 @@ class QItemSelection;
 
 // StateS Classes
 #include "statestypes.h"
-class CollapsibleWidgetWithTitle;
+class HintWidget;
 class ActionOnVariable;
 class ActionTableDelegate;
 class RangeEditorDialog;
@@ -118,13 +118,14 @@ private:
 private:
 	componentId_t actuatorId;
 
-	QTableView*                 actionTable        = nullptr;
-	QPushButton*                buttonAddAction    = nullptr;
-	QPushButton*                buttonRemoveAction = nullptr;
-	QPushButton*                buttonMoveUp       = nullptr;
-	QPushButton*                buttonMoveDown     = nullptr;
-	CollapsibleWidgetWithTitle* hintDisplay        = nullptr;
-	ActionTableDelegate*        valueColDelegate   = nullptr;
+	QTableView*  actionTable        = nullptr;
+	QPushButton* buttonAddAction    = nullptr;
+	QPushButton* buttonRemoveAction = nullptr;
+	QPushButton* buttonMoveUp       = nullptr;
+	QPushButton* buttonMoveDown     = nullptr;
+	HintWidget*  hintDisplay        = nullptr;
+
+	ActionTableDelegate* valueColDelegate   = nullptr;
 
 	RangeEditorDialog* rangeEditorDialog = nullptr;
 

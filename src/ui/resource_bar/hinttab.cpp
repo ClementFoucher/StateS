@@ -31,10 +31,11 @@
 #include "machinebuilder.h"
 #include "machinecomponentvisualizer.h"
 #include "collapsiblewidgetwithtitle.h"
+#include "hintwidget.h"
 
 
 HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
 
@@ -48,7 +49,7 @@ HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QW
 	//
 	// Hints
 
-	this->hintDisplay = new CollapsibleWidgetWithTitle(this);
+	this->hintDisplay = new HintWidget(this);
 	layout->addWidget(this->hintDisplay);
 
 	this->updateHint(MachineBuilderTool_t::none);
@@ -84,9 +85,13 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 		shared_ptr<MachineBuilder> machineBuiler = machineManager->getMachineBuilder();
 
 		if (machineBuiler != nullptr)
+		{
 			this->updateHint(machineBuiler->getTool());
+		}
 		else
+		{
 			this->updateHint(MachineBuilderTool_t::none);
+		}
 	}
 	else
 	{
@@ -134,7 +139,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 			break;
 		}
 
-		this->hintDisplay->setContent(title, hint, true);
+		this->hintDisplay->setContent(title, hint);
 	}
 }
 
@@ -219,5 +224,5 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		break;
 	}
 
-	this->hintDisplay->setContent(title, hint, true);
+	this->hintDisplay->setContent(title, hint);
 }

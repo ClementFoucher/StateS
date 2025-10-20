@@ -32,7 +32,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "truthtabledisplay.h"
-#include "collapsiblewidgetwithtitle.h"
+#include "hintwidget.h"
 #include "truthtable.h"
 #include "fsmverifier.h"
 
@@ -135,10 +135,8 @@ void VerifierTab::checkNow()
 		if (hasProofs)
 			hint += tr("Yellow highlighted issues can be double-clicked for more details on the error.");
 
-		this->hintBox = new CollapsibleWidgetWithTitle(this);
+		this->hintBox = new HintWidget(tr("Hint"), hint, this);
 		this->layout()->addWidget(this->hintBox);
-
-		this->hintBox->setContent(tr("Hint"), hint, true);
 	}
 
 	this->buttonClear = new QPushButton(tr("Clear verification"), this);
@@ -185,6 +183,6 @@ void VerifierTab::proofRequested(QListWidgetItem* item)
 
 		QString text = tr("Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.");
 
-		this->hintBox->setContent(tr("Details on error"), text, true);
+		this->hintBox->setContent(tr("Details on error"), text);
 	}
 }

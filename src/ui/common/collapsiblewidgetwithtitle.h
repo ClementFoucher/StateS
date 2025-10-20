@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,7 +46,6 @@ public:
 	// Object functions
 public:
 	void setContent(const QString& title, QWidget* content, bool deletePreviousContent = false);
-	void setContent(const QString& title, const QString& textContent, bool deletePreviousContent = false);
 
 	void setCollapsed(bool collapse);
 	bool getCollapsed();

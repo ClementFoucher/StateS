@@ -38,7 +38,7 @@ class QPushButton;
 // StateS classes
 #include "fsmverifier.h"
 class TruthTableDisplay;
-class CollapsibleWidgetWithTitle;
+class HintWidget;
 
 
 class VerifierTab : public QWidget
@@ -66,11 +66,11 @@ private:
 
 	bool checkVhdl = false;
 
-	QLabel*                     listTitle         = nullptr;
-	QListWidget*                list              = nullptr;
-	QPushButton*                buttonClear       = nullptr;
-	TruthTableDisplay*          truthTableDisplay = nullptr;
-	CollapsibleWidgetWithTitle* hintBox           = nullptr;
+	QLabel*            listTitle         = nullptr;
+	QListWidget*       list              = nullptr;
+	QPushButton*       buttonClear       = nullptr;
+	TruthTableDisplay* truthTableDisplay = nullptr;
+	HintWidget*        hintBox           = nullptr;
 
 };
 

@@ -32,6 +32,7 @@ using namespace std;
 // StateS classes
 #include "statestypes.h"
 class CollapsibleWidgetWithTitle;
+class HintWidget;
 class MachineComponentVisualizer;
 
 
@@ -59,7 +60,7 @@ private:
 	/////
 	// Object variables
 private:
-	CollapsibleWidgetWithTitle* hintDisplay    = nullptr;
+	HintWidget*                 hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
 	weak_ptr<MachineComponentVisualizer> machineComponentView;

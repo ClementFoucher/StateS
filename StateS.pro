@@ -102,6 +102,7 @@ SOURCES += \
 	src/ui/common/checkboxhtml.cpp \
 	src/ui/common/collapsiblewidgetwithtitle.cpp \
 	src/ui/common/contextmenu.cpp \
+	src/ui/common/hintwidget.cpp \
 	src/ui/common/labelwithclickevent.cpp \
 	src/ui/common/pixmapgenerator.cpp \
 	src/ui/common/reactivebutton.cpp \
@@ -240,6 +241,7 @@ HEADERS += \
 	src/ui/common/checkboxhtml.h \
 	src/ui/common/collapsiblewidgetwithtitle.h \
 	src/ui/common/contextmenu.h \
+	src/ui/common/hintwidget.h \
 	src/ui/common/labelwithclickevent.h \
 	src/ui/common/pixmapgenerator.h \
 	src/ui/common/reactivebutton.h \
