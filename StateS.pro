@@ -109,6 +109,7 @@ SOURCES += \
 	src/ui/common/statesdialog.cpp \
 	src/ui/common/statesgraphicsview.cpp \
 	src/ui/common/statesmainwindow.cpp \
+	src/ui/common/editors/actiontypecombobox.cpp \
 	src/ui/common/editors/dynamiclineeditor.cpp \
 	src/ui/common/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/common/editors/rangeeditor.cpp \
@@ -155,14 +156,13 @@ SOURCES += \
 	src/ui/resource_bar/machinecomponentvisualizer.cpp \
 	src/ui/resource_bar/resourcebar.cpp \
 	src/ui/resource_bar/verifiertab.cpp \
-	src/ui/resource_bar/component_editor/actioneditor.cpp \
-	src/ui/resource_bar/component_editor/actiontabledelegate.cpp \
-	src/ui/resource_bar/component_editor/actiontablemodel.cpp \
-	src/ui/resource_bar/component_editor/actiontypecombobox.cpp \
-	src/ui/resource_bar/component_editor/componenteditortab.cpp \
-	src/ui/resource_bar/component_editor/conditioneditor.cpp \
-	src/ui/resource_bar/component_editor/stateeditortab.cpp \
-	src/ui/resource_bar/component_editor/transitioneditortab.cpp \
+	src/ui/resource_bar/component_editor_tab/actioneditor.cpp \
+	src/ui/resource_bar/component_editor_tab/componenteditortab.cpp \
+	src/ui/resource_bar/component_editor_tab/conditioneditor.cpp \
+	src/ui/resource_bar/component_editor_tab/stateeditortab.cpp \
+	src/ui/resource_bar/component_editor_tab/transitioneditortab.cpp \
+	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabledelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp \
@@ -248,6 +248,7 @@ HEADERS += \
 	src/ui/common/statesdialog.h \
 	src/ui/common/statesgraphicsview.h \
 	src/ui/common/statesmainwindow.h \
+	src/ui/common/editors/actiontypecombobox.h \
 	src/ui/common/editors/dynamiclineeditor.h \
 	src/ui/common/editors/linewithupdownbuttonseditor.h \
 	src/ui/common/editors/rangeeditor.h \
@@ -294,14 +295,13 @@ HEADERS += \
 	src/ui/resource_bar/machinecomponentvisualizer.h \
 	src/ui/resource_bar/resourcebar.h \
 	src/ui/resource_bar/verifiertab.h \
-	src/ui/resource_bar/component_editor/actioneditor.h \
-	src/ui/resource_bar/component_editor/actiontabledelegate.h \
-	src/ui/resource_bar/component_editor/actiontablemodel.h \
-	src/ui/resource_bar/component_editor/actiontypecombobox.h \
-	src/ui/resource_bar/component_editor/componenteditortab.h \
-	src/ui/resource_bar/component_editor/conditioneditor.h \
-	src/ui/resource_bar/component_editor/stateeditortab.h \
-	src/ui/resource_bar/component_editor/transitioneditortab.h \
+	src/ui/resource_bar/component_editor_tab/actioneditor.h \
+	src/ui/resource_bar/component_editor_tab/componenteditortab.h \
+	src/ui/resource_bar/component_editor_tab/conditioneditor.h \
+	src/ui/resource_bar/component_editor_tab/stateeditortab.h \
+	src/ui/resource_bar/component_editor_tab/transitioneditortab.h \
+	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.h \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabledelegate.h \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.h \
@@ -363,7 +363,9 @@ INCLUDEPATH += \
 	src/ui/display_area/machine_editor_widget/toolbar \
 	src/ui/display_area/timeline_widget \
 	src/ui/resource_bar \
-	src/ui/resource_bar/component_editor \
+	src/ui/resource_bar/component_editor_tab \
+	src/ui/resource_bar/component_editor_tab/action_table \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates \
 	src/ui/resource_bar/machine_editor_tab \
 	src/ui/resource_bar/machine_editor_tab/variable_table \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates \
