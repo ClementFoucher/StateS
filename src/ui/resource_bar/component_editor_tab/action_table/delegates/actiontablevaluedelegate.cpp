@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "actiontabledelegate.h"
+#include "actiontablevaluedelegate.h"
 
 // Qt classes
 #include <QRegularExpressionValidator>
@@ -33,13 +33,13 @@
 #include "dynamiclineeditor.h"
 
 
-ActionTableDelegate::ActionTableDelegate(componentId_t actuatorId, QWidget* parent) :
+ActionTableValueDelegate::ActionTableValueDelegate(componentId_t actuatorId, QWidget* parent) :
     QStyledItemDelegate(parent)
 {
 	this->actuatorId = actuatorId;
 }
 
-QWidget* ActionTableDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
+QWidget* ActionTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;

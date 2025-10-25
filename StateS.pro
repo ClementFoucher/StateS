@@ -109,7 +109,7 @@ SOURCES += \
 	src/ui/common/statesdialog.cpp \
 	src/ui/common/statesgraphicsview.cpp \
 	src/ui/common/statesmainwindow.cpp \
-	src/ui/common/editors/actiontypecombobox.cpp \
+	src/ui/common/editors/actiontypeeditor.cpp \
 	src/ui/common/editors/dynamiclineeditor.cpp \
 	src/ui/common/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/common/editors/rangeeditor.cpp \
@@ -162,7 +162,7 @@ SOURCES += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp \
-	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabledelegate.cpp \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp \
@@ -248,7 +248,7 @@ HEADERS += \
 	src/ui/common/statesdialog.h \
 	src/ui/common/statesgraphicsview.h \
 	src/ui/common/statesmainwindow.h \
-	src/ui/common/editors/actiontypecombobox.h \
+	src/ui/common/editors/actiontypeeditor.h \
 	src/ui/common/editors/dynamiclineeditor.h \
 	src/ui/common/editors/linewithupdownbuttonseditor.h \
 	src/ui/common/editors/rangeeditor.h \
@@ -301,7 +301,7 @@ HEADERS += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.h \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.h \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.h \
-	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabledelegate.h \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.h \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.h \

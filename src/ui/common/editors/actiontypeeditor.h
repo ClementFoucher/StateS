@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,39 +19,46 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONTABLEDELEGATE_H
-#define ACTIONTABLEDELEGATE_H
+#ifndef ACTIONTYPEEDITOR_H
+#define ACTIONTYPEEDITOR_H
 
 // Parent
-#include <QStyledItemDelegate>
+#include <QComboBox>
+
+// C++ classes
+#include <memory>
+using namespace std;
 
 // StateS classes
-#include "statestypes.h"
+class ActionOnVariable;
 
 
 /**
- * @brief The ActionTableDelegate class provides an editor
- * for the action value cells in an ActionEditor table.
+ * @brief The ActionTypeEditor class displays
+ * a drop-down list displaying the allowed action
+ * types for a specific action, and changes the
+ * action type according to user selection in the
+ * list.
  */
-class ActionTableDelegate : public QStyledItemDelegate
+class ActionTypeEditor : public QComboBox
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableDelegate(componentId_t actuatorId, QWidget* parent = nullptr);
+	explicit ActionTypeEditor(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
-public:
-	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+private slots:
+	void processIndexChanged(int index);
 
 	/////
 	// Object variables
 private:
-	componentId_t actuatorId = nullId;
+	weak_ptr<ActionOnVariable> action;
 
 };
 
-#endif // ACTIONTABLEDELEGATE_H
+#endif // ACTIONTYPEEDITOR_H

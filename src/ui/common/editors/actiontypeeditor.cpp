@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "actiontypecombobox.h"
+#include "actiontypeeditor.h"
 
 // StateS classes
 #include "statestypes.h"
@@ -28,7 +28,7 @@
 #include "actiononvariable.h"
 
 
-ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent) :
+ActionTypeEditor::ActionTypeEditor(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent) :
     QComboBox(parent)
 {
 	this->action = action;
@@ -80,10 +80,10 @@ ActionTypeComboBox::ActionTypeComboBox(uint allowedActionTypes, shared_ptr<Actio
 	}
 
 	// Nice one... Qt5 style connect is sometime complicated to use
-	connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionTypeComboBox::processIndexChanged);
+	connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionTypeEditor::processIndexChanged);
 }
 
-void ActionTypeComboBox::processIndexChanged(int index)
+void ActionTypeEditor::processIndexChanged(int index)
 {
 	shared_ptr<ActionOnVariable> l_action = this->action.lock();
 

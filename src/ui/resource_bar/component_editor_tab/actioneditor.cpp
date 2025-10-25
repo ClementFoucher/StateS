@@ -37,13 +37,13 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "actiontypecombobox.h"
+#include "actiontypeeditor.h"
 #include "contextmenu.h"
 #include "variable.h"
 #include "rangeeditordialog.h"
 #include "hintwidget.h"
 #include "actiontablemodel.h"
-#include "actiontabledelegate.h"
+#include "actiontablevaluedelegate.h"
 #include "actiononvariable.h"
 
 
@@ -68,7 +68,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	ActionTableModel* tableModel = new ActionTableModel(actuatorId, this->actionTable);
 	this->actionTable->setModel(tableModel);
 	this->actionTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->valueColDelegate = new ActionTableDelegate(actuatorId, this->actionTable);
+	this->valueColDelegate = new ActionTableValueDelegate(actuatorId, this->actionTable);
 	this->actionTable->setItemDelegateForColumn(2, this->valueColDelegate);
 	this->actionTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	connect(this->actionTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
@@ -632,7 +632,7 @@ void ActionEditor::fillFirstColumn()
 			if (action == nullptr) continue;
 
 
-			this->actionTable->setIndexWidget(this->actionTable->model()->index(i, 0), new ActionTypeComboBox(actuator->getAllowedActionTypes(), action));
+			this->actionTable->setIndexWidget(this->actionTable->model()->index(i, 0), new ActionTypeEditor(actuator->getAllowedActionTypes(), action));
 		}
 	}
 	else
