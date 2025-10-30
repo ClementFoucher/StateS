@@ -55,7 +55,7 @@ QString StateS::getVersion()
 
 QString StateS::getCopyrightYears()
 {
-	return STATES_YEARS;
+	return STATES_DATE;
 }
 
 /////
