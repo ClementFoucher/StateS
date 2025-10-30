@@ -49,7 +49,7 @@ SimulatedFsmTransition::SimulatedFsmTransition(componentId_t logicComponentId) :
 	auto logicCondition = logicTransition->getCondition();
 	if (logicCondition != nullptr)
 	{
-		this->condition = shared_ptr<SimulatedEquation>(new SimulatedEquation(logicCondition));
+		this->condition = make_shared<SimulatedEquation>(logicCondition);
 	}
 
 	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);

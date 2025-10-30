@@ -77,7 +77,7 @@ void MachineSimulator::start(uint period)
 {
 	if (this->timer == nullptr)
 	{
-		this->timer = shared_ptr<QTimer>(new QTimer());
+		this->timer = make_shared<QTimer>();
 		connect(this->timer.get(), &QTimer::timeout, this, &MachineSimulator::timerTimeoutEventHandler);
 	}
 

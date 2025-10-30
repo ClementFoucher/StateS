@@ -45,7 +45,7 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRe
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(MachineXmlWriterMode_t::writeToUndo));
+		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriterMode_t::writeToUndo);
 	}
 
 	return machineWriter;
@@ -66,7 +66,7 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFi
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = shared_ptr<MachineXmlWriter>(new FsmXmlWriter(MachineXmlWriterMode_t::writeToFile, viewConfiguration));
+		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriterMode_t::writeToFile, viewConfiguration);
 	}
 
 	return machineWriter;
@@ -86,7 +86,7 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
 
 	if (analyzer->getMachineType() == MachineType_t::fsm)
 	{
-		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(xmlString));
+		machineParser = make_shared<FsmXmlParser>(xmlString);
 	}
 
 	return machineParser;
@@ -107,7 +107,7 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<
 
 	if (analyzer->getMachineType() == MachineType_t::fsm)
 	{
-		machineParser = shared_ptr<FsmXmlParser>(new FsmXmlParser(file));
+		machineParser = make_shared<FsmXmlParser>(file);
 	}
 
 	return machineParser;

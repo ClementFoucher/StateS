@@ -296,14 +296,14 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unkown_directory, tr("Specified directory doesn't exist."));
 	}
 
-	this->file = unique_ptr<QFile>(new QFile(machineStatus->getSaveFileFullPath()));
+	this->file = make_unique<QFile>(machineStatus->getSaveFileFullPath());
 	bool fileOpened = file->open(QIODevice::WriteOnly);
 	if (fileOpened == false)
 	{
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_open, tr("Unable to open file in write mode."));
 	}
 
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(this->file.get()));
+	this->stream = make_shared<QXmlStreamWriter>(this->file.get());
 
 	this->stream->setAutoFormatting(true);
 	this->stream->writeStartDocument();
@@ -312,7 +312,7 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 void MachineXmlWriter::createSaveString()
 {
 	this->xmlString = QString();
-	this->stream = shared_ptr<QXmlStreamWriter>(new QXmlStreamWriter(&this->xmlString));
+	this->stream = make_shared<QXmlStreamWriter>(&this->xmlString);
 }
 
 void MachineXmlWriter::finalizeSaveFile()

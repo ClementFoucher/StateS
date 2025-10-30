@@ -31,13 +31,13 @@
 FsmXmlParser::FsmXmlParser(const QString& xmlString) :
 	MachineXmlParser(xmlString)
 {
-	this->machine = shared_ptr<Fsm>(new Fsm());
+	this->machine = make_shared<Fsm>();
 }
 
 FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
 	MachineXmlParser(file)
 {
-	this->machine = shared_ptr<Fsm>(new Fsm());
+	this->machine = make_shared<Fsm>();
 }
 
 void FsmXmlParser::parseSubmachineStartElement()

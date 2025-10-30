@@ -60,7 +60,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t v
 		actionType = ActionOnVariableType_t::pulse;
 	}
 
-	auto action = shared_ptr<ActionOnVariable>(new ActionOnVariable(variableId, actionType));
+	auto action = make_shared<ActionOnVariable>(variableId, actionType);
 
 	this->addActionInternal(action, variable);
 

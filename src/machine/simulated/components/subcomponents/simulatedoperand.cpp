@@ -54,7 +54,7 @@ SimulatedOperand::SimulatedOperand(shared_ptr<const Operand> sourceOperand)
 		break;
 	}
 	case OperandSource_t::equation:
-		this->equation = shared_ptr<SimulatedEquation>(new SimulatedEquation(sourceOperand->getEquation()));
+		this->equation = make_shared<SimulatedEquation>(sourceOperand->getEquation());
 
 		connect(equation.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedOperand::operandCurrentValueChangedEvent);
 		break;

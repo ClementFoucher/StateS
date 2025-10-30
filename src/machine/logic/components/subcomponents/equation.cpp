@@ -80,7 +80,7 @@ Equation::Equation(OperatorType_t operatorType, int operandCount)
 
 shared_ptr<Equation> Equation::clone() const
 {
-	auto clonedEquation = shared_ptr<Equation>(new Equation(this->operatorType, this->operands.count()));
+	auto clonedEquation = make_shared<Equation>(this->operatorType, this->operands.count());
 
 	for (uint i = 0 ; i < this->operands.count() ; i++)
 	{
@@ -272,25 +272,25 @@ shared_ptr<Operand> Equation::getOperand(uint i) const
 
 void Equation::setOperand(uint i, componentId_t newOperand)
 {
-	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
 void Equation::setOperand(uint i, shared_ptr<Equation> newOperand)
 {
-	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
 void Equation::setOperand(uint i, LogicValue newOperand)
 {
-	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
 void Equation::setOperand(uint i, shared_ptr<Variable> newOperand)
 {
-	auto operand = shared_ptr<Operand>(new Operand(newOperand));
+	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 

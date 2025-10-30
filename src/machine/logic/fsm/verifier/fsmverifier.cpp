@@ -154,7 +154,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 						{
 							if (!detected)
 							{
-								currentIssue = shared_ptr<Issue>(new Issue());
+								currentIssue = make_shared<Issue>();
 								currentIssue->text = tr("Transitions from state") + " " + state->getName() + " " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time.");
 								currentIssue->proof = currentTruthTable;
 								currentIssue->type = VerifierSeverityLevel_t::structure;

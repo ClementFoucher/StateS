@@ -38,7 +38,7 @@
 MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 	StatesGraphicsView(parent)
 {
-	this->scene = shared_ptr<QGraphicsScene>(new QGraphicsScene());
+	this->scene = make_shared<QGraphicsScene>();
 
 	this->setDragMode(QGraphicsView::ScrollHandDrag);
 	this->setScene(this->scene.get());

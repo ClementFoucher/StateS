@@ -77,12 +77,12 @@ componentId_t Fsm::addState(const QString& name, componentId_t id)
 	componentId_t stateId;
 	if (id != nullId)
 	{
-		state = shared_ptr<FsmState>(new FsmState(id, cleanedName));
+		state = make_shared<FsmState>(id, cleanedName);
 		stateId = id;
 	}
 	else
 	{
-		state = shared_ptr<FsmState>(new FsmState(cleanedName));
+		state = make_shared<FsmState>(cleanedName);
 		stateId = state->getId();
 	}
 
@@ -105,12 +105,12 @@ componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targ
 
 	if (id != nullId)
 	{
-		transition = shared_ptr<FsmTransition>(new FsmTransition(id, source->getId(), target->getId()));
+		transition = make_shared<FsmTransition>(id, source->getId(), target->getId());
 		transitionId = id;
 	}
 	else
 	{
-		transition = shared_ptr<FsmTransition>(new FsmTransition(source->getId(), target->getId()));
+		transition = make_shared<FsmTransition>(source->getId(), target->getId());
 		transitionId = transition->getId();
 	}
 

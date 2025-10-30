@@ -89,13 +89,13 @@ shared_ptr<Operand> Operand::clone() const
 	switch (this->source)
 	{
 	case OperandSource_t::variable:
-		return shared_ptr<Operand>(new Operand(this->variableId));
+		return make_shared<Operand>(this->variableId);
 		break;
 	case OperandSource_t::equation:
-		return shared_ptr<Operand>(new Operand(this->equation->clone()));
+		return make_shared<Operand>(this->equation->clone());
 		break;
 	case OperandSource_t::constant:
-		return shared_ptr<Operand>(new Operand(this->constant));
+		return make_shared<Operand>(this->constant);
 		break;
 	}
 }

@@ -353,7 +353,7 @@ void StatesUi::beginExportImageProcedure()
 
 	this->editor->clearSelection();
 
-	auto exporter = shared_ptr<MachineImageExporter>(new MachineImageExporter(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene()));
+	auto exporter = make_shared<MachineImageExporter>(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene());
 
 	this->imageExportDialog = new ImageExportDialog(machine->getName(), exporter, machineStatus->getImageExportPath(), this);
 	connect(this->imageExportDialog, &ImageExportDialog::finished, this, &StatesUi::imageExportDialogClosedEventHandler);
@@ -369,7 +369,7 @@ void StatesUi::beginExportVhdlProcedure()
 
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 
-	auto exporter = shared_ptr<FsmVhdlExport>(new FsmVhdlExport());
+	auto exporter = make_shared<FsmVhdlExport>();
 
 	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportPath(), exporter, this);
 	connect(this->vhdlExportDialog, &VhdlExportDialog::finished, this, &StatesUi::vhdlExportDialogClosedEventHandler);

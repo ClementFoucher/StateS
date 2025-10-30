@@ -38,14 +38,14 @@
 
 MachineXmlParser::MachineXmlParser()
 {
-	this->graphicAttributes = shared_ptr<GraphicAttributes>(new GraphicAttributes());
-	this->viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
+	this->graphicAttributes = make_shared<GraphicAttributes>();
+	this->viewConfiguration = make_shared<ViewConfiguration>();
 }
 
 MachineXmlParser::MachineXmlParser(const QString& xmlString) :
 	MachineXmlParser()
 {
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlString));
+	this->xmlReader = make_shared<QXmlStreamReader>(xmlString);
 }
 
 MachineXmlParser::MachineXmlParser(shared_ptr<QFile> file) :
@@ -61,7 +61,7 @@ MachineXmlParser::MachineXmlParser(shared_ptr<QFile> file) :
 		file->reset();
 	}
 
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
+	this->xmlReader = make_shared<QXmlStreamReader>(file.get());
 }
 
 void MachineXmlParser::doParse()
@@ -228,7 +228,7 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Build action
-	auto action = shared_ptr<ActionOnVariable>(new ActionOnVariable(variable, actionType, actionValue, rangeL, rangeR));
+	auto action = make_shared<ActionOnVariable>(variable, actionType, actionValue, rangeL, rangeR);
 	currentActuator->addAction(action, variable);
 }
 
@@ -318,7 +318,7 @@ void MachineXmlParser::parseLogicEquationNode()
 	}
 
 	// Build equation
-	auto equation = shared_ptr<Equation>(new Equation(operatorType, operandCount));
+	auto equation = make_shared<Equation>(operatorType, operandCount);
 
 	if (operatorType == OperatorType_t::extractOp)
 	{
@@ -379,7 +379,7 @@ void MachineXmlParser::parseOperandVariableNode()
 	}
 	else
 	{
-		auto equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
+		auto equation = make_shared<Equation>(OperatorType_t::identity);
 		equation->setOperand(0, variable);
 
 		this->equationStack.push(equation);
@@ -413,7 +413,7 @@ void MachineXmlParser::parseOperandConstantNode()
 	}
 	else
 	{
-		auto equation = shared_ptr<Equation>(new Equation(OperatorType_t::identity));
+		auto equation = make_shared<Equation>(OperatorType_t::identity);
 		equation->setOperand(0, constantValue);
 
 		this->equationStack.push(equation);

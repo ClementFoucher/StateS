@@ -38,13 +38,13 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file)
 		file->reset();
 	}
 
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(file.get()));
+	this->xmlReader = make_shared<QXmlStreamReader>(file.get());
 	this->parse();
 }
 
 StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource)
 {
-	this->xmlReader = shared_ptr<QXmlStreamReader>(new QXmlStreamReader(xmlSource));
+	this->xmlReader = make_shared<QXmlStreamReader>(xmlSource);
 	this->parse();
 }
 

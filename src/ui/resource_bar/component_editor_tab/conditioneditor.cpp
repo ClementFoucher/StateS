@@ -298,7 +298,7 @@ void ConditionEditor::expandTruthTable()
 
 		if (condition->getOperatorType() != OperatorType_t::identity)
 		{
-			this->truthTable = shared_ptr<TruthTable>(new TruthTable(condition));
+			this->truthTable = make_shared<TruthTable>(condition);
 
 			this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
 			this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);

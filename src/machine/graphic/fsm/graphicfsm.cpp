@@ -75,7 +75,7 @@ void GraphicFsm::buildSimulation()
 
 shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
 {
-	auto machineConfiguration = shared_ptr<GraphicAttributes>(new GraphicAttributes());
+	auto machineConfiguration = make_shared<GraphicAttributes>();
 
 	auto states = this->getStates();
 	for (auto state : states)
@@ -375,7 +375,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 		if (newFriend != nullptr)
 		{
 			// Build neighborhood and act as if it already existed
-			neighborhood = shared_ptr<GraphicFsmTransitionNeighborhood>(new GraphicFsmTransitionNeighborhood(this->getState(stateId1), this->getState(stateId2)));
+			neighborhood = make_shared<GraphicFsmTransitionNeighborhood>(this->getState(stateId1), this->getState(stateId2));
 
 			if (this->neighborhoods.contains(stateId1) == false)
 			{

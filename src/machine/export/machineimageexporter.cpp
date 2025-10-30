@@ -235,12 +235,12 @@ void MachineImageExporter::generatePrintingRects()
 		}
 	}
 
-	this->painter = shared_ptr<QPainter>(new QPainter());
+	this->painter = make_shared<QPainter>();
 }
 
 void MachineImageExporter::preparePdfPrinter(const QString& path, const QString& title, const QString& creator)
 {
-	this->printer = shared_ptr<QPrinter>(new QPrinter(QPrinter::HighResolution));
+	this->printer = make_shared<QPrinter>(QPrinter::HighResolution);
 
 	this->printer->setOutputFormat(QPrinter::PdfFormat);
 	this->printer->setPageSize(QPageSize(QPageSize::A4));
@@ -262,7 +262,7 @@ void MachineImageExporter::renderPdf()
 
 void MachineImageExporter::renderSvg(const QString& path, const QString& title, const QString& creator)
 {
-	this->generator = shared_ptr<QSvgGenerator>(new QSvgGenerator());
+	this->generator = make_shared<QSvgGenerator>();
 
 	this->generator->setSize(this->pageRect.size().toSize());
 
@@ -279,7 +279,7 @@ void MachineImageExporter::renderSvg(const QString& path, const QString& title, 
 
 void MachineImageExporter::renderBitmap()
 {
-	this->pixmap = shared_ptr<QPixmap>(new QPixmap(this->pageRect.size().toSize()));
+	this->pixmap = make_shared<QPixmap>(this->pageRect.size().toSize());
 
 	this->pixmap->fill();
 
@@ -297,7 +297,7 @@ void MachineImageExporter::renderOnPainter()
 	{
 		if (this->addBorder == true)
 		{
-			this->border = shared_ptr<QGraphicsScene>(new QGraphicsScene(this->pageRect));
+			this->border = make_shared<QGraphicsScene>(this->pageRect);
 		}
 
 		this->renderScene();

@@ -62,7 +62,7 @@ void VerifierTab::checkNow()
 {
 	this->clearDisplay();
 
-	this->verifier = unique_ptr<FsmVerifier>(new FsmVerifier());
+	this->verifier = make_unique<FsmVerifier>();
 	const QList<shared_ptr<FsmVerifier::Issue>>& issues = this->verifier->verifyFsm(this->checkVhdl);
 
 	if (issues.count() == 0)

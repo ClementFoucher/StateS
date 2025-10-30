@@ -41,7 +41,7 @@ SimulatedActuatorComponent::SimulatedActuatorComponent(componentId_t componentId
 
 	for (auto& action : logicComponent->getActions())
 	{
-		auto simulatedAction = shared_ptr<SimulatedActionOnVariable>(new SimulatedActionOnVariable(action));
+		auto simulatedAction = make_shared<SimulatedActionOnVariable>(action);
 		this->actionList.append(simulatedAction);
 	}
 }

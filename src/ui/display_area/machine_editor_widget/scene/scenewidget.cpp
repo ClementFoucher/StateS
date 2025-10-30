@@ -114,7 +114,7 @@ void SceneWidget::setView(shared_ptr<ViewConfiguration> viewConfiguration)
 
 shared_ptr<ViewConfiguration> SceneWidget::getView() const
 {
-	shared_ptr<ViewConfiguration> viewConfiguration = shared_ptr<ViewConfiguration>(new ViewConfiguration());
+	auto viewConfiguration = make_shared<ViewConfiguration>();
 
 	viewConfiguration->viewCenter = this->getVisibleArea().center();
 	viewConfiguration->zoomLevel  = this->getZoomLevel();

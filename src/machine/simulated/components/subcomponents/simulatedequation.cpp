@@ -50,7 +50,7 @@ SimulatedEquation::SimulatedEquation(shared_ptr<const Equation> sourceEquation)
 		if (logicOperand == nullptr) continue;
 
 
-		auto simulatedOperand = shared_ptr<SimulatedOperand>(new SimulatedOperand(sourceEquation->getOperand(i)));
+		auto simulatedOperand = make_shared<SimulatedOperand>(sourceEquation->getOperand(i));
 
 		if (this->isValid == true)
 		{

@@ -150,8 +150,8 @@ void StateS::generateNewFsm()
 	machineStatus->setUnsavedFlag(false);
 
 	machineManager->clearMachine();
-	shared_ptr<Machine> newMachine = shared_ptr<Fsm>(new Fsm());
-	machineManager->setMachine(newMachine, shared_ptr<GraphicAttributes>(new GraphicAttributes()));
+	auto newMachine = make_shared<Fsm>();
+	machineManager->setMachine(newMachine, make_shared<GraphicAttributes>());
 }
 
 /**

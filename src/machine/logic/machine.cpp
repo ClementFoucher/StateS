@@ -105,11 +105,11 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 	componentId_t componentId = id;
 	if (id != nullId)
 	{
-		variable = shared_ptr<Variable>(new Variable(id, cleanedName));
+		variable = make_shared<Variable>(id, cleanedName);
 	}
 	else
 	{
-		variable = shared_ptr<Variable>(new Variable(cleanedName));
+		variable = make_shared<Variable>(cleanedName);
 		componentId = variable->getId();
 	}
 

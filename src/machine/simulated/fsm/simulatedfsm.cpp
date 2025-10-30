@@ -61,13 +61,13 @@ void SimulatedFsm::build()
 
 	for (const auto& stateId : fsm->getAllStatesIds())
 	{
-		auto simulatedState = shared_ptr<SimulatedFsmState>(new SimulatedFsmState(stateId));
+		auto simulatedState = make_shared<SimulatedFsmState>(stateId);
 		this->registerSimulatedComponent(stateId, simulatedState);
 	}
 
 	for (const auto& transitionId : fsm->getAllTransitionsIds())
 	{
-		auto simulatedTransition = shared_ptr<SimulatedFsmTransition>(new SimulatedFsmTransition(transitionId));
+		auto simulatedTransition = make_shared<SimulatedFsmTransition>(transitionId);
 		this->registerSimulatedComponent(transitionId, simulatedTransition);
 	}
 }

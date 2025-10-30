@@ -43,7 +43,7 @@ void SimulatedMachine::build()
 	auto variablesIds = machine->getAllVariablesIds();
 	for (auto variableId : variablesIds)
 	{
-		auto simulatedVariable = shared_ptr<SimulatedVariable>(new SimulatedVariable(variableId));
+		auto simulatedVariable = make_shared<SimulatedVariable>(variableId);
 		this->registerSimulatedComponent(variableId, simulatedVariable);
 	}
 }
