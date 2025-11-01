@@ -22,9 +22,8 @@
 #ifndef GRAPHICCOMPONENT_H
 #define GRAPHICCOMPONENT_H
 
-// Parents
-#include <QObject>
-#include <QGraphicsItem>
+// Parent
+#include <QGraphicsObject>
 
 // Qt classes
 class QAbstractGraphicsShapeItem;
@@ -33,7 +32,7 @@ class QAbstractGraphicsShapeItem;
 #include "statestypes.h"
 
 
-class GraphicComponent : public QObject, public QGraphicsItem
+class GraphicComponent : public QGraphicsObject
 {
 	Q_OBJECT
 
