@@ -75,11 +75,10 @@ protected:
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 	void clearSelectionShape();
+	void refreshSelectionShapeVisibility();
 
 private:
 	virtual QAbstractGraphicsShapeItem* buildSelectionShape() = 0;
-
-	void refreshSelectionShapeVisibility();
 
 	/////
 	// Object variables

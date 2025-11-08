@@ -158,6 +158,11 @@ void GraphicFsmTransition::refreshDisplay()
 	// Reposition other items
 	this->refreshChildrenItems();
 	this->refreshExternalItems();
+
+	// As we deleted and rebuilt the whole shape,
+	// we have to check if the item is selected
+	// and rebuild the selection shape if so.
+	this->refreshSelectionShapeVisibility();
 }
 
 componentId_t GraphicFsmTransition::getSourceStateId() const
