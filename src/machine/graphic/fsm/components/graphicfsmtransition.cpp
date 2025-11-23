@@ -290,10 +290,6 @@ void GraphicFsmTransition::keyPressEvent(QKeyEvent* event)
 
 		this->contextMenuEvent(contextEvent);
 	}
-	else if (event->key() == Qt::Key_Delete)
-	{
-		emit this->deleteTransitionCalledEvent(this->getLogicComponentId());
-	}
 	else
 	{
 		event->ignore();
@@ -406,6 +402,7 @@ void GraphicFsmTransition::treatMenu(QAction* action)
 	}
 	else if (action->text() == tr("Delete"))
 	{
+		// This call will destroy the current object
 		emit this->deleteTransitionCalledEvent(this->getLogicComponentId());
 	}
 }

@@ -403,10 +403,52 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 	}
 	else if (ke->key() == Qt::Key_Delete)
 	{
-		// Allow deleting scene components only in idle state
+		// Only allow deleting scene components when in idle mode
 		if (this->sceneMode == SceneMode_t::idle)
 		{
-			GenericScene::keyPressEvent(ke);
+			auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+			if (fsm == nullptr) return;
+
+
+			const auto selectedItems = this->selectedItems();
+			if (selectedItems.count() > 0)
+			{
+				QList<GraphicFsmTransition*> selectedTransitions;
+				QList<GraphicFsmState*>      selectedStates;
+
+				bool atLeastOneItemToDelete = false;
+				for (QGraphicsItem* item : selectedItems)
+				{
+					auto transition = dynamic_cast<GraphicFsmTransition*>(item);
+					auto state      = dynamic_cast<GraphicFsmState*>     (item);
+					if (transition != nullptr)
+					{
+						selectedTransitions.append(transition);
+						atLeastOneItemToDelete = true;
+					}
+					else if (state != nullptr)
+					{
+						selectedStates.append(state);
+						atLeastOneItemToDelete = true;
+					}
+				}
+
+				// Delete selected items
+				for (auto& transition : selectedTransitions)
+				{
+					fsm->removeTransition(transition->getLogicComponentId());
+				}
+				for (auto& state : selectedStates)
+				{
+					fsm->removeState(state->getLogicComponentId());
+				}
+
+				if (atLeastOneItemToDelete == true)
+				{
+					// Machine has been edited
+					machineManager->notifyMachineEdited();
+				}
+			}
 		}
 	}
 	else
@@ -516,7 +558,7 @@ void FsmScene::stateCallsEditEventHandler(componentId_t stateId)
 
 	this->clearSelection();
 	graphicState->setSelected(true);
-	emit editSelectedItemEvent();
+	emit this->editSelectedItemEvent();
 }
 
 void FsmScene::stateCallsRenameEventHandler(componentId_t stateId)
@@ -530,7 +572,7 @@ void FsmScene::stateCallsRenameEventHandler(componentId_t stateId)
 
 	this->clearSelection();
 	graphicState->setSelected(true);
-	emit renameSelectedItemEvent();
+	emit this->renameSelectedItemEvent();
 }
 
 void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
@@ -538,39 +580,12 @@ void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
 
-	auto logicState = fsm->getState(stateId);
-	if (logicState == nullptr) return;
 
-	bool doDelete = false;
-	int linkedTransitions = logicState->getOutgoingTransitionsIds().count() + logicState->getIncomingTransitionsIds().count();
-	if (linkedTransitions != 0)
-	{
-		QString messageText = tr("Delete current state?") + "<br />";
-		if (linkedTransitions == 1)
-			messageText += tr("The connected transition will be deleted");
-		else
-			messageText += tr("All") + " " + QString::number(linkedTransitions) + " " + tr("connected transitions will be deleted");
+	// Update FSM
+	fsm->removeState(stateId);
 
-		QMessageBox::StandardButton reply = QMessageBox::question(this->views().at(0), tr("User confirmation required"), messageText, QMessageBox::Ok | QMessageBox::Cancel);
-
-		if (reply == QMessageBox::StandardButton::Ok)
-		{
-			doDelete = true;
-		}
-	}
-	else
-	{
-		doDelete = true;
-	}
-
-	if (doDelete == true)
-	{
-		// Update FSM
-		fsm->removeState(stateId);
-
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
-	}
+	// Machine has been edited
+	machineManager->notifyMachineEdited();
 }
 
 void FsmScene::stateCallsSetInitialStateEventHandler(componentId_t stateId)
@@ -708,7 +723,7 @@ void FsmScene::transitionCallsEditEventHandler(componentId_t transitionId)
 
 	this->clearSelection();
 	transition->setSelected(true);
-	emit editSelectedItemEvent();
+	emit this->editSelectedItemEvent();
 }
 
 void FsmScene::transitionCallsDeleteEventHandler(componentId_t transitionId)
@@ -717,7 +732,10 @@ void FsmScene::transitionCallsDeleteEventHandler(componentId_t transitionId)
 	if (fsm == nullptr) return;
 
 
+	// Update FSM
 	fsm->removeTransition(transitionId);
+
+	// Machine has been edited
 	machineManager->notifyMachineEdited();
 }
 
@@ -739,20 +757,20 @@ void FsmScene::handleSelection()
 		GraphicFsmState* currentState = dynamic_cast< GraphicFsmState* >(this->selectedItems().at(0));
 		if (currentState != nullptr)
 		{
-			emit itemSelectedEvent(currentState->getLogicComponentId());
+			emit this->itemSelectedEvent(currentState->getLogicComponentId());
 		}
 		else
 		{
 			GraphicFsmTransition* currentTransition = dynamic_cast< GraphicFsmTransition* >(this->selectedItems().at(0));
 			if (currentTransition!= nullptr)
 			{
-				emit itemSelectedEvent(currentTransition->getLogicComponentId());
+				emit this->itemSelectedEvent(currentTransition->getLogicComponentId());
 			}
 		}
 	}
 	else
 	{
-		emit itemSelectedEvent(nullId);
+		emit this->itemSelectedEvent(nullId);
 	}
 }
 

@@ -156,12 +156,7 @@ ActionBox* GraphicFsmState::getActionBox() const
 
 void GraphicFsmState::keyPressEvent(QKeyEvent* event)
 {
-	if (event->key() == Qt::Key_Delete)
-	{
-		// This call may destroy the current object
-		emit this->deleteStateCalledEvent(this->getLogicComponentId());
-	}
-	else if (event->key() == Qt::Key_Menu)
+	if (event->key() == Qt::Key_Menu)
 	{
 		QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
 
@@ -284,7 +279,7 @@ void GraphicFsmState::treatMenu(QAction* action)
 	}
 	else if (action->text() == tr("Delete"))
 	{
-		// This call may destroy the current object
+		// This call will destroy the current object
 		emit this->deleteStateCalledEvent(this->getLogicComponentId());
 	}
 	else if (action->text() == tr("Draw transition from this state"))
