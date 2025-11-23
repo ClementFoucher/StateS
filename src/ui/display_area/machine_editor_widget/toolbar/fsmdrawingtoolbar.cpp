@@ -30,7 +30,7 @@
 
 
 FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
-    DrawingToolBar(parent)
+	DrawingToolBar(parent)
 {
 	// Build actions
 	this->actionMouse = new QAction(this);

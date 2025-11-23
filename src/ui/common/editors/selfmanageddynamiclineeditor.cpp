@@ -36,11 +36,6 @@ SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(const QString& conten
 	connect(this, &QLineEdit::editingFinished, this, &SelfManagedDynamicLineEditor::userValidatedEventHandler);
 }
 
-SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(QWidget* parent) :
-	SelfManagedDynamicLineEditor(nullptr, parent)
-{
-}
-
 void SelfManagedDynamicLineEditor::userValidatedEventHandler()
 {
 	// Go back to normal mode on edit end.

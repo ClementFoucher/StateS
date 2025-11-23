@@ -84,7 +84,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmVhdlExport();
+	explicit FsmVhdlExport() = default;
 
 	/////
 	// Object functions

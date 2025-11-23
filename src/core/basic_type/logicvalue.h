@@ -40,9 +40,9 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit LogicValue();
+	explicit LogicValue() : QVector<bool>() {}
 	LogicValue(const LogicValue& stateToCopy);
-	explicit LogicValue(uint bitCount, bool initialValue = false);
+	explicit LogicValue(uint bitCount, bool initialValue = false) : QVector<bool>(bitCount, initialValue) {}
 
 	/////
 	// Object functions

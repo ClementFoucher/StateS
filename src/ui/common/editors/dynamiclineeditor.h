@@ -44,8 +44,8 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit DynamicLineEditor(const QString& content, QWidget* parent = nullptr);
-	explicit DynamicLineEditor(QWidget* parent = nullptr);
+	explicit DynamicLineEditor(const QString& content, QWidget* parent = nullptr) : QLineEdit(content, parent) {}
+	explicit DynamicLineEditor(QWidget* parent = nullptr) : QLineEdit(parent) {}
 
 	/////
 	// Object functions

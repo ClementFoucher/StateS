@@ -31,7 +31,7 @@
 
 
 TruthTableOutputTableModel::TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
-    QAbstractTableModel(parent)
+	QAbstractTableModel(parent)
 {
 	this->truthTable = truthTable;
 	this->highlights = highlights;

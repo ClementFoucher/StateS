@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -21,10 +21,3 @@
 
 // Current class header
 #include "componenteditortab.h"
-
-
-ComponentEditorTab::ComponentEditorTab(QWidget* parent) :
-    QWidget(parent)
-{
-
-}

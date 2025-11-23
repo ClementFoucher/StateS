@@ -46,7 +46,7 @@ unique_ptr<MachineManager> machineManager = make_unique<MachineManager>();
 // Constructors/destructors
 
 MachineManager::MachineManager() :
-    QObject()
+	QObject()
 {
 	this->machineStatus   = make_shared<MachineStatus>();
 	this->undoRedoManager = make_unique<UndoRedoManager>();

@@ -34,16 +34,6 @@ const QString DynamicLineEditor::errorStyle = QString("QLineEdit {background-col
 // Class object definition
 //
 
-DynamicLineEditor::DynamicLineEditor(const QString& content, QWidget* parent) :
-	QLineEdit(content, parent)
-{
-}
-
-DynamicLineEditor::DynamicLineEditor(QWidget* parent) :
-	QLineEdit(parent)
-{
-}
-
 void DynamicLineEditor::setErroneous(bool erroneous)
 {
 	this->erroneous = erroneous;

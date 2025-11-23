@@ -46,7 +46,7 @@
 
 
 FsmScene::FsmScene() :
-    GenericScene()
+	GenericScene()
 {
 	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 

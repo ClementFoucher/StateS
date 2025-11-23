@@ -33,7 +33,7 @@
 
 
 CheckBoxHtml::CheckBoxHtml(const QString& text, QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	QFormLayout* layout = new QFormLayout(this);
 

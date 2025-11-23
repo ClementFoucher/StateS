@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -37,11 +37,12 @@ class MachineUndoCommand : public QObject, public QUndoCommand
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineUndoCommand();
+	explicit MachineUndoCommand() = default;
 	explicit MachineUndoCommand(const QString& previousName);
 
 	/////
 	// Object functions
+public:
 	virtual void undo() override;
 	virtual void redo() override;
 

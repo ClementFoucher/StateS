@@ -33,7 +33,7 @@ class ReactiveButton : public QPushButton
 	/////
 	// Constructors/destructors
 public:
-	explicit ReactiveButton(const QString& text, QWidget* parent = nullptr);
+	explicit ReactiveButton(const QString& text, QWidget* parent = nullptr) : QPushButton(text, parent) {}
 
 	/////
 	// Object functions

@@ -41,7 +41,7 @@ class Fsm : public Machine
 	/////
 	// Constructors/destructors
 public:
-	explicit Fsm();
+	explicit Fsm() = default;
 
 	// Pseudo-constructor to process post-loading actions
 	virtual void finalizeLoading() override;

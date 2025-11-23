@@ -56,11 +56,6 @@ CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWi
 	this->extend();
 }
 
-CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(QWidget* parent) :
-	CollapsibleWidgetWithTitle(QString(), nullptr, parent)
-{
-}
-
 void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* content, bool deletePreviousContent)
 {
 	if (this->content != nullptr)

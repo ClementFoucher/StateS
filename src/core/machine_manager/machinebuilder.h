@@ -40,7 +40,7 @@ class MachineBuilder : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineBuilder();
+	explicit MachineBuilder() = default;
 
 	/////
 	// Object functions

@@ -34,7 +34,7 @@
 
 
 ActionTableValueDelegate::ActionTableValueDelegate(componentId_t actuatorId, QWidget* parent) :
-    QStyledItemDelegate(parent)
+	QStyledItemDelegate(parent)
 {
 	this->actuatorId = actuatorId;
 }

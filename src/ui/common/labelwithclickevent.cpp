@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,17 +26,11 @@
 #include <QMouseEvent>
 
 
-LabelWithClickEvent::LabelWithClickEvent(const QString &text, QWidget* parent) :
-    QLabel(text, parent)
-{
-
-}
-
 /*
  * Normal QLabel intercepts mouseReleaseEvent (why?)
  * This allows to redirect all mouse events to a specific signal.
- * TODO: Should we still transmit event to parent when redirecting signal?
  *
+ * TODO: Should we still transmit event to parent when redirecting signal?
  */
 bool LabelWithClickEvent::event(QEvent *e)
 {

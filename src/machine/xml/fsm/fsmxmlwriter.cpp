@@ -36,7 +36,7 @@
 
 
 FsmXmlWriter::FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration) :
-    MachineXmlWriter(mode, viewConfiguration)
+	MachineXmlWriter(mode, viewConfiguration)
 {
 
 }

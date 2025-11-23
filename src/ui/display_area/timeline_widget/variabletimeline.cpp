@@ -36,7 +36,7 @@
 
 
 VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	auto machineSimulator = machineManager->getMachineSimulator();
 	if (machineSimulator == nullptr) return;

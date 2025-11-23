@@ -38,7 +38,7 @@
 
 
 VerifierTab::VerifierTab(QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &VerifierTab::clearDisplay);
 

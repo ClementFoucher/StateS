@@ -24,7 +24,7 @@
 
 
 GraphicTimeLine::GraphicTimeLine(uint eventDelay, QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	this->eventDelay = eventDelay;
 }

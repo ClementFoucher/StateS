@@ -30,7 +30,7 @@
 
 
 MachineEditorWidget::MachineEditorWidget(QWidget* parent) :
-    QMainWindow(parent)
+	QMainWindow(parent)
 {
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent, this, &MachineEditorWidget::machineReplacedEventHandler);
 

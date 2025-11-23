@@ -33,11 +33,6 @@
 #include "variable.h"
 
 
-FsmVerifier::FsmVerifier() :
-	QObject()
-{
-}
-
 FsmVerifier::~FsmVerifier()
 {
 	this->clearProofs();

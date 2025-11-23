@@ -30,7 +30,7 @@
 
 
 /////
-// Static
+// Static functions
 
 QString DiffUndoCommand::machineXmlRepresentation;
 
@@ -45,9 +45,8 @@ void DiffUndoCommand::updateXmlRepresentation()
 	}
 }
 
-
 /////
-// Object
+// Constructors/destructors
 
 DiffUndoCommand::DiffUndoCommand()
 {
@@ -65,6 +64,9 @@ DiffUndoCommand::DiffUndoCommand()
 		this->undoPatch = diffComputer.patch_make(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
 	}
 }
+
+/////
+// Object functions
 
 bool DiffUndoCommand::isEmpty()
 {

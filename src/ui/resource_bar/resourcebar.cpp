@@ -38,7 +38,7 @@
 
 
 ResourceBar::ResourceBar(QWidget* parent) :
-    QTabWidget(parent)
+	QTabWidget(parent)
 {
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,        this, &ResourceBar::clearSelection);
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent,       this, &ResourceBar::machineReplacedEventHandler);

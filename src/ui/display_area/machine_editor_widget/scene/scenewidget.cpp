@@ -49,7 +49,7 @@ const qreal  SceneWidget::sceneMargin = 100;
 // Object
 
 SceneWidget::SceneWidget(QWidget* parent) :
-    StatesGraphicsView(parent)
+	StatesGraphicsView(parent)
 {
 	// Connect Machine Manager
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent,       this, &SceneWidget::machineReplacedEventHandler);

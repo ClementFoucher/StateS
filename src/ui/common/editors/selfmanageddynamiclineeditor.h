@@ -34,7 +34,7 @@ class SelfManagedDynamicLineEditor : public DynamicLineEditor
 	// Constructors/destructors
 public:
 	explicit SelfManagedDynamicLineEditor(const QString& content, QWidget* parent = nullptr);
-	explicit SelfManagedDynamicLineEditor(QWidget* parent = nullptr);
+	explicit SelfManagedDynamicLineEditor(QWidget* parent = nullptr) : SelfManagedDynamicLineEditor(nullptr, parent) {}
 
 	/////
 	// Object functions

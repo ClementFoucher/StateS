@@ -64,24 +64,14 @@ LogicValue LogicValue::fromString(const QString &textValue)
 	return realValue;
 }
 
-LogicValue::LogicValue() :
-    QVector<bool>()
-{
-}
-
 LogicValue::LogicValue(const LogicValue& stateToCopy) :
-    LogicValue(stateToCopy.getSize())
+	LogicValue(stateToCopy.getSize())
 {
 	// Force deep copy
 	for (uint i = 0 ; i < stateToCopy.getSize() ; i++)
 	{
 		(*this)[i] = stateToCopy[i];
 	}
-}
-
-LogicValue::LogicValue(uint bitCount, bool initialValue) :
-    QVector<bool>(bitCount, initialValue)
-{
 }
 
 void LogicValue::resize(uint newSize)

@@ -33,7 +33,7 @@
 
 
 TruthTableDisplay::TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights, QWidget* parent) :
-    QTableWidget(parent)
+	QTableWidget(parent)
 {
 	this->insertColumn(0);
 	this->insertColumn(1);

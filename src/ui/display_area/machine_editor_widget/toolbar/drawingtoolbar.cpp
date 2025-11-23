@@ -26,7 +26,7 @@
 
 
 DrawingToolBar::DrawingToolBar(QWidget* parent) :
-    QToolBar(parent)
+	QToolBar(parent)
 {
 	this->setIconSize(QSize(16, 16));
 	this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

@@ -34,7 +34,7 @@
 
 
 InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget* parent) :
-    QFrame(parent)
+	QFrame(parent)
 {
 	auto simulatedMachine = machineManager->getSimulatedMachine();
 	if (simulatedMachine == nullptr) return;

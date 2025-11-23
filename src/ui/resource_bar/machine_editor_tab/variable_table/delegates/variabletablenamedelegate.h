@@ -33,7 +33,7 @@ class VariableTableNameDelegate : public QStyledItemDelegate
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableNameDelegate(QWidget* parent = nullptr);
+	explicit VariableTableNameDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
 
 	/////
 	// Object functions

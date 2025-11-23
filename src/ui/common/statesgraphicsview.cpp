@@ -27,7 +27,7 @@
 
 
 StatesGraphicsView::StatesGraphicsView(QWidget* parent) :
-    QGraphicsView(parent)
+	QGraphicsView(parent)
 {
 	// Ensure background is white as we do not support dark mode yet
 	this->setBackgroundBrush(Qt::white);

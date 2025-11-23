@@ -40,7 +40,7 @@ class CollapsibleWidgetWithTitle : public QFrame
 	// Constructors/destructors
 public:
 	explicit CollapsibleWidgetWithTitle(const QString& title, QWidget* content, QWidget* parent = nullptr);
-	explicit CollapsibleWidgetWithTitle(QWidget* parent = nullptr);
+	explicit CollapsibleWidgetWithTitle(QWidget* parent = nullptr) : CollapsibleWidgetWithTitle(QString(), nullptr, parent) {}
 
 	/////
 	// Object functions

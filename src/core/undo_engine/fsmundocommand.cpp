@@ -32,8 +32,11 @@
 #include "graphicfsmtransition.h"
 
 
+/////
+// Constructors/destructors
+
 FsmUndoCommand::FsmUndoCommand(UndoCommandId_t undoType, componentId_t componentId) :
-    MachineUndoCommand()
+	MachineUndoCommand()
 {
 	if ( (undoType != UndoCommandId_t::fsmUndoStateMoveId) && (undoType != UndoCommandId_t::fsmUndoTransitionConditionSliderPositionChangeId) ) return;
 
@@ -77,6 +80,9 @@ FsmUndoCommand::FsmUndoCommand(componentId_t componentId, const QString& previou
 	this->componentId = componentId;
 	this->previousStateName = previousStateName;
 }
+
+/////
+// Object functions
 
 void FsmUndoCommand::undo()
 {

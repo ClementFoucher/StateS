@@ -40,7 +40,7 @@
 
 
 MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;
 

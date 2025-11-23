@@ -27,12 +27,6 @@
 #include "valueeditor.h"
 
 
-VariableTableValueDelegate::VariableTableValueDelegate(QWidget* parent) :
-	QStyledItemDelegate(parent)
-{
-
-}
-
 QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return new ValueEditor(parent);

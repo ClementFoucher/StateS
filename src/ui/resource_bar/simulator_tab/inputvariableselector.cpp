@@ -34,7 +34,7 @@
 
 
 InputVariableSelector::InputVariableSelector(componentId_t relatedVariableId, QWidget *parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;

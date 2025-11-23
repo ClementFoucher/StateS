@@ -28,12 +28,6 @@
 #include "dynamiclineeditor.h"
 
 
-VariableTableNameDelegate::VariableTableNameDelegate(QWidget* parent) :
-	QStyledItemDelegate(parent)
-{
-
-}
-
 QWidget* VariableTableNameDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return new DynamicLineEditor(parent);

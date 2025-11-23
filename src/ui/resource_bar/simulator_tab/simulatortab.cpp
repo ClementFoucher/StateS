@@ -39,7 +39,7 @@
 
 
 SimulatorTab::SimulatorTab(QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	this->boxLayout = new QVBoxLayout();
 	this->setLayout(this->boxLayout);

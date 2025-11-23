@@ -27,7 +27,7 @@
 
 
 DisplayArea::DisplayArea(QWidget* parent) :
-    QMainWindow(parent)
+	QMainWindow(parent)
 {
 	this->setWindowFlags(Qt::Widget);
 	this->setContextMenuPolicy(Qt::NoContextMenu);

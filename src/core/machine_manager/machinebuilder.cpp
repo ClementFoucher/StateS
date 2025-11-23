@@ -24,14 +24,6 @@
 
 
 /////
-// Constructors/destructors
-
-MachineBuilder::MachineBuilder()
-{
-
-}
-
-/////
 // Mutators
 
 void MachineBuilder::setTool(MachineBuilderTool_t newTool)

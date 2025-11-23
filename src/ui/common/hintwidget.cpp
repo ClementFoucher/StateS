@@ -32,11 +32,6 @@ HintWidget::HintWidget(const QString& title, const QString& textContent, QWidget
 	this->setContent(title, textContent);
 }
 
-HintWidget::HintWidget(QWidget* parent) :
-	CollapsibleWidgetWithTitle(parent)
-{
-}
-
 void HintWidget::setContent(const QString& title, const QString& textContent)
 {
 	QLabel* newContent = new QLabel(textContent, this);

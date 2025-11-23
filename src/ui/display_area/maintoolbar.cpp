@@ -27,7 +27,7 @@
 
 
 MainToolBar::MainToolBar(QWidget* parent) :
-    QToolBar(parent)
+	QToolBar(parent)
 {
 	this->setIconSize(QSize(64, 64));
 

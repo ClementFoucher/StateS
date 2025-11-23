@@ -28,12 +28,6 @@
 #include "equation.h"
 
 
-Fsm::Fsm() :
-	Machine()
-{
-
-}
-
 void Fsm::finalizeLoading()
 {
 	Machine::finalizeLoading();

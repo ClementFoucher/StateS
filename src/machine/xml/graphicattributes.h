@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,7 @@ class GraphicAttributes : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicAttributes(QObject* parent = nullptr);
+	explicit GraphicAttributes(QObject* parent = nullptr) : QObject(parent) {}
 
 	/////
 	// Object functions

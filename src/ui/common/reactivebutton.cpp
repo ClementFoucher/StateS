@@ -23,12 +23,6 @@
 #include "reactivebutton.h"
 
 
-ReactiveButton::ReactiveButton(const QString& text, QWidget* parent) :
-    QPushButton(text, parent)
-{
-
-}
-
 void ReactiveButton::enterEvent(QEnterEvent*)
 {
 	emit mouseEnterEvent();

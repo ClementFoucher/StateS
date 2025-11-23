@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,16 +27,17 @@
 #include "machine.h"
 
 
-MachineUndoCommand::MachineUndoCommand()
-{
-
-}
+/////
+// Constructors/destructors
 
 MachineUndoCommand::MachineUndoCommand(const QString& previousName)
 {
 	this->undoType = UndoCommandId_t::machineUndoRenameId;
 	this->previousName = previousName;
 }
+
+/////
+// Object functions
 
 void MachineUndoCommand::undo()
 {

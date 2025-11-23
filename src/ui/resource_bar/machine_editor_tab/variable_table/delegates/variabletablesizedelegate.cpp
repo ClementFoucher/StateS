@@ -26,12 +26,6 @@
 #include "dynamiclineeditor.h"
 
 
-VariableTableSizeDelegate::VariableTableSizeDelegate(QWidget* parent) :
-	QStyledItemDelegate(parent)
-{
-
-}
-
 QWidget* VariableTableSizeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	auto editor = new DynamicLineEditor(parent);

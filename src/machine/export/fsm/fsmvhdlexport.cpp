@@ -40,11 +40,6 @@
 #include "operand.h"
 
 
-FsmVhdlExport::FsmVhdlExport()
-{
-
-}
-
 void FsmVhdlExport::setOptions(bool resetLogicPositive, bool prefixSignals)
 {
 	this->resetLogicPositive = resetLogicPositive;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Clément Foucher
+ * Copyright © 2023-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,12 +22,6 @@
 // Current object class
 #include "graphicattributes.h"
 
-
-GraphicAttributes::GraphicAttributes(QObject* parent) :
-    QObject(parent)
-{
-
-}
 
 void GraphicAttributes::addAttribute(uint componentId, QString name, QString value)
 {

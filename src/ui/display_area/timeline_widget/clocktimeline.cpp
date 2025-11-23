@@ -31,7 +31,7 @@
 
 
 ClockTimeLine::ClockTimeLine(QWidget* parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
 	QLabel* title = new QLabel(tr("Clock"));
 
