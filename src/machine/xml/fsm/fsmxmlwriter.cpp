@@ -127,8 +127,10 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 		this->stream->writeAttribute("Target", targetState->getName());
 
 		QString sliderPosition = fsmGraphicAttributes->getAttribute(transitionId, "SliderPos");
-
-		this->stream->writeAttribute("SliderPos", sliderPosition);
+		if (sliderPosition.isNull() == false)
+		{
+			this->stream->writeAttribute("SliderPos", sliderPosition);
+		}
 
 		if (this->mode == MachineXmlWriterMode_t::writeToUndo)
 		{

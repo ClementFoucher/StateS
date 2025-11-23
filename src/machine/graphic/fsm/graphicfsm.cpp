@@ -84,8 +84,11 @@ shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
 	for (auto transition : transitions)
 	{
 		auto id = transition->getLogicComponentId();
-		auto sliderPos = transition->getConditionLineSliderPosition()*100;
-		machineConfiguration->addAttribute(id, "SliderPos", QString::number(sliderPos));
+		auto sliderPos = (int)(transition->getConditionLineSliderPosition()*100);
+		if (sliderPos != 50)
+		{
+			machineConfiguration->addAttribute(id, "SliderPos", QString::number(sliderPos));
+		}
 	}
 
 	return machineConfiguration;

@@ -56,7 +56,7 @@
                 <Action Name="init duration" Action_Type="Assign" Action_Value="0000"/>
             </Actions>
         </Transition>
-        <Transition Source="On" Target="Error" SliderPos="50">
+        <Transition Source="On" Target="Error">
             <Condition>
                 <LogicVariable Name="error"/>
             </Condition>
@@ -64,7 +64,7 @@
                 <Action Name="error counter" Action_Type="Increment"/>
             </Actions>
         </Transition>
-        <Transition Source="On" Target="Off" SliderPos="50">
+        <Transition Source="On" Target="Off">
             <Condition>
                 <LogicEquation Nature="and" OperandCount="2">
                     <Operand Number="0">
@@ -80,12 +80,12 @@
                 </LogicEquation>
             </Condition>
         </Transition>
-        <Transition Source="On" Target="Blink led 0" SliderPos="50">
+        <Transition Source="On" Target="Blink led 0">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
         </Transition>
-        <Transition Source="Error" Target="Off" SliderPos="50">
+        <Transition Source="Error" Target="Off">
             <Condition>
                 <LogicEquation Nature="not">
                     <Operand Number="0">
@@ -94,7 +94,7 @@
                 </LogicEquation>
             </Condition>
         </Transition>
-        <Transition Source="Off" Target="Off" SliderPos="50">
+        <Transition Source="Off" Target="Off">
             <Condition>
                 <LogicVariable Name="reset errors"/>
             </Condition>
@@ -129,12 +129,12 @@
                 <Action Name="boot" Action_Type="Pulse"/>
             </Actions>
         </Transition>
-        <Transition Source="Blink led 0" Target="Blink led 1" SliderPos="50">
+        <Transition Source="Blink led 0" Target="Blink led 1">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
         </Transition>
-        <Transition Source="Blink led 0" Target="On" SliderPos="50">
+        <Transition Source="Blink led 0" Target="On">
             <Condition>
                 <LogicEquation Nature="not">
                     <Operand Number="0">
@@ -143,12 +143,12 @@
                 </LogicEquation>
             </Condition>
         </Transition>
-        <Transition Source="Blink led 1" Target="Blink led 0" SliderPos="50">
+        <Transition Source="Blink led 1" Target="Blink led 0">
             <Condition>
                 <LogicVariable Name="suspend"/>
             </Condition>
         </Transition>
-        <Transition Source="Blink led 1" Target="On" SliderPos="50">
+        <Transition Source="Blink led 1" Target="On">
             <Condition>
                 <LogicEquation Nature="not">
                     <Operand Number="0">
