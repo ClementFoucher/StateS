@@ -101,10 +101,7 @@ protected:
 signals:
 	// Machine changes
 	void machineNameChangedEvent();
-	void machineInputVariableListChangedEvent();
-	void machineOutputVariableListChangedEvent();
-	void machineInternalVariableListChangedEvent();
-	void machineConstantListChangedEvent();
+	void machineExternalViewChangedEvent();
 
 	// Components changes
 	void componentEditedEvent(componentId_t componentId);

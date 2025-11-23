@@ -52,14 +52,12 @@ public:
 	{
 	public:
 		QList<componentId_t> bothMooreAndMealy;
-		QList<componentId_t> bothTempAndKeepValue;
 		QList<componentId_t> rangeAdressed;
 		QList<componentId_t> mealyWithKeep;
 
 		bool isCompatible()
 		{
 			if (bothMooreAndMealy.isEmpty()    &&
-			    bothTempAndKeepValue.isEmpty() &&
 			    rangeAdressed.isEmpty()        &&
 			    mealyWithKeep.isEmpty()
 			   )

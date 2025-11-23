@@ -99,12 +99,12 @@ shared_ptr<Equation> FsmTransition::getCondition() const
 
 uint FsmTransition::getAllowedActionTypes() const
 {
-	return ((uint)actuatorAllowedActionType_t::pulse     |
-	        (uint)actuatorAllowedActionType_t::set       |
-	        (uint)actuatorAllowedActionType_t::reset     |
-	        (uint)actuatorAllowedActionType_t::assign    |
-	        (uint)actuatorAllowedActionType_t::increment |
-	        (uint)actuatorAllowedActionType_t::decrement
+	return ((uint)ActionOnVariableType_t::pulse     |
+	        (uint)ActionOnVariableType_t::set       |
+	        (uint)ActionOnVariableType_t::reset     |
+	        (uint)ActionOnVariableType_t::assign    |
+	        (uint)ActionOnVariableType_t::increment |
+	        (uint)ActionOnVariableType_t::decrement
 	       );
 }
 

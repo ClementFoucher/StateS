@@ -22,29 +22,31 @@ Thanks to the Wikimedia foundation for their sharing work.
 All files by Clément Foucher, all licensed under the terms of the Creative Commons Attribution-ShareAlike 4.0 International.
 Some of these files are based upon or use third party files mentioned above.
 
-| File name                                     |
-|-----------------------------------------------|
-|[StateS.png and variants](png/StateS.png)      |
-|[StateS.ico](ico/StateS.icog)                  |
-|[StateS.svg](svg/StateS.svg)                   |
-|[Active_on_state.svg](svg/Active_on_state.svg) |
-|[Assign.svg](svg/Assign.svg)                   |
-|[Attach_window.svg](svg/Attach_window.svg)     |
-|[Create_FSM.svg](svg/Create_FSM.svg)           |
-|[Decrement.svg](svg/Decrement.svg)             |
-|[Detach_window.svg](svg/Detach_window.svg)     |
-|[Export_image.svg](svg/Export_image.svg)       |
-|[Export_PDF.svg](svg/Export_PDF.svg)           |
-|[Export_VHDL.svg](svg/Export_VHDL.svg)         |
-|[Falling_edge.svg](svg/Falling_edge.svg)       |
-|[Increment.svg](svg/Increment.svg)             |
-|[Load.svg](svg/Load.svg)                       |
-|[Pulse.svg](svg/Pulse.svg)                     |
-|[Redo.svg](svg/Redo.svg)                       |
-|[Rising_edge.svg](svg/Rising_edge.svg)         |
-|[Save.svg](svg/Save.svg)                       |
-|[Save_as.svg](svg/Save_as.svg)                 |
-|[Undo.svg](svg/Undo.svg)                       |
+| File name                                               |
+|---------------------------------------------------------|
+|[StateS.png and variants](png/StateS.png)                |
+|[StateS.ico](ico/StateS.icog)                            |
+|[StateS.svg](svg/StateS.svg)                             |
+|[Active_on_state.svg](svg/Active_on_state.svg)           |
+|[Active_on_state_down.svg](svg/Active_on_state_down.svg) |
+|[Assign.svg](svg/Assign.svg)                             |
+|[Attach_window.svg](svg/Attach_window.svg)               |
+|[Create_FSM.svg](svg/Create_FSM.svg)                     |
+|[Decrement.svg](svg/Decrement.svg)                       |
+|[Detach_window.svg](svg/Detach_window.svg)               |
+|[Export_image.svg](svg/Export_image.svg)                 |
+|[Export_PDF.svg](svg/Export_PDF.svg)                     |
+|[Export_VHDL.svg](svg/Export_VHDL.svg)                   |
+|[Falling_edge.svg](svg/Falling_edge.svg)                 |
+|[Increment.svg](svg/Increment.svg)                       |
+|[Load.svg](svg/Load.svg)                                 |
+|[Pulse.svg](svg/Pulse.svg)                               |
+|[Pulse_down.svg](svg/Pulse_down.svg)                     |
+|[Redo.svg](svg/Redo.svg)                                 |
+|[Rising_edge.svg](svg/Rising_edge.svg)                   |
+|[Save.svg](svg/Save.svg)                                 |
+|[Save_as.svg](svg/Save_as.svg)                           |
+|[Undo.svg](svg/Undo.svg)                                 |
 
 # Licenses
 

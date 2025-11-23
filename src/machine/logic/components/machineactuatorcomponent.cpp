@@ -29,18 +29,6 @@
 #include "actiononvariable.h"
 
 
-MachineActuatorComponent::MachineActuatorComponent() :
-	MachineComponent()
-{
-
-}
-
-MachineActuatorComponent::MachineActuatorComponent(componentId_t id) :
-	MachineComponent(id)
-{
-
-}
-
 shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t variableId)
 {
 	auto machine = machineManager->getMachine();
@@ -50,17 +38,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t v
 	if (variable == nullptr) return nullptr;
 
 
-	ActionOnVariableType_t actionType;
-	if ((this->getAllowedActionTypes() & (uint)actuatorAllowedActionType_t::continuous) != 0)
-	{
-		actionType = ActionOnVariableType_t::activeOnState;
-	}
-	else
-	{
-		actionType = ActionOnVariableType_t::pulse;
-	}
-
-	auto action = make_shared<ActionOnVariable>(variableId, actionType);
+	auto action = make_shared<ActionOnVariable>(variableId, this->getAllowedActionTypes());
 
 	this->addActionInternal(action, variable);
 

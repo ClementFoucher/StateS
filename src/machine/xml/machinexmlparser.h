@@ -120,6 +120,7 @@ protected:
 	uint getCurrentNodeUintAttribute(const QString& name, bool* ok) const;
 	int getCurrentNodeIntAttribute(const QString& name, bool* ok) const;
 	float getCurrentNodeFloatAttribute(const QString& name, bool* ok) const;
+	bool getCurrentNodeBoolAttribute(const QString& name) const;
 	componentId_t getCurrentNodeIdAttribute() const;
 
 	shared_ptr<Equation> getCurrentEquation();

@@ -45,7 +45,6 @@ enum class SimulationMode_t              { editMode, simulateMode };
 enum class ImageFormat_t                 { pdf, svg, png, jpg };
 enum class LeftRight_t                   { left, right };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
-enum class ActionOnVariableType_t        { activeOnState, pulse, set, reset, assign, increment, decrement };
 enum class VariableNature_t              { input, output, internal, constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };
 enum class MachineType_t                 { none, fsm };
@@ -89,7 +88,7 @@ enum class EquationComputationFailureCause_t
 	incorrectParameter
 };
 
-enum class actuatorAllowedActionType_t : uint
+enum class ActionOnVariableType_t : uint
 {
 	none       = 0x0,
 	continuous = 0x1,

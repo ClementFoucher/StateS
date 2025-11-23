@@ -32,10 +32,8 @@
 /**
  * @brief The ActionTableModel class provides content
  * for action table displayed in ActionEditor based on
- * an a MachineActuatorComponen information. It allows
+ * an a MachineActuatorComponent information. It allows
  * edition for action value.
- * The first column is not handled by the model but
- * by a specific widget.
  *
  * The model emits a layoutChanged() signal whenever
  * the actuator component changes so that the table
@@ -57,7 +55,7 @@ public:
 	// Object functions
 public:
 	virtual int columnCount(const QModelIndex& parent)                              const override;
-	virtual int rowCount(const QModelIndex& parent)                                 const override;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex())                 const override;
 	virtual QVariant data(const QModelIndex& index, int role)                       const override;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;

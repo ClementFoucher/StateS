@@ -48,7 +48,7 @@ void Machine::finalizeLoading()
 		{
 			for (auto& action : machineActuator->getActions())
 			{
-				action->checkActionValue();
+				action->checkAndFixAction();
 			}
 		}
 	}
@@ -74,6 +74,7 @@ bool Machine::setName(const QString& newName)
 	this->name = cleanedName;
 
 	emit this->machineNameChangedEvent();
+	emit this->machineExternalViewChangedEvent();
 
 	return true;
 }
@@ -119,44 +120,28 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 	switch(nature)
 	{
 	case VariableNature_t::input:
-		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineInputVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineInputVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineInputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableRenamedEvent, this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent, this, &Machine::machineExternalViewChangedEvent);
 
 		this->inputVariables.append(componentId);
 
-		emit this->machineInputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 
 		break;
 	case VariableNature_t::output:
-		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineOutputVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineOutputVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineOutputVariableListChangedEvent);
+		connect(variable.get(), &Variable::variableRenamedEvent, this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableResizedEvent, this, &Machine::machineExternalViewChangedEvent);
 
 		this->outputVariables.append(componentId);
 
-		emit this->machineOutputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 
 		break;
 	case VariableNature_t::internal:
-		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineInternalVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineInternalVariableListChangedEvent);
-		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineInternalVariableListChangedEvent);
-
 		this->internalVariables.append(componentId);
-
-		emit this->machineInternalVariableListChangedEvent();
-
 		break;
 	case VariableNature_t::constant:
-		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineConstantListChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent,             this, &Machine::machineConstantListChangedEvent);
-		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineConstantListChangedEvent);
-
 		this->constants.append(componentId);
-
-		emit this->machineConstantListChangedEvent();
-
 		break;
 	}
 
@@ -174,28 +159,24 @@ void Machine::removeVariable(componentId_t variableId)
 		this->inputVariables.removeOne(variableId);
 		this->removeComponent(variableId);
 
-		emit this->machineInputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 	}
 	else if (this->outputVariables.contains(variableId))
 	{
 		this->outputVariables.removeOne(variableId);
 		this->removeComponent(variableId);
 
-		emit this->machineOutputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 	}
 	else if (this->internalVariables.contains(variableId))
 	{
 		this->internalVariables.removeOne(variableId);
 		this->removeComponent(variableId);
-
-		emit this->machineInternalVariableListChangedEvent();
 	}
 	else if (this->constants.contains(variableId))
 	{
 		this->constants.removeOne(variableId);
 		this->removeComponent(variableId);
-
-		emit this->machineConstantListChangedEvent();
 	}
 }
 
@@ -243,28 +224,24 @@ void Machine::changeVariableRank(componentId_t variableId, uint newRank)
 		auto oldRank = this->inputVariables.indexOf(variableId);
 		this->inputVariables.move(oldRank, newRank);
 
-		emit this->machineInputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 	}
 	else if (outputVariables.contains(variableId))
 	{
 		auto oldRank = this->outputVariables.indexOf(variableId);
 		this->outputVariables.move(oldRank, newRank);
 
-		emit this->machineOutputVariableListChangedEvent();
+		emit this->machineExternalViewChangedEvent();
 	}
 	else if (internalVariables.contains(variableId))
 	{
 		auto oldRank = this->internalVariables.indexOf(variableId);
 		this->internalVariables.move(oldRank, newRank);
-
-		emit this->machineInternalVariableListChangedEvent();
 	}
 	else if (constants.contains(variableId))
 	{
 		auto oldRank = this->constants.indexOf(variableId);
 		this->constants.move(oldRank, newRank);
-
-		emit this->machineConstantListChangedEvent();
 	}
 }
 

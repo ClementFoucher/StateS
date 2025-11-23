@@ -49,8 +49,8 @@ class MachineActuatorComponent : public MachineComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineActuatorComponent();
-	explicit MachineActuatorComponent(componentId_t id);
+	explicit MachineActuatorComponent() = default;
+	explicit MachineActuatorComponent(componentId_t id) : MachineComponent(id) {}
 
 	/////
 	// Object functions

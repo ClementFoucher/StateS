@@ -96,6 +96,14 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	                 + tr("Switch between variable natures using tabs.")
 	                 + "<br>"
 	                 + tr("Double-click on a field to edit it.")
+	                 + "</p>"
+	                 + "<p><b>" + tr("Variables memorization:") + "</b></p>"
+	                 + "<p>"
+					 + tr("Variables can be memorized or not.") + " "
+	                 + tr("Memorized variables retain the value they are affected even after the affectation is over.") + " "
+	                 + tr("They have an initial value, which is overwritten by the first affectation.") + " "
+	                 + tr("Other variables only hold the value they are affected for one cycle.") + " "
+	                 + tr("They fall back to their default value when they are not being affected.")
 	                 + "</p>";
 
 	auto hintDisplay = new HintWidget(hintTitle, hintText, this);

@@ -132,10 +132,7 @@ signals:
 	// Machine events propagated by the manager so that connections can be rerouted in one place when machine changes
 
 	void machineNameChangedEvent();
-	void machineInputVariableListChangedEvent();
-	void machineOutputVariableListChangedEvent();
-	void machineInternalVariableListChangedEvent();
-	void machineConstantListChangedEvent();
+	void machineExternalViewChangedEvent();
 
 	/////
 	// Object variables

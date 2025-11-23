@@ -367,3 +367,82 @@ int LogicValue::toInt() const
 	}
 	return acc;
 }
+
+LogicValue LogicValue::getSubrange(int msb, int lsb) const
+{
+	if ( (msb < 0) && (lsb >= 0) ) return LogicValue::getNullValue();
+	if (msb >= this->size()) return LogicValue::getNullValue();
+	if (lsb >= this->size()) return LogicValue::getNullValue();
+	if ( (lsb >= 0) && (lsb > msb) ) return LogicValue::getNullValue();
+
+
+	if (msb < 0)
+	{
+		// Get full value
+		return *this;
+	}
+	else if (lsb < 0)
+	{
+		// Get single bit
+		LogicValue result(1);
+		result[0] = this->at(msb);
+
+		return result;
+	}
+	else
+	{
+		// Get sub-range
+		LogicValue result(msb-lsb+1);
+		for (int i = 0 ; i <= msb-lsb ; i++)
+		{
+			result[i] = this->at(lsb+i);
+		}
+
+		return result;
+	}
+}
+
+bool LogicValue::setSubrange(LogicValue value, int msb, int lsb)
+{
+	if ( (msb < 0) && (lsb >= 0) ) return false;
+	if (msb >= this->size()) return false;
+	if (lsb >= this->size()) return false;
+	if ( (lsb >= 0) && (lsb > msb) ) return false;
+
+
+	if (msb < 0)
+	{
+		// Full range affectation
+		if (this->size() == value.getSize())
+		{
+			for (int i = 0 ; i < this->size() ; i++)
+			{
+				(*this)[i] = value[i];
+			}
+			return true;
+		}
+	}
+	else if (lsb < 0)
+	{
+		// Single bit affectation
+		if (value.getSize() == 1)
+		{
+			(*this)[msb] = value[0];
+			return true;
+		}
+	}
+	else
+	{
+		// Sub-range affectation
+		if (value.getSize() == (uint)msb-lsb+1)
+		{
+			for (int i = 0 ; i <= msb-lsb ; i++)
+			{
+				(*this)[i+lsb] = value[i];
+			}
+			return true;
+		}
+	}
+
+	return false;
+}

@@ -1,7 +1,7 @@
 /*
  * Copyright © 2025 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -19,40 +19,45 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMULATEDACTUATORCOMPONENT_H
-#define SIMULATEDACTUATORCOMPONENT_H
+#ifndef CHECKBOXEDITOR_H
+#define CHECKBOXEDITOR_H
 
 // Parent
-#include "simulatedcomponent.h"
-
-// C++ classes
-#include <memory>
-using namespace std;
+#include <QWidget>
 
 // Qt classes
-#include <QList>
-
-// StateS classes
-class SimulatedActionOnVariable;
+class QCheckBox;
 
 
-class SimulatedActuatorComponent : public SimulatedComponent
+class CheckBoxEditor : public QWidget
 {
+	Q_OBJECT
+
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedActuatorComponent(componentId_t componentId);
+	explicit CheckBoxEditor(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	const QList<shared_ptr<SimulatedActionOnVariable>> getActions() const;
+	void setChecked(bool checked);
+	bool getChecked() const;
+
+private slots:
+	void checkedStateChangedEventHandler(Qt::CheckState);
+
+	/////
+	// Signals
+signals:
+	void checkedStateChangedEvent(CheckBoxEditor* me);
 
 	/////
 	// Object variables
 private:
-	QList<shared_ptr<SimulatedActionOnVariable>> actionList;
+	QCheckBox* checkBox = nullptr;
+	bool inhibitEvents = false;
 
 };
 
-#endif // SIMULATEDACTUATORCOMPONENT_H
+#endif // CHECKBOXEDITOR_H

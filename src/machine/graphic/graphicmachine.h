@@ -72,6 +72,7 @@ public:
 	QGraphicsItem* getComponentVisualization() const;
 
 	virtual void removeGraphicComponent(componentId_t id);
+	virtual void forceRefreshSimulatedDisplay() = 0;
 
 protected:
 	void addComponent(GraphicComponent* graphicComponent);

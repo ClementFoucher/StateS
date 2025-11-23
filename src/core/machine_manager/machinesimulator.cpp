@@ -28,6 +28,7 @@
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
+#include "graphicmachine.h"
 #include "fsm.h"
 #include "simulatedfsm.h"
 
@@ -48,29 +49,66 @@ MachineSimulator::MachineSimulator()
 	}
 
 
-	connect(this->simulatedMachine.get(), &SimulatedMachine::emergencyShutDownEvent, this, &MachineSimulator::emergencyShutDownEventHandler);
+	connect(this->simulatedMachine.get(), &SimulatedMachine::emergencyShutDownEvent,      this, &MachineSimulator::emergencyShutDownEventHandler);
+	connect(this->simulatedMachine.get(), &SimulatedMachine::resumeNormalActivitiesEvent, this, &MachineSimulator::resumeNormalActivitiesEventHandler);
 }
 
 void MachineSimulator::initialize()
 {
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
+
+
 	this->simulatedMachine->build();
 	this->simulatedMachine->reset();
+
+	graphicMachine->forceRefreshSimulatedDisplay();
 }
 
 void MachineSimulator::reset()
 {
+	auto graphicMachine = machineManager->getGraphicMachine();
+	if (graphicMachine == nullptr) return;
+
+
 	this->suspend();
 	this->simulatedMachine->reset();
+
+	graphicMachine->forceRefreshSimulatedDisplay();
 
 	emit this->timelineResetEvent();
 }
 
 void MachineSimulator::doStep()
 {
-	this->simulatedMachine->prepareStep();
-	this->simulatedMachine->prepareActions();
-	emit this->timelineDoStepEvent();
-	this->simulatedMachine->doStep();
+	// emergencyShutDown can change asynchronously
+	// as the result of signals. Read comments in
+	// the order they are numbered.
+
+	// 2.
+	// Do not redo prepareStep if we are resuming from
+	// shutdown mode...
+	if (this->emergencyShutDown == false)
+	{
+		this->simulatedMachine->prepareStep();
+	}
+	else // (this->emergencyShutDown == true)
+	{
+		// 3.
+		// ... but clear the flag to continue the step
+		this->emergencyShutDown = false;
+	}
+
+	// 1.
+	// emergencyShutDown can be set to true at this point.
+	// If this is the case do not continue the step
+
+	if (this->emergencyShutDown == false)
+	{
+		this->simulatedMachine->prepareActions();
+		emit this->timelineDoStepEvent();
+		this->simulatedMachine->doStep();
+	}
 }
 
 void MachineSimulator::start(uint period)
@@ -143,5 +181,29 @@ void MachineSimulator::timerTimeoutEventHandler()
 
 void MachineSimulator::emergencyShutDownEventHandler()
 {
-	this->suspend();
+	this->wasAutoSimulatingBeforeShutDown = false;
+	if (this->timer != nullptr)
+	{
+		if (this->timer->isActive() == true)
+		{
+			this->wasAutoSimulatingBeforeShutDown = true;
+			this->suspend();
+		}
+	}
+
+	this->emergencyShutDown = true;
+}
+
+void MachineSimulator::resumeNormalActivitiesEventHandler()
+{
+	this->doStep();
+
+	if (this->wasAutoSimulatingBeforeShutDown == true)
+	{
+		if (this->timer != nullptr)
+		{
+			this->timer->start();
+			emit this->autoSimulationToggledEvent(true);
+		}
+	}
 }

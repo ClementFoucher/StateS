@@ -42,26 +42,31 @@ class Variable;
  * If only left range is valid, the action acts on a single bit.
  * If both are valid, the action acts on the [rangeL..rangeR] sub-vector.
  *
- * If variable is size 1 or action acts on a single bit
- *   => action value is always implicit and assigning it is illegal.
- * Else (vector variable with whole range or sub-range action)
- *   => action value is explicit for ActiveOnState, Pulse and Assign
- *      types, implicit for others.
- * For implicit action values, actionValue is null.
+ * Depending on action type and size, the action value can be
+ * explicit or implicit. Implicit values are provided by this class
+ * and can not be edited.
  */
 class ActionOnVariable : public QObject
 {
 	Q_OBJECT
 
 	/////
+	// Static functions
+public:
+	static QString getActionTypeText(ActionOnVariableType_t type);
+	static QIcon   getActionTypeIcon(ActionOnVariableType_t type, bool isDown = false);
+
+	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnVariable(componentId_t variableId, ActionOnVariableType_t actionType);
-	explicit ActionOnVariable(shared_ptr<Variable> variable, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
+	explicit ActionOnVariable(componentId_t variableId, uint actuatorAllowedActions);
+	explicit ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
 	// Object functions
 public:
+	void checkAndFixAction();
+
 	void setActionType (ActionOnVariableType_t newType);
 	void setActionValue(LogicValue newValue);
 	void setActionRange(int newRangeL, int newRangeR);
@@ -73,16 +78,25 @@ public:
 	int                    getActionRangeR()       const;
 	uint                   getActionSize()         const;
 	bool                   isActionValueEditable() const;
-	bool                   isActionMemorized()     const;
 
-	void checkActionValue();
+	uint getAllowedActionTypes() const;
+
+	QString getCurrentActionTypeText() const;
+	QIcon   getCurrentActionTypeIcon() const;
 
 private slots:
 	void variableResizedEventHandler();
+	void variableMemorizedStateChangedEventHandler();
+	void variableInitialValueChangedEventHandler();
 
 private:
+	void connectSignals(shared_ptr<Variable> variable);
+
 	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
-	void initialize(shared_ptr<Variable> variable, ActionOnVariableType_t actionType);
+
+	void checkAndFixActionRange();
+	void checkAndFixActionType();
+	void checkAndFixActionValue();
 
 	/////
 	// Signals
@@ -93,12 +107,12 @@ signals:
 	// Object variables
 private:
 	componentId_t variableId = nullId;
+	uint actuatorAllowedActions = (uint)ActionOnVariableType_t::none;
 
 	ActionOnVariableType_t actionType;
-
-	LogicValue actionValue = LogicValue();
-	int        rangeL      = -1;
-	int        rangeR      = -1;
+	LogicValue actionValue;
+	int rangeL = -1;
+	int rangeR = -1;
 
 };
 

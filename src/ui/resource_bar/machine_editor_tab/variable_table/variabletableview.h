@@ -52,6 +52,7 @@ private:
 	{
 		name,
 		size,
+		memorized,
 		value
 	};
 
@@ -80,12 +81,15 @@ private:
 	QList<int>             getSelectedRowsRanks()   const;
 	QList<QPair<int, int>> getSelectedRanksBlocks() const;
 
+	void openPersistentEditors(int firstRow = -1, int lastRow = -1);
+	void closePersistentEditors(int firstRow = -1, int lastRow = -1);
 	void updateSelectionFlags();
 
 protected slots:
 	virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)                              override;
 	virtual void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>()) override;
 	virtual void rowsInserted(const QModelIndex& parent, int start, int end)                                                     override;
+	virtual void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)                                             override;
 
 private slots:
 	void rowsMovedEventHandler();

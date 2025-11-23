@@ -133,7 +133,7 @@ void MachineXmlParser::parseActionNode()
 	}
 	else if (actionTypeText == "ActiveOnState")
 	{
-		actionType = ActionOnVariableType_t::activeOnState;
+		actionType = ActionOnVariableType_t::continuous;
 	}
 	else if (actionTypeText == "Set")
 	{
@@ -228,7 +228,7 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Build action
-	auto action = make_shared<ActionOnVariable>(variable, actionType, actionValue, rangeL, rangeR);
+	auto action = make_shared<ActionOnVariable>(variable, currentActuator->getAllowedActionTypes(), actionType, actionValue, rangeL, rangeR);
 	currentActuator->addAction(action, variable);
 }
 
@@ -517,6 +517,21 @@ int MachineXmlParser::getCurrentNodeIntAttribute(const QString& name, bool* ok) 
 float MachineXmlParser::getCurrentNodeFloatAttribute(const QString& name, bool* ok) const
 {
 	return this->xmlReader->attributes().value(name).toFloat(ok);
+}
+
+bool MachineXmlParser::getCurrentNodeBoolAttribute(const QString& name) const
+{
+	auto stringValue = this->getCurrentNodeStringAttribute(name);
+	if (stringValue.isEmpty()) return false;
+
+	if (stringValue == "true")
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 componentId_t MachineXmlParser::getCurrentNodeIdAttribute() const
@@ -844,6 +859,13 @@ void MachineXmlParser::parseVariableNode()
 		this->addIssue("    " + tr("This may trigger further errors if other components were referencing this variable."));
 	}
 
+	// Get memorized attribute
+	auto memorized = this->getCurrentNodeBoolAttribute("Memorized");
+	if (memorized == true)
+	{
+		variable->setMemorized(true);
+	}
+
 	// Get size
 	bool ok;
 	uint size = this->getCurrentNodeUintAttribute("Size", &ok);
@@ -851,7 +873,7 @@ void MachineXmlParser::parseVariableNode()
 	{
 		if (size != 1)
 		{
-			variable->resize(size);
+			variable->setSize(size);
 
 			uint variableNewSize = variable->getSize();
 			if (size != variableNewSize)

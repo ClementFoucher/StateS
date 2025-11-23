@@ -37,12 +37,12 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"
-#include "actiontypeeditor.h"
 #include "contextmenu.h"
 #include "variable.h"
 #include "rangeeditordialog.h"
 #include "hintwidget.h"
 #include "actiontablemodel.h"
+#include "actiontabletypedelegate.h"
 #include "actiontablevaluedelegate.h"
 #include "actiononvariable.h"
 
@@ -65,14 +65,16 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	QGridLayout* layout = new QGridLayout(this);
 
 	this->actionTable = new QTableView(this);
-	ActionTableModel* tableModel = new ActionTableModel(actuatorId, this->actionTable);
+	this->tableModel = new ActionTableModel(actuatorId, this->actionTable);
 	this->actionTable->setModel(tableModel);
 	this->actionTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->valueColDelegate = new ActionTableValueDelegate(actuatorId, this->actionTable);
-	this->actionTable->setItemDelegateForColumn(2, this->valueColDelegate);
+	auto typeColDelegate = new ActionTableTypeDelegate(this->actionTable);
+	this->actionTable->setItemDelegateForColumn(0, typeColDelegate);
+	auto valueColDelegate = new ActionTableValueDelegate(actuatorId, this->actionTable);
+	this->actionTable->setItemDelegateForColumn(2, valueColDelegate);
 	this->actionTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	connect(this->actionTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ActionEditor::selectionChangedEventHandler);
-	connect(tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);
+	connect(this->tableModel, &QAbstractItemModel::layoutChanged, this, &ActionEditor::tableChangedEventHandler);
 	layout->addWidget(this->actionTable, 0, 0, 1, 4);
 
 	this->buttonMoveUp       = new QPushButton("↥",                 this);
@@ -110,14 +112,13 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 
 	connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this->actionTable, &QTableView::resizeColumnsToContents);
 
-	this->fillFirstColumn();
+	this->openPersistentEditors();
 	this->updateButtonsEnableState();
 }
 
 ActionEditor::~ActionEditor()
 {
 	ActionEditor::hintCollapsed = this->hintDisplay->getCollapsed();
-	delete this->valueColDelegate;
 }
 
 void ActionEditor::keyPressEvent(QKeyEvent* e)
@@ -401,7 +402,7 @@ void ActionEditor::processContextMenuEventHandler(QAction* action)
 	int dataValue   = action->data().toInt();
 	uint actionRank = (dataValue&0xFFF0)>>8;
 
-	shared_ptr<ActionOnVariable> actionOnVariable = actuator->getAction(actionRank);
+	auto actionOnVariable = actuator->getAction(actionRank);
 	if (actionOnVariable == nullptr) return;
 
 
@@ -587,7 +588,8 @@ void ActionEditor::moveSelectedActionsDown()
 
 void ActionEditor::tableChangedEventHandler()
 {
-	this->fillFirstColumn();
+	this->closePersistentEditors();
+	this->openPersistentEditors();
 	this->restoreSelection();
 	this->updateButtonsEnableState();
 }
@@ -614,32 +616,31 @@ void ActionEditor::rangeEditorClosedEventHandler(int result)
 	this->rangeEditorDialog = nullptr;
 }
 
-void ActionEditor::fillFirstColumn()
+void ActionEditor::openPersistentEditors()
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return;
-
-
-	if (actuator->getActions().count() != 0)
+	for (int row = 0 ; row < this->tableModel->rowCount() ; row++)
 	{
-		// Fill column with drop-down list
-		for (int i = 0 ; i < this->actionTable->model()->rowCount() ; i++)
+		auto typeIndex = this->tableModel->index(row, 0);
+		uint32_t actions = typeIndex.data(Qt::EditRole).toUInt();
+
+		// Open a persistent editor for actions that have
+		// more than one allowed action type.
+		if (std::popcount(actions & 0xFFFF0000) > 1)
 		{
-			auto action = actuator->getAction(i);
-			if (action == nullptr) continue;
-
-
-			this->actionTable->setIndexWidget(this->actionTable->model()->index(i, 0), new ActionTypeEditor(actuator->getAllowedActionTypes(), action));
+			this->actionTable->openPersistentEditor(typeIndex);
 		}
 	}
-	else
+}
+
+void ActionEditor::closePersistentEditors()
+{
+	for (int row = 0 ; row < this->tableModel->rowCount() ; row++)
 	{
-		// Clear potential previous widgets if action count drops to 0
-		// (special message displayed)
-		this->actionTable->setIndexWidget(this->actionTable->model()->index(0, 0), nullptr);
+		auto typeIndex = this->tableModel->index(row, 0);
+		if (this->actionTable->isPersistentEditorOpen(typeIndex))
+		{
+			this->actionTable->closePersistentEditor(typeIndex);
+		}
 	}
 }
 

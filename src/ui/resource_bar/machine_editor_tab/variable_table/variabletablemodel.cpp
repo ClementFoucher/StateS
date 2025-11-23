@@ -37,6 +37,16 @@ VariableTableModel::VariableTableModel(VariableNature_t editorNature, QObject* p
 
 	this->columnsRoles.append(ColumnRole::name);
 	this->columnsRoles.append(ColumnRole::size);
+	switch (this->editorNature)
+	{
+	case VariableNature_t::output:
+	case VariableNature_t::internal:
+		this->columnsRoles.append(ColumnRole::memorized);
+		break;
+	case VariableNature_t::input:
+	case VariableNature_t::constant:
+		break;
+	}
 	this->columnsRoles.append(ColumnRole::value);
 }
 
@@ -88,6 +98,9 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 			case ColumnRole::size:
 				return tr("Size");
 				break;
+			case ColumnRole::memorized:
+				return tr("Memorized");
+				break;
 			case ColumnRole::value:
 				switch (this->editorNature)
 				{
@@ -96,7 +109,7 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 					break;
 				case VariableNature_t::internal:
 				case VariableNature_t::output:
-					return tr("Initial value");
+					return tr("Initial/default value");
 					break;
 				case VariableNature_t::constant:
 					return tr("Value");
@@ -115,6 +128,9 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 				break;
 			case ColumnRole::size:
 				return "SIZE";
+				break;
+			case ColumnRole::memorized:
+				return "MEMORIZED";
 				break;
 			case ColumnRole::value:
 				return "VALUE";
@@ -156,6 +172,10 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 		case ColumnRole::size:
 			return QString::number(variable->getSize());
 			break;
+		case ColumnRole::memorized:
+			// No display role for this column
+			// as all rows have a permanent editor.
+			break;
 		case ColumnRole::value:
 			return variable->getInitialValue().toString();
 			break;
@@ -170,6 +190,9 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 			break;
 		case ColumnRole::size:
 			return QString::number(variable->getSize());
+			break;
+		case ColumnRole::memorized:
+			return variable->getMemorized();
 			break;
 		case ColumnRole::value:
 			{
@@ -226,7 +249,7 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 
 			if ( (ok == true) && (valueAsInt > 0) )
 			{
-				variable->resize(valueAsInt);
+				variable->setSize(valueAsInt);
 
 				// Check that size vas correctly changed
 				if ((int)variable->getSize() == valueAsInt)
@@ -236,6 +259,10 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 			}
 			break;
 		}
+		case ColumnRole::memorized:
+			variable->setMemorized(value.toBool());
+			dataSucessfullyChanged = true;
+			break;
 		case ColumnRole::value:
 		{
 			auto valueAsString = value.toString();
@@ -375,6 +402,16 @@ bool VariableTableModel::insertRows(int row, int count, const QModelIndex& paren
 		// Add variable
 		auto newVarId = machine->addVariable(this->editorNature, initialName);
 
+		// Make internal variables memorized by default
+		if (this->editorNature == VariableNature_t::internal)
+		{
+			auto variable = machine->getVariable(newVarId);
+			if (variable != nullptr)
+			{
+				variable->setMemorized(true);
+			}
+		}
+
 		if (newVarId != nullId)
 		{
 			atLeastOneInsertion = true;
@@ -437,6 +474,7 @@ bool VariableTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow
 
 	// Strangely enough, unlike rows insertion/removal and other changes,
 	// there seem to be no way to react to rows moving in Table View...
+	// QTableView:::rowMoved exists, but is not virtual so can't be overriden.
 	emit this->rowsMovedEvent();
 
 	// Machine has been edited

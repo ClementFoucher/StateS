@@ -35,11 +35,9 @@
 VariableListEditor::VariableListEditor(VariableNature_t editorNature, QWidget* parent) :
 	QWidget(parent)
 {
-	this->editorNature = editorNature;
-
 	//
 	// Table
-	this->tableView = new VariableTableView(this->editorNature);
+	this->tableView = new VariableTableView(editorNature);
 
 	// To enable/disable buttons when a variable is selected
 	connect(this->tableView, &VariableTableView::variablesSelectionChangedEvent, this, &VariableListEditor::updateButtonsEnableState);

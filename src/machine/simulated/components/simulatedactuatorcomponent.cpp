@@ -50,14 +50,3 @@ const QList<shared_ptr<SimulatedActionOnVariable>> SimulatedActuatorComponent::g
 {
 	return this->actionList;
 }
-
-void SimulatedActuatorComponent::resetActions()
-{
-	for (auto& simulatedAction : this->actionList)
-	{
-		if (simulatedAction == nullptr) continue;
-
-
-		simulatedAction->resetAction();
-	}
-}

@@ -57,6 +57,9 @@ public:
 	QString toString() const;
 	int toInt() const;
 
+	LogicValue getSubrange(int msb, int lsb) const;
+	bool setSubrange(LogicValue value, int msb, int lsb);
+
 	// Operator overloading
 
 	// Compare operator will return false is used with different size other value

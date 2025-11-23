@@ -54,7 +54,9 @@ public:
 
 	QString    getName()         const;
 	uint       getSize()         const;
+	LogicValue getInitialValue() const;
 	LogicValue getCurrentValue() const;
+	bool       getMemorized()    const;
 
 	/////
 	// Signals
@@ -67,6 +69,7 @@ protected:
 	QString    name;
 	LogicValue initialValue;
 	LogicValue currentValue;
+	bool       memorized;
 
 };
 

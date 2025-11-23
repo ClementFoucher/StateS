@@ -46,7 +46,7 @@ class GraphicFsm : public GraphicMachine
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicFsm();
+	explicit GraphicFsm() = default;
 
 	/////
 	// Object functions
@@ -58,6 +58,7 @@ public:
 	virtual GenericScene* getGraphicScene() const override;
 
 	virtual void removeGraphicComponent(componentId_t id) override;
+	virtual void forceRefreshSimulatedDisplay() override;
 
 	GraphicFsmState*      addState     (componentId_t logicStateId,      QPointF position);
 	GraphicFsmTransition* addTransition(componentId_t logicTransitionId, qreal sliderPos);

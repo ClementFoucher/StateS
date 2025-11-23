@@ -24,102 +24,92 @@
 
 // StateS classes
 #include "statestypes.h"
-#include "pixmapgenerator.h"
 #include "actiononvariable.h"
 
 
-ActionTypeEditor::ActionTypeEditor(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent) :
-    QComboBox(parent)
+void ActionTypeEditor::fillActionList(uint allowedActionTypes, ActionOnVariableType_t currentActionType)
 {
-	this->action = action;
-
 	// List allowed actions
-	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::pulse) != 0 )
-		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse"))), tr("Pulse"));
-	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::continuous) != 0 )
-		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state"))), tr("Active on state"));
-	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::set) != 0 )
-		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/rising_edge"))), tr("Set"));
-	if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::reset) != 0 )
-		this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/falling_edge"))), tr("Reset"));
-
-	if (action->getActionSize() > 1)
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::pulse) != 0 )
 	{
-		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::assign) != 0 )
-			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/assign"))), tr("Assign"));
-		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::increment) != 0 )
-			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/increment"))), tr("Increment"));
-		if ((allowedActionTypes & (uint)actuatorAllowedActionType_t::decrement) != 0 )
-			this->addItem(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/decrement"))), tr("Decrement"));
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::pulse),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::pulse));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::continuous) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::continuous),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::continuous));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::set) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::set),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::set));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::reset) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::reset),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::reset));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::assign) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::assign),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::assign));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::increment) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::increment),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::increment));
+	}
+	if ((allowedActionTypes & (uint)ActionOnVariableType_t::decrement) != 0 )
+	{
+		this->addItem(ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t::decrement),
+		              ActionOnVariable::getActionTypeText(ActionOnVariableType_t::decrement));
 	}
 
 	// Select current action in list
-	switch(action->getActionType())
-	{
-	case ActionOnVariableType_t::pulse:
-		this->setCurrentText(tr("Pulse"));
-		break;
-	case ActionOnVariableType_t::activeOnState:
-		this->setCurrentText(tr("Active on state"));
-		break;
-	case ActionOnVariableType_t::set:
-		this->setCurrentText(tr("Set"));
-		break;
-	case ActionOnVariableType_t::reset:
-		this->setCurrentText(tr("Reset"));
-		break;
-	case ActionOnVariableType_t::assign:
-		this->setCurrentText(tr("Assign"));
-		break;
-	case ActionOnVariableType_t::increment:
-		this->setCurrentText(tr("Increment"));
-		break;
-	case ActionOnVariableType_t::decrement:
-		this->setCurrentText(tr("Decrement"));
-		break;
-	}
+	this->setCurrentText(ActionOnVariable::getActionTypeText(currentActionType));
 
-	// Nice one... Qt5 style connect is sometime complicated to use
-	connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionTypeEditor::processIndexChanged);
+	connect(this, &QComboBox::currentIndexChanged, this, &ActionTypeEditor::processIndexChanged);
 }
 
-void ActionTypeEditor::processIndexChanged(int index)
+ActionOnVariableType_t ActionTypeEditor::getActionType() const
 {
-	shared_ptr<ActionOnVariable> l_action = this->action.lock();
+	auto currentText = this->currentText();
 
-	if (l_action != nullptr)
+	if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::pulse))
 	{
-		if (this->itemText(index) == tr("Pulse"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::pulse);
-		}
-		else if (this->itemText(index) == tr("Active on state"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::activeOnState);
-		}
-		else if (this->itemText(index) == tr("Set"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::set);
-		}
-		else if (this->itemText(index) == tr("Reset"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::reset);
-		}
-		else if (this->itemText(index) == tr("Assign"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::assign);
-		}
-		else if (this->itemText(index) == tr("Increment"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::increment);
-		}
-		else if (this->itemText(index) == tr("Decrement"))
-		{
-			l_action->setActionType(ActionOnVariableType_t::decrement);
-		}
+		return ActionOnVariableType_t::pulse;
 	}
-	else
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::continuous))
 	{
-		this->clear();
+		return ActionOnVariableType_t::continuous;
 	}
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::set))
+	{
+		return ActionOnVariableType_t::set;
+	}
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::reset))
+	{
+		return ActionOnVariableType_t::reset;
+	}
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::assign))
+	{
+		return ActionOnVariableType_t::assign;
+	}
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::increment))
+	{
+		return ActionOnVariableType_t::increment;
+	}
+	else if (currentText == ActionOnVariable::getActionTypeText(ActionOnVariableType_t::decrement))
+	{
+		return ActionOnVariableType_t::decrement;
+	}
+
+	// Default value, should not happen unless the list is empty
+	return ActionOnVariableType_t::none;
+}
+
+void ActionTypeEditor::processIndexChanged(int)
+{
+	emit this->actionTypeChangedEvent(this);
 }

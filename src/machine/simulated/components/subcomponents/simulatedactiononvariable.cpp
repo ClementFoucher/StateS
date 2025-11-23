@@ -38,52 +38,7 @@ SimulatedActionOnVariable::SimulatedActionOnVariable(shared_ptr<const ActionOnVa
 	this->rangeR      = sourceAction->getActionRangeR();
 }
 
-LogicValue SimulatedActionOnVariable::getActionValue() const
-{
-	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return LogicValue::getNullValue();
-
-	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-	if (simulatedVariable == nullptr) return LogicValue::getNullValue();
-
-
-	LogicValue publicActionValue = LogicValue::getNullValue();
-	switch (this->actionType)
-	{
-	case ActionOnVariableType_t::reset:
-		publicActionValue = LogicValue::getValue0(this->getActionSize());
-		break;
-	case ActionOnVariableType_t::set:
-		publicActionValue = LogicValue::getValue1(this->getActionSize());
-		break;
-	case ActionOnVariableType_t::activeOnState:
-	case ActionOnVariableType_t::pulse:
-		if (this->getActionSize() == 1)
-		{
-			publicActionValue = LogicValue::getValue1(this->getActionSize());
-		}
-		else
-		{
-			publicActionValue = this->actionValue;
-		}
-		break;
-	case ActionOnVariableType_t::increment:
-		publicActionValue = simulatedVariable->getCurrentValue();
-		publicActionValue.increment();
-		break;
-	case ActionOnVariableType_t::decrement:
-		publicActionValue = simulatedVariable->getCurrentValue();
-		publicActionValue.decrement();
-		break;
-	case ActionOnVariableType_t::assign:
-		publicActionValue = this->actionValue;
-		break;
-	}
-
-	return publicActionValue;
-}
-
-void SimulatedActionOnVariable::beginAction()
+void SimulatedActionOnVariable::doAction()
 {
 	auto simulatedMachine = machineManager->getSimulatedMachine();
 	if (simulatedMachine == nullptr) return;
@@ -93,88 +48,60 @@ void SimulatedActionOnVariable::beginAction()
 
 
 	simulatedVariable->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
-
-	switch (this->actionType)
-	{
-	case ActionOnVariableType_t::pulse:
-	case ActionOnVariableType_t::activeOnState:
-		this->isActionActing = true;
-		break;
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::assign:
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
-		// Do not register, value change is definitive
-		break;
-	}
-}
-
-void SimulatedActionOnVariable::endAction()
-{
-	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return;
-
-	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-	if (simulatedVariable == nullptr) return;
-
-
-	if (this->isActionActing == true)
-	{
-		simulatedVariable->setCurrentValueSubRange(LogicValue::getValue0(this->getActionSize()), this->rangeL, this->rangeR);
-		this->isActionActing = false;
-	}
-}
-
-void SimulatedActionOnVariable::resetAction()
-{
-	this->isActionActing = false;
 }
 
 bool SimulatedActionOnVariable::isActionMemorized() const
 {
-	switch (this->actionType)
-	{
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::assign:
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
-		return true;
-		break;
-	case ActionOnVariableType_t::activeOnState:
-	case ActionOnVariableType_t::pulse:
-		return false;
-		break;
-	}
-}
-
-uint SimulatedActionOnVariable::getActionSize() const
-{
 	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return 0;
+	if (simulatedMachine == nullptr) return false;
 
 	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-	if (simulatedVariable == nullptr) return 0;
+	if (simulatedVariable == nullptr) return false;
 
 
-	if (simulatedVariable->getSize() == 1)
+	return simulatedVariable->getMemorized();
+}
+
+componentId_t SimulatedActionOnVariable::getVariableId() const
+{
+	return this->variableId;
+}
+
+LogicValue SimulatedActionOnVariable::getActionValue() const
+{
+	switch (this->actionType)
 	{
-		return 1;
+	case ActionOnVariableType_t::reset:
+	case ActionOnVariableType_t::set:
+	case ActionOnVariableType_t::continuous:
+	case ActionOnVariableType_t::pulse:
+	case ActionOnVariableType_t::assign:
+		return this->actionValue;
+		break;
+	case ActionOnVariableType_t::increment:
+	case ActionOnVariableType_t::decrement:
+	{
+		auto simulatedMachine = machineManager->getSimulatedMachine();
+		if (simulatedMachine == nullptr) return LogicValue::getNullValue();
+
+		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
+		if (simulatedVariable == nullptr) return LogicValue::getNullValue();
+
+
+		auto publicActionValue = simulatedVariable->getCurrentValue();
+		if (this->actionType == ActionOnVariableType_t::increment)
+		{
+			publicActionValue.increment();
+		}
+		else // (this->actionType == ActionOnVariableType_t::decrement)
+		{
+			publicActionValue.decrement();
+		}
+		return publicActionValue;
+		break;
 	}
-	else
-	{
-		if ( (this->rangeL < 0) && (this->rangeR < 0) )
-		{
-			return simulatedVariable->getSize();
-		}
-		else if ( (this->rangeL >= 0) && (this->rangeR < 0) )
-		{
-			return 1;
-		}
-		else
-		{
-			return (uint)(this->rangeL - this->rangeR + 1);
-		}
+	case ActionOnVariableType_t::none:
+		return LogicValue::getNullValue();
+		break;
 	}
 }

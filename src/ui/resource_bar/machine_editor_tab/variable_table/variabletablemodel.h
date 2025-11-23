@@ -40,6 +40,7 @@ private:
 	{
 		name,
 		size,
+		memorized,
 		value
 	};
 

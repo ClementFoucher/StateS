@@ -22,6 +22,10 @@
 // Current class header
 #include "actiontablemodel.h"
 
+// Qt classes
+#include <QBrush>
+#include <QIcon>
+
 // StateS classes
 #include "machinemanager.h"
 #include "machine.h"
@@ -110,7 +114,39 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		if (variable == nullptr) return QVariant();
 
 
-		if (index.column() == 1)
+		if (index.column() == 0)
+		{
+			uint allowedActionTypes = action->getAllowedActionTypes();
+
+			if (role == Qt::EditRole)
+			{
+				uint currentActionType  = (uint)action->getActionType();
+				uint32_t returnValue = (allowedActionTypes&0xFFFF) << 16 | (currentActionType&0xFFFF);
+				return QVariant(returnValue);
+			}
+			else if (std::popcount(allowedActionTypes) == 1)
+			{
+				// Only display text if there is one allowed action type.
+				// When more than one allowed action, there is a persistent
+				// editor in this column.
+				if (role == Qt::DisplayRole)
+				{
+					return QVariant(action->getCurrentActionTypeText());
+				}
+				else if (role == Qt::DecorationRole)
+				{
+					return QVariant(action->getCurrentActionTypeIcon());
+				}
+				else if (role == Qt::ForegroundRole)
+				{
+					QBrush brush;
+					brush.setColor(Qt::gray);
+
+					return QVariant(brush);
+				}
+			}
+		}
+		else if (index.column() == 1)
 		{
 			if (role == Qt::DisplayRole)
 			{
@@ -137,6 +173,13 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 
 				return QVariant(nameText);
 			}
+			else if (role == Qt::ForegroundRole)
+			{
+				QBrush brush;
+				brush.setColor(Qt::gray);
+
+				return QVariant(brush);
+			}
 		}
 		else if (index.column() == 2)
 		{
@@ -145,22 +188,11 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 				switch (action->getActionType())
 				{
 				case ActionOnVariableType_t::reset:
-					return QVariant(LogicValue::getValue0(action->getActionSize()).toString());
-					break;
 				case ActionOnVariableType_t::set:
-					return QVariant(LogicValue::getValue1(action->getActionSize()).toString());
-					break;
-				case ActionOnVariableType_t::activeOnState:
+				case ActionOnVariableType_t::continuous:
 				case ActionOnVariableType_t::pulse:
 				case ActionOnVariableType_t::assign:
-					if (action->getActionSize() > 1)
-					{
-						return QVariant(action->getActionValue().toString());
-					}
-					else
-					{
-						return QVariant(LogicValue::getValue1(action->getActionSize()).toString());
-					}
+					return QVariant(action->getActionValue().toString());
 					break;
 				case ActionOnVariableType_t::increment:
 					return QVariant(variable->getName() + " + 1");
@@ -168,6 +200,23 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 				case ActionOnVariableType_t::decrement:
 					return QVariant(variable->getName() + " - 1");
 					break;
+				case ActionOnVariableType_t::none:
+					// Nothing
+					break;
+				}
+			}
+			else if (role == Qt::ForegroundRole)
+			{
+				if (action->isActionValueEditable() == false)
+				{
+					QBrush brush;
+					brush.setColor(Qt::gray);
+
+					return QVariant(brush);
+				}
+				else
+				{
+					return QVariant();
 				}
 			}
 		}
@@ -200,19 +249,34 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 	if (action == nullptr) return false;
 
 
-	if (action->isActionValueEditable() == true)
+	if (index.column() == 0)
 	{
-		auto newValue = LogicValue::fromString(value.toString());
+		ActionOnVariableType_t newActionType = (ActionOnVariableType_t)value.toUInt();
+		action->setActionType(newActionType);
 
-		// Do not change current value if no new value is provided
-		if (newValue.isNull() == false)
+		// Machine has been edited
+		machineManager->notifyMachineEdited();
+	}
+	else if (index.column() == 2)
+	{
+		if (action->isActionValueEditable() == true)
 		{
-			// Make sure new value size fits the action size
-			uint actionSize = action->getActionSize();
-			newValue.resize(actionSize);
+			auto newValue = LogicValue::fromString(value.toString());
 
-			action->setActionValue(newValue);
-			return true;
+			// Do not change current value if no new value is provided
+			if (newValue.isNull() == false)
+			{
+				// Make sure new value size fits the action size
+				uint actionSize = action->getActionSize();
+				newValue.resize(actionSize);
+
+				action->setActionValue(newValue);
+
+				// Machine has been edited
+				machineManager->notifyMachineEdited();
+
+				return true;
+			}
 		}
 	}
 
@@ -274,15 +338,13 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 	if (actuator == nullptr) return Qt::NoItemFlags;
 
 
-	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
+	Qt::ItemFlags flags = Qt::ItemIsEnabled    |
+	                      Qt::ItemIsSelectable |
+	                      Qt::ItemNeverHasChildren;
 
 	if (actuator->getActions().count() != 0)
 	{
-		if (index.column() != 2)
-		{
-			flags |= Qt::ItemIsEnabled;
-		}
-		else
+		if (index.column() == 2)
 		{
 			auto action = actuator->getAction(index.row());
 			if (action == nullptr) return Qt::NoItemFlags;
@@ -290,7 +352,7 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 
 			if (action->isActionValueEditable())
 			{
-				flags |= (Qt::ItemIsEnabled | Qt::ItemIsEditable);
+				flags |= Qt::ItemIsEditable;
 			}
 		}
 	}

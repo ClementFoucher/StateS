@@ -38,7 +38,7 @@ class QItemSelection;
 #include "statestypes.h"
 class HintWidget;
 class ActionOnVariable;
-class ActionTableValueDelegate;
+class ActionTableModel;
 class RangeEditorDialog;
 
 
@@ -107,7 +107,8 @@ private slots:
 	void rangeEditorClosedEventHandler(int result);
 
 private:
-	void fillFirstColumn();
+	void openPersistentEditors();
+	void closePersistentEditors();
 	void updateButtonsEnableState();
 
 	void sortSelectionList();
@@ -125,7 +126,7 @@ private:
 	QPushButton* buttonMoveDown     = nullptr;
 	HintWidget*  hintDisplay        = nullptr;
 
-	ActionTableValueDelegate* valueColDelegate = nullptr;
+	ActionTableModel* tableModel = nullptr;
 
 	RangeEditorDialog* rangeEditorDialog = nullptr;
 

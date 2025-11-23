@@ -47,15 +47,14 @@ public:
 	/////
 	// Object functions
 public:
-	void beginAction();
-	void endAction();
-	void resetAction();
+	void doAction();
 
 	bool isActionMemorized() const;
 
+	componentId_t getVariableId() const;
+
 private:
 	LogicValue getActionValue() const;
-	uint       getActionSize()  const;
 
 	/////
 	// Object variables
@@ -63,12 +62,9 @@ private:
 	componentId_t variableId = nullId;
 
 	ActionOnVariableType_t actionType;
-
-	LogicValue actionValue = LogicValue();
-	int        rangeL      = -1;
-	int        rangeR      = -1;
-
-	bool isActionActing = false;
+	LogicValue actionValue;
+	int rangeL = -1;
+	int rangeR = -1;
 
 };
 

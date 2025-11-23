@@ -32,22 +32,14 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "graphicfsm.h"
 #include "fsm.h"
-#include "simulatedactuatorcomponent.h"
 #include "simulatedfsmstate.h"
 #include "simulatedfsmtransition.h"
 #include "simulatedequation.h"
+#include "simulatedvariable.h"
 #include "simulatedactiononvariable.h"
-#include "graphicsimulatedfsmtransition.h"
 #include "statesui.h"
 
-
-SimulatedFsm::SimulatedFsm() :
-	SimulatedMachine()
-{
-
-}
 
 void SimulatedFsm::build()
 {
@@ -84,23 +76,38 @@ shared_ptr<SimulatedFsmTransition> SimulatedFsm::getSimulatedTransition(componen
 
 void SimulatedFsm::forceStateActivation(componentId_t stateToActivate)
 {
-	if (this->activeStateId != nullId)
+	// Disable currently active state
+	auto previousActiveState = this->getSimulatedState(this->activeStateId);
+	if (previousActiveState != nullptr)
 	{
-		auto previousActiveState = this->getSimulatedState(this->activeStateId);
-		if (previousActiveState != nullptr)
-		{
-			previousActiveState->setActive(false);
-			this->deactivateStateActions(this->activeStateId);
-		}
+		previousActiveState->setActive(false);
 	}
 
+	// Change currently active state
 	this->activeStateId = stateToActivate;
 
 	auto newActiveState = this->getSimulatedState(this->activeStateId);
 	if (newActiveState != nullptr)
 	{
+		// Enable new state
 		newActiveState->setActive(true);
-		this->activateStateActions(this->activeStateId, true);
+
+		// Enable state actions
+		for (const auto& action : newActiveState->getActions())
+		{
+			if (action == nullptr) continue;
+
+
+			if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->doAction();
+			}
+			else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::immediately) )
+			{
+				action->doAction();
+				this->variablesToResetAfterNextStep.append(action->getVariableId());
+			}
+		}
 	}
 }
 
@@ -122,23 +129,18 @@ void SimulatedFsm::targetStateSelectionMadeEventHandler(int i)
 	this->signalMapper->deleteLater(); // Can't be deleted now as we are in a call from this object
 	this->signalMapper = nullptr;
 
-	this->crossTransition(this->potentialTransitionsIds[i]);
-
+	this->transitionToBeCrossedId = this->potentialTransitionsIds[i];
 	this->potentialTransitionsIds.clear();
+
+	emit this->resumeNormalActivitiesEvent();
 }
 
-void SimulatedFsm::subcomponentReset()
+void SimulatedFsm::subMachineReset()
 {
-	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
-	if (fsm == nullptr) return;
-
-	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
-	if (graphicFsm == nullptr) return;
-
-
 	// Clean any remaining internal state
-	this->latestTransitionCrossedId = nullId;
-	this->transitionToBeCrossedId   = nullId;
+	this->transitionToBeCrossedId = nullId;
+	this->variablesToResetBeforeNextStep.clear();
+	this->variablesToResetAfterNextStep.clear();
 	this->potentialTransitionsIds.clear();
 
 	delete this->targetStateSelector;
@@ -147,300 +149,221 @@ void SimulatedFsm::subcomponentReset()
 	delete this->signalMapper;
 	this->signalMapper = nullptr;
 
-	// Disable currently active state
-	if (this->activeStateId != nullId)
-	{
-		auto previousActiveState = this->getSimulatedState(this->activeStateId);
-		if (previousActiveState != nullptr)
-		{
-			previousActiveState->setActive(false);
-		}
-	}
-
 	// Enable initial state and activate its actions
-	this->activeStateId = this->initialStateId;
-
-	auto newActiveState = this->getSimulatedState(this->activeStateId);
-	if (newActiveState != nullptr)
-	{
-		newActiveState->setActive(true);
-		this->activateStateActions(this->activeStateId, true);
-	}
-
-	// Refresh all transitions to ensure they all have a color on condition line
-	for (auto transitionId : fsm->getAllTransitionsIds())
-	{
-		auto simulatedTransition = graphicFsm->getSimulatedTransition(transitionId);
-		if (simulatedTransition == nullptr) continue;
-
-
-		simulatedTransition->refreshSimulatedDisplay();
-	}
+	this->forceStateActivation(this->initialStateId);
 }
 
-void SimulatedFsm::subcomponentPrepareStep()
+void SimulatedFsm::subMachinePrepareStep()
 {
-	this->transitionToBeCrossedId = nullId;
-
-	// Determine if a transition is to be crossed
 	auto currentActiveState = this->getSimulatedState(this->activeStateId);
-	if (currentActiveState != nullptr)
+	if (currentActiveState == nullptr) return;
+
+
+	//
+	// Look for potential transitions
+	QMap<uint, componentId_t> candidateTransitions;
+	for (const auto& transitionId : currentActiveState->getOutgoingTransitionsIds())
 	{
-		//
-		// Look for potential transitions
-		QMap<uint, componentId_t> candidateTransitions;
-		for (const auto& transitionId : currentActiveState->getOutgoingTransitionsIds())
+		auto transition = this->getSimulatedTransition(transitionId);
+		if (transition == nullptr) continue;
+
+
+		auto condition = transition->getCondition();
+		if (condition != nullptr)
 		{
-			auto transition = this->getSimulatedTransition(transitionId);
-			if (transition == nullptr) continue;
-
-
-			auto condition = transition->getCondition();
-			if (condition != nullptr)
+			if (condition->isTrue())
 			{
-				if (condition->isTrue())
-				{
-					candidateTransitions.insert(candidateTransitions.count(), transition->getId());
-				}
-			}
-			else
-			{
-				// Empty conditions are implicitly true
 				candidateTransitions.insert(candidateTransitions.count(), transition->getId());
 			}
 		}
-
-		if (candidateTransitions.count() == 1)
+		else // (condition == nullptr)
 		{
-			// One available transition, let's activate it.
-			this->transitionToBeCrossedId = candidateTransitions[0];
+			// Empty conditions are implicitly true
+			candidateTransitions.insert(candidateTransitions.count(), transition->getId());
 		}
-		else if (candidateTransitions.count() > 1)
+	}
+
+	if (candidateTransitions.count() == 1)
+	{
+		// One available transition, it will be crossed.
+		this->transitionToBeCrossedId = candidateTransitions[0];
+	}
+	else if (candidateTransitions.count() > 1)
+	{
+		// If multiple transitions are crossable, ask for wich one to follow.
+		// This is just a small instant workaround, user should correct the machine.
+
+		emit this->emergencyShutDownEvent();
+
+		auto statesUi = static_cast<StatesUi*>(QApplication::activeWindow());
+		if (statesUi == nullptr) return;
+
+
+		this->targetStateSelector = statesUi->getModalDialog();
+
+		auto choiceWindowLayout = new QVBoxLayout(this->targetStateSelector);
+
+		auto choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
+		                                        + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
+		                                        + tr("For current simulation, just choose the target state in the following list:"));
+
+		choiceWindowLayout->addWidget(choiceWindowWarningText);
+
+		this->signalMapper = new QSignalMapper();
+		connect(this->signalMapper, &QSignalMapper::mappedInt, this, &SimulatedFsm::targetStateSelectionMadeEventHandler);
+
+		for (int i = 0 ; i < candidateTransitions.count() ; i++)
 		{
-			// If multiple transitions are crossable, ask for wich one to follow.
-			// This is just a small instant patch, user should correct his machine.
+			auto candidateTransition = this->getSimulatedTransition(candidateTransitions[i]);
+			if (candidateTransition == nullptr) continue;
 
-			emit this->emergencyShutDownEvent();
 
-			auto statesUi = static_cast<StatesUi*>(QApplication::activeWindow());
-			if (statesUi == nullptr) return;
-			this->targetStateSelector = statesUi->getModalDialog();
+			auto targetState = this->getSimulatedState(candidateTransition->getTargetStateId());
+			auto button = new QPushButton(targetState->getName());
 
-			QVBoxLayout* choiceWindowLayout = new QVBoxLayout(this->targetStateSelector);
+			this->signalMapper->setMapping(button, i);
 
-			QLabel* choiceWindowWarningText = new QLabel(tr("Warning! There are multiple active transitions going out the current state!") + "<br />"
-														 + tr("This means your FSM is wrong by construction. This should be fixed.") + "<br />"
-														 + tr("For current simulation, just choose the target state in the following list:"));
+			connect(button, &QPushButton::clicked, this->signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+			connect(button, &QPushButton::clicked, this->targetStateSelector, &QWidget::close);
 
-			choiceWindowLayout->addWidget(choiceWindowWarningText);
-
-			this->signalMapper = new QSignalMapper();
-			connect(this->signalMapper, static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mappedInt), this, &SimulatedFsm::targetStateSelectionMadeEventHandler);
-
-			for (int i = 0 ; i < candidateTransitions.count() ; i++)
-			{
-				auto candidateTransition = this->getSimulatedTransition(candidateTransitions[i]);
-				if (candidateTransition == nullptr) continue;
-
-				auto targetState = this->getSimulatedState(candidateTransition->getTargetStateId());
-				QPushButton* button = new QPushButton(targetState->getName());
-
-				this->signalMapper->setMapping(button, i);
-
-				connect(button, &QPushButton::clicked, this->signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-				connect(button, &QPushButton::clicked, this->targetStateSelector, &QWidget::close);
-
-				choiceWindowLayout->addWidget(button);
-			}
-
-			this->potentialTransitionsIds = candidateTransitions;
-
-			this->targetStateSelector->open();
+			choiceWindowLayout->addWidget(button);
 		}
+
+		this->potentialTransitionsIds = candidateTransitions;
+
+		this->targetStateSelector->open();
 	}
 }
 
-void SimulatedFsm::subcomponentPrepareActions()
+void SimulatedFsm::subMachinePrepareActions()
 {
-	// First reset actions from the previous cycle
-	if (this->latestTransitionCrossedId != nullId)
+	// Reset unmemorized actions
+	for (auto& variableId : this->variablesToResetBeforeNextStep)
 	{
-		this->deactivateTransitionActions(this->latestTransitionCrossedId, true);
-	}
+		auto simulatedVariable = this->getSimulatedVariable(variableId);
+		if (simulatedVariable == nullptr) continue;
 
-	// Then prepare for next actions
+
+		simulatedVariable->reinitialize();
+	}
+	this->variablesToResetBeforeNextStep.clear();
+
+	// Prepare for next actions
 	if (this->transitionToBeCrossedId != nullId)
 	{
-		this->activateTransitionActions(this->transitionToBeCrossedId, true);
-	}
-}
-
-void SimulatedFsm::subcomponentDoStep()
-{
-	// First reset pulse variables
-	if (this->latestTransitionCrossedId != nullId)
-	{
-		this->deactivateTransitionActions(this->latestTransitionCrossedId, false);
-		this->latestTransitionCrossedId = nullId;
-	}
-
-	// Look for memorized actions in current state
-	this->activateStateActions(this->activeStateId, false);
-
-	// Then determine if a transition is to be crossed
-	if (this->transitionToBeCrossedId != nullId)
-	{
-		this->crossTransition(this->transitionToBeCrossedId);
-	}
-}
-
-void SimulatedFsm::crossTransition(componentId_t transitionId)
-{
-	auto previousActiveState = this->getSimulatedState(this->activeStateId);
-	if (previousActiveState != nullptr)
-	{
-		previousActiveState->setActive(false);
-		this->deactivateStateActions(this->activeStateId);
-	}
-
-	this->latestTransitionCrossedId = transitionId;
-
-	auto simulatedTransition = this->getSimulatedTransition(transitionId);
-	if (simulatedTransition != nullptr)
-	{
-		this->activateTransitionActions(transitionId, false);
-		this->activeStateId = simulatedTransition->getTargetStateId();
-	}
-
-	auto newActiveState = this->getSimulatedState(this->activeStateId);
-	if (newActiveState != nullptr)
-	{
-		newActiveState->setActive(true);
-		this->activateStateActions(this->activeStateId, true);
-	}
-
-	emit stateChangedEvent();
-}
-
-void SimulatedFsm::activateStateActions(componentId_t actuatorId, bool isFirstActivation)
-{
-	auto simulatedActuatorComponent = this->getSimulatedActuatorComponent(actuatorId);
-	if (simulatedActuatorComponent == nullptr) return;
+		auto simulatedTransition = this->getSimulatedActuatorComponent(this->transitionToBeCrossedId);
+		if (simulatedTransition == nullptr) return;
 
 
-	for (const auto& action : simulatedActuatorComponent->getActions())
-	{
-		if (action == nullptr) continue;
-
-
-		if (action->isActionMemorized() == true)
+		for (const auto& action : simulatedTransition->getActions())
 		{
-			if (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately)
-			{
-				action->beginAction();
-			}
-			else if (isFirstActivation == false)
-			{
-				action->beginAction();
-			}
-		}
-		else
-		{
-			if (this->continuousStateActionBehavior == SimulationBehavior_t::immediately)
-			{
-				action->beginAction();
-			}
-			else if (isFirstActivation == false)
-			{
-				action->beginAction();
-			}
-		}
-	}
-}
-
-void SimulatedFsm::activateTransitionActions(componentId_t actuatorId, bool isPreparation)
-{
-	auto simulatedActuatorComponent = this->getSimulatedActuatorComponent(actuatorId);
-	if (simulatedActuatorComponent == nullptr) return;
+			if (action == nullptr) continue;
 
 
-	for (const auto& action : simulatedActuatorComponent->getActions())
-	{
-		if (action == nullptr) continue;
-
-
-		if (isPreparation == true)
-		{
 			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::prepare) )
 			{
-				action->beginAction();
+				action->doAction();
 			}
 			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::prepare) )
 			{
-				action->beginAction();
-			}
-		}
-		else
-		{
-			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
-			{
-				action->beginAction();
-			}
-			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
-			{
-				action->beginAction();
+				action->doAction();
+				this->variablesToResetBeforeNextStep.append(action->getVariableId());
 			}
 		}
 	}
 }
 
-void SimulatedFsm::deactivateStateActions(componentId_t actuatorId)
+void SimulatedFsm::subMachineDoStep()
 {
-	auto simulatedActuatorComponent = this->getSimulatedActuatorComponent(actuatorId);
-	if (simulatedActuatorComponent == nullptr) return;
+	auto currentSimulatedState = this->getSimulatedState(this->activeStateId);
+	if (currentSimulatedState == nullptr) return;
 
 
-	for (const auto& action : simulatedActuatorComponent->getActions())
+	// Reset unmemorized actions
+	for (auto& variableId : this->variablesToResetAfterNextStep)
 	{
-		if (action == nullptr) continue;
+		auto simulatedVariable = this->getSimulatedVariable(variableId);
+		if (simulatedVariable == nullptr) continue;
 
 
-		action->endAction();
+		simulatedVariable->reinitialize();
 	}
-}
+	this->variablesToResetAfterNextStep.clear();
 
-void SimulatedFsm::deactivateTransitionActions(componentId_t actuatorId, bool isPreparation)
-{
-	auto actuatorComponent = this->getSimulatedActuatorComponent(actuatorId);
-	if (actuatorComponent == nullptr) return;
-
-
-	for (const auto& action : actuatorComponent->getActions())
+	// Look for postponed actions in current state
+	for (const auto& action : currentSimulatedState->getActions())
 	{
 		if (action == nullptr) continue;
 
 
-		if (isPreparation == true)
+		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::after) )
 		{
-			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::prepare) )
-			{
-				action->endAction();
-			}
-			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::prepare) )
-			{
-				action->endAction();
-			}
+			action->doAction();
 		}
-		else
+		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::after) )
 		{
-			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
+			action->doAction();
+			this->variablesToResetAfterNextStep.append(action->getVariableId());
+		}
+	}
+
+	// Cross transition
+	if (this->transitionToBeCrossedId != nullId)
+	{
+		auto simulatedTransition = this->getSimulatedTransition(this->transitionToBeCrossedId);
+		if (simulatedTransition != nullptr)
+		{
+			// Deactivate previous state
+			auto previousActiveState = this->getSimulatedState(this->activeStateId);
+			if (previousActiveState != nullptr)
 			{
-				action->endAction();
+				previousActiveState->setActive(false);
 			}
-			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
+
+			// Activate transition actions
+			for (const auto& action : simulatedTransition->getActions())
 			{
-				action->endAction();
+				if (action == nullptr) continue;
+
+
+				if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
+				{
+					action->doAction();
+				}
+				else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
+				{
+					action->doAction();
+					this->variablesToResetAfterNextStep.append(action->getVariableId());
+				}
 			}
+
+			// Update current state
+			this->activeStateId = simulatedTransition->getTargetStateId();
+			currentSimulatedState = this->getSimulatedState(this->activeStateId);
+			if (currentSimulatedState != nullptr)
+			{
+				currentSimulatedState->setActive(true);
+			}
+
+			emit this->stateChangedEvent();
+		}
+		this->transitionToBeCrossedId = nullId;
+	}
+
+	// Activate state actions
+	for (const auto& action : currentSimulatedState->getActions())
+	{
+		if (action == nullptr) continue;
+
+
+		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately) )
+		{
+			action->doAction();
+		}
+		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::immediately) )
+		{
+			action->doAction();
+			this->variablesToResetAfterNextStep.append(action->getVariableId());
 		}
 	}
 }

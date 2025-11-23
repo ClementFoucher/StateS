@@ -48,8 +48,9 @@ public:
 	// Mutators
 
 	void setName(const QString& newName);
-	void resize(uint newSize);
+	void setSize(uint newSize);
 	void setInitialValue(const LogicValue& newInitialValue);
+	void setMemorized(bool memorized);
 
 	///
 	// Accessors
@@ -57,6 +58,7 @@ public:
 	QString    getName()         const;
 	uint       getSize()         const;
 	LogicValue getInitialValue() const;
+	bool       getMemorized()    const;
 
 	/////
 	// Signals
@@ -64,12 +66,14 @@ signals:
 	void variableRenamedEvent();
 	void variableResizedEvent();
 	void variableInitialValueChangedEvent();
+	void variableMemorizedStateChangedEvent();
 
 	/////
 	// Object variables
 private:
 	QString    name;
-	LogicValue initialValue;
+	LogicValue initialValue = LogicValue::getValue0(1);
+	bool       memorized    = false;
 
 };
 

@@ -46,7 +46,7 @@ class SimulatedMachine : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedMachine();
+	explicit SimulatedMachine() = default;
 
 	/////
 	// Object functions
@@ -71,16 +71,17 @@ protected:
 	shared_ptr<SimulatedComponent> getSimulatedComponent(componentId_t componentId) const;
 
 private:
-	virtual void subcomponentReset()          = 0;
-	virtual void subcomponentPrepareStep()    = 0;
-	virtual void subcomponentPrepareActions() = 0;
-	virtual void subcomponentDoStep()         = 0;
+	virtual void subMachineReset()          = 0;
+	virtual void subMachinePrepareStep()    = 0;
+	virtual void subMachinePrepareActions() = 0;
+	virtual void subMachineDoStep()         = 0;
 
 	/////
 	// Signals
 signals:
 	void simulatedComponentUpdatedEvent(componentId_t componentId);
 	void emergencyShutDownEvent();
+	void resumeNormalActivitiesEvent();
 
 	/////
 	// Object variables

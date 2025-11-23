@@ -26,15 +26,13 @@
 Variable::Variable(const QString& name) :
 	MachineComponent()
 {
-	this->name         = name;
-	this->initialValue = LogicValue::getValue0(1);
+	this->name = name;
 }
 
 Variable::Variable(componentId_t id, const QString& name) :
 	MachineComponent(id)
 {
-	this->name         = name;
-	this->initialValue = LogicValue::getValue0(1);
+	this->name = name;
 }
 
 /**
@@ -54,7 +52,7 @@ void Variable::setName(const QString& newName)
 	emit this->variableRenamedEvent();
 }
 
-void Variable::resize(uint newSize)
+void Variable::setSize(uint newSize)
 {
 	if (newSize == 0) return;
 
@@ -79,6 +77,16 @@ void Variable::setInitialValue(const LogicValue& newInitialValue)
 	emit this->variableInitialValueChangedEvent();
 }
 
+void Variable::setMemorized(bool memorized)
+{
+	if (memorized == this->memorized) return;
+
+
+	this->memorized = memorized;
+
+	emit this->variableMemorizedStateChangedEvent();
+}
+
 QString Variable::getName() const
 {
 	return this->name;
@@ -94,3 +102,7 @@ LogicValue Variable::getInitialValue() const
 	return this->initialValue;
 }
 
+bool Variable::getMemorized() const
+{
+	return this->memorized;
+}

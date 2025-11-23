@@ -196,20 +196,6 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
-				for (auto& variableId : compat->bothTempAndKeepValue)
-				{
-					auto variable = fsm->getVariable(variableId);
-					if (variable == nullptr) continue;
-
-
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + variable->getName() + " "
-					        + tr("has both affectations (remembered value) and temporary (pulse or active on state).") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-					        + tr("This variable will be ignored on VHDL export.");
-					issue->type = VerifierSeverityLevel_t::tool;
-					this->issues.append(issue);
-				}
 				for (auto& variableId : compat->rangeAdressed)
 				{
 					auto variable = fsm->getVariable(variableId);

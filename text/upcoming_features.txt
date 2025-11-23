@@ -10,9 +10,9 @@ These features will be implemented... some day.
 - Support hexadecimal notation for bit vector variables,
 - Allow custom path for graphic transitions instead of only straight lines and Bezier.
 
+
 ** Core **
 
-- Apply the notion of memorized variable to the variable itself instead of determining if from the action type,
 - Integer type variables support,
 - Variable to variable affectation, instead of just constant.
 

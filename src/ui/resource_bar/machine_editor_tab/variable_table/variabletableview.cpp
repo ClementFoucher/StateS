@@ -28,6 +28,7 @@
 
 // StateS classes
 #include "variabletablemodel.h"
+#include "variabletablememorizeddelegate.h"
 #include "variabletablenamedelegate.h"
 #include "variabletablesizedelegate.h"
 #include "variabletablevaluedelegate.h"
@@ -64,12 +65,20 @@ VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* pare
 			this->columnsRoles[ColumnRole::size] = column;
 			this->setItemDelegateForColumn(column, new VariableTableSizeDelegate(this));
 		}
+		else if (role == "MEMORIZED")
+		{
+			this->columnsRoles[ColumnRole::memorized] = column;
+			this->setItemDelegateForColumn(column, new VariableTableMemorizedDelegate(this));
+		}
 		else if (role == "VALUE")
 		{
 			this->columnsRoles[ColumnRole::value] = column;
 			this->setItemDelegateForColumn(column, new VariableTableValueDelegate(this));
 		}
 	}
+
+	// Open persistent editors
+	this->openPersistentEditors();
 }
 
 void VariableTableView::addNewVariable()
@@ -278,6 +287,39 @@ QList<QPair<int, int>> VariableTableView::getSelectedRanksBlocks() const
 	return list;
 }
 
+void VariableTableView::openPersistentEditors(int firstRow, int lastRow)
+{
+	if (this->columnsRoles.contains(ColumnRole::memorized))
+	{
+		if (firstRow == -1) firstRow = 0;
+		if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+
+		for (int row = firstRow ; row <= lastRow ; row++)
+		{
+			auto memIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole::memorized));
+			this->openPersistentEditor(memIndex);
+		}
+	}
+}
+
+void VariableTableView::closePersistentEditors(int firstRow, int lastRow)
+{
+	if (this->columnsRoles.contains(ColumnRole::memorized))
+	{
+		if (firstRow == -1) firstRow = 0;
+		if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+
+		for (int row = firstRow ; row <= lastRow ; row++)
+		{
+			auto index = this->tableModel->index(row, this->columnsRoles.value(ColumnRole::memorized));
+			if (this->isPersistentEditorOpen(index) == true)
+			{
+				this->closePersistentEditor(index);
+			}
+		}
+	}
+}
+
 void VariableTableView::updateSelectionFlags()
 {
 	this->canSelectedVariablesBeRaised  = false;
@@ -322,7 +364,11 @@ void VariableTableView::selectionChanged(const QItemSelection& selected, const Q
 
 void VariableTableView::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles)
 {
+	this->closePersistentEditors(topLeft.row(), bottomRight.row());
+
 	QTableView::dataChanged(topLeft, bottomRight, roles);
+
+	this->openPersistentEditors(topLeft.row(), bottomRight.row());
 
 	this->updateSelectionFlags();
 }
@@ -331,10 +377,19 @@ void VariableTableView::rowsInserted(const QModelIndex& parent, int start, int e
 {
 	QTableView::rowsInserted(parent, start, end);
 
+	this->openPersistentEditors(start, end);
+
 	// We only insert rows one at a time, at the bottom of the list,
 	// thus select and edit lowest row.
 	this->selectRow(end);
 	this->edit(this->tableModel->index(end, 0));
+}
+
+void VariableTableView::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+{
+	this->closePersistentEditors(start, end);
+
+	QTableView::rowsAboutToBeRemoved(parent, start, end);
 }
 
 void VariableTableView::rowsMovedEventHandler()

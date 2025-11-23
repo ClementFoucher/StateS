@@ -67,6 +67,7 @@ private slots:
 	void timerTimeoutEventHandler();
 
 	void emergencyShutDownEventHandler();
+	void resumeNormalActivitiesEventHandler();
 
 	/////
 	// Signals
@@ -81,6 +82,8 @@ signals:
 private:
 	shared_ptr<SimulatedMachine> simulatedMachine;
 	shared_ptr<QTimer> timer;
+	bool emergencyShutDown = false;
+	bool wasAutoSimulatingBeforeShutDown;
 
 };
 

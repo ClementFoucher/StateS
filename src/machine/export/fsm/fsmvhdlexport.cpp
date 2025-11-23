@@ -87,11 +87,6 @@ shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility
 	{
 		charac = this->determineWrittableVariableCharacteristics(outputId, false);
 
-		if (charac.isKeepValue && charac.isTempValue)
-		{
-			compatibility->bothTempAndKeepValue.append(outputId);
-		}
-
 		if (charac.isMoore && charac.isMealy)
 		{
 			compatibility->bothMooreAndMealy.append(outputId);
@@ -110,11 +105,6 @@ shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility
 	for (auto& variableId : fsm->getInternalVariablesIds())
 	{
 		charac = this->determineWrittableVariableCharacteristics(variableId, false);
-
-		if (charac.isKeepValue && charac.isTempValue)
-		{
-			compatibility->bothTempAndKeepValue.append(variableId);
-		}
 
 		if (charac.isMoore && charac.isMealy)
 		{
@@ -216,6 +206,18 @@ FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWritta
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return characteristics;
 
+	auto variable = fsm->getVariable(variableId);
+	if (variable == nullptr) return characteristics;
+
+
+	if (variable->getMemorized() == true)
+	{
+		characteristics.isKeepValue = true;
+	}
+	else // (variable->getMemorized() == false)
+	{
+		characteristics.isTempValue = true;
+	}
 
 	bool doNotGenerate = !storeResults;
 
@@ -228,23 +230,6 @@ FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWritta
 			if (action->getVariableActedOnId() == variableId)
 			{
 				characteristics.isMoore = true;
-
-				ActionOnVariableType_t actionType = action->getActionType();
-
-				switch (actionType)
-				{
-				case ActionOnVariableType_t::assign:
-				case ActionOnVariableType_t::set:
-				case ActionOnVariableType_t::reset:
-				case ActionOnVariableType_t::increment:
-				case ActionOnVariableType_t::decrement:
-					characteristics.isKeepValue = true;
-					break;
-				case ActionOnVariableType_t::activeOnState:
-				case ActionOnVariableType_t::pulse:
-					characteristics.isTempValue = true;
-					break;
-				}
 
 				if (action->getActionRangeL() != -1)
 				{
@@ -264,23 +249,6 @@ FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWritta
 			{
 				characteristics.isMealy = true;
 
-				ActionOnVariableType_t actionType = action->getActionType();
-
-				switch (actionType)
-				{
-				case ActionOnVariableType_t::assign:
-				case ActionOnVariableType_t::set:
-				case ActionOnVariableType_t::reset:
-				case ActionOnVariableType_t::increment:
-				case ActionOnVariableType_t::decrement:
-					characteristics.isKeepValue = true;
-					break;
-				case ActionOnVariableType_t::activeOnState:
-				case ActionOnVariableType_t::pulse:
-					characteristics.isTempValue = true;
-					break;
-				}
-
 				if (action->getActionRangeL() != -1)
 				{
 					characteristics.isRangeAdressed = true;
@@ -290,10 +258,6 @@ FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWritta
 	}
 
 	if (characteristics.isMealy && characteristics.isMoore)
-	{
-		doNotGenerate = true;
-	}
-	else if (characteristics.isTempValue && characteristics.isKeepValue)
 	{
 		doNotGenerate = true;
 	}
@@ -773,7 +737,7 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	{
 		switch(type)
 		{
-		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::continuous:
 		case ActionOnVariableType_t::pulse:
 		case ActionOnVariableType_t::set:
 			stream << "'1'";
@@ -784,6 +748,7 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 		case ActionOnVariableType_t::increment:
 		case ActionOnVariableType_t::decrement:
 		case ActionOnVariableType_t::assign:
+		case ActionOnVariableType_t::none:
 			// Impossible cases
 			break;
 		}
@@ -792,22 +757,21 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	{
 		switch(type)
 		{
-		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::continuous:
 		case ActionOnVariableType_t::pulse:
 		case ActionOnVariableType_t::assign:
-			stream << "\"" <<  action->getActionValue().toString() << "\"";
-			break;
 		case ActionOnVariableType_t::set:
-			stream << "\"" << LogicValue::getValue1(variable->getSize()).toString() << "\"";
-			break;
 		case ActionOnVariableType_t::reset:
-			stream << "\"" << LogicValue::getValue0(variable->getSize()).toString() << "\"";
+			stream << "\"" <<  action->getActionValue().toString() << "\"";
 			break;
 		case ActionOnVariableType_t::increment:
 			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variableId] << " + 1)";
 			break;
 		case ActionOnVariableType_t::decrement:
 			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variableId] << " - 1)";
+			break;
+		case ActionOnVariableType_t::none:
+			// Nothing
 			break;
 		}
 	}

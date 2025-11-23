@@ -293,11 +293,8 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 		// Clear old machine connections so that its destruction is silent
 
 		// Event propagation
-		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineOutputVariableListChangedEvent,   this, &MachineManager::machineOutputVariableListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineInternalVariableListChangedEvent, this, &MachineManager::machineInternalVariableListChangedEvent);
-		disconnect(this->machine.get(), &Machine::machineConstantListChangedEvent,         this, &MachineManager::machineConstantListChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,         this, &MachineManager::machineNameChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineExternalViewChangedEvent, this, &MachineManager::machineExternalViewChangedEvent);
 		// Event handling
 		disconnect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
 		disconnect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);
@@ -328,11 +325,8 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 		// Connect new machine
 
 		// Event propagation
-		connect(this->machine.get(), &Machine::machineNameChangedEvent,                 this, &MachineManager::machineNameChangedEvent);
-		connect(this->machine.get(), &Machine::machineInputVariableListChangedEvent,    this, &MachineManager::machineInputVariableListChangedEvent);
-		connect(this->machine.get(), &Machine::machineOutputVariableListChangedEvent,   this, &MachineManager::machineOutputVariableListChangedEvent);
-		connect(this->machine.get(), &Machine::machineInternalVariableListChangedEvent, this, &MachineManager::machineInternalVariableListChangedEvent);
-		connect(this->machine.get(), &Machine::machineConstantListChangedEvent,         this, &MachineManager::machineConstantListChangedEvent);
+		connect(this->machine.get(), &Machine::machineNameChangedEvent,         this, &MachineManager::machineNameChangedEvent);
+		connect(this->machine.get(), &Machine::machineExternalViewChangedEvent, this, &MachineManager::machineExternalViewChangedEvent);
 		// Event handling
 		connect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
 		connect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);

@@ -42,6 +42,7 @@ SimulatedVariable::SimulatedVariable(componentId_t componentId) :
 	this->name         = logicVariable->getName();
 	this->initialValue = logicVariable->getInitialValue();
 	this->currentValue = this->initialValue;
+	this->memorized    = logicVariable->getMemorized();
 }
 
 void SimulatedVariable::setCurrentValue(const LogicValue &value)
@@ -51,39 +52,7 @@ void SimulatedVariable::setCurrentValue(const LogicValue &value)
 
 void SimulatedVariable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR)
 {
-	bool setOk = false;
-	uint variableSize = this->initialValue.getSize();
-
-	if (rangeL < 0)
-	{
-		// Full range affectation
-		if (variableSize == value.getSize())
-		{
-			this->currentValue = value;
-			setOk = true;
-		}
-	}
-	else if (rangeR < 0)
-	{
-		// Single bit affectation
-		if ( (value.getSize() == 1) && ((uint)rangeL < variableSize) )
-		{
-			this->currentValue[rangeL] = value[0];
-			setOk = true;
-		}
-	}
-	else
-	{
-		// Sub-range affectation
-		if ( ((uint)rangeL < variableSize) && (rangeL > rangeR) && (value.getSize() == (uint)rangeR+rangeL+1) )
-		{
-			for (int i = rangeR ; i <= rangeL ; i++)
-			{
-				this->currentValue[i] = value[i-rangeR];
-			}
-			setOk = true;
-		}
-	}
+	bool setOk = this->currentValue.setSubrange(value, rangeL, rangeR);
 
 	if (setOk == true)
 	{
@@ -108,7 +77,17 @@ uint SimulatedVariable::getSize() const
 	return this->initialValue.getSize();
 }
 
+LogicValue SimulatedVariable::getInitialValue() const
+{
+	return this->initialValue;
+}
+
 LogicValue SimulatedVariable::getCurrentValue() const
 {
 	return this->currentValue;
+}
+
+bool SimulatedVariable::getMemorized() const
+{
+	return this->memorized;
 }

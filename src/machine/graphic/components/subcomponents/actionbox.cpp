@@ -97,7 +97,7 @@ void ActionBox::buildActionBox()
 
 		// Memorized state
 
-		if (currentAction->isActionMemorized() == true)
+		if (currentVariable->getMemorized() == true)
 		{
 			auto memorizedText = new QGraphicsTextItem(this);
 			memorizedText->setHtml("<span style=\"color:black;\">M</span>");
@@ -154,15 +154,11 @@ void ActionBox::buildActionBox()
 		switch (currentAction->getActionType())
 		{
 		case ActionOnVariableType_t::set:
-			currentActionText += " ← " + LogicValue::getValue1(currentVariable->getSize()).toString();
-			break;
 		case ActionOnVariableType_t::reset:
-			currentActionText += " ← " + LogicValue::getValue0(currentVariable->getSize()).toString();
-			break;
 		case ActionOnVariableType_t::assign:
 			currentActionText += " ← " + currentAction->getActionValue().toString();
 			break;
-		case ActionOnVariableType_t::activeOnState:
+		case ActionOnVariableType_t::continuous:
 		case ActionOnVariableType_t::pulse:
 			if (currentAction->getActionSize() > 1)
 			{
@@ -174,6 +170,9 @@ void ActionBox::buildActionBox()
 			break;
 		case ActionOnVariableType_t::decrement:
 			currentActionText += " ← " + currentVariable->getName() + " - 1";
+			break;
+		case ActionOnVariableType_t::none:
+			// Nothing
 			break;
 		}
 

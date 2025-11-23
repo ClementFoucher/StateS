@@ -43,7 +43,7 @@ class SimulatedFsm : public SimulatedMachine
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedFsm();
+	explicit SimulatedFsm() = default;
 
 	/////
 	// Object functions
@@ -62,18 +62,10 @@ private slots:
 	void targetStateSelectionMadeEventHandler(int i);
 
 private:
-	virtual void subcomponentReset()          override;
-	virtual void subcomponentPrepareStep()    override;
-	virtual void subcomponentPrepareActions() override;
-	virtual void subcomponentDoStep()         override;
-
-	void crossTransition(componentId_t transitionId);
-
-	void activateStateActions(componentId_t actuatorId, bool isFirstActivation);
-	void activateTransitionActions(componentId_t actuatorId, bool isPreparation);
-
-	void deactivateStateActions(componentId_t actuatorId);
-	void deactivateTransitionActions(componentId_t actuatorId, bool isPreparation);
+	virtual void subMachineReset()          override;
+	virtual void subMachinePrepareStep()    override;
+	virtual void subMachinePrepareActions() override;
+	virtual void subMachineDoStep()         override;
 
 	/////
 	// Signals
@@ -83,12 +75,19 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t initialStateId            = nullId;
-	componentId_t activeStateId             = nullId;
-	componentId_t latestTransitionCrossedId = nullId;
-	componentId_t transitionToBeCrossedId   = nullId;
-	QMap<uint, componentId_t> potentialTransitionsIds;
+	// Static state
+	componentId_t initialStateId = nullId;
 
+	// Dynamic state
+	componentId_t activeStateId = nullId;
+
+	// Temporary working variables
+	componentId_t transitionToBeCrossedId = nullId;
+	QList<componentId_t> variablesToResetBeforeNextStep;
+	QList<componentId_t> variablesToResetAfterNextStep;
+
+	// Resolution of transition conflict
+	QMap<uint, componentId_t> potentialTransitionsIds;
 	QDialog* targetStateSelector = nullptr;
 	QSignalMapper* signalMapper  = nullptr;
 

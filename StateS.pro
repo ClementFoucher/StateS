@@ -38,7 +38,7 @@ DEFINES += STATES_VERSION_MINOR=\\\"$$VERSION_MINOR\\\"
 DEFINES += STATES_VERSION_PATCH=\\\"$$VERSION_PATCH\\\"
 DEFINES += STATES_DATE=\\\"$$DATE\\\"
 
-CONFIG += c++17
+CONFIG += c++20
 
 SOURCES += \
 	src/main.cpp \
@@ -109,6 +109,7 @@ SOURCES += \
 	src/ui/common/statesgraphicsview.cpp \
 	src/ui/common/statesmainwindow.cpp \
 	src/ui/common/editors/actiontypeeditor.cpp \
+	src/ui/common/editors/checkboxeditor.cpp \
 	src/ui/common/editors/dynamiclineeditor.cpp \
 	src/ui/common/editors/linewithupdownbuttonseditor.cpp \
 	src/ui/common/editors/rangeeditor.cpp \
@@ -161,11 +162,13 @@ SOURCES += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabletypedelegate.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablememorizeddelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablesizedelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.cpp \
@@ -248,6 +251,7 @@ HEADERS += \
 	src/ui/common/statesgraphicsview.h \
 	src/ui/common/statesmainwindow.h \
 	src/ui/common/editors/actiontypeeditor.h \
+	src/ui/common/editors/checkboxeditor.h \
 	src/ui/common/editors/dynamiclineeditor.h \
 	src/ui/common/editors/linewithupdownbuttonseditor.h \
 	src/ui/common/editors/rangeeditor.h \
@@ -300,11 +304,13 @@ HEADERS += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.h \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.h \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.h \
+	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabletypedelegate.h \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.h \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \
 	src/ui/resource_bar/machine_editor_tab/variablelisteditor.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.h \
+	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablememorizeddelegate.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablesizedelegate.h \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.h \

@@ -25,20 +25,13 @@
 // Parent
 #include <QComboBox>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // StateS classes
-class ActionOnVariable;
+#include "statestypes.h"
 
 
 /**
  * @brief The ActionTypeEditor class displays
- * a drop-down list displaying the allowed action
- * types for a specific action, and changes the
- * action type according to user selection in the
- * list.
+ * a drop-down list of action types.
  */
 class ActionTypeEditor : public QComboBox
 {
@@ -47,17 +40,21 @@ class ActionTypeEditor : public QComboBox
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeEditor(uint allowedActionTypes, shared_ptr<ActionOnVariable> action, QWidget* parent = nullptr);
+	explicit ActionTypeEditor(QWidget* parent = nullptr) : QComboBox(parent) {}
 
 	/////
 	// Object functions
+public:
+	void fillActionList(uint allowedActionTypes, ActionOnVariableType_t currentActionType);
+	ActionOnVariableType_t getActionType() const;
+
 private slots:
-	void processIndexChanged(int index);
+	void processIndexChanged(int);
 
 	/////
-	// Object variables
-private:
-	weak_ptr<ActionOnVariable> action;
+	// Signals
+signals:
+	void actionTypeChangedEvent(ActionTypeEditor* me);
 
 };
 

@@ -25,7 +25,8 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="g1">
+     id="g1"
+     transform="rotate(180,128,128)">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 10.584415,228 h 50 V 28 h 25"

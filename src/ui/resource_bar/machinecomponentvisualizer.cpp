@@ -45,10 +45,8 @@ MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 
 	this->updateMachineVisualization();
 
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,                   this, &MachineComponentVisualizer::updateMachineVisualization);
-	connect(machineManager.get(), &MachineManager::machineNameChangedEvent,               this, &MachineComponentVisualizer::updateMachineVisualization);
-	connect(machineManager.get(), &MachineManager::machineInputVariableListChangedEvent,  this, &MachineComponentVisualizer::updateMachineVisualization);
-	connect(machineManager.get(), &MachineManager::machineOutputVariableListChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,             this, &MachineComponentVisualizer::updateMachineVisualization);
+	connect(machineManager.get(), &MachineManager::machineExternalViewChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
 shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const

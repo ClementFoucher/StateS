@@ -59,8 +59,6 @@ private slots:
 	/////
 	// Object variables
 private:
-	VariableNature_t editorNature;
-
 	VariableTableView* tableView = nullptr;
 
 	QPushButton* buttonAdd    = nullptr;

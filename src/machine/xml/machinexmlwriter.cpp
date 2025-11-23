@@ -107,7 +107,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 
 			switch(action->getActionType())
 			{
-			case ActionOnVariableType_t::activeOnState:
+			case ActionOnVariableType_t::continuous:
 				this->stream->writeAttribute("Action_Type", "ActiveOnState");
 				break;
 			case ActionOnVariableType_t::pulse:
@@ -127,6 +127,8 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 				break;
 			case ActionOnVariableType_t::decrement:
 				this->stream->writeAttribute("Action_Type", "Decrement");
+				break;
+			case ActionOnVariableType_t::none:
 				break;
 			}
 
@@ -402,8 +404,14 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 	// Size
 	this->stream->writeAttribute("Size", QString::number(variable->getSize()));
 
-	// Initial value
+	// Value
 	this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
+
+	// Memorized
+	if (variable->getMemorized() == true)
+	{
+		this->stream->writeAttribute("Memorized", "true");
+	}
 
 	// Id
 	if (this->mode == MachineXmlWriterMode_t::writeToUndo)

@@ -39,12 +39,6 @@
 #include "graphicfsmtransitionneighborhood.h"
 
 
-GraphicFsm::GraphicFsm() :
-    GraphicMachine()
-{
-
-}
-
 void GraphicFsm::build(shared_ptr<GraphicAttributes> graphicAttributes)
 {
 	if (graphicAttributes == nullptr) return;
@@ -112,6 +106,26 @@ void GraphicFsm::removeGraphicComponent(componentId_t id)
 	}
 
 	GraphicMachine::removeGraphicComponent(id);
+}
+
+/**
+ * @brief GraphicFsm::forceRefreshSimulatedDisplay is
+ * needed for (re)initializing transitions colors.
+ */
+void GraphicFsm::forceRefreshSimulatedDisplay()
+{
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+
+	for (auto transitionId : fsm->getAllTransitionsIds())
+	{
+		auto simulatedTransition = this->getSimulatedTransition(transitionId);
+		if (simulatedTransition == nullptr) continue;
+
+
+		simulatedTransition->refreshSimulatedDisplay();
+	}
 }
 
 GraphicFsmState* GraphicFsm::addState(componentId_t logicStateId, QPointF position)

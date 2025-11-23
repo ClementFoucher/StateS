@@ -29,11 +29,15 @@
 #include "simulatedvariable.h"
 
 
-SimulatedMachine::SimulatedMachine()
-{
-
-}
-
+/**
+ * @brief SimulatedMachine::build is used to separate object
+ * construction from initialization. As SimulatedMachine
+ * is built as part of MachineSimulator construction,
+ * he latter is thus not registered in MachineManager at
+ * this point. However, some SimulatedComponents require access
+ * to the SimulatedMachine from MachineManager when they are built,
+ * thus this separation.
+ */
 void SimulatedMachine::build()
 {
 	auto machine = machineManager->getMachine();
@@ -65,15 +69,10 @@ void SimulatedMachine::reset()
 
 
 	// Reset all machine variables
-	for (auto& inputId : machine->getInputVariablesIds())
-	{
-		auto simulatedInput = this->getSimulatedVariable(inputId);
-		if (simulatedInput == nullptr) continue;
-
-
-		simulatedInput->reinitialize();
-	}
-	for (auto& variableId : machine->getInternalVariablesIds())
+	auto variablesIds = machine->getInputVariablesIds();
+	variablesIds += machine->getInternalVariablesIds();
+	variablesIds += machine->getOutputVariablesIds();
+	for (auto& variableId : variablesIds)
 	{
 		auto simulatedVariable = this->getSimulatedVariable(variableId);
 		if (simulatedVariable == nullptr) continue;
@@ -81,42 +80,23 @@ void SimulatedMachine::reset()
 
 		simulatedVariable->reinitialize();
 	}
-	for (auto& outputId : machine->getOutputVariablesIds())
-	{
-		auto simulatedOutput = this->getSimulatedVariable(outputId);
-		if (simulatedOutput == nullptr) continue;
 
-
-		simulatedOutput->reinitialize();
-	}
-
-	// Reset actions
-	auto componentsIds = this->simulatedComponents.keys();
-	for (auto& componentId : componentsIds)
-	{
-		auto simulatedActuator = this->getSimulatedActuatorComponent(componentId);
-		if (simulatedActuator == nullptr) continue;
-
-
-		simulatedActuator->resetActions();
-	}
-
-	this->subcomponentReset();
+	this->subMachineReset();
 }
 
 void SimulatedMachine::prepareStep()
 {
-	this->subcomponentPrepareStep();
+	this->subMachinePrepareStep();
 }
 
 void SimulatedMachine::prepareActions()
 {
-	this->subcomponentPrepareActions();
+	this->subMachinePrepareActions();
 }
 
 void SimulatedMachine::doStep()
 {
-	this->subcomponentDoStep();
+	this->subMachineDoStep();
 }
 
 void SimulatedMachine::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
