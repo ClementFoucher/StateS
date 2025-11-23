@@ -85,7 +85,7 @@ protected:
 	virtual void keyPressEvent    (QKeyEvent*                      ke) override;
 	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
-	virtual void updateSimulatioMode(SimulationMode_t newMode) override;
+	virtual void updateSimulationMode(SimulationMode_t newMode) override;
 
 private slots:
 	// Machine manager signals

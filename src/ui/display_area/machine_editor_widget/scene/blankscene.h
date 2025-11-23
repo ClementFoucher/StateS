@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,7 +39,7 @@ public:
 	explicit BlankScene();
 
 protected:
-	virtual void updateSimulatioMode(SimulationMode_t newMode) override;
+	virtual void updateSimulationMode(SimulationMode_t) override;
 
 	/////
 	// Object variables

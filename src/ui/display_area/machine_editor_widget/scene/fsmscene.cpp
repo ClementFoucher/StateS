@@ -425,7 +425,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 	}
 }
 
-void FsmScene::updateSimulatioMode(SimulationMode_t newMode)
+void FsmScene::updateSimulationMode(SimulationMode_t newMode)
 {
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)

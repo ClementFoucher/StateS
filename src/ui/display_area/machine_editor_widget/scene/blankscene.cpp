@@ -37,7 +37,7 @@ BlankScene::BlankScene()
 	this->text->setDefaultTextColor(QColor("light gray"));
 }
 
-void BlankScene::updateSimulatioMode(SimulationMode_t)
+void BlankScene::updateSimulationMode(SimulationMode_t)
 {
 	// Ignore
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2024 Clément Foucher
+ * Copyright © 2014-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -45,7 +45,7 @@ public:
 	void recomputeSceneRect();
 
 protected:
-	virtual void updateSimulatioMode(SimulationMode_t newMode) = 0;
+	virtual void updateSimulationMode(SimulationMode_t newMode) = 0;
 
 signals:
 	void itemSelectedEvent(componentId_t componentId);

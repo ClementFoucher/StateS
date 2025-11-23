@@ -113,6 +113,6 @@ void GenericScene::recomputeSceneRect()
 void GenericScene::simulationModeChangeEventHandler(SimulationMode_t newMode)
 {
 	emit this->sceneSimulationModeAboutToChangeEvent();
-	this->updateSimulatioMode(newMode);
+	this->updateSimulationMode(newMode);
 	emit this->sceneSimulationModeChangedEvent();
 }
