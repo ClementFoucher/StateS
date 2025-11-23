@@ -401,7 +401,7 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 			}
 		}
 	}
-	if (ke->key() == Qt::Key_Delete)
+	else if (ke->key() == Qt::Key_Delete)
 	{
 		// Allow deleting scene components only in idle state
 		if (this->sceneMode == SceneMode_t::idle)
