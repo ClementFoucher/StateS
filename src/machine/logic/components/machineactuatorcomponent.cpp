@@ -104,23 +104,8 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	emit this->componentEditedEvent(this->id);
 }
 
-void MachineActuatorComponent::variableDeletedEventHandler(componentId_t)
+void MachineActuatorComponent::variableDeletedEventHandler(componentId_t deletedVariableId)
 {
-	this->cleanActionList();
-}
-
-void MachineActuatorComponent::variableInActionListModifiedEventHandler()
-{
-	emit this->actionListChangedEvent();
-	emit this->componentEditedEvent(this->id);
-}
-
-void MachineActuatorComponent::cleanActionList()
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-
 	QList<shared_ptr<ActionOnVariable>> newActionList;
 
 	bool listChanged = false;
@@ -134,12 +119,11 @@ void MachineActuatorComponent::cleanActionList()
 
 
 		auto variableId = action->getVariableActedOnId();
-		auto variable = machine->getVariable(variableId);
-		if (variable != nullptr)
+		if (variableId != deletedVariableId)
 		{
 			newActionList.append(action);
 		}
-		else
+		else // (variableId == deletedVariableId)
 		{
 			listChanged = true;
 		}
@@ -154,6 +138,12 @@ void MachineActuatorComponent::cleanActionList()
 	}
 }
 
+void MachineActuatorComponent::variableInActionListModifiedEventHandler()
+{
+	emit this->actionListChangedEvent();
+	emit this->componentEditedEvent(this->id);
+}
+
 void MachineActuatorComponent::addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable)
 {
 	if (action == nullptr) return;
@@ -163,7 +153,8 @@ void MachineActuatorComponent::addActionInternal(shared_ptr<ActionOnVariable> ac
 
 	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::variableInActionListModifiedEventHandler);
 	// To remove destroyed variables from the action list
-	connect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler);
+	// Use UniqueConnection as multiple actions on the same variable are possible due to actions on sub-vectors
+	connect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler, Qt::UniqueConnection);
 
 	this->actionList.append(action);
 }

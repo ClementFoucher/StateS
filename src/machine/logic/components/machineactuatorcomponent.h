@@ -66,11 +66,10 @@ public:
 	virtual uint getAllowedActionTypes() const = 0;
 
 private slots:
-	void variableDeletedEventHandler(componentId_t);
+	void variableDeletedEventHandler(componentId_t deletedVariableId);
 	void variableInActionListModifiedEventHandler();
 
 private:
-	void cleanActionList();
 	void addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable);
 
 	/////
