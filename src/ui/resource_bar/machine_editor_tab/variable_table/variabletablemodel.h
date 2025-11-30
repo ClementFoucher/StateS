@@ -72,11 +72,6 @@ private slots:
 	void machineUpdatedEventHandler();
 
 	/////
-	// Signals
-signals:
-	void rowsMovedEvent();
-
-	/////
 	// Object variables
 private:
 	VariableNature_t editorNature;

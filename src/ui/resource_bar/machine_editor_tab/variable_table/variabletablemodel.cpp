@@ -341,6 +341,7 @@ bool VariableTableModel::removeRows(int row, int count, const QModelIndex& paren
 	this->endRemoveRows();
 
 	// Machine has been edited
+	// TODO: should provide an undo type to allow merging multiples deletions
 	machineManager->notifyMachineEdited();
 
 	return true;
@@ -471,11 +472,6 @@ bool VariableTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow
 		}
 	}
 	this->endMoveRows();
-
-	// Strangely enough, unlike rows insertion/removal and other changes,
-	// there seem to be no way to react to rows moving in Table View...
-	// QTableView:::rowMoved exists, but is not virtual so can't be overriden.
-	emit this->rowsMovedEvent();
 
 	// Machine has been edited
 	// TODO: should provide an undo type to allow merging multiples moves

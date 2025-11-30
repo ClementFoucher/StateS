@@ -36,20 +36,11 @@
 
 
 VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* parent) :
-	QTableView(parent)
+	ReorderableTableView(parent)
 {
-	// Configure table
-	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-	this->setSelectionBehavior(QAbstractItemView::SelectRows);
-
 	// Build table model
 	this->tableModel = new VariableTableModel(tableNature, this);
 	this->setModel(this->tableModel);
-
-	// Strangely enough, unlike rows insertion/removal and other changes,
-	// rows move doesn't seem to have its own handler (outside QAbstractItemModelPrivate)
-	connect(this->tableModel, &VariableTableModel::rowsMovedEvent, this, &VariableTableView::rowsMovedEventHandler);
 
 	// Determine columns roles and build delegates accordingly
 	for (int column = 0 ; column < this->tableModel->columnCount() ; column++)
@@ -76,77 +67,27 @@ VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* pare
 			this->setItemDelegateForColumn(column, new VariableTableValueDelegate(this));
 		}
 	}
+}
 
-	// Open persistent editors
+void VariableTableView::initialize()
+{
 	this->openPersistentEditors();
 }
 
-void VariableTableView::addNewVariable()
+void VariableTableView::rowsInserted(const QModelIndex& parent, int start, int end)
 {
-	this->tableModel->insertRow(this->tableModel->rowCount());
-}
+	ReorderableTableView::rowsInserted(parent, start, end);
 
-void VariableTableView::deleteSelectedVariables()
-{
-	auto selectedRanksBlocks = this->getSelectedRanksBlocks();
-
-	// Deleting a block will mess with ranks of lower blocks:
-	// delete blocks from bottom to top
-	std::reverse(selectedRanksBlocks.begin(), selectedRanksBlocks.end());
-
-	for (auto block : as_const(selectedRanksBlocks))
-	{
-		this->tableModel->removeRows(block.first, block.second);
-	}
-}
-
-void VariableTableView::raiseSelectedVariables()
-{
-	const auto selectedRanksBlocks = this->getSelectedRanksBlocks();
-	for (auto rankBlock : selectedRanksBlocks)
-	{
-		// Do not raise block if it is already at the top of the list
-		if (rankBlock.first != 0)
-		{
-			auto parent = this->tableModel->index(rankBlock.first, 0).parent();
-			this->tableModel->moveRows(parent, rankBlock.first, rankBlock.second, parent, rankBlock.first-1);
-		}
-	}
-}
-
-void VariableTableView::lowerSelectedVariables()
-{
-	const auto selectedRanksBlocks = this->getSelectedRanksBlocks();
-	for (auto rankBlock : selectedRanksBlocks)
-	{
-		// Do not lower block if it is already at the bottom of the list
-		if ( (rankBlock.first + rankBlock.second) != this->tableModel->rowCount())
-		{
-			auto parent = this->tableModel->index(rankBlock.first, 0).parent();
-			this->tableModel->moveRows(parent, rankBlock.first, rankBlock.second, parent, rankBlock.first+1);
-		}
-	}
-}
-
-bool VariableTableView::getSelectedVariablesCanBeDeleted()
-{
-	return this->canSelectedVariablesBeDeleted;
-}
-
-bool VariableTableView::getSelectedVariablesCanBeRaised()
-{
-	return this->canSelectedVariablesBeRaised;
-}
-
-bool VariableTableView::getSelectedVariablesCanBeLowered()
-{
-	return this->canSelectedVariablesBeLowered;
+	// We only insert rows one at a time, at the bottom of the list,
+	// thus select and edit lowest row.
+	this->selectRow(end);
+	this->edit(this->model()->index(end, 0));
 }
 
 void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 {
-	auto selectedRanks = this->getSelectedRowsRanks();
-	if (selectedRanks.count() == 0) return;
+	uint selectedRowsCount = this->selectionModel()->selectedRows().count();
+	if (selectedRowsCount == 0) return;
 
 
 	event->accept();
@@ -156,38 +97,39 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	QVariant data;
 
 	// Title
-	if (selectedRanks.count() == 1)
+	if (selectedRowsCount == 1)
 	{
-		auto index = this->tableModel->index(selectedRanks.at(0), this->columnsRoles.value(ColumnRole::name));
+		this->currentMenuRow = this->rowAt(event->pos().y());
+		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles.value(ColumnRole::name));
 		auto variableName = this->tableModel->data(index, Qt::DisplayRole).toString();
-		menu->addTitle(tr("Action on variable") + " <i>" + variableName + "</i>");
+		menu->addTitle(tr("Edit variable") + " <i>" + variableName + "</i>");
 	}
 	else
 	{
-		menu->addTitle(tr("Action on all selected variables"));
+		menu->addTitle(tr("Edit all selected variables"));
 	}
 
 	// Items
-	if (this->canSelectedVariablesBeRaised == true)
+	if (this->getSelectionCanBeRaised() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move up"));
 		data.setValue((int)ContextAction_t::raise);
 		actionBeingAdded->setData(data);
 	}
 
-	if (this->canSelectedVariablesBeLowered == true)
+	if (this->getSelectionCanBeLowered() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move down"));
 		data.setValue((int)ContextAction_t::lower);
 		actionBeingAdded->setData(data);
 	}
 
-	if ( (this->canSelectedVariablesBeRaised == true) || (this->canSelectedVariablesBeLowered == true) )
+	if ( (this->getSelectionCanBeRaised() == true) || (this->getSelectionCanBeLowered() == true) )
 	{
 		menu->addSeparator();
 	}
 
-	if (selectedRanks.count() == 1)
+	if (selectedRowsCount == 1)
 	{
 		actionBeingAdded = menu->addAction(tr("Rename variable"));
 		data.setValue((int)ContextAction_t::rename);
@@ -207,7 +149,7 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 		data.setValue((int)ContextAction_t::deleteVar);
 		actionBeingAdded->setData(data);
 	}
-	else
+	else // (selectedRowsCount > 1)
 	{
 		actionBeingAdded = menu->addAction(tr("Delete variables"));
 		data.setValue((int)ContextAction_t::deleteVar);
@@ -230,61 +172,42 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	connect(menu, &QMenu::triggered, this, &VariableTableView::processMenuEventHandler);
 }
 
-void VariableTableView::resizeEvent(QResizeEvent* event)
+void VariableTableView::processMenuEventHandler(QAction* action)
 {
-	QTableView::resizeEvent(event);
+	ContextAction_t dataValue = ContextAction_t(action->data().toInt());
 
-	auto selectedRows = this->selectionModel()->selectedRows();
-	if (selectedRows.isEmpty() == false)
+	switch (dataValue)
 	{
-		this->scrollTo(selectedRows.at(0));
-	}
-}
-
-QList<int> VariableTableView::getSelectedRowsRanks() const
-{
-	const auto rows = this->selectionModel()->selectedRows();
-
-	QList<int> variablesRanks;
-	for (QModelIndex index : rows)
+	case ContextAction_t::cancel:
+		break;
+	case ContextAction_t::deleteVar:
+		this->deleteSelectedRows();
+		break;
+	case ContextAction_t::raise:
+		this->raiseSelectedRows();
+		break;
+	case ContextAction_t::lower:
+		this->lowerSelectedRows();
+		break;
+	case ContextAction_t::rename:
 	{
-		variablesRanks.append(index.row());
+		auto col = this->columnsRoles.value(ColumnRole::name);
+		this->edit(this->tableModel->index(this->currentMenuRow, col));
 	}
-
-	return variablesRanks;
-}
-
-QList<QPair<int, int>> VariableTableView::getSelectedRanksBlocks() const
-{
-	QList<QPair<int, int>> list;
-
-	auto selectedRows = this->getSelectedRowsRanks();
-	auto rowsCount = this->tableModel->rowCount();
-
-	int currentRow = 0;
-	while (currentRow < rowsCount)
+	break;
+	case ContextAction_t::changeValue:
 	{
-		if (selectedRows.contains(currentRow) == true)
-		{
-			int blockEnd;
-
-			for (blockEnd = currentRow+1 ; blockEnd < rowsCount ; blockEnd++)
-			{
-				if (selectedRows.contains(blockEnd) == false)
-				{
-					break;
-				}
-			}
-			list.append(QPair<int, int>(currentRow, blockEnd-currentRow));
-			currentRow = blockEnd;
-		}
-		else
-		{
-			currentRow++;
-		}
+		auto col = this->columnsRoles.value(ColumnRole::value);
+		this->edit(this->tableModel->index(this->currentMenuRow, col));
 	}
-
-	return list;
+	break;
+	case ContextAction_t::resizeBitVector:
+	{
+		auto col = this->columnsRoles.value(ColumnRole::size);
+		this->edit(this->tableModel->index(this->currentMenuRow, col));
+	}
+	break;
+	}
 }
 
 void VariableTableView::openPersistentEditors(int firstRow, int lastRow)
@@ -317,123 +240,5 @@ void VariableTableView::closePersistentEditors(int firstRow, int lastRow)
 				this->closePersistentEditor(index);
 			}
 		}
-	}
-}
-
-void VariableTableView::updateSelectionFlags()
-{
-	this->canSelectedVariablesBeRaised  = false;
-	this->canSelectedVariablesBeLowered = false;
-	this->canSelectedVariablesBeDeleted = false;
-
-	auto selectedRowsBlocks = this->getSelectedRanksBlocks();
-	if (selectedRowsBlocks.count() != 0)
-	{
-		this->canSelectedVariablesBeDeleted = true;
-
-		if (selectedRowsBlocks.count() > 1)
-		{
-			// Discontinuous selection can always be moved up or down
-			this->canSelectedVariablesBeRaised  = true;
-			this->canSelectedVariablesBeLowered = true;
-		}
-		else
-		{
-			// If single group, check if at top or at bottom
-			if (selectedRowsBlocks.at(0).first != 0)
-			{
-				this->canSelectedVariablesBeRaised  = true;
-			}
-
-			if (selectedRowsBlocks.last().first + selectedRowsBlocks.last().second < this->model()->rowCount())
-			{
-				this->canSelectedVariablesBeLowered = true;
-			}
-		}
-	}
-
-	emit this->variablesSelectionChangedEvent();
-}
-
-void VariableTableView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
-{
-	QTableView::selectionChanged(selected, deselected);
-
-	this->updateSelectionFlags();
-}
-
-void VariableTableView::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles)
-{
-	this->closePersistentEditors(topLeft.row(), bottomRight.row());
-
-	QTableView::dataChanged(topLeft, bottomRight, roles);
-
-	this->openPersistentEditors(topLeft.row(), bottomRight.row());
-
-	this->updateSelectionFlags();
-}
-
-void VariableTableView::rowsInserted(const QModelIndex& parent, int start, int end)
-{
-	QTableView::rowsInserted(parent, start, end);
-
-	this->openPersistentEditors(start, end);
-
-	// We only insert rows one at a time, at the bottom of the list,
-	// thus select and edit lowest row.
-	this->selectRow(end);
-	this->edit(this->tableModel->index(end, 0));
-}
-
-void VariableTableView::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
-{
-	this->closePersistentEditors(start, end);
-
-	QTableView::rowsAboutToBeRemoved(parent, start, end);
-}
-
-void VariableTableView::rowsMovedEventHandler()
-{
-	this->updateSelectionFlags();
-}
-
-void VariableTableView::processMenuEventHandler(QAction* action)
-{
-	ContextAction_t dataValue = ContextAction_t(action->data().toInt());
-
-	switch (dataValue)
-	{
-	case ContextAction_t::cancel:
-		break;
-	case ContextAction_t::deleteVar:
-		this->deleteSelectedVariables();
-		break;
-	case ContextAction_t::raise:
-		this->raiseSelectedVariables();
-		break;
-	case ContextAction_t::lower:
-		this->lowerSelectedVariables();
-		break;
-	case ContextAction_t::rename:
-		{
-			auto row = this->getSelectedRowsRanks().at(0);
-			auto col = this->columnsRoles.value(ColumnRole::name);
-			this->edit(this->tableModel->index(row, col));
-		}
-		break;
-	case ContextAction_t::changeValue:
-		{
-			auto row = this->getSelectedRowsRanks().at(0);
-			auto col = this->columnsRoles.value(ColumnRole::value);
-			this->edit(this->tableModel->index(row, col));
-		}
-		break;
-	case ContextAction_t::resizeBitVector:
-		{
-			auto row = this->getSelectedRowsRanks().at(0);
-			auto col = this->columnsRoles.value(ColumnRole::size);
-			this->edit(this->tableModel->index(row, col));
-		}
-		break;
 	}
 }

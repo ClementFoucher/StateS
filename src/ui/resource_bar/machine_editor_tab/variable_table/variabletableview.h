@@ -23,14 +23,14 @@
 #define VARIABLETABLEVIEW_H
 
 // Parent
-#include <QTableView>
+#include "reorderabletableview.h"
 
 // StateS classes
 #include "statestypes.h"
 class VariableTableModel;
 
 
-class VariableTableView : public QTableView
+class VariableTableView : public ReorderableTableView
 {
 	Q_OBJECT
 
@@ -64,52 +64,27 @@ public:
 	/////
 	// Object functions
 public:
-	void addNewVariable();
-	void deleteSelectedVariables();
-	void raiseSelectedVariables();
-	void lowerSelectedVariables();
+	void initialize();
 
-	bool getSelectedVariablesCanBeDeleted();
-	bool getSelectedVariablesCanBeRaised();
-	bool getSelectedVariablesCanBeLowered();
+protected slots:
+	virtual void rowsInserted(const QModelIndex& parent, int start, int end) override;
 
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent* event) override;
-	virtual void resizeEvent     (QResizeEvent* event)      override;
-
-private:
-	QList<int>             getSelectedRowsRanks()   const;
-	QList<QPair<int, int>> getSelectedRanksBlocks() const;
-
-	void openPersistentEditors(int firstRow = -1, int lastRow = -1);
-	void closePersistentEditors(int firstRow = -1, int lastRow = -1);
-	void updateSelectionFlags();
-
-protected slots:
-	virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)                              override;
-	virtual void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>()) override;
-	virtual void rowsInserted(const QModelIndex& parent, int start, int end)                                                     override;
-	virtual void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)                                             override;
 
 private slots:
-	void rowsMovedEventHandler();
 	void processMenuEventHandler(QAction* action);
 
-	/////
-	// Signals
-signals:
-	void variablesSelectionChangedEvent();
+private:
+	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
+	virtual void closePersistentEditors(int firstRow = -1, int lastRow = -1) override;
 
 	/////
 	// Object variables
 private:
 	VariableTableModel* tableModel = nullptr;
 	QMap<ColumnRole, int> columnsRoles;
-
-	// Flags depending on selection
-	bool canSelectedVariablesBeDeleted = false;
-	bool canSelectedVariablesBeRaised  = false;
-	bool canSelectedVariablesBeLowered = false;
+	int currentMenuRow = 0;
 
 };
 

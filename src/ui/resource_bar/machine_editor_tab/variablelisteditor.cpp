@@ -38,23 +38,16 @@ VariableListEditor::VariableListEditor(VariableNature_t editorNature, QWidget* p
 	//
 	// Table
 	this->tableView = new VariableTableView(editorNature);
+	this->tableView->initialize();
 
-	// To enable/disable buttons when a variable is selected
-	connect(this->tableView, &VariableTableView::variablesSelectionChangedEvent, this, &VariableListEditor::updateButtonsEnableState);
+	connect(this->tableView, &VariableTableView::selectionFlagsChangedEvent, this, &VariableListEditor::updateButtonsEnableState);
 
 	//
 	// Buttons
-	auto buttonLayout = new QGridLayout();
-
 	this->buttonAdd    = new QPushButton(tr("Add"));
 	this->buttonRemove = new QPushButton(tr("Remove"));
 	this->buttonUp     = new QPushButton("↥");
 	this->buttonDown   = new QPushButton("↧");
-
-	buttonLayout->addWidget(this->buttonAdd,    0, 0,  1, 20);
-	buttonLayout->addWidget(this->buttonRemove, 0, 20, 1, 20);
-	buttonLayout->addWidget(this->buttonUp,     0, 40, 1, 5);
-	buttonLayout->addWidget(this->buttonDown,   0, 45, 1, 5);
 
 	this->buttonRemove->setEnabled(false);
 	this->buttonUp->setEnabled(false);
@@ -67,8 +60,13 @@ VariableListEditor::VariableListEditor(VariableNature_t editorNature, QWidget* p
 
 	//
 	// Build complete rendreding
-	auto layout = new QVBoxLayout(this);
+	auto buttonLayout = new QGridLayout();
+	buttonLayout->addWidget(this->buttonAdd,    0, 0, 1, 2);
+	buttonLayout->addWidget(this->buttonRemove, 0, 2, 1, 2);
+	buttonLayout->addWidget(this->buttonUp,     0, 4, 1, 1);
+	buttonLayout->addWidget(this->buttonDown,   0, 5, 1, 1);
 
+	auto layout = new QVBoxLayout(this);
 	layout->addWidget(this->tableView);
 	layout->addLayout(buttonLayout);
 }
@@ -77,7 +75,7 @@ void VariableListEditor::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key::Key_Delete)
 	{
-		this->tableView->deleteSelectedVariables();
+		this->tableView->deleteSelectedRows();
 	}
 	else
 	{
@@ -99,27 +97,27 @@ void VariableListEditor::keyReleaseEvent(QKeyEvent* event)
 
 void VariableListEditor::updateButtonsEnableState()
 {
-	this->buttonRemove->setEnabled(this->tableView->getSelectedVariablesCanBeDeleted());
-	this->buttonUp    ->setEnabled(this->tableView->getSelectedVariablesCanBeRaised());
-	this->buttonDown  ->setEnabled(this->tableView->getSelectedVariablesCanBeLowered());
+	this->buttonRemove->setEnabled(this->tableView->getSelectionCanBeDeleted());
+	this->buttonUp    ->setEnabled(this->tableView->getSelectionCanBeRaised());
+	this->buttonDown  ->setEnabled(this->tableView->getSelectionCanBeLowered());
 }
 
 void VariableListEditor::buttonAddPressedEventHandler()
 {
-	this->tableView->addNewVariable();
+	this->tableView->addNewRow();
 }
 
 void VariableListEditor::buttonRemovePressedEventHandler()
 {
-	this->tableView->deleteSelectedVariables();
+	this->tableView->deleteSelectedRows();
 }
 
 void VariableListEditor::buttonUpPressedEventHandler()
 {
-	this->tableView->raiseSelectedVariables();
+	this->tableView->raiseSelectedRows();
 }
 
 void VariableListEditor::buttonDownPressedEventHandler()
 {
-	this->tableView->lowerSelectedVariables();
+	this->tableView->lowerSelectedRows();
 }

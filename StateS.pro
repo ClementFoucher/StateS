@@ -105,6 +105,7 @@ SOURCES += \
 	src/ui/common/labelwithclickevent.cpp \
 	src/ui/common/pixmapgenerator.cpp \
 	src/ui/common/reactivebutton.cpp \
+	src/ui/common/reorderabletableview.cpp \
 	src/ui/common/statesdialog.cpp \
 	src/ui/common/statesgraphicsview.cpp \
 	src/ui/common/statesmainwindow.cpp \
@@ -247,6 +248,7 @@ HEADERS += \
 	src/ui/common/labelwithclickevent.h \
 	src/ui/common/pixmapgenerator.h \
 	src/ui/common/reactivebutton.h \
+	src/ui/common/reorderabletableview.h \
 	src/ui/common/statesdialog.h \
 	src/ui/common/statesgraphicsview.h \
 	src/ui/common/statesmainwindow.h \
