@@ -163,6 +163,7 @@ SOURCES += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp \
+	src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabletypedelegate.cpp \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.cpp \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp \
@@ -306,6 +307,7 @@ HEADERS += \
 	src/ui/resource_bar/component_editor_tab/stateeditortab.h \
 	src/ui/resource_bar/component_editor_tab/transitioneditortab.h \
 	src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.h \
+	src/ui/resource_bar/component_editor_tab/action_table/actiontableview.h \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontabletypedelegate.h \
 	src/ui/resource_bar/component_editor_tab/action_table/delegates/actiontablevaluedelegate.h \
 	src/ui/resource_bar/machine_editor_tab/machineeditortab.h \

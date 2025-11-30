@@ -35,7 +35,7 @@
 
 
 ActionTableModel::ActionTableModel(componentId_t actuatorId, QObject* parent) :
-    QAbstractTableModel(parent)
+	QAbstractTableModel(parent)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -45,7 +45,6 @@ ActionTableModel::ActionTableModel(componentId_t actuatorId, QObject* parent) :
 
 
 	this->actuatorId = actuatorId;
-	connect(actuator.get(), &MachineActuatorComponent::actionListChangedEvent, this, &ActionTableModel::refreshList);
 }
 
 int ActionTableModel::columnCount(const QModelIndex& parent) const
@@ -256,6 +255,13 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 
 		// Machine has been edited
 		machineManager->notifyMachineEdited();
+
+		// Changing the action type can impact action value:
+		// We have to notify about it
+		auto rightColumnIndex = this->index(index.row(), this->columnCount()-1);
+		emit this->dataChanged(rightColumnIndex, rightColumnIndex);
+
+		return true;
 	}
 	else if (index.column() == 2)
 	{
@@ -360,7 +366,103 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 	return flags;
 }
 
-void ActionTableModel::refreshList()
+bool ActionTableModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-	emit layoutChanged();
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+
+	this->beginRemoveRows(parent, row, row+count-1);
+	for (uint rank = row ; rank < (uint)(row + count) ; rank++)
+	{
+		actuator->removeAction(rank);
+	}
+	this->endRemoveRows();
+
+	// Machine has been edited
+	// TODO: should provide an undo type to allow merging multiples delete
+	machineManager->notifyMachineEdited();
+
+	return true;
+}
+
+bool ActionTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+
+	if (sourceRow < destinationChild)
+	{
+		// Is lowering actions
+		bool doMove = this->beginMoveRows(sourceParent, sourceRow, sourceRow+count-1, destinationParent, destinationChild+count);
+		if (doMove == false) return false;
+
+
+		int offset = destinationChild-sourceRow;
+
+		// Iterate in reverse order
+		for (int rank = sourceRow+count-1 ; rank >= sourceRow ; rank--)
+		{
+			actuator->changeActionRank(rank, rank+offset);
+		}
+	}
+	else
+	{
+		// Is raising actions
+		bool doMove = this->beginMoveRows(sourceParent, sourceRow, sourceRow+count-1, destinationParent, destinationChild);
+		if (doMove == false) return false;
+
+
+		int offset = sourceRow-destinationChild;
+
+		// Iterate in normal order
+		for (int rank = sourceRow ; rank < sourceRow+count ; rank++)
+		{
+			actuator->changeActionRank(rank, rank-offset);
+		}
+	}
+	this->endMoveRows();
+
+	// Machine has been edited
+	// TODO: should provide an undo type to allow merging multiples moves
+	machineManager->notifyMachineEdited();
+
+	return true;
+}
+
+void ActionTableModel::addAction(const QString& variableName)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return;
+
+
+	// Find variable from name
+	for (auto variableId : machine->getWrittableVariablesIds())
+	{
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) continue;
+
+
+		if (variable->getName() == variableName)
+		{
+			this->beginInsertRows(QModelIndex(), this->rowCount(), this->rowCount());
+			actuator->addAction(variableId);
+			this->endInsertRows();
+
+			// Machine has been edited
+			machineManager->notifyMachineEdited();
+
+			break;
+		}
+	}
 }

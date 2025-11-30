@@ -42,7 +42,6 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t v
 
 	this->addActionInternal(action, variable);
 
-	emit this->actionListChangedEvent();
 	emit this->componentEditedEvent(this->id);
 
 	return action;
@@ -70,7 +69,6 @@ void MachineActuatorComponent::removeAction(uint actionRank)
 
 	this->actionList.removeAt(actionRank);
 
-	emit this->actionListChangedEvent();
 	emit this->componentEditedEvent(this->id);
 }
 
@@ -100,7 +98,6 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	this->actionList.removeAt(oldActionRank);
 	this->actionList.insert(newActionRank, action);
 
-	emit this->actionListChangedEvent();
 	emit this->componentEditedEvent(this->id);
 }
 
@@ -133,14 +130,12 @@ void MachineActuatorComponent::variableDeletedEventHandler(componentId_t deleted
 	{
 		this->actionList = newActionList;
 
-		emit this->actionListChangedEvent();
 		emit this->componentEditedEvent(this->id);
 	}
 }
 
 void MachineActuatorComponent::variableInActionListModifiedEventHandler()
 {
-	emit this->actionListChangedEvent();
 	emit this->componentEditedEvent(this->id);
 }
 

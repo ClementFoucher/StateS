@@ -108,122 +108,67 @@
 <context>
     <name>ActionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="82"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="53"/>
         <source>Add action</source>
         <translation>Ajouter une action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="83"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="54"/>
         <source>Remove action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="247"/>
-        <source>Edit affected bit</source>
-        <translation>Éditer le bit affecté</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="251"/>
-        <source>Edit range</source>
-        <translation>Éditer le sous-vecteur</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="262"/>
-        <source>Delete action</source>
-        <translation>Supprimer l&apos;action</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="267"/>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="96"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="69"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
+        <source>If action value is editable,</source>
+        <translation>Si la valeur d&apos;une action est éditable,</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
+        <source>double-click on it</source>
+        <translation>double-cliquez dessus</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
         <source>Right-click</source>
         <translation>Faites un clic-droit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="96"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
+        <source>on an action</source>
+        <translation>sur une action</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
+        <source>to display more edit options.</source>
+        <translation>pour afficher plus d&apos;options d&apos;édition.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="69"/>
         <source>Editing actions</source>
         <translation>Éditer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="100"/>
-        <source>Double-click</source>
-        <translation>Double-cliquez</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="100"/>
-        <source>on an affected value</source>
-        <translation>sur une valeur d&apos;affectation</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="100"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
         <source>to edit it.</source>
         <translation>pour l&apos;éditer.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="102"/>
-        <source>to display range options.</source>
-        <translation>pour afficher les options de sous-vecteur.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="102"/>
-        <source>on a vector variable</source>
-        <translation>sur une variable de type vecteur</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="180"/>
-        <source>Action on variable</source>
-        <translation>Action sur la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="187"/>
-        <source>Edit value</source>
-        <translation>Éditer la valeur</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="195"/>
-        <source>Move up</source>
-        <translation>Déplacer vers le haut</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="203"/>
-        <source>Move down</source>
-        <translation>Déplacer vers le bas</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="213"/>
-        <source>Affect whole variable</source>
-        <translation>Affecter la totalité de la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="223"/>
-        <source>Affect variable single bit</source>
-        <translation>Affecter un seul bit de la variable</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="233"/>
-        <source>Affect variable range</source>
-        <translation>Affecter un sous-vecteur</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="321"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="117"/>
         <source>Availables variables:</source>
         <translation>Variables disponibles :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="336"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="132"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="337"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="133"/>
         <source>First declare the machine variables in Machine tab.</source>
         <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
@@ -269,24 +214,92 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="228"/>
         <source>No action.</source>
         <translation>Aucune action.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="303"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="309"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="307"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="313"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="311"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="317"/>
         <source>Value</source>
         <translation>Valeur</translation>
+    </message>
+</context>
+<context>
+    <name>ActionTableView</name>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="111"/>
+        <source>Edit action on variable</source>
+        <translation>Éditer l&apos;action sur la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="115"/>
+        <source>Edit all selected actions</source>
+        <translation>Éditer l&apos;ensemble des actions sélectionnées</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="125"/>
+        <source>Edit value</source>
+        <translation>Éditer la valeur</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="133"/>
+        <source>Move up</source>
+        <translation>Déplacer vers le haut</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="140"/>
+        <source>Move down</source>
+        <translation>Déplacer vers le bas</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="151"/>
+        <source>Affect whole variable</source>
+        <translation>Affecter la totalité de la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="160"/>
+        <source>Affect variable single bit</source>
+        <translation>Affecter un seul bit de la variable</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="169"/>
+        <source>Affect variable range</source>
+        <translation>Affecter un sous-vecteur</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="182"/>
+        <source>Edit affected bit</source>
+        <translation>Éditer le bit affecté</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="186"/>
+        <source>Edit range</source>
+        <translation>Éditer le sous-vecteur</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="196"/>
+        <source>Delete action</source>
+        <translation>Supprimer l&apos;action</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="202"/>
+        <source>Delete actions</source>
+        <translation>Supprimer les actions</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="207"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -308,22 +321,22 @@
 <context>
     <name>CollapsibleWidgetWithTitle</name>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="102"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="97"/>
         <source>no content</source>
         <translation>aucun contenu</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="132"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="127"/>
         <source>Show</source>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="143"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="138"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="96"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="91"/>
         <source>no title</source>
         <translation>aucun titre</translation>
     </message>
@@ -705,48 +718,23 @@
     <name>FsmScene</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="262"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="769"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="787"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="263"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="774"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="792"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="548"/>
-        <source>Delete current state?</source>
-        <translation>Supprimer l&apos;état courant ?</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="550"/>
-        <source>The connected transition will be deleted</source>
-        <translation>La transition connectée sera supprimée</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="552"/>
-        <source>All</source>
-        <translation>Toutes les</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="552"/>
-        <source>connected transitions will be deleted</source>
-        <translation>transitions connectées seront supprimées</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="554"/>
-        <source>User confirmation required</source>
-        <translation>Confirmation de l&apos;utilisateur requise</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="625"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="640"/>
         <source>Multiple states moved</source>
         <translation>Plusieurs états déplacés</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1081"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1099"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -754,103 +742,103 @@
 <context>
     <name>FsmVerifier</name>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="55"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="50"/>
         <source>No FSM.</source>
         <translation>Aucune FSM.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="62"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="57"/>
         <source>Empty FSM.</source>
         <translation>FSM vide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="72"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="67"/>
         <source>No initial state.</source>
         <translation>Aucun état initial défini.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="105"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="100"/>
         <source>Error on transition condition from state</source>
         <translation>Erreur sur la condition d&apos;une transition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="105"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="100"/>
         <source>Please correct this equation:</source>
         <translation>Veuillez corriger cette équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="122"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="117"/>
         <source>Multiple transitions from state</source>
         <translation>Plusieurs transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="122"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="117"/>
         <source>have a condition value always true.</source>
         <translation>ont une condition définie comme toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
         <source>One transition from state</source>
         <translation>Une trnsition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
         <source>has a condition value always true.</source>
         <translation>a une condition toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
         <source>Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.</source>
         <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
         <source>Transitions from state</source>
         <translation>Les transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
         <source>are not mutually exclusive.</source>
         <translation>ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
         <source>Two transitions or more can be active at the same time.</source>
         <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="192"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="206"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="220"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="187"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="201"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="215"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="194"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="208"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="222"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="189"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="203"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="217"/>
         <source>StateS VHDL exporter is currently unable to handle these variables.</source>
         <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="195"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="209"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="223"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="190"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="204"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="218"/>
         <source>This variable will be ignored on VHDL export.</source>
         <translation>Cette variable sera ignorée lors de l&apos;export VHDL.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="207"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="202"/>
         <source>has range-adressed output generation.</source>
         <translation>génère des sorties sur des bits indépendants.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="221"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="216"/>
         <source>has Mealy outputs affectation (remembered value).</source>
         <translation>est une sortie de Mealy avec mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="193"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="188"/>
         <source>has both Moore and Mealy behaviors.</source>
         <translation>a un comportement à la fois de Moore et de Mealy.</translation>
     </message>
@@ -858,12 +846,12 @@
 <context>
     <name>FsmVhdlExport</name>
     <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="785"/>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="779"/>
         <source>Error: empty equation</source>
         <translation>Erreur : équation vide</translation>
     </message>
     <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="881"/>
+        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="875"/>
         <source>Error: empty operand</source>
         <translation>Erreur : opérande vide</translation>
     </message>
@@ -1081,37 +1069,37 @@
 <context>
     <name>GraphicFsmState</name>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="197"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="192"/>
         <source>State</source>
         <translation>État</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="201"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="277"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="196"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="272"/>
         <source>Set initial</source>
         <translation>Définir comme initial</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="203"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="273"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="198"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="268"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="204"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="290"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="199"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="285"/>
         <source>Draw transition from this state</source>
         <translation>Créer une transition ayant pour origine cet état</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="205"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="281"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="200"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="276"/>
         <source>Rename</source>
         <translation>Renommer</translation>
     </message>
     <message>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="206"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="285"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="201"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmstate.cpp" line="280"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -1125,25 +1113,25 @@
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="269"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="395"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="391"/>
         <source>Change source</source>
         <translation>Changer de source</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="270"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="399"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="395"/>
         <source>Change target</source>
         <translation>Changer de cible</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="271"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="403"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="399"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="272"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="407"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="403"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -2822,12 +2810,12 @@
 <context>
     <name>VariableListEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="49"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="47"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="50"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="48"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
@@ -2836,25 +2824,25 @@
     <name>VariableTableModel</name>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="85"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="365"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="366"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="371"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="372"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="91"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="368"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="369"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="94"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="374"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="375"/>
         <source>Constant</source>
         <translation>Constante</translation>
     </message>
@@ -2887,52 +2875,52 @@
 <context>
     <name>VariableTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="163"/>
-        <source>Action on variable</source>
-        <translation>Action sur la variable</translation>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="105"/>
+        <source>Edit variable</source>
+        <translation>Éditer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="167"/>
-        <source>Action on all selected variables</source>
-        <translation>Action sur la totalité des variables sélectionnées</translation>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="109"/>
+        <source>Edit all selected variables</source>
+        <translation>Éditer toutes les variables sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="173"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="115"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="180"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="122"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="134"/>
         <source>Rename variable</source>
         <translation>Renommer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="196"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="138"/>
         <source>Change bit vector size</source>
         <translation>Changer la taille du vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="200"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="142"/>
         <source>Change variable value</source>
         <translation>Changer la valeur de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="206"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="148"/>
         <source>Delete variable</source>
         <translation>Supprimer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="212"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="154"/>
         <source>Delete variables</source>
         <translation>Supprimer les variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="161"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>

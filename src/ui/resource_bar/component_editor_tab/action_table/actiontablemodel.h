@@ -32,12 +32,7 @@
 /**
  * @brief The ActionTableModel class provides content
  * for action table displayed in ActionEditor based on
- * an a MachineActuatorComponent information. It allows
- * edition for action value.
- *
- * The model emits a layoutChanged() signal whenever
- * the actuator component changes so that the table
- * view model is refreshed.
+ * a MachineActuatorComponent information.
  *
  * If no action is set on the current actuator,
  * it displays a single cell with text "No action.".
@@ -54,15 +49,17 @@ public:
 	/////
 	// Object functions
 public:
-	virtual int columnCount(const QModelIndex& parent)                              const override;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex())              const override;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex())                 const override;
 	virtual QVariant data(const QModelIndex& index, int role)                       const override;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	virtual Qt::ItemFlags flags(const QModelIndex& index)                           const override;
 
-private slots:
-	void refreshList();
+	virtual bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex())                                                       override;
+	virtual bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
+
+	void addAction(const QString& variableName);
 
 	/////
 	// Object variables

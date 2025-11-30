@@ -73,11 +73,6 @@ private:
 	void addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable);
 
 	/////
-	// Signals
-signals:
-	void actionListChangedEvent();
-
-	/////
 	// Object variables
 private:
 	QList<shared_ptr<ActionOnVariable>> actionList;

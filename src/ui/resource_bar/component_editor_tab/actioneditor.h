@@ -25,55 +25,27 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 class QPushButton;
-class QTableView;
-class QItemSelection;
 
 // StateS Classes
 #include "statestypes.h"
 class HintWidget;
-class ActionOnVariable;
-class ActionTableModel;
-class RangeEditorDialog;
+class ActionTableView;
 
 
 /**
  * @brief The ActionEditor class displays a list of actions
  * for a MachineActuatorComponent and tools to edit it.
- *
- * It has a weak dependence on the actuator, and becomes
- * passive (all functions inhibited) if the actuator is
- * deleted.
  */
 class ActionEditor : public QWidget
 {
 	Q_OBJECT
 
 	/////
-	// Type declarations
-private:
-	enum ContextAction
-	{
-		Cancel             = 0,
-		DeleteAction       = 1,
-		AffectSwitchWhole  = 2,
-		AffectSwitchSingle = 3,
-		AffectSwitchRange  = 4,
-		AffectEditRange    = 5,
-		EditValue          = 6,
-		MoveUp             = 7,
-		MoveDown           = 8
-	};
-
-	/////
 	// Static variables
 protected:
-	// Remember user choise regarding hint collapse
+	// Remember user choice regarding hint collapse
 	static bool hintCollapsed;
 
 	/////
@@ -85,54 +57,27 @@ public:
 
 	/////
 	// Object functions
-protected:
-	virtual void keyPressEvent   (QKeyEvent* e)             override;
-	virtual void keyReleaseEvent (QKeyEvent* e)             override;
-	virtual void contextMenuEvent(QContextMenuEvent* event) override;
-
 private slots:
-	void selectionChangedEventHandler(const QItemSelection&, const QItemSelection&);
-
-	void displayAddActionMenu() const;
-	void removeSelectedActions();
+	void buttonAddPushedEventHandler();
+	void buttonRemovePushedEventHandler();
+	void buttonMoveUpPushedEventHandler();
+	void buttonMoveDownPushedEventHandler();
 
 	void processAddActionMenuEventHandler(QAction* action);
-	void processContextMenuEventHandler  (QAction* action);
 
-	void moveSelectedActionsUp();
-	void moveSelectedActionsDown();
-
-	void tableChangedEventHandler();
-
-	void rangeEditorClosedEventHandler(int result);
-
-private:
-	void openPersistentEditors();
-	void closePersistentEditors();
 	void updateButtonsEnableState();
-
-	void sortSelectionList();
-	void restoreSelection();
 
 	/////
 	// Object variables
 private:
-	componentId_t actuatorId;
+	ActionTableView* actionTable = nullptr;
 
-	QTableView*  actionTable        = nullptr;
 	QPushButton* buttonAddAction    = nullptr;
 	QPushButton* buttonRemoveAction = nullptr;
 	QPushButton* buttonMoveUp       = nullptr;
 	QPushButton* buttonMoveDown     = nullptr;
-	HintWidget*  hintDisplay        = nullptr;
 
-	ActionTableModel* tableModel = nullptr;
-
-	RangeEditorDialog* rangeEditorDialog = nullptr;
-
-	QList<weak_ptr<ActionOnVariable>> latestSelection;
-	shared_ptr<ActionOnVariable> actionBeingEdited;
-
+	HintWidget* hintDisplay = nullptr;
 };
 
 #endif // ACTIONEDITOR_H
