@@ -29,6 +29,7 @@
 #include <QTabWidget>
 
 // StateS classes
+#include "machine.h"
 #include "machinemanager.h"
 #include "variablelisteditor.h"
 #include "machinecomponentvisualizer.h"
@@ -36,7 +37,6 @@
 #include "hintwidget.h"
 #include "selfmanageddynamiclineeditor.h"
 #include "machineundocommand.h"
-#include "machine.h"
 
 
 MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
@@ -56,7 +56,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	//
 	// Title
 
-	QLabel* title = new QLabel("<b>" + tr("Machine editor") + "</b>");
+	auto title = new QLabel("<b>" + tr("Machine editor") + "</b>");
 	title->setAlignment(Qt::AlignCenter);
 
 	//
@@ -71,8 +71,9 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 
 	//
 	// Machine variables
-	auto variablesEditor = new QGroupBox(tr("Variable editor"));
-	auto variablesEditorLayout = new QVBoxLayout(variablesEditor);
+	this->variablesEditor = new QGroupBox(tr("Variable editor"));
+	auto variablesEditorLayout = new QVBoxLayout(this->variablesEditor);
+	this->variablesEditor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
 	auto variablesTabs = new QTabWidget();
 	variablesTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
@@ -111,6 +112,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	//
 	// Machine visualization
 	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
+	this->machineDisplay->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
 	//
 	// Build complete rendering
@@ -118,7 +120,7 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 
 	mainLayout->addWidget(title);
 	mainLayout->addWidget(machineNameEditor);
-	mainLayout->addWidget(variablesEditor);
+	mainLayout->addWidget(this->variablesEditor);
 	mainLayout->addWidget(hintDisplay);
 	mainLayout->addWidget(this->machineDisplay);
 
@@ -131,17 +133,17 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	variablesTabs->setFocus();
 }
 
-void MachineEditorTab::showEvent(QShowEvent* e)
+void MachineEditorTab::showEvent(QShowEvent* event)
 {
 	// Ensure we get the view back
-	shared_ptr<MachineComponentVisualizer> l_machineComponentView = this->machineComponentView.lock();
+	auto l_machineComponentView = this->machineComponentView.lock();
 
 	if (l_machineComponentView != nullptr)
 	{
 		this->machineDisplay->setContent(tr("Component visualization"), l_machineComponentView.get());
 	}
 
-	QWidget::showEvent(e);
+	QWidget::showEvent(event);
 }
 
 /**
@@ -150,11 +152,19 @@ void MachineEditorTab::showEvent(QShowEvent* e)
  * otherwise clicks inside this widget that don't give focus to
  * another widget won't validate input.
  */
-void MachineEditorTab::mousePressEvent(QMouseEvent* e)
+void MachineEditorTab::mousePressEvent(QMouseEvent* event)
 {
 	this->machineName->clearFocus();
 
-	QWidget::mousePressEvent(e);
+	QWidget::mousePressEvent(event);
+}
+
+void MachineEditorTab::resizeEvent(QResizeEvent* event)
+{
+	QWidget::resizeEvent(event);
+
+	this->variablesEditor->setMinimumSize(0, this->height()/3);
+	this->machineDisplay ->setMinimumSize(0, this->height()/3);
 }
 
 void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)

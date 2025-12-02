@@ -29,6 +29,9 @@
 #include <memory>
 using namespace std;
 
+// Qt classes
+class QGroupBox;
+
 // StateS classes
 class MachineComponentVisualizer;
 class CollapsibleWidgetWithTitle;
@@ -47,8 +50,9 @@ public:
 	/////
 	// Object functions
 protected:
-	virtual void showEvent      (QShowEvent*  e) override;
-	virtual void mousePressEvent(QMouseEvent* e) override;
+	virtual void showEvent      (QShowEvent*   event) override;
+	virtual void mousePressEvent(QMouseEvent*  event) override;
+	virtual void resizeEvent    (QResizeEvent* event) override;
 
 private slots:
 	void nameTextChangedEventHandler(const QString& newName);
@@ -59,9 +63,9 @@ private slots:
 private:
 	weak_ptr<MachineComponentVisualizer> machineComponentView;
 
-	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
-
-	SelfManagedDynamicLineEditor* machineName = nullptr;
+	SelfManagedDynamicLineEditor* machineName     = nullptr;
+	QGroupBox*                    variablesEditor = nullptr;
+	CollapsibleWidgetWithTitle*   machineDisplay  = nullptr;
 
 };
 

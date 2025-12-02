@@ -39,38 +39,38 @@ HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QW
 {
 	this->machineComponentView = machineComponentView;
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->setAlignment(Qt::AlignTop);
-
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	auto machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &HintTab::toolChangedEventHandler);
 	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &HintTab::singleUsetoolChangedEventHandler);
 
 	//
 	// Hints
-
 	this->hintDisplay = new HintWidget(this);
-	layout->addWidget(this->hintDisplay);
 
 	this->updateHint(MachineBuilderTool_t::none);
 
 	//
 	// Machine visualization
-
 	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
+
+	//
+	// Build complete rendreding
+	auto layout = new QVBoxLayout(this);
+
+	layout->addWidget(this->hintDisplay);
 	layout->addWidget(this->machineDisplay);
 }
 
-void HintTab::showEvent(QShowEvent* e)
+void HintTab::showEvent(QShowEvent* event)
 {
 	// Ensure we get the view back
-	shared_ptr<MachineComponentVisualizer> l_machineComponentView = this->machineComponentView.lock();
+	auto l_machineComponentView = this->machineComponentView.lock();
 	if (l_machineComponentView != nullptr)
 	{
 		this->machineDisplay->setContent(tr("Component visualization"), l_machineComponentView.get());
 	}
 
-	QWidget::showEvent(e);
+	QWidget::showEvent(event);
 }
 
 void HintTab::toolChangedEventHandler(MachineBuilderTool_t newTool)
@@ -82,7 +82,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 {
 	if (tempTool == MachineBuilderSingleUseTool_t::none)
 	{
-		shared_ptr<MachineBuilder> machineBuiler = machineManager->getMachineBuilder();
+		auto machineBuiler = machineManager->getMachineBuilder();
 
 		if (machineBuiler != nullptr)
 		{
@@ -176,13 +176,13 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		hint += "<br />";
 		hint += tr("Tabs:");
 		hint += "<br />";
-		hint += tr("Machine tab is used to edit machine name and variables");
+		hint += tr("Machine tab is used to edit machine name and variables") + ".";
 		hint += "<br />";
-		hint += tr("State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)");
+		hint += tr("State/transition tab is used to edit the currently selected state or transition (actions, conditions, etc.)") + ".";
 		hint += "<br />";
-		hint += tr("Simulate tab allows for machine simluation");
+		hint += tr("Simulate tab allows for machine simluation") + ".";
 		hint += "<br />";
-		hint += tr("Verify tab provide tools for machine correctness verification");
+		hint += tr("Verify tab provide tools for machine correctness verification") + ".";
 
 		break;
 	case MachineBuilderTool_t::initialState:

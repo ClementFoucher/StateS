@@ -33,8 +33,8 @@ class HintWidget : public CollapsibleWidgetWithTitle
 	/////
 	// Constructors/destructors
 public:
+	explicit HintWidget(QWidget* parent = nullptr);
 	explicit HintWidget(const QString& title, const QString& textContent, QWidget* parent = nullptr);
-	explicit HintWidget(QWidget* parent = nullptr) : CollapsibleWidgetWithTitle(parent) {}
 
 	/////
 	// Object functions

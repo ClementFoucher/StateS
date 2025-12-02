@@ -24,19 +24,30 @@
 
 // Qt classes
 #include <QLabel>
+#include <QScrollArea>
 
+
+HintWidget::HintWidget(QWidget* parent) :
+	CollapsibleWidgetWithTitle(parent)
+{
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+}
 
 HintWidget::HintWidget(const QString& title, const QString& textContent, QWidget* parent) :
-	CollapsibleWidgetWithTitle(parent)
+	HintWidget(parent)
 {
 	this->setContent(title, textContent);
 }
 
 void HintWidget::setContent(const QString& title, const QString& textContent)
 {
-	QLabel* newContent = new QLabel(textContent, this);
+	auto newContent = new QLabel(textContent, this);
 	newContent->setAlignment(Qt::AlignCenter);
 	newContent->setWordWrap(true);
 
-	CollapsibleWidgetWithTitle::setContent(title, newContent, true);
+	auto scrollArea = new QScrollArea();
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setWidget(newContent);
+
+	CollapsibleWidgetWithTitle::setContent(title, scrollArea, true);
 }
