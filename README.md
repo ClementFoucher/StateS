@@ -59,7 +59,8 @@ It is not intended to be complete, or even useful for now!
 
 ## Obtaining code and generating StateS
 StateS code license (GNU GPL V2) can be consulted using [the LICENSE file](LICENSE?raw=true), or at [this address](https://www.gnu.org/licenses/gpl-2.0.en.html).
-Qt 6 is required to compile StateS, as well as a compiler supporting C++ 2017.
+Qt 6 is required to compile StateS, with modules `printsupport` and `svg` installed.
+The compiler must support C++ 2020.
 
 To obtain the code, use the following command:
 ```
@@ -71,7 +72,11 @@ To compile, use the `qmake` command on .pro file, then run `make`.
 Under Windows, I recommand using the MinGW-based toolchain as Visual Studio has non-standard exception function signature
 If you still want to use VS, you'll have to edit the source to make the function signature match before compilation.
 
+## Third-party work
 
-## Art
+### Art
 Most art used in the software is, or is based on, third-party art work released under open source licences.
 Authors information and corresponding licences can be found in the "art" folder in the git repository ([here](art/AUTHORS?raw=true)).
+
+### Code
+StateS makes use of the [Diff Template Library](https://github.com/cubicdaiya/dtl) (dtl) © Tatsuhiko Kubo and released under the terms of the [BSD-3-Clause license](src/third_party/dtl/COPYING).

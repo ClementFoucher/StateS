@@ -86,9 +86,13 @@ AboutTab::AboutTab(QWidget* parent) :
 	artLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	artLicenseLabel->setOpenExternalLinks(true);
 
-	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software includes third-party work licensed under the")
+	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software makes use of")
 	                                            + " "
-	                                            + "<a href=\"https://www.apache.org/licenses/LICENSE-2.0\">" + tr("Apache License") + " " + tr("version") + " 2.0" + "</a>"
+	                                            + "<a href=\"https://github.com/cubicdaiya/dtl\">" + tr("the Diff Template Library") + "</a>"
+	                                            + " "
+	                                            + tr("which is licensed under the")
+	                                            + " "
+	                                            + "<a href=\"https://opensource.org/license/BSD-3-Clause\">" + tr("BSD-3-Clause license") + "</a>"
 	                                           );
 	thirdPartyLicenseLabel->setAlignment(Qt::AlignCenter);
 	thirdPartyLicenseLabel->setWordWrap(true);

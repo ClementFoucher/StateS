@@ -4,7 +4,7 @@
 <context>
     <name>AboutTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="170"/>
         <source>Suggestion? Feature request?</source>
         <translation>Une suggestion ?</translation>
     </message>
@@ -14,17 +14,37 @@
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="153"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="89"/>
+        <source>This software makes use of</source>
+        <translation>Ce logiciel utilise</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
+        <source>the Diff Template Library</source>
+        <translation>la bibliothèque Diff Template Library</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="93"/>
+        <source>which is licensed under the</source>
+        <translation>distribuée selon les termes de la</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="95"/>
+        <source>BSD-3-Clause license</source>
+        <translation>licence BSD-3-Clause</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="157"/>
         <source>Found a bug?</source>
         <translation>Vous avez trouvé un bug ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="154"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="158"/>
         <source>(Please consult the</source>
         <translation>(Merci de consulter la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="156"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="160"/>
         <source>known bugs list</source>
         <translation>liste des bugs connus</translation>
     </message>
@@ -35,47 +55,46 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="71"/>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
         <source>version</source>
         <translation>version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
         <source>This application was compiled with and runs on</source>
         <translation>Cette application a été compilée avec et utilise actuellement</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="134"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="138"/>
         <source>StateS sources:</source>
         <translation>Sources de StateS :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="124"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="128"/>
         <source>Contact:</source>
         <translation>Contact :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="110"/>
         <source>This application was compiled using</source>
         <translation>Cette application a été compilée avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="117"/>
         <source>Copyright and technical information</source>
         <translation>Informations techniques et de copyright</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="110"/>
         <source>Currently running on</source>
         <translation>Version actuellement utilisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="162"/>
         <source>before filling an issue)</source>
         <translation>avant de soumettre un ticket)</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="174"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="178"/>
         <source>Contact and links</source>
         <translation>Contact et liens</translation>
     </message>
@@ -93,16 +112,6 @@
         <location filename="../src/ui/resource_bar/abouttab.cpp" line="81"/>
         <source>credits for art used in StateS</source>
         <translation>crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="89"/>
-        <source>This software includes third-party work licensed under the</source>
-        <translation>Ce logiciel utilise du travail provenant de sources tierces licenciées sous la</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
-        <source>Apache License</source>
-        <translation>licence Apache</translation>
     </message>
 </context>
 <context>
@@ -1153,7 +1162,7 @@
 <context>
     <name>HintTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/hinttab.cpp" line="60"/>
+        <location filename="../src/ui/resource_bar/hinttab.cpp" line="54"/>
         <location filename="../src/ui/resource_bar/hinttab.cpp" line="70"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
@@ -1592,22 +1601,22 @@
         <translation>Nom de la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="78"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="79"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="79"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="80"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="80"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="81"/>
         <source>Variables</source>
         <translation>Variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="81"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="82"/>
         <source>Constants</source>
         <translation>Constantes</translation>
     </message>
@@ -1617,79 +1626,79 @@
         <translation>Éditeur de variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="87"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="88"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="59"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="87"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="88"/>
         <source>Machine editor</source>
         <translation>Éditeur de machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="89"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="90"/>
         <source>Names:</source>
         <translation>Noms :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="91"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="92"/>
         <source>Allowed characters for machine and variables names are alphanumerical ones, space and</source>
         <translation>Les caractères autorisés pour la machine et les variables sont les caractères alphanumériques, l&apos;espace et</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="94"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="95"/>
         <source>Variables editor:</source>
         <translation>Éditeur de variables :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="96"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="97"/>
         <source>Switch between variable natures using tabs.</source>
         <translation>Naviguez entre les natures de variables à l&apos;aide des onglets.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="98"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="99"/>
         <source>Double-click on a field to edit it.</source>
         <translation>Double-cliquez sur un champ pour le modifier.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="100"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="101"/>
         <source>Variables memorization:</source>
         <translation>Mémorisation des variables :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="103"/>
         <source>Variables can be memorized or not.</source>
         <translation>Les variables peuvent être mémorisées ou non.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="104"/>
         <source>Memorized variables retain the value they are affected even after the affectation is over.</source>
         <translation>Les variables mémorisées conservent la valeur qui leur est affectée une fois que l&apos;opération d&apos;affectation est terminée.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="105"/>
         <source>They have an initial value, which is overwritten by the first affectation.</source>
         <translation>Elles disposent d&apos;une valeur initiale, qui est écrasée dès la première affectation.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="105"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="106"/>
         <source>Other variables only hold the value they are affected for one cycle.</source>
         <translation>Les autres variables ne conservent la valeur qui leur est affectée que pour un cycle.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="106"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="107"/>
         <source>They fall back to their default value when they are not being affected.</source>
         <translation>Elle reprennent leur valeur par défaut lorqu&apos;aucune opération d&apos;affectation n&apos;est en cours.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="113"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="141"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="114"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="143"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="198"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="208"/>
         <source>No machine</source>
         <translation>Aucune machine</translation>
     </message>

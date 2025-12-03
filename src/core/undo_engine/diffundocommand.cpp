@@ -23,26 +23,23 @@
 #include "diffundocommand.h"
 
 // StateS classes
-#include "machinemanager.h"
 #include "machinexmlparser.h"
 #include "machinexmlwriter.h"
 #include "xmlimportexportbuilder.h"
 
 
 /////
-// Static functions
+// Static members
 
 QString DiffUndoCommand::machineXmlRepresentation;
 
 void DiffUndoCommand::updateXmlRepresentation()
 {
-	DiffUndoCommand::machineXmlRepresentation = QString();
+	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
+	if (machineWriter == nullptr) return;
 
-	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
-	if (saveManager != nullptr)
-	{
-		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
-	}
+
+	DiffUndoCommand::machineXmlRepresentation = machineWriter->getMachineXml();
 }
 
 /////
@@ -52,17 +49,17 @@ DiffUndoCommand::DiffUndoCommand()
 {
 	this->undoType = UndoCommandId_t::machineGenericUndoId;
 
-	shared_ptr<MachineXmlWriter> saveManager = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
-	if (saveManager != nullptr)
-	{
-		// Get code before and after change
-		QString previousXmlCode = DiffUndoCommand::machineXmlRepresentation;
-		DiffUndoCommand::machineXmlRepresentation = saveManager->getMachineXml();
+	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
+	if (machineWriter == nullptr) return;
 
-		// Compute diff
-		diff_match_patch diffComputer = diff_match_patch();
-		this->undoPatch = diffComputer.patch_make(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
-	}
+
+	// Get XML before change
+	auto previousXmlCode = DiffUndoCommand::machineXmlRepresentation;
+	// Update machine XML
+	DiffUndoCommand::machineXmlRepresentation = machineWriter->getMachineXml();
+
+	// Compute diff
+	this->undoDiff = this->computeDiff(DiffUndoCommand::machineXmlRepresentation, previousXmlCode);
 }
 
 /////
@@ -70,7 +67,7 @@ DiffUndoCommand::DiffUndoCommand()
 
 bool DiffUndoCommand::isEmpty()
 {
-	if (this->undoPatch.isEmpty() == true)
+	if (this->undoDiff.getEditDistance() == 0)
 	{
 		return true;
 	}
@@ -82,34 +79,25 @@ bool DiffUndoCommand::isEmpty()
 
 void DiffUndoCommand::undo()
 {
-	diff_match_patch diffUnroller = diff_match_patch();
-	QString currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
-
-	QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(this->undoPatch, currentXmlCode);
-	QString previousXmlCode = result.first;
+	auto& currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
+	auto previousXmlCode = this->patchString(this->undoDiff, currentXmlCode);
 
 	// Compute redo code on undo to avoid storing unnecessary data
-	diff_match_patch diffComputer = diff_match_patch();
-	this->redoPatch = diffComputer.patch_make(previousXmlCode, currentXmlCode);
+	this->redoDiff = this->computeDiff(previousXmlCode, currentXmlCode);
 
-	this->applyPatch(previousXmlCode);
-
-	DiffUndoCommand::machineXmlRepresentation = previousXmlCode;
+	this->replaceMachine(previousXmlCode);
 }
 
 void DiffUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		diff_match_patch diffUnroller = diff_match_patch();
+		auto nextXmlCode = this->patchString(this->redoDiff, DiffUndoCommand::machineXmlRepresentation);
 
-		QPair<QString, QVector<bool> > result = diffUnroller.patch_apply(this->redoPatch, DiffUndoCommand::machineXmlRepresentation);
-		QString nextXmlCode = result.first;
+		// Clear redo patch
+		this->redoDiff = DtlDiff();
 
-		this->redoPatch.clear();
-
-		this->applyPatch(nextXmlCode);
-		DiffUndoCommand::machineXmlRepresentation = nextXmlCode;
+		this->replaceMachine(nextXmlCode);
 	}
 	else
 	{
@@ -118,12 +106,27 @@ void DiffUndoCommand::redo()
 	}
 }
 
-void DiffUndoCommand::applyPatch(const QString& newXmlCode)
+void DiffUndoCommand::replaceMachine(const QString& newXmlCode)
 {
-	shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildStringParser(newXmlCode);
-	if (parser != nullptr)
-	{
-		parser->doParse();
-		emit applyUndoRedo(parser->getMachine(), parser->getGraphicMachineConfiguration());
-	}
+	auto machineParser = XmlImportExportBuilder::buildStringParser(newXmlCode);
+	if (machineParser == nullptr) return;
+
+
+	machineParser->doParse();
+	emit this->applyUndoRedo(machineParser->getMachine(), machineParser->getGraphicMachineConfiguration());
+}
+
+DiffUndoCommand::DtlDiff DiffUndoCommand::computeDiff(const QString& oldString, const QString& newString) const
+{
+	auto patch = DtlDiff(oldString.toStdString(), newString.toStdString());
+	patch.compose();
+
+	return patch;
+}
+
+QString DiffUndoCommand::patchString(const DtlDiff& patch, const QString& string) const
+{
+	auto patchedString = QString::fromStdString(patch.patch(string.toStdString()));
+
+	return patchedString;
 }

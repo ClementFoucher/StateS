@@ -20,9 +20,6 @@ QT += core \
       printsupport \
       svg
 
-# Only for diff-match-patch to use deprecated QRegExp... should seriously think about replacing this obsolete library
-QT += core5compat
-
 # Uncomment the following line when building with MSys2's MinGW Qt6 static
 #win32: QMAKE_LIBS += -lgraphite2 -lbz2 -lusp10 -lRpcrt4
 win32: RC_ICONS = art/ico/StateS.ico
@@ -179,9 +176,7 @@ SOURCES += \
 	src/ui/resource_bar/simulator_tab/inputvariableselector.cpp \
 	src/ui/resource_bar/simulator_tab/simulatorconfigurator.cpp \
 	src/ui/resource_bar/simulator_tab/simulatortab.cpp \
-	src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp \
-	# Third party
-	src/third_party/diff_match_patch/diff_match_patch.cpp
+	src/ui/resource_bar/simulator_tab/simulatortimecontroller.cpp
 
 HEADERS += \
     # Core
@@ -325,7 +320,14 @@ HEADERS += \
 	src/ui/resource_bar/simulator_tab/simulatortab.h \
 	src/ui/resource_bar/simulator_tab/simulatortimecontroller.h \
 	# Third party
-	src/third_party/diff_match_patch/diff_match_patch.h
+	src/third_party/dtl/dtl/variables.hpp \
+	src/third_party/dtl/dtl/functors.hpp \
+	src/third_party/dtl/dtl/Sequence.hpp \
+	src/third_party/dtl/dtl/Lcs.hpp \
+	src/third_party/dtl/dtl/Ses.hpp \
+	src/third_party/dtl/dtl/Diff.hpp \
+	src/third_party/dtl/dtl/Diff3.hpp \
+	src/third_party/dtl/dtl/dtl.hpp
 
 INCLUDEPATH += \
     # Core
@@ -380,7 +382,7 @@ INCLUDEPATH += \
 	src/ui/resource_bar/machine_editor_tab/variable_table/delegates \
 	src/ui/resource_bar/simulator_tab \
 	# Third party
-	src/third_party/diff_match_patch
+	src/third_party/dtl/dtl
 
 OTHER_FILES += \
     README.md \
@@ -389,7 +391,8 @@ OTHER_FILES += \
     text/code_guidelines.txt \
     text/known_bugs.txt \
     text/release_notes.txt \
-    text/upcoming_features.txt
+    text/upcoming_features.txt \
+    src/third_party/dtl/COPYING
 
 RESOURCES += \
     art/art.qrc \
