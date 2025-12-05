@@ -5,7 +5,7 @@ AppDir:
   app_info:
     id: StateS
     name: StateS
-    icon: StateS_256.png
+    icon: StateS_256
     version: 0.4.8
     exec: usr/bin/StateS
     exec_args: $@
@@ -14,23 +14,43 @@ AppDir:
     - amd64
     allow_unauthenticated: true
     sources:
-    - sourceline: deb http://deb.debian.org/debian/ bookworm main non-free-firmware
-    - sourceline: deb http://security.debian.org/debian-security bookworm-security
-        main non-free-firmware
-    - sourceline: deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware
-    include:
-    - libqt6opengl6:amd64
-    - libqt6printsupport6:amd64
-    - libqt6svg6:amd64
-    - qt6-gtk-platformtheme:amd64
-    - qt6-image-formats-plugins
-    - qt6-qpa-plugins:amd64
+    - sourceline: deb http://ftp.fr.debian.org/debian/ trixie main non-free-firmware
+    - sourceline: deb http://security.debian.org/debian-security trixie-security main non-free-firmware
+    - sourceline: deb http://ftp.fr.debian.org/debian/ trixie-updates main non-free-firmware
+    include: []
   files:
     include:
-    - /lib/x86_64-linux-gnu/libQt6Core5Compat.so.6
-    - /lib/x86_64-linux-gnu/libQt6PrintSupport.so.6
-    - /lib/x86_64-linux-gnu/libQt6Svg.so.6
-    - /lib/x86_64-linux-gnu/libQt6XcbQpa.so.6
+    - /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader_svg.so
+    - /usr/lib/x86_64-linux-gnu/gio/modules/libdconfsettings.so
+    - /usr/lib/x86_64-linux-gnu/gio/modules/libgioremote-volume-monitor.so
+    - /usr/lib/x86_64-linux-gnu/gio/modules/libgvfsdbus.so
+    - /usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so
+    - /usr/lib/x86_64-linux-gnu/gtk-3.0/modules/libcanberra-gtk-module.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/iconengines/libqsvgicon.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqgif.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqicns.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqico.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqjpeg.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqmng.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqsvg.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqtga.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqtiff.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqwbmp.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqwebp.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqeglfs.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqlinuxfb.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqminimal.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqminimalegl.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqoffscreen.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqvkkhrdisplay.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqvnc.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqwayland-egl.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqwayland-generic.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/libqxcb.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes/libqgtk3.so
+    - /usr/lib/x86_64-linux-gnu/qt6/plugins/printsupport/libcupsprintersupport.so
     exclude:
     - usr/share/man
     - usr/share/doc/*/README.*
@@ -55,4 +75,5 @@ AppDir:
       command: ./AppRun
 AppImage:
   arch: x86_64
+  comp: zstd
   update-information: guess
