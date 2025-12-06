@@ -117,67 +117,83 @@
 <context>
     <name>ActionEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="53"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="65"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="210"/>
         <source>Add action</source>
         <translation>Ajouter une action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="54"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="66"/>
         <source>Remove action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="69"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="81"/>
         <source>Hint:</source>
         <translation>Astuce :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
         <source>If action value is editable,</source>
         <translation>Si la valeur d&apos;une action est éditable,</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
         <source>double-click on it</source>
         <translation>double-cliquez dessus</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
         <source>Right-click</source>
         <translation>Faites un clic-droit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
         <source>on an action</source>
         <translation>sur une action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
         <source>to display more edit options.</source>
         <translation>pour afficher plus d&apos;options d&apos;édition.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="69"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="208"/>
+        <source>No action.</source>
+        <translation>Aucune action.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="210"/>
+        <source>Use the</source>
+        <translation>Utilisez le bouton</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="210"/>
+        <source>button below to associate actions to the selected item.</source>
+        <translation>ci-dessous pour associer des actions à l&apos;élément sélectionné.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="81"/>
         <source>Editing actions</source>
         <translation>Éditer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
         <source>to edit it.</source>
         <translation>pour l&apos;éditer.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="117"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="137"/>
         <source>Availables variables:</source>
         <translation>Variables disponibles :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="152"/>
         <source>No compatible variable!</source>
         <translation>Aucune variable compatible !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="133"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="153"/>
         <source>First declare the machine variables in Machine tab.</source>
         <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
@@ -223,22 +239,17 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="228"/>
-        <source>No action.</source>
-        <translation>Aucune action.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="309"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="274"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="313"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="278"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="317"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="282"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -246,67 +257,67 @@
 <context>
     <name>ActionTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="111"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="128"/>
         <source>Edit action on variable</source>
         <translation>Éditer l&apos;action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="132"/>
         <source>Edit all selected actions</source>
         <translation>Éditer l&apos;ensemble des actions sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="125"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="142"/>
         <source>Edit value</source>
         <translation>Éditer la valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="133"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="150"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="140"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="157"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="151"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="168"/>
         <source>Affect whole variable</source>
         <translation>Affecter la totalité de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="160"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="177"/>
         <source>Affect variable single bit</source>
         <translation>Affecter un seul bit de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="169"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="186"/>
         <source>Affect variable range</source>
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="182"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="199"/>
         <source>Edit affected bit</source>
         <translation>Éditer le bit affecté</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="186"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="203"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="196"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="213"/>
         <source>Delete action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="202"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="219"/>
         <source>Delete actions</source>
         <translation>Supprimer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="207"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="224"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>

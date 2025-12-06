@@ -65,6 +65,23 @@ void ActionTableView::addAction(const QString& variableName)
 	this->tableModel->addAction(variableName);
 }
 
+void ActionTableView::rowsInserted(const QModelIndex& parent, int start, int end)
+{
+	ReorderableTableView::rowsInserted(parent, start, end);
+
+	uint newRowCount = this->model()->rowCount();
+	emit this->rowCountChanged(newRowCount);
+}
+
+void ActionTableView::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
+{
+	ReorderableTableView::rowsAboutToBeRemoved(parent, start, end);
+
+	uint currentRowCount = this->model()->rowCount();
+	uint newRowCount = currentRowCount - (end-start+1);
+	emit this->rowCountChanged(newRowCount);
+}
+
 void ActionTableView::keyPressEvent(QKeyEvent* ev)
 {
 	if (ev->key() == Qt::Key::Key_Delete)

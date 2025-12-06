@@ -25,6 +25,7 @@
 // Qt classes
 #include <QLayout>
 #include <QPushButton>
+#include <QLabel>
 
 // StateS classes
 #include "machinemanager.h"
@@ -46,7 +47,18 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	this->actionTable = new ActionTableView(actuatorId, this);
 	this->actionTable->initialize();
 
+	auto tableModel = this->actionTable->model();
+	if (tableModel == nullptr) return;
+
+
+	uint currentRowCout = tableModel->rowCount();
+	if (currentRowCout == 0)
+	{
+		this->buildNoActionDisplay();
+	}
+
 	connect(this->actionTable, &ActionTableView::selectionFlagsChangedEvent, this, &ActionEditor::updateButtonsEnableState);
+	connect(this->actionTable, &ActionTableView::rowCountChanged,            this, &ActionEditor::rowCountChangedEventHandler);
 
 	//
 	// Buttons
@@ -90,7 +102,15 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	buttonLayout->addWidget(this->buttonMoveDown,     0, 5, 1, 1);
 
 	auto layout = new QVBoxLayout(this);
-	layout->addWidget(this->actionTable);
+	if (currentRowCout != 0)
+	{
+		layout->addWidget(this->actionTable);
+	}
+	else
+	{
+		layout->addWidget(this->noActionLabel);
+		this->actionTable->hide();
+	}
 	layout->addLayout(buttonLayout);
 	layout->addWidget(this->hintDisplay);
 }
@@ -162,4 +182,35 @@ void ActionEditor::updateButtonsEnableState()
 	this->buttonRemoveAction->setEnabled(this->actionTable->getSelectionCanBeDeleted());
 	this->buttonMoveUp      ->setEnabled(this->actionTable->getSelectionCanBeRaised());
 	this->buttonMoveDown    ->setEnabled(this->actionTable->getSelectionCanBeLowered());
+}
+
+void ActionEditor::rowCountChangedEventHandler(int newRowCount)
+{
+	if ( (this->noActionLabel != nullptr) && (newRowCount != 0) )
+	{
+		this->layout()->replaceWidget(this->noActionLabel, this->actionTable);
+		this->actionTable->show();
+
+		delete this->noActionLabel;
+		this->noActionLabel = nullptr;
+	}
+	else if ( (this->noActionLabel == nullptr) && (newRowCount == 0) )
+	{
+		this->buildNoActionDisplay();
+		this->layout()->replaceWidget(this->actionTable, this->noActionLabel);
+
+		this->actionTable->hide();
+	}
+}
+
+void ActionEditor::buildNoActionDisplay()
+{
+	auto noActionLabel = QString(tr("No action.")
+	                            + "<br>"
+	                            + tr("Use the") + " \"" + tr("Add action") + "\" " + tr("button below to associate actions to the selected item.")
+	                            );
+	this->noActionLabel = new QLabel(noActionLabel);
+	this->noActionLabel->setAlignment(Qt::AlignCenter);
+	this->noActionLabel->setWordWrap(true);
+	this->noActionLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }

@@ -26,6 +26,7 @@
 #include <QWidget>
 
 // Qt classes
+class QLabel;
 class QPushButton;
 
 // StateS Classes
@@ -67,10 +68,16 @@ private slots:
 
 	void updateButtonsEnableState();
 
+	void rowCountChangedEventHandler(int newRowCount);
+
+private:
+	void buildNoActionDisplay();
+
 	/////
 	// Object variables
 private:
 	ActionTableView* actionTable = nullptr;
+	QLabel* noActionLabel        = nullptr;
 
 	QPushButton* buttonAddAction    = nullptr;
 	QPushButton* buttonRemoveAction = nullptr;

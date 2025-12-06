@@ -67,6 +67,10 @@ public:
 	void initialize();
 	void addAction(const QString& variableName);
 
+protected slots:
+	virtual void rowsInserted(const QModelIndex& parent, int start, int end)         override;
+	virtual void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) override;
+
 protected:
 	virtual void keyPressEvent   (QKeyEvent*         ev) override;
 	virtual void contextMenuEvent(QContextMenuEvent* ev) override;
@@ -78,6 +82,11 @@ private slots:
 private:
 	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
 	virtual void closePersistentEditors(int firstRow = -1, int lastRow = -1) override;
+
+	/////
+	// Signals
+signals:
+	void rowCountChanged(uint newCount);
 
 	/////
 	// Object variables

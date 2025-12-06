@@ -51,22 +51,8 @@ int ActionTableModel::columnCount(const QModelIndex& parent) const
 {
 	if (parent.isValid() == true) return 0;
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return 0;
 
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return 0;
-
-
-	if (actuator->getActions().count() != 0)
-	{
-		return 3;
-	}
-	else
-	{
-		// Sigle "No action" cell
-		return 1;
-	}
+	return 3;
 }
 
 int ActionTableModel::rowCount(const QModelIndex& parent) const
@@ -80,15 +66,7 @@ int ActionTableModel::rowCount(const QModelIndex& parent) const
 	if (actuator == nullptr) return 0;
 
 
-	if (actuator->getActions().count() != 0)
-	{
-		return actuator->getActions().count();
-	}
-	else
-	{
-		// Sigle "No action" cell
-		return 1;
-	}
+	return actuator->getActions().count();
 }
 
 QVariant ActionTableModel::data(const QModelIndex& index, int role) const
@@ -102,75 +80,37 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 	if (actuator == nullptr) return QVariant();
 
 
-	if (actuator->getActions().count() != 0)
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return QVariant();
+
+	auto variableId = action->getVariableActedOnId();
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return QVariant();
+
+
+	if (index.column() == 0)
 	{
-		auto action = actuator->getAction(index.row());
-		if (action == nullptr) return QVariant();
+		uint allowedActionTypes = action->getAllowedActionTypes();
 
-		auto variableId = action->getVariableActedOnId();
-
-		auto variable = machine->getVariable(variableId);
-		if (variable == nullptr) return QVariant();
-
-
-		if (index.column() == 0)
+		if (role == Qt::EditRole)
 		{
-			uint allowedActionTypes = action->getAllowedActionTypes();
-
-			if (role == Qt::EditRole)
-			{
-				uint currentActionType  = (uint)action->getActionType();
-				uint32_t returnValue = (allowedActionTypes&0xFFFF) << 16 | (currentActionType&0xFFFF);
-				return QVariant(returnValue);
-			}
-			else if (std::popcount(allowedActionTypes) == 1)
-			{
-				// Only display text if there is one allowed action type.
-				// When more than one allowed action, there is a persistent
-				// editor in this column.
-				if (role == Qt::DisplayRole)
-				{
-					return QVariant(action->getCurrentActionTypeText());
-				}
-				else if (role == Qt::DecorationRole)
-				{
-					return QVariant(action->getCurrentActionTypeIcon());
-				}
-				else if (role == Qt::ForegroundRole)
-				{
-					QBrush brush;
-					brush.setColor(Qt::gray);
-
-					return QVariant(brush);
-				}
-			}
+			uint currentActionType  = (uint)action->getActionType();
+			uint32_t returnValue = (allowedActionTypes&0xFFFF) << 16 | (currentActionType&0xFFFF);
+			return QVariant(returnValue);
 		}
-		else if (index.column() == 1)
+		else if (std::popcount(allowedActionTypes) == 1)
 		{
+			// Only display text if there is one allowed action type.
+			// When more than one allowed action, there is a persistent
+			// editor in this column.
 			if (role == Qt::DisplayRole)
 			{
-				// Build name
-				QString nameText = variable->getName();
-
-				if (variable->getSize() > 1)
-				{
-					int rangeL = action->getActionRangeL();
-					int rangeR = action->getActionRangeR();
-
-					if (rangeL != -1)
-					{
-						nameText += "[" + QString::number(rangeL);
-
-						if (rangeR != -1)
-						{
-							nameText += ".." + QString::number(rangeR);
-						}
-
-						nameText += "]";
-					}
-				}
-
-				return QVariant(nameText);
+				return QVariant(action->getCurrentActionTypeText());
+			}
+			else if (role == Qt::DecorationRole)
+			{
+				return QVariant(action->getCurrentActionTypeIcon());
 			}
 			else if (role == Qt::ForegroundRole)
 			{
@@ -180,52 +120,79 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 				return QVariant(brush);
 			}
 		}
-		else if (index.column() == 2)
-		{
-			if ( (role == Qt::DisplayRole) || (role == Qt::EditRole) )
-			{
-				switch (action->getActionType())
-				{
-				case ActionOnVariableType_t::reset:
-				case ActionOnVariableType_t::set:
-				case ActionOnVariableType_t::continuous:
-				case ActionOnVariableType_t::pulse:
-				case ActionOnVariableType_t::assign:
-					return QVariant(action->getActionValue().toString());
-					break;
-				case ActionOnVariableType_t::increment:
-					return QVariant(variable->getName() + " + 1");
-					break;
-				case ActionOnVariableType_t::decrement:
-					return QVariant(variable->getName() + " - 1");
-					break;
-				case ActionOnVariableType_t::none:
-					// Nothing
-					break;
-				}
-			}
-			else if (role == Qt::ForegroundRole)
-			{
-				if (action->isActionValueEditable() == false)
-				{
-					QBrush brush;
-					brush.setColor(Qt::gray);
-
-					return QVariant(brush);
-				}
-				else
-				{
-					return QVariant();
-				}
-			}
-		}
 	}
-	else
+	else if (index.column() == 1)
 	{
 		if (role == Qt::DisplayRole)
 		{
-			// Single "No action" cell
-			return QVariant(tr("No action."));
+			// Build name
+			QString nameText = variable->getName();
+
+			if (variable->getSize() > 1)
+			{
+				int rangeL = action->getActionRangeL();
+				int rangeR = action->getActionRangeR();
+
+				if (rangeL != -1)
+				{
+					nameText += "[" + QString::number(rangeL);
+
+					if (rangeR != -1)
+					{
+						nameText += ".." + QString::number(rangeR);
+					}
+
+					nameText += "]";
+				}
+			}
+
+			return QVariant(nameText);
+		}
+		else if (role == Qt::ForegroundRole)
+		{
+			QBrush brush;
+			brush.setColor(Qt::gray);
+
+			return QVariant(brush);
+		}
+	}
+	else if (index.column() == 2)
+	{
+		if ( (role == Qt::DisplayRole) || (role == Qt::EditRole) )
+		{
+			switch (action->getActionType())
+			{
+			case ActionOnVariableType_t::reset:
+			case ActionOnVariableType_t::set:
+			case ActionOnVariableType_t::continuous:
+			case ActionOnVariableType_t::pulse:
+			case ActionOnVariableType_t::assign:
+				return QVariant(action->getActionValue().toString());
+				break;
+			case ActionOnVariableType_t::increment:
+				return QVariant(variable->getName() + " + 1");
+				break;
+			case ActionOnVariableType_t::decrement:
+				return QVariant(variable->getName() + " - 1");
+				break;
+			case ActionOnVariableType_t::none:
+				// Nothing
+				break;
+			}
+		}
+		else if (role == Qt::ForegroundRole)
+		{
+			if (action->isActionValueEditable() == false)
+			{
+				QBrush brush;
+				brush.setColor(Qt::gray);
+
+				return QVariant(brush);
+			}
+			else
+			{
+				return QVariant();
+			}
 		}
 	}
 
@@ -300,36 +267,28 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 	if (actuator == nullptr) return QVariant();
 
 
-	if (actuator->getActions().count() != 0)
+	if (orientation == Qt::Horizontal)
 	{
-		if (orientation == Qt::Horizontal)
+		if (section == 0)
 		{
-			if (section == 0)
-			{
-				return QVariant(tr("Type"));
-			}
-			else if (section == 1)
-			{
-				return QVariant(tr("Variable"));
-			}
-			else if (section == 2)
-			{
-				return QVariant(tr("Value"));
-			}
-			else
-			{
-				return QVariant();
-			}
+			return QVariant(tr("Type"));
+		}
+		else if (section == 1)
+		{
+			return QVariant(tr("Variable"));
+		}
+		else if (section == 2)
+		{
+			return QVariant(tr("Value"));
 		}
 		else
 		{
-			return QVariant(section+1);
+			return QVariant();
 		}
 	}
 	else
 	{
-		// Sigle "No action" cell
-		return QVariant(QString());
+		return QVariant(section+1);
 	}
 }
 
@@ -348,18 +307,15 @@ Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const
 	                      Qt::ItemIsSelectable |
 	                      Qt::ItemNeverHasChildren;
 
-	if (actuator->getActions().count() != 0)
+	if (index.column() == 2)
 	{
-		if (index.column() == 2)
+		auto action = actuator->getAction(index.row());
+		if (action == nullptr) return Qt::NoItemFlags;
+
+
+		if (action->isActionValueEditable())
 		{
-			auto action = actuator->getAction(index.row());
-			if (action == nullptr) return Qt::NoItemFlags;
-
-
-			if (action->isActionValueEditable())
-			{
-				flags |= Qt::ItemIsEditable;
-			}
+			flags |= Qt::ItemIsEditable;
 		}
 	}
 
