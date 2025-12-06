@@ -1,0 +1,5 @@
+ADD_SUBDIRECTORY("core")
+ADD_SUBDIRECTORY("machine")
+ADD_SUBDIRECTORY("ui")
+
+ADD_SUBDIRECTORY("third_party")

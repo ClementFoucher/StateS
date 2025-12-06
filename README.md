@@ -36,9 +36,9 @@ The Windows version is built using [MinGW Qt6 static package](https://packages.m
 The distributed version is a static (i.e. standalone, portable) 64-bits version.
 
 ### Linux
-Download the appimage, then run the file.
+Download the appimage, make it executable if necessary then run the file.
 
-Note: on some systems, you may have to allow the appimage file for execution:
+To make the appimage file executable:
 - From command line, cd to the folder containing the executable, and type `chmod +x ./<name of the file>`.
 - Or graphically, right-click on the file, hit "Properties", search for an "Allow execution" or similar checkbox, and check it.
 
@@ -60,17 +60,27 @@ It is not intended to be complete, or even useful for now!
 ## Obtaining code and generating StateS
 StateS code license (GNU GPL V2) can be consulted using [the LICENSE file](LICENSE?raw=true), or at [this address](https://www.gnu.org/licenses/gpl-2.0.en.html).
 Qt 6 is required to compile StateS, with modules `printsupport` and `svg` installed.
+You'll also need git, CMake, a build tool like ninja or make and a C++ compiler like Clang or gcc.
 The compiler must support C++ 2020.
 
 To obtain the code, use the following command:
-```
+```bash
 git clone https://github.com/ClementFoucher/StateS.git states
 ```
-To compile, use the `qmake` command on .pro file, then run `make`.
+To compile, you first need to run `cmake .` in the root folder. You may want to customize the toolchain, e.g.:
+```bash
+cmake -G ninja -D CMAKE_CXX_COMPILER=/usr/bin/clang .
+```
+> NOTE: If your qt installation is not in PATH, you may need to use `qt-cmake` for CMake to be aware of your Qt installation path.
+
+Then build the application:
+```bash
+cmake --build .
+```
 
 ### Visual Studio issues
-Under Windows, I recommand using the MinGW-based toolchain as Visual Studio has non-standard exception function signature
-If you still want to use VS, you'll have to edit the source to make the function signature match before compilation.
+Under Windows, I recommand using the MinGW-based toolchain as Visual Studio has non-standard exception function signature.
+If you still want to use VS, you may have to edit the source to make the function signature match before compilation.
 
 ## Third-party work
 
