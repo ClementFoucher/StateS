@@ -378,7 +378,7 @@ bool ActionTableModel::removeRows(int row, int count, const QModelIndex& parent)
 	this->beginRemoveRows(parent, row, row+count-1);
 	for (uint rank = row ; rank < (uint)(row + count) ; rank++)
 	{
-		actuator->removeAction(rank);
+		actuator->removeAction(row);
 	}
 	this->endRemoveRows();
 
