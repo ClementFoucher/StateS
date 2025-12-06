@@ -39,7 +39,7 @@ LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* par
 	this->application = application;
 
 	this->frenchTranslator = new QTranslator();
-	static_cast<void>(this->frenchTranslator->load(QLocale::French, ":/translations/french")); // Discarding the result of this nodiscard function as it is an embedded resource thus we are absolutely sure it can be loaded
+	static_cast<void>(this->frenchTranslator->load(QLocale::French, ":/translations/StateS_fr.qm")); // Discarding the result of this nodiscard function as it is an embedded resource thus we are absolutely sure it can be loaded
 
 	// Build window
 	this->setWindowTitle("StateS");
