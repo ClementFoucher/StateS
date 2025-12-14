@@ -33,7 +33,7 @@
 #include "selfmanageddynamiclineeditor.h"
 #include "actioneditor.h"
 #include "fsm.h"
-#include "fsmundocommand.h"
+#include "fsmstaterenameundocommand.h"
 
 
 StateEditorTab::StateEditorTab(componentId_t stateId, QWidget* parent) :
@@ -145,7 +145,7 @@ void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 	bool result = fsm->renameState(this->stateId, name);
 	if (result == true)
 	{
-		auto undoCommand = new FsmUndoCommand(state->getId(), previousName);
+		auto undoCommand = new FsmStateRenameUndoCommand(state->getId(), previousName);
 		machineManager->notifyMachineEdited(undoCommand);
 	}
 	else

@@ -38,7 +38,7 @@
 #include "graphicfsmtransition.h"
 #include "machinemanager.h"
 #include "graphicmachine.h"
-#include "fsmundocommand.h"
+#include "fsmtransitionconditionsliderpositionchangeundocommand.h"
 #include "operand.h"
 
 
@@ -246,7 +246,7 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 	qreal realValue = ((qreal)newValue)/100;
 	graphicTransition->setConditionLineSliderPosition(realValue);
 
-	FsmUndoCommand* undoCommand = new FsmUndoCommand(UndoCommandId_t::fsmUndoTransitionConditionSliderPositionChangeId, graphicTransition->getLogicComponentId());
+	auto undoCommand = new FsmTransitionConditionSliderPositionChangeUndoCommand(graphicTransition->getLogicComponentId());
 	machineManager->notifyMachineEdited(undoCommand);
 }
 

@@ -45,9 +45,9 @@ void DiffUndoCommand::updateXmlRepresentation()
 /////
 // Constructors/destructors
 
-DiffUndoCommand::DiffUndoCommand(const QString& description)
+DiffUndoCommand::DiffUndoCommand(const QString& description) :
+	StatesUndoCommand(UndoCommandId_t::diffUndoId)
 {
-	this->undoType    = UndoCommandId_t::machineGenericUndoId;
 	this->description = description;
 
 	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();

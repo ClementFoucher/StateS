@@ -39,7 +39,7 @@ class MachineStatus;
 class MachineBuilder;
 class MachineSimulator;
 class GraphicAttributes;
-class MachineUndoCommand;
+class StatesUndoCommand;
 
 
 /**
@@ -86,7 +86,7 @@ public:
 	void undo();
 	void redo();
 
-	void notifyMachineEdited(MachineUndoCommand* undoCommand);
+	void notifyMachineEdited(StatesUndoCommand* undoCommand);
 	void notifyMachineEdited(const QString& undoDescription);
 	void notifyMachineEdited();
 

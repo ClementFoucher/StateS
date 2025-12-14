@@ -66,7 +66,7 @@ void UndoRedoManager::setClean()
 	this->undoStack.setClean();
 }
 
-void UndoRedoManager::addUndoCommand(MachineUndoCommand* undoCommand)
+void UndoRedoManager::addUndoCommand(StatesUndoCommand* undoCommand)
 {
 	this->undoStack.push(undoCommand);
 

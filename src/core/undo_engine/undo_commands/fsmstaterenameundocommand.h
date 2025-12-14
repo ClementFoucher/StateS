@@ -1,7 +1,7 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -16,29 +16,30 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MACHINEUNDOCOMMAND_H
-#define MACHINEUNDOCOMMAND_H
+#ifndef FSMSTATERENAMEUNDOCOMMAND_H
+#define FSMSTATERENAMEUNDOCOMMAND_H
 
-// Parent classes
-#include <QObject>
-#include <QUndoCommand>
+// Parent class
+#include "statesundocommand.h"
+
+// Qt classes
+#include <QPointF>
 
 // StateS classes
 #include "statestypes.h"
 
 
-class MachineUndoCommand : public QObject, public QUndoCommand
+class FsmStateRenameUndoCommand : public StatesUndoCommand
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineUndoCommand() = default;
-	explicit MachineUndoCommand(const QString& previousName);
+	explicit FsmStateRenameUndoCommand(componentId_t componentId, const QString& previousStateName);
 
 	/////
 	// Object functions
@@ -46,18 +47,16 @@ public:
 	virtual void undo() override;
 	virtual void redo() override;
 
-	virtual int id() const override;
-
-protected:
-	UndoCommandId_t undoType = UndoCommandId_t::undefinedUndoId;
-	bool firstRedoIgnored = false;
+	virtual bool mergeWith(const QUndoCommand* command) override;
 
 	/////
 	// Object variables
 private:
-	QString previousName;
-	QString nextName;
+	componentId_t componentId = nullId;
+
+	QString previousStateName;
+	QString nextStateName;
 
 };
 
-#endif // MACHINEUNDOCOMMAND_H
+#endif // FSMSTATERENAMEUNDOCOMMAND_H

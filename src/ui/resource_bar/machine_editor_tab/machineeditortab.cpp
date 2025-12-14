@@ -36,7 +36,7 @@
 #include "collapsiblewidgetwithtitle.h"
 #include "hintwidget.h"
 #include "selfmanageddynamiclineeditor.h"
-#include "machineundocommand.h"
+#include "machinerenameundocommand.h"
 
 
 MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
@@ -183,7 +183,7 @@ void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)
 		// different from the old one before building an undo command.
 		if (machine->getName() != oldName)
 		{
-			MachineUndoCommand* undoCommand = new MachineUndoCommand(oldName);
+			MachineRenameUndoCommand* undoCommand = new MachineRenameUndoCommand(oldName);
 			machineManager->notifyMachineEdited(undoCommand);
 		}
 	}

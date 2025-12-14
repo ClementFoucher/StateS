@@ -27,6 +27,7 @@
 #include "fsm.h"
 #include "machinestatus.h"
 #include "undoredomanager.h"
+#include "statesundocommand.h"
 #include "machinebuilder.h"
 #include "machinesimulator.h"
 #include "graphicmachine.h"
@@ -35,7 +36,6 @@
 #include "graphiccomponent.h"
 #include "graphicsimulatedcomponent.h"
 #include "graphicfsm.h"
-#include "machineundocommand.h"
 
 
 /////
@@ -163,7 +163,7 @@ void MachineManager::redo()
  *        undo stack.
  * @param undoCommand Command to add to the stack.
  */
-void MachineManager::notifyMachineEdited(MachineUndoCommand* undoCommand)
+void MachineManager::notifyMachineEdited(StatesUndoCommand* undoCommand)
 {
 	if (this->undoRedoMode == false)
 	{

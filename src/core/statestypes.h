@@ -105,16 +105,17 @@ enum class UndoCommandId_t : int32_t
 	// Default value
 	undefinedUndoId = -1,
 
-	// Diff undo (TODO: rename?)
-	machineGenericUndoId = 0,
+	// Diff undo is used for all cases that
+	// don't have a more specific handler.
+	diffUndoId = 0,
 
 	// Machine common commands
-	machineUndoRenameId = 1,
+	machineRenameUndoId = 1,
 
 	// FSM-specific commands
-	fsmUndoStateMoveId = 10,
-	fsmUndoTransitionConditionSliderPositionChangeId = 11,
-	fsmUndoStateRenamedId = 12
+	fsmStateMoveUndoId = 10,
+	fsmTransitionConditionSliderPositionChangeUndoId = 11,
+	fsmStateRenamedUndoId = 12
 };
 
 #endif // STATESTYPES_H

@@ -1,7 +1,7 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2025 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -16,31 +16,27 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FSMUNDOCOMMAND_H
-#define FSMUNDOCOMMAND_H
+#ifndef FSMTRANSITIONCONDITIONSLIDERPOSITIONCHANGEUNDOCOMMAND_H
+#define FSMTRANSITIONCONDITIONSLIDERPOSITIONCHANGEUNDOCOMMAND_H
 
 // Parent class
-#include "machineundocommand.h"
-
-// Qt classes
-#include <QPointF>
+#include "statesundocommand.h"
 
 // StateS classes
 #include "statestypes.h"
 
 
-class FsmUndoCommand : public MachineUndoCommand
+class FsmTransitionConditionSliderPositionChangeUndoCommand : public StatesUndoCommand
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmUndoCommand(UndoCommandId_t undoType, componentId_t componentId);
-	explicit FsmUndoCommand(componentId_t componentId, const QString& previousStateName);
+	explicit FsmTransitionConditionSliderPositionChangeUndoCommand(componentId_t componentId);
 
 	/////
 	// Object functions
@@ -53,15 +49,11 @@ public:
 	/////
 	// Object variables
 private:
-	componentId_t componentId;
+	componentId_t componentId = nullId;
 
-	QPointF previousStatePosition;
-	QPointF nextStatePosition;
-	qreal   previousTransitionSliderPosition;
-	qreal   nextTransitionSliderPosition;
-	QString previousStateName;
-	QString nextStateName;
+	qreal previousSliderPosition;
+	qreal nextTransitionSliderPosition;
 
 };
 
-#endif // FSMUNDOCOMMAND_H
+#endif // FSMTRANSITIONCONDITIONSLIDERPOSITIONCHANGEUNDOCOMMAND_H

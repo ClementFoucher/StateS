@@ -40,7 +40,7 @@
 #include "graphicsimulatedfsmstate.h"
 #include "graphicfsmtransition.h"
 #include "graphicsimulatedfsmtransition.h"
-#include "fsmundocommand.h"
+#include "fsmstatemoveundocommand.h"
 #include "actionbox.h"
 #include "contextmenu.h"
 
@@ -645,7 +645,7 @@ void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 		}
 	}
 
-	auto undoCommand = new FsmUndoCommand(UndoCommandId_t::fsmUndoStateMoveId, stateId);
+	auto undoCommand = new FsmStateMoveUndoCommand(stateId);
 	machineManager->notifyMachineEdited(undoCommand);
 
 	if (inMacro == true)

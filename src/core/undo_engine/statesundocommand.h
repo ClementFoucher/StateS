@@ -1,0 +1,59 @@
+/*
+ * Copyright © 2025 Clément Foucher
+ *
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
+ *
+ *
+ * This file is part of StateS.
+ *
+ * StateS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 2 of the License.
+ *
+ * StateS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef STATESUNDOCOMMAND_H
+#define STATESUNDOCOMMAND_H
+
+// Parent classes
+#include <QObject>
+#include <QUndoCommand>
+
+// StateS classes
+#include "statestypes.h"
+
+
+class StatesUndoCommand : public QObject, public QUndoCommand
+{
+	Q_OBJECT
+
+	/////
+	// Constructors/destructors
+public:
+	explicit StatesUndoCommand(UndoCommandId_t undoType) : undoType{undoType} {}
+
+	virtual ~StatesUndoCommand() = default;
+
+	/////
+	// Object functions
+public:
+	virtual int id() const override;
+
+	/////
+	// Object variables
+protected:
+	bool firstRedoIgnored = false;
+
+private:
+	UndoCommandId_t undoType = UndoCommandId_t::undefinedUndoId;
+
+};
+
+#endif // STATESUNDOCOMMAND_H

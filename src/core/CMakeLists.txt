@@ -9,10 +9,13 @@ set(core_header_files
     "machine_manager/machinemanager.h"
     "machine_manager/machinesimulator.h"
     "machine_manager/machinestatus.h"
-    "undo_engine/diffundocommand.h"
-    "undo_engine/fsmundocommand.h"
-    "undo_engine/machineundocommand.h"
+    "undo_engine/statesundocommand.h"
     "undo_engine/undoredomanager.h"
+    "undo_engine/undo_commands/diffundocommand.h"
+    "undo_engine/undo_commands/fsmstatemoveundocommand.h"
+    "undo_engine/undo_commands/fsmstaterenameundocommand.h"
+    "undo_engine/undo_commands/fsmtransitionconditionsliderpositionchangeundocommand.h"
+    "undo_engine/undo_commands/machinerenameundocommand.h"
     "xml/statesxmlanalyzer.h"
 )
 
@@ -25,10 +28,13 @@ set(core_source_files
     "machine_manager/machinemanager.cpp"
     "machine_manager/machinesimulator.cpp"
     "machine_manager/machinestatus.cpp"
-    "undo_engine/diffundocommand.cpp"
-    "undo_engine/fsmundocommand.cpp"
-    "undo_engine/machineundocommand.cpp"
+    "undo_engine/statesundocommand.cpp"
     "undo_engine/undoredomanager.cpp"
+    "undo_engine/undo_commands/diffundocommand.cpp"
+    "undo_engine/undo_commands/fsmstatemoveundocommand.cpp"
+    "undo_engine/undo_commands/fsmstaterenameundocommand.cpp"
+    "undo_engine/undo_commands/fsmtransitionconditionsliderpositionchangeundocommand.cpp"
+    "undo_engine/undo_commands/machinerenameundocommand.cpp"
     "xml/statesxmlanalyzer.cpp"
 )
 
@@ -39,6 +45,7 @@ set(core_include_directories
     "machine_manager"
     "simulation"
     "undo_engine"
+    "undo_engine/undo_commands"
     "xml"
 )
 

@@ -35,7 +35,7 @@ using namespace std;
 // Sates classes
 class Machine;
 class GraphicAttributes;
-class MachineUndoCommand;
+class StatesUndoCommand;
 
 
 class UndoRedoManager : public QObject
@@ -58,7 +58,7 @@ public:
 
 	void setClean();
 
-	void addUndoCommand(MachineUndoCommand* undoCommand);
+	void addUndoCommand(StatesUndoCommand* undoCommand);
 	void buildAndAddDiffUndoCommand(const QString& undoDescription = QString());
 
 	void notifyMachineReplaced();

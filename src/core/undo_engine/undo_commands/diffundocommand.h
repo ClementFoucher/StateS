@@ -23,7 +23,7 @@
 #define DIFFUNDOCOMMAND_H
 
 // Parent class
-#include "machineundocommand.h"
+#include "statesundocommand.h"
 
 // C++ classes
 #include <memory>
@@ -37,7 +37,7 @@ class Machine;
 class GraphicAttributes;
 
 
-class DiffUndoCommand : public MachineUndoCommand
+class DiffUndoCommand : public StatesUndoCommand
 {
 	Q_OBJECT
 
