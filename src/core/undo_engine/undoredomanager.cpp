@@ -64,15 +64,8 @@ void UndoRedoManager::buildAndAddDiffUndoCommand(const QString& undoDescription)
 {
 	DiffUndoCommand* undoCommand = new DiffUndoCommand(undoDescription);
 
-	if (undoCommand->isEmpty() == false)
-	{
-		connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &UndoRedoManager::freshMachineAvailableEvent);
-		this->addUndoCommand(undoCommand);
-	}
-	else
-	{
-		delete undoCommand;
-	}
+	connect(undoCommand, &DiffUndoCommand::applyUndoRedo, this, &UndoRedoManager::freshMachineAvailableEvent);
+	this->addUndoCommand(undoCommand);
 }
 
 void UndoRedoManager::notifyMachineReplaced()

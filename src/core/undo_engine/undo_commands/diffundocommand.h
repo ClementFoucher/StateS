@@ -64,8 +64,6 @@ public:
 	/////
 	// Object functions
 public:
-	bool isEmpty();
-
 	virtual void undo() override;
 	virtual void redo() override;
 

@@ -59,23 +59,18 @@ DiffUndoCommand::DiffUndoCommand(const QString& description) :
 
 	// Compute diff
 	auto currentXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
-	this->undoDiff = this->computeDiff(currentXmlCode, previousXmlCode);
+
+	bool isDiffEmpty;
+	this->undoDiff = this->computeDiff(currentXmlCode, previousXmlCode, isDiffEmpty);
+
+	if (isDiffEmpty == true)
+	{
+		this->setObsolete(true);
+	}
 }
 
 /////
 // Object functions
-
-bool DiffUndoCommand::isEmpty()
-{
-	if (this->undoDiff.getEditDistance() == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
 
 void DiffUndoCommand::undo()
 {
@@ -83,7 +78,8 @@ void DiffUndoCommand::undo()
 	auto previousXmlCode = this->patchString(this->undoDiff, currentXmlCode);
 
 	// Compute redo code on undo to avoid storing unnecessary data
-	this->redoDiff = this->computeDiff(previousXmlCode, currentXmlCode);
+	bool ignored;
+	this->redoDiff = this->computeDiff(previousXmlCode, currentXmlCode, ignored);
 
 	this->replaceMachine(previousXmlCode);
 }
@@ -122,9 +118,10 @@ bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
 	auto previousXmlCode         = this->patchString(otherCommand->undoDiff, currentXmlCode);
 	auto previousPreviousXmlCode = this->patchString(this->undoDiff,         previousXmlCode);
 
-	this->undoDiff = this->computeDiff(currentXmlCode, previousPreviousXmlCode);
+	bool isDiffEmpty;
+	this->undoDiff = this->computeDiff(currentXmlCode, previousPreviousXmlCode, isDiffEmpty);
 
-	if (this->isEmpty())
+	if (isDiffEmpty == true)
 	{
 		this->setObsolete(true);
 	}
@@ -142,11 +139,12 @@ void DiffUndoCommand::replaceMachine(const QStringList& newXmlCode)
 	emit this->applyUndoRedo(machineParser->getMachine(), machineParser->getGraphicMachineConfiguration());
 }
 
-DiffUndoCommand::DtlDiff DiffUndoCommand::computeDiff(const QStringList& oldString, const QStringList& newString) const
+DiffUndoCommand::DtlUniVector DiffUndoCommand::computeDiff(const QStringList& oldString, const QStringList& newString, bool& isDiffEmpty) const
 {
 	auto patch = DtlDiff(oldString, newString);
 	patch.compose();
 
+	isDiffEmpty = (patch.getEditDistance() == 0);
 	return patch;
 }
 
