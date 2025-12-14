@@ -97,6 +97,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 	{
 		if (this->sceneMode == SceneMode_t::addingInitialState)
 		{
+			// Machine is about to be edited
+			machineManager->notifyMachineAboutToBeDiffEdited();
+
 			// Create logic state & update FSM
 			auto logicStateId = fsm->addState(this->getUniqueStateName());
 			fsm->setInitialState(logicStateId);
@@ -118,6 +121,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 		}
 		else if (this->sceneMode == SceneMode_t::addingState)
 		{
+			// Machine is about to be edited
+			machineManager->notifyMachineAboutToBeDiffEdited();
+
 			// Create logic state
 			auto logicStateId = fsm->addState(this->getUniqueStateName());
 
@@ -151,6 +157,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 					auto targetStateId = stateUnderMouse->getLogicComponentId();
 					delete this->dummyTransition;
 					this->dummyTransition = nullptr;
+
+					// Machine is about to be edited
+					machineManager->notifyMachineAboutToBeDiffEdited();
 
 					// Create logic transition
 					auto logicTransitionId = fsm->addTransition(sourceStateId, targetStateId);
@@ -212,6 +221,10 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 						auto graphicTransition = graphicFsm->getTransition(this->transitionUnderEditId);
 						if (graphicTransition != nullptr)
 						{
+							// Machine is about to be edited
+							machineManager->notifyMachineAboutToBeDiffEdited();
+
+							// Remember slider position
 							auto sliderPosition = graphicTransition->getConditionLineSliderPosition();
 
 							// Update logic transition and replace graphic transition
@@ -435,6 +448,9 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 					}
 				}
 
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
 				// Delete selected items
 				for (auto& transition : selectedTransitions)
 				{
@@ -583,7 +599,10 @@ void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
 	if (fsm == nullptr) return;
 
 
-	// Update FSM
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Remove state
 	fsm->removeState(stateId);
 
 	// Machine has been edited
@@ -596,7 +615,10 @@ void FsmScene::stateCallsSetInitialStateEventHandler(componentId_t stateId)
 	if (fsm == nullptr) return;
 
 
-	// Update FSM
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Set state as initial
 	fsm->setInitialState(stateId);
 
 	// Machine has been edited
@@ -642,6 +664,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transition
 
 	auto transition = graphicFsm->getTransition(transitionId);
 	if (transition == nullptr) return;
+
 
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
@@ -701,7 +724,10 @@ void FsmScene::transitionCallsDeleteEventHandler(componentId_t transitionId)
 	if (fsm == nullptr) return;
 
 
-	// Update FSM
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Remove transition
 	fsm->removeTransition(transitionId);
 
 	// Machine has been edited
@@ -770,6 +796,9 @@ void FsmScene::menuAddStateTriggeredEventHandler(QAction* action)
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
 
+
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
 
 	auto logicStateId = nullId;
 	if (action->text() == tr("Add state"))

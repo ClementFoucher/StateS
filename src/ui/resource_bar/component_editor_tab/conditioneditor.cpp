@@ -132,7 +132,13 @@ void ConditionEditor::clearCondition()
 	if (transition == nullptr) return;
 
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Clear condition
 	transition->clearCondition();
+
+	// Machine has been edited
 	machineManager->notifyMachineEdited();
 }
 
@@ -246,6 +252,7 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 	qreal realValue = ((qreal)newValue)/100;
 	graphicTransition->setConditionLineSliderPosition(realValue);
 
+	// Machine has been edited
 	auto undoCommand = new FsmTransitionConditionSliderPositionChangeUndoCommand(graphicTransition->getLogicComponentId());
 	machineManager->notifyMachineEdited(undoCommand);
 }
@@ -265,7 +272,13 @@ void ConditionEditor::equationEditorClosedEventHandler(int result)
 	{
 		auto newEquation = this->equationEditor->getResultEquation();
 
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Update condition
 		transition->setCondition(newEquation);
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 	}
 

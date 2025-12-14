@@ -39,13 +39,13 @@ UndoRedoManager::UndoRedoManager()
 void UndoRedoManager::undo()
 {
 	this->undoStack.undo();
-	DiffUndoCommand::updateXmlRepresentation();
+	DiffUndoCommand::clearXmlRepresentation();
 }
 
 void UndoRedoManager::redo()
 {
 	this->undoStack.redo();
-	DiffUndoCommand::updateXmlRepresentation();
+	DiffUndoCommand::clearXmlRepresentation();
 }
 
 void UndoRedoManager::setClean()
@@ -55,9 +55,20 @@ void UndoRedoManager::setClean()
 
 void UndoRedoManager::addUndoCommand(StatesUndoCommand* undoCommand)
 {
+	// We have to make this test before pushing to the stack
+	// as it will take ownership and invalidate the pointer
+	bool isDiffUndoCommand = dynamic_cast<DiffUndoCommand*>(undoCommand) != nullptr;
+
 	this->undoStack.push(undoCommand);
 
-	DiffUndoCommand::updateXmlRepresentation();
+	if (isDiffUndoCommand == false)
+	{
+		// Avoid invalidating for diff undo commands as XML
+		// representation is updated as part of building the
+		// command. This avoids rebuilding the XML if two
+		// consecutive changes use diff undo commands
+		DiffUndoCommand::clearXmlRepresentation();
+	}
 }
 
 void UndoRedoManager::buildAndAddDiffUndoCommand(const QString& undoDescription)
@@ -68,10 +79,15 @@ void UndoRedoManager::buildAndAddDiffUndoCommand(const QString& undoDescription)
 	this->addUndoCommand(undoCommand);
 }
 
+void UndoRedoManager::prepareForDiffUndoCommand()
+{
+	DiffUndoCommand::buildXmlRepresentation();
+}
+
 void UndoRedoManager::notifyMachineReplaced()
 {
 	this->undoStack.clear();
-	DiffUndoCommand::updateXmlRepresentation();
+	DiffUndoCommand::clearXmlRepresentation();
 }
 
 void UndoRedoManager::undoStackCleanStateChangeEventHandler(bool clean)

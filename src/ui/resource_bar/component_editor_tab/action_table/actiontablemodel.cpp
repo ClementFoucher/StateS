@@ -218,6 +218,11 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 	if (index.column() == 0)
 	{
 		ActionOnVariableType_t newActionType = (ActionOnVariableType_t)value.toUInt();
+
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Change action type
 		action->setActionType(newActionType);
 
 		// Machine has been edited
@@ -244,6 +249,10 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 				uint actionSize = action->getActionSize();
 				newValue.resize(actionSize);
 
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
+				// Edit action value
 				action->setActionValue(newValue);
 
 				// Machine has been edited
@@ -333,6 +342,10 @@ bool ActionTableModel::removeRows(int row, int count, const QModelIndex& parent)
 	if (actuator == nullptr) return false;
 
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Remove actions
 	this->beginRemoveRows(parent, row, row+count-1);
 	for (uint rank = row ; rank < (uint)(row + count) ; rank++)
 	{
@@ -356,6 +369,10 @@ bool ActionTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow, 
 	if (actuator == nullptr) return false;
 
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Move actions
 	if (sourceRow < destinationChild)
 	{
 		// Is lowering actions
@@ -413,6 +430,10 @@ void ActionTableModel::addAction(const QString& variableName)
 
 		if (variable->getName() == variableName)
 		{
+			// Machine is about to be edited
+			machineManager->notifyMachineAboutToBeDiffEdited();
+
+			// Add action
 			this->beginInsertRows(QModelIndex(), this->rowCount(), this->rowCount());
 			actuator->addAction(variableId);
 			this->endInsertRows();

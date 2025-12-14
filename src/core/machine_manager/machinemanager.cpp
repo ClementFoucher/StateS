@@ -157,6 +157,19 @@ void MachineManager::redo()
 }
 
 /**
+ * @brief MachineManager::notifyMachineAboutToBeDiffEdited
+ *        This function has to be called when a diff edit
+ *        is about to be performed, *before* the change is
+ *        made to the machine. This allows to store the
+ *        XML code before change and compute the diff
+ *        after the change is made.
+ */
+void MachineManager::notifyMachineAboutToBeDiffEdited()
+{
+	this->undoRedoManager->prepareForDiffUndoCommand();
+}
+
+/**
  * @brief MachineManager::notifyMachineEdited This is the most
  *        complete call for machine edition: we provide the
  *        undo command, nothing to do but to add it to the

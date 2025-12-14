@@ -57,6 +57,7 @@ public:
 
 	void addUndoCommand(StatesUndoCommand* undoCommand);
 	void buildAndAddDiffUndoCommand(const QString& undoDescription = QString());
+	void prepareForDiffUndoCommand();
 
 	void notifyMachineReplaced();
 

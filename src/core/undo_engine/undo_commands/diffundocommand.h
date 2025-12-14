@@ -52,7 +52,11 @@ private:
 	/////
 	// Static functions
 public:
-	static void updateXmlRepresentation();
+	static void buildXmlRepresentation();
+	static void clearXmlRepresentation();
+
+private:
+	static QStringList getMachineXmlAsStringList();
 
 	/////
 	// Static variables

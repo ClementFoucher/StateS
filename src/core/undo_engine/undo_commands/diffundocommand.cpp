@@ -33,13 +33,30 @@
 
 QString DiffUndoCommand::machineXmlRepresentation;
 
-void DiffUndoCommand::updateXmlRepresentation()
+void DiffUndoCommand::buildXmlRepresentation()
 {
+	if (DiffUndoCommand::machineXmlRepresentation.isEmpty() == false) return;
+
 	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
 	if (machineWriter == nullptr) return;
 
 
 	DiffUndoCommand::machineXmlRepresentation = machineWriter->getMachineXml();
+}
+
+void DiffUndoCommand::clearXmlRepresentation()
+{
+	DiffUndoCommand::machineXmlRepresentation.clear();
+}
+
+QStringList DiffUndoCommand::getMachineXmlAsStringList()
+{
+	if (DiffUndoCommand::machineXmlRepresentation.isEmpty() == true)
+	{
+		DiffUndoCommand::buildXmlRepresentation();
+	}
+
+	return DiffUndoCommand::machineXmlRepresentation.split('\n');
 }
 
 /////
@@ -48,18 +65,16 @@ void DiffUndoCommand::updateXmlRepresentation()
 DiffUndoCommand::DiffUndoCommand(const QString& description) :
 	StatesUndoCommand(UndoCommandId_t::diffUndoId, description)
 {
-	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
-	if (machineWriter == nullptr) return;
+	// Get XML before changes
+	auto previousXmlCode = this->getMachineXmlAsStringList();
 
+	// Clear XML so that it may be rebuilt
+	DiffUndoCommand::clearXmlRepresentation();
 
-	// Get XML before change
-	auto previousXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
-	// Update machine XML
-	DiffUndoCommand::machineXmlRepresentation = machineWriter->getMachineXml();
+	// Get updated XML after changes
+	auto currentXmlCode = this->getMachineXmlAsStringList();
 
 	// Compute diff
-	auto currentXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
-
 	bool isDiffEmpty;
 	this->undoDiff = this->computeDiff(currentXmlCode, previousXmlCode, isDiffEmpty);
 
@@ -74,7 +89,7 @@ DiffUndoCommand::DiffUndoCommand(const QString& description) :
 
 void DiffUndoCommand::undo()
 {
-	auto currentXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
+	auto currentXmlCode = this->getMachineXmlAsStringList();
 	auto previousXmlCode = this->patchString(this->undoDiff, currentXmlCode);
 
 	// Compute redo code on undo to avoid storing unnecessary data
@@ -88,7 +103,7 @@ void DiffUndoCommand::redo()
 {
 	if (this->firstRedoIgnored == true)
 	{
-		auto currentXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
+		auto currentXmlCode = this->getMachineXmlAsStringList();
 		auto nextXmlCode = this->patchString(this->redoDiff, currentXmlCode);
 
 		// Clear redo patch
@@ -113,7 +128,7 @@ bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
 	if (otherCommand->text() != this->text()) return false;
 
 
-	auto currentXmlCode = DiffUndoCommand::machineXmlRepresentation.split('\n');
+	auto currentXmlCode = this->getMachineXmlAsStringList();
 
 	auto previousXmlCode         = this->patchString(otherCommand->undoDiff, currentXmlCode);
 	auto previousPreviousXmlCode = this->patchString(this->undoDiff,         previousXmlCode);

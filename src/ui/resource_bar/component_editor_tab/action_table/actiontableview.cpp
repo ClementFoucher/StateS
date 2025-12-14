@@ -290,7 +290,13 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		break;
 	}
 	case ContextAction::DeleteAction:
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Delete actions
 		this->deleteSelectedRows();
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::AffectSwitchWhole:
@@ -335,11 +341,23 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		}
 		break;
 	case ContextAction::MoveDown:
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Move actions
 		this->lowerSelectedRows();
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::MoveUp:
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Move actions
 		this->raiseSelectedRows();
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction::AffectEditRange:
@@ -356,7 +374,13 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 
 	if (setRange == true)
 	{
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Change action range
 		actionOnVariable->setActionRange(newRangeL, newRangeR);
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 	}
 
@@ -375,7 +399,13 @@ void ActionTableView::rangeEditorClosedEventHandler(int result)
 		int newRangeL = this->rangeEditorDialog->getRangeL();
 		int newRangeR = this->rangeEditorDialog->getRangeR();
 
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Change action range
 		this->actionBeingEdited->setActionRange(newRangeL, newRangeR);
+
+		// Machine has been edited
 		machineManager->notifyMachineEdited();
 	}
 

@@ -235,6 +235,11 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 		case ColumnRole::name:
 		{
 			auto valueAsString = value.toString();
+
+			// Machine is about to be edited
+			machineManager->notifyMachineAboutToBeDiffEdited();
+
+			// Rename variable
 			dataSucessfullyChanged = machine->renameVariable(variableId, valueAsString);
 
 			if (dataSucessfullyChanged == false)
@@ -250,6 +255,10 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 
 			if ( (ok == true) && (valueAsInt > 0) )
 			{
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
+				// Change variable size
 				variable->setSize(valueAsInt);
 
 				// Check that size vas correctly changed
@@ -261,7 +270,12 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 			break;
 		}
 		case ColumnRole::memorized:
+			// Machine is about to be edited
+			machineManager->notifyMachineAboutToBeDiffEdited();
+
+			// Change variable memorized flag
 			variable->setMemorized(value.toBool());
+
 			dataSucessfullyChanged = true;
 			break;
 		case ColumnRole::value:
@@ -281,6 +295,10 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 
 			if (newVariableValue.isNull() == false)
 			{
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
+				// Change variable initial value
 				variable->setInitialValue(newVariableValue);
 
 				// Check that value vas correctly changed
@@ -333,6 +351,9 @@ bool VariableTableModel::removeRows(int row, int count, const QModelIndex& paren
 		variablesToRemoveIds.append(variableId);
 	}
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
 	// Do remove variables
 	this->beginRemoveRows(parent, row, row+count-1);
 	for (auto variableToRemoveId : variablesToRemoveIds)
@@ -369,6 +390,10 @@ bool VariableTableModel::insertRows(int row, int count, const QModelIndex& paren
 	if (machine == nullptr) return false;
 
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Add variables
 	this->beginInsertRows(parent, row, row+count-1);
 
 	bool atLeastOneInsertion = false;
@@ -451,6 +476,10 @@ bool VariableTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow
 	if (machine == nullptr) return false;
 
 
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Change variables ranks
 	if (sourceRow < destinationChild)
 	{
 		// Is lowering variables

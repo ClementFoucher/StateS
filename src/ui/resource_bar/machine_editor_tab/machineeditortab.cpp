@@ -183,6 +183,7 @@ void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)
 		// different from the old one before building an undo command.
 		if (machine->getName() != oldName)
 		{
+			// Machine has been edited
 			MachineRenameUndoCommand* undoCommand = new MachineRenameUndoCommand(oldName);
 			machineManager->notifyMachineEdited(undoCommand);
 		}

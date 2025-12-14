@@ -86,6 +86,7 @@ public:
 	void undo();
 	void redo();
 
+	void notifyMachineAboutToBeDiffEdited();
 	void notifyMachineEdited(StatesUndoCommand* undoCommand);
 	void notifyMachineEdited(const QString& undoDescription);
 	void notifyMachineEdited();

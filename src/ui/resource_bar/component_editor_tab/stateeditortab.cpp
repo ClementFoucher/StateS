@@ -145,6 +145,7 @@ void StateEditorTab::nameTextChangedEventHandler(const QString& name)
 	bool result = fsm->renameState(this->stateId, name);
 	if (result == true)
 	{
+		// Machine has been edited
 		auto undoCommand = new FsmStateRenameUndoCommand(state->getId(), previousName);
 		machineManager->notifyMachineEdited(undoCommand);
 	}
