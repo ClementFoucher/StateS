@@ -151,6 +151,7 @@ private:
 	// Temporary variables
 	QPointF menuMousePos;
 	bool transmitMouseEvent;
+	QString selectionDescription;
 
 };
 

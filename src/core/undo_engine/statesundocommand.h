@@ -38,6 +38,7 @@ class StatesUndoCommand : public QObject, public QUndoCommand
 	// Constructors/destructors
 public:
 	explicit StatesUndoCommand(UndoCommandId_t undoType) : undoType{undoType} {}
+	explicit StatesUndoCommand(UndoCommandId_t undoType, const QString& description) : QUndoCommand(description), undoType{undoType} {}
 
 	virtual ~StatesUndoCommand() = default;
 

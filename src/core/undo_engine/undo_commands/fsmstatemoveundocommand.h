@@ -27,6 +27,7 @@
 
 // Qt classes
 #include <QPointF>
+#include <QMap>
 
 // StateS classes
 #include "statestypes.h"
@@ -39,7 +40,7 @@ class FsmStateMoveUndoCommand : public StatesUndoCommand
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmStateMoveUndoCommand(componentId_t componentId);
+	explicit FsmStateMoveUndoCommand(const QString& description, componentId_t componentId);
 
 	/////
 	// Object functions
@@ -52,10 +53,8 @@ public:
 	/////
 	// Object variables
 private:
-	componentId_t componentId = nullId;
-
-	QPointF previousStatePosition;
-	QPointF nextStatePosition;
+	QMap<componentId_t, QPointF> previousStatesPositions;
+	QMap<componentId_t, QPointF> nextStatesPositions;
 
 };
 

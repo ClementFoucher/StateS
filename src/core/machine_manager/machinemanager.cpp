@@ -210,16 +210,6 @@ void MachineManager::setUndoRedoMode(bool undoRedoMode)
 	this->undoRedoMode = undoRedoMode;
 }
 
-void MachineManager::beginUndoMacro(const QString& text)
-{
-	this->undoRedoManager->beginMacro(text);
-}
-
-void MachineManager::endUndoMacro()
-{
-	this->undoRedoManager->endMacro();
-}
-
 /////
 // Simulation management
 

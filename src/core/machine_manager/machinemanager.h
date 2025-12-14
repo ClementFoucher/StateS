@@ -91,8 +91,6 @@ public:
 	void notifyMachineEdited();
 
 	void setUndoRedoMode(bool undoRedoMode);
-	void beginUndoMacro(const QString& text);
-	void endUndoMacro();
 
 	// Simulation
 	void setSimulationMode(SimulationMode_t newMode);

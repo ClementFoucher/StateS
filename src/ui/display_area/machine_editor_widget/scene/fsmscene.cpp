@@ -621,43 +621,10 @@ void FsmScene::stateCallsBeginTransitionEventHandler(componentId_t stateId)
 
 void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 {
-	static bool inMacro = false;
-	static uint statesRemaining;
-
-	if (inMacro == false)
-	{
-		// Count the number of selected states
-		uint selectedStatesCount = 0;
-		const auto selectedItems = this->selectedItems();
-		for (QGraphicsItem* item : selectedItems)
-		{
-			if (dynamic_cast<GraphicFsmState*>(item) != nullptr)
-			{
-				selectedStatesCount++;
-			}
-		}
-		if (selectedStatesCount > 1)
-		{
-			// If multiple states selected, create an undo macro
-			machineManager->beginUndoMacro(tr("Multiple states moved"));
-			statesRemaining = selectedStatesCount;
-			inMacro = true;
-		}
-	}
-
-	auto undoCommand = new FsmStateMoveUndoCommand(stateId);
+	// Machine has been edited
+	QString undoDescription = "STATE_MOVE_" + this->selectionDescription;
+	auto undoCommand = new FsmStateMoveUndoCommand(undoDescription, stateId);
 	machineManager->notifyMachineEdited(undoCommand);
-
-	if (inMacro == true)
-	{
-		statesRemaining--;
-
-		if (statesRemaining == 0)
-		{
-			machineManager->endUndoMacro();
-			inMacro = false;
-		}
-	}
 }
 
 void FsmScene::statePositionChangedEventHandler(componentId_t)
@@ -773,6 +740,25 @@ void FsmScene::handleSelection()
 	else
 	{
 		emit this->itemSelectedEvent(nullId);
+	}
+
+	// Build a string representing state selection
+	this->selectionDescription.clear();
+
+	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
+	if (fsm == nullptr) return;
+
+
+	for (const auto& item : this->selectedItems())
+	{
+		auto graphicState = dynamic_cast<const GraphicFsmState*>(item);
+		if (graphicState == nullptr) continue;
+
+		auto logicState = fsm->getState(graphicState->getLogicComponentId());
+		if (logicState == nullptr) continue;
+
+
+		this->selectionDescription += "_" + logicState->getName();
 	}
 }
 

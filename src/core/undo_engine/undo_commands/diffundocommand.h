@@ -89,8 +89,6 @@ private:
 	DtlDiff undoDiff;
 	DtlDiff redoDiff;
 
-	QString description;
-
 };
 
 #endif // DIFFUNDOCOMMAND_H

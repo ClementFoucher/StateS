@@ -31,8 +31,8 @@
 /////
 // Constructors/destructors
 
-FsmStateMoveUndoCommand::FsmStateMoveUndoCommand(componentId_t componentId) :
-	StatesUndoCommand(UndoCommandId_t::fsmStateMoveUndoId)
+FsmStateMoveUndoCommand::FsmStateMoveUndoCommand(const QString& description, componentId_t componentId) :
+	StatesUndoCommand(UndoCommandId_t::fsmStateMoveUndoId, description)
 {
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicfsm == nullptr) return;
@@ -41,8 +41,7 @@ FsmStateMoveUndoCommand::FsmStateMoveUndoCommand(componentId_t componentId) :
 	if (graphicState == nullptr) return;
 
 
-	this->componentId = componentId;
-	this->previousStatePosition = graphicState->pos();
+	this->previousStatesPositions[componentId] = graphicState->pos();
 }
 
 /////
@@ -53,16 +52,19 @@ void FsmStateMoveUndoCommand::undo()
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicfsm == nullptr) return;
 
-	auto graphicState = graphicfsm->getState(this->componentId);
-	if (graphicState == nullptr) return;
 
-
-	// Compute redo
-	this->nextStatePosition = graphicState->pos();
-
-	// Apply undo
 	machineManager->setUndoRedoMode(true);
-	graphicState->setPos(this->previousStatePosition);
+	for (auto& stateId : this->previousStatesPositions.keys())
+	{
+		auto graphicState = graphicfsm->getState(stateId);
+		if (graphicState == nullptr) continue;
+
+		// Compute redo
+		this->nextStatesPositions[stateId] = graphicState->pos();
+
+		// Apply undo
+		graphicState->setPos(this->previousStatesPositions.value(stateId));
+	}
 	machineManager->setUndoRedoMode(false);
 }
 
@@ -78,17 +80,21 @@ void FsmStateMoveUndoCommand::redo()
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicfsm == nullptr) return;
 
-	auto graphicState = graphicfsm->getState(this->componentId);
-	if (graphicState == nullptr) return;
-
 
 	// Apply redo
 	machineManager->setUndoRedoMode(true);
-	graphicState->setPos(this->nextStatePosition);
+	for (auto& stateId : this->nextStatesPositions.keys())
+	{
+		auto graphicState = graphicfsm->getState(stateId);
+		if (graphicState == nullptr) continue;
+
+
+		graphicState->setPos(this->nextStatesPositions.value(stateId));
+	}
 	machineManager->setUndoRedoMode(false);
 
 	// Clear redo
-	this->nextStatePosition = QPointF();
+	this->nextStatesPositions.clear();
 }
 
 bool FsmStateMoveUndoCommand::mergeWith(const QUndoCommand* command)
@@ -96,8 +102,16 @@ bool FsmStateMoveUndoCommand::mergeWith(const QUndoCommand* command)
 	auto otherCommand = dynamic_cast<const FsmStateMoveUndoCommand*>(command);
 	if (otherCommand == nullptr) return false;
 
+	if (otherCommand->text() != this->text()) return false;
 
-	this->nextStatePosition = otherCommand->nextStatePosition;
+
+	for (auto& stateId : otherCommand->previousStatesPositions.keys())
+	{
+		if (this->previousStatesPositions.keys().contains(stateId) == false)
+		{
+			this->previousStatesPositions[stateId] = otherCommand->previousStatesPositions.value(stateId);
+		}
+	}
 
 	return true;
 }

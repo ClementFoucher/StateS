@@ -46,10 +46,8 @@ void DiffUndoCommand::updateXmlRepresentation()
 // Constructors/destructors
 
 DiffUndoCommand::DiffUndoCommand(const QString& description) :
-	StatesUndoCommand(UndoCommandId_t::diffUndoId)
+	StatesUndoCommand(UndoCommandId_t::diffUndoId, description)
 {
-	this->description = description;
-
 	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
 	if (machineWriter == nullptr) return;
 
@@ -109,12 +107,12 @@ void DiffUndoCommand::redo()
 
 bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
 {
-	if (this->description.isNull() == true) return false;
+	if (this->text().isNull() == true) return false;
 
 	auto otherCommand = dynamic_cast<const DiffUndoCommand*>(command);
 	if (otherCommand == nullptr) return false;
 
-	if (this->description != otherCommand->description) return false;
+	if (otherCommand->text() != this->text()) return false;
 
 
 	auto& currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
