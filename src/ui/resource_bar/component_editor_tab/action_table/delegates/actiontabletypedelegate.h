@@ -36,7 +36,7 @@ class ActionTableTypeDelegate : public QStyledItemDelegate
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableTypeDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
+	explicit ActionTableTypeDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -44,9 +44,16 @@ public:
 	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+	virtual QSize    sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index)             const override;
 
 private slots:
 	void actionTypeChangedEventHandler(ActionTypeEditor* editor);
+
+	/////
+	// Object variables
+private:
+	// Dummy editor is used to provide a size hint
+	ActionTypeEditor* dummyEditor = nullptr;
 
 };
 

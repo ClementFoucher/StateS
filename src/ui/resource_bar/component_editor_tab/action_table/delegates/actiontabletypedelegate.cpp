@@ -29,6 +29,14 @@
 #include "actiontypeeditor.h"
 
 
+ActionTableTypeDelegate::ActionTableTypeDelegate(QWidget* parent) :
+	QStyledItemDelegate(parent)
+{
+	this->dummyEditor = new ActionTypeEditor(parent);
+	this->dummyEditor->fillActionList(0xFFFF, ActionOnVariableType_t::none);
+	this->dummyEditor->setVisible(false);
+}
+
 QWidget* ActionTableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return new ActionTypeEditor(parent);
@@ -59,6 +67,14 @@ void ActionTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* 
 	auto newActionType = actionTypeEditor->getActionType();
 
 	model->setData(index, (uint)newActionType, Qt::EditRole);
+}
+
+QSize ActionTableTypeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+	if (this->dummyEditor == nullptr) return QStyledItemDelegate::sizeHint(option, index);
+
+
+	return this->dummyEditor->sizeHint();
 }
 
 void ActionTableTypeDelegate::actionTypeChangedEventHandler(ActionTypeEditor* editor)
