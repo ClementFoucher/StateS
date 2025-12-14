@@ -70,18 +70,15 @@ void UndoRedoManager::addUndoCommand(MachineUndoCommand* undoCommand)
 {
 	this->undoStack.push(undoCommand);
 
-	auto machineStatus = machineManager->getMachineStatus();
-	machineStatus->setUnsavedFlag(true);
-
 	if (this->recordingMacro == false)
 	{
 		DiffUndoCommand::updateXmlRepresentation();
 	}
 }
 
-void UndoRedoManager::buildAndAddDiffUndoCommand()
+void UndoRedoManager::buildAndAddDiffUndoCommand(const QString& undoDescription)
 {
-	DiffUndoCommand* undoCommand = new DiffUndoCommand();
+	DiffUndoCommand* undoCommand = new DiffUndoCommand(undoDescription);
 
 	if (undoCommand->isEmpty() == false)
 	{

@@ -231,7 +231,9 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 							graphicTransition = graphicFsm->addTransition(logicTransition->getId(), sliderPosition);
 							this->addTransition(graphicTransition, true);
 
-							machineManager->notifyMachineEdited();
+							// Machine has been edited
+							QString undoDescription = "TRANSITION_REDIRECT__" + QString::number(logicTransition->getId());
+							machineManager->notifyMachineEdited(undoDescription);
 						}
 					}
 				}

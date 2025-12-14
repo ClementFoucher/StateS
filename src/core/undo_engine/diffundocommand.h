@@ -59,7 +59,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit DiffUndoCommand();
+	explicit DiffUndoCommand(const QString& description);
 
 	/////
 	// Object functions
@@ -68,6 +68,8 @@ public:
 
 	virtual void undo() override;
 	virtual void redo() override;
+
+	virtual bool mergeWith(const QUndoCommand* command) override;
 
 private:
 	void replaceMachine(const QString& newXmlCode);
@@ -86,6 +88,8 @@ signals:
 private:
 	DtlDiff undoDiff;
 	DtlDiff redoDiff;
+
+	QString description;
 
 };
 

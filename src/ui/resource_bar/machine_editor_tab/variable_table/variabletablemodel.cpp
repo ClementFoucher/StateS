@@ -26,6 +26,7 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"
+#include "variabletableview.h"
 
 
 VariableTableModel::VariableTableModel(VariableNature_t editorNature, QObject* parent) :
@@ -341,8 +342,23 @@ bool VariableTableModel::removeRows(int row, int count, const QModelIndex& paren
 	this->endRemoveRows();
 
 	// Machine has been edited
-	// TODO: should provide an undo type to allow merging multiples deletions
-	machineManager->notifyMachineEdited();
+	QString undoDescription = "VARIABLE_REMOVE__";
+	switch (this->editorNature)
+	{
+	case VariableNature_t::input:
+		undoDescription += "INPUTS";
+		break;
+	case VariableNature_t::output:
+		undoDescription += "OUTPUTS";
+		break;
+	case VariableNature_t::internal:
+		undoDescription += "INTERNAL_VARIABLES";
+		break;
+	case VariableNature_t::constant:
+		undoDescription += "CONSTANTSS";
+		break;
+	}
+	machineManager->notifyMachineEdited(undoDescription);
 
 	return true;
 }
@@ -474,8 +490,26 @@ bool VariableTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow
 	this->endMoveRows();
 
 	// Machine has been edited
-	// TODO: should provide an undo type to allow merging multiples moves
-	machineManager->notifyMachineEdited();
+	QString undoDescription;
+	auto table = dynamic_cast<VariableTableView*>(this->parent());
+	if (table != nullptr)
+	{
+		// Build undo reason string
+		auto selection = table->selectionModel()->selectedRows();
+		QStringList selectedVariables;
+		for (auto& selectedRow : selection)
+		{
+			auto variableName = this->data(selectedRow, Qt::DisplayRole).toString();
+			selectedVariables.append(variableName);
+		}
+		selectedVariables.sort();
+		undoDescription = "VARIABLE_REORDER_";
+		for (auto& variableName : selectedVariables)
+		{
+			undoDescription += "_" + variableName;
+		}
+	}
+	machineManager->notifyMachineEdited(undoDescription);
 
 	return true;
 }

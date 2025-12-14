@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2025 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,7 +59,7 @@ public:
 	void setClean();
 
 	void addUndoCommand(MachineUndoCommand* undoCommand);
-	void buildAndAddDiffUndoCommand();
+	void buildAndAddDiffUndoCommand(const QString& undoDescription = QString());
 
 	void notifyMachineReplaced();
 

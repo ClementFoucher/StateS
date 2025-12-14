@@ -156,22 +156,52 @@ void MachineManager::redo()
 	this->undoRedoManager->redo();
 }
 
+/**
+ * @brief MachineManager::notifyMachineEdited This is the most
+ *        complete call for machine edition: we provide the
+ *        undo command, nothing to do but to add it to the
+ *        undo stack.
+ * @param undoCommand Command to add to the stack.
+ */
 void MachineManager::notifyMachineEdited(MachineUndoCommand* undoCommand)
 {
 	if (this->undoRedoMode == false)
 	{
-		if (undoCommand != nullptr)
-		{
-			this->undoRedoManager->addUndoCommand(undoCommand);
-		}
-		else
-		{
-			this->undoRedoManager->buildAndAddDiffUndoCommand();
-		}
+		this->undoRedoManager->addUndoCommand(undoCommand);
 	}
 	else
 	{
 		delete undoCommand;
+	}
+}
+
+/**
+ * @brief MachineManager::notifyMachineEdited This call for
+ *        machine edition does not provide an undo command,
+ *        so a diff command will be built. However, we provide
+ *        a description so that this command may be merged.
+ * @param undoDescription Decription of the undo, used for undo merge.
+ */
+void MachineManager::notifyMachineEdited(const QString& undoDescription)
+{
+	if (this->undoRedoMode == false)
+	{
+		this->undoRedoManager->buildAndAddDiffUndoCommand(undoDescription);
+	}
+}
+
+/**
+ * @brief MachineManager::notifyMachineEdited This call is
+ *        the most incomplete of machine edition calls:
+ *        we do not provide an undo, nor a description of
+ *        the undo. A diff undo command will be built that
+ *        can't be merged.
+ */
+void MachineManager::notifyMachineEdited()
+{
+	if (this->undoRedoMode == false)
+	{
+		this->undoRedoManager->buildAndAddDiffUndoCommand();
 	}
 }
 

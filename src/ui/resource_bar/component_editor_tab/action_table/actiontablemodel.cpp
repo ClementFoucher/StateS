@@ -221,7 +221,8 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 		action->setActionType(newActionType);
 
 		// Machine has been edited
-		machineManager->notifyMachineEdited();
+		QString undoDescription = "ACTION_CHANGE_TYPE__" + QString::number(actuator->getId()) + "_" + QString::number(index.row());
+		machineManager->notifyMachineEdited(undoDescription);
 
 		// Changing the action type can impact action value:
 		// We have to notify about it
@@ -246,7 +247,8 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 				action->setActionValue(newValue);
 
 				// Machine has been edited
-				machineManager->notifyMachineEdited();
+				QString undoDescription = "ACTION_CHANGE_VALUE__" + QString::number(actuator->getId()) + "_" + QString::number(index.row());
+				machineManager->notifyMachineEdited(undoDescription);
 
 				return true;
 			}
@@ -339,8 +341,8 @@ bool ActionTableModel::removeRows(int row, int count, const QModelIndex& parent)
 	this->endRemoveRows();
 
 	// Machine has been edited
-	// TODO: should provide an undo type to allow merging multiples delete
-	machineManager->notifyMachineEdited();
+	QString undoDescription = "ACTION_REMOVE__" + QString::number(actuator->getId());
+	machineManager->notifyMachineEdited(undoDescription);
 
 	return true;
 }
@@ -387,8 +389,8 @@ bool ActionTableModel::moveRows(const QModelIndex& sourceParent, int sourceRow, 
 	this->endMoveRows();
 
 	// Machine has been edited
-	// TODO: should provide an undo type to allow merging multiples moves
-	machineManager->notifyMachineEdited();
+	QString undoDescription = "ACTION_REORDER__" + QString::number(actuator->getId());
+	machineManager->notifyMachineEdited(undoDescription);
 
 	return true;
 }

@@ -85,7 +85,11 @@ public:
 	// Undo/redo
 	void undo();
 	void redo();
-	void notifyMachineEdited(MachineUndoCommand* undoCommand = nullptr);
+
+	void notifyMachineEdited(MachineUndoCommand* undoCommand);
+	void notifyMachineEdited(const QString& undoDescription);
+	void notifyMachineEdited();
+
 	void setUndoRedoMode(bool undoRedoMode);
 	void beginUndoMacro(const QString& text);
 	void endUndoMacro();

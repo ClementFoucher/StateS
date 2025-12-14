@@ -45,9 +45,10 @@ void DiffUndoCommand::updateXmlRepresentation()
 /////
 // Constructors/destructors
 
-DiffUndoCommand::DiffUndoCommand()
+DiffUndoCommand::DiffUndoCommand(const QString& description)
 {
-	this->undoType = UndoCommandId_t::machineGenericUndoId;
+	this->undoType    = UndoCommandId_t::machineGenericUndoId;
+	this->description = description;
 
 	auto machineWriter = XmlImportExportBuilder::buildMachineWriterForUndoRedo();
 	if (machineWriter == nullptr) return;
@@ -104,6 +105,31 @@ void DiffUndoCommand::redo()
 		// Ignore initial redo automatically applied when pushed in the stack
 		this->firstRedoIgnored = true;
 	}
+}
+
+bool DiffUndoCommand::mergeWith(const QUndoCommand* command)
+{
+	if (this->description.isNull() == true) return false;
+
+	auto otherCommand = dynamic_cast<const DiffUndoCommand*>(command);
+	if (otherCommand == nullptr) return false;
+
+	if (this->description != otherCommand->description) return false;
+
+
+	auto& currentXmlCode = DiffUndoCommand::machineXmlRepresentation;
+
+	auto previousXmlCode         = this->patchString(otherCommand->undoDiff, currentXmlCode);
+	auto previousPreviousXmlCode = this->patchString(this->undoDiff,         previousXmlCode);
+
+	this->undoDiff = this->computeDiff(currentXmlCode, previousPreviousXmlCode);
+
+	if (this->isEmpty())
+	{
+		this->setObsolete(true);
+	}
+
+	return true;
 }
 
 void DiffUndoCommand::replaceMachine(const QString& newXmlCode)
