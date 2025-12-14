@@ -54,12 +54,11 @@ void MachineStatus::setHasSaveFile(bool newHasSaveFile)
 
 void MachineStatus::setSaveFilePath(const QString& newPath)
 {
-	QFileInfo newFile(newPath);
-	if (newFile != this->saveFilePath)
-	{
-		this->saveFilePath = newFile;
-		emit saveFilePathChangedEvent();
-	}
+	if (newPath == this->saveFilePath.path()) return;
+
+
+	this->saveFilePath = QFileInfo(newPath);
+	emit this->saveFilePathChangedEvent();
 }
 
 void MachineStatus::setImageExportPath(const QString& newPath)
