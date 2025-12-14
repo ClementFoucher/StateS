@@ -44,7 +44,7 @@ class DiffUndoCommand : public StatesUndoCommand
 	/////
 	// Type declarations
 private:
-	using DtlDiff = dtl::Diff<char, std::string>;
+	using DtlDiff = dtl::Diff<QString, QStringList>;
 
 	/////
 	// Static functions
@@ -72,10 +72,10 @@ public:
 	virtual bool mergeWith(const QUndoCommand* command) override;
 
 private:
-	void replaceMachine(const QString& newXmlCode);
+	void replaceMachine(const QStringList& newXmlCode);
 
-	DtlDiff computeDiff(const QString& oldString, const QString& newString) const;
-	QString patchString(const DtlDiff& patch, const QString& string) const;
+	DtlDiff computeDiff(const QStringList& oldString, const QStringList& newString) const;
+	QStringList patchString(const DtlDiff& patch, const QStringList& string) const;
 
 signals:
 	// As applying a diff undo command reloads a complete machine,

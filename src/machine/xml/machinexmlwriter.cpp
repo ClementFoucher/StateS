@@ -315,6 +315,8 @@ void MachineXmlWriter::createSaveString()
 {
 	this->xmlString = QString();
 	this->stream = make_shared<QXmlStreamWriter>(&this->xmlString);
+	this->stream->setAutoFormatting(true);
+	this->stream->setAutoFormattingIndent(0);
 }
 
 void MachineXmlWriter::finalizeSaveFile()
