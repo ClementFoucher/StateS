@@ -95,6 +95,8 @@ namespace dtl {
               const comparator& comp) : A(a), B(b), ses(deleteFirst), cmp(comp) {
             init();
         }
+
+		Diff (uniHunkVec uniHunks) : uniHunks(uniHunks) {}
         
         ~Diff() {}
         

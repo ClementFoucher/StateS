@@ -44,7 +44,10 @@ class DiffUndoCommand : public StatesUndoCommand
 	/////
 	// Type declarations
 private:
-	using DtlDiff = dtl::Diff<QString, QStringList>;
+	using DtlDiff      = dtl::Diff<QString, QStringList>;
+	using DtlPair      = std::pair<QString, dtl::eleminfo>;
+	using DtlUniHunk   = dtl::uniHunk<DtlPair>;
+	using DtlUniVector = std::vector<DtlUniHunk>;
 
 	/////
 	// Static functions
@@ -72,8 +75,8 @@ public:
 private:
 	void replaceMachine(const QStringList& newXmlCode);
 
-	DtlDiff computeDiff(const QStringList& oldString, const QStringList& newString) const;
-	QStringList patchString(const DtlDiff& patch, const QStringList& string) const;
+	DtlUniVector computeDiff(const QStringList& oldString, const QStringList& newString, bool& isDiffEmpty) const;
+	QStringList patchString(const DtlUniVector& hunkVector, const QStringList& string) const;
 
 signals:
 	// As applying a diff undo command reloads a complete machine,
@@ -84,8 +87,8 @@ signals:
 	/////
 	// Object variables
 private:
-	DtlDiff undoDiff;
-	DtlDiff redoDiff;
+	DtlUniVector undoDiff;
+	DtlUniVector redoDiff;
 
 };
 

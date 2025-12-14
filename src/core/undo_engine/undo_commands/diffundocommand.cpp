@@ -92,7 +92,7 @@ void DiffUndoCommand::redo()
 		auto nextXmlCode = this->patchString(this->redoDiff, currentXmlCode);
 
 		// Clear redo patch
-		this->redoDiff = DtlDiff();
+		this->redoDiff = DtlUniVector();
 
 		this->replaceMachine(nextXmlCode);
 	}
@@ -143,14 +143,17 @@ DiffUndoCommand::DtlUniVector DiffUndoCommand::computeDiff(const QStringList& ol
 {
 	auto patch = DtlDiff(oldString, newString);
 	patch.compose();
+	patch.composeUnifiedHunks();
 
 	isDiffEmpty = (patch.getEditDistance() == 0);
-	return patch;
+	return patch.getUniHunks();
 }
 
-QStringList DiffUndoCommand::patchString(const DtlDiff& patch, const QStringList& string) const
+QStringList DiffUndoCommand::patchString(const DtlUniVector& hunkVector, const QStringList& string) const
 {
-	auto patchedString = patch.patch(string);
+	auto patch = DtlDiff(hunkVector);
+
+	auto patchedString = patch.uniPatch(string);
 
 	return patchedString;
 }
