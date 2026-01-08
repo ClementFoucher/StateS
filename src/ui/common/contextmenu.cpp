@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -70,6 +70,7 @@ void ContextMenu::addTitle(const QString& titleText, const QStringList& subtitle
 
 	auto title = new QLabel("<b>" + titleText + "</b>");
 	title->setAlignment(Qt::AlignCenter);
+	title->setStyleSheet("QLabel {margin: 1em}");
 
 	if (subtitlesText.isEmpty() == true)
 	{

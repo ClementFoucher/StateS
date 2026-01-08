@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,6 +59,13 @@ TemplateEquationPartsWidget::TemplateEquationPartsWidget(QWidget* parent) :
 		templatesLayout->addWidget(internalVariables);
 	}
 
+	// Add outputs
+	auto outputVariables = this->getOutputVariables();
+	if (outputVariables != nullptr)
+	{
+		templatesLayout->addWidget(outputVariables);
+	}
+
 	// Add constants
 	auto constants = this->getConstants();
 	if (constants != nullptr)
@@ -116,13 +123,37 @@ QWidget* TemplateEquationPartsWidget::getInternalVariables() const
 	internalVariablesLayout->setAlignment(Qt::AlignTop);
 
 	// Title
-	auto internalVariablesTitle = new QLabel("<b>" + tr("Variables")+ "</b>");
+	auto internalVariablesTitle = new QLabel("<b>" + tr("Internal variables")+ "</b>");
 	internalVariablesLayout->addWidget(internalVariablesTitle, 0, Qt::AlignHCenter);
 
 	// Machine internal variables
 	this->buildVariableList(internalVariablesLayout, internalVariableIds);
 
 	return internalVariablesWidget;
+}
+
+QWidget* TemplateEquationPartsWidget::getOutputVariables() const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return nullptr;
+
+	auto outputIds = machine->getOutputVariablesIds();
+	if (outputIds.isEmpty() == true) return nullptr;
+
+
+	// Build widget
+	auto outputsWidget = new QWidget();
+	auto outputsLayout = new QVBoxLayout(outputsWidget);
+	outputsLayout->setAlignment(Qt::AlignTop);
+
+	// Title
+	auto outputsTitle = new QLabel("<b>" + tr("Outputs") + "</b>");
+	outputsLayout->addWidget(outputsTitle, 0, Qt::AlignHCenter);
+
+	// Machine inputs
+	this->buildVariableList(outputsLayout, outputIds);
+
+	return outputsWidget;
 }
 
 QWidget* TemplateEquationPartsWidget::getConstants() const

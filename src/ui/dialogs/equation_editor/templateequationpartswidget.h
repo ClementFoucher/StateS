@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,6 +46,7 @@ public:
 private:
 	QWidget* getInputs()            const;
 	QWidget* getInternalVariables() const;
+	QWidget* getOutputVariables()   const;
 	QWidget* getConstants()         const;
 	QWidget* getOperators()         const;
 

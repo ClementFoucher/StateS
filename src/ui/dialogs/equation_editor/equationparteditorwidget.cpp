@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,8 +34,8 @@
 
 const QString EquationPartEditorWidget::passiveStyleSheet   = "EquationPartEditorWidget {border: 1px solid lightgrey; border-radius: 10px}";
 const QString EquationPartEditorWidget::activeStyleSheet    = "EquationPartEditorWidget {border: 1px solid blue; border-radius: 10px}";
-const QString EquationPartEditorWidget::erroneousStyleSheet = "EquationPartEditorWidget {border: 1px solid red; border-radius: 10px}";
-const QString EquationPartEditorWidget::editableStyleSheet  = "EquationPartEditorWidget {border: 1px solid green; border-radius: 10px}";
+const QString EquationPartEditorWidget::erroneousStyleSheet = "EquationPartEditorWidget {border: 2px solid red; border-radius: 10px}";
+const QString EquationPartEditorWidget::editableStyleSheet  = "EquationPartEditorWidget {border: 2px solid green; border-radius: 10px}";
 
 
 EquationPartEditorWidget::EquationPartEditorWidget(uint rankInParentOperands, bool isTemplate, QWidget* parent) :
@@ -138,7 +138,7 @@ void EquationPartEditorWidget::contextMenuEvent(QContextMenuEvent* event)
 
 
 	auto menu = new ContextMenu();
-	menu->addTitle(tr("Operand:") +  " <i>" + this->getText() + "</i>");
+	menu->addTitle(tr("Selected equation:") +  " <i>" + this->getText() + "</i>");
 
 	QVariant data;
 	QAction* addedAction = nullptr;

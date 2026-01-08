@@ -239,17 +239,17 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="274"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="285"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="278"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="289"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="282"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="293"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -375,7 +375,7 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="318"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="331"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
@@ -390,32 +390,32 @@
         <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="209"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="215"/>
         <source>Warning: the current condition is not valid.</source>
         <translation>Attention : la condition actuelle est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="210"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="216"/>
         <source>Thus, this transition will never be crossed.</source>
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="308"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="321"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="221"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="227"/>
         <source>Thus, the current transition will never be crossed.</source>
         <translation>Ainsi, la transition actuelle ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="219"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="225"/>
         <source>Warning: equation representing condition is size</source>
         <translation>Attention : l&apos;équation représentant la transition est de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="226"/>
         <source>Conditions must be size one to allow being treated as booleans.</source>
         <translation>Les conditions doivent être de taille 1 pour permettre leur évaluation en tant que booléens.</translation>
     </message>
@@ -425,7 +425,7 @@
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="211"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="217"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -454,12 +454,12 @@
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="51"/>
         <source>Drag and drop equation components from here</source>
-        <translation>Glissez puis déposez les composants d&apos;équation ci-dessous</translation>
+        <translation>Glissez puis déposez les composants d&apos;équation depuis le cadre ci-dessous</translation>
     </message>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="65"/>
-        <source>to here.</source>
-        <translation>à cet endroit.</translation>
+        <source>to the frame below.</source>
+        <translation>vers le cadre ci-dessous.</translation>
     </message>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="72"/>
@@ -597,11 +597,6 @@
 <context>
     <name>EquationPartEditorWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="141"/>
-        <source>Operand:</source>
-        <translation>Opérande :</translation>
-    </message>
-    <message>
         <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="150"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
@@ -630,6 +625,11 @@
         <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="157"/>
         <source>Edit</source>
         <translation>Éditer</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="141"/>
+        <source>Selected equation:</source>
+        <translation>Équation sélectionnée :</translation>
     </message>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationparteditorwidget.cpp" line="178"/>
@@ -737,24 +737,19 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="262"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="787"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="277"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="804"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="263"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="792"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="278"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="809"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="640"/>
-        <source>Multiple states moved</source>
-        <translation>Plusieurs états déplacés</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1099"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1116"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -1709,7 +1704,7 @@
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="208"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="209"/>
         <source>No machine</source>
         <translation>Aucune machine</translation>
     </message>
@@ -2679,22 +2674,27 @@
 <context>
     <name>TemplateEquationPartsWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="95"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="102"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="119"/>
-        <source>Variables</source>
-        <translation>Variables</translation>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="126"/>
+        <source>Internal variables</source>
+        <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="140"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="150"/>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="171"/>
         <source>Constants</source>
         <translation>Constantes</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="161"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="192"/>
         <source>Logic functions</source>
         <translation>Fonctions logiques</translation>
     </message>
@@ -2843,51 +2843,51 @@
 <context>
     <name>VariableTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="85"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="366"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="86"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="407"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="372"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="89"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="413"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="91"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="369"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="92"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="410"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="94"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="375"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="95"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="416"/>
         <source>Constant</source>
         <translation>Constante</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="99"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="100"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="103"/>
         <source>Memorized</source>
         <translation>Mémorisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="108"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="109"/>
         <source>Initial value in simulator</source>
         <translation>Valeur initiale dans le simulateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="112"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="113"/>
         <source>Initial/default value</source>
         <translation>Valeur initiale/par défaut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="115"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="116"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
