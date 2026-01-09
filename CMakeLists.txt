@@ -11,7 +11,7 @@ project(StateS VERSION 0.4.8 LANGUAGES CXX)
 # Also remember to update version in README.md, known_bugs.txt, AppImageBuilder.yml and WindowsMetadata.rc (x4!)
 
 # Set variables used by the project
-set(STATES_DATES "2014-2025")
+set(STATES_DATES "2014-2026")
 # Also remember to update date in WindowsMetadata.rc
 
 # Configure toolchain

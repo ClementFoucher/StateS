@@ -23,7 +23,7 @@ VS_VERSION_INFO VERSIONINFO
 				VALUE "FileDescription", ""
 				VALUE "FileVersion", "0.4.8.0"
 				VALUE "InternalName", "StateS"
-				VALUE "LegalCopyright", "© 2014-2025 Clément Foucher"
+				VALUE "LegalCopyright", "© 2014-2026 Clément Foucher"
 				VALUE "OriginalFilename", "StateS.exe"
 				VALUE "ProductName", "StateS"
 				VALUE "ProductVersion", "0.4.8.0"
