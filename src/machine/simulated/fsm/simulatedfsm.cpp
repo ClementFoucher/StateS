@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -363,7 +363,13 @@ void SimulatedFsm::subMachineDoStep()
 		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::immediately) )
 		{
 			action->doAction();
-			this->variablesToResetAfterNextStep.append(action->getVariableId());
+			auto variableId = action->getVariableId();
+			this->variablesToResetAfterNextStep.append(variableId);
+			if (this->variablesToResetBeforeNextStep.contains(variableId))
+			{
+				// If action is handled in current state, remove it from the reset list of transitions
+				this->variablesToResetBeforeNextStep.removeOne(variableId);
+			}
 		}
 	}
 }
