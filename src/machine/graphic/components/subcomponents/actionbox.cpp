@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -129,7 +129,6 @@ void ActionBox::buildActionBox()
 		currentActionText += currentVariable->getName();
 
 		// Variable range
-
 		if (currentVariable->getSize() > 1)
 		{
 			int rangeL = currentAction->getActionRangeL();
@@ -160,10 +159,7 @@ void ActionBox::buildActionBox()
 			break;
 		case ActionOnVariableType_t::continuous:
 		case ActionOnVariableType_t::pulse:
-			if (currentAction->getActionSize() > 1)
-			{
-				currentActionText += " ← " + currentAction->getActionValue().toString();
-			}
+			currentActionText += " ← " + currentAction->getActionValue().toString();
 			break;
 		case ActionOnVariableType_t::increment:
 			currentActionText += " ← " + currentVariable->getName() + " + 1";
