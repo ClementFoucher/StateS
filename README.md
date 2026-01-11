@@ -17,8 +17,14 @@ Currently, StateS allows you to:
 - Export it to code (**very experimental feature**)
     - VHDL
 
-You can test interacting with a machine by loading [file Demo.SfsmS](samples/Demo.SfsmS) (hit the "Download raw file" button on the top right).
+You can test interacting with a machine by loading one of the [demo files ](samples) (select a file then hit the "Download raw file" button on the top right).
 
+### Drawing a FSM
+![Draw FSM](./art/screenshots/edition.png)
+
+### Simulating a FSM
+![Graphical simulation](./art/screenshots/simulation.png)
+![Timeline visualization](./art/screenshots/timeline.png)
 
 ## How to use
 You'll find compiled versions for both Windows and Linux on [the `Releases` page](https://github.com/ClementFoucher/StateS/releases).
@@ -32,7 +38,7 @@ Windows sometimes automatically blocks this kind of programs when downloaded fro
 The warning window is built to make difficult running the executable: the execution option is hidden.
 I guarantee there is no malicious code in StateS, so to avoid the warning, right-click on the executable, choose "Properties", check "Unlock", and hit "OK".
 
-The Windows version is built using [MinGW Qt6 static package](https://packages.msys2.org/base/mingw-w64-qt6-static) under [MSYS2](https://www.msys2.org/).
+The Windows version is built using [MinGW Qt6 static package](https://aur.archlinux.org/packages/mingw-w64-qt6-base-static) from ArchLinux.
 The distributed version is a static (i.e. standalone, portable) 64-bits version.
 
 ### Linux
@@ -42,8 +48,8 @@ To make the appimage file executable:
 - From command line, cd to the folder containing the executable, and type `chmod +x ./<name of the file>`.
 - Or graphically, right-click on the file, hit "Properties", search for an "Allow execution" or similar checkbox, and check it.
 
-The Linux version is an [AppImage](https://en.wikipedia.org/wiki/AppImage) file (a self-contained archive) built using a Debian virtual machine using [appimage-builder](https://appimage-builder.readthedocs.io/en/latest/).
-I had to resort to using Debian for the packaging as appimage-builder still struggles with ArchLinux (my base installation).
+The Linux version is an [AppImage](https://en.wikipedia.org/wiki/AppImage) file (a self-contained archive) built using a Debian 13 virtual machine with [appimage-builder](https://appimage-builder.readthedocs.io/en/latest/).
+I had to resort to using Debian for the packaging as appimage-builder struggles with ArchLinux.
 
 
 ## Bugs and development
@@ -58,12 +64,13 @@ It is not intended to be complete, or even useful for now!
 
 
 ## Obtaining code and generating StateS
-StateS code license (GNU GPL V2) can be consulted using [the LICENSE file](LICENSE?raw=true), or at [this address](https://www.gnu.org/licenses/gpl-2.0.en.html).
+StateS is licensed under the GNU GPL V2.
+The license can be read in [the LICENSE file](LICENSE?raw=true), or at [this address](https://www.gnu.org/licenses/gpl-2.0.en.html).
 Qt 6 is required to compile StateS, with modules `printsupport` and `svg` installed.
 You'll also need git, CMake, a build tool like ninja or make and a C++ compiler like Clang or gcc.
 The compiler must support C++ 2020.
 
-To obtain the code, use the following command:
+To get the code, use the following command:
 ```bash
 git clone https://github.com/ClementFoucher/StateS.git states
 ```
