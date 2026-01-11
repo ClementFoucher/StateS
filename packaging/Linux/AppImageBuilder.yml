@@ -6,7 +6,7 @@ AppDir:
     id: StateS
     name: StateS
     icon: StateS_256
-    version: 0.4.8
+    version: 0.4.9
     exec: usr/bin/StateS
     exec_args: $@
   apt:

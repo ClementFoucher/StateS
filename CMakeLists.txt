@@ -7,7 +7,7 @@
 
 # Define project
 cmake_minimum_required(VERSION 3.31)
-project(StateS VERSION 0.4.8 LANGUAGES CXX)
+project(StateS VERSION 0.4.9 LANGUAGES CXX)
 # Also remember to update version in README.md, known_bugs.txt, AppImageBuilder.yml and WindowsMetadata.rc (x4!)
 
 # Set variables used by the project

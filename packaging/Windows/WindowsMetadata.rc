@@ -4,8 +4,8 @@
 ID_ICON ICON "StateS.ico"
 
 VS_VERSION_INFO VERSIONINFO
-	FILEVERSION 0,4,8,0
-	PRODUCTVERSION 0,4,8,0
+	FILEVERSION 0,4,9,0
+	PRODUCTVERSION 0,4,9,0
 #ifdef _DEBUG
 	FILEFLAGS VS_FF_DEBUG
 #else
@@ -21,12 +21,12 @@ VS_VERSION_INFO VERSIONINFO
 				VALUE "Commments", "Source code available on https://github.com/ClementFoucher/StateS"
 				VALUE "CompanyName", ""
 				VALUE "FileDescription", ""
-				VALUE "FileVersion", "0.4.8.0"
+				VALUE "FileVersion", "0.4.9.0"
 				VALUE "InternalName", "StateS"
 				VALUE "LegalCopyright", "© 2014-2026 Clément Foucher"
 				VALUE "OriginalFilename", "StateS.exe"
 				VALUE "ProductName", "StateS"
-				VALUE "ProductVersion", "0.4.8.0"
+				VALUE "ProductVersion", "0.4.9.0"
 			END
 		END
 		BLOCK "VarFileInfo"
