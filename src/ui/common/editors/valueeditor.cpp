@@ -40,7 +40,7 @@ ValueEditor::ValueEditor(QWidget* parent) :
 	this->setSizePolicy(sizePolicy);
 
 	this->lineEdit = new ColoredLineEditor();
-	connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::valueChangedEvent);
+	connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
 
 	auto editorLayout = new QHBoxLayout(this);
 	editorLayout->setContentsMargins(0, 0, 0, 0);
@@ -114,4 +114,9 @@ void ValueEditor::keyPressEvent(QKeyEvent* event)
 	{
 		QWidget::keyPressEvent(event);
 	}
+}
+
+void ValueEditor::textEditChangedEventHandler()
+{
+	emit this->valueChangedEvent(this);
 }

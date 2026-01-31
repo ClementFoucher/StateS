@@ -54,10 +54,13 @@ protected:
 
 	virtual void keyPressEvent(QKeyEvent* event) override;
 
+private slots:
+	void textEditChangedEventHandler();
+
 	/////
 	// Signals
 signals:
-	void valueChangedEvent();
+	void valueChangedEvent(ValueEditor* me);
 	void cancelEditEvent();
 
 	/////

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,6 +25,9 @@
 // Parent
 #include <QStyledItemDelegate>
 
+// StateS classes
+class ValueEditor;
+
 
 class VariableTableValueDelegate : public QStyledItemDelegate
 {
@@ -41,6 +44,9 @@ public:
 	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+
+private slots:
+	void valueChangedEventHandler(ValueEditor* editor);
 
 };
 

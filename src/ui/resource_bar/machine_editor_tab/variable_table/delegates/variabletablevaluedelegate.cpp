@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,6 +46,8 @@ void VariableTableValueDelegate::setEditorData(QWidget* editor, const QModelInde
 	int variableSize = stringBits.at(1).toInt();
 
 	valueEditor->setBitVectorValue(initialValue, variableSize);
+
+	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &VariableTableValueDelegate::valueChangedEventHandler);
 }
 
 void VariableTableValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
@@ -56,4 +58,12 @@ void VariableTableValueDelegate::setModelData(QWidget* editor, QAbstractItemMode
 
 	auto newValue = valueEditor->getBitVectorValue();
 	model->setData(index, newValue.toString(), Qt::EditRole);
+}
+
+void VariableTableValueDelegate::valueChangedEventHandler(ValueEditor* editor)
+{
+	// This is required as ValueEditor is not a QLineEdit:
+	// we have to manually handle editor finalization
+	emit this->commitData(editor);
+	emit this->closeEditor(editor);
 }
