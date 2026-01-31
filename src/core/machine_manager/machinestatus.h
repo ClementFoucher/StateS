@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2025 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,20 +25,18 @@
 // Parent
 #include <QObject>
 
-// C++ classes
-#include <memory>
-using namespace std;
-
 // Qt classes
 #include <QFileInfo>
 
 
 /**
  * @brief The MachineStatus class strores meta-information required
- * during the application life, such as save status and pathes.
+ * during the application life, such as save status and paths.
  * Its mutators must only be used by the StateS class (including
- * its undo-redo manager), with the exception of some pathes that
- * are only used by StatesUI, thus managed by it.
+ * its undo-redo manager), with the exception of export paths
+ * that are only used by StatesUI, thus managed by it.
+ * It also ensures paths are persistent settings by managing their
+ * storage and retrieval.
  */
 class MachineStatus : public QObject
 {
@@ -52,18 +50,21 @@ public:
 	/////
 	// Object functions
 public:
-	void setUnsavedFlag    (bool newUnsavedFlag);
-	void setHasSaveFile    (bool newHasSaveFile);
-	void setSaveFilePath   (const QString& newPath);
-	void setImageExportPath(const QString& newPath);
-	void setVhdlExportPath (const QString& newPath);
+	void setUnsavedFlag(bool newUnsavedFlag);
+	void setHasSaveFile(bool newHasSaveFile);
 
-	bool    getUnsavedFlag()      const;
-	bool    getHasSaveFile()      const;
-	QString getSaveFilePath()     const;
-	QString getSaveFileFullPath() const;
-	QString getImageExportPath()  const;
-	QString getVhdlExportPath()   const;
+	void setSaveFilePath         (const QString& newPath);
+	void setSaveLoadFolderPath   (const QString& newPath);
+	void setImageExportFolderPath(const QString& newPath);
+	void setVhdlExportFolderPath (const QString& newPath);
+
+	bool getUnsavedFlag() const;
+	bool getHasSaveFile() const;
+
+	QString getSaveFilePath()          const;
+	QString getSaveLoadFolderPath()    const;
+	QString getImageExportFolderPath() const;
+	QString getVhdlExportFolderPath()  const;
 
 	/////
 	// Signals
@@ -74,11 +75,16 @@ signals:
 	/////
 	// Object variables
 private:
+	// Status flags
+	bool unsavedFlag = false;
+	bool hasSaveFile = false;
+
+	// Paths
 	QFileInfo saveFilePath;
-	QFileInfo imageExportPath;
-	QFileInfo vhdlExportPath;
-	bool      unsavedFlag;
-	bool      hasSaveFile;
+	QFileInfo saveLoadFolderPath;
+	QFileInfo imageExportFolderPath;
+	QFileInfo vhdlExportFolderPath;
+
 };
 
 #endif // MACHINESTATUS_H

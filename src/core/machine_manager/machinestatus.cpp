@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2025 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,17 +22,29 @@
 // Current class header
 #include "machinestatus.h"
 
+// StateS classes
+#include "states.h"
+
 
 /////
 // Constructors/destructors
 
 MachineStatus::MachineStatus()
 {
-	this->unsavedFlag     = false;
-	this->hasSaveFile     = false;
-	this->saveFilePath    = QFileInfo();
-	this->imageExportPath = QFileInfo();
-	this->vhdlExportPath  = QFileInfo();
+	if (StateS::hasSetting("SaveLoadPath") == true)
+	{
+		this->saveLoadFolderPath = QFileInfo(StateS::retreiveSetting("SaveLoadPath").toString());
+	}
+
+	if (StateS::hasSetting("ImageExportPath") == true)
+	{
+		this->imageExportFolderPath = QFileInfo(StateS::retreiveSetting("ImageExportPath").toString());
+	}
+
+	if (StateS::hasSetting("VhdlExportPath") == true)
+	{
+		this->vhdlExportFolderPath = QFileInfo(StateS::retreiveSetting("VhdlExportPath").toString());
+	}
 }
 
 /////
@@ -58,17 +70,30 @@ void MachineStatus::setSaveFilePath(const QString& newPath)
 
 
 	this->saveFilePath = QFileInfo(newPath);
+	this->setSaveLoadFolderPath(this->saveFilePath.absolutePath());
+
 	emit this->saveFilePathChangedEvent();
 }
 
-void MachineStatus::setImageExportPath(const QString& newPath)
+void MachineStatus::setSaveLoadFolderPath(const QString& newPath)
 {
-	this->imageExportPath = QFileInfo(newPath);
+	this->saveLoadFolderPath = QFileInfo(newPath);
+
+	StateS::storeSetting("SaveLoadPath", this->saveLoadFolderPath.absoluteFilePath());
 }
 
-void MachineStatus::setVhdlExportPath(const QString& newPath)
+void MachineStatus::setImageExportFolderPath(const QString& newPath)
 {
-	this->vhdlExportPath = QFileInfo(newPath);
+	this->imageExportFolderPath = QFileInfo(newPath);
+
+	StateS::storeSetting("ImageExportPath", this->imageExportFolderPath.absoluteFilePath());
+}
+
+void MachineStatus::setVhdlExportFolderPath(const QString& newPath)
+{
+	this->vhdlExportFolderPath = QFileInfo(newPath);
+
+	StateS::storeSetting("VhdlExportPath", this->vhdlExportFolderPath.absoluteFilePath());
 }
 
 /////
@@ -86,19 +111,19 @@ bool MachineStatus::getHasSaveFile() const
 
 QString MachineStatus::getSaveFilePath() const
 {
-	return this->saveFilePath.path();
+	return this->saveFilePath.absoluteFilePath();
 }
 
-QString MachineStatus::getSaveFileFullPath() const
+QString MachineStatus::getSaveLoadFolderPath() const
 {
-	return this->saveFilePath.filePath();
+	return this->saveLoadFolderPath.absoluteFilePath();
 }
 
-QString MachineStatus::getImageExportPath() const
+QString MachineStatus::getImageExportFolderPath() const
 {
-	if (this->imageExportPath.path().isEmpty() == false)
+	if (this->imageExportFolderPath.path().isEmpty() == false)
 	{
-		return this->imageExportPath.path();
+		return this->imageExportFolderPath.absoluteFilePath();
 	}
 	else
 	{
@@ -106,11 +131,11 @@ QString MachineStatus::getImageExportPath() const
 	}
 }
 
-QString MachineStatus::getVhdlExportPath() const
+QString MachineStatus::getVhdlExportFolderPath() const
 {
-	if (this->vhdlExportPath.path().isEmpty() == false)
+	if (this->vhdlExportFolderPath.path().isEmpty() == false)
 	{
-		return this->vhdlExportPath.path();
+		return this->vhdlExportFolderPath.absoluteFilePath();
 	}
 	else
 	{
