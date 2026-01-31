@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 #include <QKeyEvent>
 
 // StateS classes
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
 LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const QString& text, QWidget* parent) :
@@ -63,11 +63,11 @@ LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const
 	int pos;
 	if (this->validator->validate(initialText, pos) != QValidator::State::Invalid)
 	{
-		this->lineEdit = new DynamicLineEditor(text);
+		this->lineEdit = new ColoredLineEditor(text);
 	}
 	else
 	{
-		this->lineEdit = new DynamicLineEditor();
+		this->lineEdit = new ColoredLineEditor();
 	}
 
 	this->lineEdit->setValidator(validator);
@@ -90,7 +90,7 @@ LineWithUpDownButtonsEditor::LineWithUpDownButtonsEditor(int min, int max, const
 	connect(buttonUp,   &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::up);
 	connect(buttonDown, &QPushButton::clicked, this, &LineWithUpDownButtonsEditor::down);
 
-	connect(this->lineEdit, &DynamicLineEditor::textChanged, this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
+	connect(this->lineEdit, &ColoredLineEditor::textChanged, this, &LineWithUpDownButtonsEditor::textUpdatedByUserEventHandler);
 }
 
 int LineWithUpDownButtonsEditor::getValue() const

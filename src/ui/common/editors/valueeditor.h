@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,7 @@
 
 // StateS classes
 class LogicValue;
-class DynamicLineEditor;
+class ColoredLineEditor;
 
 
 class ValueEditor : public QWidget
@@ -63,10 +63,10 @@ signals:
 	/////
 	// Object variables
 private:
-	DynamicLineEditor* lineEdit = nullptr;
+	ColoredLineEditor* lineEdit = nullptr;
 
 	uint bitVectorSize = 0;
-	bool autoFocusOnNextShow = true;
+	bool autoFocusOnNextShow = false;
 
 };
 

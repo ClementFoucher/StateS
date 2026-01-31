@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,12 +23,12 @@
 #include "variabletablesizedelegate.h"
 
 // StateS classes
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
 QWidget* VariableTableSizeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	auto editor = new DynamicLineEditor(parent);
+	auto editor = new ColoredLineEditor(parent);
 	editor->setValidator(new QIntValidator(0, 64));
 
 	return editor;
@@ -36,7 +36,7 @@ QWidget* VariableTableSizeDelegate::createEditor(QWidget* parent, const QStyleOp
 
 void VariableTableSizeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto sizeEditor = dynamic_cast<DynamicLineEditor*>(editor);
+	auto sizeEditor = dynamic_cast<ColoredLineEditor*>(editor);
 	if (sizeEditor == nullptr) return;
 
 
@@ -45,7 +45,7 @@ void VariableTableSizeDelegate::setEditorData(QWidget* editor, const QModelIndex
 
 void VariableTableSizeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto sizeEditor = dynamic_cast<DynamicLineEditor*>(editor);
+	auto sizeEditor = dynamic_cast<ColoredLineEditor*>(editor);
 	if (sizeEditor == nullptr) return;
 
 

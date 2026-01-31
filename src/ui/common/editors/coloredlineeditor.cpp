@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -20,27 +20,27 @@
  */
 
 // Current class header
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
 //
 // Static elements
 //
 
-const QString DynamicLineEditor::editStyle  = QString("QLineEdit {background-color: yellow; color: black;}");
-const QString DynamicLineEditor::errorStyle = QString("QLineEdit {background-color: red; color: black;}");
+const QString ColoredLineEditor::editStyle  = QString("QLineEdit {background-color: yellow; color: black;}");
+const QString ColoredLineEditor::errorStyle = QString("QLineEdit {background-color: red; color: black;}");
 
 //
 // Class object definition
 //
 
-void DynamicLineEditor::setErroneous(bool erroneous)
+void ColoredLineEditor::setErroneous(bool erroneous)
 {
 	this->erroneous = erroneous;
 
 	if (this->erroneous == true)
 	{
-		this->setStyleSheet(DynamicLineEditor::errorStyle);
+		this->setStyleSheet(ColoredLineEditor::errorStyle);
 
 		// When erroneous, force focus to continue edit
 		this->setFocus();
@@ -49,7 +49,7 @@ void DynamicLineEditor::setErroneous(bool erroneous)
 	{
 		if (this->hasFocus() == true)
 		{
-			this->setStyleSheet(DynamicLineEditor::editStyle);
+			this->setStyleSheet(ColoredLineEditor::editStyle);
 		}
 		else
 		{
@@ -58,22 +58,22 @@ void DynamicLineEditor::setErroneous(bool erroneous)
 	}
 }
 
-bool DynamicLineEditor::getIsErroneous() const
+bool ColoredLineEditor::getIsErroneous() const
 {
 	return this->erroneous;
 }
 
-void DynamicLineEditor::focusInEvent(QFocusEvent* event)
+void ColoredLineEditor::focusInEvent(QFocusEvent* event)
 {
 	if (this->erroneous == false)
 	{
-		this->setStyleSheet(DynamicLineEditor::editStyle);
+		this->setStyleSheet(ColoredLineEditor::editStyle);
 	}
 
 	QLineEdit::focusInEvent(event);
 }
 
-void DynamicLineEditor::focusOutEvent(QFocusEvent* event)
+void ColoredLineEditor::focusOutEvent(QFocusEvent* event)
 {
 	if (this->erroneous == false)
 	{

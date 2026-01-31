@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 class QIntValidator;
 
 // StateS classes
-class DynamicLineEditor;
+class ColoredLineEditor;
 
 
 class LineWithUpDownButtonsEditor : public QWidget
@@ -72,7 +72,7 @@ signals:
 	/////
 	// Object variables
 private:
-	DynamicLineEditor* lineEdit  = nullptr;
+	ColoredLineEditor* lineEdit  = nullptr;
 	QIntValidator*     validator = nullptr;
 
 };

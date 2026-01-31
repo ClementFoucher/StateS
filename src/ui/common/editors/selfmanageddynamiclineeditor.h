@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,10 +23,10 @@
 #define SELFMANAGEDDYNAMICLINEEDITOR_H
 
 // Parent
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
-class SelfManagedDynamicLineEditor : public DynamicLineEditor
+class SelfManagedDynamicLineEditor : public ColoredLineEditor
 {
 	Q_OBJECT
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,19 +19,19 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DYNAMICLINEEDITOR_H
-#define DYNAMICLINEEDITOR_H
+#ifndef COLOREDLINEEDITOR_H
+#define COLOREDLINEEDITOR_H
 
 // Parent
 #include <QLineEdit>
 
 
 /**
- * @brief The DynamicLineEditor class provides a line edit
+ * @brief The ColoredLineEditor class provides a line edit
  * which is highlighted when edition starts and can be
  * marked as erroneous.
  */
-class DynamicLineEditor : public QLineEdit
+class ColoredLineEditor : public QLineEdit
 {
 	Q_OBJECT
 
@@ -44,8 +44,8 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit DynamicLineEditor(const QString& content, QWidget* parent = nullptr) : QLineEdit(content, parent) {}
-	explicit DynamicLineEditor(QWidget* parent = nullptr) : QLineEdit(parent) {}
+	explicit ColoredLineEditor(const QString& content, QWidget* parent = nullptr) : QLineEdit(content, parent) {}
+	explicit ColoredLineEditor(QWidget* parent = nullptr) : QLineEdit(parent) {}
 
 	/////
 	// Object functions
@@ -64,4 +64,4 @@ protected:
 
 };
 
-#endif // DYNAMICLINEEDITOR_H
+#endif // COLOREDLINEEDITOR_H

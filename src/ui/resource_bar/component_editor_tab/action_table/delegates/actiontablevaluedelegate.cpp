@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 #include "machine.h"
 #include "machineactuatorcomponent.h"
 #include "actiononvariable.h"
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
 ActionTableValueDelegate::ActionTableValueDelegate(componentId_t actuatorId, QWidget* parent) :
@@ -53,7 +53,7 @@ QWidget* ActionTableValueDelegate::createEditor(QWidget* parent, const QStyleOpt
 
 	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
 
-	auto editor = new DynamicLineEditor(parent);
+	auto editor = new ColoredLineEditor(parent);
 	editor->setValidator(new QRegularExpressionValidator(re));
 
 	return editor;

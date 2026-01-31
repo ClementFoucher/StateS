@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,7 @@
 
 
 SelfManagedDynamicLineEditor::SelfManagedDynamicLineEditor(const QString& content, QWidget* parent) :
-	DynamicLineEditor(content, parent)
+	ColoredLineEditor(content, parent)
 {
 	// The widget will automatically reset
 	// its visual style and yield focus on user validation.
@@ -64,7 +64,7 @@ void SelfManagedDynamicLineEditor::keyPressEvent(QKeyEvent* event)
 	}
 	else
 	{
-		DynamicLineEditor::keyPressEvent(event);
+		ColoredLineEditor::keyPressEvent(event);
 	}
 }
 
@@ -76,6 +76,6 @@ void SelfManagedDynamicLineEditor::keyReleaseEvent(QKeyEvent* event)
 	}
 	else
 	{
-		DynamicLineEditor::keyReleaseEvent(event);
+		ColoredLineEditor::keyReleaseEvent(event);
 	}
 }

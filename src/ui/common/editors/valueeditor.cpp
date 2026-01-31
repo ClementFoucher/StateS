@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 
 // StateS classes
 #include "logicvalue.h"
-#include "dynamiclineeditor.h"
+#include "coloredlineeditor.h"
 
 
 ValueEditor::ValueEditor(QWidget* parent) :
@@ -39,8 +39,8 @@ ValueEditor::ValueEditor(QWidget* parent) :
 	sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 	this->setSizePolicy(sizePolicy);
 
-	this->lineEdit = new DynamicLineEditor();
-	connect(this->lineEdit, &DynamicLineEditor::editingFinished, this, &ValueEditor::valueChangedEvent);
+	this->lineEdit = new ColoredLineEditor();
+	connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::valueChangedEvent);
 
 	auto editorLayout = new QHBoxLayout(this);
 	editorLayout->setContentsMargins(0, 0, 0, 0);
