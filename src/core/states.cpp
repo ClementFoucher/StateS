@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -58,6 +58,27 @@ QString StateS::getCopyrightYears()
 	return STATES_DATE;
 }
 
+void StateS::storeSetting(const QString& setting, const QVariant& value)
+{
+	QSettings statesSettings("DoubleUnderscore", "StateS");
+	statesSettings.setValue(setting, value);
+}
+
+bool StateS::hasSetting(const QString& setting)
+{
+	QSettings statesSettings("DoubleUnderscore", "StateS");
+	return statesSettings.value(setting).isValid();
+}
+
+QVariant StateS::retreiveSetting(const QString& setting)
+{
+	if (StateS::hasSetting(setting) == false) return QVariant();
+
+
+	QSettings statesSettings("DoubleUnderscore", "StateS");
+	return statesSettings.value(setting);
+}
+
 /////
 // Constructors/destructors
 
@@ -76,21 +97,12 @@ StateS::StateS(QApplication* app, const QString& initialFilePath)
 	this->languageSelectionWindow = new LangSelectionDialog(app);
 	connect(this->languageSelectionWindow, &LangSelectionDialog::languageSelected, this, &StateS::languageSelected);
 
-	QSettings windowGeometrySetting("DoubleUnderscore", "StateS");
-	QByteArray windowGeometry = windowGeometrySetting.value("LanguageWindowGeometry", QByteArray()).toByteArray();
-	if (windowGeometry.isEmpty() == false)
-	{
-		this->languageSelectionWindow->restoreGeometry(windowGeometry);
-	}
-	else
-	{
-		// Set default position: screen center (does not work on Wayland)
-		QSize screenSize = QGuiApplication::primaryScreen()->size();
-		QSize windowSize = this->languageSelectionWindow->sizeHint();
-		this->languageSelectionWindow->move((screenSize.width()  - windowSize.width() )/2,
-		                                    (screenSize.height() - windowSize.height())/2
-		                                   );
-	}
+	// Set default position: screen center
+	QSize screenSize = QGuiApplication::primaryScreen()->size();
+	QSize windowSize = this->languageSelectionWindow->sizeHint();
+	this->languageSelectionWindow->move((screenSize.width()  - windowSize.width() )/2,
+	                                    (screenSize.height() - windowSize.height())/2
+	                                    );
 
 	this->languageSelectionWindow->show();
 }
@@ -102,9 +114,7 @@ StateS::StateS(QApplication* app, const QString& initialFilePath)
 StateS::~StateS()
 {
 	// Save main window geometry
-	QSettings windowGeometrySetting("DoubleUnderscore", "StateS");
-	QByteArray windowGeometry = this->statesUi->saveGeometry();
-	windowGeometrySetting.setValue("MainWindowGeometry", windowGeometry);
+	StateS::storeSetting("MainWindowGeometry", this->statesUi->saveGeometry());
 
 	// Delete permanent members
 	delete this->statesUi;
@@ -125,11 +135,6 @@ void StateS::languageSelected(QTranslator* translator)
 {
 	// Store pointer to translator, it will only be deleted on UI close
 	this->translator = translator;
-
-	// Store language window geometry
-	QSettings windowGeometrySetting("DoubleUnderscore", "StateS");
-	QByteArray languageWindowGeometry = this->languageSelectionWindow->saveGeometry();
-	windowGeometrySetting.setValue("LanguageWindowGeometry", languageWindowGeometry);
 
 	// Language window self destroys on close, clear pointer
 	this->languageSelectionWindow = nullptr;
@@ -344,11 +349,9 @@ void StateS::launchUi()
 	connect(this->statesUi, &StatesUi::saveMachineInCurrentFileRequestEvent, this, &StateS::saveCurrentMachineInCurrentFile);
 
 	// Set UI geometry
-	QSettings windowGeometrySetting("DoubleUnderscore", "StateS");
-	QByteArray mainWindowGeometry = windowGeometrySetting.value("MainWindowGeometry", QByteArray()).toByteArray();
-	if (mainWindowGeometry.isEmpty() == false)
+	if (StateS::hasSetting("MainWindowGeometry") == true)
 	{
-		this->statesUi->restoreGeometry(mainWindowGeometry);
+		this->statesUi->restoreGeometry(StateS::retreiveSetting("MainWindowGeometry").toByteArray());
 	}
 	else
 	{

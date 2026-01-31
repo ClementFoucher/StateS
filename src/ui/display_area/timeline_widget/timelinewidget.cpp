@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,6 +23,7 @@
 #include "timelinewidget.h"
 
 // Qt classes
+#include <QSettings>
 #include <QAction>
 #include <QFileDialog>
 #include <QLabel>
@@ -34,6 +35,7 @@
 #include <QScrollArea>
 
 // StateS classes
+#include "states.h"
 #include "machinemanager.h"
 #include "machine.h"
 #include "variabletimeline.h"
@@ -140,10 +142,22 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	}
 }
 
+TimelineWidget::~TimelineWidget()
+{
+	this->saveWindowGeometry();
+}
+
 void TimelineWidget::closeEvent(QCloseEvent* event)
 {
 	event->ignore();
 	this->bindMe();
+}
+
+void TimelineWidget::showEvent(QShowEvent* event)
+{
+	StatesMainWindow::showEvent(event);
+
+	this->restoreWindowGeometry();
 }
 
 void TimelineWidget::mousePressEvent(QMouseEvent* event)
@@ -204,7 +218,7 @@ void TimelineWidget::setMeFree()
 {
 	disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 
-	emit detachTimelineEvent(true);
+	emit this->detachTimelineEvent(true);
 
 	this->actionDetach->setText(tr("Attach to main window"));
 
@@ -218,7 +232,9 @@ void TimelineWidget::bindMe()
 {
 	disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
 
-	emit detachTimelineEvent(false);
+	this->saveWindowGeometry();
+
+	emit this->detachTimelineEvent(false);
 
 	this->actionDetach->setText(tr("Detach as independant window"));
 
@@ -226,4 +242,23 @@ void TimelineWidget::bindMe()
 	this->actionDetach->setIcon(detachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
+}
+
+void TimelineWidget::saveWindowGeometry()
+{
+	if (this->isWindow() == false) return;
+
+
+	StateS::storeSetting("TimelineWindowGeometry", this->saveGeometry());
+}
+
+void TimelineWidget::restoreWindowGeometry()
+{
+	if (this->isWindow() == false) return;
+
+
+	if (StateS::hasSetting("TimelineWindowGeometry") == true)
+	{
+		this->restoreGeometry(StateS::retreiveSetting("TimelineWindowGeometry").toByteArray());
+	}
 }

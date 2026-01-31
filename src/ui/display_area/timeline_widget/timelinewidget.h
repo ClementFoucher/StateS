@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,6 +39,7 @@ class TimelineWidget : public StatesMainWindow
 	// Constructors/destructors
 public:
 	explicit TimelineWidget(QWidget* parent = nullptr);
+	virtual ~TimelineWidget();
 
 	/////
 	// Object functions
@@ -47,6 +48,7 @@ signals:
 
 protected:
 	virtual void closeEvent     (QCloseEvent*) override;
+	virtual void showEvent      (QShowEvent*)  override;
 	virtual void mousePressEvent(QMouseEvent*) override;
 	virtual void mouseMoveEvent (QMouseEvent*) override;
 	virtual void paintEvent     (QPaintEvent*) override;
@@ -55,6 +57,10 @@ private slots:
 	void exportToPDF();
 	void setMeFree();
 	void bindMe();
+
+private:
+	void saveWindowGeometry();
+	void restoreWindowGeometry();
 
 	/////
 	// Object variables

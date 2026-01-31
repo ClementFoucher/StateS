@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,6 +23,7 @@
 #include "statesui.h"
 
 // Qt classes
+#include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSplitter>
@@ -436,7 +437,22 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 		this->timeline = new TimelineWidget(this);
 		connect(this->timeline, &TimelineWidget::detachTimelineEvent, this, &StatesUi::setTimelineDetachedState);
 
-		this->displayArea->addWidget(this->timeline, tr("Timeline"));
+		if (StateS::hasSetting("TimelineWindowDetachedState") == true)
+		{
+			if (StateS::retreiveSetting("TimelineWindowDetachedState").toBool() == false)
+			{
+				this->displayArea->addWidget(this->timeline, tr("Timeline"));
+			}
+			else
+			{
+				this->timeline->show();
+			}
+		}
+		else
+		{
+			// Default to attached state
+			this->displayArea->addWidget(this->timeline, tr("Timeline"));
+		}
 
 		isUndoEnabled = this->toolbar->getUndoActionEnabled();
 		isRedoEnabled = this->toolbar->getRedoActionEnabled();
@@ -479,6 +495,8 @@ void StatesUi::setTimelineDetachedState(bool detach)
 	{
 		this->displayArea->addWidget(this->timeline, tr("Timeline"));
 	}
+
+	StateS::storeSetting("TimelineWindowDetachedState", detach);
 }
 
 void StatesUi::undoActionAvailabilityChangeEventHandler(bool undoAvailable)

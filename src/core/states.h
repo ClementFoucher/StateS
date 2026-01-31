@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -56,6 +56,10 @@ class StateS : public QObject
 public:
 	static QString getVersion();
 	static QString getCopyrightYears();
+
+	static void     storeSetting   (const QString& setting, const QVariant& value);
+	static bool     hasSetting     (const QString& setting);
+	static QVariant retreiveSetting(const QString& setting);
 
 	/////
 	// Constructors/destructors
