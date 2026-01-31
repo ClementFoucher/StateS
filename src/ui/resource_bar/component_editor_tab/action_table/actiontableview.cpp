@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -51,7 +51,7 @@ ActionTableView::ActionTableView(componentId_t actuatorId, QWidget* parent) :
 	// Build delegates
 	auto typeColDelegate = new ActionTableTypeDelegate(this);
 	this->setItemDelegateForColumn(0, typeColDelegate);
-	auto valueColDelegate = new ActionTableValueDelegate(actuatorId, this);
+	auto valueColDelegate = new ActionTableValueDelegate(this);
 	this->setItemDelegateForColumn(2, valueColDelegate);
 }
 

@@ -26,35 +26,47 @@
 #include <QRegularExpressionValidator>
 
 // StateS classes
-#include "machinemanager.h"
-#include "machine.h"
-#include "machineactuatorcomponent.h"
-#include "actiononvariable.h"
-#include "coloredlineeditor.h"
+#include "logicvalue.h"
+#include "valueeditor.h"
 
 
-ActionTableValueDelegate::ActionTableValueDelegate(componentId_t actuatorId, QWidget* parent) :
-	QStyledItemDelegate(parent)
+QWidget* ActionTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	this->actuatorId = actuatorId;
+	return new ValueEditor(parent);
 }
 
-QWidget* ActionTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const
+void ActionTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return nullptr;
-
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return nullptr;
-
-	auto action = actuator->getAction(index.row());
-	if (action == nullptr) return nullptr;
+	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
+	if (valueEditor == nullptr) return;
 
 
-	QRegularExpression re("[01]{0," + QString::number(action->getActionSize()) + "}");
+	auto valueAsString = index.data(Qt::EditRole).toString();
 
-	auto editor = new ColoredLineEditor(parent);
-	editor->setValidator(new QRegularExpressionValidator(re));
+	auto initialValue = LogicValue::fromString(valueAsString);
 
-	return editor;
+	if (initialValue.isNull()) return;
+
+
+	valueEditor->setBitVectorValue(initialValue, initialValue.getSize());
+
+	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &ActionTableValueDelegate::valueChangedEventHandler);
+}
+
+void ActionTableValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+{
+	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
+	if (valueEditor == nullptr) return;
+
+
+	auto newValue = valueEditor->getBitVectorValue();
+	model->setData(index, newValue.toString(), Qt::EditRole);
+}
+
+void ActionTableValueDelegate::valueChangedEventHandler(ValueEditor* editor)
+{
+	// This is required as ValueEditor is not a QLineEdit:
+	// we have to manually handle editor finalization
+	emit this->commitData(editor);
+	emit this->closeEditor(editor);
 }

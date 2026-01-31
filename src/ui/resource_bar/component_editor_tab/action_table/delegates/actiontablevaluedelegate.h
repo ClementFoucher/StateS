@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QStyledItemDelegate>
 
 // StateS classes
-#include "statestypes.h"
+class ValueEditor;
 
 
 /**
@@ -40,17 +40,17 @@ class ActionTableValueDelegate : public QStyledItemDelegate
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableValueDelegate(componentId_t actuatorId, QWidget* parent = nullptr);
+	explicit ActionTableValueDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
 
 	/////
 	// Object functions
 public:
-	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
+	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
+	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
-	/////
-	// Object variables
-private:
-	componentId_t actuatorId = nullId;
+private slots:
+	void valueChangedEventHandler(ValueEditor* editor);
 
 };
 
