@@ -614,31 +614,30 @@ void StatesUi::updateTitle()
 
 bool StatesUi::displayUnsavedConfirmation(const QString& cause)
 {
-	bool userConfirmed = false;
-
 	auto machine = machineManager->getMachine();
-	if (machine != nullptr)
+	if (machine == nullptr)
 	{
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-		if (machineStatus->getUnsavedFlag() == true)
-		{
-			QMessageBox::StandardButton reply;
-			reply = QMessageBox::question(this, tr("User confirmation needed"), cause + "<br />" + tr("Unsaved changes will be lost."), QMessageBox::Ok | QMessageBox::Cancel);
-
-			if (reply == QMessageBox::StandardButton::Ok)
-			{
-				userConfirmed = true;
-			}
-		}
-		else // Saved machine: do not ask, implicit confirmation. // TODO: check if not reversed
-		{
-			userConfirmed = true;
-		}
-	}
-	else // No machine: do not ask, implicit confirmation. // TODO: check if not reversed
-	{
-		userConfirmed = true;
+		// No machine: do not ask, implicit confirmation.
+		return true;
 	}
 
-	return userConfirmed;
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	if (machineStatus->getUnsavedFlag() == false)
+	{
+		// Saved machine: do not ask, implicit confirmation.
+		return true;
+	}
+
+	auto reply = QMessageBox::question(this,
+	                                   tr("User confirmation needed"),
+	                                   cause + "<br>" + tr("Unsaved changes will be lost."),
+	                                   QMessageBox::Ok | QMessageBox::Cancel
+	                                  );
+
+	if (reply == QMessageBox::Ok)
+	{
+		return true;
+	}
+
+	return false;
 }
