@@ -33,17 +33,17 @@ MachineStatus::MachineStatus()
 {
 	if (StateS::hasSetting("SaveLoadPath") == true)
 	{
-		this->saveLoadFolderPath = QFileInfo(StateS::retreiveSetting("SaveLoadPath").toString());
+		this->saveLoadFolderPath = QFileInfo(StateS::retrieveSetting("SaveLoadPath").toString());
 	}
 
 	if (StateS::hasSetting("ImageExportPath") == true)
 	{
-		this->imageExportFolderPath = QFileInfo(StateS::retreiveSetting("ImageExportPath").toString());
+		this->imageExportFolderPath = QFileInfo(StateS::retrieveSetting("ImageExportPath").toString());
 	}
 
 	if (StateS::hasSetting("VhdlExportPath") == true)
 	{
-		this->vhdlExportFolderPath = QFileInfo(StateS::retreiveSetting("VhdlExportPath").toString());
+		this->vhdlExportFolderPath = QFileInfo(StateS::retrieveSetting("VhdlExportPath").toString());
 	}
 }
 

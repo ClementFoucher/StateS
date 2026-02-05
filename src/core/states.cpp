@@ -70,7 +70,7 @@ bool StateS::hasSetting(const QString& setting)
 	return statesSettings.value(setting).isValid();
 }
 
-QVariant StateS::retreiveSetting(const QString& setting)
+QVariant StateS::retrieveSetting(const QString& setting)
 {
 	if (StateS::hasSetting(setting) == false) return QVariant();
 
@@ -351,7 +351,7 @@ void StateS::launchUi()
 	// Set UI geometry
 	if (StateS::hasSetting("MainWindowGeometry") == true)
 	{
-		this->statesUi->restoreGeometry(StateS::retreiveSetting("MainWindowGeometry").toByteArray());
+		this->statesUi->restoreGeometry(StateS::retrieveSetting("MainWindowGeometry").toByteArray());
 	}
 	else
 	{

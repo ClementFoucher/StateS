@@ -259,6 +259,6 @@ void TimelineWidget::restoreWindowGeometry()
 
 	if (StateS::hasSetting("TimelineWindowGeometry") == true)
 	{
-		this->restoreGeometry(StateS::retreiveSetting("TimelineWindowGeometry").toByteArray());
+		this->restoreGeometry(StateS::retrieveSetting("TimelineWindowGeometry").toByteArray());
 	}
 }

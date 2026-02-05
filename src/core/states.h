@@ -59,7 +59,7 @@ public:
 
 	static void     storeSetting   (const QString& setting, const QVariant& value);
 	static bool     hasSetting     (const QString& setting);
-	static QVariant retreiveSetting(const QString& setting);
+	static QVariant retrieveSetting(const QString& setting);
 
 	/////
 	// Constructors/destructors

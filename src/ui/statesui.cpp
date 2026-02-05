@@ -435,7 +435,7 @@ void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
 
 		if (StateS::hasSetting("TimelineWindowDetachedState") == true)
 		{
-			if (StateS::retreiveSetting("TimelineWindowDetachedState").toBool() == false)
+			if (StateS::retrieveSetting("TimelineWindowDetachedState").toBool() == false)
 			{
 				this->displayArea->addWidget(this->timeline, tr("Timeline"));
 			}
