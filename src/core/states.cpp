@@ -23,7 +23,7 @@
 #include "states.h"
 
 // Qt classes
-#include <QGuiApplication>
+#include <QApplication>
 #include <QScreen>
 #include <QFileInfo>
 #include <QDir>
@@ -86,15 +86,21 @@ QVariant StateS::retrieveSetting(const QString& setting)
  * @brief StateS::StateS
  * Constructor for the main StateS object.
  * Builds the machine manaager and display language selection window.
- * @param initialFilePath
- * Parameter indicating that we have to load an initial machine from file.
  */
-StateS::StateS(QApplication* app, const QString& initialFilePath)
+StateS::StateS()
 {
-	this->initialFilePath = initialFilePath;
+	auto args = QApplication::arguments();
+	if (args.count() > 1)
+	{
+		QFileInfo file(args.at(1));
+		if (file.isFile() == true)
+		{
+			this->initialFilePath = file.absoluteFilePath();
+		}
+	}
 
 	// Build and show language selection dialog
-	this->languageSelectionWindow = new LangSelectionDialog(app);
+	this->languageSelectionWindow = new LangSelectionDialog();
 	connect(this->languageSelectionWindow, &LangSelectionDialog::languageSelected, this, &StateS::languageSelected);
 
 	// Set default position: screen center

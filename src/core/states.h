@@ -64,7 +64,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit StateS(QApplication* app, const QString& initialFilePath = QString());
+	explicit StateS();
 	~StateS();
 
 	/////

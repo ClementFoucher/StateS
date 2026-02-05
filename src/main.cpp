@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2022 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,14 +59,7 @@ int main(int argc, char* argv[])
 	unique_ptr<StateS> states;
 	try
 	{
-		if (argc >= 2)
-		{
-			states = make_unique<StateS>(app, argv[1]);
-		}
-		else
-		{
-			states = make_unique<StateS>(app);
-		}
+		states = make_unique<StateS>();
 
 		// Start event loop
 		res = app->exec();

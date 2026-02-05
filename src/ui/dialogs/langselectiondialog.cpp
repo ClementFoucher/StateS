@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,12 +32,10 @@
 #include "reactivebutton.h"
 
 
-LangSelectionDialog::LangSelectionDialog(QApplication* application, QWidget* parent) :
+LangSelectionDialog::LangSelectionDialog(QWidget* parent) :
 	StatesMainWindow(parent)
 {
-	// Buid members
-	this->application = application;
-
+	// Build translator and load translation
 	this->frenchTranslator = new QTranslator();
 	static_cast<void>(this->frenchTranslator->load(QLocale::French, ":/translations/StateS_fr.qm")); // Discarding the result of this nodiscard function as it is an embedded resource thus we are absolutely sure it can be loaded
 
@@ -85,14 +83,14 @@ void LangSelectionDialog::closeEvent(QCloseEvent* event)
 
 void LangSelectionDialog::setEnglish()
 {
-	this->application->removeTranslator(this->frenchTranslator);
+	QApplication::removeTranslator(this->frenchTranslator);
 	this->activeTranslator = nullptr;
 	this->retranslateUi();
 }
 
 void LangSelectionDialog::setFrench()
 {
-	this->application->installTranslator(this->frenchTranslator);
+	QApplication::installTranslator(this->frenchTranslator);
 	this->activeTranslator = this->frenchTranslator;
 	this->retranslateUi();
 }

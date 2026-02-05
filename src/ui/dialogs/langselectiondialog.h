@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Qt classes
 class QLabel;
-class QApplication;
 class QTranslator;
 
 
@@ -38,7 +37,7 @@ class LangSelectionDialog : public StatesMainWindow
 	/////
 	// Constructors/destructors
 public:
-	explicit LangSelectionDialog(QApplication* application, QWidget* parent = nullptr);
+	explicit LangSelectionDialog(QWidget* parent = nullptr);
 	~LangSelectionDialog();
 
 	/////
@@ -61,7 +60,6 @@ private:
 private:
 	QTranslator*  frenchTranslator = nullptr;
 	QTranslator*  activeTranslator = nullptr;
-	QApplication* application      = nullptr;
 	QLabel*       mainLabel        = nullptr;
 
 };
