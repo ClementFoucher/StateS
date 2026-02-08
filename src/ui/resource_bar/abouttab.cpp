@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,10 +23,14 @@
 #include "abouttab.h"
 
 // Qt classes
+#include <QGuiApplication>
+#include <QStyleFactory>
+#include <QStyleHints>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QGroupBox>
+#include <QScrollArea>
 
 // StateS classes
 #include "states.h"
@@ -60,7 +64,7 @@ AboutTab::AboutTab(QWidget* parent) :
 	headerLayout->addWidget(versionLabel);
 
 	//
-	// Copyright and technical info
+	// Copyright info
 
 	QLabel* copyrightLabel = new QLabel("© " + StateS::getCopyrightYears() + " " + "Clément Foucher");
 	copyrightLabel->setAlignment(Qt::AlignCenter);
@@ -86,8 +90,13 @@ AboutTab::AboutTab(QWidget* parent) :
 	artLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	artLicenseLabel->setOpenExternalLinks(true);
 
-	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software makes use of")
+	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software makes use of:")
+	                                            + "<br>"
+	                                            + "<a href=\"https://code.qt.io/cgit/qt/qt5.git\">" + "Qt 6" + "</a>" + " "
+	                                            + tr("which is licensed under the")
 	                                            + " "
+	                                            + "<a href=\"https://www.gnu.org/licenses/lgpl-3.0.html\">" + tr("LGPLv3 license") + "</a>"
+	                                            + "<br>"
 	                                            + "<a href=\"https://github.com/cubicdaiya/dtl\">" + tr("the Diff Template Library") + "</a>"
 	                                            + " "
 	                                            + tr("which is licensed under the")
@@ -100,27 +109,13 @@ AboutTab::AboutTab(QWidget* parent) :
 	thirdPartyLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	thirdPartyLicenseLabel->setOpenExternalLinks(true);
 
-	QString versionText;
-	if (std::strcmp(QT_VERSION_STR, qVersion()) == 0)
-	{
-		versionText = tr("This application was compiled with and runs on") + " Qt " + QT_VERSION_STR;
-	}
-	else
-	{
-		versionText = tr("This application was compiled using") + " Qt " + QT_VERSION_STR + "\n" + tr("Currently running on") + " Qt " + qVersion();
-	}
-	QLabel* qtVersionLabel = new QLabel(versionText);
-	qtVersionLabel->setAlignment(Qt::AlignCenter);
-	qtVersionLabel->setWordWrap(true);
-
 	// Package in a group
-	auto techInfoGroup = new QGroupBox(tr("Copyright and technical information"));
-	auto techInfoLayout = new QVBoxLayout(techInfoGroup);
-	techInfoLayout->addWidget(copyrightLabel);
-	techInfoLayout->addWidget(licenseLabel);
-	techInfoLayout->addWidget(artLicenseLabel);
-	techInfoLayout->addWidget(thirdPartyLicenseLabel);
-	techInfoLayout->addWidget(qtVersionLabel);
+	auto copyrightGroup = new QGroupBox(tr("Copyright information"));
+	auto copyrightLayout = new QVBoxLayout(copyrightGroup);
+	copyrightLayout->addWidget(copyrightLabel);
+	copyrightLayout->addWidget(licenseLabel);
+	copyrightLayout->addWidget(artLicenseLabel);
+	copyrightLayout->addWidget(thirdPartyLicenseLabel);
 
 	//
 	// Contact info
@@ -186,15 +181,28 @@ AboutTab::AboutTab(QWidget* parent) :
 	//
 	// Build complete rendering
 
-	auto* mainLayout = new QVBoxLayout();
+	// Package text info in a scroll area
+	auto textWidget = new QWidget();
+	this->textLayout = new QVBoxLayout(textWidget);
 
-	mainLayout->addStretch(5);
-	mainLayout->addLayout(headerLayout);
+	this->textLayout->addStretch(1);
+	this->textLayout->addWidget(copyrightGroup);
+	this->textLayout->addStretch(1);
+	this->textLayout->addWidget(contactGroup);
+	this->textLayout->addStretch(1);
+
+	auto scrollArea = new QScrollArea();
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+	scrollArea->setWidget(textWidget);
+
+	// Build main layout
+	auto* mainLayout = new QVBoxLayout();
 	mainLayout->addStretch(1);
-	mainLayout->addWidget(techInfoGroup);
+	mainLayout->addLayout(headerLayout, 0);
 	mainLayout->addStretch(1);
-	mainLayout->addWidget(contactGroup);
-	mainLayout->addStretch(5);
+	mainLayout->addWidget(scrollArea, 10);
+	mainLayout->addStretch(1);
 
 	auto* rootLayout = new QHBoxLayout(this);
 	rootLayout->addStretch(1);
@@ -212,11 +220,87 @@ void AboutTab::iconClicked()
 		QTransform rotation;
 		rotation.rotate(90);
 		newIcon = QIcon(pixmap.transformed(rotation));
+		if (this->techInfoGroup != nullptr)
+		{
+			this->techInfoGroup->setVisible(true);
+		}
+		else
+		{
+			this->buildTechInfo();
+		}
 	}
 	else
 	{
 		newIcon = QIcon(pixmap);
+		this->techInfoGroup->setVisible(false);
 	}
 
 	this->icon->setIcon(newIcon);
+}
+
+void AboutTab::buildTechInfo()
+{
+	if (this->techInfoGroup != nullptr) return;
+
+
+	QString versionText;
+	if (std::strcmp(QT_VERSION_STR, qVersion()) == 0)
+	{
+		versionText = tr("This application was compiled with and runs on") + " Qt " + QT_VERSION_STR;
+	}
+	else
+	{
+		versionText = tr("This application was compiled using") + " Qt " + QT_VERSION_STR + "\n" + tr("Currently running on") + " Qt " + qVersion();
+	}
+
+	QLabel* qtVersionLabel = new QLabel(versionText);
+	qtVersionLabel->setAlignment(Qt::AlignCenter);
+	qtVersionLabel->setWordWrap(true);
+
+	QString platformText = tr("Current platform:") + " " + QGuiApplication::platformName();
+	auto platformInfo = new QLabel(platformText);
+	platformInfo->setAlignment(Qt::AlignCenter);
+	platformInfo->setWordWrap(true);
+
+	QString colorMode = tr("OS color scheme:") + " ";
+
+	auto styleHint = QGuiApplication::styleHints();
+	auto colorScheme = styleHint->colorScheme();
+	if (colorScheme == Qt::ColorScheme::Dark)
+	{
+		colorMode += tr("dark");
+	}
+	else
+	{
+		colorMode += tr("light");
+	}
+	auto colorInfo = new QLabel(colorMode);
+	colorInfo->setAlignment(Qt::AlignCenter);
+	colorInfo->setWordWrap(true);
+
+	QString stylesText = tr("Available Qt themes:") + " ";
+	const auto styles = QStyleFactory::keys();
+	for (auto& key : styles)
+	{
+		stylesText += key.toStdString();
+		if (key != styles.last())
+		{
+			stylesText += ", ";
+		}
+	}
+	auto stylesInfo = new QLabel(stylesText);
+	stylesInfo->setAlignment(Qt::AlignCenter);
+	stylesInfo->setWordWrap(true);
+
+	// Package in a group
+	this->techInfoGroup = new QGroupBox(tr("Technical information"));
+	auto techInfoLayout = new QVBoxLayout(this->techInfoGroup);
+	techInfoLayout->addWidget(qtVersionLabel);
+	techInfoLayout->addWidget(platformInfo);
+	techInfoLayout->addWidget(colorInfo);
+	techInfoLayout->addWidget(stylesInfo);
+
+	// Add to text layout
+	this->textLayout->addWidget(this->techInfoGroup);
+	this->textLayout->addStretch(1);
 }

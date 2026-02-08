@@ -4,112 +4,148 @@
 <context>
     <name>AboutTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="170"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="165"/>
         <source>Suggestion? Feature request?</source>
         <translation>Une suggestion ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="52"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="56"/>
         <source>Version</source>
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="89"/>
-        <source>This software makes use of</source>
-        <translation>Ce logiciel utilise</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="91"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="100"/>
         <source>the Diff Template Library</source>
         <translation>la bibliothèque Diff Template Library</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="93"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="96"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
         <source>which is licensed under the</source>
         <translation>distribuée selon les termes de la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="95"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="93"/>
+        <source>This software makes use of:</source>
+        <translation>Ce logiciel utilise :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="98"/>
+        <source>LGPLv3 license</source>
+        <translation>licence LGPLv3</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="104"/>
         <source>BSD-3-Clause license</source>
         <translation>licence BSD-3-Clause</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="157"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="113"/>
+        <source>Copyright information</source>
+        <translation>Information de copyright</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="152"/>
         <source>Found a bug?</source>
         <translation>Vous avez trouvé un bug ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="153"/>
         <source>(Please consult the</source>
         <translation>(Merci de consulter la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="160"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="155"/>
         <source>known bugs list</source>
         <translation>liste des bugs connus</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="69"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="260"/>
+        <source>Current platform:</source>
+        <translation>Plateforme actuelle :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="265"/>
+        <source>OS color scheme:</source>
+        <translation>Mode de couleur du système d&apos;exploitation :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="271"/>
+        <source>dark</source>
+        <translation>sombre</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="275"/>
+        <source>light</source>
+        <translation>clair</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="281"/>
+        <source>Available Qt themes:</source>
+        <translation>Thèmes Qt disponibles :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="296"/>
+        <source>Technical information</source>
+        <translation>Informations techniques</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="73"/>
         <source>Distributed under the terms of the</source>
         <translation>Distribué selon les termes de la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="71"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="75"/>
         <source>version</source>
         <translation>version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="106"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="249"/>
         <source>This application was compiled with and runs on</source>
         <translation>Cette application a été compilée avec et utilise actuellement</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="138"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="133"/>
         <source>StateS sources:</source>
         <translation>Sources de StateS :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="128"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="123"/>
         <source>Contact:</source>
         <translation>Contact :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="110"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="253"/>
         <source>This application was compiled using</source>
         <translation>Cette application a été compilée avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="117"/>
-        <source>Copyright and technical information</source>
-        <translation>Informations techniques et de copyright</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="110"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="253"/>
         <source>Currently running on</source>
         <translation>Version actuellement utilisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="162"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="157"/>
         <source>before filling an issue)</source>
         <translation>avant de soumettre un ticket)</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="178"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="173"/>
         <source>Contact and links</source>
         <translation>Contact et liens</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="71"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="75"/>
         <source>GNU General Public Licence</source>
         <translation>Licence publique générale GNU</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="79"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="83"/>
         <source>See</source>
         <translation>Voir les</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="81"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="85"/>
         <source>credits for art used in StateS</source>
         <translation>crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
     </message>
@@ -1586,7 +1622,7 @@
 <context>
     <name>LangSelectionDialog</name>
     <message>
-        <location filename="../src/ui/dialogs/langselectiondialog.cpp" line="102"/>
+        <location filename="../src/ui/dialogs/langselectiondialog.cpp" line="100"/>
         <source>Choose your language</source>
         <translation>Sélectionnez votre langue</translation>
     </message>
@@ -2492,99 +2528,99 @@
 <context>
     <name>StateS</name>
     <message>
-        <location filename="../src/core/states.cpp" line="185"/>
-        <location filename="../src/core/states.cpp" line="192"/>
-        <location filename="../src/core/states.cpp" line="210"/>
+        <location filename="../src/core/states.cpp" line="196"/>
+        <location filename="../src/core/states.cpp" line="203"/>
+        <location filename="../src/core/states.cpp" line="221"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="185"/>
+        <location filename="../src/core/states.cpp" line="196"/>
         <source>StateS couldn&apos;t find the selected file.</source>
         <translation>StateS n&apos;a pas trouvé le fichier sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="186"/>
-        <location filename="../src/core/states.cpp" line="194"/>
-        <location filename="../src/core/states.cpp" line="241"/>
+        <location filename="../src/core/states.cpp" line="197"/>
+        <location filename="../src/core/states.cpp" line="205"/>
+        <location filename="../src/core/states.cpp" line="252"/>
         <source>Issues occured reading the file. StateS was unable to load machine.</source>
         <translation>Des erreurs ont été rencontrées lors de la lecture du fichier. StateS n&apos;a pas été en mesure de charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="192"/>
-        <location filename="../src/core/states.cpp" line="210"/>
+        <location filename="../src/core/states.cpp" line="203"/>
+        <location filename="../src/core/states.cpp" line="221"/>
         <source>StateS couldn&apos;t read the selected file.</source>
         <translation>StateS n&apos;a pas pu lire le fichier sélectionné.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="193"/>
+        <location filename="../src/core/states.cpp" line="204"/>
         <source>Please check file permissions and make sure you have enough privileges to read it.</source>
         <translation>Vérifiez les permissions du fichier et assurez-vous que vos droits utilisateur sont suffisants pour le lire.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="200"/>
+        <location filename="../src/core/states.cpp" line="211"/>
         <source>Warning!</source>
         <translation>Attention !</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="200"/>
+        <location filename="../src/core/states.cpp" line="211"/>
         <source>This file seems to be read only. You may not be able to save your changes.</source>
         <translation>Ce fichier semble être en lecture seule. Vous risquez de ne pas pouvoir enregistrer vos modifications.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="201"/>
+        <location filename="../src/core/states.cpp" line="212"/>
         <source>If you encounter an error when saving, try using &quot;save as&quot; instead of &quot;save&quot;.</source>
         <translation>Si vous rencontrez une erreur en enregistrant, essayez d&apos;utiliser &quot;enregistrer sous&quot; plutôt que &quot;enregistrer&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="214"/>
+        <location filename="../src/core/states.cpp" line="225"/>
         <source>While this file seems to be a valid StateS save, StateS was unable to read the file content.</source>
         <translation>Bien que ce fichier semble être une sauvegarde StateS valide, StateS n&apos;a pas été en mesure de lire le contenu du fichier.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="219"/>
+        <location filename="../src/core/states.cpp" line="230"/>
         <source>The file may have been altered or is not a StateS save.</source>
         <translation>Ce fichier peut avoir été altéré ou n&apos;est pas une sauvegarde StateS.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="224"/>
+        <location filename="../src/core/states.cpp" line="235"/>
         <source>This file has been created with a newer version of StateS and is probably incompatible with this version.</source>
         <translation>Ce fichier a été créé avec une version de StateS plus récente et est probablement incompatible avec cette version.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="225"/>
+        <location filename="../src/core/states.cpp" line="236"/>
         <source>Please use a newer version of StateS to open this file.</source>
         <translation>Merci d&apos;utiliser une version de StateS plus récente pour ouvrir ce fichier.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="226"/>
-        <location filename="../src/core/states.cpp" line="232"/>
+        <location filename="../src/core/states.cpp" line="237"/>
+        <location filename="../src/core/states.cpp" line="243"/>
         <source>File version:</source>
         <translation>Version du fichier :</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="226"/>
-        <location filename="../src/core/states.cpp" line="232"/>
+        <location filename="../src/core/states.cpp" line="237"/>
+        <location filename="../src/core/states.cpp" line="243"/>
         <source>StateS version:</source>
         <translation>Version de StateS :</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="231"/>
+        <location filename="../src/core/states.cpp" line="242"/>
         <source>This file has been created with an ancient version of StateS and is probably incompatible with this version.</source>
         <translation>Ce fichier a été créé avec une version de StateS plus ancienne et est problablement incompatible avec cette version.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="238"/>
+        <location filename="../src/core/states.cpp" line="249"/>
         <source>This file does not seems to be a StateS save.</source>
         <translation>Ce fichier ne semble pas être une sauvegarde StateS.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="250"/>
+        <location filename="../src/core/states.cpp" line="261"/>
         <source>Issues occured reading the file. StateS still managed to load machine.</source>
         <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="320"/>
+        <location filename="../src/core/states.cpp" line="331"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>
@@ -2600,73 +2636,74 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="291"/>
+        <location filename="../src/ui/statesui.cpp" line="284"/>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="317"/>
+        <location filename="../src/ui/statesui.cpp" line="311"/>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="608"/>
+        <location filename="../src/ui/statesui.cpp" line="632"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="328"/>
+        <location filename="../src/ui/statesui.cpp" line="325"/>
         <source>Clear current machine?</source>
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="338"/>
+        <location filename="../src/ui/statesui.cpp" line="335"/>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="608"/>
+        <location filename="../src/ui/statesui.cpp" line="633"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="581"/>
+        <location filename="../src/ui/statesui.cpp" line="599"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="512"/>
+        <location filename="../src/ui/statesui.cpp" line="526"/>
         <source>Created with</source>
         <translation>Créé avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="132"/>
+        <location filename="../src/ui/statesui.cpp" line="133"/>
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="249"/>
+        <location filename="../src/ui/statesui.cpp" line="250"/>
         <source>Load file</source>
         <translation>Charger un fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="249"/>
+        <location filename="../src/ui/statesui.cpp" line="250"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="309"/>
+        <location filename="../src/ui/statesui.cpp" line="304"/>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="84"/>
+        <location filename="../src/ui/statesui.cpp" line="85"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="439"/>
-        <location filename="../src/ui/statesui.cpp" line="480"/>
+        <location filename="../src/ui/statesui.cpp" line="440"/>
+        <location filename="../src/ui/statesui.cpp" line="450"/>
+        <location filename="../src/ui/statesui.cpp" line="492"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -2702,53 +2739,53 @@
 <context>
     <name>TimelineWidget</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="55"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="57"/>
         <source>StateS timeline visualizer</source>
         <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="59"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="61"/>
         <source>Tools</source>
         <translation>Outils</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="63"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="65"/>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="67"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="223"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="69"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="239"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="91"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="93"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="101"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="103"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="114"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="116"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="130"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="132"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="176"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="190"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="209"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="223"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>

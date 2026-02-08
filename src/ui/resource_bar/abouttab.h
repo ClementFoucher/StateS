@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,6 +27,8 @@
 
 // Qt classes
 class QPushButton;
+class QVBoxLayout;
+class QGroupBox;
 
 
 class AboutTab : public QWidget
@@ -43,10 +45,15 @@ public:
 private slots:
 	void iconClicked();
 
+private:
+	void buildTechInfo();
+
 	/////
 	// Object variables
 private:
-	QPushButton* icon = nullptr;
+	QPushButton* icon          = nullptr;
+	QVBoxLayout* textLayout    = nullptr;
+	QGroupBox*   techInfoGroup = nullptr;
 
 };
 
