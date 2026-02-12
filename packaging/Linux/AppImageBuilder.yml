@@ -20,6 +20,7 @@ AppDir:
     include: []
   files:
     include:
+    - /usr/lib/x86_64-linux-gnu/gio/modules/libdconfsettings.so
     - /usr/lib/x86_64-linux-gnu/gtk-3.0/modules/libcanberra-gtk-module.so
     - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqjpeg.so
     - /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/libqsvg.so
@@ -32,6 +33,10 @@ AppDir:
     - /usr/lib/x86_64-linux-gnu/qt6/plugins/wayland-shell-integration/libxdg-shell.so
     - /usr/lib/x86_64-linux-gnu/qt6/plugins/wayland-decoration-client/libadwaita.so
     - /usr/lib/x86_64-linux-gnu/qt6/plugins/wayland-decoration-client/libbradient.so
+    - /usr/share/icons/Adwaita/symbolic/ui/window-close-symbolic.svg
+    - /usr/share/icons/Adwaita/symbolic/ui/window-minimize-symbolic.svg
+    - /usr/share/icons/Adwaita/symbolic/ui/window-maximize-symbolic.svg
+    - /usr/share/icons/Adwaita/symbolic/ui/window-restore-symbolic.svg
     exclude:
     - usr/share/man
     - usr/share/doc/*/README.*
