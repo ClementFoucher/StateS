@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2025 Clément Foucher
+ * Copyright © 2021-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -64,9 +64,9 @@ MachineManager::MachineManager() :
 void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
 	// Close simulation mode before changing the machine
-	if (this->currentSimulationMode == SimulationMode_t::simulateMode)
+	if (this->currentInterfaceMode == InterfaceMode_t::simulateMode)
 	{
-		this->setSimulationMode(SimulationMode_t::editMode);
+		this->setInterfaceMode(InterfaceMode_t::editMode);
 	}
 
 	// Update the reference to the machine
@@ -224,23 +224,23 @@ void MachineManager::setUndoRedoMode(bool undoRedoMode)
 }
 
 /////
-// Simulation management
+// Interface mode management
 
-void MachineManager::setSimulationMode(SimulationMode_t newMode)
+void MachineManager::setInterfaceMode(InterfaceMode_t newMode)
 {
-	if (newMode == this->currentSimulationMode) return;
+	if (newMode == this->currentInterfaceMode) return;
 
 
 	switch (newMode)
 	{
-	case SimulationMode_t::editMode:
+	case InterfaceMode_t::editMode:
 		this->machineSimulator.reset();
 		this->graphicMachine->clearSimulation();
 
-		this->currentSimulationMode = SimulationMode_t::editMode;
-		emit this->simulationModeChangedEvent(SimulationMode_t::editMode);
+		this->currentInterfaceMode = InterfaceMode_t::editMode;
+		emit this->interfaceModeChangedEvent(InterfaceMode_t::editMode);
 		break;
-	case SimulationMode_t::simulateMode:
+	case InterfaceMode_t::simulateMode:
 	{
 		// Reset tool when quitting edit mode
 		this->machineBuilder->resetTool();
@@ -256,16 +256,16 @@ void MachineManager::setSimulationMode(SimulationMode_t newMode)
 		auto simulatedMachine = this->machineSimulator->getSimulatedMachine();
 		connect(simulatedMachine.get(), &SimulatedMachine::simulatedComponentUpdatedEvent, this, &MachineManager::simulatedComponentUpdatedEventHandler);
 
-		this->currentSimulationMode = SimulationMode_t::simulateMode;
-		emit this->simulationModeChangedEvent(SimulationMode_t::simulateMode);
+		this->currentInterfaceMode = InterfaceMode_t::simulateMode;
+		emit this->interfaceModeChangedEvent(InterfaceMode_t::simulateMode);
 		break;
 	}
 	}
 }
 
-SimulationMode_t MachineManager::getCurrentSimulationMode() const
+InterfaceMode_t MachineManager::getCurrentInterfaceMode() const
 {
-	return this->currentSimulationMode;
+	return this->currentInterfaceMode;
 }
 
 /////

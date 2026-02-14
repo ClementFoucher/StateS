@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -78,7 +78,7 @@ private slots:
 	void machineReplacedEventHandler();
 
 	void clearSelection();
-	void machineModeChangedEventHandler(SimulationMode_t newMode);
+	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
 
 private:
 	void build();

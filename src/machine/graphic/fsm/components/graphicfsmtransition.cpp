@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -257,7 +257,7 @@ void GraphicFsmTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* even
 		return;
 	}
 
-	if (machineManager->getCurrentSimulationMode() != SimulationMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
 	{
 		event->ignore();
 		return;

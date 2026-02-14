@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 
 GenericScene::GenericScene()
 {
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &GenericScene::simulationModeChangeEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &GenericScene::interfaceModeChangedEventHandler);
 }
 
 QRectF GenericScene::getItemsBoundingRect()
@@ -110,9 +110,9 @@ void GenericScene::recomputeSceneRect()
 	this->setSceneRect(newSceneRect);
 }
 
-void GenericScene::simulationModeChangeEventHandler(SimulationMode_t newMode)
+void GenericScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	emit this->sceneSimulationModeAboutToChangeEvent();
-	this->updateSimulationMode(newMode);
-	emit this->sceneSimulationModeChangedEvent();
+	emit this->requestSaveViewEvent();
+	this->updateInterfaceMode(newMode);
+	emit this->requestRestoreViewEvent();
 }

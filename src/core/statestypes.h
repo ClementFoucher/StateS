@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,7 +41,7 @@ const componentId_t nullId = 0;
 /////
 // Enums
 
-enum class SimulationMode_t              { editMode, simulateMode };
+enum class InterfaceMode_t               { editMode, simulateMode };
 enum class ImageFormat_t                 { pdf, svg, png, jpg };
 enum class LeftRight_t                   { left, right };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };

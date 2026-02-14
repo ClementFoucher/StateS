@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,9 +40,9 @@
 ResourceBar::ResourceBar(QWidget* parent) :
 	QTabWidget(parent)
 {
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,        this, &ResourceBar::clearSelection);
-	connect(machineManager.get(), &MachineManager::machineReplacedEvent,       this, &ResourceBar::machineReplacedEventHandler);
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &ResourceBar::machineModeChangedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,       this, &ResourceBar::clearSelection);
+	connect(machineManager.get(), &MachineManager::machineReplacedEvent,      this, &ResourceBar::machineReplacedEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &ResourceBar::interfaceModeChangedEventHandler);
 
 	this->build();
 }
@@ -55,7 +55,7 @@ void ResourceBar::setSelectedItem(componentId_t componentId)
 		return;
 	}
 
-	if (machineManager->getCurrentSimulationMode() != SimulationMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
 	{
 		this->clearSelection();
 		return;
@@ -152,9 +152,9 @@ void ResourceBar::clearSelection()
 	}
 }
 
-void ResourceBar::machineModeChangedEventHandler(SimulationMode_t newMode)
+void ResourceBar::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == SimulationMode_t::simulateMode)
+	if (newMode == InterfaceMode_t::simulateMode)
 	{
 		this->clearSelection();
 

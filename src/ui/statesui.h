@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -68,13 +68,6 @@ public:
 
 	QDialog* getModalDialog();
 
-signals:
-	void newFsmRequestEvent();
-	void clearMachineRequestEvent();
-	void loadMachineRequestEvent(const QString& path);
-	void saveMachineRequestEvent(const QString& path);
-	void saveMachineInCurrentFileRequestEvent();
-
 protected:
 	virtual void closeEvent     (QCloseEvent* event) override;
 	virtual void keyPressEvent  (QKeyEvent*   event) override;
@@ -104,7 +97,7 @@ private slots:
 	void machineFilePathUpdated();
 	void machineUnsavedStateUpdated();
 
-	void simulationModeToggledEventHandler(SimulationMode_t newMode);
+	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
 	void setTimelineDetachedState(bool detach);
 
 	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);
@@ -117,6 +110,15 @@ private:
 	void resetUi();
 	void updateTitle();
 	bool displayUnsavedConfirmation(const QString& cause);
+
+	/////
+	// Signals
+signals:
+	void newFsmRequestEvent();
+	void clearMachineRequestEvent();
+	void loadMachineRequestEvent(const QString& path);
+	void saveMachineRequestEvent(const QString& path);
+	void saveMachineInCurrentFileRequestEvent();
 
 	/////
 	// Object variables

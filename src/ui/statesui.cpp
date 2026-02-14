@@ -52,7 +52,7 @@ StatesUi::StatesUi() :
 	connect(machineManager.get(), &MachineManager::machineReplacedEvent,               this, &StatesUi::machineReplacedEventHandler);
 	connect(machineManager.get(), &MachineManager::undoActionAvailabilityChangedEvent, this, &StatesUi::undoActionAvailabilityChangeEventHandler);
 	connect(machineManager.get(), &MachineManager::redoActionAvailabilityChangedEvent, this, &StatesUi::redoActionAvailabilityChangeEventHandler);
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent,         this, &StatesUi::simulationModeToggledEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent,          this, &StatesUi::interfaceModeChangedEventHandler);
 
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 	connect(machineStatus.get(), &MachineStatus::saveFilePathChangedEvent, this, &StatesUi::machineFilePathUpdated);
@@ -172,7 +172,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) == 0) && (event->key() == Qt::Key_Z) )
 	{
-		if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 		{
 			this->undo();
 		}
@@ -180,7 +180,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_Y) )
 	{
-		if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 		{
 			this->redo();
 		}
@@ -188,7 +188,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) != 0) && (event->key() == Qt::Key_Z) )
 	{
-		if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 		{
 			this->redo();
 		}
@@ -421,14 +421,14 @@ void StatesUi::machineUnsavedStateUpdated()
 	}
 }
 
-void StatesUi::simulationModeToggledEventHandler(SimulationMode_t newMode)
+void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
 	static bool isUndoEnabled;
 	static bool isRedoEnabled;
 	static bool isSaveEnabled;
 
 	auto machine = machineManager->getMachine();
-	if ( (machine != nullptr) && (newMode == SimulationMode_t::simulateMode) )
+	if ( (machine != nullptr) && (newMode == InterfaceMode_t::simulateMode) )
 	{
 		this->timeline = new TimelineWidget(this);
 		connect(this->timeline, &TimelineWidget::detachTimelineEvent, this, &StatesUi::setTimelineDetachedState);
@@ -497,7 +497,7 @@ void StatesUi::setTimelineDetachedState(bool detach)
 
 void StatesUi::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
 {
-	if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 	{
 		this->toolbar->setUndoActionEnabled(undoAvailable);
 	}
@@ -505,7 +505,7 @@ void StatesUi::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
 
 void StatesUi::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
 {
-	if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 	{
 		this->toolbar->setRedoActionEnabled(redoAvailable);
 	}

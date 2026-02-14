@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,7 +46,7 @@ MachineEditorWidget::MachineEditorWidget(QWidget* parent) :
 	connect(this->machineDisplayArea, &SceneWidget::renameSelectedItemEvent, this, &MachineEditorWidget::renameSelectedItemEvent);
 
 	// Connect machine manager signal
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &MachineEditorWidget::simulationModeToggledEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &MachineEditorWidget::interfaceModeChangedEventHandler);
 
 	// Initialize tool bar
 	this->buildToolbar();
@@ -78,9 +78,9 @@ void MachineEditorWidget::machineReplacedEventHandler()
 	this->buildToolbar();
 }
 
-void MachineEditorWidget::simulationModeToggledEventHandler(SimulationMode_t newMode)
+void MachineEditorWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == SimulationMode_t::simulateMode)
+	if (newMode == InterfaceMode_t::simulateMode)
 	{
 		this->drawingToolBar->setVisible(false);
 	}

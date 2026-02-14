@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -52,8 +52,8 @@ SceneWidget::SceneWidget(QWidget* parent) :
 	StatesGraphicsView(parent)
 {
 	// Connect Machine Manager
-	connect(machineManager.get(), &MachineManager::machineReplacedEvent,       this, &SceneWidget::machineReplacedEventHandler);
-	connect(machineManager.get(), &MachineManager::simulationModeChangedEvent, this, &SceneWidget::simulationModeChangedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineReplacedEvent,      this, &SceneWidget::machineReplacedEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &SceneWidget::interfaceModeChangedEventHandler);
 
 	// Build zoom controls
 	this->zoomBackground = new QFrame(this);
@@ -295,9 +295,9 @@ void SceneWidget::sceneRectChangedEventHandler(QRectF sceneRect)
 	this->setSceneRect(sceneRect);
 }
 
-void SceneWidget::simulationModeChangedEventHandler(SimulationMode_t newMode)
+void SceneWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == SimulationMode_t::simulateMode)
+	if (newMode == InterfaceMode_t::simulateMode)
 	{
 		this->updateSceneMode(SceneMode_t::simulating);
 	}
@@ -307,12 +307,12 @@ void SceneWidget::simulationModeChangedEventHandler(SimulationMode_t newMode)
 	}
 }
 
-void SceneWidget::sceneSimulationModeAboutToChangeEventHandler()
+void SceneWidget::requestSaveViewEventHandler()
 {
 	this->viewConfigurationSave = this->getView();
 }
 
-void SceneWidget::sceneSimulationModeChangedEventHandler()
+void SceneWidget::requestRestoreViewEventHandler()
 {
 	if (this->viewConfigurationSave != nullptr)
 	{
@@ -441,12 +441,12 @@ void SceneWidget::buildScene()
 		return;
 	}
 
-	connect(newScene, &GenericScene::itemSelectedEvent,                     this, &SceneWidget::itemSelectedEvent);
-	connect(newScene, &GenericScene::editSelectedItemEvent,                 this, &SceneWidget::editSelectedItemEvent);
-	connect(newScene, &GenericScene::renameSelectedItemEvent,               this, &SceneWidget::renameSelectedItemEvent);
-	connect(newScene, &GenericScene::sceneRectChanged,                      this, &SceneWidget::sceneRectChangedEventHandler);
-	connect(newScene, &GenericScene::sceneSimulationModeAboutToChangeEvent, this, &SceneWidget::sceneSimulationModeAboutToChangeEventHandler);
-	connect(newScene, &GenericScene::sceneSimulationModeChangedEvent,       this, &SceneWidget::sceneSimulationModeChangedEventHandler);
+	connect(newScene, &GenericScene::itemSelectedEvent,       this, &SceneWidget::itemSelectedEvent);
+	connect(newScene, &GenericScene::editSelectedItemEvent,   this, &SceneWidget::editSelectedItemEvent);
+	connect(newScene, &GenericScene::renameSelectedItemEvent, this, &SceneWidget::renameSelectedItemEvent);
+	connect(newScene, &GenericScene::sceneRectChanged,        this, &SceneWidget::sceneRectChangedEventHandler);
+	connect(newScene, &GenericScene::requestSaveViewEvent,    this, &SceneWidget::requestSaveViewEventHandler);
+	connect(newScene, &GenericScene::requestRestoreViewEvent, this, &SceneWidget::requestRestoreViewEventHandler);
 
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &SceneWidget::toolChangedEventHandler);
 	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &SceneWidget::singleUseToolChangedEventHandler);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -63,7 +63,7 @@ signals:
 private slots:
 	void machineReplacedEventHandler();
 
-	void simulationModeToggledEventHandler(SimulationMode_t newMode);
+	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
 
 private:
 	void buildToolbar();

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -78,7 +78,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 {
 	if (enabled == true)
 	{
-		if (machineManager->getCurrentSimulationMode() == SimulationMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 		{
 			auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 			if (fsm == nullptr) return;
@@ -87,7 +87,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			if (fsm->getInitialStateId() != nullId)
 			{
 				// Enable simulation mode
-				machineManager->setSimulationMode(SimulationMode_t::simulateMode);
+				machineManager->setInterfaceMode(InterfaceMode_t::simulateMode);
 				auto machineSimulator = machineManager->getMachineSimulator();
 				if (machineSimulator == nullptr) return;
 
@@ -136,7 +136,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 	}
 	else
 	{
-		if (machineManager->getCurrentSimulationMode() == SimulationMode_t::simulateMode)
+		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::simulateMode)
 		{
 			delete this->timeManagerGroup;
 			this->timeManagerGroup = nullptr;
@@ -144,7 +144,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			delete this->inputsGroup;
 			this->inputsGroup = nullptr;
 
-			machineManager->setSimulationMode(SimulationMode_t::editMode);
+			machineManager->setInterfaceMode(InterfaceMode_t::editMode);
 
 			this->buttonTriggerSimulation->setText(tr("Start simulation"));
 			this->configurationGroup->setVisible(true);

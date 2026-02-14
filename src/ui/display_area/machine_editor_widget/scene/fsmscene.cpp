@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -485,14 +485,14 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 	}
 }
 
-void FsmScene::updateSimulationMode(SimulationMode_t newMode)
+void FsmScene::updateInterfaceMode(InterfaceMode_t newMode)
 {
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
 	{
 		machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
 
-		if (newMode == SimulationMode_t::editMode)
+		if (newMode == InterfaceMode_t::editMode)
 		{
 			this->clearScene();
 

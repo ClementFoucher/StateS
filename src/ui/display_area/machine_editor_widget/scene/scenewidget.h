@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -92,9 +92,9 @@ protected:
 private slots:
 	void machineReplacedEventHandler();
 	void sceneRectChangedEventHandler(QRectF sceneRect);
-	void simulationModeChangedEventHandler(SimulationMode_t newMode);
-	void sceneSimulationModeAboutToChangeEventHandler();
-	void sceneSimulationModeChangedEventHandler();
+	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void requestSaveViewEventHandler();
+	void requestRestoreViewEventHandler();
 
 	void toolChangedEventHandler(MachineBuilderTool_t tool);
 	void singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool);

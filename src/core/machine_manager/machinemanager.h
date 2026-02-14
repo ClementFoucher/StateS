@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2025 Clément Foucher
+ * Copyright © 2021-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -93,9 +93,9 @@ public:
 
 	void setUndoRedoMode(bool undoRedoMode);
 
-	// Simulation
-	void setSimulationMode(SimulationMode_t newMode);
-	SimulationMode_t getCurrentSimulationMode() const;
+	// Interface
+	void setInterfaceMode(InterfaceMode_t newMode);
+	InterfaceMode_t getCurrentInterfaceMode() const;
 
 private slots:
 	// Undo/redo
@@ -123,7 +123,7 @@ signals:
 	// Notably, graphic machine is replaced so all components depending on it should be rebuilt.
 	void machineUpdatedEvent();
 
-	void simulationModeChangedEvent(SimulationMode_t newMode);
+	void interfaceModeChangedEvent(InterfaceMode_t newMode);
 
 	///
 	// Undo/redo manager events propagated by the manager
@@ -147,10 +147,12 @@ private:
 	shared_ptr<GraphicMachine>   graphicMachine;
 	shared_ptr<MachineSimulator> machineSimulator;
 
-	// Internal
+	// Undo/redo
 	unique_ptr<UndoRedoManager> undoRedoManager;
 	bool undoRedoMode = false;
-	SimulationMode_t currentSimulationMode = SimulationMode_t::editMode;
+
+	// Interface
+	InterfaceMode_t currentInterfaceMode = InterfaceMode_t::editMode;
 
 };
 
