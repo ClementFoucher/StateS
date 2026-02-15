@@ -53,8 +53,7 @@ FsmScene::FsmScene() :
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &FsmScene::machineUpdatedEventHandler);
 
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
-	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent,      this, &FsmScene::toolChangeEventHandler);
-	connect(machineBuilder.get(), &MachineBuilder::singleUseToolSelected, this, &FsmScene::singleUseToolChangeEventHandler);
+	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmScene::toolChangeEventHandler);
 
 	// Add scene content
 	this->displayGraphicMachine();
@@ -69,6 +68,13 @@ FsmScene::~FsmScene()
 
 void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 {
+	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
+	{
+		// We only handle mouse events when in edit mode
+		GenericScene::mousePressEvent(me);
+		return;
+	}
+
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr)
 	{
@@ -95,7 +101,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 
 	if (me->button() == Qt::LeftButton)
 	{
-		if (this->sceneMode == SceneMode_t::addingInitialState)
+		if (this->sceneEditionMode == SceneEditionMode_t::addingInitialState)
 		{
 			// Machine is about to be edited
 			machineManager->notifyMachineAboutToBeDiffEdited();
@@ -119,7 +125,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 			// Transmitting event so that new state is selected
 			// and can be moved within the same click
 		}
-		else if (this->sceneMode == SceneMode_t::addingState)
+		else if (this->sceneEditionMode == SceneEditionMode_t::addingState)
 		{
 			// Machine is about to be edited
 			machineManager->notifyMachineAboutToBeDiffEdited();
@@ -139,7 +145,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 			// Transmitting event so that new state is selected
 			// and can be moved within the same click
 		}
-		else if ( (this->sceneMode == SceneMode_t::addingTransition) || (this->sceneMode == SceneMode_t::addingTransitionSingleUse) )
+		else if ( (this->sceneEditionMode == SceneEditionMode_t::addingTransition) || (this->sceneEditionMode == SceneEditionMode_t::addingTransitionSingleUse) )
 		{
 			GraphicFsmState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
@@ -171,13 +177,14 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 					this->addTransition(graphicTransition, true);
 
 					// Update mode or tool
-					if (this->sceneMode == SceneMode_t::addingTransition)
+					if (this->sceneEditionMode == SceneEditionMode_t::addingTransition)
 					{
 						// Get ready for next transition
 						this->transitionStep = AddTransitionStep_t::waitingForSource;
 					}
-					else // (this->sceneMode == sceneMode_t::addingTransitionSingleUse)
+					else // (this->sceneEditionMode == SceneEditionMode_t::addingTransitionSingleUse)
 					{
+						this->updateSceneEditionMode(SceneEditionMode_t::idle);
 						// Single-use tool: terminate transition adding mode
 						machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
 					}
@@ -189,7 +196,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 				this->transmitMouseEvent = false;
 			}
 		}
-		else if ( (this->sceneMode == SceneMode_t::editingTransitionSource) || (this->sceneMode == SceneMode_t::editingTransitionTarget) )
+		else if ( (this->sceneEditionMode == SceneEditionMode_t::editingTransitionSource) || (this->sceneEditionMode == SceneEditionMode_t::editingTransitionTarget) )
 		{
 			GraphicFsmState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
 
@@ -200,17 +207,19 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 				{
 					// Just cancel edition if state has not changed
 					bool ignore = false;
-					if (this->sceneMode == SceneMode_t::editingTransitionSource)
+					if (this->sceneEditionMode == SceneEditionMode_t::editingTransitionSource)
 					{
 						if (logicTransition->getSourceStateId() == stateUnderMouse->getLogicComponentId())
 						{
+							this->cancelOngoingEdition();
 							ignore = true;
 						}
 					}
-					else // (this->sceneMode == sceneMode_t::editingTransitionTarget)
+					else // (this->sceneEditionMode == SceneEditionMode_t::editingTransitionTarget)
 					{
 						if (logicTransition->getTargetStateId() == stateUnderMouse->getLogicComponentId())
 						{
+							this->cancelOngoingEdition();
 							ignore = true;
 						}
 					}
@@ -232,7 +241,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 							// so that nighborhood is automatically updated
 							graphicFsm->removeGraphicComponent(this->transitionUnderEditId);
 
-							if (this->sceneMode == SceneMode_t::editingTransitionTarget)
+							if (this->sceneEditionMode == SceneEditionMode_t::editingTransitionTarget)
 							{
 								fsm->redirectTransition(logicTransition->getId(), logicTransition->getSourceStateId(), stateUnderMouse->getLogicComponentId());
 							}
@@ -252,6 +261,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 				}
 
 				// Single-use tools: terminate current mode
+				this->updateSceneEditionMode(SceneEditionMode_t::idle);
 				machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
 
 				this->transmitMouseEvent = false;
@@ -260,13 +270,42 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 	}
 	else if (me->button() == Qt::RightButton)
 	{
-		if (this->sceneMode != SceneMode_t::idle)
+		switch (this->sceneEditionMode)
 		{
-			this->cancelOngoingAction();
+		case SceneEditionMode_t::editingTransitionSource:
+		case SceneEditionMode_t::editingTransitionTarget:
+		case SceneEditionMode_t::addingTransitionSingleUse:
+			// For single-use tools, get back to idle mode (which
+			// cancels the ongoing edtion) and get rid of the tool
+			this->updateSceneEditionMode(SceneEditionMode_t::idle);
+			machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+
 			this->transmitMouseEvent = false;
-		}
-		else // (this->sceneMode == SceneMode_t::idle)
-		{
+			break;
+		case SceneEditionMode_t::addingInitialState:
+		case SceneEditionMode_t::addingState:
+			// For state adding, get rid of the tool (this will update scene mode indirectly)
+			machineBuilder->setTool(MachineBuilderTool_t::none);
+
+			this->transmitMouseEvent = false;
+			break;
+		case SceneEditionMode_t::addingTransition:
+			// Depending on the step, get rid of tool or get back to initial step
+			if (this->transitionStep == AddTransitionStep_t::waitingForSource)
+			{
+				// Get rid of tool (this will update scene mode indirectly)
+				machineBuilder->setTool(MachineBuilderTool_t::none);
+			}
+			else
+			{
+				// Cancel current transition insertion but stay in adding mode
+				this->cancelOngoingEdition();
+				this->transitionStep = AddTransitionStep_t::waitingForSource;
+			}
+
+			this->transmitMouseEvent = false;
+			break;
+		case SceneEditionMode_t::idle:
 			if (this->items(me->scenePos(), Qt::IntersectsItemShape, Qt::DescendingOrder).count() == 0)
 			{
 				// If no tool was selected and there is no item under mouse, display menu.
@@ -284,6 +323,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 
 				this->transmitMouseEvent = false;
 			}
+			break;
 		}
 	}
 
@@ -297,10 +337,10 @@ void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
 {
 	static GraphicFsmState* previousStatePointed = nullptr;
 
-	if ( (this->transitionStep == AddTransitionStep_t::settingSource)    ||
-	     (this->transitionStep == AddTransitionStep_t::waitingForTarget) ||
-	     (this->sceneMode == SceneMode_t::editingTransitionSource)       ||
-	     (this->sceneMode == SceneMode_t::editingTransitionTarget)
+	if ( (this->transitionStep == AddTransitionStep_t::settingSource)            ||
+	     (this->transitionStep == AddTransitionStep_t::waitingForTarget)         ||
+	     (this->sceneEditionMode == SceneEditionMode_t::editingTransitionSource) ||
+	     (this->sceneEditionMode == SceneEditionMode_t::editingTransitionTarget)
 	   )
 	{
 		GraphicFsmState* stateUnderMouse = getStateAt(QPointF(me->scenePos()));
@@ -327,15 +367,11 @@ void FsmScene::mouseMoveEvent(QGraphicsSceneMouseEvent* me)
 
 void FsmScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* me)
 {
-	bool transmitEvent = true;
-
 	if (this->transmitMouseEvent == false)
 	{
-		transmitEvent = false;
 		this->transmitMouseEvent = true;
 	}
-
-	if (transmitEvent == true)
+	else
 	{
 		GenericScene::mouseReleaseEvent(me);
 	}
@@ -345,13 +381,42 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 {
 	if (ke->key() == Qt::Key_Escape)
 	{
-		if (this->sceneMode != SceneMode_t::idle)
+		shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+		if (machineBuilder == nullptr) return;
+
+
+		switch (this->sceneEditionMode)
 		{
-			this->cancelOngoingAction();
-		}
-		else // (this->sceneMode == SceneMode_t::idle)
-		{
+		case SceneEditionMode_t::editingTransitionSource:
+		case SceneEditionMode_t::editingTransitionTarget:
+		case SceneEditionMode_t::addingTransitionSingleUse:
+			// For single-use tools, get back to idle mode (which
+			// cancels the ongoing edtion) and get rid of the tool
+			this->updateSceneEditionMode(SceneEditionMode_t::idle);
+			machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+			break;
+		case SceneEditionMode_t::addingInitialState:
+		case SceneEditionMode_t::addingState:
+			// For state adding, get rid of the tool (this will update scene mode indirectly)
+			machineBuilder->setTool(MachineBuilderTool_t::none);
+			break;
+		case SceneEditionMode_t::addingTransition:
+			// Depending on the step, get rid of tool or get back to initial step
+			if (this->transitionStep == AddTransitionStep_t::waitingForSource)
+			{
+				// Get rid of tool (this will update scene mode indirectly)
+				machineBuilder->setTool(MachineBuilderTool_t::none);
+			}
+			else
+			{
+				// Cancel current transition insertion but stay in adding mode
+				this->cancelOngoingEdition();
+				this->transitionStep = AddTransitionStep_t::waitingForSource;
+			}
+			break;
+		case SceneEditionMode_t::idle:
 			this->clearSelection();
+			break;
 		}
 	}
 	else if ( (ke->key() == Qt::Key_Right) ||
@@ -419,7 +484,7 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 	else if (ke->key() == Qt::Key_Delete)
 	{
 		// Only allow deleting scene components when in idle mode
-		if (this->sceneMode == SceneMode_t::idle)
+		if (this->sceneEditionMode == SceneEditionMode_t::idle)
 		{
 			auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 			if (fsm == nullptr) return;
@@ -478,90 +543,72 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 
 void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 {
-	// Context menu events are only allowed in these two modes
-	if ( (this->sceneMode == SceneMode_t::idle) || (this->sceneMode == SceneMode_t::simulating) )
+	switch (machineManager->getCurrentInterfaceMode())
 	{
+	case InterfaceMode_t::editMode:
+		if (this->sceneEditionMode == SceneEditionMode_t::idle)
+		{
+			// In edit mode, context menu is only allowed
+			// when there is no ongoing action
+			GenericScene::contextMenuEvent(ce);
+		}
+		break;
+	case InterfaceMode_t::simulateMode:
 		GenericScene::contextMenuEvent(ce);
+		break;
 	}
 }
 
 void FsmScene::updateInterfaceMode(InterfaceMode_t newMode)
 {
+	// Go back to idle mode before changing interface mode
+	if (this->sceneEditionMode != SceneEditionMode_t::idle)
+	{
+		this->updateSceneEditionMode(SceneEditionMode_t::idle);
+	}
+
+	// Get rid of any tool
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
 	{
-		machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
+		machineBuilder->resetTool();
+	}
 
-		if (newMode == InterfaceMode_t::editMode)
-		{
-			this->clearScene();
-
-			this->updateSceneMode(SceneMode_t::idle);
-
-			this->displayGraphicMachine();
-		}
-		else // (newMode == SimulationMode_t::simulateMode)
-		{
-			// Go back to idle mode first to cancel ongoing editions
-			if (this->sceneMode != SceneMode_t::idle)
-			{
-				this->updateSceneMode(SceneMode_t::idle);
-			}
-
-			this->clearScene();
-
-			this->updateSceneMode(SceneMode_t::simulating);
-
-			this->displaySimulatedMachine();
-		}
+	switch (newMode)
+	{
+	case InterfaceMode_t::editMode:
+		this->clearScene();
+		this->displayGraphicMachine();
+		break;
+	case InterfaceMode_t::simulateMode:
+		this->clearScene();
+		this->displaySimulatedMachine();
+		break;
 	}
 }
 
 void FsmScene::machineUpdatedEventHandler()
 {
-	delete this->dummyTransition;
-	this->dummyTransition = nullptr;
-
-	this->transitionUnderEditId = nullId;
-	this->sceneMode = SceneMode_t::idle;
-	this->transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
-
+	this->updateSceneEditionMode(SceneEditionMode_t::idle);
 	this->displayGraphicMachine();
 }
 
 void FsmScene::toolChangeEventHandler(MachineBuilderTool_t newTool)
 {
-	switch(newTool)
+	switch (newTool)
 	{
 	case MachineBuilderTool_t::initialState:
-		this->updateSceneMode(SceneMode_t::addingInitialState);
+		this->updateSceneEditionMode(SceneEditionMode_t::addingInitialState);
 		break;
 	case MachineBuilderTool_t::state:
-		this->updateSceneMode(SceneMode_t::addingState);
+		this->updateSceneEditionMode(SceneEditionMode_t::addingState);
 		break;
 	case MachineBuilderTool_t::transition:
-		this->updateSceneMode(SceneMode_t::addingTransition);
+		this->updateSceneEditionMode(SceneEditionMode_t::addingTransition);
 		break;
-	default:
-		this->updateSceneMode(SceneMode_t::idle);
-	}
-}
-
-void FsmScene::singleUseToolChangeEventHandler(MachineBuilderSingleUseTool_t newTool)
-{
-	switch(newTool)
-	{
-	case MachineBuilderSingleUseTool_t::drawTransitionFromScene:
-		this->updateSceneMode(SceneMode_t::addingTransitionSingleUse);
+	case MachineBuilderTool_t::none:
+		this->updateSceneEditionMode(SceneEditionMode_t::idle);
 		break;
-	case MachineBuilderSingleUseTool_t::editTransitionSource:
-		this->updateSceneMode(SceneMode_t::editingTransitionSource);
-		break;
-	case MachineBuilderSingleUseTool_t::editTransitionTarget:
-		this->updateSceneMode(SceneMode_t::editingTransitionTarget);
-		break;
-	default:
-		this->updateSceneMode(SceneMode_t::idle);
 	}
 }
 
@@ -636,6 +683,9 @@ void FsmScene::stateCallsBeginTransitionEventHandler(componentId_t stateId)
 	auto graphicState = graphicFsm->getState(stateId);
 	if (graphicState == nullptr) return;
 
+
+	this->updateSceneEditionMode(SceneEditionMode_t::addingTransitionSingleUse);
+
 	this->beginDrawTransition(graphicState);
 
 	machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::drawTransitionFromScene);
@@ -666,6 +716,8 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transition
 	if (transition == nullptr) return;
 
 
+	this->updateSceneEditionMode(SceneEditionMode_t::editingTransitionSource);
+
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
 	this->dummyTransition = new GraphicFsmTransition(nullId, transition->getTargetStateId(), sceneMousePos);
@@ -690,6 +742,8 @@ void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transition
 	auto transition = graphicFsm->getTransition(transitionId);
 	if (transition == nullptr) return;
 
+
+	this->updateSceneEditionMode(SceneEditionMode_t::editingTransitionTarget);
 
 	QGraphicsView* currentView = this->views().constFirst();
 	QPointF sceneMousePos = currentView->mapToScene(currentView->mapFromGlobal(QCursor::pos()));
@@ -826,38 +880,20 @@ void FsmScene::menuAddStateTriggeredEventHandler(QAction* action)
 	}
 }
 
-void FsmScene::updateSceneMode(FsmScene::SceneMode_t newMode)
+void FsmScene::updateSceneEditionMode(FsmScene::SceneEditionMode_t newMode)
 {
 	// Cancel ongoing editions before changing mode
-	if ( (this->sceneMode == SceneMode_t::editingTransitionSource)   ||
-	     (this->sceneMode == SceneMode_t::editingTransitionTarget)   ||
-	     (this->sceneMode == SceneMode_t::addingTransitionSingleUse) ||
-	     (this->sceneMode == SceneMode_t::addingTransition)          )
-	{
-		delete this->dummyTransition;
-		this->dummyTransition = nullptr;
+	this->cancelOngoingEdition();
 
-		if ( (this->sceneMode == SceneMode_t::editingTransitionSource) ||
-		     (this->sceneMode == SceneMode_t::editingTransitionTarget) )
-		{
-			auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
-			if (graphicFsm == nullptr) return;
-
-			auto graphicTransition = graphicFsm->getTransition(this->transitionUnderEditId);
-			if (graphicTransition == nullptr) return;
-
-			graphicTransition->setUnderEdit(false);
-		}
-	}
-
-	this->sceneMode = newMode;
+	// Update edit mode
+	this->sceneEditionMode = newMode;
 
 	// Set transition mode step
-	if (newMode == SceneMode_t::addingTransition)
+	if (newMode == SceneEditionMode_t::addingTransition)
 	{
 		this->transitionStep = AddTransitionStep_t::waitingForSource;
 	}
-	else if (newMode == SceneMode_t::addingTransitionSingleUse)
+	else if (newMode == SceneEditionMode_t::addingTransitionSingleUse)
 	{
 		this->transitionStep = AddTransitionStep_t::waitingForTarget;
 	}
@@ -925,7 +961,7 @@ void FsmScene::clearScene()
 		auto transitionItem = dynamic_cast<GraphicFsmTransition*>(item);
 		if (transitionItem != nullptr)
 		{
-			if (this->sceneMode != SceneMode_t::simulating)
+			if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 			{
 				disconnect(transitionItem, &GraphicFsmTransition::dynamicSourceCalledEvent,    this, &FsmScene::transitionCallsDynamicSourceEventHandler);
 				disconnect(transitionItem, &GraphicFsmTransition::dynamicTargetCalledEvent,    this, &FsmScene::transitionCallsDynamicTargetEventHandler);
@@ -951,7 +987,7 @@ void FsmScene::clearScene()
 		auto stateItem = dynamic_cast<GraphicFsmState*>(item);
 		if (stateItem != nullptr)
 		{
-			if (this->sceneMode != SceneMode_t::simulating)
+			if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
 			{
 				disconnect(stateItem, &GraphicFsmState::editStateCalledEvent,             this, &FsmScene::stateCallsEditEventHandler);
 				disconnect(stateItem, &GraphicFsmState::renameStateCalledEvent,           this, &FsmScene::stateCallsRenameEventHandler);
@@ -1049,42 +1085,25 @@ void FsmScene::beginDrawTransition(GraphicFsmState* source, const QPointF& curre
 	this->addTransition(this->dummyTransition, false);
 }
 
-void FsmScene::cancelOngoingAction()
+void FsmScene::cancelOngoingEdition()
 {
-	auto machineBuilder = machineManager->getMachineBuilder();
-	if (machineBuilder == nullptr) return;
+	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
+	if (graphicFsm == nullptr) return;
 
 
-	switch (this->sceneMode)
+	// Get rid of dummy transition if there is one
+	delete this->dummyTransition;
+	this->dummyTransition = nullptr;
+
+	// If there is a transition being edited, cancel highlighting
+	if (this->transitionUnderEditId != nullId)
 	{
-	case SceneMode_t::editingTransitionSource:
-	case SceneMode_t::editingTransitionTarget:
-	case SceneMode_t::addingTransitionSingleUse:
-		machineBuilder->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
-		break;
-	case SceneMode_t::addingTransition:
-		if (this->transitionStep == AddTransitionStep_t::waitingForSource)
+		auto transition = graphicFsm->getTransition(this->transitionUnderEditId);
+		if (transition != nullptr)
 		{
-			// Get rid of tool
-			machineBuilder->setTool(MachineBuilderTool_t::none);
+			transition->setUnderEdit(false);
 		}
-		else
-		{
-			// Cancel current transition insertion but stay in adding mode
-			delete this->dummyTransition;
-			this->dummyTransition = nullptr;
-
-			this->transitionStep = AddTransitionStep_t::waitingForSource;
-		}
-		break;
-	case SceneMode_t::addingInitialState:
-	case SceneMode_t::addingState:
-		machineBuilder->setTool(MachineBuilderTool_t::none);
-		break;
-	case SceneMode_t::idle:
-	case SceneMode_t::simulating:
-		// Nothing to do for these modes
-		break;
+		this->transitionUnderEditId = nullId;
 	}
 }
 

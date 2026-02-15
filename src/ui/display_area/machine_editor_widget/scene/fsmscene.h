@@ -46,11 +46,10 @@ class FsmScene : public GenericScene
 	/////
 	// Type declarations
 private:
-	enum class SceneMode_t
+	enum class SceneEditionMode_t
 	{
-		// General modes
+		// Not currently editing
 		idle,
-		simulating,
 		// Adding modes with a Machine Builder tool
 		addingInitialState,
 		addingState,
@@ -74,7 +73,7 @@ private:
 	// Constructors/destructors
 public:
 	explicit FsmScene();
-	~FsmScene();
+	virtual ~FsmScene();
 
 	/////
 	// Object functions
@@ -91,9 +90,8 @@ private slots:
 	// Machine manager signals
 	void machineUpdatedEventHandler();
 
-	// Tools signals
+	// Machine builder signal
 	void toolChangeEventHandler(MachineBuilderTool_t newTool);
-	void singleUseToolChangeEventHandler(MachineBuilderSingleUseTool_t newTool);
 
 	// States signals
 	void stateCallsEditEventHandler(componentId_t stateId);
@@ -116,7 +114,7 @@ private slots:
 
 private:
 	// Scene mode
-	void updateSceneMode(FsmScene::SceneMode_t newMode);
+	void updateSceneEditionMode(FsmScene::SceneEditionMode_t newMode);
 
 	// Scene clear/build
 	void displayGraphicMachine();
@@ -129,7 +127,7 @@ private:
 
 	// Transition adding/editings
 	void beginDrawTransition(GraphicFsmState* source, const QPointF& currentMousePos = QPointF());
-	void cancelOngoingAction();
+	void cancelOngoingEdition();
 
 	// Accessors
 	GraphicFsmState* getStateAt(const QPointF& location) const;
@@ -141,7 +139,7 @@ private:
 	// Object variables
 private:
 	// Scene mode
-	SceneMode_t sceneMode = SceneMode_t::idle;
+	SceneEditionMode_t sceneEditionMode = SceneEditionMode_t::idle;
 
 	// Transition adding/edition
 	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
