@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,6 +40,7 @@ public:
 public:
 	void setSaveAsActionEnabled(bool enable);
 	void setSaveActionEnabled  (bool enable);
+	void setLoadActionEnabled  (bool enable);
 	void setNewFsmActionEnabled(bool enable);
 	void setExportImageEnabled (bool enable);
 	void setExportCodeEnabled  (bool enable);
@@ -51,6 +52,8 @@ public:
 	bool getSaveActionEnabled() const;
 	bool getExportCodeEnabled() const;
 
+	/////
+	// Signals
 signals:
 	void saveAsRequestedEvent     ();
 	void saveRequestedEvent       ();

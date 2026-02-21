@@ -154,19 +154,25 @@ void ResourceBar::clearSelection()
 
 void ResourceBar::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == InterfaceMode_t::simulateMode)
+	switch (newMode)
 	{
+	case InterfaceMode_t::editMode:
+		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, true);
+		this->setTabEnabled(TabIndex_t::simulatorTabIndex,     true);
+		this->setTabEnabled(TabIndex_t::verifierTabIndex,      true);
+		break;
+	case InterfaceMode_t::simulateMode:
 		this->clearSelection();
 
-		this->setTabEnabled(TabIndex_t::aboutTabIndex,         false);
 		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, false);
 		this->setTabEnabled(TabIndex_t::verifierTabIndex,      false);
-	}
-	else
-	{
-		this->setTabEnabled(TabIndex_t::aboutTabIndex,         true);
-		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, true);
-		this->setTabEnabled(TabIndex_t::verifierTabIndex,      true);
+		break;
+    case InterfaceMode_t::verifyMode:
+		this->clearSelection();
+
+		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, false);
+		this->setTabEnabled(TabIndex_t::simulatorTabIndex,     false);
+		break;
 	}
 }
 

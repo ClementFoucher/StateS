@@ -109,10 +109,3 @@ void GenericScene::recomputeSceneRect()
 
 	this->setSceneRect(newSceneRect);
 }
-
-void GenericScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
-{
-	emit this->requestSaveViewEvent();
-	this->updateInterfaceMode(newMode);
-	emit this->requestRestoreViewEvent();
-}

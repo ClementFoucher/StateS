@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,27 +33,38 @@
 #include "variable.h"
 
 
-FsmVerifier::~FsmVerifier()
+const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
 {
-	this->clearProofs();
+	return this->issues;
 }
 
-const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkVhdl)
+void FsmVerifier::setCheckVhdl()
 {
-	this->clearProofs();
+	this->checkVhdl = true;
+}
+
+void FsmVerifier::abort()
+{
+	this->doAbort = true;
+}
+
+void FsmVerifier::run()
+{
+	this->setTerminationEnabled(true);
+	this->issues.clear();
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 
 	if (fsm == nullptr)
 	{
-		shared_ptr<Issue> issue(new Issue());
+		auto issue = make_shared<Issue>();
 		issue->text = tr("No FSM.");
 		issue->type = VerifierSeverityLevel_t::blocking;
 		this->issues.append(issue);
 	}
 	else if (fsm->getAllStatesIds().isEmpty())
 	{
-		shared_ptr<Issue> issue(new Issue());
+		auto issue = make_shared<Issue>();
 		issue->text = tr("Empty FSM.");
 		issue->type = VerifierSeverityLevel_t::blocking;
 		this->issues.append(issue);
@@ -63,7 +74,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 		// Check initial state
 		if (fsm->getInitialStateId() == nullId)
 		{
-			shared_ptr<Issue> issue(new Issue());
+			auto issue = make_shared<Issue>();
 			issue->text = tr("No initial state.");
 			issue->type = VerifierSeverityLevel_t::blocking;
 			this->issues.append(issue);
@@ -96,8 +107,8 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					errorOnTransition = true;
 					equations.clear();
 
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Error on transition condition from state") + " " + state->getName() + ". " + tr("Please correct this equation:") + " " + condition->getText();
+					auto issue = make_shared<Issue>();
+					issue->text = tr("Error on transition condition from state") + " \"" + state->getName() + "\". " + tr("Please correct this equation:") + " " + condition->getText();
 					issue->type = VerifierSeverityLevel_t::structure;
 					this->issues.append(issue);
 
@@ -113,21 +124,42 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 
 				if (constantToOneConditions > 1)
 				{
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Multiple transitions from state") + " " + state->getName() + " " + tr("have a condition value always true.");
+					auto issue = make_shared<Issue>();
+					issue->text = tr("Multiple transitions from state") + " \"" + state->getName() + "\" " + tr("have a condition value always true.");
 					issue->type = VerifierSeverityLevel_t::structure;
 					this->issues.append(issue);
 				}
 				else if ( (constantToOneConditions == 1) && (state->getOutgoingTransitionsIds().count() > 1) )
 				{
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("One transition from state") + " " + state->getName() + " " + tr("has a condition value always true.") + " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.");
+					auto issue = make_shared<Issue>();
+					issue->text = tr("One transition from state") + " \"" + state->getName() + "\" " + tr("has a condition value always true.") + " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.");
 					issue->type = VerifierSeverityLevel_t::structure;
 					this->issues.append(issue);
 				}
 				else if (state->getOutgoingTransitionsIds().count() > 1)
 				{
-					shared_ptr<TruthTable> currentTruthTable(new TruthTable(equations));
+					auto currentTruthTable = make_shared<TruthTable>(equations);
+					bool finished = false;
+					while (finished == false)
+					{
+						finished = currentTruthTable->buildRow();
+						if (this->doAbort == true)
+						{
+							this->issues.clear();
+							return;
+						}
+					}
+
+					if (currentTruthTable->getTableBuiltSuccessfully() == false)
+					{
+						auto issue = make_shared<Issue>();
+						issue->text = tr("StateS was unable to build the truth table for transitions going out of state") + " \"" + state->getName() + "\". "
+						            + tr("This is probably because there are too many combinations to compute.") + " "
+						            + tr("This means that there may be transitions going out of this state that are not mutually exclusive.") + " ";
+						issue->type = VerifierSeverityLevel_t::tool;
+						this->issues.append(issue);
+						continue;
+					}
 
 					bool detected = false;
 					uint rowcount = 0;
@@ -150,7 +182,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 							if (!detected)
 							{
 								currentIssue = make_shared<Issue>();
-								currentIssue->text = tr("Transitions from state") + " " + state->getName() + " " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time.");
+								currentIssue->text = tr("Transitions from state") + " \"" + state->getName() + "\" " + tr("are not mutually exclusive.") + " " + tr("Two transitions or more can be active at the same time.");
 								currentIssue->proof = currentTruthTable;
 								currentIssue->type = VerifierSeverityLevel_t::structure;
 								this->issues.append(currentIssue);
@@ -168,7 +200,7 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 		}
 
 		// Check VHDL export support
-		if (checkVhdl)
+		if (this->checkVhdl == true)
 		{
 			unique_ptr<FsmVhdlExport> vhdlExporter(new FsmVhdlExport());
 
@@ -183,11 +215,11 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					if (variable == nullptr) continue;
 
 
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + variable->getName() + " "
-					        + tr("has both Moore and Mealy behaviors.") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-					        + tr("This variable will be ignored on VHDL export.");
+					auto issue = make_shared<Issue>();
+					issue->text = tr("Variable") + " \"" + variable->getName() + "\" "
+					            + tr("has both Moore and Mealy behaviors.") + " "
+					            + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					            + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
@@ -197,11 +229,11 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					if (variable == nullptr) continue;
 
 
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + variable->getName() + " "
-					        + tr("has range-adressed output generation.") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-					        + tr("This variable will be ignored on VHDL export.");
+					auto issue = make_shared<Issue>();
+					issue->text = tr("Variable") + " \"" + variable->getName() + "\" "
+					            + tr("has range-adressed output generation.") + " "
+					            + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					            + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
@@ -211,32 +243,17 @@ const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::verifyFsm(bool checkV
 					if (variable == nullptr) continue;
 
 
-					shared_ptr<Issue> issue(new Issue());
-					issue->text = tr("Variable") + " " + variable->getName() + " "
-					        + tr("has Mealy outputs affectation (remembered value).") + " "
-					        + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
-					        + tr("This variable will be ignored on VHDL export.");
+					auto issue = make_shared<Issue>();
+					issue->text = tr("Variable") + " \"" + variable->getName() + "\" "
+					            + tr("has Mealy outputs affectation (remembered value).") + " "
+					            + tr("StateS VHDL exporter is currently unable to handle these variables.") + " "
+					            + tr("This variable will be ignored on VHDL export.");
 					issue->type = VerifierSeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 			}
 		}
-
 	}
 
-	return this->issues;
+	emit this->verificationOver();
 }
-
-
-const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
-{
-	return this->issues;
-}
-
-void FsmVerifier::clearProofs()
-{
-	this->issues.clear();
-}
-
-
-

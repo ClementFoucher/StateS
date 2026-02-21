@@ -63,8 +63,8 @@ MachineManager::MachineManager() :
 
 void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
-	// Close simulation mode before changing the machine
-	if (this->currentInterfaceMode == InterfaceMode_t::simulateMode)
+	// Close any open mode before changing the machine
+	if (this->currentInterfaceMode != InterfaceMode_t::editMode)
 	{
 		this->setInterfaceMode(InterfaceMode_t::editMode);
 	}
@@ -234,17 +234,14 @@ void MachineManager::setInterfaceMode(InterfaceMode_t newMode)
 	switch (newMode)
 	{
 	case InterfaceMode_t::editMode:
-		this->machineSimulator.reset();
-		this->graphicMachine->clearSimulation();
-
-		this->currentInterfaceMode = InterfaceMode_t::editMode;
-		emit this->interfaceModeChangedEvent(InterfaceMode_t::editMode);
+		if (this->currentInterfaceMode == InterfaceMode_t::simulateMode)
+		{
+			this->machineSimulator.reset();
+			this->graphicMachine->clearSimulation();
+		}
 		break;
 	case InterfaceMode_t::simulateMode:
 	{
-		// Reset tool when quitting edit mode
-		this->machineBuilder->resetTool();
-
 		// Build simulator
 		this->machineSimulator = make_shared<MachineSimulator>();
 		this->machineSimulator->initialize();
@@ -256,11 +253,15 @@ void MachineManager::setInterfaceMode(InterfaceMode_t newMode)
 		auto simulatedMachine = this->machineSimulator->getSimulatedMachine();
 		connect(simulatedMachine.get(), &SimulatedMachine::simulatedComponentUpdatedEvent, this, &MachineManager::simulatedComponentUpdatedEventHandler);
 
-		this->currentInterfaceMode = InterfaceMode_t::simulateMode;
-		emit this->interfaceModeChangedEvent(InterfaceMode_t::simulateMode);
 		break;
 	}
+	case InterfaceMode_t::verifyMode:
+		// Nothing to do
+		break;
 	}
+
+	this->currentInterfaceMode = newMode;
+	emit this->interfaceModeChangedEvent(this->currentInterfaceMode);
 }
 
 InterfaceMode_t MachineManager::getCurrentInterfaceMode() const

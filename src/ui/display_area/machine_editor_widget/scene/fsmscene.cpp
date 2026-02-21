@@ -552,22 +552,32 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 			// when there is no ongoing action
 			GenericScene::contextMenuEvent(ce);
 		}
+		else
+		{
+			ce->ignore();
+		}
 		break;
 	case InterfaceMode_t::simulateMode:
 		GenericScene::contextMenuEvent(ce);
 		break;
+	case InterfaceMode_t::verifyMode:
+		// No context menu allowed in this mode
+		ce->ignore();
+		break;
 	}
 }
 
-void FsmScene::updateInterfaceMode(InterfaceMode_t newMode)
+void FsmScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
+	static bool sceneIsInSimulateMode = false;
+
 	// Go back to idle mode before changing interface mode
 	if (this->sceneEditionMode != SceneEditionMode_t::idle)
 	{
 		this->updateSceneEditionMode(SceneEditionMode_t::idle);
 	}
 
-	// Get rid of any tool
+	// Get rid of any tool on mode change
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
 	{
@@ -577,12 +587,26 @@ void FsmScene::updateInterfaceMode(InterfaceMode_t newMode)
 	switch (newMode)
 	{
 	case InterfaceMode_t::editMode:
-		this->clearScene();
-		this->displayGraphicMachine();
+		if (sceneIsInSimulateMode == true)
+		{
+			emit this->requestSaveViewEvent();
+			this->clearScene();
+			this->displayGraphicMachine();
+			emit this->requestRestoreViewEvent();
+
+			sceneIsInSimulateMode = false;
+		}
 		break;
 	case InterfaceMode_t::simulateMode:
+		emit this->requestSaveViewEvent();
 		this->clearScene();
 		this->displaySimulatedMachine();
+		emit this->requestRestoreViewEvent();
+
+		sceneIsInSimulateMode = true;
+		break;
+	case InterfaceMode_t::verifyMode:
+		// Nothing to do
 		break;
 	}
 }

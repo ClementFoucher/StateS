@@ -80,13 +80,13 @@ void MachineEditorWidget::machineReplacedEventHandler()
 
 void MachineEditorWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == InterfaceMode_t::simulateMode)
+	if (newMode == InterfaceMode_t::editMode)
 	{
-		this->drawingToolBar->setVisible(false);
+		this->drawingToolBar->setVisible(true);
 	}
 	else
 	{
-		this->drawingToolBar->setVisible(true);
+		this->drawingToolBar->setVisible(false);
 	}
 }
 

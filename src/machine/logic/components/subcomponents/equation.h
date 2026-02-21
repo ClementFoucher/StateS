@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -73,6 +73,8 @@ public:
 
 	void setOperatorType(OperatorType_t newOperator);
 	OperatorType_t getOperatorType() const;
+
+	QSet<componentId_t> getVariablesIdsSet() const;
 
 	bool isInverted() const;
 

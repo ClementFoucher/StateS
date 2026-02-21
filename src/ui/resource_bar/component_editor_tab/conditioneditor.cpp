@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -197,7 +197,7 @@ void ConditionEditor::updateContent()
 
 		if (condition->getSize() == 1)
 		{
-			if (condition->getOperatorType() != OperatorType_t::identity)
+			if (condition->getVariablesIdsSet().count() > 0)
 			{
 				this->buttonToggleTruthTable->setEnabled(true);
 
@@ -309,13 +309,36 @@ void ConditionEditor::expandTruthTable()
 		if (condition == nullptr) return;
 
 
-		if (condition->getOperatorType() != OperatorType_t::identity)
+		this->truthTable = make_shared<TruthTable>(condition);
+		if (this->truthTable->getRowsCount() > 1024)
 		{
-			this->truthTable = make_shared<TruthTable>(condition);
+			auto textList = QStringList();
+			textList.append(tr("Too much combinations!"));
+			textList.append(tr("StateS will not display the truth table when there is more than 1024 combinations."));
+			auto menu = ContextMenu::createErrorMenu(textList);
 
-			this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
-			this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
+			menu->popup(this->buttonToggleTruthTable->mapToGlobal(QPoint(0, -menu->sizeHint().height())));
+
+			return;
 		}
+
+		this->truthTable->buildTable();
+		if (this->truthTable->getTableBuiltSuccessfully() == false)
+		{
+			auto textList = QStringList();
+			textList.append(tr("Error!"));
+			textList.append(tr("StateS was unable to build the truth table."));
+			textList.append(tr("The equation may be is invalid,"));
+			textList.append(tr("or there are too many combinations to compute."));
+			auto menu = ContextMenu::createErrorMenu(textList);
+
+			menu->popup(this->buttonToggleTruthTable->mapToGlobal(QPoint(0, -menu->sizeHint().height())));
+
+			return;
+		}
+
+		this->truthTableDisplay = new TruthTableDisplay(this->truthTable);
+		this->layout->addWidget(this->truthTableDisplay, 5, 0, 1, 2);
 	}
 
 	this->buttonToggleTruthTable->setText(tr("Collapse truth table"));

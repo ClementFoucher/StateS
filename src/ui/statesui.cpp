@@ -423,13 +423,43 @@ void StatesUi::machineUnsavedStateUpdated()
 
 void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	static bool isUndoEnabled;
-	static bool isRedoEnabled;
-	static bool isSaveEnabled;
+	static bool isUndoEnabled = false;
+	static bool isRedoEnabled = false;
+	static bool isSaveEnabled = false;
 
 	auto machine = machineManager->getMachine();
-	if ( (machine != nullptr) && (newMode == InterfaceMode_t::simulateMode) )
+	if (machine == nullptr) return;
+
+
+	if (newMode == InterfaceMode_t::editMode)
 	{
+		this->toolbar->setSaveActionEnabled(isSaveEnabled);
+		this->toolbar->setSaveAsActionEnabled(true);
+		this->toolbar->setLoadActionEnabled(true);
+		this->toolbar->setNewFsmActionEnabled(true);
+		this->toolbar->setExportImageEnabled(true);
+		this->toolbar->setExportCodeEnabled(true);
+		this->toolbar->setUndoActionEnabled(isUndoEnabled);
+		this->toolbar->setRedoActionEnabled(isRedoEnabled);
+	}
+	else // (newMode != InterfaceMode_t::editMode)
+	{
+		isUndoEnabled = this->toolbar->getUndoActionEnabled();
+		isRedoEnabled = this->toolbar->getRedoActionEnabled();
+		isSaveEnabled = this->toolbar->getSaveActionEnabled();
+
+		this->toolbar->setSaveAsActionEnabled(false);
+		this->toolbar->setSaveActionEnabled(false);
+		this->toolbar->setLoadActionEnabled(false);
+		this->toolbar->setNewFsmActionEnabled(false);
+		this->toolbar->setExportCodeEnabled(false);
+		this->toolbar->setUndoActionEnabled(false);
+		this->toolbar->setRedoActionEnabled(false);
+	}
+
+	switch (newMode)
+	{
+	case InterfaceMode_t::simulateMode:
 		this->timeline = new TimelineWidget(this);
 		connect(this->timeline, &TimelineWidget::detachTimelineEvent, this, &StatesUi::setTimelineDetachedState);
 
@@ -449,31 +479,18 @@ void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 			// Default to attached state
 			this->displayArea->addWidget(this->timeline, tr("Timeline"));
 		}
-
-		isUndoEnabled = this->toolbar->getUndoActionEnabled();
-		isRedoEnabled = this->toolbar->getRedoActionEnabled();
-		isSaveEnabled = this->toolbar->getSaveActionEnabled();
-
-		this->toolbar->setSaveActionEnabled(false);
-		this->toolbar->setSaveAsActionEnabled(false);
-		this->toolbar->setUndoActionEnabled(false);
-		this->toolbar->setRedoActionEnabled(false);
-		this->toolbar->setExportCodeEnabled(false);
-	}
-	else
-	{
+		break;
+	case InterfaceMode_t::editMode:
 		if (this->timeline != nullptr)
 		{
 			this->displayArea->removeWidget(this->timeline);
 			delete this->timeline;
 			this->timeline = nullptr;
 		}
-
-		this->toolbar->setSaveActionEnabled(isSaveEnabled);
-		this->toolbar->setSaveAsActionEnabled(true);
-		this->toolbar->setUndoActionEnabled(isUndoEnabled);
-		this->toolbar->setRedoActionEnabled(isRedoEnabled);
-		this->toolbar->setExportCodeEnabled(true);
+		break;
+	case InterfaceMode_t::verifyMode:
+		this->toolbar->setExportImageEnabled(false);
+		break;
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,13 +30,15 @@
 using namespace std;
 
 // Qt classes
-class QListWidget;
-class QLabel;
 class QListWidgetItem;
+class QVBoxLayout;
+class QCheckBox;
+class QLabel;
+class QListWidget;
 class QPushButton;
 
 // StateS classes
-#include "fsmverifier.h"
+class FsmVerifier;
 class TruthTableDisplay;
 class HintWidget;
 
@@ -53,9 +55,13 @@ public:
 	/////
 	// Object functions
 private slots:
-	void checkNow();
-	void clearDisplay();
-	void setCheckVhdl(bool doCheck);
+	void beginCheck();
+	void cancelCheck();
+	void checkFinished();
+
+	void resetContent();
+
+	void timeout();
 
 	void proofRequested(QListWidgetItem* item);
 
@@ -63,12 +69,23 @@ private slots:
 	// Object variables
 private:
 	unique_ptr<FsmVerifier> verifier;
+	QTimer* timer = nullptr;
 
-	bool checkVhdl = false;
+	QVBoxLayout* mainLayout = nullptr;
 
+	// Permanent widgets
+	QCheckBox*   checkVhdlExport = nullptr;
+	QPushButton* buttonVerify    = nullptr;
+
+	// Verification in progress widgets
+	QLabel*      verificationRunningLabel = nullptr;
+	QPushButton* buttonCancel             = nullptr;
+	QLabel*      timingWarning            = nullptr;
+
+	// Verification results widgets
+	QPushButton*       buttonClear       = nullptr;
 	QLabel*            listTitle         = nullptr;
 	QListWidget*       list              = nullptr;
-	QPushButton*       buttonClear       = nullptr;
 	TruthTableDisplay* truthTableDisplay = nullptr;
 	HintWidget*        hintBox           = nullptr;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,8 +33,26 @@ using namespace std;
 #include "statestypes.h"
 class LogicValue;
 class Equation;
+class Variable;
 
 
+/**
+ * @brief The TruthTable class represents a table containing all
+ *        possible combinations of input values for a given
+ *        equation and it corresponding outputs.
+ *        When the object is built, the number of lines and columns
+ *        in the table are computed, as well as their label texts.
+ *        From there, the table can be built.
+ *        Building the table can be done at once using the buildTable
+ *        function, or row by row by calling the buildRow function
+ *        multiple times until it returns true.
+ *        Row-by-row building is provided so that the process can
+ *        be interrupted before completion, as large tables can
+ *        require quite an amount of time (and memory) to be built.
+ *        The table will be considered invalid if the equation has
+ *        more than 32768 rown (and this is probably far more than
+ *        what a human being can read!).
+ */
 class TruthTable
 {
 
@@ -57,20 +75,37 @@ public:
 	uint getInputCount()  const;
 	uint getOutputCount() const;
 
-private:
-	const QList<componentId_t> extractVariables(shared_ptr<const Equation> equation) const;
-	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const;
+	bool getTableBuiltSuccessfully() const;
 
-	void buildTable(QList<shared_ptr<const Equation>> equations);
+	void buildTable();
+	bool buildRow();
+
+private:
+	void prepareTable();
+
+	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const;
 
 	/////
 	// Object variables
 private:
+	// Table status
+	bool tableBuilt = false;
+
+	// Members valid as soon as object has been created
+	uint16_t rowsCount = 0;
+
 	QList<QString> inputVariablesTexts;
 	QList<QString> outputEquationsTexts;
 
+	// Members valid only once the table has been built
 	QList<QList<LogicValue>> inputValuesTable;
 	QList<QList<LogicValue>> outputValuesTable;
+
+	// Temporary members, useless once table has been built
+	QList<shared_ptr<const Equation>> equations;
+	QList<shared_ptr<const Variable>> variablesList;
+	QList<LogicValue> currentInputRow;
+	uint currentRowRank = 0;
 
 };
 

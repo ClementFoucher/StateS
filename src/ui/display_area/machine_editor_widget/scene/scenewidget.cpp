@@ -135,9 +135,16 @@ void SceneWidget::clearSelection()
 
 void SceneWidget::mousePressEvent(QMouseEvent* me)
 {
+	if (this->sceneMode == SceneMode_t::noScene)
+	{
+		QGraphicsView::mousePressEvent(me);
+		return;
+	}
+
+
 	bool transmitEvent = true;
 
-	if ( (this->sceneMode != SceneMode_t::noScene) && (me->button() == Qt::MiddleButton) )
+	if (me->button() == Qt::MiddleButton)
 	{
 		this->updateSceneAction(SceneAction_t::movingScene, true);
 		transmitEvent = false;
@@ -151,6 +158,13 @@ void SceneWidget::mousePressEvent(QMouseEvent* me)
 
 void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 {
+	if (this->sceneMode == SceneMode_t::noScene)
+	{
+		QGraphicsView::mousePressEvent(me);
+		return;
+	}
+
+
 	static QPoint previousMouseEventPos(0, 0);
 
 	bool transmitEvent = true;
@@ -176,6 +190,13 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 
 void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 {
+	if (this->sceneMode == SceneMode_t::noScene)
+	{
+		QGraphicsView::mousePressEvent(me);
+		return;
+	}
+
+
 	bool transmitEvent = true;
 
 	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
@@ -192,6 +213,13 @@ void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 
 void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
 {
+	if (this->sceneMode == SceneMode_t::noScene)
+	{
+		QGraphicsView::mousePressEvent(me);
+		return;
+	}
+
+
 	bool transmitEvent = true;
 
 	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
@@ -209,8 +237,8 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 {
 	// Never transmit wheel events to parent: wheel is fully handed at this level
 
-	if (this->sceneMode == SceneMode_t::noScene)
-		return;
+	if (this->sceneMode == SceneMode_t::noScene) return;
+
 
 	if ( (event->modifiers() & Qt::ControlModifier) != 0)
 	{
@@ -297,13 +325,23 @@ void SceneWidget::sceneRectChangedEventHandler(QRectF sceneRect)
 
 void SceneWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 {
-	if (newMode == InterfaceMode_t::simulateMode)
+	switch (newMode)
 	{
-		this->updateSceneMode(SceneMode_t::simulating);
-	}
-	else
-	{
-		this->updateSceneMode(SceneMode_t::editing);
+	case InterfaceMode_t::editMode:
+		this->sceneMode = SceneMode_t::editing;
+		this->updateSceneAction(SceneAction_t::idle, true);
+		this->setInteractive(true);
+		break;
+	case InterfaceMode_t::simulateMode:
+		this->sceneMode = SceneMode_t::viewing;
+		this->updateSceneAction(SceneAction_t::idle, true);
+		this->setInteractive(true);
+		break;
+	case InterfaceMode_t::verifyMode:
+		this->sceneMode = SceneMode_t::viewing;
+		this->updateSceneAction(SceneAction_t::idle, true);
+		this->setInteractive(false);
+		break;
 	}
 }
 
@@ -314,23 +352,17 @@ void SceneWidget::requestSaveViewEventHandler()
 
 void SceneWidget::requestRestoreViewEventHandler()
 {
-	if (this->viewConfigurationSave != nullptr)
-	{
-		this->setView(this->viewConfigurationSave);
-		this->viewConfigurationSave.reset();
-	}
+	if (this->viewConfigurationSave == nullptr) return;
+
+
+	this->setView(this->viewConfigurationSave);
+	this->viewConfigurationSave.reset();
 }
 
 void SceneWidget::toolChangedEventHandler(MachineBuilderTool_t tool)
 {
-	// Tool changes are only handled in edit mode
-	if (this->sceneMode != SceneMode_t::editing)
+	switch (tool)
 	{
-		return;
-	}
-
-	// In edit mode, tool change will cause scene mode to change
-	switch (tool) {
 	case MachineBuilderTool_t::none:
 		this->updateMouseCursor(MouseCursor_t::none);
 		this->updateSceneAction(SceneAction_t::usingTool, false);
@@ -349,14 +381,8 @@ void SceneWidget::toolChangedEventHandler(MachineBuilderTool_t tool)
 
 void SceneWidget::singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool)
 {
-	// Tool changes are only handled in edit mode
-	if (this->sceneMode != SceneMode_t::editing)
+	switch (tool)
 	{
-		this->updateMouseCursor(MouseCursor_t::none);
-		return;
-	}
-
-	switch (tool) {
 	case MachineBuilderSingleUseTool_t::none:
 		this->updateMouseCursor(MouseCursor_t::none);
 		this->updateSceneAction(SceneAction_t::usingTool, false);
@@ -364,8 +390,8 @@ void SceneWidget::singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t
 	case MachineBuilderSingleUseTool_t::drawTransitionFromScene:
 	case MachineBuilderSingleUseTool_t::editTransitionSource:
 	case MachineBuilderSingleUseTool_t::editTransitionTarget:
-		this->updateSceneAction(SceneAction_t::usingTool, true);
 		this->updateMouseCursor(MouseCursor_t::transition);
+		this->updateSceneAction(SceneAction_t::usingTool, true);
 		break;
 	}
 }
@@ -415,9 +441,8 @@ void SceneWidget::clearScene()
 		delete oldScene;
 	}
 
-	this->updateSceneMode(SceneMode_t::noScene);
+	this->sceneMode = SceneMode_t::noScene;
 	this->updateSceneAction(SceneAction_t::idle, true);
-	this->updateMouseCursor(MouseCursor_t::none);
 }
 
 void SceneWidget::buildScene()
@@ -437,7 +462,7 @@ void SceneWidget::buildScene()
 	if ( (newScene == nullptr) || (machineBuilder == nullptr) )
 	{
 		this->setScene(new BlankScene());
-		this->setView(nullptr);
+		this->zoomFit();
 		return;
 	}
 
@@ -454,39 +479,9 @@ void SceneWidget::buildScene()
 	this->setScene(newScene);
 	newScene->recomputeSceneRect();
 	this->setView(nullptr);
-	this->updateSceneMode(SceneMode_t::editing);
-}
 
-void SceneWidget::updateSceneMode(SceneMode_t newMode)
-{
-	if (newMode == this->sceneMode) return; // If no change, ignore call
-
-	// Update mode
-	this->sceneMode = newMode;
-
-	// Update zoom buttons visibility
-	if (this->sceneMode != SceneMode_t::noScene) // editing or simulating
-	{
-		this->setZoomPanelVisible(true);
-	}
-	else // noScene
-	{
-		this->setZoomPanelVisible(false);
-	}
-
-	// Update drag mode
-	if (this->sceneMode == SceneMode_t::editing)
-	{
-		this->setDragMode(QGraphicsView::RubberBandDrag);
-	}
-	else // noScene or simulating
-	{
-		this->setDragMode(QGraphicsView::NoDrag);
-	}
-
-	// Reset action and cursor when changing mode
+	this->sceneMode = SceneMode_t::editing;
 	this->updateSceneAction(SceneAction_t::idle, true);
-	this->updateMouseCursor(MouseCursor_t::none);
 }
 
 void SceneWidget::updateSceneAction(SceneAction_t action, bool enable)
@@ -512,12 +507,11 @@ void SceneWidget::updateSceneAction(SceneAction_t action, bool enable)
 	}
 	else // idle or usingTool
 	{
-		// Depends on mode... duplicated code, can do better.
-		if (this->sceneMode != SceneMode_t::noScene) // editing or simulating
+		if (this->sceneMode != SceneMode_t::noScene)
 		{
 			this->setZoomPanelVisible(true);
 		}
-		else // noScene
+		else // (this->sceneMode == SceneMode_t::noScene)
 		{
 			this->setZoomPanelVisible(false);
 		}
@@ -535,12 +529,11 @@ void SceneWidget::updateSceneAction(SceneAction_t action, bool enable)
 	}
 	else // idle
 	{
-		// Depends on mode... duplicated code, can do better.
 		if (this->sceneMode == SceneMode_t::editing)
 		{
 			this->setDragMode(QGraphicsView::RubberBandDrag);
 		}
-		else // noScene or simulating
+		else // noScene or viewing
 		{
 			this->setDragMode(QGraphicsView::NoDrag);
 		}

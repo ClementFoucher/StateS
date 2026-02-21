@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #define FSMVERIFIER_H
 
 // Parent
-#include <QObject>
+#include <QThread>
 
 // C++ classes
 #include <memory>
@@ -37,10 +37,7 @@ using namespace std;
 class TruthTable;
 
 
-// For now, use pointers to TruthTables for storage reasons
-// (QHash vs shared_ptr).
-// Should be reviewd a some point.
-class FsmVerifier : public QObject
+class FsmVerifier : public QThread
 {
 	Q_OBJECT
 
@@ -61,20 +58,30 @@ public:
 	// Constructors/destructors
 public:
 	explicit FsmVerifier() = default;
-	~FsmVerifier();
+
+	void setCheckVhdl();
+
+	void abort();
 
 	/////
 	// Object functions
 public:
 	const QList<shared_ptr<Issue>>& getIssues();
-	const QList<shared_ptr<Issue>>& verifyFsm(bool checkVhdl);
 
-private:
-	void clearProofs();
+protected:
+	virtual void run() override;
+
+	/////
+	// Signals
+signals:
+	void verificationOver();
 
 	/////
 	// Object variables
 private:
+	bool checkVhdl = false;
+	bool doAbort = false;
+
 	QList<shared_ptr<Issue>> issues;
 
 };

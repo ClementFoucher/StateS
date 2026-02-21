@@ -55,11 +55,6 @@ public:
 
 	void clearSelection();
 
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-
 private slots:
 	void machineReplacedEventHandler();
 
@@ -67,6 +62,13 @@ private slots:
 
 private:
 	void buildToolbar();
+
+	/////
+	// Signals
+signals:
+	void itemSelectedEvent(componentId_t componentId);
+	void editSelectedItemEvent();
+	void renameSelectedItemEvent();
 
 	/////
 	// Object variables

@@ -411,7 +411,7 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="331"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="354"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
@@ -436,7 +436,37 @@
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="321"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="316"/>
+        <source>Too much combinations!</source>
+        <translation>Trop de combinaisons !</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="317"/>
+        <source>StateS will not display the truth table when there is more than 1024 combinations.</source>
+        <translation>StateS n&apos;affiche pas la table de vérité lorsqu&apos;elle contient plus de 1024 combinaisons.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="329"/>
+        <source>Error!</source>
+        <translation>Erreur !</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="330"/>
+        <source>StateS was unable to build the truth table.</source>
+        <translation>StateS n&apos;a pas réussi à construire la table de vérité.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="331"/>
+        <source>The equation may be is invalid,</source>
+        <translation>L&apos;équation est peut-être invalide,</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="332"/>
+        <source>or there are too many combinations to compute.</source>
+        <translation>ou elle a trop de combinaisons possible pour être calculée.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="344"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
@@ -773,19 +803,19 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="277"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="804"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="316"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="882"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="278"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="809"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="317"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="887"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1116"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1159"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -793,103 +823,118 @@
 <context>
     <name>FsmVerifier</name>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="50"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="61"/>
         <source>No FSM.</source>
         <translation>Aucune FSM.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="57"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="68"/>
         <source>Empty FSM.</source>
         <translation>FSM vide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="67"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="78"/>
         <source>No initial state.</source>
         <translation>Aucun état initial défini.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="100"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="111"/>
         <source>Error on transition condition from state</source>
         <translation>Erreur sur la condition d&apos;une transition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="100"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="111"/>
         <source>Please correct this equation:</source>
         <translation>Veuillez corriger cette équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="117"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="128"/>
         <source>Multiple transitions from state</source>
         <translation>Plusieurs transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="117"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="128"/>
         <source>have a condition value always true.</source>
         <translation>ont une condition définie comme toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="135"/>
         <source>One transition from state</source>
         <translation>Une trnsition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="135"/>
         <source>has a condition value always true.</source>
         <translation>a une condition toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="124"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="135"/>
         <source>Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.</source>
         <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="156"/>
+        <source>StateS was unable to build the truth table for transitions going out of state</source>
+        <translation>StateS n&apos;a pas réussi à construire la table de vérité pour les transitions ayant pour origine l&apos;état</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="157"/>
+        <source>This is probably because there are too many combinations to compute.</source>
+        <translation>C&apos;est probablement dû à un trop grand nombre de combinaisons à calculer.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="158"/>
+        <source>This means that there may be transitions going out of this state that are not mutually exclusive.</source>
+        <translation>Cela signifie qu&apos;il y a potentiellement des transitions ayant pour origine cet état qui ne sont pas mutuellement exclusives.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="185"/>
         <source>Transitions from state</source>
         <translation>Les transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="185"/>
         <source>are not mutually exclusive.</source>
         <translation>ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="185"/>
         <source>Two transitions or more can be active at the same time.</source>
         <translation>Deux transitions ou plus peuvent être actives au même moment.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="187"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="201"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="215"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="219"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="233"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="247"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="189"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="203"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="217"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="221"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="235"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="249"/>
         <source>StateS VHDL exporter is currently unable to handle these variables.</source>
         <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="190"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="204"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="218"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="222"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="236"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="250"/>
         <source>This variable will be ignored on VHDL export.</source>
         <translation>Cette variable sera ignorée lors de l&apos;export VHDL.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="202"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="234"/>
         <source>has range-adressed output generation.</source>
         <translation>génère des sorties sur des bits indépendants.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="216"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="248"/>
         <source>has Mealy outputs affectation (remembered value).</source>
         <translation>est une sortie de Mealy avec mémorisation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="188"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="220"/>
         <source>has both Moore and Mealy behaviors.</source>
         <translation>a un comportement à la fois de Moore et de Mealy.</translation>
     </message>
@@ -2261,20 +2306,20 @@
     <name>ResourceBar</name>
     <message>
         <location filename="../src/ui/resource_bar/resourcebar.cpp" line="142"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="187"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="200"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="193"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="206"/>
         <source>Editor</source>
         <translation>Éditeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="188"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="201"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="194"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="207"/>
         <source>Simulator</source>
         <translation>Simulateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="190"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="196"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="209"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
@@ -2289,20 +2334,20 @@
         <translation>Transition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="189"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="202"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="195"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="208"/>
         <source>Verifier</source>
         <translation>Vérificateur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="185"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="198"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="191"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="204"/>
         <source>Hints</source>
         <translation>Astuces</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="186"/>
-        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="199"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="192"/>
+        <location filename="../src/ui/resource_bar/resourcebar.cpp" line="205"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
@@ -2646,7 +2691,7 @@
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="632"/>
+        <location filename="../src/ui/statesui.cpp" line="649"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
@@ -2661,17 +2706,17 @@
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="633"/>
+        <location filename="../src/ui/statesui.cpp" line="650"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="599"/>
+        <location filename="../src/ui/statesui.cpp" line="616"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="526"/>
+        <location filename="../src/ui/statesui.cpp" line="543"/>
         <source>Created with</source>
         <translation>Créé avec</translation>
     </message>
@@ -2701,9 +2746,9 @@
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="440"/>
-        <location filename="../src/ui/statesui.cpp" line="450"/>
-        <location filename="../src/ui/statesui.cpp" line="492"/>
+        <location filename="../src/ui/statesui.cpp" line="470"/>
+        <location filename="../src/ui/statesui.cpp" line="480"/>
+        <location filename="../src/ui/statesui.cpp" line="509"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -2998,67 +3043,92 @@
 <context>
     <name>VerifierTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="48"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="49"/>
         <source>Verifier tool</source>
         <translation>Outil de vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="57"/>
         <source>Check machine</source>
         <translation>Vérifier la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="70"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="161"/>
         <source>No errors!</source>
         <translation>Aucune erreur !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="142"/>
-        <source>Clear verification</source>
-        <translation>Effacer la vérification</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="52"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="55"/>
         <source>Check for VHDL export restrictions</source>
         <translation>Vérifier les restrictions d&apos;export VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="79"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="81"/>
+        <source>Verification in progress...</source>
+        <translation>Vérification en cours...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="86"/>
+        <source>Cancel verification</source>
+        <translation>Annuler la vérification</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="152"/>
+        <source>Clear verification results</source>
+        <translation>Effacer les résultats de la vérification</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="170"/>
         <source>The following issues were found:</source>
         <translation>Les problèmes suivants ont été trouvés :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="130"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="222"/>
         <source>Issues in red are blocking for the machine to work.</source>
         <translation>Les problèmes en rouge sont bloquants pour le fonctionnement de la machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="134"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="230"/>
         <source>Issues in green are not machine errors but have restriction in StateS.</source>
         <translation>Les problèmes en vert ne sont pas des erreurs de la machine mais ont des restrictions dans StateS.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="136"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="234"/>
         <source>Yellow highlighted issues can be double-clicked for more details on the error.</source>
         <translation>Vous pouvez double-cliquer sur les erreurs surlignées en jaune pour obtenir plus de détails sur l&apos;erreur.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="138"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="237"/>
         <source>Hint</source>
         <translation>Astuce</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="186"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="278"/>
+        <source>Warning: The verification has been running for an anormal duration.</source>
+        <translation>Attention : la vérification prend un temps anormal à arriver à son terme.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="280"/>
+        <source>This looks like the number of combinations to test is very high.</source>
+        <translation>Il semble que le nombre de combinaisons à tester est très élevé.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="282"/>
+        <source>Consider canceling the verification.</source>
+        <translation>Envisagez d&apos;annuler la vérification.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="309"/>
         <source>Details on error</source>
         <translation>Détails sur l&apos;erreur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="132"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="226"/>
         <source>Issues in blue won&apos;t block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.</source>
         <translation>Les problèmes en bleu ne bloqueront pas le fonctionnement de la machine, mais sont des erreurs structurelles qui mènent à un comportement non défini, et doivent donc être corrigées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="184"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="307"/>
         <source>Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
         <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
     </message>

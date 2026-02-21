@@ -44,18 +44,17 @@ public:
 	QRectF getItemsBoundingRect();
 	void recomputeSceneRect();
 
-protected:
-	virtual void updateInterfaceMode(InterfaceMode_t newMode) = 0;
+private slots:
+	virtual void interfaceModeChangedEventHandler(InterfaceMode_t newMode) = 0;
 
+	/////
+	// Signals
 signals:
 	void itemSelectedEvent(componentId_t componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 	void requestSaveViewEvent();
 	void requestRestoreViewEvent();
-
-private slots:
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
 
 };
 

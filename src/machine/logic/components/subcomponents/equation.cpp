@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -21,6 +21,9 @@
 
 // Current class header
 #include "equation.h"
+
+// Qt classes
+#include <QSet>
 
 // StateS classes
 #include "operand.h"
@@ -233,6 +236,32 @@ void Equation::setOperatorType(OperatorType_t newOperator)
 OperatorType_t Equation::getOperatorType() const
 {
 	return this->operatorType;
+}
+
+QSet<componentId_t> Equation::getVariablesIdsSet() const
+{
+	QSet<componentId_t> variablesIds;
+
+	for (const auto& operand : this->operands)
+	{
+		if (operand == nullptr) continue;
+
+
+		if (operand->getSource() == OperandSource_t::equation)
+		{
+			auto equation = operand->getEquation();
+			if (equation == nullptr) continue;
+
+
+			variablesIds += equation->getVariablesIdsSet();
+		}
+		else if (operand->getSource() == OperandSource_t::variable)
+		{
+			variablesIds.insert(operand->getVariableId());
+		}
+	}
+
+	return variablesIds;
 }
 
 bool Equation::isInverted() const

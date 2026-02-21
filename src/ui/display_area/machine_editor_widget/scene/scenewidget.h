@@ -40,11 +40,12 @@ class ViewConfiguration;
 
 
 /**
- * @brief The SceneWidget class displays a graphic scene
- * linked to a machine. Replacing the machine makes the
+ * @brief The SceneWidget class handles the graphic scene,
+ * which shows the machine. Replacing the machine makes the
  * SceneWidget replace its graphic scene.
- * This class is also in charge of the zoom level UI,
- * and adapts the cursor depending on actions.
+ * This class is in charge of the zoom level and scrolling
+ * of the scene. It displays a the zoom UI, and adapts
+ * the mouse cursor depending on actions.
  */
 class SceneWidget : public StatesGraphicsView
 {
@@ -53,7 +54,7 @@ class SceneWidget : public StatesGraphicsView
 	/////
 	// Type declarations
 private:
-	enum class SceneMode_t { noScene, editing, simulating };
+	enum class SceneMode_t { noScene, editing, viewing };
 	typedef enum : uint32_t { idle = 0, movingScene = 1, usingTool = 2} SceneAction_t;
 
 	/////
@@ -75,11 +76,6 @@ public:
 	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
 	shared_ptr<ViewConfiguration> getView() const;
 	void clearSelection();
-
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
 
 protected:
 	virtual void mousePressEvent      (QMouseEvent*)  override;
@@ -107,13 +103,19 @@ private slots:
 private:
 	void clearScene();
 	void buildScene();
-	void updateSceneMode(SceneMode_t newMode);
 	void updateSceneAction(SceneAction_t action, bool enable);
 	void updateMouseCursor(MouseCursor_t cursor);
 	void setZoomPanelVisible(bool visible);
 	void setZoomLevel(qreal level);
 	qreal getZoomLevel() const;
 	QRectF getVisibleArea() const;
+
+	/////
+	// Signals
+signals:
+	void itemSelectedEvent(componentId_t componentId);
+	void editSelectedItemEvent();
+	void renameSelectedItemEvent();
 
 	/////
 	// Object variables

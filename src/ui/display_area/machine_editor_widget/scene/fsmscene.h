@@ -84,9 +84,9 @@ protected:
 	virtual void keyPressEvent    (QKeyEvent*                      ke) override;
 	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
-	virtual void updateInterfaceMode(InterfaceMode_t newMode) override;
-
 private slots:
+	virtual void interfaceModeChangedEventHandler(InterfaceMode_t newMode) override;
+
 	// Machine manager signals
 	void machineUpdatedEventHandler();
 
