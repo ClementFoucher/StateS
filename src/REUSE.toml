@@ -1,0 +1,17 @@
+version = 1
+
+[[annotations]]
+path = "third_party/dtl/**"
+SPDX-FileCopyrightText = "Tatsuhiko Kubo"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+    "main.cpp",
+    "core/**",
+    "machine/**",
+    "ui/**"
+]
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "GPL-2.0-only"
+

@@ -1,0 +1,17 @@
+version = 1
+
+[[annotations]]
+path = "CMakeLists.txt"
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = [
+    "code_guidelines.txt",
+    "known_bugs.txt",
+    "release_notes.txt",
+    "upcoming_features.txt"
+]
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+

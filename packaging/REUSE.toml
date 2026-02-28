@@ -1,0 +1,16 @@
+version = 1
+
+[[annotations]]
+path = [
+    "Linux/AppImageBuilder.yml",
+    "Windows/build_arch_mingw.sh",
+    "Windows/WindowsMetadata.rc",
+]
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "Windows/StateS.ico"
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+

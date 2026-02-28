@@ -1,0 +1,7 @@
+version = 1
+
+[[annotations]]
+path = "*.SfsmS"
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC0-1.0"
+

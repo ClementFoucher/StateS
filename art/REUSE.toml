@@ -1,0 +1,46 @@
+version = 1
+
+[[annotations]]
+path = "3rd_party/Usb_stick_by_mimooh.svg"
+SPDX-FileCopyrightText = "Mimooh"
+SPDX-License-Identifier = "CC-BY-SA-3.0"
+
+[[annotations]]
+path = "3rd_party/Gnome-go-jump.svg"
+SPDX-FileCopyrightText = "GNOME Project"
+SPDX-License-Identifier = "LGPL-3.0-or-later"
+
+[[annotations]]
+path = [
+    "3rd_party/Gtk-undo-ltr.svg",
+    "3rd_party/Gtk-redo-ltr.svg"
+]
+SPDX-FileCopyrightText = "David Vignoni / ICON KING"
+SPDX-License-Identifier = "LGPL-2.1-or-later"
+
+[[annotations]]
+path = "3rd_party/29699-kleanSweep.svg"
+SPDX-FileCopyrightText = "gg3po"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = [
+    "3rd_party/Oxygen15.04.1-flag-blue.svg",
+    "3rd_party/Oxygen480-actions-flag-yellow.svg"
+]
+SPDX-FileCopyrightText = [
+    "The Oxygen Team",
+    "KDE"
+]
+SPDX-License-Identifier = "LGPL-3.0-or-later"
+
+[[annotations]]
+path = [
+    "AUTHORS.md",
+    "png/*.png",
+    "screenshots/*.png",
+    "svg/*.svg"
+]
+SPDX-FileCopyrightText = "Clément Foucher"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
