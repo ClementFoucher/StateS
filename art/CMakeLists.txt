@@ -2,9 +2,6 @@
 set_source_files_properties("3rd_party/29699-kleanSweep.svg"
     PROPERTIES QT_RESOURCE_ALIAS "clear"
 )
-set_source_files_properties("3rd_party/Oxygen15.04.1-flag-blue.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "add_checkpoint"
-)
 set_source_files_properties("svg/Active_on_state.svg"
     PROPERTIES QT_RESOURCE_ALIAS "active_on_state"
 )
@@ -72,7 +69,6 @@ set_source_files_properties("svg/Undo.svg"
 # Set files lists
 set(art_files
     "3rd_party/29699-kleanSweep.svg"
-    "3rd_party/Oxygen15.04.1-flag-blue.svg"
     "svg/Active_on_state.svg"
     "svg/Assign.svg"
     "svg/Attach_window.svg"

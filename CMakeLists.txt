@@ -7,7 +7,11 @@
 
 # Define project
 cmake_minimum_required(VERSION 3.31)
-project(StateS VERSION 0.4.9 LANGUAGES CXX)
+project(StateS
+    VERSION      0.4.9
+    HOMEPAGE_URL "https://github.com/ClementFoucher/StateS"
+    LANGUAGES    CXX
+)
 # Also remember to update version in README.md, known_bugs.txt, AppImageBuilder.yml and WindowsMetadata.rc (x4!)
 
 # Set variables used by the project
@@ -15,12 +19,9 @@ set(STATES_DATES "2014-2026")
 # Also remember to update date in WindowsMetadata.rc
 
 # Configure toolchain
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD          20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Aditional configuration
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/ClementFoucher/StateS")
+set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
 
 # Qt required modules
 find_package(Qt6 REQUIRED COMPONENTS
@@ -39,17 +40,32 @@ qt_standard_project_setup(
     I18N_TRANSLATED_LANGUAGES fr
 )
 
-# Define CMake target
+# Define CMake target depending on OS
+set(main_source_file "src/main.cpp")
 if(WIN32)
     qt_add_executable(StateS
-        "src/main.cpp"
+        WIN32
+        ${main_source_file}
         "packaging/Windows/WindowsMetadata.rc"
+    )
+elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    qt_add_executable(StateS
+        MACOSX_BUNDLE
+        ${main_source_file}
     )
 else()
     qt_add_executable(StateS
-        "src/main.cpp"
+        ${main_source_file}
     )
 endif()
+
+# Define C++ macros used in code
+target_compile_definitions(StateS PRIVATE
+    STATES_VERSION_MAJOR=\"${PROJECT_VERSION_MAJOR}\"
+    STATES_VERSION_MINOR=\"${PROJECT_VERSION_MINOR}\"
+    STATES_VERSION_PATCH=\"${PROJECT_VERSION_PATCH}\"
+    STATES_DATE=\"${STATES_DATES}\"
+)
 
 # Add project subdirectories
 add_subdirectory("art")
@@ -63,14 +79,6 @@ target_link_libraries(StateS PRIVATE
     ui
     dtl
     text
-)
-
-# Define C++ macros used in code
-target_compile_definitions(StateS PRIVATE
-    STATES_VERSION_MAJOR=\"${PROJECT_VERSION_MAJOR}\"
-    STATES_VERSION_MINOR=\"${PROJECT_VERSION_MINOR}\"
-    STATES_VERSION_PATCH=\"${PROJECT_VERSION_PATCH}\"
-    STATES_DATE=\"${STATES_DATES}\"
 )
 
 # Link with Qt libraries
@@ -102,10 +110,4 @@ qt_add_translations(StateS
     RESOURCE_PREFIX "/translations"
     LUPDATE_TARGET  "update_translations_clean_vanished"
     LUPDATE_OPTIONS "-no-obsolete"
-)
-
-# Set some os-specific properties
-set_target_properties(StateS PROPERTIES
-    WIN32_EXECUTABLE ON
-    MACOSX_BUNDLE    ON
 )
