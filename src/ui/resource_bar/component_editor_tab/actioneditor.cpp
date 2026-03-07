@@ -94,7 +94,7 @@ ActionEditor::ActionEditor(componentId_t actuatorId, QWidget* parent) :
 	}
 
 	//
-	// Build complete rendreding
+	// Build complete rendering
 	auto buttonLayout = new QGridLayout();
 	buttonLayout->addWidget(this->buttonAddAction,    0, 0, 1, 2);
 	buttonLayout->addWidget(this->buttonRemoveAction, 0, 2, 1, 2);

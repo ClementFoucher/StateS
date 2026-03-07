@@ -59,7 +59,7 @@ VariableListEditor::VariableListEditor(VariableNature_t editorNature, QWidget* p
 	connect(this->buttonDown,   &QPushButton::clicked, this, &VariableListEditor::buttonDownPressedEventHandler);
 
 	//
-	// Build complete rendreding
+	// Build complete rendering
 	auto buttonLayout = new QGridLayout();
 	buttonLayout->addWidget(this->buttonAdd,    0, 0, 1, 2);
 	buttonLayout->addWidget(this->buttonRemove, 0, 2, 1, 2);

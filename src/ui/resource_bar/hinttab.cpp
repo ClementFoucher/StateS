@@ -54,7 +54,7 @@ HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QW
 	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get(), this);
 
 	//
-	// Build complete rendreding
+	// Build complete rendering
 	auto layout = new QVBoxLayout(this);
 
 	layout->addWidget(this->hintDisplay);
