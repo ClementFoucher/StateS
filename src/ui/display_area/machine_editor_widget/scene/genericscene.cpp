@@ -23,57 +23,8 @@
 #include "genericscene.h"
 
 // Qt classes
-#include <QGraphicsItem>
 #include <QGraphicsView>
 
-// StateS classes
-#include "machinemanager.h"
-
-
-GenericScene::GenericScene()
-{
-	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &GenericScene::interfaceModeChangedEventHandler);
-}
-
-QRectF GenericScene::getItemsBoundingRect()
-{
-	if (this->items().count() == 0) return QRectF();
-
-	// Use one item to initialize rect
-	auto firstItem = this->items().at(0);
-	qreal leftmostPosition   = firstItem->mapToScene(firstItem->boundingRect().topLeft()).x();
-	qreal topmostPosition    = firstItem->mapToScene(firstItem->boundingRect().topLeft()).y();
-	qreal rightmostPosition  = firstItem->mapToScene(firstItem->boundingRect().bottomRight()).x();
-	qreal bottommostPosition = firstItem->mapToScene(firstItem->boundingRect().bottomRight()).y();
-
-	// Then adjust to include all items
-	const auto items = this->items();
-	for (QGraphicsItem* item : items)
-	{
-		// Get item's boundig box scene coordinates
-		// Use two points instead of the rect to avoid polygon conversion
-		QPointF itemTopLeft     = item->mapToScene(item->boundingRect().topLeft());
-		QPointF itemBottomRight = item->mapToScene(item->boundingRect().bottomRight());
-
-		if (itemTopLeft.x() < leftmostPosition)
-			leftmostPosition = itemTopLeft.x();
-
-		if (itemTopLeft.y() < topmostPosition)
-			topmostPosition = itemTopLeft.y();
-
-		if (itemBottomRight.x() > rightmostPosition)
-			rightmostPosition = itemBottomRight.x();
-
-		if (itemBottomRight.y() > bottommostPosition)
-			bottommostPosition = itemBottomRight.y();
-	}
-
-	// Build rect with a margin
-	const int margin = 100;
-	QRectF finalDisplayRectangle(QPoint(leftmostPosition-margin, topmostPosition-margin), QPoint(rightmostPosition+margin, bottommostPosition+margin));
-
-	return finalDisplayRectangle;
-}
 
 void GenericScene::recomputeSceneRect()
 {
@@ -88,7 +39,7 @@ void GenericScene::recomputeSceneRect()
 	auto top    = -displaySize.height()/2;
 	auto bottom =  displaySize.height()/2;
 
-	auto newSceneRect = this->getItemsBoundingRect();
+	auto newSceneRect = this->getItemsBoundingRect(100);
 
 	if (newSceneRect.left() > left)
 	{

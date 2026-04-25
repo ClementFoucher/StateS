@@ -1,7 +1,7 @@
 /*
- * Copyright © 2014-2026 Clément Foucher
+ * Copyright © 2026 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -16,42 +16,34 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef STATESSCENE_H
+#define STATESSCENE_H
 
 // Parent
-#include "statesscene.h"
-
-// StateS classes
-#include "statestypes.h"
+#include <QGraphicsScene>
 
 
-class GenericScene : public StatesScene
+class StatesScene : public QGraphicsScene
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GenericScene() = default;
+	explicit StatesScene() = default;
+	virtual ~StatesScene() = default;
 
 	/////
 	// Object functions
 public:
-	void recomputeSceneRect();
+	QRectF getItemsBoundingRect(uint margin = 0) const;
 
-	/////
-	// Signals
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-	void requestSaveViewEvent();
-	void requestRestoreViewEvent();
+protected:
+	QGraphicsTextItem* buildGraphicsTextItem(const QString& text) const;
 
 };
 
-#endif // GENERICSCENE_H
+#endif // STATESSCENE_H

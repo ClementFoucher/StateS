@@ -1,7 +1,7 @@
 /*
- * Copyright © 2014-2026 Clément Foucher
+ * Copyright © 2026 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -16,42 +16,35 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with StateS. If not, see <http://www.gnu.org/licenses/>.
+ * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERICSCENE_H
-#define GENERICSCENE_H
+#ifndef FIXEDSIZELINEEDITOR_H
+#define FIXEDSIZELINEEDITOR_H
 
 // Parent
-#include "statesscene.h"
-
-// StateS classes
-#include "statestypes.h"
+#include <QLineEdit>
 
 
-class GenericScene : public StatesScene
+class FixedSizeLineEditor : public QLineEdit
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GenericScene() = default;
+	explicit FixedSizeLineEditor(uint characters, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void recomputeSceneRect();
+	virtual QSize sizeHint() const override;
 
 	/////
-	// Signals
-signals:
-	void itemSelectedEvent(componentId_t componentId);
-	void editSelectedItemEvent();
-	void renameSelectedItemEvent();
-	void requestSaveViewEvent();
-	void requestRestoreViewEvent();
+	// Object variables
+private:
+	uint fixedWidth = 0;
 
 };
 
-#endif // GENERICSCENE_H
+#endif // FIXEDSIZELINEEDITOR_H

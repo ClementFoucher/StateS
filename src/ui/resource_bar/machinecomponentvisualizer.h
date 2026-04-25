@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,11 @@
 using namespace std;
 
 // Qt classes
-class QGraphicsScene;
 class QGraphicsView;
 class QMouseEvent;
+
+// StateS classes
+class GenericScene;
 
 
 class MachineComponentVisualizer : public StatesGraphicsView
@@ -47,7 +49,7 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
+	shared_ptr<GenericScene> getComponentVisualizationScene() const;
 
 protected:
 	virtual void mousePressEvent      (QMouseEvent* me)    override;
@@ -62,7 +64,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	shared_ptr<QGraphicsScene> scene;
+	shared_ptr<GenericScene> scene;
 
 	// Qwidget with parent
 	QGraphicsView* view = nullptr;

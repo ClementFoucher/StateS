@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,19 +26,18 @@
 #include <QObject>
 
 // C++ classes
-using namespace std;
 #include <memory>
+using namespace std;
 
 // Qt classes
 #include <QRectF>
-class QGraphicsScene;
+#include <QPageLayout>
+class QPaintDevice;
 class QPainter;
-class QPrinter;
-class QSvgGenerator;
 
 // StateS classes
 #include "statestypes.h"
-class GenericScene;
+#include "variabletablescene.h"
 
 
 class MachineImageExporter : public QObject
@@ -48,75 +47,87 @@ class MachineImageExporter : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineImageExporter(GenericScene* scene, shared_ptr<QGraphicsScene> component);
+	explicit MachineImageExporter(StatesScene* stateGraphScene, shared_ptr<StatesScene> componentScene) :
+		stateGraphScene(stateGraphScene                  ),
+		componentScene (componentScene                   ),
+		variableScene  (make_shared<VariableTableScene>())
+	{}
 
 	/////
 	// Object functions
 public:
-	void setDisplayComponent(bool doDisplay);
-	void setDisplayConstants(bool doDisplay);
-	void setDisplayVariables(bool doDisplay);
-	void setDisplayBorder(bool doDisplay);
-	void setMainSceneRatio(uint sceneRatio);
-	void setInfoPos(LeftRight_t pos);
+	void setImageFormat(ImageFormat_t imageFormat);
 
-	shared_ptr<QPixmap> renderPreview(QSizeF previewSize);
-	void doExport(const QString& path, ImageFormat_t format, const QString& creator = QString()); // TODO: throw StatesException for file access
+	void setVectorPageLayout(const QPageLayout& pageLayout);
+	void setBitmapSize(const QSize& size);
+
+	void setDisplayComponent(bool doDisplay);
+	void setDisplayInputs   (bool doDisplay);
+	void setDisplayOutputs  (bool doDisplay);
+	void setDisplayVariables(bool doDisplay);
+	void setDisplayConstants(bool doDisplay);
+	void setDisplayBorder   (bool doDisplay);
+
+	void setOuterMargin(int margin);
+	void setInnerMargin(int margin);
+
+	void setStateGraphRatio(uint stateGraphRatio);
+
+	void setInfoPosition(LeftRight_t infoPosition);
+
+	shared_ptr<QPixmap> renderPreview(uint sideInPixels);
+	void doExport(const QString& path);
 
 private:
-	void generatePrintingRects();
-	void preparePdfPrinter(const QString& path, const QString& title, const QString& creator);
-	void renderPdf();
-	void renderSvg(const QString& path, const QString& title, const QString& creator);
-	void renderBitmap();
+	void renderPdf(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin);
+	void renderSvg(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin);
+	shared_ptr<QPixmap> renderBitmap(qreal width, qreal height);
 
-	void renderOnPainter();
+	void generatePrintingRects(QRectF renderAreaRect);
 
-	void renderScene();
-	void renderComponent();
-	void renderConstants();
-	void renderVariables();
-	void prepareBorder(const QRectF& availablePrintingRect);
-	void renderBorder();
+	void renderOnDevice(QPaintDevice* device, uint bitmapPenWidth = 0);
 
-	QRectF getActualPrintedRect(const QRectF& elementPrintingRect, const QRectF& availablePrintingRect);
+	void renderStateGraph(QPainter* painter);
+	void renderComponent (QPainter* painter);
+	void renderVariables (QPainter* painter);
+	void renderBorder    (QPainter* painter);
 
-	void freeRenderingResources();
+	QRectF getActualPrintingRect(const QRectF& inputSceneRect, const QRectF& availablePrintingRect) const;
+
+	bool hasVariablesToDisplay() const;
 
 	/////
 	// Object variables
 private:
-	const qreal spacer = 50;
+	// Input scenes
+	StatesScene*                   stateGraphScene;
+	shared_ptr<StatesScene>        componentScene;
+	shared_ptr<VariableTableScene> variableScene;
 
-	// Required elements
-	GenericScene* scene;
-	weak_ptr<QGraphicsScene> component;
-	shared_ptr<QGraphicsScene> border;
+	// Configuration
+	ImageFormat_t format = ImageFormat_t::svg;
 
-	// Options
-	uint mainSceneRatio;
-	bool includeComponent;
-	bool includeConstant;
-	bool includeVariables;
-	bool addBorder;
-	LeftRight_t infoPosition = LeftRight_t::left;
-	bool strictBorders;
+	QPageLayout vectorPageLayout;
+	QSize       bitmapSize;
 
-	// There objects handle rendering on file. All must be persistent until export is over
-	shared_ptr<QPrinter>      printer;
-	shared_ptr<QSvgGenerator> generator;
-	shared_ptr<QPixmap>       pixmap;
+	bool displayComponent = false;
+	bool displayInputs    = false;
+	bool displayOutputs   = false;
+	bool displayVariables = false;
+	bool displayConstants = false;
+	bool displayBorder    = false;
 
-	// Object we paint on
-	shared_ptr<QPainter> painter;
+	int outerMargin = 3;
+	int innerMargin = 3;
 
-	// Printing areas
-	QRectF pageRect;
-	QRectF renderAreaWithoutBordersRect;
-	QRectF scenePrintingRect;
-	QRectF componentPrintingRect;
-	QRectF constantsPrintingRect;
-	QRectF variablesPrintingRect;
+	uint stateGraphRatio = 3;
+
+	LeftRight_t infoPosition = LeftRight_t::right;
+
+	// Rects indicating area available for rendering
+	QRectF stateGraphRect;
+	QRectF componentRect;
+	QRectF variablesRect;
 
 };
 

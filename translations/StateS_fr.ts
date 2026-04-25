@@ -511,6 +511,52 @@
     </message>
 </context>
 <context>
+    <name>DocumentSizeEditor</name>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="41"/>
+        <source>Size:</source>
+        <translation>Taille :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="54"/>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="369"/>
+        <source>mm</source>
+        <translation>mm</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="55"/>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="373"/>
+        <source>in</source>
+        <translation>pouces</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="60"/>
+        <source>pixels</source>
+        <translation>pixels</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="63"/>
+        <source>Orientation:</source>
+        <translation>Orientation :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="66"/>
+        <source>Landscape</source>
+        <translation>Paysage</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="67"/>
+        <source>Portrait</source>
+        <translation>Portrait</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="257"/>
+        <location filename="../src/ui/common/editors/documentsizeeditor.cpp" line="284"/>
+        <source>Custom</source>
+        <translation>Personnalisée</translation>
+    </message>
+</context>
+<context>
     <name>EquationEditorDialog</name>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="45"/>
@@ -803,19 +849,19 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="316"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="882"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="317"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="883"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="317"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="887"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="318"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="888"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1159"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1160"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -1558,84 +1604,129 @@
 <context>
     <name>ImageExportDialog</name>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="108"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="95"/>
+        <source>Position of the additional information:</source>
+        <translation>Position des éléments additionnels :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="104"/>
+        <source>Ratio between state graph and additional information:</source>
+        <translation>Rapport entre le graphe d&apos;état et les informations additionnelles :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="109"/>
+        <source>Additional margin inside each area:</source>
+        <translation>Marge supplémentaire dans chaque zone :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="122"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="112"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="123"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="166"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="91"/>
+        <source>Configuration of the additional information</source>
+        <translation>Configuration des éléments additionnels</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="240"/>
         <source>Export machine to Pdf</source>
         <translation>Exporter la machine en Pdf</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="174"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="243"/>
         <source>Export machine to Svg</source>
         <translation>Exporter la machine en Svg</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="182"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="246"/>
         <source>Export machine to Png</source>
         <translation>Exporter la machine en Png</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="190"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="249"/>
         <source>Export machine to Jpeg</source>
         <translation>Exporter la machine en Jpeg</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="54"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="56"/>
         <source>Customize image</source>
         <translation>Personnaliser l&apos;image</translation>
     </message>
     <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="49"/>
+        <source>Export as image</source>
+        <translation>Exporter en tant qu&apos;image</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="77"/>
+        <source>Include additional information next to the state graph</source>
+        <translation>Inclure des informations supplémentaires en plus du graphe</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="73"/>
+        <source>Margin:</source>
+        <translation>Marge :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="84"/>
+        <source>Include inputs</source>
+        <translation>Inclure les entrées</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="85"/>
+        <source>Include outputs</source>
+        <translation>Inclure les sorties</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="86"/>
+        <source>Include internal variables</source>
+        <translation>Inclure les variables internes</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="93"/>
+        <source>Display a border</source>
+        <translation>Afficher une bordure</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="98"/>
+        <source>Right</source>
+        <translation>Droite</translation>
+    </message>
+    <message>
         <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="99"/>
+        <source>Left</source>
+        <translation>Gauche</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="81"/>
+        <source>Additional information to include</source>
+        <translation>Éléments additionnels à inclure</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="115"/>
         <source>Preview</source>
         <translation>Prévisualisation</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="64"/>
-        <source>Image format</source>
-        <translation>Format de l&apos;image</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="67"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="83"/>
         <source>Include component external view</source>
         <translation>Inclure la vue externe du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="72"/>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="58"/>
+        <source>Format:</source>
+        <translation>Format :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="87"/>
         <source>Include constants</source>
         <translation>Inclure les constantes</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="76"/>
-        <source>Include variables</source>
-        <translation>Inclure les variables</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="80"/>
-        <source>Place information to the right</source>
-        <translation>Placer les informations à droite</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="84"/>
-        <source>Add border</source>
-        <translation>Ajouter une bordure</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="89"/>
-        <source>Ratio between machine view and aditional information</source>
-        <translation>Ratio entre la taille de la machine et celle des informations aditionnelles</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/imageexportdialog.cpp" line="50"/>
-        <source>Image export</source>
-        <translation>Exporter une image</translation>
     </message>
 </context>
 <context>
@@ -1793,14 +1884,9 @@
 <context>
     <name>MachineImageExporter</name>
     <message>
-        <location filename="../src/machine/export/machineimageexporter.cpp" line="355"/>
-        <source>Constants:</source>
-        <translation>Constantes :</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/export/machineimageexporter.cpp" line="396"/>
-        <source>Variables:</source>
-        <translation>Variables :</translation>
+        <location filename="../src/machine/export/machineimageexporter.cpp" line="150"/>
+        <source>Created with</source>
+        <translation>Créé avec</translation>
     </message>
 </context>
 <context>
@@ -2353,6 +2439,44 @@
     </message>
 </context>
 <context>
+    <name>SaveFileDialog</name>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="43"/>
+        <source>already exists and is a folder.</source>
+        <translation>existe déjà et est un dossier.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="44"/>
+        <source>StateS is unable to write a file with this name.</source>
+        <translation>StateS ne peut pas créer de fichier sous ce nom.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="45"/>
+        <source>Unable to overwrite</source>
+        <translation>Impossible d&apos;écraser</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="51"/>
+        <source>File</source>
+        <translation>Le fichier</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="51"/>
+        <source>already exists.</source>
+        <translation>existe déjà.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="53"/>
+        <source>Do you want to overwrite it?</source>
+        <translation>Voulez-vous l&apos;écraser ?</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/savefiledialog.cpp" line="54"/>
+        <source>User confirmation needed</source>
+        <translation>Confirmation de l&apos;utilisateur requise</translation>
+    </message>
+</context>
+<context>
     <name>SceneWidget</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/scenewidget.cpp" line="60"/>
@@ -2681,74 +2805,69 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="284"/>
+        <location filename="../src/ui/statesui.cpp" line="285"/>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="311"/>
+        <location filename="../src/ui/statesui.cpp" line="312"/>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="649"/>
+        <location filename="../src/ui/statesui.cpp" line="646"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="325"/>
+        <location filename="../src/ui/statesui.cpp" line="326"/>
         <source>Clear current machine?</source>
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="335"/>
+        <location filename="../src/ui/statesui.cpp" line="336"/>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="650"/>
+        <location filename="../src/ui/statesui.cpp" line="647"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="616"/>
+        <location filename="../src/ui/statesui.cpp" line="613"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="543"/>
-        <source>Created with</source>
-        <translation>Créé avec</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/statesui.cpp" line="133"/>
+        <location filename="../src/ui/statesui.cpp" line="134"/>
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="250"/>
+        <location filename="../src/ui/statesui.cpp" line="251"/>
         <source>Load file</source>
         <translation>Charger un fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="250"/>
+        <location filename="../src/ui/statesui.cpp" line="251"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="304"/>
+        <location filename="../src/ui/statesui.cpp" line="305"/>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="85"/>
+        <location filename="../src/ui/statesui.cpp" line="86"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="470"/>
-        <location filename="../src/ui/statesui.cpp" line="480"/>
-        <location filename="../src/ui/statesui.cpp" line="509"/>
+        <location filename="../src/ui/statesui.cpp" line="469"/>
+        <location filename="../src/ui/statesui.cpp" line="479"/>
+        <location filename="../src/ui/statesui.cpp" line="508"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -2970,6 +3089,70 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="116"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
+    </message>
+</context>
+<context>
+    <name>VariableTableScene</name>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="94"/>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="97"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="115"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="133"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="151"/>
+        <source>Name</source>
+        <translation>Nom</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="112"/>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="130"/>
+        <source>Internal variables</source>
+        <translation>Variables internes</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="148"/>
+        <source>Constants</source>
+        <translation>Constantes</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="169"/>
+        <source>yes</source>
+        <translation>oui</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="174"/>
+        <source>no</source>
+        <translation>non</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="181"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="187"/>
+        <source>Memorized</source>
+        <translation>Mémorisée</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="252"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="258"/>
+        <source>Initial value</source>
+        <translation>Valeur initiale</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="281"/>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="287"/>
+        <source>Default value</source>
+        <translation>Valeur par défaut</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/scene/variabletablescene.cpp" line="299"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>

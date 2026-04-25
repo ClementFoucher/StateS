@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,12 +32,15 @@ using namespace std;
 // Qt classes
 class QComboBox;
 class QLabel;
-class QSlider;
+class QCheckBox;
+class QGroupBox;
 
 // StateS classes
 #include "statestypes.h"
 class MachineImageExporter;
-class CheckBoxHtml;
+class DocumentSizeEditor;
+class SliderWithTitleAndValue;
+class StatesScene;
 
 
 class ImageExportDialog : public StatesDialog
@@ -47,7 +50,7 @@ class ImageExportDialog : public StatesDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit ImageExportDialog(const QString& baseFileName, shared_ptr<MachineImageExporter> imageExporter, const QString& searchPath, QWidget* parent = nullptr);
+	explicit ImageExportDialog(StatesScene* stateGraphScene, shared_ptr<StatesScene> componentScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -55,43 +58,65 @@ public slots:
 	virtual void accept() override;
 
 public:
-	ImageFormat_t getImageFormat() const;
 	QString getFilePath() const;
 
 	shared_ptr<MachineImageExporter> getImageExporter() const;
 
-protected slots:
-	virtual void resizeEvent(QResizeEvent*) override;
-
 private slots:
-	void includeComponentCheckBoxChanged(bool b);
-	void includeConstantsCheckBoxChanged(bool b);
-	void includeVariablesCheckBoxChanged(bool b);
-	void infoToTheRightCheckBoxChanged(bool b);
-	void addBorderCheckBoxChanged(bool b);
-	void ratioSliderValueChanged(int i);
+	void includeAdditionalInfoCheckBoxChanged(bool doInclude);
+	void includeComponentCheckBoxChanged(bool checked);
+	void includeInputsCheckBoxChanged(bool checked);
+	void includeOutputsCheckBoxChanged(bool checked);
+	void includeVariablesCheckBoxChanged(bool checked);
+	void includeConstantsCheckBoxChanged(bool checked);
+	void addBorderCheckBoxChanged(bool checked);
+	void imageFormatComboBoxChanged(int);
+	void additionalInfoPositionComboBoxChanged(int);
+	void additionalInfoRatioSliderChanged(int ratio);
+	void outerMarginSliderChanged(int margin);
+	void innerMarginSliderChanged(int margin);
+	void selectedSizeChangedEventHandler();
 
 private:
+	ImageFormat_t getImageFormat() const;
 	void updatePreview();
 
 	/////
 	// Object variables
 private:
-	QComboBox*    imageFormatSelectionBox  = nullptr;
-	CheckBoxHtml* includeComponentCheckBox = nullptr;
-	CheckBoxHtml* includeConstantsCheckBox = nullptr;
-	CheckBoxHtml* includeVariablesCheckBox = nullptr;
-	CheckBoxHtml* infoToTheRightCheckBox   = nullptr;
-	CheckBoxHtml* addBorderCheckBox        = nullptr;
-	QSlider*      ratioSlider              = nullptr;
-	QLabel*       previewWidget            = nullptr;
+	// Constant
+	const uint previewSidePixels = 500;
 
-	shared_ptr<MachineImageExporter> previewManager;
-	shared_ptr<QPixmap> previewPixmap;
+	// Widgets
+	QGroupBox* additionalInfoSelectionGroup     = nullptr;
+	QGroupBox* additionalInfoConfigurationGroup = nullptr;
 
+	QComboBox* imageFormatComboBox            = nullptr;
+	QComboBox* additionalInfoPositionComboBox = nullptr;
+
+	QCheckBox* addBorderCheckBox        = nullptr;
+	QCheckBox* includeComponentCheckBox = nullptr;
+	QCheckBox* includeInputsCheckBox    = nullptr;
+	QCheckBox* includeOutputsCheckBox   = nullptr;
+	QCheckBox* includeVariablesCheckBox = nullptr;
+	QCheckBox* includeConstantsCheckBox = nullptr;
+
+	DocumentSizeEditor* imageSizeEditor = nullptr;
+
+	SliderWithTitleAndValue* innerMarginSlider = nullptr;
+
+	QLabel* previewWidget = nullptr;
+
+	// Other objects
+	shared_ptr<MachineImageExporter> imageExporter;
+
+	// Paths
+	QString baseFilePath;
 	QString baseFileName;
-	QString searchPath;
-	QString filePath;
+	QString outputFilePath;
+
+	// Status
+	bool haveAdditionalInfoBeenConfigured = false;
 
 };
 

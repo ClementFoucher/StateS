@@ -38,9 +38,6 @@ class BlankScene : public GenericScene
 public:
 	explicit BlankScene();
 
-private slots:
-	virtual void interfaceModeChangedEventHandler(InterfaceMode_t) override;
-
 	/////
 	// Object variables
 private:

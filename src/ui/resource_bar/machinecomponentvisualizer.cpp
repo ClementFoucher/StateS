@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,12 +33,13 @@
 // StateS classes
 #include "machinemanager.h"
 #include "graphicmachine.h"
+#include "genericscene.h"
 
 
 MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 	StatesGraphicsView(parent)
 {
-	this->scene = make_shared<QGraphicsScene>();
+	this->scene = make_shared<GenericScene>();
 
 	this->setDragMode(QGraphicsView::ScrollHandDrag);
 	this->setScene(this->scene.get());
@@ -49,7 +50,7 @@ MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 	connect(machineManager.get(), &MachineManager::machineExternalViewChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
 }
 
-shared_ptr<QGraphicsScene> MachineComponentVisualizer::getComponentVisualizationScene() const
+shared_ptr<GenericScene> MachineComponentVisualizer::getComponentVisualizationScene() const
 {
 	return this->scene;
 }

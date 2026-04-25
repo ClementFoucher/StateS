@@ -114,7 +114,7 @@ void ResourceBar::renameSelectedItem()
 	stateEditorTab->setEditName();
 }
 
-shared_ptr<QGraphicsScene> ResourceBar::getComponentVisualizationScene() const
+shared_ptr<GenericScene> ResourceBar::getComponentVisualizationScene() const
 {
 	return this->machineComponentScene->getComponentVisualizationScene();
 }

@@ -36,8 +36,3 @@ BlankScene::BlankScene()
 
 	this->text->setDefaultTextColor(QColor("light gray"));
 }
-
-void BlankScene::interfaceModeChangedEventHandler(InterfaceMode_t)
-{
-	// Ignore
-}

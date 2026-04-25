@@ -50,7 +50,8 @@ FsmScene::FsmScene() :
 {
 	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &FsmScene::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,       this, &FsmScene::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &FsmScene::interfaceModeChangedEventHandler);
 
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmScene::toolChangeEventHandler);

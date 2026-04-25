@@ -29,12 +29,10 @@
 #include <memory>
 using namespace std;
 
-// Qt classes
-class QGraphicsScene;
-
 // StateS classes
 #include "statestypes.h"
 class MachineComponentVisualizer;
+class GenericScene;
 
 
 /**
@@ -72,7 +70,7 @@ public:
 	void editSelectedItem();
 	void renameSelectedItem();
 
-	shared_ptr<QGraphicsScene> getComponentVisualizationScene() const;
+	shared_ptr<GenericScene> getComponentVisualizationScene() const;
 
 private slots:
 	void machineReplacedEventHandler();

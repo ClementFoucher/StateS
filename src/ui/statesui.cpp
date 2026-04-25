@@ -44,6 +44,7 @@
 #include "machineeditorwidget.h"
 #include "timelinewidget.h"
 #include "machineimageexporter.h"
+#include "genericscene.h"
 
 
 StatesUi::StatesUi() :
@@ -350,9 +351,7 @@ void StatesUi::beginExportImageProcedure()
 
 	this->editor->clearSelection();
 
-	auto exporter = make_shared<MachineImageExporter>(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene());
-
-	this->imageExportDialog = new ImageExportDialog(machine->getName(), exporter, machineStatus->getImageExportFolderPath(), this);
+	this->imageExportDialog = new ImageExportDialog(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene(), machineStatus->getImageExportFolderPath(), machine->getName(), this);
 	connect(this->imageExportDialog, &ImageExportDialog::finished, this, &StatesUi::imageExportDialogClosedEventHandler);
 
 	this->imageExportDialog->open();
@@ -540,9 +539,7 @@ void StatesUi::imageExportDialogClosedEventHandler(int result)
 	{
 		auto filePath = this->imageExportDialog->getFilePath();
 
-		QString comment = tr("Created with") + " StateS v." + StateS::getVersion();
-
-		exporter->doExport(filePath, this->imageExportDialog->getImageFormat(), comment);
+		exporter->doExport(filePath);
 
 		auto machineStatus = machineManager->getMachineStatus();
 

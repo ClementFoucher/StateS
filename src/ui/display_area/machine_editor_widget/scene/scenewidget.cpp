@@ -122,7 +122,7 @@ shared_ptr<ViewConfiguration> SceneWidget::getView() const
 	auto scene = this->getScene();
 	if (scene != nullptr)
 	{
-		viewConfiguration->sceneTranslation = -(scene->getItemsBoundingRect().topLeft());
+		viewConfiguration->sceneTranslation = -(scene->getItemsBoundingRect(100).topLeft());
 	}
 
 	return viewConfiguration;
@@ -413,7 +413,7 @@ void SceneWidget::zoomFit()
 	auto scene = this->getScene();
 	if (scene == nullptr) return;
 
-	QRectF idealView = scene->getItemsBoundingRect();
+	QRectF idealView = scene->getItemsBoundingRect(100);
 	if (idealView.isNull() == true) return; // Zoom fit is only relevant if scene contains elements
 
 	QRectF currentView = this->getVisibleArea();

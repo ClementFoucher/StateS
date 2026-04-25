@@ -85,7 +85,7 @@ protected:
 	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
 private slots:
-	virtual void interfaceModeChangedEventHandler(InterfaceMode_t newMode) override;
+	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
 
 	// Machine manager signals
 	void machineUpdatedEventHandler();
