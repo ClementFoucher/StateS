@@ -25,7 +25,6 @@
 // Qt classes
 #include <QSettings>
 #include <QAction>
-#include <QFileDialog>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
@@ -38,6 +37,8 @@
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"
+#include "machinestatus.h"
+#include "savefiledialog.h"
 #include "variabletimeline.h"
 #include "clocktimeline.h"
 #include "statetimeline.h"
@@ -187,15 +188,12 @@ void TimelineWidget::paintEvent(QPaintEvent*)
 
 void TimelineWidget::exportToPDF()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Export time line to PDF"), QString(), "*.pdf");
+	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 
-	if (!fileName.isEmpty())
+	QString fileName = SaveFileDialog::getSaveFileName(this, tr("Export time line to PDF"), machineStatus->getImageExportFolderPath(), tr("timeline"), "pdf");
+
+	if (fileName.isEmpty() == false)
 	{
-		if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
-		{
-			fileName += ".pdf";
-		}
-
 		QPrinter printer(QPrinter::HighResolution);
 		printer.setOutputFormat(QPrinter::PdfFormat);
 		printer.setOutputFileName(fileName);

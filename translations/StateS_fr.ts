@@ -2805,69 +2805,69 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="285"/>
+        <location filename="../src/ui/statesui.cpp" line="288"/>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="312"/>
+        <location filename="../src/ui/statesui.cpp" line="310"/>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="646"/>
+        <location filename="../src/ui/statesui.cpp" line="642"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="326"/>
+        <location filename="../src/ui/statesui.cpp" line="324"/>
         <source>Clear current machine?</source>
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="336"/>
+        <location filename="../src/ui/statesui.cpp" line="334"/>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="647"/>
+        <location filename="../src/ui/statesui.cpp" line="643"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="613"/>
+        <location filename="../src/ui/statesui.cpp" line="609"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="134"/>
+        <location filename="../src/ui/statesui.cpp" line="135"/>
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="251"/>
+        <location filename="../src/ui/statesui.cpp" line="252"/>
         <source>Load file</source>
         <translation>Charger un fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="251"/>
+        <location filename="../src/ui/statesui.cpp" line="252"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="305"/>
+        <location filename="../src/ui/statesui.cpp" line="303"/>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="86"/>
+        <location filename="../src/ui/statesui.cpp" line="87"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="469"/>
-        <location filename="../src/ui/statesui.cpp" line="479"/>
-        <location filename="../src/ui/statesui.cpp" line="508"/>
+        <location filename="../src/ui/statesui.cpp" line="465"/>
+        <location filename="../src/ui/statesui.cpp" line="475"/>
+        <location filename="../src/ui/statesui.cpp" line="504"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -2903,53 +2903,58 @@
 <context>
     <name>TimelineWidget</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="57"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="58"/>
         <source>StateS timeline visualizer</source>
         <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="61"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="62"/>
         <source>Tools</source>
         <translation>Outils</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="65"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="66"/>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="69"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="239"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="70"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="237"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="93"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="94"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="103"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="104"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="116"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="117"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="132"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="133"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="190"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="193"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="223"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="193"/>
+        <source>timeline</source>
+        <translation>chronogramme</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="221"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>
@@ -3319,52 +3324,52 @@
 <context>
     <name>VhdlExportDialog</name>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="58"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="57"/>
         <source>Please run machine verifier to identify affected variables.</source>
         <translation>Veuillez utiliser le vérificateur pour identifier les variables affectées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="63"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="61"/>
         <source>Choose export options:</source>
         <translation>Choisissez les options pour l&apos;export :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="71"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="65"/>
         <source>Positive</source>
         <translation>Positive</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="72"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="66"/>
         <source>Negative</source>
         <translation>Négative</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="73"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="79"/>
         <source>Reset logic:</source>
         <translation>Logique du reset :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="76"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="69"/>
         <source>No</source>
         <translation>Non</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="77"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="70"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="78"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="80"/>
         <source>Prefix inputs and outputs with &apos;I_&apos; and &apos;O_&apos; respectively:</source>
         <translation>Ajouter un préfixe &apos;I_&apos; ou &apos;O_&apos; respectivement aux entrées et aux sorties :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="83"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="72"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="87"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="73"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -3374,22 +3379,22 @@
         <translation>Exporter la machine en VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="55"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="54"/>
         <source>Warning! Experimental feature.</source>
         <translation>Attention ! Fonctionnalité expériementale.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="56"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="55"/>
         <source>Output generation has strong restrictions:</source>
         <translation>La génération des sorties ne gère pas toutes les possibilités :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="57"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="56"/>
         <source>some of the current machine&apos;s outputs won&apos;t be correctly handled.</source>
         <translation>certaines sorties de la machine actuelle ne seront pas correctement générées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="46"/>
+        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="43"/>
         <source>VHDL export</source>
         <translation>Exporter en VHDL</translation>
     </message>
