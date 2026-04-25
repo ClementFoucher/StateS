@@ -109,9 +109,20 @@ bool MachineStatus::getHasSaveFile() const
 	return this->hasSaveFile;
 }
 
-QString MachineStatus::getSaveFilePath() const
+QString MachineStatus::getSaveFileFullPath() const
 {
 	return this->saveFilePath.absoluteFilePath();
+}
+
+QString MachineStatus::getSaveFileFolderPath() const
+{
+	return this->saveFilePath.path();
+}
+
+QString MachineStatus::getSaveFileName() const
+{
+	auto fullFileName = this->saveFilePath.fileName();
+	return fullFileName.remove(".SfsmS");
 }
 
 QString MachineStatus::getSaveLoadFolderPath() const

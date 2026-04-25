@@ -288,7 +288,7 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 void MachineXmlWriter::createSaveFile() // Throws StatesException
 {
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
-	QFileInfo fileInfo(machineStatus->getSaveFilePath());
+	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
 	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
 	{
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_replace, tr("Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights."));
@@ -298,7 +298,7 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unkown_directory, tr("Specified directory doesn't exist."));
 	}
 
-	this->file = make_unique<QFile>(machineStatus->getSaveFilePath());
+	this->file = make_unique<QFile>(machineStatus->getSaveFileFullPath());
 	bool fileOpened = file->open(QIODevice::WriteOnly);
 	if (fileOpened == false)
 	{

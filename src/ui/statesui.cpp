@@ -271,27 +271,24 @@ void StatesUi::beginSaveAsProcedure()
 	auto machineStatus = machineManager->getMachineStatus();
 
 	QString filePath;
+	QString fileName;
 	if (machineStatus->getHasSaveFile() == true)
 	{
 		// If machine already has a save file, use it
-		filePath = machineStatus->getSaveFilePath();
+		filePath = machineStatus->getSaveFileFolderPath();
+		fileName = machineStatus->getSaveFileName();
 	}
 	else
 	{
 		// Otherwise, use save/load path with machine name as file name
-		filePath  = machineStatus->getSaveLoadFolderPath();
-		filePath += machine->getName() + ".SfsmS";
+		filePath = machineStatus->getSaveLoadFolderPath();
+		fileName = machine->getName();
 	}
 
-	auto finalFilePath = QFileDialog::getSaveFileName(this, tr("Save machine"), filePath, "*.SfsmS");
+	auto finalFilePath = SaveFileDialog::getSaveFileName(this, tr("Save machine"), filePath, fileName, "SfsmS");
 
 	if (finalFilePath.isEmpty() == false)
 	{
-		if (!finalFilePath.endsWith(".SfsmS", Qt::CaseInsensitive))
-		{
-			finalFilePath += ".SfsmS";
-		}
-
 		emit this->saveMachineRequestEvent(finalFilePath);
 	}
 }
@@ -315,7 +312,7 @@ void StatesUi::beginLoadProcedure()
 		                                                  "*.SfsmS"
 		                                                 );
 
-		if (! finalFilePath.isEmpty())
+		if (finalFilePath.isEmpty() == false)
 		{
 			emit this->loadMachineRequestEvent(finalFilePath);
 		}
@@ -613,7 +610,7 @@ void StatesUi::updateTitle()
 		}
 		else
 		{
-			title = "StateS — " + machineStatus->getSaveFilePath();
+			title = "StateS — " + machineStatus->getSaveFileFullPath();
 		}
 
 		if (machineStatus->getUnsavedFlag() == true)

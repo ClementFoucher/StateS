@@ -61,7 +61,9 @@ public:
 	bool getUnsavedFlag() const;
 	bool getHasSaveFile() const;
 
-	QString getSaveFilePath()          const;
+	QString getSaveFileFullPath()      const;
+	QString getSaveFileFolderPath()    const;
+	QString getSaveFileName()          const;
 	QString getSaveLoadFolderPath()    const;
 	QString getImageExportFolderPath() const;
 	QString getVhdlExportFolderPath()  const;
