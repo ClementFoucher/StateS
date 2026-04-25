@@ -38,6 +38,7 @@ class QPainter;
 // StateS classes
 #include "statestypes.h"
 #include "variabletablescene.h"
+#include "componentscene.h"
 
 
 class MachineImageExporter : public QObject
@@ -47,9 +48,9 @@ class MachineImageExporter : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineImageExporter(StatesScene* stateGraphScene, shared_ptr<StatesScene> componentScene) :
+	explicit MachineImageExporter(StatesScene* stateGraphScene) :
 		stateGraphScene(stateGraphScene                  ),
-		componentScene (componentScene                   ),
+		componentScene (make_shared<ComponentScene>()    ),
 		variableScene  (make_shared<VariableTableScene>())
 	{}
 

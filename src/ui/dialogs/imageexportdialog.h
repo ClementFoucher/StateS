@@ -50,7 +50,7 @@ class ImageExportDialog : public StatesDialog
 	/////
 	// Constructors/destructors
 public:
-	explicit ImageExportDialog(StatesScene* stateGraphScene, shared_ptr<StatesScene> componentScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent = nullptr);
+	explicit ImageExportDialog(StatesScene* stateGraphScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent = nullptr);
 
 	/////
 	// Object functions

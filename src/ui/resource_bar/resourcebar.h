@@ -32,7 +32,6 @@ using namespace std;
 // StateS classes
 #include "statestypes.h"
 class MachineComponentVisualizer;
-class GenericScene;
 
 
 /**
@@ -69,8 +68,6 @@ public:
 	void setSelectedItem(componentId_t componentId);
 	void editSelectedItem();
 	void renameSelectedItem();
-
-	shared_ptr<GenericScene> getComponentVisualizationScene() const;
 
 private slots:
 	void machineReplacedEventHandler();

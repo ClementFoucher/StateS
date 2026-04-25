@@ -39,10 +39,10 @@
 #include "savefiledialog.h"
 
 
-ImageExportDialog::ImageExportDialog(StatesScene* stateGraphScene, shared_ptr<StatesScene> componentScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent) :
+ImageExportDialog::ImageExportDialog(StatesScene* stateGraphScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent) :
 	StatesDialog(parent)
 {
-	this->imageExporter = make_shared<MachineImageExporter>(stateGraphScene, componentScene);
+	this->imageExporter = make_shared<MachineImageExporter>(stateGraphScene);
 	this->baseFilePath  = baseFilePath;
 	this->baseFileName  = baseFileName;
 

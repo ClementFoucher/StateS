@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,15 +22,9 @@
 // Current class header
 #include "graphicmachine.h"
 
-// Qt classes
-#include <QGraphicsItem>
-
 // StateS classes
-#include "machinemanager.h"
-#include "machine.h"
 #include "graphiccomponent.h"
 #include "graphicsimulatedcomponent.h"
-#include "variable.h"
 
 
 GraphicMachine::~GraphicMachine()
@@ -82,187 +76,6 @@ GraphicSimulatedComponent* GraphicMachine::getSimulatedGraphicComponent(componen
 	{
 		return nullptr;
 	}
-}
-
-QGraphicsItem* GraphicMachine::getComponentVisualization() const
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return nullptr;
-
-
-	// /!\ QGraphicsItemGroup bounding box seems not to be updated
-	// if item is added using its constructor's parent parameter
-
-	QGraphicsItemGroup* visu = new QGraphicsItemGroup();
-
-	//
-	// Main sizes
-
-	const qreal variablesLinesWidth = 20;
-	const qreal horizontalVariablesNamesSpacer = 50;
-	const qreal verticalElementsSpacer = 5;
-	const qreal busesLineHeight = 10;
-	const qreal busesLineWidth = 5;
-
-	//
-	// Draw inputs
-
-	QGraphicsItemGroup* inputsGroup = new QGraphicsItemGroup();
-
-	// Items position wrt. subgroup:
-	// All items @ Y = 0, and rising
-	// Variables names @ X > 0
-	// Lines @ X < 0
-
-	qreal currentInputY = 0;
-	for (auto& inputId : machine->getInputVariablesIds())
-	{
-		auto input = machine->getVariable(inputId);
-		if (input == nullptr) continue;
-
-
-		QGraphicsTextItem* textItem = new QGraphicsTextItem();
-
-		QString text = "<span style=\"color:black;\">" + input->getName() + "</span>";
-		textItem->setHtml(text);
-
-		inputsGroup->addToGroup(textItem);
-		textItem->setPos(0, currentInputY);
-
-		qreal currentLineY = currentInputY + textItem->boundingRect().height()/2;
-		inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth, currentLineY, 0, currentLineY));
-
-		if (input->getSize() > 1)
-		{
-			inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
-			QString textSize = "<span style=\"color:black;\">" + QString::number(input->getSize()) + "</span>";
-			sizeTextItem->setHtml(textSize);
-			inputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(-variablesLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
-		}
-
-		currentInputY += textItem->boundingRect().height();
-	}
-
-	//
-	// Draw outputs
-
-	QGraphicsItemGroup* outputsGroup = new QGraphicsItemGroup();
-
-	// Items position wrt. subgroup:
-	// All items @ Y = 0, and rising
-	// Variables names @ X < 0
-	// Lines @ X > 0
-
-	qreal currentOutputY = 0;
-	for (auto& outputId : machine->getOutputVariablesIds())
-	{
-		auto output = machine->getVariable(outputId);
-		if (output == nullptr) continue;
-
-
-		QGraphicsTextItem* textItem = new QGraphicsTextItem();
-
-		QString text = "<span style=\"color:black;\">" + output->getName() + "</span>";
-		textItem->setHtml(text);
-
-		outputsGroup->addToGroup(textItem);
-		textItem->setPos(-textItem->boundingRect().width(), currentOutputY);
-
-		qreal currentLineY = currentOutputY + textItem->boundingRect().height()/2;
-		outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, variablesLinesWidth, currentLineY));
-
-		if (output->getSize() > 1)
-		{
-			outputsGroup->addToGroup(new QGraphicsLineItem(variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
-			QGraphicsTextItem* sizeTextItem = new QGraphicsTextItem();
-			QString textSize = "<span style=\"color:black;\">" + QString::number(output->getSize()) + "</span>";
-			sizeTextItem->setHtml(textSize);
-			outputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(variablesLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
-		}
-
-		currentOutputY += textItem->boundingRect().height();
-	}
-
-	//
-	// Draw component name
-
-	QGraphicsTextItem* title = new QGraphicsTextItem();
-	title->setHtml("<span style=\"color:black; font-weight:bold;\">" + machine->getName() + "</span>");
-
-	//
-	// Compute component size
-
-	qreal componentWidth;
-	qreal componentHeight;
-
-	// Width
-
-	qreal inputsNamesWidth = inputsGroup->boundingRect().width() - variablesLinesWidth;
-	qreal outputsNamesWidth = outputsGroup->boundingRect().width() - variablesLinesWidth;
-
-	componentWidth = inputsNamesWidth + horizontalVariablesNamesSpacer + outputsNamesWidth;
-
-	if (componentWidth <= title->boundingRect().width() + horizontalVariablesNamesSpacer)
-	{
-		componentWidth = title->boundingRect().width() + horizontalVariablesNamesSpacer;
-	}
-
-	// Height
-
-	qreal maxVariablesHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
-
-	componentHeight =
-	        verticalElementsSpacer +
-	        title->boundingRect().height() +
-	        verticalElementsSpacer +
-	        maxVariablesHeight +
-	        verticalElementsSpacer;
-
-	//
-	// Draw component border
-
-	QGraphicsPolygonItem* border = nullptr;
-
-
-	QPolygonF borderPolygon;
-	borderPolygon.append(QPoint(0,              0));
-	borderPolygon.append(QPoint(componentWidth, 0));
-	borderPolygon.append(QPoint(componentWidth, componentHeight));
-	borderPolygon.append(QPoint(0,              componentHeight));
-
-	border = new QGraphicsPolygonItem(borderPolygon);
-
-	//
-	// Place components in main group
-
-	// Items position wrt. main group:
-	// Component top left corner @ (0; 0)
-
-	visu->addToGroup(border);
-	visu->addToGroup(title);
-	visu->addToGroup(inputsGroup);
-	visu->addToGroup(outputsGroup);
-
-	border->setPos(0, 0);
-
-	title->setPos( (componentWidth-title->boundingRect().width())/2, verticalElementsSpacer);
-
-	qreal verticalVariablesNameOffset = title->boundingRect().bottom() + verticalElementsSpacer;
-
-	qreal inoutsDeltaHeight = inputsGroup->boundingRect().height() - outputsGroup->boundingRect().height();
-	qreal additionalInputsOffet  = (inoutsDeltaHeight > 0 ? 0 : -inoutsDeltaHeight/2);
-	qreal additionalOutputsOffet = (inoutsDeltaHeight < 0 ? 0 : inoutsDeltaHeight/2);
-
-	inputsGroup-> setPos(0,              verticalVariablesNameOffset + additionalInputsOffet);
-	outputsGroup->setPos(componentWidth, verticalVariablesNameOffset + additionalOutputsOffet);
-
-	//
-	// Done
-
-	return visu;
 }
 
 void GraphicMachine::removeGraphicComponent(componentId_t id)

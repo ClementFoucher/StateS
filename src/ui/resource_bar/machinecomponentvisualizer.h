@@ -34,7 +34,7 @@ class QGraphicsView;
 class QMouseEvent;
 
 // StateS classes
-class GenericScene;
+class ComponentScene;
 
 
 class MachineComponentVisualizer : public StatesGraphicsView
@@ -48,9 +48,6 @@ public:
 
 	/////
 	// Object functions
-public:
-	shared_ptr<GenericScene> getComponentVisualizationScene() const;
-
 protected:
 	virtual void mousePressEvent      (QMouseEvent* me)    override;
 	virtual void mouseMoveEvent       (QMouseEvent* me)    override;
@@ -64,9 +61,8 @@ private slots:
 	/////
 	// Object variables
 private:
-	shared_ptr<GenericScene> scene;
+	shared_ptr<ComponentScene> scene;
 
-	// Qwidget with parent
 	QGraphicsView* view = nullptr;
 
 	bool isMoving = false;

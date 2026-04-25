@@ -114,11 +114,6 @@ void ResourceBar::renameSelectedItem()
 	stateEditorTab->setEditName();
 }
 
-shared_ptr<GenericScene> ResourceBar::getComponentVisualizationScene() const
-{
-	return this->machineComponentScene->getComponentVisualizationScene();
-}
-
 void ResourceBar::machineReplacedEventHandler()
 {
 	// Delete previous content
@@ -190,10 +185,10 @@ void ResourceBar::build()
 
 		this->insertTab(TabIndex_t::hintTabIndex,            hintTab,          tr("Hints"));
 		this->insertTab(TabIndex_t::machineEditorTabIndex,   machineEditorTab, tr("Machine"));
-		this->insertTab(TabIndex_t::componentEditorTabIndex, new QWidget(),          tr("Editor"));
+		this->insertTab(TabIndex_t::componentEditorTabIndex, new QWidget(),    tr("Editor"));
 		this->insertTab(TabIndex_t::simulatorTabIndex,       simulatorTab,     tr("Simulator"));
 		this->insertTab(TabIndex_t::verifierTabIndex,        verifierTab,      tr("Verifier"));
-		this->insertTab(TabIndex_t::aboutTabIndex,           new AboutTab(),         tr("About"));
+		this->insertTab(TabIndex_t::aboutTabIndex,           new AboutTab(),   tr("About"));
 
 		this->setTabEnabled(TabIndex_t::componentEditorTabIndex, false);
 

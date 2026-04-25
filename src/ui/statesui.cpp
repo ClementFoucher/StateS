@@ -349,7 +349,7 @@ void StatesUi::beginExportImageProcedure()
 
 	this->editor->clearSelection();
 
-	this->imageExportDialog = new ImageExportDialog(this->editor->getScene(), this->resourceBar->getComponentVisualizationScene(), machineStatus->getImageExportFolderPath(), machine->getName(), this);
+	this->imageExportDialog = new ImageExportDialog(this->editor->getScene(), machineStatus->getImageExportFolderPath(), machine->getName(), this);
 	connect(this->imageExportDialog, &ImageExportDialog::finished, this, &StatesUi::imageExportDialogClosedEventHandler);
 
 	this->imageExportDialog->open();

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,6 @@ using namespace std;
 
 // Qt classes
 #include <QMap>
-class QGraphicsItem;
 
 // StateS classes
 #include "statestypes.h"
@@ -69,7 +68,6 @@ public:
 
 	GraphicComponent* getGraphicComponent(componentId_t componentId) const;
 	GraphicSimulatedComponent* getSimulatedGraphicComponent(componentId_t componentId) const;
-	QGraphicsItem* getComponentVisualization() const;
 
 	virtual void removeGraphicComponent(componentId_t id);
 	virtual void forceRefreshSimulatedDisplay() = 0;

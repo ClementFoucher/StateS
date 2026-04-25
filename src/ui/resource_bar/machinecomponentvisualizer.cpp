@@ -32,27 +32,18 @@
 
 // StateS classes
 #include "machinemanager.h"
-#include "graphicmachine.h"
-#include "genericscene.h"
+#include "componentscene.h"
 
 
 MachineComponentVisualizer::MachineComponentVisualizer(QWidget* parent) :
 	StatesGraphicsView(parent)
 {
-	this->scene = make_shared<GenericScene>();
-
 	this->setDragMode(QGraphicsView::ScrollHandDrag);
-	this->setScene(this->scene.get());
 
 	this->updateMachineVisualization();
 
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,             this, &MachineComponentVisualizer::updateMachineVisualization);
 	connect(machineManager.get(), &MachineManager::machineExternalViewChangedEvent, this, &MachineComponentVisualizer::updateMachineVisualization);
-}
-
-shared_ptr<GenericScene> MachineComponentVisualizer::getComponentVisualizationScene() const
-{
-	return this->scene;
 }
 
 void MachineComponentVisualizer::mousePressEvent(QMouseEvent* me)
@@ -65,8 +56,10 @@ void MachineComponentVisualizer::mousePressEvent(QMouseEvent* me)
 		transmitEvent = false;
 	}
 
-	if (transmitEvent)
+	if (transmitEvent == true)
+	{
 		QGraphicsView::mousePressEvent(me);
+	}
 }
 
 void MachineComponentVisualizer::mouseMoveEvent(QMouseEvent* me)
@@ -88,8 +81,10 @@ void MachineComponentVisualizer::mouseMoveEvent(QMouseEvent* me)
 
 	lastMouseEventPos = me->pos();
 
-	if (transmitEvent)
+	if (transmitEvent == true)
+	{
 		QGraphicsView::mouseMoveEvent(me);
+	}
 }
 
 void MachineComponentVisualizer::mouseReleaseEvent(QMouseEvent* me)
@@ -102,8 +97,10 @@ void MachineComponentVisualizer::mouseReleaseEvent(QMouseEvent* me)
 		transmitEvent = false;
 	}
 
-	if (transmitEvent)
+	if (transmitEvent == true)
+	{
 		QGraphicsView::mouseReleaseEvent(me);
+	}
 }
 
 void MachineComponentVisualizer::mouseDoubleClickEvent(QMouseEvent* me)
@@ -115,8 +112,10 @@ void MachineComponentVisualizer::mouseDoubleClickEvent(QMouseEvent* me)
 		transmitEvent = false;
 	}
 
-	if (transmitEvent)
+	if (transmitEvent == true)
+	{
 		QGraphicsView::mouseMoveEvent(me);
+	}
 }
 
 void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
@@ -136,11 +135,6 @@ void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
 
 void MachineComponentVisualizer::updateMachineVisualization()
 {
-	this->scene->clear();
-
-	auto graphicMachine = machineManager->getGraphicMachine();
-	if (graphicMachine == nullptr) return;
-
-	QGraphicsItem* component = graphicMachine->getComponentVisualization();
-	this->scene->addItem(component);
+	this->scene = make_shared<ComponentScene>();
+	this->setScene(this->scene.get());
 }
