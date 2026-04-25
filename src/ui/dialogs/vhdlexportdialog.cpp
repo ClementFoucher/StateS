@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,66 +27,76 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QPushButton>
-#include <QFileDialog>
 
 // StateS classes
 #include "fsmvhdlexport.h"
+#include "savefiledialog.h"
 
 
-VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, shared_ptr<FsmVhdlExport> fsmVhdlExport, QWidget* parent) :
+VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& searchPath, QWidget* parent) :
 	StatesDialog(parent)
 {
-	if (fsmVhdlExport == nullptr) return;
-
-
 	this->baseFileName  = baseFileName;
 	this->searchPath    = searchPath;
-	this->fsmVhdlExport = fsmVhdlExport;
+	this->fsmVhdlExport = make_shared<FsmVhdlExport>();
 
 	this->setWindowTitle(tr("VHDL export"));
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
-
 	auto compatChecker = fsmVhdlExport->checkCompatibility();
-	bool isCompatible = compatChecker->isCompatible();
-	if (isCompatible == false)
+
+	//
+	// Build widgets
+
+	QLabel* warning = nullptr;
+	if (compatChecker->isCompatible() == false)
 	{
-		QLabel* warning = new QLabel("<span style=\"color:red;\">"
-		                             + tr("Warning! Experimental feature.") + "<br />"
-		                             + tr("Output generation has strong restrictions:") + "<br />"
-		                             + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
-		                             + tr("Please run machine verifier to identify affected variables.") + "</span>");
+		warning = new QLabel("<span style=\"color:red;\">"
+		                     + tr("Warning! Experimental feature.") + "<br />"
+		                     + tr("Output generation has strong restrictions:") + "<br />"
+		                     + tr("some of the current machine's outputs won't be correctly handled.") + "<br />"
+		                     + tr("Please run machine verifier to identify affected variables.") + "</span>");
 		warning->setAlignment(Qt::AlignCenter);
-		layout->addWidget(warning);
 	}
 
-	QLabel* title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
+	auto title = new QLabel("<b>" + tr("Choose export options:") + "</b>");
 	title->setAlignment(Qt::AlignCenter);
-	layout->addWidget(title);
-
-	QFormLayout* formLayout = new QFormLayout();
-	layout->addLayout(formLayout);
 
 	this->resetLogicSelectionBox = new QComboBox();
 	this->resetLogicSelectionBox->addItem(tr("Positive"));
 	this->resetLogicSelectionBox->addItem(tr("Negative"));
-	formLayout->addRow(tr("Reset logic:"), this->resetLogicSelectionBox);
 
 	this->addPrefixSelectionBox = new QComboBox();
 	this->addPrefixSelectionBox->addItem(tr("No"));
 	this->addPrefixSelectionBox->addItem(tr("Yes"));
+
+	auto buttonOK     = new QPushButton(tr("OK"));
+	auto buttonCancel = new QPushButton(tr("Cancel"));
+
+	//
+	// Build layouts
+
+	auto formLayout = new QFormLayout();
+	formLayout->addRow(tr("Reset logic:"), this->resetLogicSelectionBox);
 	formLayout->addRow(tr("Prefix inputs and outputs with 'I_' and 'O_' respectively:"), this->addPrefixSelectionBox);
 
-	QHBoxLayout* buttonsLayout = new QHBoxLayout();
-	layout->addLayout(buttonsLayout);
-
-	QPushButton* buttonOK = new QPushButton(tr("OK"));
-	connect(buttonOK, &QPushButton::clicked, this, &QDialog::accept);
+	auto buttonsLayout = new QHBoxLayout();
 	buttonsLayout->addWidget(buttonOK);
-
-	QPushButton* buttonCancel = new QPushButton(tr("Cancel"));
-	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
 	buttonsLayout->addWidget(buttonCancel);
+
+	auto mainLayout = new QVBoxLayout(this);
+	if (warning != nullptr)
+	{
+		mainLayout->addWidget(warning);
+	}
+	mainLayout->addWidget(title);
+	mainLayout->addLayout(formLayout);
+	mainLayout->addLayout(buttonsLayout);
+
+	//
+	// Connect signals
+
+	connect(buttonOK,     &QPushButton::clicked, this, &QDialog::accept);
+	connect(buttonCancel, &QPushButton::clicked, this, &QDialog::reject);
 }
 
 bool VhdlExportDialog::isResetPositive() const
@@ -125,22 +135,7 @@ shared_ptr<FsmVhdlExport> VhdlExportDialog::getFsmVhdlExport() const
 
 void VhdlExportDialog::accept()
 {
-	QString defaultFilePath;
-
-	if (this->searchPath.isEmpty() == false)
-	{
-		defaultFilePath += this->searchPath;
-		defaultFilePath += "/"; // TODO: check if environment dependant!
-	}
-
-	defaultFilePath += this->baseFileName;
-
-	this->filePath = QFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), defaultFilePath + ".vhdl", "*.vhdl");
-
-	if ( (this->filePath.isEmpty() == false) && (! this->filePath.endsWith(".vhdl", Qt::CaseInsensitive)) )
-	{
-		this->filePath += ".vhdl";
-	}
+	this->filePath = SaveFileDialog::getSaveFileName(this, tr("Export machine to VHDL"), this->searchPath, this->baseFileName, "vhdl");
 
 	if (this->filePath.isEmpty() == false)
 	{

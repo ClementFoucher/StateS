@@ -39,6 +39,7 @@
 #include "resourcebar.h"
 #include "vhdlexportdialog.h"
 #include "imageexportdialog.h"
+#include "savefiledialog.h"
 #include "fsmvhdlexport.h"
 #include "machinestatus.h"
 #include "machineeditorwidget.h"
@@ -365,9 +366,7 @@ void StatesUi::beginExportVhdlProcedure()
 
 	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
 
-	auto exporter = make_shared<FsmVhdlExport>();
-
-	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportFolderPath(), exporter, this);
+	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportFolderPath(), this);
 	connect(this->vhdlExportDialog, &VhdlExportDialog::finished, this, &StatesUi::vhdlExportDialogClosedEventHandler);
 
 	this->vhdlExportDialog->open();
