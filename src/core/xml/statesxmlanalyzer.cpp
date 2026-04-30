@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -116,17 +116,15 @@ StateSXmlAnalyzer::VersionCompatibility_t StateSXmlAnalyzer::getVersionCompatibi
 
 void StateSXmlAnalyzer::parse()
 {
-	while (this->xmlReader->atEnd() == false)
+	while ( (this->xmlReader->atEnd() == false) && (this->type == MachineType_t::none) )
 	{
 		this->xmlReader->readNext();
 
 		if (this->xmlReader->isStartElement())
 		{
-			if (this->xmlReader->name() == QString("FSM"))
+			if (this->xmlReader->name() == QString("StateS"))
 			{
-				this->type = MachineType_t::fsm;
-
-				auto extractedVersion = this->xmlReader->attributes().value("StateS_version").toString();
+				auto extractedVersion = this->xmlReader->attributes().value("Version").toString();
 
 				if (extractedVersion.isNull() == false)
 				{
@@ -139,16 +137,15 @@ void StateSXmlAnalyzer::parse()
 						this->saveVersionPatch = QString(versionParts[2]).toUInt(&ok, 16);
 					}
 				}
-				else
-				{
-					// Default version number: before 0.4,
-					// version was not written in save.
-					this->saveVersionMajor = 0;
-					this->saveVersionMinor = 3;
-					this->saveVersionPatch = 0;
-				}
+			}
+			else if (this->xmlReader->name() == QString("Machine"))
+			{
+				auto extractedType = this->xmlReader->attributes().value("Type").toString();
 
-				break;
+				if (extractedType == QString("FSM"))
+				{
+					this->type = MachineType_t::fsm;
+				}
 			}
 		}
 	}

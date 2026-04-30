@@ -1,161 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FSM Name="Demo machine" StateS_version="0.4.9">
+<StateS Version="0.5.0">
     <Configuration>
-        <Scale Value="0.787122"/>
-        <ViewCentralPoint X="771.164" Y="546.294"/>
+        <ViewScale Value="0.771665"/>
+        <ViewCentralPoint X="785.845" Y="545.988"/>
     </Configuration>
-    <Signals>
-        <Input Name="boot ok" Size="1" Initial_value="0"/>
-        <Input Name="stop" Size="1" Initial_value="0"/>
-        <Input Name="start" Size="1" Initial_value="0"/>
-        <Input Name="suspend" Size="1" Initial_value="0"/>
-        <Input Name="error" Size="1" Initial_value="0"/>
-        <Input Name="reset errors" Size="1" Initial_value="0"/>
-        <Variable Name="error counter" Size="4" Initial_value="0000" Memorized="true"/>
-        <Variable Name="init duration" Size="4" Initial_value="0000" Memorized="true"/>
-        <Output Name="boot" Size="1" Initial_value="0"/>
-        <Output Name="leds" Size="2" Initial_value="00"/>
-        <Output Name="alarm" Size="1" Initial_value="0"/>
-        <Output Name="power" Size="1" Initial_value="0"/>
-    </Signals>
-    <States>
-        <State Name="Init" X="558.904" Y="152.381">
-            <Actions>
-                <Action Name="power" Action_Type="ActiveOnState"/>
-                <Action Name="init duration" Action_Type="Increment"/>
-            </Actions>
-        </State>
-        <State Name="On" X="833.904" Y="385.068">
-            <Actions>
-                <Action Name="power" Action_Type="ActiveOnState"/>
-            </Actions>
-        </State>
-        <State Name="Error" X="453.904" Y="679.068">
-            <Actions>
-                <Action Name="alarm" Action_Type="ActiveOnState"/>
-            </Actions>
-        </State>
-        <State Name="Off" IsInitial="true" X="158.904" Y="385.068"/>
-        <State Name="Blink led 0" X="827.485" Y="855.61">
-            <Actions>
-                <Action Name="leds" Action_Type="ActiveOnState" RangeL="0"/>
-            </Actions>
-        </State>
-        <State Name="Blink led 1" X="1296.23" Y="846.64">
-            <Actions>
-                <Action Name="leds" Action_Type="ActiveOnState" RangeL="1"/>
-            </Actions>
-        </State>
-    </States>
-    <Transitions>
-        <Transition Source="Init" Target="On" SliderPos="36">
-            <Condition>
-                <LogicVariable Name="boot ok"/>
-            </Condition>
-            <Actions>
-                <Action Name="init duration" Action_Type="Assign" Action_Value="0000"/>
-            </Actions>
-        </Transition>
-        <Transition Source="On" Target="Error">
-            <Condition>
-                <LogicVariable Name="error"/>
-            </Condition>
-            <Actions>
-                <Action Name="error counter" Action_Type="Increment"/>
-            </Actions>
-        </Transition>
-        <Transition Source="On" Target="Off">
-            <Condition>
-                <LogicEquation Nature="and" OperandCount="2">
-                    <Operand Number="0">
-                        <LogicVariable Name="stop"/>
-                    </Operand>
-                    <Operand Number="1">
-                        <LogicEquation Nature="not">
-                            <Operand Number="0">
-                                <LogicVariable Name="error"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-        </Transition>
-        <Transition Source="On" Target="Blink led 0">
-            <Condition>
-                <LogicVariable Name="suspend"/>
-            </Condition>
-        </Transition>
-        <Transition Source="Error" Target="Off">
-            <Condition>
-                <LogicEquation Nature="not">
-                    <Operand Number="0">
-                        <LogicVariable Name="error"/>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-        </Transition>
-        <Transition Source="Off" Target="Off">
-            <Condition>
-                <LogicVariable Name="reset errors"/>
-            </Condition>
-            <Actions>
-                <Action Name="error counter" Action_Type="Assign" Action_Value="0000"/>
-            </Actions>
-        </Transition>
-        <Transition Source="Off" Target="Error" SliderPos="24">
-            <Condition>
-                <LogicVariable Name="error"/>
-            </Condition>
-            <Actions>
-                <Action Name="error counter" Action_Type="Increment"/>
-            </Actions>
-        </Transition>
-        <Transition Source="Off" Target="Init" SliderPos="62">
-            <Condition>
-                <LogicEquation Nature="and" OperandCount="2">
-                    <Operand Number="0">
-                        <LogicVariable Name="start"/>
-                    </Operand>
-                    <Operand Number="1">
-                        <LogicEquation Nature="not">
-                            <Operand Number="0">
-                                <LogicVariable Name="error"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-            <Actions>
-                <Action Name="boot" Action_Type="Pulse"/>
-            </Actions>
-        </Transition>
-        <Transition Source="Blink led 0" Target="Blink led 1">
-            <Condition>
-                <LogicVariable Name="suspend"/>
-            </Condition>
-        </Transition>
-        <Transition Source="Blink led 0" Target="On">
-            <Condition>
-                <LogicEquation Nature="not">
-                    <Operand Number="0">
-                        <LogicVariable Name="suspend"/>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-        </Transition>
-        <Transition Source="Blink led 1" Target="Blink led 0">
-            <Condition>
-                <LogicVariable Name="suspend"/>
-            </Condition>
-        </Transition>
-        <Transition Source="Blink led 1" Target="On">
-            <Condition>
-                <LogicEquation Nature="not">
-                    <Operand Number="0">
-                        <LogicVariable Name="suspend"/>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-        </Transition>
-    </Transitions>
-</FSM>
+    <Machine Name="Demo machine" Type="FSM">
+        <Variables>
+            <Input Name="boot ok" Size="1" Value="0"/>
+            <Input Name="stop" Size="1" Value="0"/>
+            <Input Name="start" Size="1" Value="0"/>
+            <Input Name="suspend" Size="1" Value="0"/>
+            <Input Name="error" Size="1" Value="0"/>
+            <Input Name="reset errors" Size="1" Value="0"/>
+            <Internal Name="error counter" Size="4" Value="0000" Memorized="true"/>
+            <Internal Name="init duration" Size="4" Value="0000" Memorized="true"/>
+            <Output Name="boot" Size="1" Value="0"/>
+            <Output Name="leds" Size="2" Value="00"/>
+            <Output Name="alarm" Size="1" Value="0"/>
+            <Output Name="power" Size="1" Value="0"/>
+        </Variables>
+        <States>
+            <State Name="Init" X="558.787" Y="151.5">
+                <Actions>
+                    <Action Name="power" ActionType="ActiveOnState"/>
+                    <Action Name="init duration" ActionType="Increment"/>
+                </Actions>
+            </State>
+            <State Name="On" X="833.787" Y="384.187">
+                <Actions>
+                    <Action Name="power" ActionType="ActiveOnState"/>
+                </Actions>
+            </State>
+            <State Name="Error" X="453.787" Y="678.187">
+                <Actions>
+                    <Action Name="alarm" ActionType="ActiveOnState"/>
+                </Actions>
+            </State>
+            <State Name="Off" IsInitial="true" X="158.787" Y="384.187"/>
+            <State Name="Blink led 0" X="827.368" Y="854.729">
+                <Actions>
+                    <Action Name="leds" ActionType="ActiveOnState" RangeL="0"/>
+                </Actions>
+            </State>
+            <State Name="Blink led 1" X="1296.11" Y="845.759">
+                <Actions>
+                    <Action Name="leds" ActionType="ActiveOnState" RangeL="1"/>
+                </Actions>
+            </State>
+        </States>
+        <Transitions>
+            <Transition Source="Init" Target="On" SliderPos="36">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="boot ok"/>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="init duration" ActionType="Assign" ActionValue="0000"/>
+                </Actions>
+            </Transition>
+            <Transition Source="On" Target="Error">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="error"/>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="error counter" ActionType="Increment"/>
+                </Actions>
+            </Transition>
+            <Transition Source="On" Target="Off">
+                <Condition>
+                    <LogicEquation Operator="and" OperandCount="2">
+                        <Operand Rank="0" Source="Variable" Name="stop"/>
+                        <Operand Rank="1" Source="Equation">
+                            <LogicEquation Operator="not">
+                                <Operand Rank="0" Source="Variable" Name="error"/>
+                            </LogicEquation>
+                        </Operand>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="On" Target="Blink led 0">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="suspend"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Error" Target="Off">
+                <Condition>
+                    <LogicEquation Operator="not">
+                        <Operand Rank="0" Source="Variable" Name="error"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Off" Target="Off">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="reset errors"/>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="error counter" ActionType="Assign" ActionValue="0000"/>
+                </Actions>
+            </Transition>
+            <Transition Source="Off" Target="Error" SliderPos="24">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="error"/>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="error counter" ActionType="Increment"/>
+                </Actions>
+            </Transition>
+            <Transition Source="Off" Target="Init" SliderPos="62">
+                <Condition>
+                    <LogicEquation Operator="and" OperandCount="2">
+                        <Operand Rank="0" Source="Variable" Name="start"/>
+                        <Operand Rank="1" Source="Equation">
+                            <LogicEquation Operator="not">
+                                <Operand Rank="0" Source="Variable" Name="error"/>
+                            </LogicEquation>
+                        </Operand>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="boot" ActionType="Pulse"/>
+                </Actions>
+            </Transition>
+            <Transition Source="Blink led 0" Target="Blink led 1">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="suspend"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Blink led 0" Target="On">
+                <Condition>
+                    <LogicEquation Operator="not">
+                        <Operand Rank="0" Source="Variable" Name="suspend"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Blink led 1" Target="Blink led 0">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="suspend"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Blink led 1" Target="On">
+                <Condition>
+                    <LogicEquation Operator="not">
+                        <Operand Rank="0" Source="Variable" Name="suspend"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+        </Transitions>
+    </Machine>
+</StateS>

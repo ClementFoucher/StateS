@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -125,7 +125,7 @@ void MachineXmlParser::parseActionNode()
 
 	// Get action type
 	ActionOnVariableType_t actionType;
-	QString actionTypeText = this->getCurrentNodeStringAttribute("Action_Type");
+	QString actionTypeText = this->getCurrentNodeStringAttribute("ActionType");
 
 	if (actionTypeText == "Pulse")
 	{
@@ -167,15 +167,6 @@ void MachineXmlParser::parseActionNode()
 	// Get action range
 	QString srangel = this->getCurrentNodeStringAttribute("RangeL");
 	QString sranger = this->getCurrentNodeStringAttribute("RangeR");
-	// For compatibility with previous saves
-	if (srangel.isNull() == true)
-	{
-		srangel = this->getCurrentNodeStringAttribute("Param1");
-	}
-	if (sranger.isNull() == true)
-	{
-		sranger = this->getCurrentNodeStringAttribute("Param2");
-	}
 
 	int rangeL;
 	int rangeR;
@@ -199,7 +190,7 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Get action value
-	QString sactval = this->getCurrentNodeStringAttribute("Action_Value");
+	QString sactval = this->getCurrentNodeStringAttribute("ActionValue");
 	LogicValue actionValue;
 	if (sactval.isEmpty() == false)
 	{
@@ -248,7 +239,7 @@ void MachineXmlParser::parseLogicEquationNode()
 		operandCount = -1;
 	}
 
-	QString valueOperator = this->getCurrentNodeStringAttribute("Nature"); // TODO: use "Operator"
+	QString valueOperator = this->getCurrentNodeStringAttribute("Operator");
 	if (valueOperator == "not")
 	{
 		operatorType = OperatorType_t::notOp;
@@ -289,21 +280,16 @@ void MachineXmlParser::parseLogicEquationNode()
 	{
 		operatorType = OperatorType_t::concatOp;
 	}
+	else if (valueOperator == "identity")
+	{
+		operatorType = OperatorType_t::identity;
+	}
 	else if (valueOperator == "extract")
 	{
 		operatorType = OperatorType_t::extractOp;
 
 		auto srangel = this->getCurrentNodeStringAttribute("RangeL");
 		auto sranger = this->getCurrentNodeStringAttribute("RangeR");
-		// For compatibility with previous saves
-		if (srangel.isNull())
-		{
-			srangel = this->getCurrentNodeStringAttribute("Param1");
-		}
-		if (sranger.isNull())
-		{
-			sranger = this->getCurrentNodeStringAttribute("Param2");
-		}
 
 		rangeL = srangel.toInt();
 		rangeR = sranger.toInt();
@@ -337,9 +323,21 @@ void MachineXmlParser::parseOperandNode()
 		return;
 	}
 
+	QString operandSource = this->getCurrentNodeStringAttribute("Source");
+	if ( (operandSource != "Equation") &&
+	     (operandSource != "Variable") &&
+	     (operandSource != "Constant") )
+	{
+		this->addIssue(tr("Error!") + " " + tr("Unable to parse operand source for an equation."));
+		this->addIssue("    " + tr("Expected") + " \"Equation\", \"Variable\" " + tr("or") + "\"Constant\"" + tr("got") + " \"" + operandSource + "\".");
+		this->addIssue("    " + tr("Operand will be ignored."));
+
+		return;
+	}
+
 
 	bool ok;
-	uint operandRank = this->getCurrentNodeUintAttribute("Number", &ok);
+	uint operandRank = this->getCurrentNodeUintAttribute("Rank", &ok);
 	if (ok == false)
 	{
 		this->addIssue(tr("Warning:") + " " + tr("Unable to parse operand rank for an equation."));
@@ -348,10 +346,34 @@ void MachineXmlParser::parseOperandNode()
 	}
 
 	this->operandRankStack.push(operandRank);
+
+	// Nothing to do now if operand is an equation: it will
+	// be parsed when the LogicEquation tag is encountered
+	if (operandSource == "Variable")
+	{
+		this->parseOperandVariableNode();
+	}
+	else if (operandSource == "Constant")
+	{
+		this->parseOperandConstantNode();
+	}
 }
 
 void MachineXmlParser::parseOperandVariableNode()
 {
+	if (this->equationStack.isEmpty() == true)
+	{
+		this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"Operand\" " + tr("node due to previous errors") + ".");
+		return;
+	}
+
+	if (this->operandRankStack.isEmpty() == true)
+	{
+		this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"Operand\" " + tr("node due to previous errors") + ".");
+		return;
+	}
+
+
 	auto variableName = this->getCurrentNodeStringAttribute("Name");
 
 	shared_ptr<Variable> variable = this->getVariableByName(variableName);
@@ -364,31 +386,27 @@ void MachineXmlParser::parseOperandVariableNode()
 		return;
 	}
 
-
-	if (this->equationStack.isEmpty() == false)
-	{
-		if (this->operandRankStack.isEmpty() == true)
-		{
-			this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"LogicVariable\" " + tr("node due to previous errors."));
-			return;
-		}
-
-
-		auto parentEquation = this->equationStack.top();
-		parentEquation->setOperand(this->operandRankStack.pop(), variable);
-	}
-	else
-	{
-		auto equation = make_shared<Equation>(OperatorType_t::identity);
-		equation->setOperand(0, variable);
-
-		this->equationStack.push(equation);
-	}
+	auto parentEquation = this->equationStack.top();
+	parentEquation->setOperand(this->operandRankStack.pop(), variable);
 }
 
 void MachineXmlParser::parseOperandConstantNode()
 {
+	if (this->equationStack.isEmpty() == true)
+	{
+		this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"Operand\" " + tr("node due to previous errors") + ".");
+		return;
+	}
+
+	if (this->operandRankStack.isEmpty() == true)
+	{
+		this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"Operand\" " + tr("node due to previous errors") + ".");
+		return;
+	}
+
+
 	auto constantValue = LogicValue::fromString(this->getCurrentNodeStringAttribute("Value"));
+
 	if (constantValue.isNull() == true)
 	{
 		constantValue = LogicValue::getValue0(1);
@@ -397,58 +415,8 @@ void MachineXmlParser::parseOperandConstantNode()
 		this->addIssue("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
 	}
 
-	if (this->equationStack.isEmpty() == false)
-	{
-		if (this->operandRankStack.isEmpty() == true)
-		{
-			this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"LogicEquation\" " + tr("node due to previous errors."));
-
-			return;
-		}
-
-
-		auto parentEquation = this->equationStack.top();
-		parentEquation->setOperand(this->operandRankStack.pop(), constantValue);
-		this->isParsingConstantOperand = true;
-	}
-	else
-	{
-		auto equation = make_shared<Equation>(OperatorType_t::identity);
-		equation->setOperand(0, constantValue);
-
-		this->equationStack.push(equation);
-	}
-}
-
-/**
- * @brief MachineXmlParser::processEndLogicVariableNode is called when
- *        a LogicVariable end tag is encountered. It identifies
- *        if the current variable is root or is an equation operand.
- * @return IsRoot_t::no if equation was an operand,
- *         IsRoot_t::yes if it was root
- */
-MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicVariableNode()
-{
-	if (this->equationStack.count() == 0)
-	{
-		// This is an error case, but we should declare
-		// this is root to fall back in the correct tag.
-		return IsRoot_t::yes;
-	}
-
-	if (this->equationStack.count() == 1)
-	{
-		auto equation = this->equationStack.top();
-
-		if (equation->getOperatorType() == OperatorType_t::identity)
-		{
-			// Current equation is root
-			return IsRoot_t::yes;
-		}
-	}
-
-	// Current equation is an equation operand
-	return IsRoot_t::no;
+	auto parentEquation = this->equationStack.top();
+	parentEquation->setOperand(this->operandRankStack.pop(), constantValue);
 }
 
 /**
@@ -462,14 +430,6 @@ MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicVariableNode()
  */
 MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicEquationNode()
 {
-	if (this->isParsingConstantOperand == true)
-	{
-		// Constant is a special case as we removed the operator type,
-		// but it is still used in save files.
-		this->isParsingConstantOperand = false;
-		return IsRoot_t::no;
-	}
-
 	if (this->equationStack.count() == 1)
 	{
 		// Current equation is root
@@ -584,7 +544,30 @@ void MachineXmlParser::parseStartElement()
 	switch (this->currentTag)
 	{
 	case Tag_t::none:
-		if (nodeName == "FSM")
+		if (nodeName == "StateS")
+		{
+			this->currentTag = Tag_t::states;
+			// Nothing to do here: version is checked ahead
+		}
+		else if (nodeName == "Machine")
+		{
+			// In string representation (for undo commands), StateS node is omitted
+			this->currentTag = Tag_t::machine;
+			this->parseMachineName();
+		}
+		else
+		{
+			this->unexpectedTagLevel++;
+
+			this->addIssue(tr("Error!") + " " + tr("Unexpected root node.") + " " + tr("Root node should be") + " \"StateS\", " + tr("but found") + " " + nodeName);
+		}
+		break;
+	case Tag_t::states:
+		if (nodeName == "Configuration")
+		{
+			this->currentTag = Tag_t::configuration;
+		}
+		else if (nodeName == "Machine")
 		{
 			this->currentTag = Tag_t::machine;
 			this->parseMachineName();
@@ -593,26 +576,13 @@ void MachineXmlParser::parseStartElement()
 		{
 			this->unexpectedTagLevel++;
 
-			this->addIssue(tr("Error!") + " " + tr("Unexpected root node.") + " " + tr("Root node should be") + " \"FSM\", " + tr("but found") + " \"" + nodeName + "\".");
-		}
-		break;
-	case Tag_t::machine:
-		if (nodeName == "Configuration")
-		{
-			this->currentTag = Tag_t::configuration;
-		}
-		else if (nodeName == "Signals")
-		{
-			this->currentTag = Tag_t::variables;
-		}
-		else
-		{
-			this->currentTag = Tag_t::submachineTag;
-			this->parseSubmachineStartElement();
+			this->addIssue(tr("Warning.") + " " + tr("Unexpected node found within \"StateS\" node."));
+			this->addIssue("    " + tr("Expected") + " \"Configuration\" " + tr("or") + " \"Machine\", " + tr("got") + " \"" + nodeName + "\".");
+			this->addIssue("    " + tr("Node ignored."));
 		}
 		break;
 	case Tag_t::configuration:
-		if (nodeName == "Scale")
+		if (nodeName == "ViewScale")
 		{
 			this->currentTag = Tag_t::configurationViewScale;
 			this->parseConfigurationViewScale();
@@ -627,8 +597,19 @@ void MachineXmlParser::parseStartElement()
 			this->unexpectedTagLevel++;
 
 			this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing configuration."));
-			this->addIssue("    " + tr("Expected") + " \"Scale\" " + tr("or") + " \"ViewCentralPoint\", " + tr("got") + " \"" + nodeName + "\".");
+			this->addIssue("    " + tr("Expected") + " \"ViewScale\" " + tr("or") + " \"ViewCentralPoint\", " + tr("got") + " \"" + nodeName + "\".");
 			this->addIssue("    " + tr("Node ignored."));
+		}
+		break;
+	case Tag_t::machine:
+		if (nodeName == "Variables")
+		{
+			this->currentTag = Tag_t::variables;
+		}
+		else
+		{
+			this->currentTag = Tag_t::submachineTag;
+			this->parseSubmachineStartElement();
 		}
 		break;
 	case Tag_t::variables:
@@ -642,7 +623,7 @@ void MachineXmlParser::parseStartElement()
 			this->currentTag = Tag_t::variablesOutput;
 			this->parseVariableNode();
 		}
-		else if (nodeName == "Variable")
+		else if (nodeName == "Internal")
 		{
 			this->currentTag = Tag_t::variablesInternal;
 			this->parseVariableNode();
@@ -657,7 +638,7 @@ void MachineXmlParser::parseStartElement()
 			this->unexpectedTagLevel++;
 
 			this->addIssue(tr("Error!") + " " + tr("Unexpected variable nature encountered while parsing variable list."));
-			this->addIssue("    " + tr("Expected") + " \"Input\", \"Output\", \"Variable\" " + tr("or") + " \"Constant\", " + tr("got") + " \"" + nodeName + "\".");
+			this->addIssue("    " + tr("Expected") + " \"Input\", \"Output\", \"Internal\" " + tr("or") + " \"Constant\", " + tr("got") + " \"" + nodeName + "\".");
 			this->addIssue("    " + tr("Variable ignored."));
 		}
 		break;
@@ -690,11 +671,17 @@ void MachineXmlParser::parseEndElement()
 
 	switch (this->currentTag)
 	{
-	case Tag_t::machine:
+	case Tag_t::none:
+		// The end
+		break;
+	case Tag_t::states:
 		this->currentTag = Tag_t::none;
 		break;
 	case Tag_t::configuration:
-		this->currentTag = Tag_t::machine;
+		this->currentTag = Tag_t::states;
+		break;
+	case Tag_t::machine:
+		this->currentTag = Tag_t::states;
 		break;
 	case Tag_t::configurationViewScale:
 		this->currentTag = Tag_t::configuration;
@@ -719,7 +706,7 @@ void MachineXmlParser::parseEndElement()
 		break;
 	case Tag_t::submachineTag:
 	{
-		auto isSubmachineEnd =this->parseSubmachineEndElement();
+		auto isSubmachineEnd = this->parseSubmachineEndElement();
 
 		if (isSubmachineEnd == IsSubmachineEnd_t::yes)
 		{
@@ -727,8 +714,6 @@ void MachineXmlParser::parseEndElement()
 		}
 		break;
 	}
-	case Tag_t::none:
-		break;
 	}
 }
 
@@ -891,7 +876,7 @@ void MachineXmlParser::parseVariableNode()
 	}
 
 	// Get value
-	QString variableValueStr = this->getCurrentNodeStringAttribute("Initial_value");
+	QString variableValueStr = this->getCurrentNodeStringAttribute("Value");
 	if (variableValueStr.isEmpty() == false)
 	{
 		auto initialValue = LogicValue::fromString(variableValueStr);

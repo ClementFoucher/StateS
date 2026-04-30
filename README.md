@@ -1,5 +1,5 @@
 
-# StateS v. 0.4.9
+# StateS v. 0.5.0
 
 StateS is intended to be a simple yet effective Finite State Machines (FSMs) tool.
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -68,16 +68,18 @@ private:
 	{
 		none,
 		// Level 0
-		machine, // Currently, tag is named FSM => TODO rename
+		states,
 		// Level 1
 		configuration,
-		variables, // Currently, tag is named Signals => TODO rename
+		machine,
 		// Level 2
 		configurationViewScale,
 		configurationViewCentralPoint,
+		variables,
+		// Level 3
 		variablesInput,
 		variablesOutput,
-		variablesInternal, // Currently, tag is named Variable => TODO rename
+		variablesInternal,
 		variablesConstant,
 		// Other tag in machine: passed to submachine parser
 		submachineTag
@@ -109,7 +111,6 @@ protected:
 	void parseOperandVariableNode();
 	void parseOperandConstantNode();
 
-	IsRoot_t processEndLogicVariableNode();
 	IsRoot_t processEndLogicEquationNode();
 
 	virtual void              parseSubmachineStartElement() = 0;
@@ -163,9 +164,6 @@ private:
 	// Remember position in file
 	Tag_t currentTag = Tag_t::none;
 	int unexpectedTagLevel = 0;
-
-	// Temporary workaround to identify constant parsing
-	bool isParsingConstantOperand = false;
 
 };
 

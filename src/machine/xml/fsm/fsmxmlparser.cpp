@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -161,33 +161,17 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::condition:
-			if (nodeName == "LogicVariable")
-			{
-				this->currentSubTag = SubTag_t::logicVariable;
-				this->parseOperandVariableNode();
-			}
-			else if (nodeName == "LogicEquation")
+			if (nodeName == "LogicEquation")
 			{
 				this->currentSubTag = SubTag_t::logicEquation;
-
-				QString valueNature = this->getCurrentNodeStringAttribute("Nature");
-				if (valueNature != "constant")
-				{
-					this->parseLogicEquationNode();
-				}
-				else
-				{
-					// Constant is a special case as we removed the operator type,
-					// but it is still used in save files.
-					this->parseOperandConstantNode();
-				}
+				this->parseLogicEquationNode();
 			}
 			else
 			{
 				this->unexpectedTagLevel++;
 
 				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Condition\" " + tr("node") + ".");
-				this->addIssue("    " + tr("Expected") + " \"LogicVariable\" " + tr("or") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::logicEquation:
@@ -205,37 +189,20 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::operand:
-			if (nodeName == "LogicVariable")
-			{
-				this->currentSubTag = SubTag_t::logicVariable;
-				this->parseOperandVariableNode();
-			}
-			else if (nodeName == "LogicEquation")
+			if (nodeName == "LogicEquation")
 			{
 				this->currentSubTag = SubTag_t::logicEquation;
-
-				QString valueNature = this->getCurrentNodeStringAttribute("Nature");
-				if (valueNature != "constant")
-				{
-					this->parseLogicEquationNode();
-				}
-				else
-				{
-					// Constant is a special case as we removed the operator type,
-					// but it is still used in save files.
-					this->parseOperandConstantNode();
-				}
+				this->parseLogicEquationNode();
 			}
 			else
 			{
 				this->unexpectedTagLevel++;
 
-				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Operand\" " + tr("node."));
-				this->addIssue("    " + tr("Expected") + " \"LogicVariable\" " + tr("or") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Operand\" " + tr("node of type") + " \"Equation\".");
+				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::action:
-		case SubTag_t::logicVariable:
 			this->unexpectedTagLevel++;
 
 			this->addIssue(tr("Error!") + " " + tr("Unexpected node found in a node that doesn't accept subnodes."));
@@ -287,21 +254,6 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 		case SubTag_t::logicEquation:
 		{
 			auto isRoot = this->processEndLogicEquationNode();
-
-			switch (isRoot)
-			{
-			case IsRoot_t::yes:
-				this->currentSubTag = SubTag_t::condition;
-				break;
-			case IsRoot_t::no:
-				this->currentSubTag = SubTag_t::operand;
-				break;
-			}
-			break;
-		}
-		case SubTag_t::logicVariable:
-		{
-			auto isRoot = this->processEndLogicVariableNode();
 
 			switch (isRoot)
 			{

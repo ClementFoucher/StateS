@@ -1,111 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FSM Name="Burst emitter" StateS_version="0.4.9">
+<StateS Version="0.5.0">
     <Configuration>
-        <Scale Value="0.771269"/>
-        <ViewCentralPoint X="728.669" Y="276.168"/>
+        <ViewScale Value="0.835754"/>
+        <ViewCentralPoint X="725.318" Y="367.187"/>
     </Configuration>
-    <Signals>
-        <Input Name="Trigger" Size="1" Initial_value="0"/>
-        <Variable Name="period counter" Size="3" Initial_value="000" Memorized="true"/>
-        <Variable Name="event counter" Size="3" Initial_value="000" Memorized="true"/>
-        <Output Name="Burst" Size="1" Initial_value="0"/>
-        <Constant Name="period length" Size="3" Initial_value="011"/>
-        <Constant Name="period count" Size="3" Initial_value="100"/>
-    </Signals>
-    <States>
-        <State Name="Wait trig" IsInitial="true" X="150.678" Y="389.773"/>
-        <State Name="Burst low" X="893.025" Y="671.17">
-            <Actions>
-                <Action Name="event counter" Action_Type="Increment"/>
-            </Actions>
-        </State>
-        <State Name="Burst high" X="897.897" Y="151.646">
-            <Actions>
-                <Action Name="Burst" Action_Type="ActiveOnState"/>
-                <Action Name="event counter" Action_Type="Increment"/>
-            </Actions>
-        </State>
-    </States>
-    <Transitions>
-        <Transition Source="Wait trig" Target="Burst high">
-            <Condition>
-                <LogicVariable Name="Trigger"/>
-            </Condition>
-        </Transition>
-        <Transition Source="Burst high" Target="Burst low" SliderPos="76">
-            <Condition>
-                <LogicEquation Nature="equals">
-                    <Operand Number="0">
-                        <LogicVariable Name="event counter"/>
-                    </Operand>
-                    <Operand Number="1">
-                        <LogicVariable Name="period length"/>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-            <Actions>
-                <Action Name="event counter" Action_Type="Assign" Action_Value="000"/>
-            </Actions>
-        </Transition>
-        <Transition Source="Burst low" Target="Burst high" SliderPos="76">
-            <Condition>
-                <LogicEquation Nature="and" OperandCount="2">
-                    <Operand Number="0">
-                        <LogicEquation Nature="equals">
-                            <Operand Number="0">
-                                <LogicVariable Name="event counter"/>
-                            </Operand>
-                            <Operand Number="1">
-                                <LogicVariable Name="period length"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                    <Operand Number="1">
-                        <LogicEquation Nature="differs">
-                            <Operand Number="0">
-                                <LogicVariable Name="period counter"/>
-                            </Operand>
-                            <Operand Number="1">
-                                <LogicVariable Name="period count"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-            <Actions>
-                <Action Name="event counter" Action_Type="Assign" Action_Value="000"/>
-                <Action Name="period counter" Action_Type="Increment"/>
-            </Actions>
-        </Transition>
-        <Transition Source="Burst low" Target="Wait trig" SliderPos="86">
-            <Condition>
-                <LogicEquation Nature="and" OperandCount="2">
-                    <Operand Number="0">
-                        <LogicEquation Nature="equals">
-                            <Operand Number="0">
-                                <LogicVariable Name="event counter"/>
-                            </Operand>
-                            <Operand Number="1">
-                                <LogicVariable Name="period length"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                    <Operand Number="1">
-                        <LogicEquation Nature="equals">
-                            <Operand Number="0">
-                                <LogicVariable Name="period counter"/>
-                            </Operand>
-                            <Operand Number="1">
-                                <LogicVariable Name="period count"/>
-                            </Operand>
-                        </LogicEquation>
-                    </Operand>
-                </LogicEquation>
-            </Condition>
-            <Actions>
-                <Action Name="period counter" Action_Type="Assign" Action_Value="000"/>
-                <Action Name="event counter" Action_Type="Assign" Action_Value="000"/>
-            </Actions>
-        </Transition>
-    </Transitions>
-</FSM>
+    <Machine Name="Burst emitter" Type="FSM">
+        <Variables>
+            <Input Name="Trigger" Size="1" Value="0"/>
+            <Internal Name="period counter" Size="3" Value="000" Memorized="true"/>
+            <Internal Name="event counter" Size="3" Value="000" Memorized="true"/>
+            <Output Name="Burst" Size="1" Value="0"/>
+            <Constant Name="period length" Size="3" Value="011"/>
+            <Constant Name="period count" Size="3" Value="100"/>
+        </Variables>
+        <States>
+            <State Name="Wait trig" IsInitial="true" X="151.5" Y="389.627"/>
+            <State Name="Burst low" X="893.847" Y="671.024">
+                <Actions>
+                    <Action Name="event counter" ActionType="Increment"/>
+                </Actions>
+            </State>
+            <State Name="Burst high" X="898.719" Y="151.5">
+                <Actions>
+                    <Action Name="Burst" ActionType="ActiveOnState"/>
+                    <Action Name="event counter" ActionType="Increment"/>
+                </Actions>
+            </State>
+        </States>
+        <Transitions>
+            <Transition Source="Wait trig" Target="Burst high">
+                <Condition>
+                    <LogicEquation Operator="identity">
+                        <Operand Rank="0" Source="Variable" Name="Trigger"/>
+                    </LogicEquation>
+                </Condition>
+            </Transition>
+            <Transition Source="Burst high" Target="Burst low" SliderPos="76">
+                <Condition>
+                    <LogicEquation Operator="equals">
+                        <Operand Rank="0" Source="Variable" Name="event counter"/>
+                        <Operand Rank="1" Source="Variable" Name="period length"/>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                </Actions>
+            </Transition>
+            <Transition Source="Burst low" Target="Burst high" SliderPos="76">
+                <Condition>
+                    <LogicEquation Operator="and" OperandCount="2">
+                        <Operand Rank="0" Source="Equation">
+                            <LogicEquation Operator="equals">
+                                <Operand Rank="0" Source="Variable" Name="event counter"/>
+                                <Operand Rank="1" Source="Variable" Name="period length"/>
+                            </LogicEquation>
+                        </Operand>
+                        <Operand Rank="1" Source="Equation">
+                            <LogicEquation Operator="differs">
+                                <Operand Rank="0" Source="Variable" Name="period counter"/>
+                                <Operand Rank="1" Source="Variable" Name="period count"/>
+                            </LogicEquation>
+                        </Operand>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                    <Action Name="period counter" ActionType="Increment"/>
+                </Actions>
+            </Transition>
+            <Transition Source="Burst low" Target="Wait trig" SliderPos="86">
+                <Condition>
+                    <LogicEquation Operator="and" OperandCount="2">
+                        <Operand Rank="0" Source="Equation">
+                            <LogicEquation Operator="equals">
+                                <Operand Rank="0" Source="Variable" Name="event counter"/>
+                                <Operand Rank="1" Source="Variable" Name="period length"/>
+                            </LogicEquation>
+                        </Operand>
+                        <Operand Rank="1" Source="Equation">
+                            <LogicEquation Operator="equals">
+                                <Operand Rank="0" Source="Variable" Name="period counter"/>
+                                <Operand Rank="1" Source="Variable" Name="period count"/>
+                            </LogicEquation>
+                        </Operand>
+                    </LogicEquation>
+                </Condition>
+                <Actions>
+                    <Action Name="period counter" ActionType="Assign" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                </Actions>
+            </Transition>
+        </Transitions>
+    </Machine>
+</StateS>

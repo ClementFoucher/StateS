@@ -68,18 +68,28 @@ void MachineXmlWriter::writeMachineToStream()
 	if (machine == nullptr) return;
 
 
-	this->writeMachineType();
-	this->stream->writeAttribute("Name", machine->getName());
-	this->stream->writeAttribute("StateS_version", StateS::getVersion());
-
 	if (this->mode == MachineXmlWriterMode_t::writeToFile)
 	{
+		this->stream->writeStartElement("StateS");
+		this->stream->writeAttribute("Version", StateS::getVersion());
+
 		this->writeUiConfiguration();
 	}
+
+	this->stream->writeStartElement("Machine");
+	this->stream->writeAttribute("Name", machine->getName());
+	this->writeMachineType();
+
 	this->writeMachineVariables();
 	this->writeSubmachineToStream();
 
-	this->stream->writeEndElement(); // End "Machine" tag (i.e. only FSM currently)
+	this->stream->writeEndElement(); // End Machine tag
+
+
+	if (this->mode == MachineXmlWriterMode_t::writeToFile)
+	{
+		this->stream->writeEndElement(); // End StateS tag
+	}
 }
 
 void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
@@ -108,25 +118,25 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 			switch(action->getActionType())
 			{
 			case ActionOnVariableType_t::continuous:
-				this->stream->writeAttribute("Action_Type", "ActiveOnState");
+				this->stream->writeAttribute("ActionType", "ActiveOnState");
 				break;
 			case ActionOnVariableType_t::pulse:
-				this->stream->writeAttribute("Action_Type", "Pulse");
+				this->stream->writeAttribute("ActionType", "Pulse");
 				break;
 			case ActionOnVariableType_t::set:
-				this->stream->writeAttribute("Action_Type", "Set");
+				this->stream->writeAttribute("ActionType", "Set");
 				break;
 			case ActionOnVariableType_t::reset:
-				this->stream->writeAttribute("Action_Type", "Reset");
+				this->stream->writeAttribute("ActionType", "Reset");
 				break;
 			case ActionOnVariableType_t::assign:
-				this->stream->writeAttribute("Action_Type", "Assign");
+				this->stream->writeAttribute("ActionType", "Assign");
 				break;
 			case ActionOnVariableType_t::increment:
-				this->stream->writeAttribute("Action_Type", "Increment");
+				this->stream->writeAttribute("ActionType", "Increment");
 				break;
 			case ActionOnVariableType_t::decrement:
-				this->stream->writeAttribute("Action_Type", "Decrement");
+				this->stream->writeAttribute("ActionType", "Decrement");
 				break;
 			case ActionOnVariableType_t::none:
 				break;
@@ -137,7 +147,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 				auto actionValue = action->getActionValue();
 				if (actionValue.isNull() == false)
 				{
-					this->stream->writeAttribute("Action_Value", actionValue.toString());
+					this->stream->writeAttribute("ActionValue", actionValue.toString());
 				}
 			}
 			if (action->getActionRangeL() != -1)
@@ -163,126 +173,96 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 	if (machine == nullptr) return;
 
 
-	if (equation->getOperatorType() != OperatorType_t::identity)
+	this->stream->writeStartElement("LogicEquation");
+	switch (equation->getOperatorType())
 	{
-		this->stream->writeStartElement("LogicEquation");
-		switch (equation->getOperatorType())
-		{
-		case OperatorType_t::andOp:
-			this->stream->writeAttribute("Nature", "and");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::nandOp:
-			this->stream->writeAttribute("Nature", "nand");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::norOp:
-			this->stream->writeAttribute("Nature", "nor");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::notOp:
-			this->stream->writeAttribute("Nature", "not");
-			break;
-		case OperatorType_t::orOp:
-			this->stream->writeAttribute("Nature", "or");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::xnorOp:
-			this->stream->writeAttribute("Nature", "xnor");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::xorOp:
-			this->stream->writeAttribute("Nature", "xor");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::equalOp:
-			this->stream->writeAttribute("Nature", "equals");
-			break;
-		case OperatorType_t::diffOp:
-			this->stream->writeAttribute("Nature", "differs");
-			break;
-		case OperatorType_t::extractOp:
-			this->stream->writeAttribute("Nature", "extract");
-			this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));
-			this->stream->writeAttribute("RangeR", QString::number(equation->getRangeR()));
-			break;
-		case OperatorType_t::concatOp:
-			this->stream->writeAttribute("Nature", "concatenate");
-			this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
-			break;
-		case OperatorType_t::identity:
-			// Handled in another branch of the if
-			break;
-		}
-
-		for (uint i = 0 ; i < equation->getOperandCount() ; i++)
-		{
-			auto operand = equation->getOperand(i);
-			if (operand == nullptr) continue;
-
-
-			this->stream->writeStartElement("Operand");
-			this->stream->writeAttribute("Number", QString::number(i));
-
-			switch (operand->getSource())
-			{
-			case OperandSource_t::equation:
-				this->writeLogicEquation(operand->getEquation());
-				break;
-			case OperandSource_t::variable:
-			{
-				auto variableId = operand->getVariableId();
-
-				auto variable = machine->getVariable(variableId);
-				if (variable != nullptr)
-				{
-					this->stream->writeStartElement("LogicVariable");
-					this->stream->writeAttribute("Name", variable->getName());
-					this->stream->writeEndElement(); // LogicVariable
-				}
-				break;
-			}
-			case OperandSource_t::constant:
-				this->stream->writeStartElement("LogicEquation");
-				this->stream->writeAttribute("Nature", "constant");
-				this->stream->writeAttribute("Value", operand->getConstant().toString());
-				this->stream->writeEndElement(); // LogicEquation
-				break;
-			}
-
-			this->stream->writeEndElement(); // Operand
-		}
-
-		this->stream->writeEndElement(); // LogicEquation
+	case OperatorType_t::andOp:
+		this->stream->writeAttribute("Operator", "and");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::nandOp:
+		this->stream->writeAttribute("Operator", "nand");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::norOp:
+		this->stream->writeAttribute("Operator", "nor");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::notOp:
+		this->stream->writeAttribute("Operator", "not");
+		break;
+	case OperatorType_t::orOp:
+		this->stream->writeAttribute("Operator", "or");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::xnorOp:
+		this->stream->writeAttribute("Operator", "xnor");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::xorOp:
+		this->stream->writeAttribute("Operator", "xor");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::equalOp:
+		this->stream->writeAttribute("Operator", "equals");
+		break;
+	case OperatorType_t::diffOp:
+		this->stream->writeAttribute("Operator", "differs");
+		break;
+	case OperatorType_t::extractOp:
+		this->stream->writeAttribute("Operator", "extract");
+		this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));
+		this->stream->writeAttribute("RangeR", QString::number(equation->getRangeR()));
+		break;
+	case OperatorType_t::concatOp:
+		this->stream->writeAttribute("Operator", "concatenate");
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		break;
+	case OperatorType_t::identity:
+		this->stream->writeAttribute("Operator", "identity");
+		break;
 	}
-	else // (equation->getOperatorType() == OperatorType_t::identity)
+
+	for (uint i = 0 ; i < equation->getOperandCount() ; i++)
 	{
-		// Identity should only happen aa root equation to carry variables or constants
-		auto operand = equation->getOperand(0);
-		if (operand == nullptr) return;
+		auto operand = equation->getOperand(i);
+		if (operand == nullptr) continue;
 
 
-		auto operandSource = operand->getSource();
-		if (operandSource == OperandSource_t::variable)
+		this->stream->writeStartElement("Operand");
+		this->stream->writeAttribute("Rank", QString::number(i));
+
+		switch (operand->getSource())
+		{
+		case OperandSource_t::equation:
+			this->stream->writeAttribute("Source", "Equation");
+			this->writeLogicEquation(operand->getEquation());
+			break;
+		case OperandSource_t::variable:
 		{
 			auto variableId = operand->getVariableId();
-
 			auto variable = machine->getVariable(variableId);
-			if (variable == nullptr) return;
-
-
-			this->stream->writeStartElement("LogicVariable");
-			this->stream->writeAttribute("Name", variable->getName());
-			this->stream->writeEndElement(); // LogicVariable
+			if (variable != nullptr)
+			{
+				this->stream->writeAttribute("Source", "Variable");
+				this->stream->writeAttribute("Name", variable->getName());
+			}
+			break;
 		}
-		else if (operandSource == OperandSource_t::constant)
-		{
-			this->stream->writeStartElement("LogicEquation");
-			this->stream->writeAttribute("Nature", "constant");
-			this->stream->writeAttribute("Value", operand->getConstant().toString());
-			this->stream->writeEndElement(); // LogicEquation
+		case OperandSource_t::constant:
+			auto constantValue = operand->getConstant();
+			if (constantValue.isNull() == false)
+			{
+				this->stream->writeAttribute("Source", "Constant");
+				this->stream->writeAttribute("Value", constantValue.toString());
+			}
+			break;
 		}
+
+		this->stream->writeEndElement(); // Operand
 	}
+
+	this->stream->writeEndElement(); // LogicEquation
 }
 
 void MachineXmlWriter::createSaveFile() // Throws StatesException
@@ -332,7 +312,7 @@ void MachineXmlWriter::writeUiConfiguration()
 
 	this->stream->writeStartElement("Configuration");
 
-	this->stream->writeStartElement("Scale");
+	this->stream->writeStartElement("ViewScale");
 	this->stream->writeAttribute("Value", QString::number(this->viewConfiguration->zoomLevel));
 	this->stream->writeEndElement();
 
@@ -350,7 +330,7 @@ void MachineXmlWriter::writeMachineVariables()
 	if (machine == nullptr) return;
 
 
-	this->stream->writeStartElement("Signals");
+	this->stream->writeStartElement("Variables");
 
 	for (auto& variableId : machine->getInputVariablesIds())
 	{
@@ -390,7 +370,7 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 		this->stream->writeStartElement("Input");
 		break;
 	case VariableNature_t::internal:
-		this->stream->writeStartElement("Variable");
+		this->stream->writeStartElement("Internal");
 		break;
 	case VariableNature_t::output:
 		this->stream->writeStartElement("Output");
@@ -407,7 +387,7 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 	this->stream->writeAttribute("Size", QString::number(variable->getSize()));
 
 	// Value
-	this->stream->writeAttribute("Initial_value", variable->getInitialValue().toString());
+	this->stream->writeAttribute("Value", variable->getInitialValue().toString());
 
 	// Memorized
 	if (variable->getMemorized() == true)

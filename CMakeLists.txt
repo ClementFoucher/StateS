@@ -8,7 +8,7 @@
 # Define project
 cmake_minimum_required(VERSION 3.31)
 project(StateS
-    VERSION      0.4.9
+    VERSION      0.5.0
     HOMEPAGE_URL "https://github.com/ClementFoucher/StateS"
     LANGUAGES    CXX
 )

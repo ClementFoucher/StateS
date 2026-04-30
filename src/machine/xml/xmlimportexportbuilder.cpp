@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2025 Clément Foucher
+ * Copyright © 2021-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -82,9 +82,9 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
 {
 	shared_ptr<MachineXmlParser> machineParser;
 
-	shared_ptr<StateSXmlAnalyzer> analyzer(new StateSXmlAnalyzer(xmlString));
+	StateSXmlAnalyzer analyzer{xmlString};
 
-	if (analyzer->getMachineType() == MachineType_t::fsm)
+	if (analyzer.getMachineType() == MachineType_t::fsm)
 	{
 		machineParser = make_shared<FsmXmlParser>(xmlString);
 	}
