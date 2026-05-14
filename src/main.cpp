@@ -21,11 +21,10 @@
 
 // C++ classes
 #include <memory>
-using namespace std;
 
 // Qt classes
 #include <QApplication>
-
+#include <QFile>
 #include <QDebug>
 
 // StateS classes
@@ -33,86 +32,73 @@ using namespace std;
 #include "statesexception.h"
 
 
-// Debug management (inactive for now)
-#define DEBUG_TO_FILE 0
+void logCrash(QApplication* app, const QString& logText)
+{
+	const QString logPathBase = app->applicationDirPath() + "/states-crash-";
+	uint crashNum = 1;
 
-#if DEBUG_TO_FILE == 1
+	QString logPath = logPathBase + QString::number(crashNum) +	".log";
+	QFile debugFile{logPath};
+	while (debugFile.exists() == true)
+	{
+		crashNum++;
+		logPath = logPathBase + QString::number(crashNum) +	".log";
+		debugFile.setFileName(logPath);
+	}
 
-#include <QFile>
+	QDebug debug_log{&debugFile};
+	debug_log.setAutoInsertSpaces(false);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-#define DEBUG_LOG_FILE (SHGetSpecialFolderPath(CSIDL_DESKTOP) + "\StateS.log")
-#else
-#define DEBUG_LOG_FILE "~/StateS.log"
-#endif
+	bool opened = debugFile.open(QFile::WriteOnly | QFile::Text);
+	if (opened == false) return;
 
-#endif
 
+	debug_log << "States encountered an error and crashed.\n";
+	debug_log << "Please open an issue on https://github.com/ClementFoucher/StateS/issues and report this error along with a short description of what you were doing when it happened.\n";
+	debug_log << "The error text is:\n";
+	debug_log << logText;
+	debug_log << "\n";
+
+	debugFile.close();
+}
 
 int main(int argc, char* argv[])
 {
 	// Create application
 	QApplication* app = new QApplication(argc, argv);
 
-	// Build StateS main object and begin execution
 	int res;
-	unique_ptr<StateS> states;
 	try
 	{
-		states = make_unique<StateS>();
+		// Build StateS main object
+		auto states = std::make_unique<StateS>();
 
 		// Start event loop
 		res = app->exec();
 	}
 	catch (const StatesException& e)
 	{
-		// TODO: check log + actualize error text
-		qDebug() << "Error! " << e.what();
-		qDebug() << "Sorry for the inconvenience. Terminating StateS";
-#if DEBUG_TO_FILE == 1
-		QFile debug_file(DEBUG_LOG_FILE);
-		QDebug debug_log(&debug_file);
-		debug_log << e.what();
-		debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
-		debug_file.close();
-#endif
+		logCrash(app, e.what());
+
 		res = -1;
 	}
 	catch (const exception& e)
 	{
-		// TODO: write in log file
-		qDebug() << "Error! Unknown exception occured in a standard library.";
-		qDebug() << "I wish I knew where.";
-		qDebug() << "Exception says: \"" << e.what() << "\".";
-		qDebug() << "Sorry for the inconvenience. Terminating StateS";
-#if DEBUG_TO_FILE == 1
-		QFile debug_file(DEBUG_LOG_FILE);
-		QDebug debug_log(&debug_file);
-		debug_log << "Unhandled exception occured in a standard library.";
-		debug_log << "Exception says: \"" << e.what() << "\".";
-		debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
-		debug_file.close();
-#endif
+		QString errorText = "The following exception occured in a standard library: ";
+		errorText += e.what();
+		logCrash(app, errorText);
+
 		res = -1;
 	}
 	catch (...)
 	{
-		// TODO: write in log file
-		qDebug() << "Error! Unknown exception occured somewhere.";
-		qDebug() << "I wish I knew what and where.";
-		qDebug() << "Sorry for the inconvenience. Terminating StateS";
-#if DEBUG_TO_FILE == 1
-		QFile debug_file(DEBUG_LOG_FILE);
-		QDebug debug_log(&debug_file);
-		debug_log << "Unknown exception occured.";
-		debug_log << "Please send this file to SateS-dev@outlook.fr with a short description of what you were doing when the error occured.";
-		debug_file.close();
-#endif
+		QString errorText = "An unknown exception occured in an unknown location.";
+		logCrash(app, errorText);
+
 		res = -1;
 	}
 
-	// Clear everyting
-	states.reset();
+	// Clear application
 	delete app;
 
 	// The end
