@@ -64,6 +64,7 @@ class MachineManager : public QObject
 	// Constructors/destructors
 public:
 	explicit MachineManager();
+	virtual ~MachineManager();
 
 	/////
 	// Object functions

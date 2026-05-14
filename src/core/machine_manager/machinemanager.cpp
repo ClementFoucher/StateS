@@ -58,6 +58,37 @@ MachineManager::MachineManager() :
 	connect(this->undoRedoManager.get(), &UndoRedoManager::redoActionAvailabilityChangeEvent, this, &MachineManager::redoActionAvailabilityChangedEvent);
 }
 
+MachineManager::~MachineManager()
+{
+	// Disconnect all signals before deleting the MachineManager
+	// This prevents anarchic calls from machine components being deleted
+	// to be transmitted to the machine manager that is already deleted but as
+	// the inherited QObject hasn't been yet, signals are not disconnected.
+
+	if (this->machine != nullptr)
+	{
+		disconnect(this->machine.get(), &Machine::machineNameChangedEvent,         this, &MachineManager::machineNameChangedEvent);
+		disconnect(this->machine.get(), &Machine::machineExternalViewChangedEvent, this, &MachineManager::machineExternalViewChangedEvent);
+
+		disconnect(this->machine.get(), &Machine::componentEditedEvent,  this, &MachineManager::componentEditedEventHandler);
+		disconnect(this->machine.get(), &Machine::componentDeletedEvent, this, &MachineManager::componentDeletedEventHandler);
+	}
+
+	disconnect(this->undoRedoManager.get(), &UndoRedoManager::freshMachineAvailableEvent,        this, &MachineManager::freshMachineAvailableFromUndoRedo);
+	disconnect(this->undoRedoManager.get(), &UndoRedoManager::undoActionAvailabilityChangeEvent, this, &MachineManager::undoActionAvailabilityChangedEvent);
+	disconnect(this->undoRedoManager.get(), &UndoRedoManager::redoActionAvailabilityChangeEvent, this, &MachineManager::redoActionAvailabilityChangedEvent);
+
+	disconnect(this->machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent, this, &MachineManager::machineUnsavedFlagChangedEventHandler);
+
+	// For destruction order
+	this->machineSimulator.reset();
+	this->graphicMachine.reset();
+	this->machine.reset();
+	this->machineBuilder.reset();
+	this->machineStatus.reset();
+	this->undoRedoManager.reset();
+}
+
 /////
 // Mutators
 
