@@ -22,10 +22,10 @@
 // Current class header
 #include "machinesimulator.h"
 
-// Qt classes
+// Qt
 #include <QTimer>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "graphicmachine.h"

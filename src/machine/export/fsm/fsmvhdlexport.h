@@ -25,16 +25,16 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QMap>
 class QString;
 class QTextStream;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class ActionOnVariable;
 class Equation;

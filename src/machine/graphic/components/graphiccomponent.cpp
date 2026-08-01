@@ -22,7 +22,7 @@
 // Current class header
 #include "graphiccomponent.h"
 
-// Qt classes
+// Qt
 #include <QPen>
 
 

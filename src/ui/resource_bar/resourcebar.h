@@ -25,11 +25,11 @@
 // Parent
 #include <QTabWidget>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class MachineComponentVisualizer;
 

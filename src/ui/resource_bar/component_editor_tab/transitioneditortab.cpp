@@ -22,12 +22,12 @@
 // Current class header
 #include "transitioneditortab.h"
 
-// Qt classes
+// Qt
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QGroupBox>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "actioneditor.h"

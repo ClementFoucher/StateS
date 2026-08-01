@@ -22,10 +22,10 @@
 #ifndef ACTIONTABLEMODEL_H
 #define ACTIONTABLEMODEL_H
 
-// Parent class
+// Parent
 #include <QAbstractTableModel>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

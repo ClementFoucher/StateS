@@ -22,7 +22,7 @@
 // Current class header
 #include "statesscene.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsItem>
 
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicfsmtransitionneighborhood.h"
 
-// StateS classes
+// StateS
 #include "graphicfsmstate.h"
 #include "graphicfsmtransition.h"
 

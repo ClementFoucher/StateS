@@ -25,15 +25,15 @@
 // Parent
 #include "statesgraphicsview.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QPushButton;
 class QLabel;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class GenericScene;
 class ViewConfiguration;

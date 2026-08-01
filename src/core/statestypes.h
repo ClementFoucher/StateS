@@ -22,7 +22,7 @@
 #ifndef STATESTYPES_H
 #define STATESTYPES_H
 
-// Qt classes
+// Qt
 #include <QtTypes>
 
 

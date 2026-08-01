@@ -25,14 +25,14 @@
 // Parent
 #include "statesdialog.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QComboBox;
 
-// StateS classes
+// StateS
 class FsmVhdlExport;
 
 

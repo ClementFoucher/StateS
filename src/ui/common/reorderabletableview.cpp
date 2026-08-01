@@ -22,7 +22,7 @@
 // Current class header
 #include "reorderabletableview.h"
 
-// Qt classes
+// Qt
 #include <QAbstractTableModel>
 #include <QHeaderView>
 

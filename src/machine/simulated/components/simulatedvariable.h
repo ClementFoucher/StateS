@@ -25,7 +25,7 @@
 // Parent
 #include "simulatedcomponent.h"
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 
 

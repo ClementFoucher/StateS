@@ -22,7 +22,7 @@
 // Current class header
 #include "fsmdrawingtoolbar.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinebuilder.h"
 #include "graphicfsmstate.h"

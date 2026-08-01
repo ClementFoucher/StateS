@@ -22,11 +22,11 @@
 #ifndef STATESUNDOCOMMAND_H
 #define STATESUNDOCOMMAND_H
 
-// Parent classes
+// Parent
 #include <QObject>
 #include <QUndoCommand>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

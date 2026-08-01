@@ -22,13 +22,13 @@
 // Current class header
 #include "inputsselector.h"
 
-// Qt classes
+// Qt
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QStyle>
 #include <QLabel>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "inputvariableselector.h"

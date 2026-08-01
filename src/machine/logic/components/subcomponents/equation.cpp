@@ -22,10 +22,10 @@
 // Current class header
 #include "equation.h"
 
-// Qt classes
+// Qt
 #include <QSet>
 
-// StateS classes
+// StateS
 #include "operand.h"
 
 

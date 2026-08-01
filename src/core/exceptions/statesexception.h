@@ -22,11 +22,11 @@
 #ifndef STATESEXCEPTION_H
 #define STATESEXCEPTION_H
 
-// C++ classes
+// Stdlib
 #include <exception>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QString>
 
 

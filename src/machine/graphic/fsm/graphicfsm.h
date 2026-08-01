@@ -22,13 +22,13 @@
 #ifndef GRAPHICFSM_H
 #define GRAPHICFSM_H
 
-// Parent class
+// Parent
 #include "graphicmachine.h"
 
-// Qt classes
+// Qt
 #include "QHash"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class GraphicAttributes;
 class GraphicFsmState;

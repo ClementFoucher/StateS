@@ -22,14 +22,14 @@
 #ifndef ACTIONTABLEVIEW_H
 #define ACTIONTABLEVIEW_H
 
-// Parent class
+// Parent
 #include "reorderabletableview.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS Classes
+// StateS
 #include "statestypes.h"
 class ActionTableModel;
 class RangeEditorDialog;

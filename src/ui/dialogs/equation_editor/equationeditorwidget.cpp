@@ -22,13 +22,13 @@
 // Current class header
 #include "equationeditorwidget.h"
 
-// Qt classes
+// Qt
 #include <QDrag>
 #include <QLabel>
 #include <QMessageBox>
 #include <QBoxLayout>
 
-// StateS classes
+// StateS
 #include "equationpartmimedata.h"
 #include "equation.h"
 #include "operand.h"

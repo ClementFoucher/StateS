@@ -22,13 +22,13 @@
 // Current class header
 #include "simulatortimecontroller.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLineEdit>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinesimulator.h"
 

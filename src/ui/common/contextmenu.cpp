@@ -22,7 +22,7 @@
 // Current class header
 #include "contextmenu.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QWidgetAction>
 #include <QVBoxLayout>

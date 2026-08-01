@@ -25,14 +25,14 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QUndoStack>
 
-// Sates classes
+// Sates
 class Machine;
 class GraphicAttributes;
 class StatesUndoCommand;

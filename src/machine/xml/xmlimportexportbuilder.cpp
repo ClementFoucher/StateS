@@ -22,7 +22,7 @@
 // Current class header
 #include "xmlimportexportbuilder.h"
 
-// StateS classes
+// StateS
 #include "fsmxmlwriter.h"
 #include "fsmxmlparser.h"
 #include "machinexmlwriter.h"

@@ -25,7 +25,7 @@
 // Parent
 #include "statesmainwindow.h"
 
-// Qt classes
+// Qt
 class QLabel;
 class QTranslator;
 

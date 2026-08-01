@@ -22,7 +22,7 @@
 // Current class header
 #include "machinestatus.h"
 
-// StateS classes
+// StateS
 #include "states.h"
 
 

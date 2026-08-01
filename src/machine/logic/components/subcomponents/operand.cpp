@@ -22,7 +22,7 @@
 // Current class header
 #include "operand.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

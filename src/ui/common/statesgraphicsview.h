@@ -25,7 +25,7 @@
 // Parent
 #include <QGraphicsView>
 
-// StateS classes
+// StateS
 class StatesUi;
 
 

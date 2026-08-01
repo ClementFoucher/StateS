@@ -22,14 +22,14 @@
 #ifndef TRUTHTABLE_H
 #define TRUTHTABLE_H
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QList>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class LogicValue;
 class Equation;

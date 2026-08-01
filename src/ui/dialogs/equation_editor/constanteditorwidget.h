@@ -25,10 +25,10 @@
 // Parent
 #include "equationparteditorwidget.h"
 
-// Qt classes
+// Qt
 class QLabel;
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 class ValueEditor;
 

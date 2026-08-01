@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicmachine.h"
 
-// StateS classes
+// StateS
 #include "graphiccomponent.h"
 #include "graphicsimulatedcomponent.h"
 

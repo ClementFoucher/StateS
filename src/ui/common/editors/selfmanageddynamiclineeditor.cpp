@@ -22,7 +22,7 @@
 // Current class header
 #include "selfmanageddynamiclineeditor.h"
 
-// Qt classes
+// Qt
 #include <QKeyEvent>
 
 

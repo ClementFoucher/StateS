@@ -22,12 +22,12 @@
 // Current class header
 #include "machinexmlwriter.h"
 
-// Qt classes
+// Qt
 #include <QXmlStreamWriter>
 #include <QFileInfo>
 #include <QDir>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"

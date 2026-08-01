@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicsimulatedcomponent.h"
 
-// Qt classes
+// Qt
 #include <QColor>
 
 

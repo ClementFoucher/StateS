@@ -25,14 +25,14 @@
 // Parent
 #include <QFrame>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QDrag;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 class EquationEditorWidget;

@@ -22,7 +22,7 @@
 // Current class header
 #include "statesxmlanalyzer.h"
 
-// Qt classes
+// Qt
 #include <QXmlStreamReader>
 #include <QFile>
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicvectortimeline.h"
 
-// Qt classes
+// Qt
 #include <QPainter>
 
 

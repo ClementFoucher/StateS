@@ -22,7 +22,7 @@
 // Current class header
 #include "diffundocommand.h"
 
-// StateS classes
+// StateS
 #include "machinexmlparser.h"
 #include "machinexmlwriter.h"
 #include "xmlimportexportbuilder.h"

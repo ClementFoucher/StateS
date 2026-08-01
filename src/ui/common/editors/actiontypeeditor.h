@@ -25,7 +25,7 @@
 // Parent
 #include <QComboBox>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

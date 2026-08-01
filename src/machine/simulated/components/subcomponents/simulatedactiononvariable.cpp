@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatedactiononvariable.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "simulatedmachine.h"
 #include "actiononvariable.h"

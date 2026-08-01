@@ -22,13 +22,13 @@
 // Current class header
 #include "simulatortab.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "machinesimulator.h"

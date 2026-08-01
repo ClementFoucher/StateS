@@ -25,10 +25,10 @@
 // Parent
 #include <QGraphicsItemGroup>
 
-// Qt classes
+// Qt
 #include <QGraphicsPathItem>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

@@ -25,11 +25,11 @@
 // Parent
 #include <QObject>
 
-// Qt classes
+// Qt
 class QApplication;
 class QTranslator;
 
-// StateS classes
+// StateS
 class StatesUi;
 class LangSelectionDialog;
 

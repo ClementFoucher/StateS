@@ -22,13 +22,13 @@
 // Current class header
 #include "rangeeditordialog.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QRadioButton>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "equation.h"

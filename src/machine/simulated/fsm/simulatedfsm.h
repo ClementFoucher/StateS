@@ -25,12 +25,12 @@
 // Parent
 #include "simulatedmachine.h"
 
-// Qt classes
+// Qt
 #include <QMap>
 class QDialog;
 class QSignalMapper;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class SimulatedFsmState;
 class SimulatedFsmTransition;

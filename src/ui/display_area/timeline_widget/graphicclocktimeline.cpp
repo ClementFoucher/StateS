@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicclocktimeline.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinesimulator.h"
 

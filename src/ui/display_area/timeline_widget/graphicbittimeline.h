@@ -25,7 +25,7 @@
 // Parent
 #include "graphictimeline.h"
 
-// Qt classes
+// Qt
 #include <QPolygon>
 #include <QVector>
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "machinecomponentvisualizer.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QGraphicsView>
@@ -30,7 +30,7 @@
 #include <QGraphicsItem>
 #include <QScrollBar>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "componentscene.h"
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "abouttab.h"
 
-// Qt classes
+// Qt
 #include <QGuiApplication>
 #include <QStyleFactory>
 #include <QStyleHints>
@@ -32,7 +32,7 @@
 #include <QGroupBox>
 #include <QScrollArea>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "pixmapgenerator.h"
 

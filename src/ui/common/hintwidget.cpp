@@ -22,7 +22,7 @@
 // Current class header
 #include "hintwidget.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QScrollArea>
 

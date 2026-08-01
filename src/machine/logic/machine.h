@@ -25,14 +25,14 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QHash>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class Variable;
 class MachineComponent;

@@ -25,11 +25,11 @@
 // Parent
 #include "graphictimeline.h"
 
-// Qt classes
+// Qt
 #include <QPolygon>
 #include <QVector>
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 
 

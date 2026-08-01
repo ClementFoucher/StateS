@@ -25,11 +25,11 @@
 // Parent
 #include <QMimeData>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 class Equation;

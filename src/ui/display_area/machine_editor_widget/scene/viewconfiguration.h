@@ -22,10 +22,10 @@
 #ifndef VIEWCONFIGURATION_H
 #define VIEWCONFIGURATION_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// Qt classes
+// Qt
 #include <QPointF>
 
 

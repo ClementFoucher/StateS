@@ -22,11 +22,10 @@
 #ifndef FSMDRAWINGTOOLBAR_H
 #define FSMDRAWINGTOOLBAR_H
 
-// Parent class
+// Parent
 #include "drawingtoolbar.h"
 
-
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

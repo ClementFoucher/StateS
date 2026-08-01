@@ -22,11 +22,11 @@
 // Current class header
 #include "variabletableview.h"
 
-// Qt classes
+// Qt
 #include <QHeaderView>
 #include <QContextMenuEvent>
 
-// StateS classes
+// StateS
 #include "variabletablemodel.h"
 #include "variabletablememorizeddelegate.h"
 #include "variabletablenamedelegate.h"

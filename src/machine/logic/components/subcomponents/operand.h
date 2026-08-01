@@ -22,14 +22,14 @@
 #ifndef OPERAND_H
 #define OPERAND_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 class Equation;

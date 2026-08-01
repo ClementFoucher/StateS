@@ -25,11 +25,11 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// States classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 class Variable;

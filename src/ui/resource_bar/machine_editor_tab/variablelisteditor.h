@@ -25,10 +25,10 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QPushButton;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class VariableTableView;
 

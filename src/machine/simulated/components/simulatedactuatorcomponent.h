@@ -25,14 +25,14 @@
 // Parent
 #include "simulatedcomponent.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QList>
 
-// StateS classes
+// StateS
 class SimulatedActionOnVariable;
 
 

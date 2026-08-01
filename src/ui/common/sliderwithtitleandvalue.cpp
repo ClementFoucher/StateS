@@ -22,7 +22,7 @@
 // Current class header
 #include "sliderwithtitleandvalue.h"
 
-// Qt classes
+// Qt
 #include <QBoxLayout>
 #include <QLabel>
 #include <QSlider>

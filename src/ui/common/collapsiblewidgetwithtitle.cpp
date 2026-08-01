@@ -22,7 +22,7 @@
 // Current class header
 #include "collapsiblewidgetwithtitle.h"
 
-// Qt classes
+// Qt
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLabel>

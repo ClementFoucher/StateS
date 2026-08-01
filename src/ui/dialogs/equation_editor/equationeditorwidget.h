@@ -25,7 +25,7 @@
 // Parent
 #include "equationparteditorwidget.h"
 
-// StateS classes
+// StateS
 class RangeEditor;
 
 

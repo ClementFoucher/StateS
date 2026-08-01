@@ -22,12 +22,12 @@
 // Current class header
 #include "variableeditorwidget.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QDrag>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

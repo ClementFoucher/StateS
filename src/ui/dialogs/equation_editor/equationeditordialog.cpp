@@ -22,7 +22,7 @@
 // Current class header
 #include "equationeditordialog.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -30,7 +30,7 @@
 #include <QKeyEvent>
 #include <QStyle>
 
-// StateS classes
+// StateS
 #include "equation.h"
 #include "operand.h"
 #include "equationeditorwidget.h"

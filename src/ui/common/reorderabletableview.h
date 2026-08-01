@@ -22,7 +22,7 @@
 #ifndef REORDERABLETABLEVIEW_H
 #define REORDERABLETABLEVIEW_H
 
-// Parent class
+// Parent
 #include <QTableView>
 
 

@@ -22,17 +22,17 @@
 #ifndef GRAPHICMACHINE_H
 #define GRAPHICMACHINE_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QMap>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class GraphicComponent;
 class GraphicSimulatedComponent;

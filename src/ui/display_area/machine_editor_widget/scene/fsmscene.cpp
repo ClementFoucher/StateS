@@ -22,13 +22,13 @@
 // Current class header
 #include "fsmscene.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 #include <QGraphicsView>
 #include <QMessageBox>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinebuilder.h"
 #include "fsm.h"

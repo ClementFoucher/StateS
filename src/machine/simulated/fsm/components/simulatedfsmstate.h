@@ -25,7 +25,7 @@
 // Parent
 #include "simulatedactuatorcomponent.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

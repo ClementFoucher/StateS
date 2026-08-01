@@ -22,10 +22,10 @@
 // Current class header
 #include "graphicfsm.h"
 
-// C++ classes
+// Stdlib
 #include <math.h>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "graphicattributes.h"

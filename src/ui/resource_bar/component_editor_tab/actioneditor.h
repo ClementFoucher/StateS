@@ -25,11 +25,11 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QLabel;
 class QPushButton;
 
-// StateS Classes
+// StateS
 #include "statestypes.h"
 class HintWidget;
 class ActionTableView;

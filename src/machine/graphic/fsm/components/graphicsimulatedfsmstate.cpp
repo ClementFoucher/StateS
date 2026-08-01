@@ -22,12 +22,12 @@
 // Current class header
 #include "graphicsimulatedfsmstate.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "graphicfsm.h"
 #include "simulatedfsm.h"

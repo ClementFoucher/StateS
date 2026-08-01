@@ -22,10 +22,10 @@
 // Current class header
 #include "truthtableinputtablemodel.h"
 
-// Qt classes
+// Qt
 #include <QColor>
 
-// StateS classes
+// StateS
 #include "truthtable.h"
 #include "logicvalue.h"
 

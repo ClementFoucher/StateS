@@ -25,7 +25,7 @@
 // Parent
 #include <QWidget>
 
-// StateS classes
+// StateS
 class LogicValue;
 class ColoredLineEditor;
 

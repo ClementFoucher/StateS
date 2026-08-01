@@ -25,10 +25,10 @@
 // Parent
 #include <QFrame>
 
-// Qt classes
+// Qt
 class QLabel;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

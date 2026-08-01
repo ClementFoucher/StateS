@@ -22,10 +22,10 @@
 // Current class header
 #include "actiontablevaluedelegate.h"
 
-// Qt classes
+// Qt
 #include <QRegularExpressionValidator>
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 #include "valueeditor.h"
 

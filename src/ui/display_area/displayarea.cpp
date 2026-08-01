@@ -22,7 +22,7 @@
 // Current class header
 #include "displayarea.h"
 
-// Qt classes
+// Qt
 #include <QToolBar>
 
 

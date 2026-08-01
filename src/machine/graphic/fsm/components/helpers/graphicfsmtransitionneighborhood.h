@@ -25,10 +25,10 @@
 // Parent
 #include <QObject>
 
-// Qt classes
+// Qt
 #include <QMap>
 
-// StateS classes
+// StateS
 class GraphicFsmTransition;
 class GraphicFsmState;
 

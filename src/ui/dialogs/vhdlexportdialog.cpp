@@ -22,13 +22,13 @@
 // Current class header
 #include "vhdlexportdialog.h"
 
-// Qt classes
+// Qt
 #include <QFormLayout>
 #include <QLabel>
 #include <QComboBox>
 #include <QPushButton>
 
-// StateS classes
+// StateS
 #include "fsmvhdlexport.h"
 #include "savefiledialog.h"
 

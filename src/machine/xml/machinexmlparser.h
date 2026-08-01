@@ -22,19 +22,19 @@
 #ifndef MACHINEXMLPARSER_H
 #define MACHINEXMLPARSER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QStack>
 class QFile;
 class QXmlStreamReader;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class Machine;
 class ViewConfiguration;

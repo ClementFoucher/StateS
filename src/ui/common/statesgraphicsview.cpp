@@ -22,7 +22,7 @@
 // Current class header
 #include "statesgraphicsview.h"
 
-// Qt classes
+// Qt
 #include "QDragEnterEvent"
 
 

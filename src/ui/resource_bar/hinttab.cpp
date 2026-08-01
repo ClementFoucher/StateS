@@ -22,11 +22,11 @@
 // Current class header
 #include "hinttab.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QVBoxLayout>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinebuilder.h"
 #include "machinecomponentvisualizer.h"

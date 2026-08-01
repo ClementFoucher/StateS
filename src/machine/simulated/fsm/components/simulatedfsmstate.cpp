@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatedfsmstate.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"

@@ -22,11 +22,11 @@
 // Current class header
 #include "clocktimeline.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QHBoxLayout>
 
-// StateS classes
+// StateS
 #include "graphicclocktimeline.h"
 
 

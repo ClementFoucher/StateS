@@ -22,11 +22,11 @@
 // Current class header
 #include "actiontablemodel.h"
 
-// Qt classes
+// Qt
 #include <QBrush>
 #include <QIcon>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"

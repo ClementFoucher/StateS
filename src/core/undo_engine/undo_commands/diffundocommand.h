@@ -22,17 +22,17 @@
 #ifndef DIFFUNDOCOMMAND_H
 #define DIFFUNDOCOMMAND_H
 
-// Parent class
+// Parent
 #include "statesundocommand.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Third-party classes
+// Third-party
 #include "dtl.hpp"
 
-// StateS classes
+// StateS
 class Machine;
 class GraphicAttributes;
 

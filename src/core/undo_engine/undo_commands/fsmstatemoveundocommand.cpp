@@ -22,7 +22,7 @@
 // Current class header
 #include "fsmstatemoveundocommand.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "graphicfsm.h"
 #include "graphicfsmstate.h"

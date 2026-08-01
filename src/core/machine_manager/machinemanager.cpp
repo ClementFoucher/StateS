@@ -19,10 +19,10 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current class
+// Current class header
 #include "machinemanager.h"
 
-// StateS classes
+// StateS
 #include "machine.h"
 #include "fsm.h"
 #include "machinestatus.h"

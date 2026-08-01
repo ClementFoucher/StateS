@@ -22,7 +22,7 @@
 // Current class header
 #include "states.h"
 
-// Qt classes
+// Qt
 #include <QApplication>
 #include <QScreen>
 #include <QFileInfo>
@@ -30,7 +30,7 @@
 #include <QTranslator>
 #include <QSettings>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "statesui.h"
 #include "langselectiondialog.h"

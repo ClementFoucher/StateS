@@ -22,7 +22,7 @@
 // Current class header
 #include "blankscene.h"
 
-// Qt classes
+// Qt
 #include <QFont>
 #include <QGraphicsItem>
 

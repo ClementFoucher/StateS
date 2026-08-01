@@ -19,10 +19,10 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Parent class
+// Current class header
 #include "machinerenameundocommand.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 

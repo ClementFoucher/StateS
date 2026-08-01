@@ -25,11 +25,11 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QListWidgetItem;
 class QVBoxLayout;
 class QCheckBox;
@@ -37,7 +37,7 @@ class QLabel;
 class QListWidget;
 class QPushButton;
 
-// StateS classes
+// StateS
 class FsmVerifier;
 class TruthTableDisplay;
 class HintWidget;

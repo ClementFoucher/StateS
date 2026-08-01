@@ -25,7 +25,7 @@
 // Parent
 #include "genericscene.h"
 
-// Qt classes
+// Qt
 class QGraphicsTextItem;
 
 

@@ -22,10 +22,10 @@
 // Current class header
 #include "truthtable.h"
 
-// Qt classes
+// Qt
 #include <QSet>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

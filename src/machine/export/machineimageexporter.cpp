@@ -22,12 +22,12 @@
 // Current class header
 #include "machineimageexporter.h"
 
-// Qt classes
+// Qt
 #include <QPainter>
 #include <QPrinter>
 #include <QSvgGenerator>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"

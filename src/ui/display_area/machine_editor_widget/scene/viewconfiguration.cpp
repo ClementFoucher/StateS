@@ -19,7 +19,7 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Current file header
+// Current class header
 #include "viewconfiguration.h"
 
 

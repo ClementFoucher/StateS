@@ -25,17 +25,17 @@
 // Parent
 #include "statesdialog.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QComboBox;
 class QLabel;
 class QCheckBox;
 class QGroupBox;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class MachineImageExporter;
 class DocumentSizeEditor;

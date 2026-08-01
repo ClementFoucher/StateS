@@ -25,7 +25,7 @@
 // Parent
 #include "equationparteditorwidget.h"
 
-// States classes
+// States
 #include "statestypes.h"
 
 

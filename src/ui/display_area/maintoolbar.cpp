@@ -22,7 +22,7 @@
 // Current class header
 #include "maintoolbar.h"
 
-// StateS classes
+// StateS
 #include "pixmapgenerator.h"
 
 

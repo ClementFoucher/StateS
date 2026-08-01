@@ -22,7 +22,7 @@
 // Current class header
 #include "actiontypeeditor.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "actiononvariable.h"
 

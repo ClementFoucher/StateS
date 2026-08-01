@@ -22,11 +22,11 @@
 // Current class header
 #include "templateequationpartswidget.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QBoxLayout>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "equation.h"

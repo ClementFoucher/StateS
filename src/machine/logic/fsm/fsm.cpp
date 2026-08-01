@@ -22,7 +22,7 @@
 // Current class header
 #include "fsm.h"
 
-// StateS classes
+// StateS
 #include "fsmstate.h"
 #include "fsmtransition.h"
 #include "equation.h"

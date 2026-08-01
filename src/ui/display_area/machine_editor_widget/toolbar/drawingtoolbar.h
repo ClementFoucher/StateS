@@ -22,10 +22,10 @@
 #ifndef DRAWINGTOOLBAR_H
 #define DRAWINGTOOLBAR_H
 
-// Parent class
+// Parent
 #include <QToolBar>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

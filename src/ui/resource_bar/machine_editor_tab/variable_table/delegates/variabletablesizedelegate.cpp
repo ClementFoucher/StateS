@@ -22,7 +22,7 @@
 // Current class header
 #include "variabletablesizedelegate.h"
 
-// StateS classes
+// StateS
 #include "coloredlineeditor.h"
 
 

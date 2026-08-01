@@ -25,11 +25,11 @@
 // Parent
 #include "machine.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 class FsmState;
 class FsmTransition;
 

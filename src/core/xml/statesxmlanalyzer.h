@@ -22,18 +22,18 @@
 #ifndef STATESXMLANALYZER_H
 #define STATESXMLANALYZER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QXmlStreamReader;
 class QFile;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

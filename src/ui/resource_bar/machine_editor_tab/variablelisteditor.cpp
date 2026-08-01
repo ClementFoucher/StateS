@@ -22,12 +22,12 @@
 // Current class header
 #include "variablelisteditor.h"
 
-// Qt classes
+// Qt
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QKeyEvent>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "variabletableview.h"
 

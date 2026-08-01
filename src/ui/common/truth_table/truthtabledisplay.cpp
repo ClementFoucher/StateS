@@ -22,11 +22,11 @@
 // Current class header
 #include "truthtabledisplay.h"
 
-// Qt classes
+// Qt
 #include <QHeaderView>
 #include <QScrollBar>
 
-// StateS classes
+// StateS
 #include "truthtableinputtablemodel.h"
 #include "truthtableoutputtablemodel.h"
 #include "truthtable.h"

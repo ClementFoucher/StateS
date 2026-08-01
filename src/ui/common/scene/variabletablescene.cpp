@@ -22,10 +22,10 @@
 // Current class header
 #include "variabletablescene.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsTextItem>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

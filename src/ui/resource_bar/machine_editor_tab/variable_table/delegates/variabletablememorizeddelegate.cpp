@@ -22,7 +22,7 @@
 // Current class header
 #include "variabletablememorizeddelegate.h"
 
-// StateS classes
+// StateS
 #include "checkboxeditor.h"
 
 

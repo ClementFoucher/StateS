@@ -22,11 +22,11 @@
 // Current class header
 #include "variabletimeline.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QVBoxLayout>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machinesimulator.h"
 #include "simulatedmachine.h"

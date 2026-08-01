@@ -25,14 +25,14 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QMap>
 
-// SateS classes
+// StateS
 #include "statestypes.h"
 class SimulatedComponent;
 class SimulatedActuatorComponent;

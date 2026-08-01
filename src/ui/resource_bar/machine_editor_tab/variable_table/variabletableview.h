@@ -25,7 +25,7 @@
 // Parent
 #include "reorderabletableview.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class VariableTableModel;
 

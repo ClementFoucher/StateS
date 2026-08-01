@@ -25,11 +25,11 @@
 // Parent
 #include <QMainWindow>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QTabWidget;
 
 

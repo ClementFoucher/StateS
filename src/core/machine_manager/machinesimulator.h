@@ -25,14 +25,14 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QTimer;
 
-// SateS classes
+// SateS
 #include "statestypes.h"
 class SimulatedMachine;
 

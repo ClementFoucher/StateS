@@ -22,12 +22,12 @@
 // Current class header
 #include "inputbitselector.h"
 
-// Qt classes
+// Qt
 #include <QHBoxLayout>
 #include <QStyle>
 #include <QLabel>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "simulatedmachine.h"
 #include "simulatedvariable.h"

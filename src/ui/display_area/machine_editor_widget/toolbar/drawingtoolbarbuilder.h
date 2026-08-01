@@ -22,10 +22,10 @@
 #ifndef DRAWINGTOOLBARBUILDER_H
 #define DRAWINGTOOLBARBUILDER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// StateS classes
+// StateS
 class DrawingToolBar;
 
 

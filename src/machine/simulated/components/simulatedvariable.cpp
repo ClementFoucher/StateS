@@ -19,11 +19,10 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // Current class header
 #include "simulatedvariable.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

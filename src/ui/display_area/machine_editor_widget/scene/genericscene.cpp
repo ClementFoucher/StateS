@@ -22,7 +22,7 @@
 // Current class header
 #include "genericscene.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsView>
 
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "inverterbarwidget.h"
 
-// Qt classes
+// Qt
 #include <QPainter>
 
 

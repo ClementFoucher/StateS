@@ -22,12 +22,12 @@
 // Current class header
 #include "valueeditor.h"
 
-// Qt classes
+// Qt
 #include <QHBoxLayout>
 #include <QRegularExpressionValidator>
 #include <QKeyEvent>
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 #include "coloredlineeditor.h"
 

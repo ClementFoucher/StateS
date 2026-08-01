@@ -25,14 +25,14 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QLabel;
 
-// StateS classes
+// StateS
 class LineWithUpDownButtonsEditor;
 class Equation;
 

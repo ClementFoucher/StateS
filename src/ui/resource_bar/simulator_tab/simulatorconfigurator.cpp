@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatorconfigurator.h"
 
-// Qt classes
+// Qt
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QLabel>

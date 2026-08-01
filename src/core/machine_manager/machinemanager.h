@@ -25,11 +25,11 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "undoredomanager.h"
 class Machine;

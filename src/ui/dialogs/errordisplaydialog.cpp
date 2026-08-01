@@ -22,7 +22,7 @@
 // Current class header
 #include "errordisplaydialog.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QListWidget>
 #include <QPushButton>

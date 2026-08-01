@@ -22,7 +22,7 @@
 // Current class header
 #include "nulleditorwidget.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QHBoxLayout>
 

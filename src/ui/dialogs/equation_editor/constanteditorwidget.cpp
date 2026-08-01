@@ -22,12 +22,12 @@
 // Current class header
 #include "constanteditorwidget.h"
 
-// Qt classes
+// Qt
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QDrag>
 
-// StateS classes
+// StateS
 #include "equation.h"
 #include "valueeditor.h"
 #include "equationpartmimedata.h"

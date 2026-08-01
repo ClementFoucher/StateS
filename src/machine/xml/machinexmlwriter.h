@@ -22,18 +22,18 @@
 #ifndef MACHINEXMLWRITER_H
 #define MACHINEXMLWRITER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QXmlStreamWriter;
 class QFile;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class MachineActuatorComponent;
 class ViewConfiguration;

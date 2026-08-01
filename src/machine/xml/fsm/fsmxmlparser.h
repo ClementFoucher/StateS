@@ -22,14 +22,14 @@
 #ifndef FSMXMLPARSER_H
 #define FSMXMLPARSER_H
 
-// Parent class
+// Parent
 #include "machinexmlparser.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 class FsmState;
 
 

@@ -19,15 +19,15 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// C++ classes
+// Stdlib
 #include <memory>
 
-// Qt classes
+// Qt
 #include <QApplication>
 #include <QFile>
 #include <QDebug>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "statesexception.h"
 

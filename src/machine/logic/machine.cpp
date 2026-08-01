@@ -22,7 +22,7 @@
 // Current class header
 #include "machine.h"
 
-// StateS classes
+// StateS
 #include "variable.h"
 #include "machinecomponent.h"
 #include "machineactuatorcomponent.h"

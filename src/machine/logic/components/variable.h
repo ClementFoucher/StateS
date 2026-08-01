@@ -25,7 +25,7 @@
 // Parent
 #include <machinecomponent.h>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 

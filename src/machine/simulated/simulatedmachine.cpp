@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatedmachine.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "simulatedactuatorcomponent.h"

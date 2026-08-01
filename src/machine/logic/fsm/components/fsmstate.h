@@ -25,10 +25,10 @@
 // Parent
 #include "machineactuatorcomponent.h"
 
-// Qt classes
+// Qt
 #include <QList>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

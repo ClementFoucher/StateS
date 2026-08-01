@@ -25,7 +25,7 @@
 // Parent
 #include "statesscene.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

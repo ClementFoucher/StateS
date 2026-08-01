@@ -22,7 +22,7 @@
 #ifndef MAINTOOLBAR_H
 #define MAINTOOLBAR_H
 
-// Parent class
+// Parent
 #include <QToolBar>
 
 

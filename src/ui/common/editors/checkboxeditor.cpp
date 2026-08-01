@@ -22,7 +22,7 @@
 // Current class header
 #include "checkboxeditor.h"
 
-// Qt classes
+// Qt
 #include <QHBoxLayout>
 #include <QCheckBox>
 

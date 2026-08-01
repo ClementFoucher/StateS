@@ -22,7 +22,7 @@
 // Current class header
 #include "graphicbittimeline.h"
 
-// Qt classes
+// Qt
 #include <QPainter>
 
 

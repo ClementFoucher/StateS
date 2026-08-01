@@ -25,10 +25,10 @@
 // Parent
 #include "graphiccomponent.h"
 
-// Qt classes
+// Qt
 class QAction;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class ActionBox;
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "fsmxmlparser.h"
 
-// StateS classes
+// StateS
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"

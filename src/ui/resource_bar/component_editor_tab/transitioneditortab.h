@@ -25,7 +25,7 @@
 // Parent
 #include "componenteditortab.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

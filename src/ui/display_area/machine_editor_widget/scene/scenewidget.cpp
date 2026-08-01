@@ -22,7 +22,7 @@
 // Current class header
 #include "scenewidget.h"
 
-// Qt classes
+// Qt
 #include <QResizeEvent>
 #include <QStyle>
 #include <QScrollBar>
@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QFrame>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "blankscene.h"
 #include "viewconfiguration.h"

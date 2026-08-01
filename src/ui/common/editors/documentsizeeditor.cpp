@@ -22,12 +22,12 @@
 // Current class header
 #include "documentsizeeditor.h"
 
-// Qt classes
+// Qt
 #include <QBoxLayout>
 #include <QLabel>
 #include <QComboBox>
 
-// StateS classes
+// StateS
 #include "fixedsizelineeditor.h"
 
 

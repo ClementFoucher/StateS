@@ -25,7 +25,7 @@
 // Parent
 #include <QFrame>
 
-// Qt classes
+// Qt
 class QWidget;
 class QPushButton;
 class QLabel;

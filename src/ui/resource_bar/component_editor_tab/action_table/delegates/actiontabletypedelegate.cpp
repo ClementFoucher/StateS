@@ -22,10 +22,10 @@
 // Current class header
 #include "actiontabletypedelegate.h"
 
-// Qt classes
+// Qt
 #include <QRegularExpressionValidator>
 
-// StateS classes
+// StateS
 #include "actiontypeeditor.h"
 
 

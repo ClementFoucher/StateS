@@ -22,7 +22,7 @@
 // Current class header
 #include "variabletablevaluedelegate.h"
 
-// StateS classes
+// StateS
 #include "logicvalue.h"
 #include "valueeditor.h"
 

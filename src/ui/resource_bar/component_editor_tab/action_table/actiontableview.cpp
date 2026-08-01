@@ -22,11 +22,11 @@
 // Current class header
 #include "actiontableview.h"
 
-// Qt classes
+// Qt
 #include <QInputEvent>
 #include <QHeaderView>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "machineactuatorcomponent.h"

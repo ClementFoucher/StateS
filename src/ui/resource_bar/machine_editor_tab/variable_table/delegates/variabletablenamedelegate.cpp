@@ -22,7 +22,7 @@
 // Current class header
 #include "variabletablenamedelegate.h"
 
-// StateS classes
+// StateS
 #include "variabletableview.h"
 #include "variabletablemodel.h"
 #include "coloredlineeditor.h"

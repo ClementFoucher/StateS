@@ -22,7 +22,7 @@
 // Current class header
 #include "verifiertab.h"
 
-// Qt classes
+// Qt
 #include <QTimer>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QCheckBox>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "truthtabledisplay.h"
 #include "hintwidget.h"

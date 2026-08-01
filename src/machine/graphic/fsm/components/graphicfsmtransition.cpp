@@ -22,13 +22,13 @@
 // Current class header
 #include "graphicfsmtransition.h"
 
-// Qt classes
+// Qt
 #include <QGraphicsSceneContextMenuEvent>
 #include <QKeyEvent>
 #include <QPainter>
 #include <QGraphicsView>
 
-// States classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "graphicfsm.h"

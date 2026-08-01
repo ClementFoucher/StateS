@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatedequation.h"
 
-// StateS classes
+// StateS
 #include "equation.h"
 #include "simulatedoperand.h"
 

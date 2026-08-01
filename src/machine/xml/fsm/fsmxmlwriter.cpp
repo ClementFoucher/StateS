@@ -22,10 +22,10 @@
 // Current class header
 #include "fsmxmlwriter.h"
 
-// Qt classes
+// Qt
 #include <QXmlStreamWriter>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "fsmstate.h"

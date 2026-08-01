@@ -22,7 +22,7 @@
 // Current class header
 #include "savefiledialog.h"
 
-// Qt classes
+// Qt
 #include <QFileDialog>
 #include <QMessageBox>
 

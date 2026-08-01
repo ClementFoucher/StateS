@@ -22,7 +22,7 @@
 #ifndef GRAPHICSIMULATEDCOMPONENT_H
 #define GRAPHICSIMULATEDCOMPONENT_H
 
-// Qt classes
+// Qt
 class QColor;
 
 

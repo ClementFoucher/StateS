@@ -22,10 +22,10 @@
 // Current class header
 #include "actiononvariable.h"
 
-// Qt classes
+// Qt
 #include <QIcon>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"

@@ -22,14 +22,14 @@
 #ifndef FSMXMLWRITER_H
 #define FSMXMLWRITER_H
 
-// Parent class
+// Parent
 #include "machinexmlwriter.h"
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 class ViewConfiguration;
 class Fsm;
 class GraphicAttributes;

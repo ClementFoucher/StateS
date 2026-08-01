@@ -22,7 +22,7 @@
 // Current class header
 #include "logicvalue.h"
 
-// Qt classes
+// Qt
 #include <QString>
 
 

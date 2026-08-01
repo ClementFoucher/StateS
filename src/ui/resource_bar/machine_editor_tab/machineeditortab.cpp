@@ -22,13 +22,13 @@
 // Current class header
 #include "machineeditortab.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QTabWidget>
 
-// StateS classes
+// StateS
 #include "machine.h"
 #include "machinemanager.h"
 #include "variablelisteditor.h"

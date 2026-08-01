@@ -22,7 +22,7 @@
 #ifndef PIXMAPGENERATOR_H
 #define PIXMAPGENERATOR_H
 
-// Qt classes
+// Qt
 class QPixmap;
 class QString;
 

@@ -22,12 +22,12 @@
 // Current class header
 #include "conditioneditor.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QPushButton>
 #include <QGridLayout>
 
-// StateS classes
+// StateS
 #include "fsmtransition.h"
 #include "truthtabledisplay.h"
 #include "equation.h"

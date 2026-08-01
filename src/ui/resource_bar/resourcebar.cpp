@@ -22,7 +22,7 @@
 // Current class header
 #include "resourcebar.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "machine.h"
 #include "hinttab.h"

@@ -22,14 +22,14 @@
 // Current class header
 #include "linewithupdownbuttonseditor.h"
 
-// Qt classes
+// Qt
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QIntValidator>
 #include <QMouseEvent>
 #include <QKeyEvent>
 
-// StateS classes
+// StateS
 #include "coloredlineeditor.h"
 
 

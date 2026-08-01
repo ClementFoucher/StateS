@@ -22,12 +22,12 @@
 // Current class header
 #include "rangeeditor.h"
 
-// Qt classes
+// Qt
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QInputEvent>
 
-// StateS classes
+// StateS
 #include "linewithupdownbuttonseditor.h"
 #include "equation.h"
 #include "operand.h"

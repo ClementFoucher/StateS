@@ -22,7 +22,7 @@
 #ifndef MACHINERENAMEUNDOCOMMAND_H
 #define MACHINERENAMEUNDOCOMMAND_H
 
-// Parent class
+// Parent
 #include "statesundocommand.h"
 
 

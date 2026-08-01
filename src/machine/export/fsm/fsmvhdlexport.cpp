@@ -22,12 +22,12 @@
 // Current class header
 #include "fsmvhdlexport.h"
 
-// Qt classes
+// Qt
 #include <QDate>
 #include <QFile>
 #include <QTextStream>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"

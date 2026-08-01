@@ -25,7 +25,7 @@
 // Parent
 #include <QAbstractTableModel>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

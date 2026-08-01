@@ -25,7 +25,7 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QCheckBox;
 
 

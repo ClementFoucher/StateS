@@ -22,13 +22,13 @@
 // Current class header
 #include "langselectiondialog.h"
 
-// Qt classes
+// Qt
 #include <QApplication>
 #include <QTranslator>
 #include <QVBoxLayout>
 #include <QLabel>
 
-// StateS classes
+// StateS
 #include "reactivebutton.h"
 
 

@@ -22,10 +22,10 @@
 #ifndef FSMTRANSITIONCONDITIONSLIDERPOSITIONCHANGEUNDOCOMMAND_H
 #define FSMTRANSITIONCONDITIONSLIDERPOSITIONCHANGEUNDOCOMMAND_H
 
-// Parent class
+// Parent
 #include "statesundocommand.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

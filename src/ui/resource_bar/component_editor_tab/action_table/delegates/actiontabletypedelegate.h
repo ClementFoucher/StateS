@@ -25,7 +25,7 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// StateS classes
+// StateS
 class ActionTypeEditor;
 
 

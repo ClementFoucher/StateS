@@ -25,7 +25,7 @@
 // Parent
 #include <QObject>
 
-// Qt classes
+// Qt
 #include <QFileInfo>
 
 

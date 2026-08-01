@@ -25,11 +25,11 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
+// Stdlib
 using namespace std;
 #include <memory.h>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class CollapsibleWidgetWithTitle;
 class HintWidget;

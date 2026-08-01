@@ -25,10 +25,10 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QComboBox;
 
-// StateS classes
+// StateS
 #include <statestypes.h>
 
 

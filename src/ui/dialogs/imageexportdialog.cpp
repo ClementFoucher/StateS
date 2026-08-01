@@ -22,7 +22,7 @@
 // Current class header
 #include "imageexportdialog.h"
 
-// Qt classes
+// Qt
 #include <QBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -32,7 +32,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-// StateS classes
+// StateS
 #include "machineimageexporter.h"
 #include "documentsizeeditor.h"
 #include "sliderwithtitleandvalue.h"

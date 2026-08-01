@@ -25,10 +25,10 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QIntValidator;
 
-// StateS classes
+// StateS
 class ColoredLineEditor;
 
 

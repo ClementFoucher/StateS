@@ -22,12 +22,12 @@
 // Current class header
 #include "pixmapgenerator.h"
 
-// Qt classes
+// Qt
 #include <QSvgRenderer>
 #include <QPixmap>
 #include <QPainter>
 
-// StateS classes
+// StateS
 #include "graphicfsmstate.h"
 #include "graphicfsmtransition.h"
 

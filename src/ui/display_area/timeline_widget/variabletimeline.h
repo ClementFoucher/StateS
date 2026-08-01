@@ -25,7 +25,7 @@
 // Parent
 #include <QWidget>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class GraphicTimeLine;
 

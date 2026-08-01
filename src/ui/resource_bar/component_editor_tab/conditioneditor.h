@@ -25,17 +25,17 @@
 // Parent
 #include <QWidget>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QLabel;
 class QPushButton;
 class QGridLayout;
 class QSlider;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 class TruthTable;
 class TruthTableDisplay;

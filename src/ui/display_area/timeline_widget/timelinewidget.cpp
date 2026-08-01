@@ -22,7 +22,7 @@
 // Current class header
 #include "timelinewidget.h"
 
-// Qt classes
+// Qt
 #include <QSettings>
 #include <QAction>
 #include <QLabel>
@@ -33,7 +33,7 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 
-// StateS classes
+// StateS
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"

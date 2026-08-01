@@ -25,17 +25,17 @@
 // Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 #include <QRectF>
 #include <QPageLayout>
 class QPaintDevice;
 class QPainter;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "variabletablescene.h"
 #include "componentscene.h"

@@ -22,7 +22,7 @@
 // Current class header
 #include "simulatedfsm.h"
 
-// Qt classes
+// Qt
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -30,7 +30,7 @@
 #include <QPushButton>
 #include <QDialog>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsm.h"
 #include "simulatedfsmstate.h"

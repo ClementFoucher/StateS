@@ -22,12 +22,12 @@
 // Current class header
 #include "stateeditortab.h"
 
-// Qt classes
+// Qt
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "fsmstate.h"
 #include "selfmanageddynamiclineeditor.h"

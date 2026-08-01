@@ -22,17 +22,17 @@
 #ifndef XMLIMPORTEXPORTBUILDER_H
 #define XMLIMPORTEXPORTBUILDER_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// Qt classes
+// Qt
 class QFile;
 
-// StateS classes
+// StateS
 class MachineXmlWriter;
 class MachineXmlParser;
 class ViewConfiguration;

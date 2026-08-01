@@ -22,7 +22,7 @@
 // Current class header
 #include "machineeditorwidget.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "scenewidget.h"
 #include "drawingtoolbar.h"

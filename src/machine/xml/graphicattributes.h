@@ -22,13 +22,13 @@
 #ifndef GRAPHICATTRIBUTES_H
 #define GRAPHICATTRIBUTES_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// Qt classes
+// Qt
 #include <QMap>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

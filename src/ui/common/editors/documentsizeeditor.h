@@ -25,12 +25,12 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 #include <QPageLayout>
 class QComboBox;
 class QLabel;
 
-// StateS classes
+// StateS
 class FixedSizeLineEditor;
 
 

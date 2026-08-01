@@ -22,14 +22,14 @@
 #ifndef SIMULATEDOPERAND_H
 #define SIMULATEDOPERAND_H
 
-// Parent class
+// Parent
 #include <QObject>
 
-// C++ classes
+// Stdlib
 #include <memory>
 using namespace std;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 #include "logicvalue.h"
 class Operand;

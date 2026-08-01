@@ -25,12 +25,12 @@
 // Parent
 #include <QWidget>
 
-// Qt classes
+// Qt
 class QPushButton;
 class QVBoxLayout;
 class QGroupBox;
 
-// StateS classes
+// StateS
 class SimulatorConfigurator;
 
 

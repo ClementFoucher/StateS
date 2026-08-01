@@ -25,7 +25,7 @@
 // Parent
 #include <QObject>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

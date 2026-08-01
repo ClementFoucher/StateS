@@ -22,11 +22,11 @@
 // Current class header
 #include "machinexmlparser.h"
 
-// Qt classes
+// Qt
 #include <QXmlStreamReader>
 #include <QFile>
 
-// StateS classes
+// StateS
 #include "machine.h"
 #include "variable.h"
 #include "viewconfiguration.h"

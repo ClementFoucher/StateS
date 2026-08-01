@@ -25,10 +25,10 @@
 // Parent
 #include <QGraphicsObject>
 
-// Qt classes
+// Qt
 class QAbstractGraphicsShapeItem;
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

@@ -22,7 +22,7 @@
 // Current class header
 #include "fsmtransitionconditionsliderpositionchangeundocommand.h"
 
-// StateS classes
+// StateS
 #include "machinemanager.h"
 #include "graphicfsm.h"
 #include "graphicfsmtransition.h"

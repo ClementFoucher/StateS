@@ -25,11 +25,11 @@
 // Parent
 #include <QTableWidget>
 
-// C++ classes
+// Stdlib
 using namespace std;
 #include <memory>
 
-// StateS classes
+// StateS
 class TruthTable;
 
 

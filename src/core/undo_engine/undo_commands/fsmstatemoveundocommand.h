@@ -22,14 +22,14 @@
 #ifndef FSMSTATEMOVEUNDOCOMMAND_H
 #define FSMSTATEMOVEUNDOCOMMAND_H
 
-// Parent class
+// Parent
 #include "statesundocommand.h"
 
-// Qt classes
+// Qt
 #include <QPointF>
 #include <QMap>
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 

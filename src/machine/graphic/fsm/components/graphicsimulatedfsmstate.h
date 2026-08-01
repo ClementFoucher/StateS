@@ -26,7 +26,7 @@
 #include "graphicfsmstate.h"
 #include "graphicsimulatedcomponent.h"
 
-// StateS classes
+// StateS
 #include "statestypes.h"
 
 
