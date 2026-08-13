@@ -1,7 +1,6 @@
 set(core_header_files
     "states.h"
     "statestypes.h"
-    "exceptions/exceptiontypes.h"
     "exceptions/statesexception.h"
     "machine_manager/machinebuilder.h"
     "machine_manager/machinemanager.h"

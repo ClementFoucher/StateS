@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,6 +32,15 @@ using namespace std;
 
 class StatesException : exception
 {
+	/////
+	// Type declarations
+public:
+	enum class FileError_t
+	{
+		unable_to_replace = 0,
+		unkown_directory  = 1,
+		unable_to_open    = 2
+	};
 
 	/////
 	// Constructors/destructors

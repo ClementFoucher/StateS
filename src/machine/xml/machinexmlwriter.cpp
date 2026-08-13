@@ -39,7 +39,6 @@
 #include "operand.h"
 #include "actiononvariable.h"
 #include "statesexception.h"
-#include "exceptiontypes.h"
 
 
 MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
@@ -300,18 +299,18 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
 	if ( (fileInfo.exists() == true) && (fileInfo.isWritable() == false) ) // Replace existing file
 	{
-		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_replace, tr("Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights."));
+		throw StatesException("MachineXmlWriter", static_cast<uint>(StatesException::FileError_t::unable_to_replace), tr("Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights."));
 	}
 	else if (fileInfo.absoluteDir().exists() == false)
 	{
-		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unkown_directory, tr("Specified directory doesn't exist."));
+		throw StatesException("MachineXmlWriter", static_cast<uint>(StatesException::FileError_t::unkown_directory), tr("Specified directory doesn't exist."));
 	}
 
 	this->file = make_unique<QFile>(machineStatus->getSaveFileFullPath());
 	bool fileOpened = file->open(QIODevice::WriteOnly);
 	if (fileOpened == false)
 	{
-		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_open, tr("Unable to open file in write mode."));
+		throw StatesException("MachineXmlWriter", static_cast<uint>(StatesException::FileError_t::unable_to_open), tr("Unable to open file in write mode."));
 	}
 
 	this->stream = make_shared<QXmlStreamWriter>(this->file.get());
