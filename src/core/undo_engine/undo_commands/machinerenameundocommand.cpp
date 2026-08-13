@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -31,7 +31,7 @@
 // Constructors/destructors
 
 MachineRenameUndoCommand::MachineRenameUndoCommand(const QString& previousName) :
-	StatesUndoCommand(UndoCommandId_t::machineRenameUndoId)
+	StatesUndoCommand(CommandId_t::machineRenameUndoId)
 {
 	this->previousName = previousName;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -32,7 +32,7 @@
 // Constructors/destructors
 
 FsmTransitionConditionSliderPositionChangeUndoCommand::FsmTransitionConditionSliderPositionChangeUndoCommand(componentId_t componentId) :
-	StatesUndoCommand(UndoCommandId_t::fsmTransitionConditionSliderPositionChangeUndoId)
+	StatesUndoCommand(CommandId_t::fsmTransitionConditionSliderPositionChangeUndoId)
 {
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicfsm == nullptr) return;

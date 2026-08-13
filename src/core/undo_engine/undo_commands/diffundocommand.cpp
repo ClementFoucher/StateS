@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -63,7 +63,7 @@ QStringList DiffUndoCommand::getMachineXmlAsStringList()
 // Constructors/destructors
 
 DiffUndoCommand::DiffUndoCommand(const QString& description) :
-	StatesUndoCommand(UndoCommandId_t::diffUndoId, description)
+	StatesUndoCommand(CommandId_t::diffUndoId, description)
 {
 	// Get XML before changes
 	auto previousXmlCode = this->getMachineXmlAsStringList();

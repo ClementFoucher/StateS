@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -26,19 +26,37 @@
 #include <QObject>
 #include <QUndoCommand>
 
-// StateS
-#include "statestypes.h"
-
 
 class StatesUndoCommand : public QObject, public QUndoCommand
 {
 	Q_OBJECT
 
 	/////
+	// Type declarations
+protected:
+	enum class CommandId_t : int32_t
+	{
+		// Default value
+		undefinedUndoId = -1,
+
+		// Diff undo is used for all cases that
+		// don't have a more specific handler.
+		diffUndoId = 0,
+
+		// Machine common commands
+		machineRenameUndoId = 1,
+
+		// FSM-specific commands
+		fsmStateMoveUndoId = 10,
+		fsmTransitionConditionSliderPositionChangeUndoId = 11,
+		fsmStateRenamedUndoId = 12
+	};
+
+	/////
 	// Constructors/destructors
 public:
-	explicit StatesUndoCommand(UndoCommandId_t undoType) : undoType{undoType} {}
-	explicit StatesUndoCommand(UndoCommandId_t undoType, const QString& description) : QUndoCommand(description), undoType{undoType} {}
+	explicit StatesUndoCommand(CommandId_t undoType) : undoType{undoType} {}
+	explicit StatesUndoCommand(CommandId_t undoType, const QString& description) : QUndoCommand(description), undoType{undoType} {}
 
 	virtual ~StatesUndoCommand() = default;
 
@@ -53,7 +71,7 @@ protected:
 	bool firstRedoIgnored = false;
 
 private:
-	UndoCommandId_t undoType = UndoCommandId_t::undefinedUndoId;
+	CommandId_t undoType = CommandId_t::undefinedUndoId;
 
 };
 

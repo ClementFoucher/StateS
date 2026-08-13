@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -32,7 +32,7 @@
 // Constructors/destructors
 
 FsmStateRenameUndoCommand::FsmStateRenameUndoCommand(componentId_t componentId, const QString& previousStateName) :
-	StatesUndoCommand(UndoCommandId_t::fsmStateRenamedUndoId)
+	StatesUndoCommand(CommandId_t::fsmStateRenamedUndoId)
 {
 	this->componentId = componentId;
 	this->previousStateName = previousStateName;

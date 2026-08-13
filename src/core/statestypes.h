@@ -53,22 +53,4 @@ enum class MachineBuilderTool_t          { none, initialState, state, transition
 enum class MachineBuilderSingleUseTool_t { none, drawTransitionFromScene, editTransitionSource, editTransitionTarget };
 enum class SimulationBehavior_t          { prepare, immediately, after };
 
-enum class UndoCommandId_t : int32_t
-{
-	// Default value
-	undefinedUndoId = -1,
-
-	// Diff undo is used for all cases that
-	// don't have a more specific handler.
-	diffUndoId = 0,
-
-	// Machine common commands
-	machineRenameUndoId = 1,
-
-	// FSM-specific commands
-	fsmStateMoveUndoId = 10,
-	fsmTransitionConditionSliderPositionChangeUndoId = 11,
-	fsmStateRenamedUndoId = 12
-};
-
 #endif // STATESTYPES_H
