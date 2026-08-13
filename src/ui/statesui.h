@@ -31,6 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
+#include "machinemanager.h"
 class ResourceBar;
 class DisplayArea;
 class MainToolBar;
@@ -97,7 +98,7 @@ private slots:
 	void machineFilePathUpdated();
 	void machineUnsavedStateUpdated();
 
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 	void setTimelineDetachedState(bool detach);
 
 	void undoActionAvailabilityChangeEventHandler(bool undoAvailable);

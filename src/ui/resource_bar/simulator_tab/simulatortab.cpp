@@ -78,7 +78,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 {
 	if (enabled == true)
 	{
-		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 		{
 			auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 			if (fsm == nullptr) return;
@@ -87,7 +87,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			if (fsm->getInitialStateId() != nullId)
 			{
 				// Enable simulation mode
-				machineManager->setInterfaceMode(InterfaceMode_t::simulateMode);
+				machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::simulateMode);
 				auto machineSimulator = machineManager->getMachineSimulator();
 				if (machineSimulator == nullptr) return;
 
@@ -136,7 +136,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 	}
 	else
 	{
-		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::simulateMode)
+		if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::simulateMode)
 		{
 			delete this->timeManagerGroup;
 			this->timeManagerGroup = nullptr;
@@ -144,7 +144,7 @@ void SimulatorTab::triggerSimulationMode(bool enabled)
 			delete this->inputsGroup;
 			this->inputsGroup = nullptr;
 
-			machineManager->setInterfaceMode(InterfaceMode_t::editMode);
+			machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::editMode);
 
 			this->buttonTriggerSimulation->setText(tr("Start simulation"));
 			this->configurationGroup->setVisible(true);

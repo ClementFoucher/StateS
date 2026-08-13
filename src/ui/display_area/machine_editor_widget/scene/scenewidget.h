@@ -35,6 +35,7 @@ class QLabel;
 
 // StateS
 #include "statestypes.h"
+#include "machinemanager.h"
 class GenericScene;
 class ViewConfiguration;
 
@@ -88,7 +89,7 @@ protected:
 private slots:
 	void machineReplacedEventHandler();
 	void sceneRectChangedEventHandler(QRectF sceneRect);
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 	void requestSaveViewEventHandler();
 	void requestRestoreViewEventHandler();
 

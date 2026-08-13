@@ -55,7 +55,7 @@ void ResourceBar::setSelectedItem(componentId_t componentId)
 		return;
 	}
 
-	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() != MachineManager::InterfaceMode_t::editMode)
 	{
 		this->clearSelection();
 		return;
@@ -147,22 +147,22 @@ void ResourceBar::clearSelection()
 	}
 }
 
-void ResourceBar::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
+void ResourceBar::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode)
 {
 	switch (newMode)
 	{
-	case InterfaceMode_t::editMode:
+	case MachineManager::InterfaceMode_t::editMode:
 		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, true);
 		this->setTabEnabled(TabIndex_t::simulatorTabIndex,     true);
 		this->setTabEnabled(TabIndex_t::verifierTabIndex,      true);
 		break;
-	case InterfaceMode_t::simulateMode:
+	case MachineManager::InterfaceMode_t::simulateMode:
 		this->clearSelection();
 
 		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, false);
 		this->setTabEnabled(TabIndex_t::verifierTabIndex,      false);
 		break;
-    case InterfaceMode_t::verifyMode:
+    case MachineManager::InterfaceMode_t::verifyMode:
 		this->clearSelection();
 
 		this->setTabEnabled(TabIndex_t::machineEditorTabIndex, false);

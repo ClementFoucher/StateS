@@ -30,6 +30,7 @@ class QAction;
 
 // StateS
 #include "statestypes.h"
+#include "machinemanager.h"
 class GraphicFsmTransition;
 class GraphicFsmState;
 
@@ -85,7 +86,7 @@ protected:
 	virtual void contextMenuEvent (QGraphicsSceneContextMenuEvent* ce) override;
 
 private slots:
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 
 	// Machine manager signals
 	void machineUpdatedEventHandler();

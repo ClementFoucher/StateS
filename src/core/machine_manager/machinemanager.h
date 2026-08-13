@@ -61,6 +61,11 @@ class MachineManager : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class InterfaceMode_t { editMode, simulateMode, verifyMode };
+
+	/////
 	// Constructors/destructors
 public:
 	explicit MachineManager();

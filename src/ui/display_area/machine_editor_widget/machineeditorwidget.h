@@ -31,6 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
+#include "machinemanager.h"
 class GenericScene;
 class SceneWidget;
 class DrawingToolBar;
@@ -58,7 +59,7 @@ public:
 private slots:
 	void machineReplacedEventHandler();
 
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 
 private:
 	void buildToolbar();

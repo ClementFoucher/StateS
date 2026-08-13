@@ -174,7 +174,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) == 0) && (event->key() == Qt::Key_Z) )
 	{
-		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 		{
 			this->undo();
 		}
@@ -182,7 +182,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_Y) )
 	{
-		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 		{
 			this->redo();
 		}
@@ -190,7 +190,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 	}
 	else if ( ((event->modifiers() & Qt::CTRL) != 0) && ((event->modifiers() & Qt::SHIFT) != 0) && (event->key() == Qt::Key_Z) )
 	{
-		if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+		if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 		{
 			this->redo();
 		}
@@ -416,7 +416,7 @@ void StatesUi::machineUnsavedStateUpdated()
 	}
 }
 
-void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
+void StatesUi::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode)
 {
 	static bool isUndoEnabled = false;
 	static bool isRedoEnabled = false;
@@ -426,7 +426,7 @@ void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 	if (machine == nullptr) return;
 
 
-	if (newMode == InterfaceMode_t::editMode)
+	if (newMode == MachineManager::InterfaceMode_t::editMode)
 	{
 		this->toolbar->setSaveActionEnabled(isSaveEnabled);
 		this->toolbar->setSaveAsActionEnabled(true);
@@ -454,7 +454,7 @@ void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 
 	switch (newMode)
 	{
-	case InterfaceMode_t::simulateMode:
+	case MachineManager::InterfaceMode_t::simulateMode:
 		this->timeline = new TimelineWidget(this);
 		connect(this->timeline, &TimelineWidget::detachTimelineEvent, this, &StatesUi::setTimelineDetachedState);
 
@@ -475,7 +475,7 @@ void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 			this->displayArea->addWidget(this->timeline, tr("Timeline"));
 		}
 		break;
-	case InterfaceMode_t::editMode:
+	case MachineManager::InterfaceMode_t::editMode:
 		if (this->timeline != nullptr)
 		{
 			this->displayArea->removeWidget(this->timeline);
@@ -483,7 +483,7 @@ void StatesUi::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 			this->timeline = nullptr;
 		}
 		break;
-	case InterfaceMode_t::verifyMode:
+	case MachineManager::InterfaceMode_t::verifyMode:
 		this->toolbar->setExportImageEnabled(false);
 		break;
 	}
@@ -509,7 +509,7 @@ void StatesUi::setTimelineDetachedState(bool detach)
 
 void StatesUi::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
 {
-	if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 	{
 		this->toolbar->setUndoActionEnabled(undoAvailable);
 	}
@@ -517,7 +517,7 @@ void StatesUi::undoActionAvailabilityChangeEventHandler(bool undoAvailable)
 
 void StatesUi::redoActionAvailabilityChangeEventHandler(bool redoAvailable)
 {
-	if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 	{
 		this->toolbar->setRedoActionEnabled(redoAvailable);
 	}

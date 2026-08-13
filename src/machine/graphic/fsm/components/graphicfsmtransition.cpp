@@ -257,7 +257,7 @@ void GraphicFsmTransition::contextMenuEvent(QGraphicsSceneContextMenuEvent* even
 		return;
 	}
 
-	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() != MachineManager::InterfaceMode_t::editMode)
 	{
 		event->ignore();
 		return;

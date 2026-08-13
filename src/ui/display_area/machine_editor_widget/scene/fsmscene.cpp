@@ -69,7 +69,7 @@ FsmScene::~FsmScene()
 
 void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 {
-	if (machineManager->getCurrentInterfaceMode() != InterfaceMode_t::editMode)
+	if (machineManager->getCurrentInterfaceMode() != MachineManager::InterfaceMode_t::editMode)
 	{
 		// We only handle mouse events when in edit mode
 		GenericScene::mousePressEvent(me);
@@ -546,7 +546,7 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 {
 	switch (machineManager->getCurrentInterfaceMode())
 	{
-	case InterfaceMode_t::editMode:
+	case MachineManager::InterfaceMode_t::editMode:
 		if (this->sceneEditionMode == SceneEditionMode_t::idle)
 		{
 			// In edit mode, context menu is only allowed
@@ -558,17 +558,17 @@ void FsmScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* ce)
 			ce->ignore();
 		}
 		break;
-	case InterfaceMode_t::simulateMode:
+	case MachineManager::InterfaceMode_t::simulateMode:
 		GenericScene::contextMenuEvent(ce);
 		break;
-	case InterfaceMode_t::verifyMode:
+	case MachineManager::InterfaceMode_t::verifyMode:
 		// No context menu allowed in this mode
 		ce->ignore();
 		break;
 	}
 }
 
-void FsmScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
+void FsmScene::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode)
 {
 	static bool sceneIsInSimulateMode = false;
 
@@ -587,7 +587,7 @@ void FsmScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 
 	switch (newMode)
 	{
-	case InterfaceMode_t::editMode:
+	case MachineManager::InterfaceMode_t::editMode:
 		if (sceneIsInSimulateMode == true)
 		{
 			emit this->requestSaveViewEvent();
@@ -598,7 +598,7 @@ void FsmScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 			sceneIsInSimulateMode = false;
 		}
 		break;
-	case InterfaceMode_t::simulateMode:
+	case MachineManager::InterfaceMode_t::simulateMode:
 		emit this->requestSaveViewEvent();
 		this->clearScene();
 		this->displaySimulatedMachine();
@@ -606,7 +606,7 @@ void FsmScene::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
 
 		sceneIsInSimulateMode = true;
 		break;
-	case InterfaceMode_t::verifyMode:
+	case MachineManager::InterfaceMode_t::verifyMode:
 		// Nothing to do
 		break;
 	}
@@ -986,7 +986,7 @@ void FsmScene::clearScene()
 		auto transitionItem = dynamic_cast<GraphicFsmTransition*>(item);
 		if (transitionItem != nullptr)
 		{
-			if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+			if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 			{
 				disconnect(transitionItem, &GraphicFsmTransition::dynamicSourceCalledEvent,    this, &FsmScene::transitionCallsDynamicSourceEventHandler);
 				disconnect(transitionItem, &GraphicFsmTransition::dynamicTargetCalledEvent,    this, &FsmScene::transitionCallsDynamicTargetEventHandler);
@@ -1012,7 +1012,7 @@ void FsmScene::clearScene()
 		auto stateItem = dynamic_cast<GraphicFsmState*>(item);
 		if (stateItem != nullptr)
 		{
-			if (machineManager->getCurrentInterfaceMode() == InterfaceMode_t::editMode)
+			if (machineManager->getCurrentInterfaceMode() == MachineManager::InterfaceMode_t::editMode)
 			{
 				disconnect(stateItem, &GraphicFsmState::editStateCalledEvent,             this, &FsmScene::stateCallsEditEventHandler);
 				disconnect(stateItem, &GraphicFsmState::renameStateCalledEvent,           this, &FsmScene::stateCallsRenameEventHandler);

@@ -101,7 +101,7 @@ void VerifierTab::beginCheck()
 	connect(this->timer, &QTimer::timeout, this, &VerifierTab::timeout);
 
 	// Lock interface
-	machineManager->setInterfaceMode(InterfaceMode_t::verifyMode);
+	machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::verifyMode);
 
 	// Launch verification
 	this->verifier->start();
@@ -121,7 +121,7 @@ void VerifierTab::cancelCheck()
 	this->resetContent();
 
 	// Unlock interface
-	machineManager->setInterfaceMode(InterfaceMode_t::editMode);
+	machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::editMode);
 }
 
 void VerifierTab::checkFinished()
@@ -142,7 +142,7 @@ void VerifierTab::checkFinished()
 	this->timingWarning            = nullptr;
 
 	// Unlock interface
-	machineManager->setInterfaceMode(InterfaceMode_t::editMode);
+	machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::editMode);
 
 	// Restore initial widgets visibility
 	this->checkVhdlExport->setVisible(true);

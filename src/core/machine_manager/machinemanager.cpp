@@ -295,7 +295,7 @@ void MachineManager::setInterfaceMode(InterfaceMode_t newMode)
 	emit this->interfaceModeChangedEvent(this->currentInterfaceMode);
 }
 
-InterfaceMode_t MachineManager::getCurrentInterfaceMode() const
+MachineManager::InterfaceMode_t MachineManager::getCurrentInterfaceMode() const
 {
 	return this->currentInterfaceMode;
 }

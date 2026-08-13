@@ -78,9 +78,9 @@ void MachineEditorWidget::machineReplacedEventHandler()
 	this->buildToolbar();
 }
 
-void MachineEditorWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
+void MachineEditorWidget::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode)
 {
-	if (newMode == InterfaceMode_t::editMode)
+	if (newMode == MachineManager::InterfaceMode_t::editMode)
 	{
 		this->drawingToolBar->setVisible(true);
 	}

@@ -31,6 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
+#include "machinemanager.h"
 class MachineComponentVisualizer;
 
 
@@ -73,7 +74,7 @@ private slots:
 	void machineReplacedEventHandler();
 
 	void clearSelection();
-	void interfaceModeChangedEventHandler(InterfaceMode_t newMode);
+	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 
 private:
 	void build();

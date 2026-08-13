@@ -323,21 +323,21 @@ void SceneWidget::sceneRectChangedEventHandler(QRectF sceneRect)
 	this->setSceneRect(sceneRect);
 }
 
-void SceneWidget::interfaceModeChangedEventHandler(InterfaceMode_t newMode)
+void SceneWidget::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode)
 {
 	switch (newMode)
 	{
-	case InterfaceMode_t::editMode:
+	case MachineManager::InterfaceMode_t::editMode:
 		this->sceneMode = SceneMode_t::editing;
 		this->updateSceneAction(SceneAction_t::idle, true);
 		this->setInteractive(true);
 		break;
-	case InterfaceMode_t::simulateMode:
+	case MachineManager::InterfaceMode_t::simulateMode:
 		this->sceneMode = SceneMode_t::viewing;
 		this->updateSceneAction(SceneAction_t::idle, true);
 		this->setInteractive(true);
 		break;
-	case InterfaceMode_t::verifyMode:
+	case MachineManager::InterfaceMode_t::verifyMode:
 		this->sceneMode = SceneMode_t::viewing;
 		this->updateSceneAction(SceneAction_t::idle, true);
 		this->setInteractive(false);
