@@ -363,28 +363,28 @@ void MachineXmlWriter::writeMachineVariables()
 
 	for (auto& variableId : machine->getInputVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::input, variableId);
+		this->writeMachineVariable(Machine::VariableNature_t::input, variableId);
 	}
 
 	for (auto& variableId : machine->getInternalVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::internal, variableId);
+		this->writeMachineVariable(Machine::VariableNature_t::internal, variableId);
 	}
 
 	for (auto& variableId : machine->getOutputVariablesIds())
 	{
-		this->writeMachineVariable(VariableNature_t::output, variableId);
+		this->writeMachineVariable(Machine::VariableNature_t::output, variableId);
 	}
 
 	for (auto& variableId : machine->getConstantsIds())
 	{
-		this->writeMachineVariable(VariableNature_t::constant, variableId);
+		this->writeMachineVariable(Machine::VariableNature_t::constant, variableId);
 	}
 
 	this->stream->writeEndElement();
 }
 
-void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId_t variableId)
+void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, componentId_t variableId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -398,16 +398,16 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 
 	switch (nature)
 	{
-	case VariableNature_t::input:
+	case Machine::VariableNature_t::input:
 		this->stream->writeStartElement("Input");
 		break;
-	case VariableNature_t::internal:
+	case Machine::VariableNature_t::internal:
 		this->stream->writeStartElement("Internal");
 		break;
-	case VariableNature_t::output:
+	case Machine::VariableNature_t::output:
 		this->stream->writeStartElement("Output");
 		break;
-	case VariableNature_t::constant:
+	case Machine::VariableNature_t::constant:
 		this->stream->writeStartElement("Constant");
 		break;
 	}

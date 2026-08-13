@@ -26,7 +26,7 @@
 #include <QAbstractTableModel>
 
 // StateS
-#include "statestypes.h"
+#include "machine.h"
 
 
 class VariableTableModel : public QAbstractTableModel
@@ -47,7 +47,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableModel(VariableNature_t editorNature, QObject* parent = nullptr);
+	explicit VariableTableModel(Machine::VariableNature_t editorNature, QObject* parent = nullptr);
 
 	/////
 	// Object functions
@@ -79,7 +79,7 @@ signals:
 	/////
 	// Object variables
 private:
-	VariableNature_t editorNature;
+	Machine::VariableNature_t editorNature;
 	QList<ColumnRole_t> columnsRoles;
 
 	// Temporary storage to retrieve erroneous name and relaunch edit

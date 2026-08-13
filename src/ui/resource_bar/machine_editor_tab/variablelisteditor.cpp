@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,11 +28,10 @@
 #include <QKeyEvent>
 
 // StateS
-#include "statestypes.h"
 #include "variabletableview.h"
 
 
-VariableListEditor::VariableListEditor(VariableNature_t editorNature, QWidget* parent) :
+VariableListEditor::VariableListEditor(Machine::VariableNature_t editorNature, QWidget* parent) :
 	QWidget(parent)
 {
 	//

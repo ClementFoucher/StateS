@@ -45,6 +45,11 @@ class Machine : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class VariableNature_t { input, output, internal, constant };
+
+	/////
 	// Constructors/destructors
 public:
 	explicit Machine();

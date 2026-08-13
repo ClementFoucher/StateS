@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@ class QXmlStreamWriter;
 class QFile;
 
 // StateS
-#include "statestypes.h"
+#include "machine.h"
 class MachineActuatorComponent;
 class ViewConfiguration;
 class Equation;
@@ -70,7 +70,7 @@ private:
 
 	void writeUiConfiguration();
 	void writeMachineVariables();
-	void writeMachineVariable(VariableNature_t nature, componentId_t variableId);
+	void writeMachineVariable(Machine::VariableNature_t nature, componentId_t variableId);
 
 	/////
 	// Object variables

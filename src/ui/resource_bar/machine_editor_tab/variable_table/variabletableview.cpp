@@ -36,7 +36,7 @@
 #include "typeeditor.h"
 
 
-VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* parent) :
+VariableTableView::VariableTableView(Machine::VariableNature_t tableNature, QWidget* parent) :
 	ReorderableTableView(parent)
 {
 	// Build table model

@@ -26,7 +26,7 @@
 #include "reorderabletableview.h"
 
 // StateS
-#include "statestypes.h"
+#include "machine.h"
 class VariableTableModel;
 
 
@@ -59,7 +59,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableView(VariableNature_t tableNature, QWidget* parent = nullptr);
+	explicit VariableTableView(Machine::VariableNature_t tableNature, QWidget* parent = nullptr);
 
 	/////
 	// Object functions

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -76,10 +76,10 @@ MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machin
 	this->variablesEditor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
 	auto variablesTabs = new QTabWidget();
-	variablesTabs->insertTab(0, new VariableListEditor(VariableNature_t::input),    tr("Inputs"));
-	variablesTabs->insertTab(1, new VariableListEditor(VariableNature_t::output),   tr("Outputs"));
-	variablesTabs->insertTab(2, new VariableListEditor(VariableNature_t::internal), tr("Variables"));
-	variablesTabs->insertTab(3, new VariableListEditor(VariableNature_t::constant), tr("Constants"));
+	variablesTabs->insertTab(0, new VariableListEditor(Machine::VariableNature_t::input),    tr("Inputs"));
+	variablesTabs->insertTab(1, new VariableListEditor(Machine::VariableNature_t::output),   tr("Outputs"));
+	variablesTabs->insertTab(2, new VariableListEditor(Machine::VariableNature_t::internal), tr("Variables"));
+	variablesTabs->insertTab(3, new VariableListEditor(Machine::VariableNature_t::constant), tr("Constants"));
 	variablesTabs->setCurrentIndex(0);
 	variablesEditorLayout->addWidget(variablesTabs);
 

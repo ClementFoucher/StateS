@@ -29,7 +29,7 @@
 #include "variabletableview.h"
 
 
-VariableTableModel::VariableTableModel(VariableNature_t editorNature, QObject* parent) :
+VariableTableModel::VariableTableModel(Machine::VariableNature_t editorNature, QObject* parent) :
 	QAbstractTableModel(parent)
 {
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent, this, &VariableTableModel::machineUpdatedEventHandler);
@@ -40,12 +40,12 @@ VariableTableModel::VariableTableModel(VariableNature_t editorNature, QObject* p
 	this->columnsRoles.append(ColumnRole_t::type);
 	switch (this->editorNature)
 	{
-	case VariableNature_t::output:
-	case VariableNature_t::internal:
+	case Machine::VariableNature_t::output:
+	case Machine::VariableNature_t::internal:
 		this->columnsRoles.append(ColumnRole_t::memorized);
 		break;
-	case VariableNature_t::input:
-	case VariableNature_t::constant:
+	case Machine::VariableNature_t::input:
+	case Machine::VariableNature_t::constant:
 		break;
 	}
 	this->columnsRoles.append(ColumnRole_t::value);
@@ -82,16 +82,16 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 			case ColumnRole_t::name:
 				switch (this->editorNature)
 				{
-				case VariableNature_t::input:
+				case Machine::VariableNature_t::input:
 					return tr("Input");
 					break;
-				case VariableNature_t::internal:
+				case Machine::VariableNature_t::internal:
 					return tr("Variable");
 					break;
-				case VariableNature_t::output:
+				case Machine::VariableNature_t::output:
 					return tr("Output");
 					break;
-				case VariableNature_t::constant:
+				case Machine::VariableNature_t::constant:
 					return tr("Constant");
 					break;
 				}
@@ -105,14 +105,14 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 			case ColumnRole_t::value:
 				switch (this->editorNature)
 				{
-				case VariableNature_t::input:
+				case Machine::VariableNature_t::input:
 					return tr("Initial value in simulator");
 					break;
-				case VariableNature_t::internal:
-				case VariableNature_t::output:
+				case Machine::VariableNature_t::internal:
+				case Machine::VariableNature_t::output:
 					return tr("Initial/default value");
 					break;
-				case VariableNature_t::constant:
+				case Machine::VariableNature_t::constant:
 					return tr("Value");
 					break;
 				}
@@ -450,16 +450,16 @@ bool VariableTableModel::removeRows(int row, int count, const QModelIndex& paren
 	QString undoDescription = "VARIABLE_REMOVE__";
 	switch (this->editorNature)
 	{
-	case VariableNature_t::input:
+	case Machine::VariableNature_t::input:
 		undoDescription += "INPUTS";
 		break;
-	case VariableNature_t::output:
+	case Machine::VariableNature_t::output:
 		undoDescription += "OUTPUTS";
 		break;
-	case VariableNature_t::internal:
+	case Machine::VariableNature_t::internal:
 		undoDescription += "INTERNAL_VARIABLES";
 		break;
-	case VariableNature_t::constant:
+	case Machine::VariableNature_t::constant:
 		undoDescription += "CONSTANTSS";
 		break;
 	}
@@ -487,16 +487,16 @@ bool VariableTableModel::insertRows(int row, int count, const QModelIndex& paren
 		QString namePrefix;
 		switch (this->editorNature)
 		{
-		case VariableNature_t::input:
+		case Machine::VariableNature_t::input:
 			namePrefix = tr("Input");
 			break;
-		case VariableNature_t::output:
+		case Machine::VariableNature_t::output:
 			namePrefix = tr("Output");
 			break;
-		case VariableNature_t::internal:
+		case Machine::VariableNature_t::internal:
 			namePrefix = tr("Variable");
 			break;
-		case VariableNature_t::constant:
+		case Machine::VariableNature_t::constant:
 			namePrefix = tr("Constant");
 			break;
 		}
@@ -529,7 +529,7 @@ bool VariableTableModel::insertRows(int row, int count, const QModelIndex& paren
 		auto newVarId = machine->addVariable(this->editorNature, initialName, MachineValue::Type_t::boolean);
 
 		// Make internal variables memorized by default
-		if (this->editorNature == VariableNature_t::internal)
+		if (this->editorNature == Machine::VariableNature_t::internal)
 		{
 			auto variable = machine->getVariable(newVarId);
 			if (variable != nullptr)

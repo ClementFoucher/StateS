@@ -41,7 +41,6 @@ const componentId_t nullId = 0;
 /////
 // Enums
 
-enum class VariableNature_t              { input, output, internal, constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };
 enum class MachineType_t                 { none, fsm };
 enum class MouseCursor_t                 { none, state, transition };

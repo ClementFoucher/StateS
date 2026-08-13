@@ -821,20 +821,20 @@ void MachineXmlParser::parseVariableNode()
 	}
 
 	// Get nature
-	VariableNature_t nature;
+	Machine::VariableNature_t nature;
 	switch (this->currentTag)
 	{
 	case Tag_t::variablesInput:
-		nature = VariableNature_t::input;
+		nature = Machine::VariableNature_t::input;
 		break;
 	case Tag_t::variablesOutput:
-		nature = VariableNature_t::output;
+		nature = Machine::VariableNature_t::output;
 		break;
 	case Tag_t::variablesInternal:
-		nature = VariableNature_t::internal;
+		nature = Machine::VariableNature_t::internal;
 		break;
 	case Tag_t::variablesConstant:
-		nature = VariableNature_t::constant;
+		nature = Machine::VariableNature_t::constant;
 		break;
 	default:
 		this->addIssue(tr("Error!") + " XKCD 2200.");
