@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class Variable;
 class Operand;
@@ -111,12 +111,12 @@ public:
 	void setOperator(Operator_t newOperator);
 	Operator_t getOperator() const;
 
-	QSet<componentId_t> getVariablesIdsSet() const;
+	QSet<ComponentId> getVariablesIdsSet() const;
 
 	bool isInverted() const;
 
 	shared_ptr<Operand> getOperand(uint i) const;
-	void setOperand(uint i, componentId_t        newOperand); // Set variable operand
+	void setOperand(uint i, ComponentId          newOperand); // Set variable operand
 	void setOperand(uint i, shared_ptr<Equation> newOperand); // Set equation operand
 	void setOperand(uint i, MachineValue         newOperand); // Set constant operand
 	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand (when machine is still being parsed)

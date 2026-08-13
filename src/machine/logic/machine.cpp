@@ -79,7 +79,7 @@ bool Machine::setName(const QString& newName)
 	return true;
 }
 
-componentId_t Machine::addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, componentId_t id)
+ComponentId Machine::addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, ComponentId id)
 {
 	if (type == MachineValue::Type_t::nullType) return nullId;
 
@@ -106,7 +106,7 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 
 	// Create variable
 	shared_ptr<Variable> variable;
-	componentId_t componentId = id;
+	auto componentId = id;
 	if (id != nullId)
 	{
 		variable = make_shared<Variable>(id, cleanedName, type);
@@ -153,7 +153,7 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 	return componentId;
 }
 
-void Machine::removeVariable(componentId_t variableId)
+void Machine::removeVariable(ComponentId variableId)
 {
 	auto variable = this->getVariable(variableId);
 	if (variable == nullptr) return;
@@ -185,7 +185,7 @@ void Machine::removeVariable(componentId_t variableId)
 	}
 }
 
-bool Machine::renameVariable(componentId_t variableId, const QString& newName)
+bool Machine::renameVariable(ComponentId variableId, const QString& newName)
 {
 	auto variable = this->getVariable(variableId);
 	if (variable == nullptr) return false;
@@ -222,7 +222,7 @@ bool Machine::renameVariable(componentId_t variableId, const QString& newName)
 	return true;
 }
 
-void Machine::changeVariableRank(componentId_t variableId, uint newRank)
+void Machine::changeVariableRank(ComponentId variableId, uint newRank)
 {
 	if (inputVariables.contains(variableId))
 	{
@@ -258,7 +258,7 @@ QString Machine::getName() const
 	return this->name;
 }
 
-shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) const
+shared_ptr<MachineComponent> Machine::getComponent(ComponentId componentId) const
 {
 	if (this->components.contains(componentId) == false) return nullptr;
 
@@ -266,37 +266,37 @@ shared_ptr<MachineComponent> Machine::getComponent(componentId_t componentId) co
 	return this->components[componentId];
 }
 
-shared_ptr<MachineActuatorComponent> Machine::getActuatorComponent(componentId_t componentId) const
+shared_ptr<MachineActuatorComponent> Machine::getActuatorComponent(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<MachineActuatorComponent>(this->getComponent(componentId));
 }
 
-shared_ptr<Variable> Machine::getVariable(componentId_t variableId) const
+shared_ptr<Variable> Machine::getVariable(ComponentId variableId) const
 {
 	return dynamic_pointer_cast<Variable>(this->getComponent(variableId));
 }
 
-const QList<componentId_t> Machine::getInputVariablesIds() const
+const QList<ComponentId> Machine::getInputVariablesIds() const
 {
 	return this->inputVariables;
 }
 
-const QList<componentId_t> Machine::getOutputVariablesIds() const
+const QList<ComponentId> Machine::getOutputVariablesIds() const
 {
 	return this->outputVariables;
 }
 
-const QList<componentId_t> Machine::getInternalVariablesIds() const
+const QList<ComponentId> Machine::getInternalVariablesIds() const
 {
 	return this->internalVariables;
 }
 
-const QList<componentId_t> Machine::getConstantsIds() const
+const QList<ComponentId> Machine::getConstantsIds() const
 {
 	return this->constants;
 }
 
-const QList<componentId_t> Machine::getVariablesIds(VariableNature_t nature) const
+const QList<ComponentId> Machine::getVariablesIds(VariableNature_t nature) const
 {
 	switch (nature)
 	{
@@ -315,9 +315,9 @@ const QList<componentId_t> Machine::getVariablesIds(VariableNature_t nature) con
 	}
 }
 
-const QList<componentId_t> Machine::getWrittableVariablesIds() const
+const QList<ComponentId> Machine::getWrittableVariablesIds() const
 {
-	QList<componentId_t> writtableVariablesIds;
+	QList<ComponentId> writtableVariablesIds;
 
 	writtableVariablesIds += this->getInternalVariablesIds();
 	writtableVariablesIds += this->getOutputVariablesIds();
@@ -325,9 +325,9 @@ const QList<componentId_t> Machine::getWrittableVariablesIds() const
 	return writtableVariablesIds;
 }
 
-const QList<componentId_t> Machine::getReadableVariablesIds() const
+const QList<ComponentId> Machine::getReadableVariablesIds() const
 {
-	QList<componentId_t> readableVariablesIds;
+	QList<ComponentId> readableVariablesIds;
 
 	readableVariablesIds += this->getInputVariablesIds();
 	readableVariablesIds += this->getInternalVariablesIds();
@@ -336,9 +336,9 @@ const QList<componentId_t> Machine::getReadableVariablesIds() const
 	return readableVariablesIds;
 }
 
-const QList<componentId_t> Machine::getAllVariablesIds() const
+const QList<ComponentId> Machine::getAllVariablesIds() const
 {
-	QList<componentId_t> allVariablesIds;
+	QList<ComponentId> allVariablesIds;
 
 	allVariablesIds += this->getInputVariablesIds();
 	allVariablesIds += this->getInternalVariablesIds();
@@ -348,7 +348,7 @@ const QList<componentId_t> Machine::getAllVariablesIds() const
 	return allVariablesIds;
 }
 
-componentId_t Machine::getVariableId(VariableNature_t nature, uint rank) const
+ComponentId Machine::getVariableId(VariableNature_t nature, uint rank) const
 {
 	auto variablesIds = this->getVariablesIds(nature);
 
@@ -369,7 +369,7 @@ void Machine::registerComponent(shared_ptr<MachineComponent> newComponent)
 	connect(newComponent.get(), &MachineComponent::componentDeletedEvent, this, &Machine::componentDeletedEvent);
 }
 
-void Machine::removeComponent(componentId_t componentId)
+void Machine::removeComponent(ComponentId componentId)
 {
 	this->components.remove(componentId);
 }

@@ -199,7 +199,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	bool hasMemorizedVariables    = false;
 	bool hasNonMemorizedVariables = false;
 
-	QList<componentId_t> variablesIds;
+	QList<ComponentId> variablesIds;
 	if (displayVariables)
 	{
 		variablesIds += machine->getInternalVariablesIds();
@@ -348,7 +348,7 @@ QGraphicsTextItem* VariableTableScene::buildSectionTitle(const QString& titleTex
 	return titleGraphicObject;
 }
 
-qreal VariableTableScene::buildColumn(const QString& header, const QList<componentId_t> variablesIds, qreal horizontalPos, qreal verticalPos, function<QString (shared_ptr<Variable>)> textFunc)
+qreal VariableTableScene::buildColumn(const QString& header, const QList<ComponentId> variablesIds, qreal horizontalPos, qreal verticalPos, function<QString (shared_ptr<Variable>)> textFunc)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return 0;

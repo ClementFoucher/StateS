@@ -31,7 +31,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class Equation;
 
@@ -59,7 +59,7 @@ public:
 		contentType{ContentType_t::equation},
 		content{equation}
 	{}
-	explicit EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId) :
+	explicit EquationPartMimeData(const QString& text, uint availableActions, ComponentId variableId) :
 		text{text},
 		availableActions{availableActions},
 		contentType{ContentType_t::variable},
@@ -81,7 +81,7 @@ public:
 	ContentType_t getContentType() const;
 
 	shared_ptr<Equation> getEquation()   const;
-	componentId_t        getVariableId() const;
+	ComponentId          getVariableId() const;
 	MachineValue         getConstant()   const;
 
 	/////
@@ -91,7 +91,7 @@ private:
 	uint availableActions;
 
 	ContentType_t contentType;
-	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> content;
+	std::variant<ComponentId, shared_ptr<Equation>, MachineValue> content;
 
 };
 

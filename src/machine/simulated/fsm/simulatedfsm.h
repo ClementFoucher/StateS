@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,6 @@ class QDialog;
 class QSignalMapper;
 
 // StateS
-#include "statestypes.h"
 class SimulatedFsmState;
 class SimulatedFsmTransition;
 
@@ -50,13 +49,13 @@ public:
 public:
 	virtual void build() override;
 
-	shared_ptr<SimulatedFsmState>      getSimulatedState     (componentId_t componentId) const;
-	shared_ptr<SimulatedFsmTransition> getSimulatedTransition(componentId_t componentId) const;
+	shared_ptr<SimulatedFsmState>      getSimulatedState     (ComponentId componentId) const;
+	shared_ptr<SimulatedFsmTransition> getSimulatedTransition(ComponentId componentId) const;
 
-	void forceStateActivation(componentId_t stateToActivate);
+	void forceStateActivation(ComponentId stateToActivate);
 
-	componentId_t getInitialStateId() const;
-	componentId_t getActiveStateId()  const;
+	ComponentId getInitialStateId() const;
+	ComponentId getActiveStateId()  const;
 
 private slots:
 	void targetStateSelectionMadeEventHandler(int i);
@@ -76,18 +75,18 @@ signals:
 	// Object variables
 private:
 	// Static state
-	componentId_t initialStateId = nullId;
+	ComponentId initialStateId = nullId;
 
 	// Dynamic state
-	componentId_t activeStateId = nullId;
+	ComponentId activeStateId = nullId;
 
 	// Temporary working variables
-	componentId_t transitionToBeCrossedId = nullId;
-	QList<componentId_t> variablesToResetBeforeNextStep;
-	QList<componentId_t> variablesToResetAfterNextStep;
+	ComponentId transitionToBeCrossedId = nullId;
+	QList<ComponentId> variablesToResetBeforeNextStep;
+	QList<ComponentId> variablesToResetAfterNextStep;
 
 	// Resolution of transition conflict
-	QMap<uint, componentId_t> potentialTransitionsIds;
+	QMap<uint, ComponentId> potentialTransitionsIds;
 	QDialog* targetStateSelector = nullptr;
 	QSignalMapper* signalMapper  = nullptr;
 

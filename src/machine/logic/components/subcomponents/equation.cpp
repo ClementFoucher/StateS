@@ -295,9 +295,9 @@ Equation::Operator_t Equation::getOperator() const
 	return this->operatorType;
 }
 
-QSet<componentId_t> Equation::getVariablesIdsSet() const
+QSet<ComponentId> Equation::getVariablesIdsSet() const
 {
-	QSet<componentId_t> variablesIds;
+	QSet<ComponentId> variablesIds;
 
 	for (const auto& operand : this->operands)
 	{
@@ -356,7 +356,7 @@ shared_ptr<Operand> Equation::getOperand(uint i) const
 	}
 }
 
-void Equation::setOperand(uint i, componentId_t newOperand)
+void Equation::setOperand(uint i, ComponentId newOperand)
 {
 	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);

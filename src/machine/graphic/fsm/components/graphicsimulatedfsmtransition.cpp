@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 #include "graphicsimulatedfsmstate.h"
 
 
-GraphicSimulatedFsmTransition::GraphicSimulatedFsmTransition(componentId_t logicComponentId) :
+GraphicSimulatedFsmTransition::GraphicSimulatedFsmTransition(ComponentId logicComponentId) :
 	GraphicFsmTransition(logicComponentId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());

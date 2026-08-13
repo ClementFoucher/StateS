@@ -30,7 +30,7 @@ using namespace std;
 #include <QList>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class MachineValue;
 class Equation;
 class Variable;
@@ -83,7 +83,7 @@ public:
 private:
 	void prepareTable();
 
-	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, MachineValue constantValue) const;
+	void replaceVariableByConstant(shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const;
 
 	/////
 	// Object variables

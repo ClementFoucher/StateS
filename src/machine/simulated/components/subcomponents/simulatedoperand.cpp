@@ -75,7 +75,7 @@ MachineValue SimulatedOperand::getCurrentValue() const
 		auto simulatedMachine = machineManager->getSimulatedMachine();
 		if (simulatedMachine == nullptr) return MachineValue{};
 
-		auto simulatedVariable = simulatedMachine->getSimulatedVariable(std::get<componentId_t>(this->value));
+		auto simulatedVariable = simulatedMachine->getSimulatedVariable(std::get<ComponentId>(this->value));
 		if (simulatedVariable == nullptr) return MachineValue{};
 
 

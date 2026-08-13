@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,9 +25,6 @@
 // Parent
 #include "equationparteditorwidget.h"
 
-// States
-#include "statestypes.h"
-
 
 class VariableEditorWidget : public EquationPartEditorWidget
 {
@@ -36,7 +33,7 @@ class VariableEditorWidget : public EquationPartEditorWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableEditorWidget(componentId_t variableId, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
+	explicit VariableEditorWidget(ComponentId variableId, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
 
 	/////
 	// Object functions
@@ -56,7 +53,7 @@ protected:
 	/////
 	// Object variables
 private:
-	componentId_t variableId = nullId;
+	ComponentId variableId = nullId;
 
 };
 

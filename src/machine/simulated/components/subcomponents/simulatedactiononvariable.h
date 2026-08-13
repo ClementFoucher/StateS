@@ -50,7 +50,7 @@ public:
 
 	bool isActionMemorized() const;
 
-	componentId_t getVariableId() const;
+	ComponentId getVariableId() const;
 
 private:
 	MachineValue getActionValue() const;
@@ -58,7 +58,7 @@ private:
 	/////
 	// Object variables
 private:
-	componentId_t variableId = nullId;
+	ComponentId variableId = nullId;
 
 	ActionOnVariable::Type_t actionType;
 	MachineValue actionValue;

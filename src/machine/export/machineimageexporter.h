@@ -36,7 +36,6 @@ class QPaintDevice;
 class QPainter;
 
 // StateS
-#include "statestypes.h"
 #include "variabletablescene.h"
 #include "componentscene.h"
 

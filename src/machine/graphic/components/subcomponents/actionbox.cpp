@@ -46,7 +46,7 @@ const QPen ActionBox::defaultPen = QPen(Qt::SolidPattern, 3);
 // Class object definition
 //
 
-ActionBox::ActionBox(componentId_t actuatorId, bool addLine)
+ActionBox::ActionBox(ComponentId actuatorId, bool addLine)
 {
 	this->actuatorId = actuatorId;
 	this->addLine = addLine;

@@ -28,7 +28,7 @@
 #include "variable.h"
 
 
-SimulatedVariable::SimulatedVariable(componentId_t componentId) :
+SimulatedVariable::SimulatedVariable(ComponentId componentId) :
 	SimulatedComponent(componentId)
 {
 	auto machine = machineManager->getMachine();

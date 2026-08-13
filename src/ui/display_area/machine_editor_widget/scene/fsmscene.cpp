@@ -255,7 +255,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 							this->addTransition(graphicTransition, true);
 
 							// Machine has been edited
-							QString undoDescription = "TRANSITION_REDIRECT__" + QString::number(logicTransition->getId());
+							QString undoDescription = "TRANSITION_REDIRECT__" + QString::number(static_cast<uint32_t>(logicTransition->getId()));
 							machineManager->notifyMachineEdited(undoDescription);
 						}
 					}
@@ -637,7 +637,7 @@ void FsmScene::toolChangeEventHandler(MachineBuilder::Tool_t newTool)
 	}
 }
 
-void FsmScene::stateCallsEditEventHandler(componentId_t stateId)
+void FsmScene::stateCallsEditEventHandler(ComponentId stateId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -651,7 +651,7 @@ void FsmScene::stateCallsEditEventHandler(componentId_t stateId)
 	emit this->editSelectedItemEvent();
 }
 
-void FsmScene::stateCallsRenameEventHandler(componentId_t stateId)
+void FsmScene::stateCallsRenameEventHandler(ComponentId stateId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -665,7 +665,7 @@ void FsmScene::stateCallsRenameEventHandler(componentId_t stateId)
 	emit this->renameSelectedItemEvent();
 }
 
-void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
+void FsmScene::stateCallsDeleteEventHandler(ComponentId stateId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -681,7 +681,7 @@ void FsmScene::stateCallsDeleteEventHandler(componentId_t stateId)
 	machineManager->notifyMachineEdited();
 }
 
-void FsmScene::stateCallsSetInitialStateEventHandler(componentId_t stateId)
+void FsmScene::stateCallsSetInitialStateEventHandler(ComponentId stateId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -697,7 +697,7 @@ void FsmScene::stateCallsSetInitialStateEventHandler(componentId_t stateId)
 	machineManager->notifyMachineEdited();
 }
 
-void FsmScene::stateCallsBeginTransitionEventHandler(componentId_t stateId)
+void FsmScene::stateCallsBeginTransitionEventHandler(ComponentId stateId)
 {
 	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder == nullptr) return;
@@ -716,7 +716,7 @@ void FsmScene::stateCallsBeginTransitionEventHandler(componentId_t stateId)
 	machineBuilder->setSingleUseTool(MachineBuilder::SingleUseTool_t::drawTransitionFromScene);
 }
 
-void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
+void FsmScene::statePositionAboutToChangeEventHandler(ComponentId stateId)
 {
 	// Machine has been edited
 	QString undoDescription = "STATE_MOVE_" + this->selectionDescription;
@@ -724,12 +724,12 @@ void FsmScene::statePositionAboutToChangeEventHandler(componentId_t stateId)
 	machineManager->notifyMachineEdited(undoCommand);
 }
 
-void FsmScene::statePositionChangedEventHandler(componentId_t)
+void FsmScene::statePositionChangedEventHandler(ComponentId)
 {
 	this->recomputeSceneRect();
 }
 
-void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transitionId)
+void FsmScene::transitionCallsDynamicSourceEventHandler(ComponentId transitionId)
 {
 	auto machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder == nullptr) return;
@@ -756,7 +756,7 @@ void FsmScene::transitionCallsDynamicSourceEventHandler(componentId_t transition
 	machineBuilder->setSingleUseTool(MachineBuilder::SingleUseTool_t::editTransitionSource);
 }
 
-void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transitionId)
+void FsmScene::transitionCallsDynamicTargetEventHandler(ComponentId transitionId)
 {
 	auto machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder == nullptr) return;
@@ -783,7 +783,7 @@ void FsmScene::transitionCallsDynamicTargetEventHandler(componentId_t transition
 	machineBuilder->setSingleUseTool(MachineBuilder::SingleUseTool_t::editTransitionTarget);
 }
 
-void FsmScene::transitionCallsEditEventHandler(componentId_t transitionId)
+void FsmScene::transitionCallsEditEventHandler(ComponentId transitionId)
 {
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());
 	if (graphicFsm == nullptr) return;
@@ -797,7 +797,7 @@ void FsmScene::transitionCallsEditEventHandler(componentId_t transitionId)
 	emit this->editSelectedItemEvent();
 }
 
-void FsmScene::transitionCallsDeleteEventHandler(componentId_t transitionId)
+void FsmScene::transitionCallsDeleteEventHandler(ComponentId transitionId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,9 +26,6 @@
 #include "graphicfsmtransition.h"
 #include "graphicsimulatedcomponent.h"
 
-// StateS
-#include "statestypes.h"
-
 
 class GraphicSimulatedFsmTransition : public GraphicFsmTransition, public GraphicSimulatedComponent
 {
@@ -37,7 +34,7 @@ class GraphicSimulatedFsmTransition : public GraphicFsmTransition, public Graphi
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicSimulatedFsmTransition(componentId_t logicComponentId);
+	explicit GraphicSimulatedFsmTransition(ComponentId logicComponentId);
 
 	/////
 	// Object functions

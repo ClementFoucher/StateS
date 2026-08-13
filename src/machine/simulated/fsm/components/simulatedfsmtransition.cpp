@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,7 +33,7 @@
 // Class object definition
 //
 
-SimulatedFsmTransition::SimulatedFsmTransition(componentId_t logicComponentId) :
+SimulatedFsmTransition::SimulatedFsmTransition(ComponentId logicComponentId) :
 	SimulatedActuatorComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -60,12 +60,12 @@ shared_ptr<SimulatedEquation> SimulatedFsmTransition::getCondition()
 	return this->condition;
 }
 
-componentId_t SimulatedFsmTransition::getSourceStateId() const
+ComponentId SimulatedFsmTransition::getSourceStateId() const
 {
 	return this->sourceStateId;
 }
 
-componentId_t SimulatedFsmTransition::getTargetStateId() const
+ComponentId SimulatedFsmTransition::getTargetStateId() const
 {
 	return this->targetStateId;
 }

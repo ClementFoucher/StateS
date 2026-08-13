@@ -33,7 +33,7 @@ using namespace std;
 #include <QMap>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinesimulator.h"
 class SimulatedComponent;
 class SimulatedActuatorComponent;
@@ -54,8 +54,8 @@ public:
 public:
 	virtual void build();
 
-	shared_ptr<SimulatedActuatorComponent> getSimulatedActuatorComponent(componentId_t actuatorId) const;
-	shared_ptr<SimulatedVariable>          getSimulatedVariable         (componentId_t variableId) const;
+	shared_ptr<SimulatedActuatorComponent> getSimulatedActuatorComponent(ComponentId actuatorId) const;
+	shared_ptr<SimulatedVariable>          getSimulatedVariable         (ComponentId variableId) const;
 
 	void reset();
 	void prepareStep();
@@ -68,8 +68,8 @@ public:
 	void setPulseTransitionActionBehavior    (MachineSimulator::SimulationBehavior_t behv);
 
 protected:
-	void registerSimulatedComponent(componentId_t componentId, shared_ptr<SimulatedComponent> component);
-	shared_ptr<SimulatedComponent> getSimulatedComponent(componentId_t componentId) const;
+	void registerSimulatedComponent(ComponentId componentId, shared_ptr<SimulatedComponent> component);
+	shared_ptr<SimulatedComponent> getSimulatedComponent(ComponentId componentId) const;
 
 private:
 	virtual void subMachineReset()          = 0;
@@ -80,7 +80,7 @@ private:
 	/////
 	// Signals
 signals:
-	void simulatedComponentUpdatedEvent(componentId_t componentId);
+	void simulatedComponentUpdatedEvent(ComponentId componentId);
 	void emergencyShutDownEvent();
 	void resumeNormalActivitiesEvent();
 
@@ -93,7 +93,7 @@ protected:
 	MachineSimulator::SimulationBehavior_t pulseTransitionActionBehavior;
 
 private:
-	QMap<componentId_t, shared_ptr<SimulatedComponent>> simulatedComponents;
+	QMap<ComponentId, shared_ptr<SimulatedComponent>> simulatedComponents;
 
 };
 

@@ -31,7 +31,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class Equation;
 class Variable;
@@ -54,7 +54,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit Operand(componentId_t variableId);      // Defines an operand whose source is a variable
+	explicit Operand(ComponentId variableId);        // Defines an operand whose source is a variable
 	explicit Operand(shared_ptr<Equation> equation); // Defines an operand whose source is an equation
 	explicit Operand(MachineValue constant);         // Defines an operand whose source is a constant
 	explicit Operand(shared_ptr<Variable> variable); // Defines an operand whose source is a variable (when machine is still being parsed)
@@ -69,14 +69,14 @@ public:
 	MachineValue getInitialValue() const;
 	MachineValue::Type_t getType() const;
 
-	componentId_t        getVariableId() const;
+	ComponentId          getVariableId() const;
 	shared_ptr<Equation> getEquation()   const;
 	MachineValue         getConstant()   const;
 
 	QString getText() const;
 
 private slots:
-	void variableDeletedEventHandler(componentId_t);
+	void variableDeletedEventHandler(ComponentId);
 
 	/////
 	// Signals
@@ -90,7 +90,7 @@ signals:
 private:
 	Source_t source;
 
-	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> value;
+	std::variant<ComponentId, shared_ptr<Equation>, MachineValue> value;
 
 };
 

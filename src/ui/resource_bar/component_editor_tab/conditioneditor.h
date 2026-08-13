@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,7 +36,7 @@ class QGridLayout;
 class QSlider;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class TruthTable;
 class TruthTableDisplay;
 class EquationEditorDialog;
@@ -49,7 +49,7 @@ class ConditionEditor : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit ConditionEditor(componentId_t transitionId, QWidget* parent = nullptr);
+	explicit ConditionEditor(ComponentId transitionId, QWidget* parent = nullptr);
 	~ConditionEditor();
 
 	/////
@@ -72,7 +72,7 @@ private:
 	/////
 	// Object variables
 private:
-	componentId_t transitionId = nullId;
+	ComponentId transitionId = nullId;
 	shared_ptr<TruthTable> truthTable;
 
 	// Widgets

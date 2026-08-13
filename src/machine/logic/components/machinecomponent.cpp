@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,14 +23,14 @@
 #include "machinecomponent.h"
 
 
-componentId_t MachineComponent::getUniqueId()
+ComponentId MachineComponent::getUniqueId()
 {
-	static componentId_t currentId = 0L;
+	static uint32_t currentId = 0;
 
 	// ID O is reserved for nullId,
 	// increment *before* assigning ID.
 	currentId++;
-	return currentId;
+	return static_cast<ComponentId>(currentId);
 }
 
 MachineComponent::MachineComponent()
@@ -38,7 +38,7 @@ MachineComponent::MachineComponent()
 	this->id = MachineComponent::getUniqueId();
 }
 
-MachineComponent::MachineComponent(componentId_t id)
+MachineComponent::MachineComponent(ComponentId id)
 {
 	this->id = id;
 }
@@ -48,7 +48,7 @@ MachineComponent::~MachineComponent()
 	emit this->componentDeletedEvent(this->id);
 }
 
-componentId_t MachineComponent::getId() const
+ComponentId MachineComponent::getId() const
 {
 	return this->id;
 }

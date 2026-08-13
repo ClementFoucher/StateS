@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,9 +25,6 @@
 // Parent
 #include "simulatedactuatorcomponent.h"
 
-// StateS
-#include "statestypes.h"
-
 
 class SimulatedFsmState : public SimulatedActuatorComponent
 {
@@ -36,7 +33,7 @@ class SimulatedFsmState : public SimulatedActuatorComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedFsmState(componentId_t logicComponentId);
+	explicit SimulatedFsmState(ComponentId logicComponentId);
 
 	/////
 	// Object functions
@@ -45,7 +42,7 @@ public:
 	bool getIsActive() const;
 
 	QString getName() const;
-	const QList<componentId_t> getOutgoingTransitionsIds() const;
+	const QList<ComponentId> getOutgoingTransitionsIds() const;
 
 	/////
 	// Object variables
@@ -53,7 +50,7 @@ private:
 	bool isActive = false;
 
 	QString name;
-	QList<componentId_t> outgoingTransitionsIds;
+	QList<ComponentId> outgoingTransitionsIds;
 
 };
 

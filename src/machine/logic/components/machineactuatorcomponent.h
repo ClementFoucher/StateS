@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 class ActionOnVariable;
 class Variable;
 
@@ -50,12 +49,12 @@ class MachineActuatorComponent : public MachineComponent
 	// Constructors/destructors
 public:
 	explicit MachineActuatorComponent() = default;
-	explicit MachineActuatorComponent(componentId_t id) : MachineComponent(id) {}
+	explicit MachineActuatorComponent(ComponentId id) : MachineComponent(id) {}
 
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnVariable> addAction(componentId_t variableId);
+	shared_ptr<ActionOnVariable> addAction(ComponentId variableId);
 	void addAction(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable); // Add action when machine is still being parsed
 	void removeAction(uint actionRank);
 	shared_ptr<ActionOnVariable> getAction(uint actionRank) const;
@@ -66,7 +65,7 @@ public:
 	virtual uint getAllowedActionTypes() const = 0;
 
 private slots:
-	void variableDeletedEventHandler(componentId_t deletedVariableId);
+	void variableDeletedEventHandler(ComponentId deletedVariableId);
 	void variableInActionListModifiedEventHandler();
 
 private:

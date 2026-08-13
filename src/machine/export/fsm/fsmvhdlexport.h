@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -35,7 +35,7 @@ class QString;
 class QTextStream;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class ActionOnVariable;
 class Equation;
 class Operand;
@@ -51,9 +51,9 @@ public:
 	class ExportCompatibility
 	{
 	public:
-		QList<componentId_t> bothMooreAndMealy;
-		QList<componentId_t> rangeAdressed;
-		QList<componentId_t> mealyWithKeep;
+		QList<ComponentId> bothMooreAndMealy;
+		QList<ComponentId> rangeAdressed;
+		QList<ComponentId> mealyWithKeep;
 
 		bool isCompatible()
 		{
@@ -96,7 +96,7 @@ public:
 
 private:
 	void generateVhdlCharacteristics();
-	WrittableVariableCharacteristics_t determineWrittableVariableCharacteristics(componentId_t variableId, bool storeResults);
+	WrittableVariableCharacteristics_t determineWrittableVariableCharacteristics(ComponentId variableId, bool storeResults);
 	QString generateVhdlSignalName(const QString& prefix, const QString& name) const;
 	QString cleanNameForVhdl(const QString& name) const;
 
@@ -118,8 +118,8 @@ private:
 	bool resetLogicPositive;
 	bool prefixSignals;
 
-	QMap<componentId_t, QString> variableVhdlName;
-	QMap<componentId_t, QString> stateVhdlName;
+	QMap<ComponentId, QString> variableVhdlName;
+	QMap<ComponentId, QString> stateVhdlName;
 	QString machineVhdlName;
 
 	// The following is used to determine how a writtable variable should be affected value.
@@ -128,18 +128,18 @@ private:
 	// - A variable is either Mealy or Moore, not both.
 	// - A variable either keeps its value or has an active-on-state/pulse value, not both.
 
-	QList<componentId_t> mooreVariables;
-	QList<componentId_t> mealyVariables; // TODO: Mealy variables are currently ignored.
+	QList<ComponentId> mooreVariables;
+	QList<ComponentId> mealyVariables; // TODO: Mealy variables are currently ignored.
 
-	QList<componentId_t> tempValueVariables;
-	QList<componentId_t> keepValueVariables;
+	QList<ComponentId> tempValueVariables;
+	QList<ComponentId> keepValueVariables;
 
 	// At first, the variables with range adressing should be treated
 	// as independant bits, each bit acting like a whole variable.
 	// Then maybe determine independant ranges, not alway go @ bit level.
 
 	// TODO: Range adresssed variables are currently ignored.
-	//QList<componentId_t> rangeAdressedVariables;
+	//QList<ComponentId> rangeAdressedVariables;
 
 };
 

@@ -39,7 +39,7 @@
 #include "rangeeditordialog.h"
 
 
-ActionTableView::ActionTableView(componentId_t actuatorId, QWidget* parent) :
+ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
 	ReorderableTableView(parent)
 {
 	this->actuatorId = actuatorId;

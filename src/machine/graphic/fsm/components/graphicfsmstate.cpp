@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -79,7 +79,7 @@ QPixmap GraphicFsmState::getPixmap(uint size, bool isInitial, bool addArrow)
 // Class object definition
 //
 
-GraphicFsmState::GraphicFsmState(componentId_t logicComponentId) :
+GraphicFsmState::GraphicFsmState(ComponentId logicComponentId) :
 	GraphicComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());

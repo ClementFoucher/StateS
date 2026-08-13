@@ -26,7 +26,7 @@
 #include "statesscene.h"
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class GenericScene : public StatesScene
@@ -46,7 +46,7 @@ public:
 	/////
 	// Signals
 signals:
-	void itemSelectedEvent(componentId_t componentId);
+	void itemSelectedEvent(ComponentId componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 	void requestSaveViewEvent();

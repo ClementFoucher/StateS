@@ -31,7 +31,7 @@
 /////
 // Constructors/destructors
 
-FsmTransitionConditionSliderPositionChangeUndoCommand::FsmTransitionConditionSliderPositionChangeUndoCommand(componentId_t componentId) :
+FsmTransitionConditionSliderPositionChangeUndoCommand::FsmTransitionConditionSliderPositionChangeUndoCommand(ComponentId componentId) :
 	StatesUndoCommand(CommandId_t::fsmTransitionConditionSliderPositionChangeUndoId)
 {
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());

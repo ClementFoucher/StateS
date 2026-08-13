@@ -33,7 +33,7 @@ using namespace std;
 #include <QMap>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class GraphicComponent;
 class GraphicSimulatedComponent;
 class GraphicAttributes;
@@ -66,10 +66,10 @@ public:
 	// Extract graphic attributes from the current graphic objects
 	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const = 0;
 
-	GraphicComponent* getGraphicComponent(componentId_t componentId) const;
-	GraphicSimulatedComponent* getSimulatedGraphicComponent(componentId_t componentId) const;
+	GraphicComponent* getGraphicComponent(ComponentId componentId) const;
+	GraphicSimulatedComponent* getSimulatedGraphicComponent(ComponentId componentId) const;
 
-	virtual void removeGraphicComponent(componentId_t id);
+	virtual void removeGraphicComponent(ComponentId id);
 	virtual void forceRefreshSimulatedDisplay() = 0;
 
 protected:
@@ -80,8 +80,8 @@ protected:
 	/////
 	// Object variables
 private:
-	QMap<componentId_t, GraphicComponent*> componentsMap;
-	QMap<componentId_t, GraphicSimulatedComponent*> simulatedComponentsMap;
+	QMap<ComponentId, GraphicComponent*> componentsMap;
+	QMap<ComponentId, GraphicSimulatedComponent*> simulatedComponentsMap;
 
 };
 

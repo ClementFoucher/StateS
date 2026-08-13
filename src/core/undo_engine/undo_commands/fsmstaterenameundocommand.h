@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -29,7 +29,7 @@
 #include <QPointF>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class FsmStateRenameUndoCommand : public StatesUndoCommand
@@ -39,7 +39,7 @@ class FsmStateRenameUndoCommand : public StatesUndoCommand
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmStateRenameUndoCommand(componentId_t componentId, const QString& previousStateName);
+	explicit FsmStateRenameUndoCommand(ComponentId componentId, const QString& previousStateName);
 
 	/////
 	// Object functions
@@ -52,7 +52,7 @@ public:
 	/////
 	// Object variables
 private:
-	componentId_t componentId = nullId;
+	ComponentId componentId = nullId;
 
 	QString previousStateName;
 	QString nextStateName;

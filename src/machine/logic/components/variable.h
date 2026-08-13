@@ -41,7 +41,7 @@ public:
 	    name{name}, initialValue{MachineValue::fromType(type)}, memorized{false}
 	{}
 
-	explicit Variable(componentId_t id, const QString& name, MachineValue::Type_t type) :
+	explicit Variable(ComponentId id, const QString& name, MachineValue::Type_t type) :
 	    MachineComponent(id),
 	    name{name}, initialValue{MachineValue::fromType(type)}, memorized{false}
 	{}

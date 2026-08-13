@@ -92,7 +92,7 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 
 		if (this->mode == WriteMode_t::writeToUndo)
 		{
-			this->stream->writeAttribute("Id", QString::number(stateId));
+			this->stream->writeAttribute("Id", QString::number(static_cast<uint32_t>(stateId)));
 		}
 
 		// Actions
@@ -128,7 +128,7 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 
 		if (this->mode == WriteMode_t::writeToUndo)
 		{
-			this->stream->writeAttribute("Id", QString::number(transitionId));
+			this->stream->writeAttribute("Id", QString::number(static_cast<uint32_t>(transitionId)));
 		}
 
 		// Deal with equations

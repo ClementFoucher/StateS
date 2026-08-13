@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "undoredomanager.h"
 class Machine;
 class GraphicMachine;
@@ -108,9 +108,9 @@ private slots:
 	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes);
 	void machineUnsavedFlagChangedEventHandler();
 
-	void componentDeletedEventHandler(componentId_t componentId);
-	void componentEditedEventHandler(componentId_t componentId);
-	void simulatedComponentUpdatedEventHandler(componentId_t componentId);
+	void componentDeletedEventHandler(ComponentId componentId);
+	void componentEditedEventHandler(ComponentId componentId);
+	void simulatedComponentUpdatedEventHandler(ComponentId componentId);
 
 private:
 	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);

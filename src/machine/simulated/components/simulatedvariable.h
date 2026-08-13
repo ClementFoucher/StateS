@@ -36,7 +36,7 @@ class SimulatedVariable : public SimulatedComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedVariable(componentId_t componentId);
+	explicit SimulatedVariable(ComponentId componentId);
 
 	/////
 	// Object functions

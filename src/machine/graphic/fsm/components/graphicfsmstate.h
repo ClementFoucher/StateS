@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,6 @@
 class QAction;
 
 // StateS
-#include "statestypes.h"
 class ActionBox;
 
 
@@ -51,7 +50,7 @@ protected:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicFsmState(componentId_t logicComponentId);
+	explicit GraphicFsmState(ComponentId logicComponentId);
 	virtual ~GraphicFsmState();
 
 	/////
@@ -88,14 +87,14 @@ private:
 	/////
 	// Signals
 signals:
-	void statePositionAboutToChangeEvent(componentId_t stateId);
-	void statePositionChangedEvent(componentId_t stateId);
+	void statePositionAboutToChangeEvent(ComponentId stateId);
+	void statePositionChangedEvent(ComponentId stateId);
 
-	void editStateCalledEvent(componentId_t stateId);
-	void renameStateCalledEvent(componentId_t stateId);
-	void deleteStateCalledEvent(componentId_t stateId);
-	void setInitialStateCalledEvent(componentId_t stateId);
-	void beginDrawTransitionFromThisState(componentId_t stateId);
+	void editStateCalledEvent(ComponentId stateId);
+	void renameStateCalledEvent(ComponentId stateId);
+	void deleteStateCalledEvent(ComponentId stateId);
+	void setInitialStateCalledEvent(ComponentId stateId);
+	void beginDrawTransitionFromThisState(ComponentId stateId);
 
 	/////
 	// Object variables

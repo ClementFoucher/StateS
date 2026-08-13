@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 #include "machinemanager.h"
 class GenericScene;
 class SceneWidget;
@@ -67,7 +66,7 @@ private:
 	/////
 	// Signals
 signals:
-	void itemSelectedEvent(componentId_t componentId);
+	void itemSelectedEvent(ComponentId componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 

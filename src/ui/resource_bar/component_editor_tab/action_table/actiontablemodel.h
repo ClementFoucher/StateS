@@ -26,7 +26,7 @@
 #include <QAbstractTableModel>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 /**
@@ -54,7 +54,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableModel(componentId_t actuatorId, QObject* parent = nullptr);
+	explicit ActionTableModel(ComponentId actuatorId, QObject* parent = nullptr);
 
 	/////
 	// Object functions
@@ -79,7 +79,7 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t actuatorId = nullId;
+	ComponentId actuatorId = nullId;
 
 	QList<ColumnRole_t> columnsRoles;
 

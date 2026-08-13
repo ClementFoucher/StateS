@@ -32,7 +32,7 @@
 #include "simulatedvariable.h"
 
 
-InputToggleSelector::InputToggleSelector(componentId_t variableId, QWidget* parent) :
+InputToggleSelector::InputToggleSelector(ComponentId variableId, QWidget* parent) :
 	QFrame(parent)
 {
 	auto simulatedMachine = machineManager->getSimulatedMachine();

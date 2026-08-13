@@ -54,7 +54,7 @@ void GraphicMachine::clearSimulation()
 	this->simulatedComponentsMap.clear();
 }
 
-GraphicComponent* GraphicMachine::getGraphicComponent(componentId_t componentId) const
+GraphicComponent* GraphicMachine::getGraphicComponent(ComponentId componentId) const
 {
 	if (this->componentsMap.contains(componentId))
 	{
@@ -66,7 +66,7 @@ GraphicComponent* GraphicMachine::getGraphicComponent(componentId_t componentId)
 	}
 }
 
-GraphicSimulatedComponent* GraphicMachine::getSimulatedGraphicComponent(componentId_t componentId) const
+GraphicSimulatedComponent* GraphicMachine::getSimulatedGraphicComponent(ComponentId componentId) const
 {
 	if (this->simulatedComponentsMap.contains(componentId))
 	{
@@ -78,7 +78,7 @@ GraphicSimulatedComponent* GraphicMachine::getSimulatedGraphicComponent(componen
 	}
 }
 
-void GraphicMachine::removeGraphicComponent(componentId_t id)
+void GraphicMachine::removeGraphicComponent(ComponentId id)
 {
 	if (this->componentsMap.contains(id))
 	{

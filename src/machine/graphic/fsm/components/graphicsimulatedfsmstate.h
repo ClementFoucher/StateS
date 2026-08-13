@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,9 +26,6 @@
 #include "graphicfsmstate.h"
 #include "graphicsimulatedcomponent.h"
 
-// StateS
-#include "statestypes.h"
-
 
 class GraphicSimulatedFsmState : public GraphicFsmState, public GraphicSimulatedComponent
 {
@@ -37,7 +34,7 @@ class GraphicSimulatedFsmState : public GraphicFsmState, public GraphicSimulated
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicSimulatedFsmState(componentId_t logicComponentId);
+	explicit GraphicSimulatedFsmState(ComponentId logicComponentId);
 
 	/////
 	// Object functions

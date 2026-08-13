@@ -32,7 +32,7 @@ FsmState::FsmState(const QString& name) :
 	this->name = name;
 }
 
-FsmState::FsmState(componentId_t id, const QString& name) :
+FsmState::FsmState(ComponentId id, const QString& name) :
 	MachineActuatorComponent(id)
 {
 	this->name = name;
@@ -50,40 +50,40 @@ QString FsmState::getName() const
 	return this->name;
 }
 
-void FsmState::addOutgoingTransitionId(componentId_t transitionId)
+void FsmState::addOutgoingTransitionId(ComponentId transitionId)
 {
 	this->outputTransitionsIds.append(transitionId);
 	// Do not emit componentEditedEvent signal as linked transition lists
 	// are just used for easy access and not actually part of the state
 }
 
-void FsmState::removeOutgoingTransitionId(componentId_t transitionId)
+void FsmState::removeOutgoingTransitionId(ComponentId transitionId)
 {
 	this->outputTransitionsIds.removeAll(transitionId);
 	// Do not emit componentEditedEvent signal as linked transition lists
 	// are just used for easy access and not actually part of the state
 }
 
-const QList<componentId_t> FsmState::getOutgoingTransitionsIds() const
+const QList<ComponentId> FsmState::getOutgoingTransitionsIds() const
 {
 	return this->outputTransitionsIds;
 }
 
-void FsmState::addIncomingTransitionId(componentId_t transitionId)
+void FsmState::addIncomingTransitionId(ComponentId transitionId)
 {
 	this->inputTransitionsIds.append(transitionId);
 	// Do not emit componentEditedEvent signal as linked transition lists
 	// are just used for easy access and not actually part of the state
 }
 
-void FsmState::removeIncomingTransitionId(componentId_t transitionId)
+void FsmState::removeIncomingTransitionId(ComponentId transitionId)
 {
 	this->inputTransitionsIds.removeAll(transitionId);
 	// Do not emit componentEditedEvent signal as linked transition lists
 	// are just used for easy access and not actually part of the state
 }
 
-const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
+const QList<ComponentId> FsmState::getIncomingTransitionsIds() const
 {
 	return this->inputTransitionsIds;
 }

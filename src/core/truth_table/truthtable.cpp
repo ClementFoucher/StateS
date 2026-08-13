@@ -245,7 +245,7 @@ void TruthTable::prepareTable()
 
 
 	// Obtain IDs of all variables involved in all equations
-	QSet<componentId_t> variablesIds;
+	QSet<ComponentId> variablesIds;
 	for (auto& equation : this->equations)
 	{
 		variablesIds += equation->getVariablesIdsSet();
@@ -316,7 +316,7 @@ void TruthTable::prepareTable()
 	}
 }
 
-void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, MachineValue constantValue) const
+void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const
 {
 	if (equation == nullptr) return;
 

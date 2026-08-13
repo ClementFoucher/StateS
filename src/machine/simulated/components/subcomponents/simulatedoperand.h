@@ -63,7 +63,7 @@ signals:
 private:
 	Operand::Source_t source;
 
-	std::variant<componentId_t, shared_ptr<SimulatedEquation>, MachineValue> value;
+	std::variant<ComponentId, shared_ptr<SimulatedEquation>, MachineValue> value;
 
 };
 

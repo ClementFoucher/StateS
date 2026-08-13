@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,7 +23,7 @@
 #include "graphicattributes.h"
 
 
-void GraphicAttributes::addAttribute(uint componentId, QString name, QString value)
+void GraphicAttributes::addAttribute(ComponentId componentId, QString name, QString value)
 {
 	if (this->attributes.contains(componentId) == false)
 	{
@@ -33,7 +33,7 @@ void GraphicAttributes::addAttribute(uint componentId, QString name, QString val
 	this->attributes[componentId][name] = value;
 }
 
-QString GraphicAttributes::getAttribute(uint componentId, QString name)
+QString GraphicAttributes::getAttribute(ComponentId componentId, QString name)
 {
 	if (this->attributes.contains(componentId) == true)
 	{

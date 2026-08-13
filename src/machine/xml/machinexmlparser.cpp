@@ -517,14 +517,14 @@ bool MachineXmlParser::getCurrentNodeBoolAttribute(const QString& name) const
 	}
 }
 
-componentId_t MachineXmlParser::getCurrentNodeIdAttribute() const
+ComponentId MachineXmlParser::getCurrentNodeIdAttribute() const
 {
 	bool ok;
 	ulong idValue = this->xmlReader->attributes().value("Id").toULong(&ok);
 
 	if (ok == true)
 	{
-		return static_cast<componentId_t>(idValue);
+		return static_cast<ComponentId>(idValue);
 	}
 	else
 	{
@@ -540,7 +540,7 @@ shared_ptr<Equation> MachineXmlParser::getCurrentEquation()
 	return this->equationStack.pop();
 }
 
-void MachineXmlParser::addGraphicAttribute(uint componentId, QString name, QString value)
+void MachineXmlParser::addGraphicAttribute(ComponentId componentId, QString name, QString value)
 {
 	this->graphicAttributes->addAttribute(componentId, name, value);
 }

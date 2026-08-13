@@ -383,7 +383,7 @@ void MachineXmlWriter::writeMachineVariables()
 	this->stream->writeEndElement();
 }
 
-void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, componentId_t variableId)
+void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, ComponentId variableId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -440,7 +440,7 @@ void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, co
 	// Id
 	if (this->mode == WriteMode_t::writeToUndo)
 	{
-		this->stream->writeAttribute("Id", QString::number(variableId));
+		this->stream->writeAttribute("Id", QString::number(static_cast<uint32_t>(variableId)));
 	}
 
 	this->stream->writeEndElement();

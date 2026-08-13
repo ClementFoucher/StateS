@@ -29,7 +29,7 @@
 #include "actiononvariable.h"
 
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(componentId_t variableId)
+shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId variableId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
@@ -101,7 +101,7 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	emit this->componentEditedEvent(this->id);
 }
 
-void MachineActuatorComponent::variableDeletedEventHandler(componentId_t deletedVariableId)
+void MachineActuatorComponent::variableDeletedEventHandler(ComponentId deletedVariableId)
 {
 	QList<shared_ptr<ActionOnVariable>> newActionList;
 

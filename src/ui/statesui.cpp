@@ -379,7 +379,7 @@ void StatesUi::redo()
 	machineManager->redo();
 }
 
-void StatesUi::itemSelectedInSceneEventHandler(componentId_t componentId)
+void StatesUi::itemSelectedInSceneEventHandler(ComponentId componentId)
 {
 	this->resourceBar->setSelectedItem(componentId);
 }

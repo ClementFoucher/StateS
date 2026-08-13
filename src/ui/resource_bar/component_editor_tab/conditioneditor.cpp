@@ -42,7 +42,7 @@
 #include "operand.h"
 
 
-ConditionEditor::ConditionEditor(componentId_t transitionId, QWidget* parent) :
+ConditionEditor::ConditionEditor(ComponentId transitionId, QWidget* parent) :
 	QWidget(parent)
 {
 	auto machine = machineManager->getMachine();

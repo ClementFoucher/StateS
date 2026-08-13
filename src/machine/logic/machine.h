@@ -33,7 +33,7 @@ using namespace std;
 #include <QHash>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class Variable;
 class MachineComponent;
@@ -66,39 +66,39 @@ public:
 
 	bool setName(const QString& newName);
 
-	componentId_t addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, componentId_t id = nullId);
-	void removeVariable(componentId_t variableId);
-	bool renameVariable(componentId_t variableId, const QString& newName);
-	void changeVariableRank(componentId_t variableId, uint newRank);
+	ComponentId addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, ComponentId id = nullId);
+	void removeVariable(ComponentId variableId);
+	bool renameVariable(ComponentId variableId, const QString& newName);
+	void changeVariableRank(ComponentId variableId, uint newRank);
 
 	///
 	// Accessors
 
 	QString getName() const;
 
-	shared_ptr<MachineComponent> getComponent(componentId_t componentId) const;
-	shared_ptr<MachineActuatorComponent> getActuatorComponent(componentId_t componentId) const;
+	shared_ptr<MachineComponent> getComponent(ComponentId componentId) const;
+	shared_ptr<MachineActuatorComponent> getActuatorComponent(ComponentId componentId) const;
 
-	shared_ptr<Variable> getVariable(componentId_t variableId) const;
+	shared_ptr<Variable> getVariable(ComponentId variableId) const;
 
 	// Ordered lists for each nature of variable
-	const QList<componentId_t> getInputVariablesIds()    const;
-	const QList<componentId_t> getOutputVariablesIds()   const;
-	const QList<componentId_t> getInternalVariablesIds() const;
-	const QList<componentId_t> getConstantsIds()         const;
-	const QList<componentId_t> getVariablesIds(VariableNature_t nature) const;
+	const QList<ComponentId> getInputVariablesIds()    const;
+	const QList<ComponentId> getOutputVariablesIds()   const;
+	const QList<ComponentId> getInternalVariablesIds() const;
+	const QList<ComponentId> getConstantsIds()         const;
+	const QList<ComponentId> getVariablesIds(VariableNature_t nature) const;
 
 	// Unordered lists for categories of variables
-	const QList<componentId_t> getWrittableVariablesIds() const;
-	const QList<componentId_t> getReadableVariablesIds()  const;
-	const QList<componentId_t> getAllVariablesIds()       const;
+	const QList<ComponentId> getWrittableVariablesIds() const;
+	const QList<ComponentId> getReadableVariablesIds()  const;
+	const QList<ComponentId> getAllVariablesIds()       const;
 
 	// Single ID using rank
-	componentId_t getVariableId(VariableNature_t nature, uint rank) const;
+	ComponentId getVariableId(VariableNature_t nature, uint rank) const;
 
 protected:
 	void registerComponent(shared_ptr<MachineComponent> newComponent);
-	void removeComponent(componentId_t componentId);
+	void removeComponent(ComponentId componentId);
 
 	void cleanName(QString& nameToClean) const;
 
@@ -110,20 +110,20 @@ signals:
 	void machineExternalViewChangedEvent();
 
 	// Components changes
-	void componentEditedEvent(componentId_t componentId);
-	void componentDeletedEvent(componentId_t componentId);
+	void componentEditedEvent(ComponentId componentId);
+	void componentDeletedEvent(ComponentId componentId);
 
 	/////
 	// Object variables
 private:
 	QString name;
 
-	QHash<componentId_t, shared_ptr<MachineComponent>> components;
+	QHash<ComponentId, shared_ptr<MachineComponent>> components;
 
-	QList<componentId_t> inputVariables;
-	QList<componentId_t> outputVariables;
-	QList<componentId_t> internalVariables;
-	QList<componentId_t> constants;
+	QList<ComponentId> inputVariables;
+	QList<ComponentId> outputVariables;
+	QList<ComponentId> internalVariables;
+	QList<ComponentId> constants;
 
 };
 

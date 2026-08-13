@@ -43,7 +43,7 @@ public:
 public:
 	void replaceOperand(uint operandRank, shared_ptr<Equation> newOperand);
 	void replaceOperand(uint operandRank, MachineValue newConstant, bool isProcessingDrop = false);
-	void replaceOperand(uint operandRank, componentId_t newVariable);
+	void replaceOperand(uint operandRank, ComponentId newVariable);
 	void clearOperand(uint operandRank);
 
 	shared_ptr<Equation> getLogicEquation() const;

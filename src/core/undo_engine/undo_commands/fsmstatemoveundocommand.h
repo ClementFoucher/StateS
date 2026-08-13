@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -30,7 +30,7 @@
 #include <QMap>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class FsmStateMoveUndoCommand : public StatesUndoCommand
@@ -40,7 +40,7 @@ class FsmStateMoveUndoCommand : public StatesUndoCommand
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmStateMoveUndoCommand(const QString& description, componentId_t componentId);
+	explicit FsmStateMoveUndoCommand(const QString& description, ComponentId componentId);
 
 	/////
 	// Object functions
@@ -53,8 +53,8 @@ public:
 	/////
 	// Object variables
 private:
-	QMap<componentId_t, QPointF> previousStatesPositions;
-	QMap<componentId_t, QPointF> nextStatesPositions;
+	QMap<ComponentId, QPointF> previousStatesPositions;
+	QMap<ComponentId, QPointF> nextStatesPositions;
 
 };
 

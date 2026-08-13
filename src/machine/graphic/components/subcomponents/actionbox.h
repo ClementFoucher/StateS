@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 #include <QGraphicsPathItem>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class ActionBox : public QObject, public QGraphicsItemGroup
@@ -44,7 +44,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionBox(componentId_t actuatorId, bool addLine = false);
+	explicit ActionBox(ComponentId actuatorId, bool addLine = false);
 
 	/////
 	// Object functions
@@ -59,7 +59,7 @@ private:
 	// Object variables
 protected:
 	qreal textHeight = 0;
-	componentId_t actuatorId = nullId;
+	ComponentId actuatorId = nullId;
 	bool addLine;
 	QGraphicsPathItem* actionsOutline = nullptr;
 

@@ -22,9 +22,6 @@
 // Current class header
 #include "actiontypeeditor.h"
 
-// StateS
-#include "statestypes.h"
-
 
 void ActionTypeEditor::fillActionList(uint allowedActionTypes, ActionOnVariable::Type_t currentActionType)
 {

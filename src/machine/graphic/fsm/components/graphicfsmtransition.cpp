@@ -68,7 +68,7 @@ QPixmap GraphicFsmTransition::getPixmap(uint size)
 // Class object definition
 //
 
-GraphicFsmTransition::GraphicFsmTransition(componentId_t logicComponentId) :
+GraphicFsmTransition::GraphicFsmTransition(ComponentId logicComponentId) :
 	GraphicComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -109,7 +109,7 @@ GraphicFsmTransition::GraphicFsmTransition(componentId_t logicComponentId) :
 	this->refreshExternalItems();
 }
 
-GraphicFsmTransition::GraphicFsmTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition) :
+GraphicFsmTransition::GraphicFsmTransition(ComponentId sourceStateId, ComponentId targetStateId, const QPointF& dynamicMousePosition) :
 	GraphicComponent(nullId)
 {
 	if ( ( (sourceStateId != nullId) && (targetStateId != nullId) ) ||
@@ -165,12 +165,12 @@ void GraphicFsmTransition::refreshDisplay()
 	this->refreshSelectionShapeVisibility();
 }
 
-componentId_t GraphicFsmTransition::getSourceStateId() const
+ComponentId GraphicFsmTransition::getSourceStateId() const
 {
 	return this->sourceStateId;
 }
 
-componentId_t GraphicFsmTransition::getTargetStateId() const
+ComponentId GraphicFsmTransition::getTargetStateId() const
 {
 	return this->targetStateId;
 }
@@ -226,7 +226,7 @@ void GraphicFsmTransition::setUnderEdit(bool edit)
 	this->repaint();
 }
 
-void GraphicFsmTransition::setDynamicState(componentId_t newDynamicStateId)
+void GraphicFsmTransition::setDynamicState(ComponentId newDynamicStateId)
 {
 	if (newDynamicStateId == this->dynamicStateId) return;
 
@@ -431,8 +431,8 @@ void GraphicFsmTransition::buildArrowBody()
 	// For ends that are connected to a state, center is used as a first approximation
 	QPointF currentSourcePoint;
 	QPointF currentTargetPoint;
-	componentId_t currentSourceStateId = nullId;
-	componentId_t currentTargetStateId = nullId;
+	ComponentId currentSourceStateId = nullId;
+	ComponentId currentTargetStateId = nullId;
 	auto currentSourceState = graphicFsm->getState(this->sourceStateId);
 	auto currentTargetState = graphicFsm->getState(this->targetStateId);
 

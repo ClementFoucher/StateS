@@ -34,7 +34,7 @@
 #include "inputbooleanselector.h"
 
 
-InputVariableSelector::InputVariableSelector(componentId_t variableId, QWidget *parent) :
+InputVariableSelector::InputVariableSelector(ComponentId variableId, QWidget *parent) :
 	QWidget(parent)
 {
 	auto simulatedMachine = machineManager->getSimulatedMachine();

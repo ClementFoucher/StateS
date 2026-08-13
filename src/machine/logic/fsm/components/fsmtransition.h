@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 class Equation;
 
 
@@ -41,17 +40,17 @@ class FsmTransition : public MachineActuatorComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmTransition(componentId_t sourceStateId, componentId_t targetStateId);
-	explicit FsmTransition(componentId_t id, componentId_t sourceStateId, componentId_t targetStateId);
+	explicit FsmTransition(ComponentId sourceStateId, ComponentId targetStateId);
+	explicit FsmTransition(ComponentId id, ComponentId sourceStateId, ComponentId targetStateId);
 
 	/////
 	// Object functions
 public:
-	void setSourceStateId(componentId_t sourceStateId);
-	componentId_t getSourceStateId() const;
+	void setSourceStateId(ComponentId sourceStateId);
+	ComponentId getSourceStateId() const;
 
-	void setTargetStateId(componentId_t targetStateId);
-	componentId_t getTargetStateId() const;
+	void setTargetStateId(ComponentId targetStateId);
+	ComponentId getTargetStateId() const;
 
 	void setCondition(shared_ptr<Equation> newCondition);
 	void clearCondition();
@@ -71,8 +70,8 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t sourceStateId;
-	componentId_t targetStateId;
+	ComponentId sourceStateId;
+	ComponentId targetStateId;
 
 	shared_ptr<Equation> condition;
 

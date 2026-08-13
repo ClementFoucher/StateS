@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 #include <QMap>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class GraphicAttributes : public QObject
@@ -44,13 +44,13 @@ public:
 	/////
 	// Object functions
 public:
-	void addAttribute(uint componentId, QString name, QString value);
-	QString getAttribute(uint componentId, QString name);
+	void addAttribute(ComponentId componentId, QString name, QString value);
+	QString getAttribute(ComponentId componentId, QString name);
 
 	/////
 	// Object variables
 private:
-	QMap<componentId_t, QMap<QString, QString>> attributes;
+	QMap<ComponentId, QMap<QString, QString>> attributes;
 
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QObject>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class SimulatedComponent : public QObject
@@ -36,22 +36,22 @@ class SimulatedComponent : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedComponent(componentId_t componentId);
+	explicit SimulatedComponent(ComponentId componentId);
 
 	/////
 	// Object functions
 public:
-	componentId_t getId() const;
+	ComponentId getId() const;
 
 	/////
 	// Signals
 signals:
-	void simulatedComponentUpdatedEvent(componentId_t componentId);
+	void simulatedComponentUpdatedEvent(ComponentId componentId);
 
 	/////
 	// Object variables
 protected:
-	componentId_t componentId;
+	ComponentId componentId;
 
 };
 

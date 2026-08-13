@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class ActionTableModel;
 class RangeEditorDialog;
 class ActionOnVariable;
@@ -66,7 +66,7 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableView(componentId_t actuatorId, QWidget* parent = nullptr);
+	explicit ActionTableView(ComponentId actuatorId, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -99,7 +99,7 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t actuatorId = nullId;
+	ComponentId actuatorId = nullId;
 
 	ActionTableModel* tableModel = nullptr;
 	QMap<ColumnRole_t, int> columnsRoles;

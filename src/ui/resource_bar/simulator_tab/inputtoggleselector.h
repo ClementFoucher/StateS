@@ -33,7 +33,7 @@ using namespace std;
 class QLabel;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class SimulatedVariable;
 
 
@@ -44,7 +44,7 @@ class InputToggleSelector : public QFrame
 	/////
 	// Constructors/destructors
 public:
-	explicit InputToggleSelector(componentId_t variableId, QWidget* parent = nullptr);
+	explicit InputToggleSelector(ComponentId variableId, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -60,7 +60,7 @@ private slots:
 	/////
 	// Object variables
 protected:
-	componentId_t variableId = nullId;
+	ComponentId variableId = nullId;
 
 	QLabel* toggleValue = nullptr;
 

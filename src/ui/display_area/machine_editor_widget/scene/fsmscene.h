@@ -29,7 +29,6 @@
 class QAction;
 
 // StateS
-#include "statestypes.h"
 #include "machinemanager.h"
 #include "machinebuilder.h"
 class GraphicFsmTransition;
@@ -96,19 +95,19 @@ private slots:
 	void toolChangeEventHandler(MachineBuilder::Tool_t newTool);
 
 	// States signals
-	void stateCallsEditEventHandler(componentId_t stateId);
-	void stateCallsRenameEventHandler(componentId_t stateId);
-	void stateCallsDeleteEventHandler(componentId_t stateId);
-	void stateCallsSetInitialStateEventHandler(componentId_t stateId);
-	void stateCallsBeginTransitionEventHandler(componentId_t stateId);
-	void statePositionAboutToChangeEventHandler(componentId_t stateId);
-	void statePositionChangedEventHandler(componentId_t stateId);
+	void stateCallsEditEventHandler(ComponentId stateId);
+	void stateCallsRenameEventHandler(ComponentId stateId);
+	void stateCallsDeleteEventHandler(ComponentId stateId);
+	void stateCallsSetInitialStateEventHandler(ComponentId stateId);
+	void stateCallsBeginTransitionEventHandler(ComponentId stateId);
+	void statePositionAboutToChangeEventHandler(ComponentId stateId);
+	void statePositionChangedEventHandler(ComponentId stateId);
 
 	// Transitions signals
-	void transitionCallsDynamicSourceEventHandler(componentId_t transitionId);
-	void transitionCallsDynamicTargetEventHandler(componentId_t transitionId);
-	void transitionCallsEditEventHandler(componentId_t transitionId);
-	void transitionCallsDeleteEventHandler(componentId_t transitionId);
+	void transitionCallsDynamicSourceEventHandler(ComponentId transitionId);
+	void transitionCallsDynamicTargetEventHandler(ComponentId transitionId);
+	void transitionCallsEditEventHandler(ComponentId transitionId);
+	void transitionCallsDeleteEventHandler(ComponentId transitionId);
 
 	// Others
 	void handleSelection();
@@ -146,7 +145,7 @@ private:
 	// Transition adding/edition
 	AddTransitionStep_t transitionStep = AddTransitionStep_t::notInTransitionAddingMode;
 	GraphicFsmTransition* dummyTransition = nullptr;
-	componentId_t transitionUnderEditId = nullId;
+	ComponentId transitionUnderEditId = nullId;
 
 	// Temporary variables
 	QPointF menuMousePos;

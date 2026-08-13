@@ -94,7 +94,7 @@ void EquationEditorWidget::replaceOperand(uint operandRank, MachineValue newCons
 	}
 }
 
-void EquationEditorWidget::replaceOperand(uint operandRank, componentId_t newVariable)
+void EquationEditorWidget::replaceOperand(uint operandRank, ComponentId newVariable)
 {
 	if (this->equation == nullptr) return;
 

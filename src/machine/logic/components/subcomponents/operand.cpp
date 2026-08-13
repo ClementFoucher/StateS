@@ -29,7 +29,7 @@
 #include "equation.h"
 
 
-Operand::Operand(componentId_t variableId) :
+Operand::Operand(ComponentId variableId) :
 	source{Source_t::variable},
 	value{nullId}
 {
@@ -139,12 +139,12 @@ MachineValue::Type_t Operand::getType() const
 	return this->getInitialValue().getType();
 }
 
-componentId_t Operand::getVariableId() const
+ComponentId Operand::getVariableId() const
 {
 	if (this->source != Source_t::variable) return nullId;
 
 
-	return std::get<componentId_t>(this->value);
+	return std::get<ComponentId>(this->value);
 }
 
 shared_ptr<Equation> Operand::getEquation() const
@@ -200,7 +200,7 @@ QString Operand::getText() const
 	}
 }
 
-void Operand::variableDeletedEventHandler(componentId_t)
+void Operand::variableDeletedEventHandler(ComponentId)
 {
 	this->value = nullId;
 	emit this->operandInvalidatedEvent();

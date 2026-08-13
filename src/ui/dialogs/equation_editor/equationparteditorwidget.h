@@ -34,7 +34,7 @@ using namespace std;
 class QDrag;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class EquationEditorWidget;
 class Equation;
@@ -168,7 +168,7 @@ protected:
 
 	// Temporary storage
 	TempValueNature_t tempValueNature = TempValueNature_t::empty;
-	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> tempValue;
+	std::variant<ComponentId, shared_ptr<Equation>, MachineValue> tempValue;
 
 private:
 	bool isHighlighted = false;

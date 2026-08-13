@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,7 +34,7 @@
 #include "conditioneditor.h"
 
 
-TransitionEditorTab::TransitionEditorTab(componentId_t transitionId, QWidget* parent) :
+TransitionEditorTab::TransitionEditorTab(ComponentId transitionId, QWidget* parent) :
 	ComponentEditorTab(parent)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());

@@ -322,14 +322,14 @@ void MachineManager::machineUnsavedFlagChangedEventHandler()
 	}
 }
 
-void MachineManager::componentDeletedEventHandler(componentId_t componentId)
+void MachineManager::componentDeletedEventHandler(ComponentId componentId)
 {
 	if (this->graphicMachine == nullptr) return;
 
 	this->graphicMachine->removeGraphicComponent(componentId);
 }
 
-void MachineManager::componentEditedEventHandler(componentId_t componentId)
+void MachineManager::componentEditedEventHandler(ComponentId componentId)
 {
 	auto graphicComponent = this->graphicMachine->getGraphicComponent(componentId);
 	if (graphicComponent == nullptr) return;
@@ -338,7 +338,7 @@ void MachineManager::componentEditedEventHandler(componentId_t componentId)
 	graphicComponent->refreshDisplay();
 }
 
-void MachineManager::simulatedComponentUpdatedEventHandler(componentId_t componentId)
+void MachineManager::simulatedComponentUpdatedEventHandler(ComponentId componentId)
 {
 	auto simulatedGraphicComponent = this->graphicMachine->getSimulatedGraphicComponent(componentId);
 	if (simulatedGraphicComponent == nullptr) return;

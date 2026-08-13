@@ -35,7 +35,7 @@
 #include "equationpartmimedata.h"
 
 
-VariableEditorWidget::VariableEditorWidget(componentId_t variableId, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
+VariableEditorWidget::VariableEditorWidget(ComponentId variableId, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
 	EquationPartEditorWidget(rankInParentOperands, isTemplate, parent)
 {
 	auto machine = machineManager->getMachine();

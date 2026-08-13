@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 // Class object definition
 //
 
-SimulatedFsmState::SimulatedFsmState(componentId_t logicComponentId) :
+SimulatedFsmState::SimulatedFsmState(ComponentId logicComponentId) :
 	SimulatedActuatorComponent(logicComponentId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -63,7 +63,7 @@ QString SimulatedFsmState::getName() const
 	return this->name;
 }
 
-const QList<componentId_t> SimulatedFsmState::getOutgoingTransitionsIds() const
+const QList<ComponentId> SimulatedFsmState::getOutgoingTransitionsIds() const
 {
 	return this->outgoingTransitionsIds;
 }

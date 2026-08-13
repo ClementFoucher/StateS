@@ -47,7 +47,7 @@ ResourceBar::ResourceBar(QWidget* parent) :
 	this->build();
 }
 
-void ResourceBar::setSelectedItem(componentId_t componentId)
+void ResourceBar::setSelectedItem(ComponentId componentId)
 {
 	if (componentId == nullId)
 	{

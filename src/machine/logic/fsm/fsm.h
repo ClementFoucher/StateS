@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -53,40 +53,40 @@ public:
 	///
 	// Components accessors and mutators
 
-	componentId_t addState     (const QString& name, componentId_t id = nullId);
-	componentId_t addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id = nullId);
+	ComponentId addState     (const QString& name, ComponentId id = nullId);
+	ComponentId addTransition(ComponentId sourceStateId, ComponentId targetStateId, ComponentId id = nullId);
 
-	void removeState     (componentId_t stateId);
-	void removeTransition(componentId_t transitionId);
+	void removeState     (ComponentId stateId);
+	void removeTransition(ComponentId transitionId);
 
-	shared_ptr<FsmState>      getState     (componentId_t stateId)      const;
-	shared_ptr<FsmTransition> getTransition(componentId_t transitionId) const;
+	shared_ptr<FsmState>      getState     (ComponentId stateId)      const;
+	shared_ptr<FsmTransition> getTransition(ComponentId transitionId) const;
 
-	const QList<componentId_t> getAllStatesIds()      const;
-	const QList<componentId_t> getAllTransitionsIds() const;
+	const QList<ComponentId> getAllStatesIds()      const;
+	const QList<ComponentId> getAllTransitionsIds() const;
 
 	///
 	// Components edition functions
 
-	bool renameState(componentId_t stateId, const QString& newName);
+	bool renameState(ComponentId stateId, const QString& newName);
 
-	void redirectTransition(componentId_t transitionId, componentId_t newSourceStateId, componentId_t newTargetStateId);
+	void redirectTransition(ComponentId transitionId, ComponentId newSourceStateId, ComponentId newTargetStateId);
 
 	///
 	// Initial state managemment
 
-	void setInitialState(componentId_t stateId);
-	componentId_t getInitialStateId() const;
+	void setInitialState(ComponentId stateId);
+	ComponentId getInitialStateId() const;
 
 	/////
 	// Object variables
 private:
 	//FSM characteristic
-	componentId_t initialStateId = nullId;
+	ComponentId initialStateId = nullId;
 
 	// Maintain lists of states and transitions to allow fast access
-	QList<componentId_t> states;
-	QList<componentId_t> transitions;
+	QList<ComponentId> states;
+	QList<ComponentId> transitions;
 
 };
 

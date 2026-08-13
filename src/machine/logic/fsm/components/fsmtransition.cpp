@@ -27,40 +27,40 @@
 #include "actiononvariable.h"
 
 
-FsmTransition::FsmTransition(componentId_t sourceStateId, componentId_t targetStateId) :
+FsmTransition::FsmTransition(ComponentId sourceStateId, ComponentId targetStateId) :
 	MachineActuatorComponent()
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;
 }
 
-FsmTransition::FsmTransition(componentId_t id, componentId_t sourceStateId, componentId_t targetStateId) :
+FsmTransition::FsmTransition(ComponentId id, ComponentId sourceStateId, ComponentId targetStateId) :
 	MachineActuatorComponent(id)
 {
 	this->sourceStateId = sourceStateId;
 	this->targetStateId = targetStateId;
 }
 
-void FsmTransition::setSourceStateId(componentId_t sourceStateId)
+void FsmTransition::setSourceStateId(ComponentId sourceStateId)
 {
 	this->sourceStateId = sourceStateId;
 	// Do not emit componentEditedEvent signal as the graphic
 	// transition is recreated by the caller (FsmScene)
 }
 
-componentId_t FsmTransition::getSourceStateId() const
+ComponentId FsmTransition::getSourceStateId() const
 {
 	return this->sourceStateId;
 }
 
-void FsmTransition::setTargetStateId(componentId_t targetStateId)
+void FsmTransition::setTargetStateId(ComponentId targetStateId)
 {
 	this->targetStateId = targetStateId;
 	// Do not emit componentEditedEvent signal as the graphic
 	// transition is recreated by the caller (FsmScene)
 }
 
-componentId_t FsmTransition::getTargetStateId() const
+ComponentId FsmTransition::getTargetStateId() const
 {
 	return this->targetStateId;
 }

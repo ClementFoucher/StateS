@@ -26,7 +26,7 @@
 #include <QWidget>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class InputVariableSelector : public QWidget
@@ -36,7 +36,7 @@ class InputVariableSelector : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit InputVariableSelector(componentId_t variableId, QWidget* parent = nullptr);
+	explicit InputVariableSelector(ComponentId variableId, QWidget* parent = nullptr);
 
 };
 

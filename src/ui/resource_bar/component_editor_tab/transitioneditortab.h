@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include "componenteditortab.h"
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class TransitionEditorTab : public ComponentEditorTab
@@ -36,7 +36,7 @@ class TransitionEditorTab : public ComponentEditorTab
 	/////
 	// Constructors/destructors
 public:
-	explicit TransitionEditorTab(componentId_t transitionId, QWidget* parent = nullptr);
+	explicit TransitionEditorTab(ComponentId transitionId, QWidget* parent = nullptr);
 
 };
 

@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 #include "machinemanager.h"
 class MachineComponentVisualizer;
 
@@ -66,7 +65,7 @@ public:
 	/////
 	// Object functions
 public:
-	void setSelectedItem(componentId_t componentId);
+	void setSelectedItem(ComponentId componentId);
 	void editSelectedItem();
 	void renameSelectedItem();
 

@@ -116,7 +116,7 @@ QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariable::Type_t type, bool is
 // Class object definition
 //
 
-ActionOnVariable::ActionOnVariable(componentId_t variableId, uint actuatorAllowedActions)
+ActionOnVariable::ActionOnVariable(ComponentId variableId, uint actuatorAllowedActions)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -230,7 +230,7 @@ void ActionOnVariable::setActionRange(int newRangeL, int newRangeR)
 	emit this->actionChangedEvent();
 }
 
-componentId_t ActionOnVariable::getVariableActedOnId() const
+ComponentId ActionOnVariable::getVariableActedOnId() const
 {
 	return this->variableId;
 }

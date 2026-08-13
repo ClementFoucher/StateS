@@ -83,7 +83,7 @@ bool SimulatedActionOnVariable::isActionMemorized() const
 	return simulatedVariable->getMemorized();
 }
 
-componentId_t SimulatedActionOnVariable::getVariableId() const
+ComponentId SimulatedActionOnVariable::getVariableId() const
 {
 	return this->variableId;
 }

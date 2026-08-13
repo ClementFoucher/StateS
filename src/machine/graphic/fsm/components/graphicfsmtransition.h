@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,6 @@
 class QAction;
 
 // StateS
-#include "statestypes.h"
 class ActionBox;
 
 
@@ -58,10 +57,10 @@ private:
 public:
 
 	// For persistent build of transition, we already have a logic element to represent
-	explicit GraphicFsmTransition(componentId_t logicComponentId);
+	explicit GraphicFsmTransition(ComponentId logicComponentId);
 
 	// This constructor toggles dynamic mode on target. This is used to display a temporary transition when adding/editing.
-	explicit GraphicFsmTransition(componentId_t sourceStateId, componentId_t targetStateId, const QPointF& dynamicMousePosition);
+	explicit GraphicFsmTransition(ComponentId sourceStateId, ComponentId targetStateId, const QPointF& dynamicMousePosition);
 
 	virtual ~GraphicFsmTransition();
 
@@ -70,8 +69,8 @@ public:
 public:
 	virtual void refreshDisplay() override;
 
-	componentId_t getSourceStateId() const;
-	componentId_t getTargetStateId() const;
+	ComponentId getSourceStateId() const;
+	ComponentId getTargetStateId() const;
 
 	void setConditionLineSliderPosition(qreal position);
 	qreal getConditionLineSliderPosition() const;
@@ -85,7 +84,7 @@ public:
 
 	// Edition related
 	void setUnderEdit(bool edit);
-	void setDynamicState(componentId_t newDynamicStateId);
+	void setDynamicState(ComponentId newDynamicStateId);
 	void setMousePosition(const QPointF& mousePos);
 
 protected:
@@ -125,10 +124,10 @@ private:
 	/////
 	// Signals
 signals:
-	void editTransitionCalledEvent  (componentId_t transitionId);
-	void dynamicSourceCalledEvent   (componentId_t transitionId);
-	void dynamicTargetCalledEvent   (componentId_t transitionId);
-	void deleteTransitionCalledEvent(componentId_t transitionId);
+	void editTransitionCalledEvent  (ComponentId transitionId);
+	void dynamicSourceCalledEvent   (ComponentId transitionId);
+	void dynamicTargetCalledEvent   (ComponentId transitionId);
+	void deleteTransitionCalledEvent(ComponentId transitionId);
 
 	/////
 	// Object variables
@@ -137,15 +136,15 @@ private:
 	QPen* currentConditionPen = nullptr;
 
 	// A FSM graphic transition must always have at least a source (may not have a target when drawing)
-	componentId_t sourceStateId = nullId;
-	componentId_t targetStateId = nullId;
+	ComponentId sourceStateId = nullId;
+	ComponentId targetStateId = nullId;
 
 	// Dynamic mode
 	Mode_t currentMode = Mode_t::errorMode;
 	// This will be used if one of the linked state is missing in dynamic mode
 	QPointF mousePosition;
 	// Dynamic mode holds a temporary state when mouse hovers a state to preview what the result would be if selected
-	componentId_t dynamicStateId = nullId;
+	ComponentId dynamicStateId = nullId;
 	bool isUnderEdit = false;
 
 	// Children items

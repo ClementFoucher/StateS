@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,9 +28,6 @@
 // Qt
 #include <QList>
 
-// StateS
-#include "statestypes.h"
-
 
 class FsmState : public MachineActuatorComponent
 {
@@ -40,7 +37,7 @@ class FsmState : public MachineActuatorComponent
 	// Constructors/destructors
 public:
 	explicit FsmState(const QString& name);
-	explicit FsmState(componentId_t id, const QString& name);
+	explicit FsmState(ComponentId id, const QString& name);
 
 	/////
 	// Object functions
@@ -48,13 +45,13 @@ public:
 	void setName(const QString& value);
 	QString getName() const;
 
-	void addOutgoingTransitionId(componentId_t transitionId);
-	void removeOutgoingTransitionId(componentId_t transitionId);
-	const QList<componentId_t> getOutgoingTransitionsIds() const;
+	void addOutgoingTransitionId(ComponentId transitionId);
+	void removeOutgoingTransitionId(ComponentId transitionId);
+	const QList<ComponentId> getOutgoingTransitionsIds() const;
 
-	void addIncomingTransitionId(componentId_t transitionId);
-	void removeIncomingTransitionId(componentId_t transitionId);
-	const QList<componentId_t> getIncomingTransitionsIds() const;
+	void addIncomingTransitionId(ComponentId transitionId);
+	void removeIncomingTransitionId(ComponentId transitionId);
+	const QList<ComponentId> getIncomingTransitionsIds() const;
 
 	virtual uint getAllowedActionTypes() const override;
 
@@ -68,8 +65,8 @@ private:
 
 	// Linked transitions lists only for quick access,
 	// they are not actual part of the state
-	QList<componentId_t> inputTransitionsIds;
-	QList<componentId_t> outputTransitionsIds;
+	QList<ComponentId> inputTransitionsIds;
+	QList<ComponentId> outputTransitionsIds;
 
 };
 

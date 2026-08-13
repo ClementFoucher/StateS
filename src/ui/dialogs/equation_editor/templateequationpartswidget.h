@@ -29,7 +29,7 @@
 class QVBoxLayout;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class TemplateEquationPartsWidget : public QWidget
@@ -50,7 +50,7 @@ private:
 	QWidget* getConstants()         const;
 	QWidget* getOperators()         const;
 
-	void buildVariableList(QVBoxLayout* layout, QList<componentId_t> variableList) const;
+	void buildVariableList(QVBoxLayout* layout, QList<ComponentId> variableList) const;
 
 };
 

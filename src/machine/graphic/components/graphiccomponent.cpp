@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -54,12 +54,12 @@ const QPen GraphicComponent::selectionShapePen = QPen(QBrush(GraphicComponent::s
 // Class object definition
 //
 
-GraphicComponent::GraphicComponent(componentId_t logicComponentId)
+GraphicComponent::GraphicComponent(ComponentId logicComponentId)
 {
 	this->logicComponentId = logicComponentId;
 }
 
-componentId_t GraphicComponent::getLogicComponentId() const
+ComponentId GraphicComponent::getLogicComponentId() const
 {
 	return this->logicComponentId;
 }

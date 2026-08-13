@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 class SimulatedEquation;
 
 
@@ -41,15 +40,15 @@ class SimulatedFsmTransition : public SimulatedActuatorComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedFsmTransition(componentId_t logicComponentId);
+	explicit SimulatedFsmTransition(ComponentId logicComponentId);
 
 	/////
 	// Object functions
 public:
 	shared_ptr<SimulatedEquation> getCondition();
 
-	componentId_t getSourceStateId() const;
-	componentId_t getTargetStateId() const;
+	ComponentId getSourceStateId() const;
+	ComponentId getTargetStateId() const;
 
 private slots:
 	void conditionChangedEventHandler();
@@ -57,8 +56,8 @@ private slots:
 	/////
 	// Object variable
 private:
-	componentId_t sourceStateId = nullId;
-	componentId_t targetStateId = nullId;
+	ComponentId sourceStateId = nullId;
+	ComponentId targetStateId = nullId;
 
 	shared_ptr<SimulatedEquation> condition;
 

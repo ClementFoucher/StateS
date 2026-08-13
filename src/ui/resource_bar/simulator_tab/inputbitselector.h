@@ -25,9 +25,6 @@
 // Parent
 #include "inputtoggleselector.h"
 
-// StateS
-#include "statestypes.h"
-
 
 class InputBitSelector : public InputToggleSelector
 {
@@ -36,7 +33,7 @@ class InputBitSelector : public InputToggleSelector
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBitSelector(componentId_t variableId, uint bitNumber, QWidget* parent = nullptr);
+	explicit InputBitSelector(ComponentId variableId, uint bitNumber, QWidget* parent = nullptr);
 
 	/////
 	// Object functions

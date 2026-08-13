@@ -64,17 +64,17 @@ void SimulatedFsm::build()
 	}
 }
 
-shared_ptr<SimulatedFsmState> SimulatedFsm::getSimulatedState(componentId_t componentId) const
+shared_ptr<SimulatedFsmState> SimulatedFsm::getSimulatedState(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<SimulatedFsmState>(this->getSimulatedComponent(componentId));
 }
 
-shared_ptr<SimulatedFsmTransition> SimulatedFsm::getSimulatedTransition(componentId_t componentId) const
+shared_ptr<SimulatedFsmTransition> SimulatedFsm::getSimulatedTransition(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<SimulatedFsmTransition>(this->getSimulatedComponent(componentId));
 }
 
-void SimulatedFsm::forceStateActivation(componentId_t stateToActivate)
+void SimulatedFsm::forceStateActivation(ComponentId stateToActivate)
 {
 	// Disable currently active state
 	auto previousActiveState = this->getSimulatedState(this->activeStateId);
@@ -111,12 +111,12 @@ void SimulatedFsm::forceStateActivation(componentId_t stateToActivate)
 	}
 }
 
-componentId_t SimulatedFsm::getInitialStateId() const
+ComponentId SimulatedFsm::getInitialStateId() const
 {
 	return this->initialStateId;
 }
 
-componentId_t SimulatedFsm::getActiveStateId() const
+ComponentId SimulatedFsm::getActiveStateId() const
 {
 	return this->activeStateId;
 }
@@ -161,7 +161,7 @@ void SimulatedFsm::subMachinePrepareStep()
 
 	//
 	// Look for potential transitions
-	QMap<uint, componentId_t> candidateTransitions;
+	QMap<uint, ComponentId> candidateTransitions;
 	for (const auto& transitionId : currentActiveState->getOutgoingTransitionsIds())
 	{
 		auto transition = this->getSimulatedTransition(transitionId);

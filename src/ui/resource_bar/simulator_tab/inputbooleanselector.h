@@ -25,9 +25,6 @@
 // Parent
 #include "inputtoggleselector.h"
 
-// StateS
-#include "statestypes.h"
-
 
 class InputBooleanSelector : public InputToggleSelector
 {
@@ -36,7 +33,7 @@ class InputBooleanSelector : public InputToggleSelector
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBooleanSelector(componentId_t variableId, QWidget* parent = nullptr);
+	explicit InputBooleanSelector(ComponentId variableId, QWidget* parent = nullptr);
 
 	/////
 	// Object functions

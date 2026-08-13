@@ -372,7 +372,7 @@ void EquationPartEditorWidget::replaceByTempValue()
 	{
 	case TempValueNature_t::variable:
 	{
-		auto tempVariableId = std::get<componentId_t>(this->tempValue);
+		auto tempVariableId = std::get<ComponentId>(this->tempValue);
 		if (tempVariableId == nullId) return;
 
 

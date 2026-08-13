@@ -34,7 +34,6 @@ class QPushButton;
 class QLabel;
 
 // StateS
-#include "statestypes.h"
 #include "machinemanager.h"
 #include "machinebuilder.h"
 class GenericScene;
@@ -117,7 +116,7 @@ private:
 	/////
 	// Signals
 signals:
-	void itemSelectedEvent(componentId_t componentId);
+	void itemSelectedEvent(ComponentId componentId);
 	void editSelectedItemEvent();
 	void renameSelectedItemEvent();
 

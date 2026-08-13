@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,6 @@
 #include "QHash"
 
 // StateS
-#include "statestypes.h"
 class GraphicAttributes;
 class GraphicFsmState;
 class GraphicFsmTransition;
@@ -57,38 +56,38 @@ public:
 	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const override;
 	virtual GenericScene* getGraphicScene() const override;
 
-	virtual void removeGraphicComponent(componentId_t id) override;
+	virtual void removeGraphicComponent(ComponentId id) override;
 	virtual void forceRefreshSimulatedDisplay() override;
 
-	GraphicFsmState*      addState     (componentId_t logicStateId,      QPointF position);
-	GraphicFsmTransition* addTransition(componentId_t logicTransitionId, qreal sliderPos);
+	GraphicFsmState*      addState     (ComponentId logicStateId,      QPointF position);
+	GraphicFsmTransition* addTransition(ComponentId logicTransitionId, qreal sliderPos);
 
 	const QList<GraphicFsmState*>      getStates()      const;
 	const QList<GraphicFsmTransition*> getTransitions() const;
 
-	GraphicFsmState*      getState(componentId_t id)      const;
-	GraphicFsmTransition* getTransition(componentId_t id) const;
+	GraphicFsmState*      getState(ComponentId id)      const;
+	GraphicFsmTransition* getTransition(ComponentId id) const;
 
-	GraphicSimulatedFsmState*      getSimulatedState(componentId_t id)      const;
-	GraphicSimulatedFsmTransition* getSimulatedTransition(componentId_t id) const;
+	GraphicSimulatedFsmState*      getSimulatedState(ComponentId id)      const;
+	GraphicSimulatedFsmTransition* getSimulatedTransition(ComponentId id) const;
 
 	// Neighborhood
-	int getTransitionRank(componentId_t transitionId) const;
-	shared_ptr<GraphicFsmTransitionNeighborhood> getTransitionNeighborhood(componentId_t transitionId) const;
+	int getTransitionRank(ComponentId transitionId) const;
+	shared_ptr<GraphicFsmTransitionNeighborhood> getTransitionNeighborhood(ComponentId transitionId) const;
 
 private:
 	void buildStates(shared_ptr<GraphicAttributes> configuration);
 	void buildTransitions(shared_ptr<GraphicAttributes> configuration);
 
-	void addTransitionToNeighborhood(componentId_t transitionId);
-	void removeTransitionFromNeighborhood(componentId_t transitionId);
+	void addTransitionToNeighborhood(ComponentId transitionId);
+	void removeTransitionFromNeighborhood(ComponentId transitionId);
 
 	/////
 	// Object variables
 private:
 	// Neighborhoods are stored for each pair of FsmState
 	// First key is the lowest state ID, second key the other state ID.
-	QHash<componentId_t, QHash<componentId_t, shared_ptr<GraphicFsmTransitionNeighborhood>>> neighborhoods;
+	QHash<ComponentId, QHash<ComponentId, shared_ptr<GraphicFsmTransitionNeighborhood>>> neighborhoods;
 
 };
 

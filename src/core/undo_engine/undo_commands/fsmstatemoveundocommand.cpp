@@ -31,7 +31,7 @@
 /////
 // Constructors/destructors
 
-FsmStateMoveUndoCommand::FsmStateMoveUndoCommand(const QString& description, componentId_t componentId) :
+FsmStateMoveUndoCommand::FsmStateMoveUndoCommand(const QString& description, ComponentId componentId) :
 	StatesUndoCommand(CommandId_t::fsmStateMoveUndoId, description)
 {
 	auto graphicfsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());

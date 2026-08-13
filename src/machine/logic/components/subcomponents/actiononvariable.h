@@ -30,7 +30,7 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 #include "machinevalue.h"
 class Variable;
 
@@ -74,7 +74,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnVariable(componentId_t variableId, uint actuatorAllowedActions);
+	explicit ActionOnVariable(ComponentId variableId, uint actuatorAllowedActions);
 	explicit ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
@@ -86,7 +86,7 @@ public:
 	void setActionValue(MachineValue newValue);
 	void setActionRange(int newRangeL, int newRangeR);
 
-	componentId_t            getVariableActedOnId()  const;
+	ComponentId              getVariableActedOnId()  const;
 	ActionOnVariable::Type_t getActionType()         const;
 	MachineValue             getActionValue()        const;
 	int                      getActionRangeL()       const;
@@ -126,7 +126,7 @@ signals:
 	/////
 	// Object variables
 private:
-	componentId_t variableId = nullId;
+	ComponentId variableId = nullId;
 	uint actuatorAllowedActions = (uint)ActionOnVariable::Type_t::none;
 
 	ActionOnVariable::Type_t actionType;

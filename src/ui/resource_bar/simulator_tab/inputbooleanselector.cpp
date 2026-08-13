@@ -29,7 +29,7 @@
 #include "simulatedvariable.h"
 
 
-InputBooleanSelector::InputBooleanSelector(componentId_t variableId, QWidget* parent) :
+InputBooleanSelector::InputBooleanSelector(ComponentId variableId, QWidget* parent) :
 	InputToggleSelector(variableId, parent)
 {
 	auto variable = this->getVariable();

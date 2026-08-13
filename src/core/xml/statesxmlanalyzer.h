@@ -33,9 +33,6 @@ using namespace std;
 class QXmlStreamReader;
 class QFile;
 
-// StateS
-#include "statestypes.h"
-
 
 class StateSXmlAnalyzer : public QObject
 {

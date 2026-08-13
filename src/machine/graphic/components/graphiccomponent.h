@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 class QAbstractGraphicsShapeItem;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class GraphicComponent : public QGraphicsObject
@@ -60,13 +60,13 @@ private:
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicComponent(componentId_t logicComponentId);
+	explicit GraphicComponent(ComponentId logicComponentId);
 	virtual ~GraphicComponent() = default;
 
 	/////
 	// Object functions
 public:
-	componentId_t getLogicComponentId() const;
+	ComponentId getLogicComponentId() const;
 
 	virtual void refreshDisplay() = 0;
 
@@ -83,7 +83,7 @@ private:
 	/////
 	// Object variables
 private:
-	componentId_t logicComponentId = nullId;
+	ComponentId logicComponentId = nullId;
 
 	QAbstractGraphicsShapeItem* selectionShape = nullptr;
 

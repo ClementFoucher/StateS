@@ -425,7 +425,7 @@ bool VariableTableModel::removeRows(int row, int count, const QModelIndex& paren
 
 
 	// List variables to be removed
-	QList<componentId_t> variablesToRemoveIds;
+	QList<ComponentId> variablesToRemoveIds;
 	for (int rank = row ; rank < row + count ; rank++)
 	{
 		auto variableId = machine->getVariableId(this->editorNature, rank);

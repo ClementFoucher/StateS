@@ -31,7 +31,7 @@
 /////
 // Constructors/destructors
 
-FsmStateRenameUndoCommand::FsmStateRenameUndoCommand(componentId_t componentId, const QString& previousStateName) :
+FsmStateRenameUndoCommand::FsmStateRenameUndoCommand(ComponentId componentId, const QString& previousStateName) :
 	StatesUndoCommand(CommandId_t::fsmStateRenamedUndoId)
 {
 	this->componentId = componentId;

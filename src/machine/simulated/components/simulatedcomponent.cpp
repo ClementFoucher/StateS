@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,12 +23,12 @@
 #include "simulatedcomponent.h"
 
 
-SimulatedComponent::SimulatedComponent(componentId_t componentId)
+SimulatedComponent::SimulatedComponent(ComponentId componentId)
 {
 	this->componentId = componentId;
 }
 
-componentId_t SimulatedComponent::getId() const
+ComponentId SimulatedComponent::getId() const
 {
 	return this->componentId;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -46,7 +46,7 @@ void Fsm::finalizeLoading()
 	}
 }
 
-componentId_t Fsm::addState(const QString& name, componentId_t id)
+ComponentId Fsm::addState(const QString& name, ComponentId id)
 {
 	// Clean name
 	QString cleanedName = name;
@@ -68,7 +68,7 @@ componentId_t Fsm::addState(const QString& name, componentId_t id)
 
 	// Build state
 	shared_ptr<FsmState> state = nullptr;
-	componentId_t stateId;
+	ComponentId stateId;
 	if (id != nullId)
 	{
 		state = make_shared<FsmState>(id, cleanedName);
@@ -86,7 +86,7 @@ componentId_t Fsm::addState(const QString& name, componentId_t id)
 	return stateId;
 }
 
-componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targetStateId, componentId_t id)
+ComponentId Fsm::addTransition(ComponentId sourceStateId, ComponentId targetStateId, ComponentId id)
 {
 	auto source = this->getState(sourceStateId);
 	auto target = this->getState(targetStateId);
@@ -95,7 +95,7 @@ componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targ
 
 
 	shared_ptr<FsmTransition> transition;
-	componentId_t transitionId;
+	ComponentId transitionId;
 
 	if (id != nullId)
 	{
@@ -117,7 +117,7 @@ componentId_t Fsm::addTransition(componentId_t sourceStateId, componentId_t targ
 	return transitionId;
 }
 
-void Fsm::removeState(componentId_t stateId)
+void Fsm::removeState(ComponentId stateId)
 {
 	auto state = this->getState(stateId);
 	if (state == nullptr) return;
@@ -137,7 +137,7 @@ void Fsm::removeState(componentId_t stateId)
 	this->removeComponent(stateId);
 }
 
-void Fsm::removeTransition(componentId_t transitionId)
+void Fsm::removeTransition(ComponentId transitionId)
 {
 	auto transition = this->getTransition(transitionId);
 	if (transition == nullptr) return;
@@ -154,27 +154,27 @@ void Fsm::removeTransition(componentId_t transitionId)
 	this->removeComponent(transitionId);
 }
 
-shared_ptr<FsmState> Fsm::getState(componentId_t stateId) const
+shared_ptr<FsmState> Fsm::getState(ComponentId stateId) const
 {
 	return dynamic_pointer_cast<FsmState>(this->getComponent(stateId));
 }
 
-shared_ptr<FsmTransition> Fsm::getTransition(componentId_t transitionId) const
+shared_ptr<FsmTransition> Fsm::getTransition(ComponentId transitionId) const
 {
 	return dynamic_pointer_cast<FsmTransition>(this->getComponent(transitionId));
 }
 
-const QList<componentId_t> Fsm::getAllStatesIds() const
+const QList<ComponentId> Fsm::getAllStatesIds() const
 {
 	return this->states;
 }
 
-const QList<componentId_t> Fsm::getAllTransitionsIds() const
+const QList<ComponentId> Fsm::getAllTransitionsIds() const
 {
 	return this->transitions;
 }
 
-bool Fsm::renameState(componentId_t stateId, const QString& newName)
+bool Fsm::renameState(ComponentId stateId, const QString& newName)
 {
 	auto state = this->getState(stateId);
 	if (state == nullptr) return false;
@@ -206,17 +206,17 @@ bool Fsm::renameState(componentId_t stateId, const QString& newName)
 	return true;
 }
 
-void Fsm::redirectTransition(componentId_t transitionId, componentId_t newSourceStateId, componentId_t newTargetStateId)
+void Fsm::redirectTransition(ComponentId transitionId, ComponentId newSourceStateId, ComponentId newTargetStateId)
 {
 	auto transition     = this->getTransition(transitionId);
 	auto newSourceState = this->getState(newSourceStateId);
 	auto newTargetState = this->getState(newTargetStateId);
 	if ( (transition == nullptr) || (newSourceState == nullptr) || (newTargetState == nullptr) ) return;
 
-	componentId_t oldSourceStateId = transition->getSourceStateId();
+	auto oldSourceStateId = transition->getSourceStateId();
 	if (newSourceStateId != oldSourceStateId)
 	{
-		shared_ptr<FsmState> oldSourceState = this->getState(oldSourceStateId);
+		auto oldSourceState = this->getState(oldSourceStateId);
 		if (oldSourceState != nullptr)
 		{
 			oldSourceState->removeOutgoingTransitionId(transition->getId());
@@ -226,10 +226,10 @@ void Fsm::redirectTransition(componentId_t transitionId, componentId_t newSource
 		newSourceState->addOutgoingTransitionId(transition->getId());
 	}
 
-	componentId_t oldTargetStateId = transition->getTargetStateId();
+	auto oldTargetStateId = transition->getTargetStateId();
 	if (newTargetStateId != oldTargetStateId)
 	{
-		shared_ptr<FsmState> oldTargetState = this->getState(oldTargetStateId);
+		auto oldTargetState = this->getState(oldTargetStateId);
 		if (oldTargetState != nullptr)
 		{
 			oldTargetState->removeIncomingTransitionId(transition->getId());
@@ -240,12 +240,12 @@ void Fsm::redirectTransition(componentId_t transitionId, componentId_t newSource
 	}
 }
 
-void Fsm::setInitialState(componentId_t stateId)
+void Fsm::setInitialState(ComponentId stateId)
 {
 	if (stateId == this->initialStateId) return;
 
-	shared_ptr<FsmState> previousInitialState = this->getState(this->initialStateId);
-	shared_ptr<FsmState> newInitialState      = this->getState(stateId);
+	auto previousInitialState = this->getState(this->initialStateId);
+	auto newInitialState      = this->getState(stateId);
 
 	this->initialStateId = stateId;
 
@@ -259,7 +259,7 @@ void Fsm::setInitialState(componentId_t stateId)
 	}
 }
 
-componentId_t Fsm::getInitialStateId() const
+ComponentId Fsm::getInitialStateId() const
 {
 	return this->initialStateId;
 }

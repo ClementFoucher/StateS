@@ -258,7 +258,7 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	return operatorsWidget;
 }
 
-void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<componentId_t> variableList) const
+void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<ComponentId> variableList) const
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;

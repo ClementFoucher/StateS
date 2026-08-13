@@ -29,7 +29,7 @@
 #include "simulatedvariable.h"
 
 
-InputBitSelector::InputBitSelector(componentId_t variableId, uint bitNumber, QWidget* parent) :
+InputBitSelector::InputBitSelector(ComponentId variableId, uint bitNumber, QWidget* parent) :
 	InputToggleSelector(variableId, parent)
 {
 	auto variable = this->getVariable();

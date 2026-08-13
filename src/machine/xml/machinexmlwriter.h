@@ -75,7 +75,7 @@ private:
 
 	void writeUiConfiguration();
 	void writeMachineVariables();
-	void writeMachineVariable(Machine::VariableNature_t nature, componentId_t variableId);
+	void writeMachineVariable(Machine::VariableNature_t nature, ComponentId variableId);
 
 	/////
 	// Object variables

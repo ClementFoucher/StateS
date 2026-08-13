@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include "componenteditortab.h"
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class SelfManagedDynamicLineEditor;
 
 
@@ -37,7 +37,7 @@ class StateEditorTab : public ComponentEditorTab
 	/////
 	// Constructors/destructors
 public:
-	explicit StateEditorTab(componentId_t stateId, QWidget* parent = nullptr);
+	explicit StateEditorTab(ComponentId stateId, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -54,7 +54,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	componentId_t stateId = nullId;
+	ComponentId stateId = nullId;
 
 	SelfManagedDynamicLineEditor* textStateName = nullptr;
 

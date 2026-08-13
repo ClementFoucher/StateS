@@ -46,12 +46,12 @@ shared_ptr<Equation> EquationPartMimeData::getEquation() const
 	return std::get<shared_ptr<Equation>>(this->content);
 }
 
-componentId_t EquationPartMimeData::getVariableId() const
+ComponentId EquationPartMimeData::getVariableId() const
 {
 	if (this->contentType != ContentType_t::variable) return nullId;
 
 
-	return std::get<componentId_t>(this->content);
+	return std::get<ComponentId>(this->content);
 }
 
 MachineValue EquationPartMimeData::getConstant() const

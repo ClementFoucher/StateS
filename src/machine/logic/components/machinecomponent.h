@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QObject>
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class MachineComponent : public QObject
@@ -36,28 +36,28 @@ class MachineComponent : public QObject
 	/////
 	// Static functions
 private:
-	static componentId_t getUniqueId();
+	static ComponentId getUniqueId();
 
 	/////
 	// Constructors/destructors
 public:
 	explicit MachineComponent();
-	explicit MachineComponent(componentId_t id);
+	explicit MachineComponent(ComponentId id);
 	~MachineComponent();
 
 	/////
 	// Object functions
 public:
-	componentId_t getId() const;
+	ComponentId getId() const;
 
 signals:
-	void componentEditedEvent(componentId_t componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
-	void componentDeletedEvent(componentId_t componentId);
+	void componentEditedEvent(ComponentId componentId); // Triggered when logic object has been edited in a way that requires a graphic redraw
+	void componentDeletedEvent(ComponentId componentId);
 
 	/////
 	// Object variables
 protected:
-	componentId_t id;
+	ComponentId id;
 
 };
 

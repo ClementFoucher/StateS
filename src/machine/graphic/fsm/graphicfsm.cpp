@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023-2025 Clément Foucher
+ * Copyright © 2023-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -99,7 +99,7 @@ GenericScene* GraphicFsm::getGraphicScene() const
 	return new FsmScene();
 }
 
-void GraphicFsm::removeGraphicComponent(componentId_t id)
+void GraphicFsm::removeGraphicComponent(ComponentId id)
 {
 	auto transition = this->getTransition(id);
 
@@ -131,7 +131,7 @@ void GraphicFsm::forceRefreshSimulatedDisplay()
 	}
 }
 
-GraphicFsmState* GraphicFsm::addState(componentId_t logicStateId, QPointF position)
+GraphicFsmState* GraphicFsm::addState(ComponentId logicStateId, QPointF position)
 {
 	GraphicFsmState* graphicState = new GraphicFsmState(logicStateId);
 	graphicState->setPos(position);
@@ -141,7 +141,7 @@ GraphicFsmState* GraphicFsm::addState(componentId_t logicStateId, QPointF positi
 	return graphicState;
 }
 
-GraphicFsmTransition* GraphicFsm::addTransition(componentId_t logicTransitionId, qreal sliderPos)
+GraphicFsmTransition* GraphicFsm::addTransition(ComponentId logicTransitionId, qreal sliderPos)
 {
 	GraphicFsmTransition* graphicTransition = new GraphicFsmTransition(logicTransitionId);
 	graphicTransition->setConditionLineSliderPosition(sliderPos);
@@ -178,31 +178,31 @@ const QList<GraphicFsmTransition*> GraphicFsm::getTransitions() const
 	return transitionsList;
 }
 
-GraphicFsmState* GraphicFsm::getState(componentId_t id) const
+GraphicFsmState* GraphicFsm::getState(ComponentId id) const
 {
 	auto state = this->getGraphicComponent(id);
 	return dynamic_cast<GraphicFsmState*>(state);
 }
 
-GraphicFsmTransition* GraphicFsm::getTransition(componentId_t id) const
+GraphicFsmTransition* GraphicFsm::getTransition(ComponentId id) const
 {
 	auto transition = this->getGraphicComponent(id);
 	return dynamic_cast<GraphicFsmTransition*>(transition);
 }
 
-GraphicSimulatedFsmState* GraphicFsm::getSimulatedState(componentId_t id) const
+GraphicSimulatedFsmState* GraphicFsm::getSimulatedState(ComponentId id) const
 {
 	auto state = this->getSimulatedGraphicComponent(id);
 	return dynamic_cast<GraphicSimulatedFsmState*>(state);
 }
 
-GraphicSimulatedFsmTransition* GraphicFsm::getSimulatedTransition(componentId_t id) const
+GraphicSimulatedFsmTransition* GraphicFsm::getSimulatedTransition(ComponentId id) const
 {
 	auto transition = this->getSimulatedGraphicComponent(id);
 	return dynamic_cast<GraphicSimulatedFsmTransition*>(transition);
 }
 
-int GraphicFsm::getTransitionRank(componentId_t transitionId) const
+int GraphicFsm::getTransitionRank(ComponentId transitionId) const
 {
 	auto graphicTransition = this->getTransition(transitionId);
 	if (graphicTransition == nullptr) return 0;
@@ -231,7 +231,7 @@ int GraphicFsm::getTransitionRank(componentId_t transitionId) const
 	return rank;
 }
 
-shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(componentId_t transitionId) const
+shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(ComponentId transitionId) const
 {
 	auto graphicTransition = this->getTransition(transitionId);
 	if (graphicTransition == nullptr) return nullptr;
@@ -319,7 +319,7 @@ void GraphicFsm::buildTransitions(shared_ptr<GraphicAttributes> configuration)
 	}
 }
 
-void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
+void GraphicFsm::addTransitionToNeighborhood(ComponentId transitionId)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -396,7 +396,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 
 			if (this->neighborhoods.contains(stateId1) == false)
 			{
-				this->neighborhoods[stateId1] = QHash<componentId_t, shared_ptr<GraphicFsmTransitionNeighborhood>>();
+				this->neighborhoods[stateId1] = QHash<ComponentId, shared_ptr<GraphicFsmTransitionNeighborhood>>();
 			}
 			this->neighborhoods[stateId1][stateId2] = neighborhood;
 
@@ -419,7 +419,7 @@ void GraphicFsm::addTransitionToNeighborhood(componentId_t transitionId)
 	}
 }
 
-void GraphicFsm::removeTransitionFromNeighborhood(componentId_t transitionId)
+void GraphicFsm::removeTransitionFromNeighborhood(ComponentId transitionId)
 {
 	auto graphicTransition = this->getTransition(transitionId);
 

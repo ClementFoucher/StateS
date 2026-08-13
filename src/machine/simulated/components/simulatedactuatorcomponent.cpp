@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 #include "simulatedactiononvariable.h"
 
 
-SimulatedActuatorComponent::SimulatedActuatorComponent(componentId_t componentId) :
+SimulatedActuatorComponent::SimulatedActuatorComponent(ComponentId componentId) :
 	SimulatedComponent(componentId)
 {
 	auto machine = machineManager->getMachine();

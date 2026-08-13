@@ -36,7 +36,7 @@
 #include "rangeeditor.h"
 
 
-RangeEditorDialog::RangeEditorDialog(componentId_t variableId, int rangeL, int rangeR, QWidget* parent) :
+RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int rangeR, QWidget* parent) :
 	StatesDialog(parent)
 {
 	auto machine = machineManager->getMachine();

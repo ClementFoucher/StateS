@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -26,7 +26,7 @@
 #include "statesundocommand.h"
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 
 
 class FsmTransitionConditionSliderPositionChangeUndoCommand : public StatesUndoCommand
@@ -36,7 +36,7 @@ class FsmTransitionConditionSliderPositionChangeUndoCommand : public StatesUndoC
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmTransitionConditionSliderPositionChangeUndoCommand(componentId_t componentId);
+	explicit FsmTransitionConditionSliderPositionChangeUndoCommand(ComponentId componentId);
 
 	/////
 	// Object functions
@@ -49,7 +49,7 @@ public:
 	/////
 	// Object variables
 private:
-	componentId_t componentId = nullId;
+	ComponentId componentId = nullId;
 
 	qreal previousSliderPosition;
 	qreal nextTransitionSliderPosition;

@@ -1,6 +1,6 @@
 set(core_header_files
+    "componentid.h"
     "states.h"
-    "statestypes.h"
     "exceptions/statesexception.h"
     "machine_manager/machinebuilder.h"
     "machine_manager/machinemanager.h"

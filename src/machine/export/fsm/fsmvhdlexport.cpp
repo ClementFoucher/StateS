@@ -194,7 +194,7 @@ void FsmVhdlExport::generateVhdlCharacteristics()
 	}
 }
 
-FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWrittableVariableCharacteristics(componentId_t variableId, bool storeResults)
+FsmVhdlExport::WrittableVariableCharacteristics_t FsmVhdlExport::determineWrittableVariableCharacteristics(ComponentId variableId, bool storeResults)
 {
 	WrittableVariableCharacteristics_t characteristics;
 

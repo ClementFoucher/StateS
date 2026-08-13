@@ -30,7 +30,6 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
 #include "machinemanager.h"
 class ResourceBar;
 class DisplayArea;
@@ -91,7 +90,7 @@ private slots:
 	void undo();
 	void redo();
 
-	void itemSelectedInSceneEventHandler(componentId_t componentId);
+	void itemSelectedInSceneEventHandler(ComponentId componentId);
 	void editSelectedItem();
 	void renameSelectedItem();
 

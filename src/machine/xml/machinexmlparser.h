@@ -35,7 +35,7 @@ class QFile;
 class QXmlStreamReader;
 
 // StateS
-#include "statestypes.h"
+#include "componentid.h"
 class Machine;
 class ViewConfiguration;
 class GraphicAttributes;
@@ -121,11 +121,11 @@ protected:
 	int getCurrentNodeIntAttribute(const QString& name, bool* ok) const;
 	float getCurrentNodeFloatAttribute(const QString& name, bool* ok) const;
 	bool getCurrentNodeBoolAttribute(const QString& name) const;
-	componentId_t getCurrentNodeIdAttribute() const;
+	ComponentId getCurrentNodeIdAttribute() const;
 
 	shared_ptr<Equation> getCurrentEquation();
 
-	void addGraphicAttribute(uint componentId, QString name, QString value);
+	void addGraphicAttribute(ComponentId componentId, QString name, QString value);
 
 	void addIssue(const QString& warning);
 
@@ -146,7 +146,7 @@ private:
 protected:
 	shared_ptr<Machine> machine;
 
-	componentId_t currentComponentId;
+	ComponentId currentComponentId;
 
 private:
 	shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed
