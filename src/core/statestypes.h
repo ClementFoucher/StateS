@@ -41,7 +41,6 @@ const componentId_t nullId = 0;
 /////
 // Enums
 
-enum class MouseCursor_t                 { none, state, transition };
 enum class MachineBuilderTool_t          { none, initialState, state, transition };
 enum class MachineBuilderSingleUseTool_t { none, drawTransitionFromScene, editTransitionSource, editTransitionTarget };
 enum class SimulationBehavior_t          { prepare, immediately, after };

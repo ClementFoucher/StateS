@@ -169,7 +169,7 @@ void SceneWidget::mouseMoveEvent(QMouseEvent* me)
 
 	bool transmitEvent = true;
 
-	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
+	if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::movingScene)) != 0)
 	{
 		QScrollBar* hBar = horizontalScrollBar();
 		QScrollBar* vBar = verticalScrollBar();
@@ -199,7 +199,7 @@ void SceneWidget::mouseReleaseEvent(QMouseEvent* me)
 
 	bool transmitEvent = true;
 
-	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
+	if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::movingScene)) != 0)
 	{
 		this->updateSceneAction(SceneAction_t::movingScene, false);
 		transmitEvent = false;
@@ -222,7 +222,7 @@ void SceneWidget::mouseDoubleClickEvent(QMouseEvent* me)
 
 	bool transmitEvent = true;
 
-	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
+	if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::movingScene)) != 0)
 	{
 		transmitEvent = false;
 	}
@@ -489,19 +489,19 @@ void SceneWidget::updateSceneAction(SceneAction_t action, bool enable)
 	// Update action
 	if (action == SceneAction_t::idle)
 	{
-		this->currentAction = SceneAction_t::idle;
+		this->currentAction = static_cast<uint32_t>(SceneAction_t::idle);
 	}
 	else if (enable == true)
 	{
-		this->currentAction |= action;
+		this->currentAction |= static_cast<uint32_t>(action);
 	}
 	else
 	{
-		this->currentAction &= ~action;
+		this->currentAction &= ~static_cast<uint32_t>(action);
 	}
 
 	// Temporary zoom buttons visibility
-	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
+	if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::movingScene)) != 0)
 	{
 		this->setZoomPanelVisible(false);
 	}
@@ -518,12 +518,12 @@ void SceneWidget::updateSceneAction(SceneAction_t action, bool enable)
 	}
 
 	// Temporary drag mode
-	if ( (this->currentAction & SceneAction_t::movingScene) != 0)
+	if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::movingScene)) != 0)
 	{
 		// Just for mouse icon, not using its properties as it requires left mouse button pressed to work
 		this->setDragMode(QGraphicsView::ScrollHandDrag);
 	}
-	else if ( (this->currentAction & SceneAction_t::usingTool) != 0)
+	else if ( (this->currentAction & static_cast<uint32_t>(SceneAction_t::usingTool)) != 0)
 	{
 		this->setDragMode(QGraphicsView::NoDrag);
 	}

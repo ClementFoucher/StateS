@@ -55,8 +55,10 @@ class SceneWidget : public StatesGraphicsView
 	/////
 	// Type declarations
 private:
-	enum class SceneMode_t { noScene, editing, viewing };
-	typedef enum : uint32_t { idle = 0, movingScene = 1, usingTool = 2} SceneAction_t;
+	enum class SceneMode_t   { noScene, editing, viewing };
+	enum class MouseCursor_t { none, state, transition };
+
+	enum class SceneAction_t : uint32_t { idle = 0, movingScene = 1, usingTool = 2};
 
 	/////
 	// Static variables
@@ -131,7 +133,7 @@ private:
 
 	// Current state
 	SceneMode_t   sceneMode     = SceneMode_t::noScene;
-	uint32_t      currentAction = SceneAction_t::idle;
+	uint32_t      currentAction = static_cast<uint32_t>(SceneAction_t::idle);
 	MouseCursor_t currentCursor = MouseCursor_t::none;
 
 	// Temporary state
