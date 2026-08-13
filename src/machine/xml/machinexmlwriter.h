@@ -45,9 +45,14 @@ class MachineXmlWriter : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class WriteMode_t { writeToFile, writeToUndo };
+
+	/////
 	// Constructors/destructors
 protected:
-	explicit MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration);
+	explicit MachineXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration);
 
 	/////
 	// Object functions
@@ -80,7 +85,7 @@ protected:
 	shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;
 
-	MachineXmlWriterMode_t mode;
+	WriteMode_t mode;
 
 private:
 	shared_ptr<QFile> file;

@@ -42,7 +42,7 @@
 #include "exceptiontypes.h"
 
 
-MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
+MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
 {
 	this->mode = mode;
 	this->viewConfiguration = viewConfiguration;
@@ -68,7 +68,7 @@ void MachineXmlWriter::writeMachineToStream()
 	if (machine == nullptr) return;
 
 
-	if (this->mode == MachineXmlWriterMode_t::writeToFile)
+	if (this->mode == WriteMode_t::writeToFile)
 	{
 		this->stream->writeStartElement("StateS");
 		this->stream->writeAttribute("Version", StateS::getVersion());
@@ -85,7 +85,7 @@ void MachineXmlWriter::writeMachineToStream()
 
 	this->stream->writeEndElement(); // End Machine tag
 
-	if (this->mode == MachineXmlWriterMode_t::writeToFile)
+	if (this->mode == WriteMode_t::writeToFile)
 	{
 		this->stream->writeEndElement(); // End StateS tag
 	}
@@ -439,7 +439,7 @@ void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, co
 	}
 
 	// Id
-	if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+	if (this->mode == WriteMode_t::writeToUndo)
 	{
 		this->stream->writeAttribute("Id", QString::number(variableId));
 	}

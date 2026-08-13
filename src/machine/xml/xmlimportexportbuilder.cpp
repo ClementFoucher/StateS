@@ -45,7 +45,7 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRe
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriterMode_t::writeToUndo);
+		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToUndo);
 	}
 
 	return machineWriter;
@@ -66,7 +66,7 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFi
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriterMode_t::writeToFile, viewConfiguration);
+		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToFile, viewConfiguration);
 	}
 
 	return machineWriter;

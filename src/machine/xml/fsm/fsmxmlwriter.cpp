@@ -35,12 +35,6 @@
 #include "graphicattributes.h"
 
 
-FsmXmlWriter::FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration) :
-	MachineXmlWriter(mode, viewConfiguration)
-{
-
-}
-
 void FsmXmlWriter::writeSubmachineToStream()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
@@ -83,7 +77,7 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 		QString x = fsmGraphicAttributes->getAttribute(stateId, "X");
 		QString y = fsmGraphicAttributes->getAttribute(stateId, "Y");
 
-		if ( (this->mode == MachineXmlWriterMode_t::writeToFile) && (this->viewConfiguration != nullptr) ) // Full save to file
+		if ( (this->mode == WriteMode_t::writeToFile) && (this->viewConfiguration != nullptr) ) // Full save to file
 		{
 			// Position => offseted so that scene top-left corner is in (0,0)
 			this->stream->writeAttribute("X", QString::number(x.toDouble() + this->viewConfiguration->sceneTranslation.x()));
@@ -96,7 +90,7 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 			this->stream->writeAttribute("Y", y);
 		}
 
-		if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+		if (this->mode == WriteMode_t::writeToUndo)
 		{
 			this->stream->writeAttribute("Id", QString::number(stateId));
 		}
@@ -132,7 +126,7 @@ void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAt
 			this->stream->writeAttribute("SliderPos", sliderPosition);
 		}
 
-		if (this->mode == MachineXmlWriterMode_t::writeToUndo)
+		if (this->mode == WriteMode_t::writeToUndo)
 		{
 			this->stream->writeAttribute("Id", QString::number(transitionId));
 		}

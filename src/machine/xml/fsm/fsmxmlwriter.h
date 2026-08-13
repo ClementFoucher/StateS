@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,7 +42,7 @@ class FsmXmlWriter : public MachineXmlWriter
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration = nullptr);
+	explicit FsmXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration = nullptr) : MachineXmlWriter(mode, viewConfiguration) {}
 
 	/////
 	// Object functions
