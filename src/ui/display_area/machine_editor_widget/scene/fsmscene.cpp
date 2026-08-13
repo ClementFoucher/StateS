@@ -854,7 +854,8 @@ void FsmScene::handleSelection()
 	if (fsm == nullptr) return;
 
 
-	for (const auto& item : this->selectedItems())
+	const auto selectedItems = this->selectedItems();
+	for (auto item : selectedItems)
 	{
 		auto graphicState = dynamic_cast<const GraphicFsmState*>(item);
 		if (graphicState == nullptr) continue;

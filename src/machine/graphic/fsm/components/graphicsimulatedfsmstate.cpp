@@ -83,7 +83,7 @@ void GraphicSimulatedFsmState::keyPressEvent(QKeyEvent* event)
 	{
 		QGraphicsSceneContextMenuEvent* contextEvent = new QGraphicsSceneContextMenuEvent(QEvent::KeyPress);
 
-		QGraphicsView* view = scene()->views()[0];
+		QGraphicsView* view = scene()->views().at(0);
 
 		QPoint posOnParent = view->mapFromScene(this->scenePos());
 
