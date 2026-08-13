@@ -48,7 +48,7 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource)
 	this->parse();
 }
 
-MachineType_t StateSXmlAnalyzer::getMachineType() const
+StateSXmlAnalyzer::MachineType_t StateSXmlAnalyzer::getMachineType() const
 {
 	return this->type;
 }

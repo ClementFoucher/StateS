@@ -84,7 +84,7 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
 
 	StateSXmlAnalyzer analyzer{xmlString};
 
-	if (analyzer.getMachineType() == MachineType_t::fsm)
+	if (analyzer.getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
 	{
 		machineParser = make_shared<FsmXmlParser>(xmlString);
 	}
@@ -105,7 +105,7 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<
 
 	shared_ptr<MachineXmlParser> machineParser;
 
-	if (analyzer->getMachineType() == MachineType_t::fsm)
+	if (analyzer->getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
 	{
 		machineParser = make_shared<FsmXmlParser>(file);
 	}

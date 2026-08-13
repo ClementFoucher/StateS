@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -40,6 +40,11 @@ class QFile;
 class StateSXmlAnalyzer : public QObject
 {
 	Q_OBJECT
+
+	/////
+	// Type declarations
+public:
+	enum class MachineType_t { none, fsm };
 
 	/////
 	// Type declarations
