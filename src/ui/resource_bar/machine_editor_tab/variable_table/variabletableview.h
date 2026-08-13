@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,10 +48,10 @@ private:
 		resizeBitVector = 6
 	};
 
-	enum class ColumnRole
+	enum class ColumnRole_t
 	{
 		name,
-		size,
+		type,
 		memorized,
 		value
 	};
@@ -74,6 +74,7 @@ protected:
 
 private slots:
 	void processMenuEventHandler(QAction* action);
+	void refreshPersistentEditorsEventHandler();
 
 private:
 	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
@@ -83,7 +84,7 @@ private:
 	// Object variables
 private:
 	VariableTableModel* tableModel = nullptr;
-	QMap<ColumnRole, int> columnsRoles;
+	QMap<ColumnRole_t, int> columnsRoles;
 	int currentMenuRow = 0;
 
 };

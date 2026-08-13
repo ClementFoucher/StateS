@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,7 +36,7 @@
 RangeEditor::RangeEditor(shared_ptr<Equation> equation, QWidget* parent) :
 	QWidget(parent)
 {
-	if (equation->getOperatorType() != OperatorType_t::extractOp) return;
+	if (equation->getOperator() != Equation::Operator_t::extractOp) return;
 
 
 	this->equation = equation;
@@ -59,18 +59,20 @@ bool RangeEditor::setMode(Mode_t newMode, bool saveChanges)
 	if (this->mode == newMode) return false;
 
 
+	auto operand = this->equation->getOperand(0);
+
 	if (newMode == Mode_t::editor_mode)
 	{
-		// The operand CAN be null:
+		// The operand can be null or of invalid type:
 		// do not allow triggering editor mode in that case.
-		if (this->equation->getOperand(0) != nullptr)
+		if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
 		{
 			emit this->beginEditEvent();
 
 			this->mode = Mode_t::editor_mode;
 		}
 	}
-	else  // (newMode == Mode_t::compact_mode)
+	else // (newMode == Mode_t::compact_mode)
 	{
 		if (saveChanges == true)
 		{
@@ -90,12 +92,11 @@ bool RangeEditor::setMode(Mode_t newMode, bool saveChanges)
 			// Make sure range values are acceptable
 			bool valueAccepted = true;
 
-			auto operand = this->equation->getOperand(0);
-			// If operand is null, just accept any value
-			// as equation is invalid any way.
-			if (operand != nullptr)
+			// If operand is null or of invalid type, just accept any value
+			// as equation is invalid anyway.
+			if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
 			{
-				auto value = operand->getInitialValue();
+				auto value = operand->getInitialValue().getBitVectorValue();
 				int operandSize = value.getSize();
 
 				if (rangeL <= rangeR)      valueAccepted = false;
@@ -190,8 +191,10 @@ void RangeEditor::wheelEvent(QWheelEvent* event)
 	auto operand = this->equation->getOperand(0);
 	if (operand == nullptr) return;
 
+	if (operand->getType() != MachineValue::Type_t::bitVector) return;
 
-	auto value = operand->getInitialValue();
+
+	auto value = operand->getInitialValue().getBitVectorValue();
 	int vectorSize = value.getSize();
 
 	int upperLBound = vectorSize-1;
@@ -368,9 +371,9 @@ void RangeEditor::build()
 		}
 
 		auto operand = this->equation->getOperand(0);
-		if (operand != nullptr)
+		if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
 		{
-			auto value = operand->getInitialValue();
+			auto value = operand->getInitialValue().getBitVectorValue();
 			int variableSize = value.getSize();
 
 			if (currentRangeR != -1)

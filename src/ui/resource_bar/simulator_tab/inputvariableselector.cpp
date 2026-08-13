@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -28,32 +28,51 @@
 
 // StateS
 #include "machinemanager.h"
-#include "machine.h"
-#include "variable.h"
+#include "simulatedmachine.h"
+#include "simulatedvariable.h"
 #include "inputbitselector.h"
+#include "inputbooleanselector.h"
 
 
-InputVariableSelector::InputVariableSelector(componentId_t relatedVariableId, QWidget *parent) :
+InputVariableSelector::InputVariableSelector(componentId_t variableId, QWidget *parent) :
 	QWidget(parent)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
-	auto relatedVariable = machine->getVariable(relatedVariableId);
-	if (relatedVariable == nullptr) return;
+	auto simulatedVariable = simulatedMachine->getSimulatedVariable(variableId);
+	if (simulatedVariable == nullptr) return;
 
 
-	QHBoxLayout* globalLayout = new QHBoxLayout(this);
+	auto globalLayout = new QHBoxLayout(this);
 
-	QLabel* variableName = new QLabel(relatedVariable->getName(), this);
+	auto variableName = new QLabel(simulatedVariable->getName());
 	globalLayout->addWidget(variableName);
 
-	QHBoxLayout* bitLayout = new QHBoxLayout();
-	globalLayout->addLayout(bitLayout, 0);
+	globalLayout->addStretch();
 
-	for (int i = (int)relatedVariable->getSize()-1 ; i >= 0 ; i--)
+	switch (simulatedVariable->getType())
 	{
-		InputBitSelector* currentBit = new InputBitSelector(relatedVariableId, i, this);
-		bitLayout->addWidget(currentBit, 0, Qt::AlignRight);
+	case MachineValue::Type_t::bitVector:
+	{
+		auto bitLayout = new QHBoxLayout();
+		globalLayout->addLayout(bitLayout);
+
+		uint bitVectorSize = simulatedVariable->getCurrentValue().getBitVectorValue().getSize();
+		for (int bitIndex = static_cast<int>(bitVectorSize)-1 ; bitIndex >= 0 ; bitIndex--)
+		{
+			auto currentBit = new InputBitSelector(variableId, bitIndex);
+			bitLayout->addWidget(currentBit);
+		}
+		break;
+	}
+	case MachineValue::Type_t::boolean:
+	{
+		auto booleanSelector = new InputBooleanSelector(variableId);
+		globalLayout->addWidget(booleanSelector);
+		break;
+	}
+	case MachineValue::Type_t::nullType:
+		break;
 	}
 }

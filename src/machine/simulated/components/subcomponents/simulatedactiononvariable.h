@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,8 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
-#include "logicvalue.h"
-class ActionOnVariable;
+#include "machinevalue.h"
+#include "actiononvariable.h"
 
 
 class SimulatedActionOnVariable : public QObject
@@ -54,15 +53,15 @@ public:
 	componentId_t getVariableId() const;
 
 private:
-	LogicValue getActionValue() const;
+	MachineValue getActionValue() const;
 
 	/////
 	// Object variables
 private:
 	componentId_t variableId = nullId;
 
-	ActionOnVariableType_t actionType;
-	LogicValue actionValue;
+	ActionOnVariable::Type_t actionType;
+	MachineValue actionValue;
 	int rangeL = -1;
 	int rangeR = -1;
 

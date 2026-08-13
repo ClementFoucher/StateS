@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -357,11 +357,24 @@ void FsmVhdlExport::writeEntity(QTextStream& stream) const
 
 		stream << this->variableVhdlName[inputId] << " : in std_logic";
 
-		if (input->getSize() > 1)
+		uint variableSize = 0;
+		switch (input->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			variableSize = 1;
+			break;
+		case MachineValue::Type_t::bitVector:
+			variableSize = input->getInitialValue().getBitVectorValue().getSize();
+			break;
+		case MachineValue::Type_t::nullType:
+			break;
+		}
+
+		if (variableSize > 1)
 		{
 			stream << "_vector(";
 
-			stream << QString::number(input->getSize() - 1) << " downto 0)";
+			stream << QString::number(variableSize - 1) << " downto 0)";
 		}
 
 		stream << ";\n       ";
@@ -376,11 +389,24 @@ void FsmVhdlExport::writeEntity(QTextStream& stream) const
 
 		stream << this->variableVhdlName[outputId] << " : out std_logic";
 
-		if (output->getSize() > 1)
+		uint variableSize = 0;
+		switch (output->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			variableSize = 1;
+			break;
+		case MachineValue::Type_t::bitVector:
+			variableSize = output->getInitialValue().getBitVectorValue().getSize();
+			break;
+		case MachineValue::Type_t::nullType:
+			break;
+		}
+
+		if (variableSize > 1)
 		{
 			stream << "_vector(";
 
-			stream << QString::number(output->getSize() - 1) << " downto 0)";
+			stream << QString::number(variableSize - 1) << " downto 0)";
 		}
 
 		if (outputId == outputIds.last())
@@ -428,17 +454,30 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream) const
 
 		stream << "  signal " + this->variableVhdlName[localVarId] << " : std_logic";
 
-		if (localVar->getSize() > 1)
+		uint variableSize = 0;
+		switch (localVar->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			variableSize = 1;
+			break;
+		case MachineValue::Type_t::bitVector:
+			variableSize = localVar->getInitialValue().getBitVectorValue().getSize();
+			break;
+		case MachineValue::Type_t::nullType:
+			break;
+		}
+
+		if (variableSize > 1)
 		{
 			stream << "_vector(";
 
-			stream << QString::number(localVar->getSize() - 1) << " downto 0)";
+			stream << QString::number(variableSize - 1) << " downto 0)";
 
-			stream << " := \"" << localVar->getInitialValue().toString() << "\";\n";
+			stream << " := \"" << localVar->getInitialValue().toRawString() << "\";\n";
 		}
 		else
 		{
-			stream << " := '" << localVar->getInitialValue().toString() << "';\n";
+			stream << " := '" << localVar->getInitialValue().toRawString() << "';\n";
 		}
 	}
 
@@ -452,17 +491,30 @@ void FsmVhdlExport::writeArchitecture(QTextStream& stream) const
 
 		stream << "  constant " + this->variableVhdlName[constantId] << " : std_logic";
 
-		if (constant->getSize() > 1)
+		uint variableSize = 0;
+		switch (constant->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			variableSize = 1;
+			break;
+		case MachineValue::Type_t::bitVector:
+			variableSize = constant->getInitialValue().getBitVectorValue().getSize();
+			break;
+		case MachineValue::Type_t::nullType:
+			break;
+		}
+
+		if (variableSize > 1)
 		{
 			stream << "_vector(";
 
-			stream << QString::number(constant->getSize() - 1) << " downto 0)";
+			stream << QString::number(variableSize - 1) << " downto 0)";
 
-			stream << " := \"" << constant->getInitialValue().toString() << "\";\n";
+			stream << " := \"" << constant->getInitialValue().toRawString() << "\";\n";
 		}
 		else
 		{
-			stream << " := '" << constant->getInitialValue().toString() << "';\n";
+			stream << " := '" << constant->getInitialValue().toRawString() << "';\n";
 		}
 	}
 
@@ -567,7 +619,20 @@ void FsmVhdlExport::writeMooreOutputs(QTextStream& stream) const
 
 
 			// Write default value for temp variables
-			stream << "    " << this->variableVhdlName[variableId] << " <= \"" << LogicValue::getValue0(variable->getSize()).toString() << "\";\n";
+			uint variableSize = 0;
+			switch (variable->getType())
+			{
+			case MachineValue::Type_t::boolean:
+				variableSize = 1;
+				break;
+			case MachineValue::Type_t::bitVector:
+				variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+				break;
+			case MachineValue::Type_t::nullType:
+				break;
+			}
+
+			stream << "    " << this->variableVhdlName[variableId] << " <= \"" << BitVectorValue::allZeros(variableSize).toRawString() << "\";\n";
 		}
 	}
 	stream << "    -- Signals handled in this process but not listed above this line implicitly maintain their value.\n";
@@ -637,6 +702,18 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream) const
 				auto variable = fsm->getVariable(variableId);
 				if (variable == nullptr) continue;
 
+				uint variableSize = 0;
+				switch (variable->getType())
+				{
+				case MachineValue::Type_t::boolean:
+					variableSize = 1;
+					break;
+				case MachineValue::Type_t::bitVector:
+					variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+					break;
+				case MachineValue::Type_t::nullType:
+					break;
+				}
 
 				stream << "  affect_" << this->variableVhdlName[variableId] << ":";
 				stream << this->variableVhdlName[variableId] << " <= ";
@@ -647,10 +724,12 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream) const
 					{
 						if (action->getVariableActedOnId() == variableId)
 						{
-							if (variable->getSize() > 1)
+
+
+							if (variableSize > 1)
 							{
-								// Currently, the only case leading here is for ActionOnVariableType_t::pulse
-								stream << "\"" << action->getActionValue().toString() << "\"";
+								// Currently, the only case leading here is for ActionOnVariable::Type_t::pulse
+								stream << "\"" << action->getActionValue().toRawString() << "\"";
 							}
 							else
 							{
@@ -664,7 +743,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream) const
 					}
 				}
 
-				stream << LogicValue::getValue0(variable->getSize()).toString() << ";\n";
+				stream << BitVectorValue::allZeros(variableSize).toRawString() << ";\n";
 			}
 		}
 	}
@@ -726,24 +805,37 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	stream << this->variableVhdlName[variableId];
 	stream << " <= ";
 
-	ActionOnVariableType_t type = action->getActionType();
+	ActionOnVariable::Type_t type = action->getActionType();
 
-	if (variable->getSize() == 1)
+	uint variableSize = 0;
+	switch (variable->getType())
+	{
+	case MachineValue::Type_t::boolean:
+		variableSize = 1;
+		break;
+	case MachineValue::Type_t::bitVector:
+		variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+		break;
+	case MachineValue::Type_t::nullType:
+		break;
+	}
+
+	if (variableSize == 1)
 	{
 		switch(type)
 		{
-		case ActionOnVariableType_t::continuous:
-		case ActionOnVariableType_t::pulse:
-		case ActionOnVariableType_t::set:
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+		case ActionOnVariable::Type_t::set:
 			stream << "'1'";
 			break;
-		case ActionOnVariableType_t::reset:
+		case ActionOnVariable::Type_t::reset:
 			stream << "'0'";
 			break;
-		case ActionOnVariableType_t::increment:
-		case ActionOnVariableType_t::decrement:
-		case ActionOnVariableType_t::assign:
-		case ActionOnVariableType_t::none:
+		case ActionOnVariable::Type_t::increment:
+		case ActionOnVariable::Type_t::decrement:
+		case ActionOnVariable::Type_t::assign:
+		case ActionOnVariable::Type_t::none:
 			// Impossible cases
 			break;
 		}
@@ -752,20 +844,20 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	{
 		switch(type)
 		{
-		case ActionOnVariableType_t::continuous:
-		case ActionOnVariableType_t::pulse:
-		case ActionOnVariableType_t::assign:
-		case ActionOnVariableType_t::set:
-		case ActionOnVariableType_t::reset:
-			stream << "\"" <<  action->getActionValue().toString() << "\"";
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+		case ActionOnVariable::Type_t::assign:
+		case ActionOnVariable::Type_t::set:
+		case ActionOnVariable::Type_t::reset:
+			stream << "\"" <<  action->getActionValue().toRawString() << "\"";
 			break;
-		case ActionOnVariableType_t::increment:
+		case ActionOnVariable::Type_t::increment:
 			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variableId] << " + 1)";
 			break;
-		case ActionOnVariableType_t::decrement:
+		case ActionOnVariable::Type_t::decrement:
 			stream << "std_logic_vector(unsigned(" << this->variableVhdlName[variableId] << " - 1)";
 			break;
-		case ActionOnVariableType_t::none:
+		case ActionOnVariable::Type_t::none:
 			// Nothing
 			break;
 		}
@@ -781,14 +873,14 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Equation> equation) const
 
 	QString text;
 
-	OperatorType_t function = equation->getOperatorType();
-	if (equation->getOperatorType() == OperatorType_t::identity) // Equation is actually a single variable or constant
+	Equation::Operator_t function = equation->getOperator();
+	if (equation->getOperator() == Equation::Operator_t::identity) // Equation is actually a single variable or constant
 	{
 		// This should only happen at condition root for a well-formed condition
 		auto operand = equation->getOperand(0);
 		text = generateOperandText(operand);
 	}
-	else if (function == OperatorType_t::extractOp)
+	else if (function == Equation::Operator_t::extractOp)
 	{
 		auto operand = equation->getOperand(0);
 		text = generateOperandText(operand);
@@ -807,7 +899,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Equation> equation) const
 
 		text += ")";
 	}
-	else if (function == OperatorType_t::notOp)
+	else if (function == Equation::Operator_t::notOp)
 	{
 		text = "not ";
 
@@ -828,36 +920,36 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Equation> equation) const
 			{
 				switch(function)
 				{
-				case OperatorType_t::andOp:
+				case Equation::Operator_t::andOp:
 					text += " and ";
 					break;
-				case OperatorType_t::orOp:
+				case Equation::Operator_t::orOp:
 					text += " or ";
 					break;
-				case OperatorType_t::xorOp:
+				case Equation::Operator_t::xorOp:
 					text += " xor ";
 					break;
-				case OperatorType_t::nandOp:
+				case Equation::Operator_t::nandOp:
 					text += " nand ";
 					break;
-				case OperatorType_t::norOp:
+				case Equation::Operator_t::norOp:
 					text += " nor ";
 					break;
-				case OperatorType_t::xnorOp:
+				case Equation::Operator_t::xnorOp:
 					text += " xnor ";
 					break;
-				case OperatorType_t::equalOp:
+				case Equation::Operator_t::equalOp:
 					text += " = ";
 					break;
-				case OperatorType_t::diffOp:
+				case Equation::Operator_t::diffOp:
 					text += " /= ";
 					break;
-				case OperatorType_t::concatOp:
+				case Equation::Operator_t::concatOp:
 					text += "&";
 					break;
-				case OperatorType_t::extractOp:
-				case OperatorType_t::notOp:
-				case OperatorType_t::identity:
+				case Equation::Operator_t::extractOp:
+				case Equation::Operator_t::notOp:
+				case Equation::Operator_t::identity:
 					// Cases treated in another branch of the if
 					break;
 				}
@@ -877,16 +969,16 @@ QString FsmVhdlExport::generateOperandText(shared_ptr<Operand> operand) const
 
 	switch (operand->getSource())
 	{
-	case OperandSource_t::equation:
+	case Operand::Source_t::equation:
 		return generateEquationText(operand->getEquation());
 		break;
-	case OperandSource_t::variable:
+	case Operand::Source_t::variable:
 	{
 		auto variableId = operand->getVariableId();
 		return this->variableVhdlName[variableId];
 		break;
 	}
-	case OperandSource_t::constant:
+	case Operand::Source_t::constant:
 	{
 		auto constantText = operand->getText();
 

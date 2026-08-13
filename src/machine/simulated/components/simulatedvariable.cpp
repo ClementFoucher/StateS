@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -44,19 +44,22 @@ SimulatedVariable::SimulatedVariable(componentId_t componentId) :
 	this->memorized    = logicVariable->getMemorized();
 }
 
-void SimulatedVariable::setCurrentValue(const LogicValue &value)
+void SimulatedVariable::setCurrentValue(MachineValue value)
 {
-	this->setCurrentValueSubRange(value, -1, -1);
-}
+	if (value.getType() != this->getType()) return;
 
-void SimulatedVariable::setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR)
-{
-	bool setOk = this->currentValue.setSubrange(value, rangeL, rangeR);
-
-	if (setOk == true)
+	if (this->getType() == MachineValue::Type_t::bitVector)
 	{
-		emit this->variableCurrentValueChangedEvent();
+		if (value.getBitVectorValue().getSize() != this->initialValue.getBitVectorValue().getSize())
+		{
+			return;
+		}
 	}
+
+
+	this->currentValue = value;
+
+	emit this->variableCurrentValueChangedEvent();
 }
 
 void SimulatedVariable::reinitialize()
@@ -71,17 +74,17 @@ QString SimulatedVariable::getName() const
 	return this->name;
 }
 
-uint SimulatedVariable::getSize() const
+MachineValue::Type_t SimulatedVariable::getType() const
 {
-	return this->initialValue.getSize();
+	return this->initialValue.getType();
 }
 
-LogicValue SimulatedVariable::getInitialValue() const
+MachineValue SimulatedVariable::getInitialValue() const
 {
 	return this->initialValue;
 }
 
-LogicValue SimulatedVariable::getCurrentValue() const
+MachineValue SimulatedVariable::getCurrentValue() const
 {
 	return this->currentValue;
 }

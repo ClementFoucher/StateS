@@ -171,8 +171,12 @@ QWidget* TemplateEquationPartsWidget::getConstants() const
 	auto constantsTitle = new QLabel("<b>" + tr("Constants")+ "</b>");
 	constantsLayout->addWidget(constantsTitle, 0, Qt::AlignHCenter);
 
+	// Custom constant for booleans
+	auto booleanConstant = new ConstantEditorWidget(BooleanValue::falseValue(), 0, true, constantsWidget);
+	constantsLayout->addWidget(booleanConstant);
+
 	// Custom constant for bit vectors
-	auto bitVectorConstant = new ConstantEditorWidget(LogicValue::getValue0(1), 0, true, constantsWidget);
+	auto bitVectorConstant = new ConstantEditorWidget(BitVectorValue::allZeros(1), 0, true, constantsWidget);
 	constantsLayout->addWidget(bitVectorConstant);
 
 	// Machine constants (which are actually variables)
@@ -183,44 +187,56 @@ QWidget* TemplateEquationPartsWidget::getConstants() const
 
 QWidget* TemplateEquationPartsWidget::getOperators() const
 {
-	// Build widget
+	//
+	// Build widgets
+
+	// Main widget
 	auto operatorsWidget = new QWidget();
+
+	// Sections titles
+	auto comparisonOPeratorsTitle = new QLabel("<b>" + tr("Comparision") + "</b>");
+	auto logicFunctionsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
+	auto otherTitle = new QLabel("<b>" + tr("Other") + "</b>");
+
+	// Operators
+	auto equalOperator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::equalOp),   0, true);
+	auto diffOperator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::diffOp),    0, true);
+
+	auto notOperator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::notOp),     0, true);
+
+	auto and2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::andOp,  2), 0, true);
+	auto or2Operator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::orOp,   2), 0, true);
+	auto xor2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xorOp,  2), 0, true);
+	auto nand2Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::nandOp, 2), 0, true);
+	auto nor2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::norOp,  2), 0, true);
+	auto xnor2Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xnorOp, 2), 0, true);
+
+	auto and3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::andOp,  3), 0, true);
+	auto or3Operator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::orOp,   3), 0, true);
+	auto xor3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xorOp,  3), 0, true);
+	auto nand3Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::nandOp, 3), 0, true);
+	auto nor3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::norOp,  3), 0, true);
+	auto xnor3Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xnorOp, 3), 0, true);
+
+	auto concatOperator = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::concatOp),  0, true);
+
+	//
+	// Build complete rendering
+
 	auto operatorsLayout = new QGridLayout(operatorsWidget);
 	operatorsLayout->setAlignment(Qt::AlignTop);
 
-	// Title
-	auto operatorsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
-	operatorsLayout->addWidget(operatorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
+	// Comparison
+	operatorsLayout->addWidget(comparisonOPeratorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
 
-	// Operators
-	auto notOperator    = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::notOp),    0, true, operatorsWidget);
-	auto concatOperator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::concatOp), 0, true, operatorsWidget);
-	auto equalOperator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::equalOp),  0, true, operatorsWidget);
-	auto diffOperator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::diffOp),   0, true, operatorsWidget);
+	operatorsLayout->addWidget(equalOperator,  1, 0, 1, 1);
+	operatorsLayout->addWidget(diffOperator,   1, 1, 1, 1);
 
-	auto and2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  2), 0, true, operatorsWidget);
-	auto or2Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   2), 0, true, operatorsWidget);
-	auto xor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  2), 0, true, operatorsWidget);
-	auto nand2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 2), 0, true, operatorsWidget);
-	auto nor2Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  2), 0, true, operatorsWidget);
-	auto xnor2Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 2), 0, true, operatorsWidget);
+	// Logic operators
+	operatorsLayout->addWidget(logicFunctionsTitle, 2, 0, 1, 2, Qt::AlignHCenter);
 
-	auto and3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::andOp,  3), 0, true, operatorsWidget);
-	auto or3Operator   = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::orOp,   3), 0, true, operatorsWidget);
-	auto xor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xorOp,  3), 0, true, operatorsWidget);
-	auto nand3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::nandOp, 3), 0, true, operatorsWidget);
-	auto nor3Operator  = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::norOp,  3), 0, true, operatorsWidget);
-	auto xnor3Operator = new EquationEditorWidget(make_shared<Equation>(OperatorType_t::xnorOp, 3), 0, true, operatorsWidget);
+	operatorsLayout->addWidget(notOperator,    3, 0, 1, 2);
 
-	// 1 per row
-	operatorsLayout->addWidget(notOperator,    1, 0, 1, 2);
-	operatorsLayout->addWidget(concatOperator, 2, 0, 1, 2);
-
-	// Equal/diff
-	operatorsLayout->addWidget(equalOperator,  3, 0, 1, 1);
-	operatorsLayout->addWidget(diffOperator,   3, 1, 1, 1);
-
-	// Other logic operators
 	operatorsLayout->addWidget(and2Operator,   4, 0, 1, 1);
 	operatorsLayout->addWidget(and3Operator,   4, 1, 1, 1);
 	operatorsLayout->addWidget(or2Operator,    5, 0, 1, 1);
@@ -233,6 +249,11 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	operatorsLayout->addWidget(nor3Operator,   8, 1, 1, 1);
 	operatorsLayout->addWidget(xnor2Operator,  9, 0, 1, 1);
 	operatorsLayout->addWidget(xnor3Operator,  9, 1, 1, 1);
+
+	// Other operators
+	operatorsLayout->addWidget(otherTitle, 10, 0, 1, 2, Qt::AlignHCenter);
+
+	operatorsLayout->addWidget(concatOperator, 11, 0, 1, 2);
 
 	return operatorsWidget;
 }
@@ -248,12 +269,15 @@ void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<c
 		auto variableEditorWidget = new VariableEditorWidget(varId, 0, true);
 
 		auto variable = machine->getVariable(varId);
-		if (variable->getSize() > 1)
+
+		if ( (variable->getType() == MachineValue::Type_t::bitVector) &&
+		     (variable->getInitialValue().getBitVectorValue().getSize() > 1)
+		   )
 		{
 			auto hLayout = new QHBoxLayout();
 			hLayout->addWidget(variableEditorWidget);
 
-			auto rangeEquation = make_shared<Equation>(OperatorType_t::extractOp);
+			auto rangeEquation = make_shared<Equation>(Equation::Operator_t::extractOp);
 			rangeEquation->setOperand(0, varId);
 			rangeEquation->setRange(0);
 			auto rangeEditorWidget = new EquationEditorWidget(rangeEquation, 0, true);

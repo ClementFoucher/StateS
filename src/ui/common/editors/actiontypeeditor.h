@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QComboBox>
 
 // StateS
-#include "statestypes.h"
+#include "actiononvariable.h"
 
 
 /**
@@ -45,8 +45,8 @@ public:
 	/////
 	// Object functions
 public:
-	void fillActionList(uint allowedActionTypes, ActionOnVariableType_t currentActionType);
-	ActionOnVariableType_t getActionType() const;
+	void fillActionList(uint allowedActionTypes, ActionOnVariable::Type_t currentActionType);
+	ActionOnVariable::Type_t getActionType() const;
 
 private slots:
 	void processIndexChanged(int);

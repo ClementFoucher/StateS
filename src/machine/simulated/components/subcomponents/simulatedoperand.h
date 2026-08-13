@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,11 +27,12 @@
 
 // Stdlib
 #include <memory>
+#include <variant>
 using namespace std;
 
 // StateS
-#include "statestypes.h"
-#include "logicvalue.h"
+#include "operand.h"
+#include "machinevalue.h"
 class Operand;
 class SimulatedEquation;
 
@@ -48,7 +49,9 @@ public:
 	/////
 	// Object functions
 public:
-	LogicValue getCurrentValue() const;
+	MachineValue getCurrentValue() const;
+
+	MachineValue::Type_t getType() const;
 
 	/////
 	// Signals
@@ -58,11 +61,9 @@ signals:
 	/////
 	// Object variables
 private:
-	OperandSource_t source;
+	Operand::Source_t source;
 
-	componentId_t                 variableId = nullId;
-	shared_ptr<SimulatedEquation> equation;
-	LogicValue                    constant   = LogicValue();
+	std::variant<componentId_t, shared_ptr<SimulatedEquation>, MachineValue> value;
 
 };
 

@@ -35,6 +35,7 @@
 const QString EquationPartEditorWidget::passiveStyleSheet   = "EquationPartEditorWidget {border: 1px solid lightgrey; border-radius: 10px}";
 const QString EquationPartEditorWidget::activeStyleSheet    = "EquationPartEditorWidget {border: 1px solid blue; border-radius: 10px}";
 const QString EquationPartEditorWidget::erroneousStyleSheet = "EquationPartEditorWidget {border: 2px solid red; border-radius: 10px}";
+const QString EquationPartEditorWidget::warningStyleSheet   = "EquationPartEditorWidget {border: 2px solid yellow; border-radius: 10px}";
 const QString EquationPartEditorWidget::editableStyleSheet  = "EquationPartEditorWidget {border: 2px solid green; border-radius: 10px}";
 
 
@@ -145,71 +146,71 @@ void EquationPartEditorWidget::contextMenuEvent(QContextMenuEvent* event)
 
 	uint allowedActions = this->getAllowedMenuActions();
 
-	if ((allowedActions & (uint)ContextAction_t::Remove) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::Remove)) != 0)
 	{
 		addedAction = menu->addAction(tr("Remove"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::Remove);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::Remove));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::Edit) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::Edit)) != 0)
 	{
 		addedAction = menu->addAction(tr("Edit"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::Edit);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::Edit));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::ExtractSwitchSingle) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::ExtractSwitchSingle)) != 0)
 	{
 		addedAction = menu->addAction(tr("Extract single bit"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::ExtractSwitchSingle);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::ExtractSwitchSingle));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::ExtractSwitchRange) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::ExtractSwitchRange)) != 0)
 	{
 		addedAction = menu->addAction(tr("Extract sub-vector"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::ExtractSwitchRange);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::ExtractSwitchRange));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::AddExtractor) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::AddExtractor)) != 0)
 	{
 		addedAction = menu->addAction(tr("Extract sub-vector or single bit"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::AddExtractor);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::AddExtractor));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::IncreaseOperandCount) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::IncreaseOperandCount)) != 0)
 	{
 		addedAction = menu->addAction(tr("Add one operand to that operator"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::IncreaseOperandCount);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::IncreaseOperandCount));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::DecreaseOperandCount) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::DecreaseOperandCount)) != 0)
 	{
 		addedAction = menu->addAction(tr("Remove one operand from that operator"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::DecreaseOperandCount);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::DecreaseOperandCount));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::Invert) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::Invert)) != 0)
 	{
 		addedAction = menu->addAction(tr("Invert"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::Invert);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::Invert));
 		addedAction->setData(data);
 	}
 
-	if ((allowedActions & (uint)ContextAction_t::RemoveInverter) != 0)
+	if ((allowedActions & static_cast<uint>(ContextAction_t::RemoveInverter)) != 0)
 	{
 		addedAction = menu->addAction(tr("Remove the inverter"));
-		data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::RemoveInverter);
+		data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::RemoveInverter));
 		addedAction->setData(data);
 	}
 
 	addedAction = menu->addAction(tr("Cancel"));
-	data.setValue((int)ActionType_t::ContextMenuAction | (int)ContextAction_t::Cancel);
+	data.setValue(static_cast<uint>(ActionType_t::ContextMenuAction) | static_cast<uint>(ContextAction_t::Cancel));
 	addedAction->setData(data);
 
 	menu->popup(this->mapToGlobal(event->pos()));
@@ -221,7 +222,7 @@ void EquationPartEditorWidget::contextMenuEvent(QContextMenuEvent* event)
 void EquationPartEditorWidget::dragEnterEvent(QDragEnterEvent* event)
 {
 	// Check if drag object is acceptable
-	const EquationPartMimeData* mimeData = dynamic_cast<const EquationPartMimeData*>(event->mimeData());
+	auto mimeData = dynamic_cast<const EquationPartMimeData*>(event->mimeData());
 	if (mimeData == nullptr) return;
 
 
@@ -243,17 +244,19 @@ void EquationPartEditorWidget::dropEvent(QDropEvent* event)
 	event->acceptProposedAction();
 
 	// Obtain dropped content
-	this->tempValueNature = mimeData->getSource();
-	switch(this->tempValueNature)
+	switch (mimeData->getContentType())
 	{
-	case OperandSource_t::variable:
-		this->tempVariableId = mimeData->getVariableId();
+	case EquationPartMimeData::ContentType_t::variable:
+		this->tempValueNature = TempValueNature_t::variable;
+		this->tempValue = mimeData->getVariableId();
 		break;
-	case OperandSource_t::equation:
-		this->tempEquation = mimeData->getEquation();
+	case EquationPartMimeData::ContentType_t::equation:
+		this->tempValueNature = TempValueNature_t::equation;
+		this->tempValue = mimeData->getEquation();
 		break;
-	case OperandSource_t::constant:
-		this->tempConstant = mimeData->getConstant();
+	case EquationPartMimeData::ContentType_t::constant:
+		this->tempValueNature = TempValueNature_t::constant;
+		this->tempValue = mimeData->getConstant();
 		break;
 	}
 
@@ -262,9 +265,9 @@ void EquationPartEditorWidget::dropEvent(QDropEvent* event)
 
 	bool displayMenu = true;
 	bool autoReplace = false;
-	if ( ((allowedActions & (uint)DropAction_t::ReplaceExisting) != 0) && (this->getReplaceWithoutAsking() == true) )
+	if ( ((allowedActions & static_cast<uint>(DropAction_t::ReplaceExisting)) != 0) && (this->getReplaceWithoutAsking() == true) )
 	{
-		if ( (mimeData->getSource() != OperandSource_t::equation) || ((allowedActions & (uint)DropAction_t::ExistingAsOperand) == 0) )
+		if ( (mimeData->getContentType() != EquationPartMimeData::ContentType_t::equation) || ((allowedActions & static_cast<uint>(DropAction_t::ExistingAsOperand)) == 0) )
 		{
 			// Special case: only replace action available, and part allows to be replaced without asking
 			// Replace without asking, except if source is equation: ask if replace or use as operand
@@ -281,7 +284,7 @@ void EquationPartEditorWidget::dropEvent(QDropEvent* event)
 		subtitles.append(tr("Current element:") + " <i>"  + this->getText() + "</i>");
 		subtitles.append(tr("Dropped element:") + " <i> " + mimeData->getText() + "</i>");
 
-		if ((allowedActions & ~(uint)DropAction_t::ReplaceExisting) != 0)
+		if ((allowedActions & ~static_cast<uint>(DropAction_t::ReplaceExisting)) != 0)
 		{
 			menu->addTitle(tr("What do you want to do?"), subtitles);
 		}
@@ -293,31 +296,31 @@ void EquationPartEditorWidget::dropEvent(QDropEvent* event)
 		QVariant data;
 		QAction* addedAction;
 
-		if ((allowedActions & (uint)DropAction_t::ReplaceExisting) != 0)
+		if ((allowedActions & static_cast<uint>(DropAction_t::ReplaceExisting)) != 0)
 		{
 			addedAction = menu->addAction(tr("Replace current element by dropped element"));
-			data.setValue((int)ActionType_t::DropAction | (int)DropAction_t::ReplaceExisting);
+			data.setValue(static_cast<uint>(ActionType_t::DropAction) | static_cast<uint>(DropAction_t::ReplaceExisting));
 			addedAction->setData(data);
 		}
 
-		if ((allowedActions & (uint)DropAction_t::ExistingAsOperand) != 0)
+		if ((allowedActions & static_cast<uint>(DropAction_t::ExistingAsOperand)) != 0)
 		{
 			addedAction = menu->addAction(tr("Make current element an operand of dropped equation"));
-			data.setValue((int)ActionType_t::DropAction | (int)DropAction_t::ExistingAsOperand);
+			data.setValue(static_cast<uint>(ActionType_t::DropAction) | static_cast<uint>(DropAction_t::ExistingAsOperand));
 			addedAction->setData(data);
 		}
 
-		if ((allowedActions & (uint)DropAction_t::RemoveInverter) != 0)
+		if ((allowedActions & static_cast<uint>(DropAction_t::RemoveInverter)) != 0)
 		{
 			addedAction = menu->addAction(tr("Remove inverter from current element"));
-			data.setValue((int)ActionType_t::DropAction | (int)DropAction_t::RemoveInverter);
+			data.setValue(static_cast<uint>(ActionType_t::DropAction) | static_cast<uint>(DropAction_t::RemoveInverter));
 			addedAction->setData(data);
 		}
 
 		menu->addSeparator();
 
 		addedAction = menu->addAction(tr("Cancel"));
-		data.setValue((int)ActionType_t::DropAction | (int)DropAction_t::Cancel);
+		data.setValue(static_cast<uint>(ActionType_t::DropAction) | static_cast<uint>(DropAction_t::Cancel));
 		addedAction->setData(data);
 
 		menu->popup(this->mapToGlobal(event->position()).toPoint());
@@ -347,7 +350,14 @@ void EquationPartEditorWidget::showEvent(QShowEvent* event)
 bool EquationPartEditorWidget::getIsEditable() const
 {
 	// Provide a default implementation so that non-editable parts
-	// don't have to care about these functions.
+	// don't have to care about this function.
+	return false;
+}
+
+bool EquationPartEditorWidget::getHasWarning() const
+{
+	// Warning is only applicable to equation:
+	// provide default for other equation parts
 	return false;
 }
 
@@ -355,34 +365,48 @@ void EquationPartEditorWidget::replaceByTempValue()
 {
 	if (this->parentEquationEditor == nullptr) return;
 
+	if (this->tempValueNature == TempValueNature_t::empty) return;
 
-	switch(this->tempValueNature)
+
+	switch (this->tempValueNature)
 	{
-	case OperandSource_t::variable:
-		if (this->tempVariableId == nullId) return;
+	case TempValueNature_t::variable:
+	{
+		auto tempVariableId = std::get<componentId_t>(this->tempValue);
+		if (tempVariableId == nullId) return;
 
 
-		this->parentEquationEditor->replaceOperand(this->rankInParentOperands, this->tempVariableId);
+		this->parentEquationEditor->replaceOperand(this->rankInParentOperands, tempVariableId);
 		// Do NOT do anything after, as this ceases to exist
 		break;
-	case OperandSource_t::equation:
-		if (this->tempEquation == nullptr)
+	}
+	case TempValueNature_t::equation:
+	{
+		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		if (tempEquation == nullptr)
 		{
 			// Empty equation is possible in certain cases
 			this->parentEquationEditor->clearOperand(this->rankInParentOperands);
 		}
 		else
 		{
-			this->parentEquationEditor->replaceOperand(this->rankInParentOperands, this->tempEquation);
+			this->parentEquationEditor->replaceOperand(this->rankInParentOperands, tempEquation);
 		}
 		// Do NOT do anything after, as this ceases to exist
 		break;
-	case OperandSource_t::constant:
-		if (this->tempConstant.isNull() == true) return;
+	}
+	case TempValueNature_t::constant:
+	{
+		auto tempConstant = std::get<MachineValue>(this->tempValue);
+		if (tempConstant.isNull() == true) return;
 
 
-		this->parentEquationEditor->replaceOperand(this->rankInParentOperands, this->tempConstant, this->isBeingReplacedByDrop);
+		this->parentEquationEditor->replaceOperand(this->rankInParentOperands, tempConstant, this->isBeingReplacedByDrop);
 		// Do NOT do anything after, as this ceases to exist
+		break;
+	}
+	case TempValueNature_t::empty:
+		// Handled previously: should not happen
 		break;
 	}
 }
@@ -397,12 +421,6 @@ bool EquationPartEditorWidget::isRootEquation() const
 	{
 		return false;
 	}
-}
-
-void EquationPartEditorWidget::setHighlighted(bool highlighted)
-{
-	this->isHighlighted = highlighted;
-	this->updateBorderColor();
 }
 
 void EquationPartEditorWidget::updateBorderColor()
@@ -422,6 +440,10 @@ void EquationPartEditorWidget::updateBorderColor()
 	{
 		this->setStyleSheet(EquationPartEditorWidget::erroneousStyleSheet);
 	}
+	else if (this->getHasWarning() == true)
+	{
+		this->setStyleSheet(EquationPartEditorWidget::warningStyleSheet);
+	}
 	else if (this->getIsEditable() == true)
 	{
 		this->setStyleSheet(EquationPartEditorWidget::editableStyleSheet);
@@ -430,6 +452,12 @@ void EquationPartEditorWidget::updateBorderColor()
 	{
 		this->setStyleSheet(EquationPartEditorWidget::passiveStyleSheet);
 	}
+}
+
+void EquationPartEditorWidget::setHighlighted(bool highlighted)
+{
+	this->isHighlighted = highlighted;
+	this->updateBorderColor();
 }
 
 void EquationPartEditorWidget::processMenuAction(ContextAction_t action)
@@ -483,18 +511,18 @@ void EquationPartEditorWidget::processDropAction(DropAction_t action)
 void EquationPartEditorWidget::processMenuEventHandler(QAction* action)
 {
 	QVariant data = action->data();
-	uint dataValue = (uint)data.toInt();
+	uint dataValue = data.toUInt();
 
-	ActionType_t actionType = (ActionType_t)(dataValue & 0xF000);
+	auto actionType = static_cast<ActionType_t>(dataValue & 0xF000);
 
 	if (actionType == ActionType_t::ContextMenuAction)
 	{
-		ContextAction_t actionValue = (ContextAction_t)(dataValue & 0x0FFF);
+		auto actionValue =  static_cast<ContextAction_t>(dataValue & 0x0FFF);
 		this->processMenuAction(actionValue);
 	}
 	else
 	{
-		DropAction_t actionValue = (DropAction_t)(dataValue & 0x0FFF);
+		auto actionValue = static_cast<DropAction_t>(dataValue & 0x0FFF);
 		this->processDropAction(actionValue);
 	}
 }

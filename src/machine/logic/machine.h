@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,6 +34,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
+#include "machinevalue.h"
 class Variable;
 class MachineComponent;
 class MachineActuatorComponent;
@@ -60,7 +61,7 @@ public:
 
 	bool setName(const QString& newName);
 
-	componentId_t addVariable(VariableNature_t nature, const QString& name, componentId_t id = nullId);
+	componentId_t addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, componentId_t id = nullId);
 	void removeVariable(componentId_t variableId);
 	bool renameVariable(componentId_t variableId, const QString& newName);
 	void changeVariableRank(componentId_t variableId, uint newRank);

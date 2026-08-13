@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,94 +23,47 @@
 #include "inputbitselector.h"
 
 // Qt
-#include <QHBoxLayout>
-#include <QStyle>
 #include <QLabel>
 
 // StateS
-#include "machinemanager.h"
-#include "simulatedmachine.h"
 #include "simulatedvariable.h"
 
 
-InputBitSelector::InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget* parent) :
-	QFrame(parent)
+InputBitSelector::InputBitSelector(componentId_t variableId, uint bitNumber, QWidget* parent) :
+	InputToggleSelector(variableId, parent)
 {
-	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return;
+	auto variable = this->getVariable();
+	if (variable == nullptr) return;
 
-	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
-	if (variableToCommand == nullptr) return;
+	if (variable->getType() != MachineValue::Type_t::bitVector) return;
 
 
-	this->variableToCommandId = variableToCommandId;
-	this->bitNumber           = bitNumber;
+	this->bitNumber = bitNumber;
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
-
-	this->bitValue = new QLabel(QString::number(variableToCommand->getCurrentValue()[this->bitNumber]), this);
-	this->bitValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of variable") + " " + variableToCommand->getName());
-	layout->addWidget(this->bitValue);
-
-	this->setMinimumHeight(this->bitValue->sizeHint().height() + 2*this->style()->pixelMetric(QStyle::PM_LayoutTopMargin) + 2);
-
-	connect(variableToCommand.get(), &SimulatedVariable::variableCurrentValueChangedEvent, this, &InputBitSelector::variableValueChangedEventHandler);
+	auto initialVariableValue = variable->getInitialValue().getBitVectorValue();
+	this->toggleValue->setText(QString::number(initialVariableValue[this->bitNumber]));
+	this->toggleValue->setToolTip(tr("Bit") + " " + QString::number(this->bitNumber) + " " + tr("of variable") + " " + variable->getName());
 }
 
-void InputBitSelector::enterEvent(QEnterEvent* event)
+void InputBitSelector::mousePressEvent(QMouseEvent* event)
 {
-	this->setStyleSheet("InputBitSelector {border: 1px solid black; border-radius: 10px}");
+	InputToggleSelector::mousePressEvent(event);
 
-	QFrame::enterEvent(event);
-}
-
-
-void InputBitSelector::leaveEvent(QEvent* event)
-{
-	this->setStyleSheet("");
-
-	QFrame::leaveEvent(event);
-}
-
-void InputBitSelector::mousePressEvent(QMouseEvent*)
-{
-	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return;
-
-	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
-	if (variableToCommand == nullptr) return;
+	auto variable = this->getVariable();
+	if (variable == nullptr) return;
 
 
-	LogicValue variableValue = variableToCommand->getCurrentValue();
-
-	variableValue[this->bitNumber] = !variableValue[this->bitNumber];
-
-	variableToCommand->setCurrentValue(variableValue);
-}
-
-void InputBitSelector::mouseMoveEvent(QMouseEvent*)
-{
-	// Just because this class never sends event to parent
-}
-
-void InputBitSelector::mouseReleaseEvent(QMouseEvent*)
-{
-	// Just because this class never sends event to parent
-}
-
-void InputBitSelector::mouseDoubleClickEvent(QMouseEvent*)
-{
-	// Just because this class never sends event to parent
+	auto variableValue = variable->getCurrentValue().getBitVectorValue();
+	variableValue.setBit(this->bitNumber, !variableValue[this->bitNumber]);
+	variable->setCurrentValue(variableValue);
 }
 
 void InputBitSelector::variableValueChangedEventHandler()
 {
-	auto simulatedMachine = machineManager->getSimulatedMachine();
-	if (simulatedMachine == nullptr) return;
-
-	auto variableToCommand = simulatedMachine->getSimulatedVariable(variableToCommandId);
-	if (variableToCommand == nullptr) return;
+	auto variable = this->getVariable();
+	if (variable == nullptr) return;
 
 
-	this->bitValue->setText(QString::number(variableToCommand->getCurrentValue()[this->bitNumber]));
+	auto currentVariableValue = variable->getCurrentValue().getBitVectorValue();
+	this->toggleValue->setText(QString::number(currentVariableValue[this->bitNumber]));
 }

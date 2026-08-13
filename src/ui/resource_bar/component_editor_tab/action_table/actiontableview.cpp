@@ -48,11 +48,18 @@ ActionTableView::ActionTableView(componentId_t actuatorId, QWidget* parent) :
 	this->tableModel = new ActionTableModel(actuatorId, this);
 	this->setModel(this->tableModel);
 
+	// Fill column roles
+	this->columnsRoles[ColumnRole_t::actionType]   = 0;
+	this->columnsRoles[ColumnRole_t::variableName] = 1;
+	this->columnsRoles[ColumnRole_t::actionValue]  = 2;
+
 	// Build delegates
 	auto typeColDelegate = new ActionTableTypeDelegate(this);
-	this->setItemDelegateForColumn(0, typeColDelegate);
+	this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionType], typeColDelegate);
 	auto valueColDelegate = new ActionTableValueDelegate(this);
-	this->setItemDelegateForColumn(2, valueColDelegate);
+	this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionValue], valueColDelegate);
+
+	connect(this->tableModel, &ActionTableModel::refreshPersistentEditorsEvent, this, &ActionTableView::refreshPersistentEditorsEventHandler);
 }
 
 void ActionTableView::initialize()
@@ -140,7 +147,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 		if (actionActedOn->isActionValueEditable())
 		{
 			actionBeingAdded = menu->addAction(tr("Edit value"));
-			data.setValue((int)ContextAction::EditValue);
+			data.setValue(static_cast<int>(ContextAction_t::EditValue));
 			actionBeingAdded->setData(QVariant());
 		}
 	}
@@ -148,14 +155,14 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 	if (this->getSelectionCanBeRaised() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move up"));
-		data.setValue((int)ContextAction::MoveUp);
+		data.setValue(static_cast<int>(ContextAction_t::MoveUp));
 		actionBeingAdded->setData(data);
 	}
 
 	if (this->getSelectionCanBeLowered() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move down"));
-		data.setValue((int)ContextAction::MoveDown);
+		data.setValue(static_cast<int>(ContextAction_t::MoveDown));
 		actionBeingAdded->setData(data);
 	}
 
@@ -163,7 +170,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 
 	if (selectedRowsCount == 1)
 	{
-		if (variableActedOn->getSize() > 1)
+		if ( (variableActedOn->getType() == MachineValue::Type_t::bitVector) && (variableActedOn->getInitialValue().getBitVectorValue().getSize() > 1) )
 		{
 			actionBeingAdded = menu->addAction(tr("Affect whole variable"));
 			actionBeingAdded->setCheckable(true);
@@ -171,7 +178,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue((int)ContextAction::AffectSwitchWhole);
+			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchWhole));
 			actionBeingAdded->setData(data);
 
 			actionBeingAdded = menu->addAction(tr("Affect variable single bit"));
@@ -180,7 +187,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue((int)ContextAction::AffectSwitchSingle);
+			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchSingle));
 			actionBeingAdded->setData(data);
 
 			actionBeingAdded = menu->addAction(tr("Affect variable range"));
@@ -189,7 +196,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue((int)ContextAction::AffectSwitchRange);
+			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchRange));
 			actionBeingAdded->setData(data);
 
 			if ( (actionActedOn->getActionRangeL() != -1) || (actionActedOn->getActionRangeR() != -1) )
@@ -203,7 +210,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 					actionBeingAdded = menu->addAction(tr("Edit range"));
 				}
 
-				data.setValue((int)ContextAction::AffectEditRange);
+				data.setValue(static_cast<int>(ContextAction_t::AffectEditRange));
 				actionBeingAdded->setData(data);
 			}
 
@@ -211,18 +218,18 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 		}
 
 		actionBeingAdded = menu->addAction(tr("Delete action"));
-		data.setValue((int)ContextAction::DeleteAction);
+		data.setValue(static_cast<int>(ContextAction_t::DeleteAction));
 		actionBeingAdded->setData(data);
 	}
 	else // (selectedRowsCount > 1)
 	{
 		actionBeingAdded = menu->addAction(tr("Delete actions"));
-		data.setValue((int)ContextAction::DeleteAction);
+		data.setValue(static_cast<int>(ContextAction_t::DeleteAction));
 		actionBeingAdded->setData(data);
 	}
 
 	actionBeingAdded = menu->addAction(tr("Cancel"));
-	data.setValue((int)ContextAction::Cancel);
+	data.setValue(static_cast<int>(ContextAction_t::Cancel));
 	actionBeingAdded->setData(data);
 
 	// Adjust event position wrt. headers
@@ -238,7 +245,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 
 void ActionTableView::processContextMenuEventHandler(QAction* action)
 {
-	int dataValue = action->data().toInt();
+	auto dataValue = static_cast<ContextAction_t>(action->data().toInt());
 
 	shared_ptr<ActionOnVariable> actionOnVariable;
 	if (this->currentMenuRow >= 0)
@@ -260,10 +267,10 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 	int newRangeR = -1;
 	bool setRange = false;
 
-	if ( (dataValue == ContextAction::AffectSwitchWhole)  ||
-	     (dataValue == ContextAction::AffectSwitchSingle) ||
-	     (dataValue == ContextAction::AffectSwitchRange)  ||
-	     (dataValue == ContextAction::AffectEditRange)
+	if ( (dataValue == ContextAction_t::AffectSwitchWhole)  ||
+	     (dataValue == ContextAction_t::AffectSwitchSingle) ||
+	     (dataValue == ContextAction_t::AffectSwitchRange)  ||
+	     (dataValue == ContextAction_t::AffectEditRange)
 	   )
 	{
 		if (actionOnVariable == nullptr) return;
@@ -275,21 +282,21 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 
 	switch (dataValue)
 	{
-	case ContextAction::Cancel:
+	case ContextAction_t::Cancel:
 		break;
-	case ContextAction::EditValue:
+	case ContextAction_t::EditValue:
 	{
 		if (this->currentMenuRow < 0) return;
 
 
-		auto index = this->tableModel->index(this->currentMenuRow, 2);
+		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ColumnRole_t::actionValue]);
 
 		this->setCurrentIndex(index);
 		this->edit(index);
 
 		break;
 	}
-	case ContextAction::DeleteAction:
+	case ContextAction_t::DeleteAction:
 		// Machine is about to be edited
 		machineManager->notifyMachineAboutToBeDiffEdited();
 
@@ -299,13 +306,13 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
-	case ContextAction::AffectSwitchWhole:
+	case ContextAction_t::AffectSwitchWhole:
 		if ( (oldRangeL != -1) || (oldRangeR != -1) )
 		{
 			setRange = true;
 		}
 		break;
-	case ContextAction::AffectSwitchSingle:
+	case ContextAction_t::AffectSwitchSingle:
 		if (oldRangeL == -1)
 		{
 			newRangeL = 0;
@@ -317,7 +324,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 			setRange = true;
 		}
 		break;
-	case ContextAction::AffectSwitchRange:
+	case ContextAction_t::AffectSwitchRange:
 		if (oldRangeL == -1)
 		{
 			newRangeL = 1;
@@ -340,7 +347,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 			}
 		}
 		break;
-	case ContextAction::MoveDown:
+	case ContextAction_t::MoveDown:
 		// Machine is about to be edited
 		machineManager->notifyMachineAboutToBeDiffEdited();
 
@@ -350,7 +357,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
-	case ContextAction::MoveUp:
+	case ContextAction_t::MoveUp:
 		// Machine is about to be edited
 		machineManager->notifyMachineAboutToBeDiffEdited();
 
@@ -360,7 +367,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		// Machine has been edited
 		machineManager->notifyMachineEdited();
 		break;
-	case ContextAction::AffectEditRange:
+	case ContextAction_t::AffectEditRange:
 		if (actionOnVariable == nullptr) return;
 
 
@@ -415,6 +422,12 @@ void ActionTableView::rangeEditorClosedEventHandler(int result)
 	this->rangeEditorDialog = nullptr;
 }
 
+void ActionTableView::refreshPersistentEditorsEventHandler()
+{
+	this->closePersistentEditors();
+	this->openPersistentEditors();
+}
+
 void ActionTableView::openPersistentEditors(int firstRow, int lastRow)
 {
 	if (firstRow == -1) firstRow = 0;
@@ -422,7 +435,7 @@ void ActionTableView::openPersistentEditors(int firstRow, int lastRow)
 
 	for (int row = firstRow ; row <= lastRow ; row++)
 	{
-		auto typeIndex = this->tableModel->index(row, 0);
+		auto typeIndex = this->tableModel->index(row, this->columnsRoles[ColumnRole_t::actionType]);
 		uint32_t actions = typeIndex.data(Qt::EditRole).toUInt();
 
 		// Open a persistent editor for actions that have
@@ -430,6 +443,12 @@ void ActionTableView::openPersistentEditors(int firstRow, int lastRow)
 		if (std::popcount(actions & 0xFFFF0000) > 1)
 		{
 			this->openPersistentEditor(typeIndex);
+		}
+
+		auto valueIndex = this->tableModel->index(row, this->columnsRoles[ColumnRole_t::actionValue]);
+		if (this->tableModel->data(valueIndex, Qt::EditRole).toString().startsWith("BOOLEAN"))
+		{
+			this->openPersistentEditor(valueIndex);
 		}
 	}
 }
@@ -441,10 +460,13 @@ void ActionTableView::closePersistentEditors(int firstRow, int lastRow)
 
 	for (int row = firstRow ; row <= lastRow ; row++)
 	{
-		auto typeIndex = this->tableModel->index(row, 0);
-		if (this->isPersistentEditorOpen(typeIndex))
+		for (int col = 0 ; col < this->tableModel->columnCount() ; col++)
 		{
-			this->closePersistentEditor(typeIndex);
+			auto index = this->tableModel->index(row, col);
+			if (this->isPersistentEditorOpen(index) == true)
+			{
+				this->closePersistentEditor(index);
+			}
 		}
 	}
 }

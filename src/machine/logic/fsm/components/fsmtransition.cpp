@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,6 +24,7 @@
 
 // StateS
 #include "equation.h"
+#include "actiononvariable.h"
 
 
 FsmTransition::FsmTransition(componentId_t sourceStateId, componentId_t targetStateId) :
@@ -99,12 +100,12 @@ shared_ptr<Equation> FsmTransition::getCondition() const
 
 uint FsmTransition::getAllowedActionTypes() const
 {
-	return ((uint)ActionOnVariableType_t::pulse     |
-	        (uint)ActionOnVariableType_t::set       |
-	        (uint)ActionOnVariableType_t::reset     |
-	        (uint)ActionOnVariableType_t::assign    |
-	        (uint)ActionOnVariableType_t::increment |
-	        (uint)ActionOnVariableType_t::decrement
+	return (static_cast<uint>(ActionOnVariable::Type_t::pulse)     |
+	        static_cast<uint>(ActionOnVariable::Type_t::set)       |
+	        static_cast<uint>(ActionOnVariable::Type_t::reset)     |
+	        static_cast<uint>(ActionOnVariable::Type_t::assign)    |
+	        static_cast<uint>(ActionOnVariable::Type_t::increment) |
+	        static_cast<uint>(ActionOnVariable::Type_t::decrement)
 	       );
 }
 

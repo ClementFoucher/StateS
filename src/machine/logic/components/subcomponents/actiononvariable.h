@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 class Variable;
 
 
@@ -51,33 +51,47 @@ class ActionOnVariable : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class Type_t : uint
+	{
+		none       = 0x0,
+		continuous = 0x1,
+		pulse      = 0x2,
+		set        = 0x4,
+		reset      = 0x8,
+		assign     = 0x10,
+		increment  = 0x20,
+		decrement  = 0x40
+	};
+
+	/////
 	// Static functions
 public:
-	static QString getActionTypeText(ActionOnVariableType_t type);
-	static QIcon   getActionTypeIcon(ActionOnVariableType_t type, bool isDown = false);
+	static QString getActionTypeText(ActionOnVariable::Type_t type);
+	static QIcon   getActionTypeIcon(ActionOnVariable::Type_t type, bool isDown = false);
 
 	/////
 	// Constructors/destructors
 public:
 	explicit ActionOnVariable(componentId_t variableId, uint actuatorAllowedActions);
-	explicit ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
+	explicit ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
 	// Object functions
 public:
 	void checkAndFixAction();
 
-	void setActionType (ActionOnVariableType_t newType);
-	void setActionValue(LogicValue newValue);
+	void setActionType (ActionOnVariable::Type_t newType);
+	void setActionValue(MachineValue newValue);
 	void setActionRange(int newRangeL, int newRangeR);
 
-	componentId_t          getVariableActedOnId()  const;
-	ActionOnVariableType_t getActionType()         const;
-	LogicValue             getActionValue()        const;
-	int                    getActionRangeL()       const;
-	int                    getActionRangeR()       const;
-	uint                   getActionSize()         const;
-	bool                   isActionValueEditable() const;
+	componentId_t            getVariableActedOnId()  const;
+	ActionOnVariable::Type_t getActionType()         const;
+	MachineValue             getActionValue()        const;
+	int                      getActionRangeL()       const;
+	int                      getActionRangeR()       const;
+	bool                     isActionValueEditable() const;
 
 	uint getAllowedActionTypes() const;
 
@@ -85,7 +99,7 @@ public:
 	QIcon   getCurrentActionTypeIcon() const;
 
 private slots:
-	void variableResizedEventHandler();
+	void variableTypeChangedEventHandler();
 	void variableMemorizedStateChangedEventHandler();
 	void variableInitialValueChangedEventHandler();
 
@@ -98,19 +112,25 @@ private:
 	void checkAndFixActionType();
 	void checkAndFixActionValue();
 
+	void setDefaultActionValue();
+
+	MachineValue::Type_t getExpectedActionType() const;
+	uint getExpectedBitVectorActionSize() const;
+
 	/////
 	// Signals
 signals:
-	void actionChangedEvent();
+	void actionChangedEvent(); // Emitted when action changes whatever the cause
+	void actionFixedEvent();   // Emitted when action had to be adapted due to its related variable changing
 
 	/////
 	// Object variables
 private:
 	componentId_t variableId = nullId;
-	uint actuatorAllowedActions = (uint)ActionOnVariableType_t::none;
+	uint actuatorAllowedActions = (uint)ActionOnVariable::Type_t::none;
 
-	ActionOnVariableType_t actionType;
-	LogicValue actionValue;
+	ActionOnVariable::Type_t actionType;
+	MachineValue actionValue;
 	int rangeL = -1;
 	int rangeR = -1;
 

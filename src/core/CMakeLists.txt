@@ -1,7 +1,6 @@
 set(core_header_files
     "states.h"
     "statestypes.h"
-    "basic_type/logicvalue.h"
     "basic_type/truthtable.h"
     "exceptions/exceptiontypes.h"
     "exceptions/statesexception.h"
@@ -16,12 +15,14 @@ set(core_header_files
     "undo_engine/undo_commands/fsmstaterenameundocommand.h"
     "undo_engine/undo_commands/fsmtransitionconditionsliderpositionchangeundocommand.h"
     "undo_engine/undo_commands/machinerenameundocommand.h"
+    "values/bitvectorvalue.h"
+    "values/booleanvalue.h"
+    "values/machinevalue.h"
     "xml/statesxmlanalyzer.h"
 )
 
 set(core_source_files
     "states.cpp"
-    "basic_type/logicvalue.cpp"
     "basic_type/truthtable.cpp"
     "exceptions/statesexception.cpp"
     "machine_manager/machinebuilder.cpp"
@@ -35,6 +36,9 @@ set(core_source_files
     "undo_engine/undo_commands/fsmstaterenameundocommand.cpp"
     "undo_engine/undo_commands/fsmtransitionconditionsliderpositionchangeundocommand.cpp"
     "undo_engine/undo_commands/machinerenameundocommand.cpp"
+    "values/bitvectorvalue.cpp"
+    "values/booleanvalue.cpp"
+    "values/machinevalue.cpp"
     "xml/statesxmlanalyzer.cpp"
 )
 
@@ -46,6 +50,7 @@ set(core_include_directories
     "simulation"
     "undo_engine"
     "undo_engine/undo_commands"
+    "values"
     "xml"
 )
 

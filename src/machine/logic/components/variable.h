@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,8 +26,7 @@
 #include <machinecomponent.h>
 
 // StateS
-#include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 
 
 class Variable : public MachineComponent
@@ -37,8 +36,15 @@ class Variable : public MachineComponent
 	/////
 	// Constructors/destructors
 public:
-	explicit Variable(const QString& name);
-	explicit Variable(componentId_t id, const QString& name);
+	explicit Variable(const QString& name, MachineValue::Type_t type) :
+	    MachineComponent(),
+	    name{name}, initialValue{MachineValue::fromType(type)}, memorized{false}
+	{}
+
+	explicit Variable(componentId_t id, const QString& name, MachineValue::Type_t type) :
+	    MachineComponent(id),
+	    name{name}, initialValue{MachineValue::fromType(type)}, memorized{false}
+	{}
 
 	/////
 	// Object functions
@@ -48,32 +54,32 @@ public:
 	// Mutators
 
 	void setName(const QString& newName);
-	void setSize(uint newSize);
-	void setInitialValue(const LogicValue& newInitialValue);
+	void setType(MachineValue::Type_t newType);
+	void setInitialValue(MachineValue newInitialValue);
 	void setMemorized(bool memorized);
 
 	///
 	// Accessors
 
-	QString    getName()         const;
-	uint       getSize()         const;
-	LogicValue getInitialValue() const;
-	bool       getMemorized()    const;
+	QString                   getName()         const;
+	MachineValue::Type_t getType()         const;
+	MachineValue              getInitialValue() const;
+	bool                      getMemorized()    const;
 
 	/////
 	// Signals
 signals:
 	void variableRenamedEvent();
-	void variableResizedEvent();
+	void variableTypeChangedEvent();
 	void variableInitialValueChangedEvent();
 	void variableMemorizedStateChangedEvent();
 
 	/////
 	// Object variables
 private:
-	QString    name;
-	LogicValue initialValue = LogicValue::getValue0(1);
-	bool       memorized    = false;
+	QString      name;
+	MachineValue initialValue;
+	bool         memorized;
 
 };
 

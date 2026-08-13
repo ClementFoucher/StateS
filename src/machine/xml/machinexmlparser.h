@@ -39,7 +39,6 @@ class QXmlStreamReader;
 class Machine;
 class ViewConfiguration;
 class GraphicAttributes;
-class MachineComponent;
 class Equation;
 class Variable;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,19 +36,19 @@ VariableTableModel::VariableTableModel(VariableNature_t editorNature, QObject* p
 
 	this->editorNature = editorNature;
 
-	this->columnsRoles.append(ColumnRole::name);
-	this->columnsRoles.append(ColumnRole::size);
+	this->columnsRoles.append(ColumnRole_t::name);
+	this->columnsRoles.append(ColumnRole_t::type);
 	switch (this->editorNature)
 	{
 	case VariableNature_t::output:
 	case VariableNature_t::internal:
-		this->columnsRoles.append(ColumnRole::memorized);
+		this->columnsRoles.append(ColumnRole_t::memorized);
 		break;
 	case VariableNature_t::input:
 	case VariableNature_t::constant:
 		break;
 	}
-	this->columnsRoles.append(ColumnRole::value);
+	this->columnsRoles.append(ColumnRole_t::value);
 }
 
 int VariableTableModel::rowCount(const QModelIndex& parent) const
@@ -79,7 +79,7 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 			auto columnRole = this->columnsRoles.at(section);
 			switch (columnRole)
 			{
-			case ColumnRole::name:
+			case ColumnRole_t::name:
 				switch (this->editorNature)
 				{
 				case VariableNature_t::input:
@@ -96,13 +96,13 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 					break;
 				}
 				break;
-			case ColumnRole::size:
-				return tr("Size");
+			case ColumnRole_t::type:
+				return tr("Type");
 				break;
-			case ColumnRole::memorized:
+			case ColumnRole_t::memorized:
 				return tr("Memorized");
 				break;
-			case ColumnRole::value:
+			case ColumnRole_t::value:
 				switch (this->editorNature)
 				{
 				case VariableNature_t::input:
@@ -124,16 +124,16 @@ QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation
 			auto columnRole = this->columnsRoles.at(section);
 			switch (columnRole)
 			{
-			case ColumnRole::name:
+			case ColumnRole_t::name:
 				return "NAME";
 				break;
-			case ColumnRole::size:
-				return "SIZE";
+			case ColumnRole_t::type:
+				return "TYPE";
 				break;
-			case ColumnRole::memorized:
+			case ColumnRole_t::memorized:
 				return "MEMORIZED";
 				break;
-			case ColumnRole::value:
+			case ColumnRole_t::value:
 				return "VALUE";
 				break;
 			}
@@ -167,18 +167,16 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 	{
 		switch (columnRole)
 		{
-		case ColumnRole::name:
+		case ColumnRole_t::name:
 			return variable->getName();
 			break;
-		case ColumnRole::size:
-			return QString::number(variable->getSize());
+		case ColumnRole_t::value:
+			return variable->getInitialValue().toDisplayString();
 			break;
-		case ColumnRole::memorized:
-			// No display role for this column
+		case ColumnRole_t::type:
+		case ColumnRole_t::memorized:
+			// No display role for these columns
 			// as all rows have a permanent editor.
-			break;
-		case ColumnRole::value:
-			return variable->getInitialValue().toString();
 			break;
 		}
 	}
@@ -186,28 +184,61 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 	{
 		switch (columnRole)
 		{
-		case ColumnRole::name:
+		case ColumnRole_t::name:
 			return variable->getName();
 			break;
-		case ColumnRole::size:
-			return QString::number(variable->getSize());
+		case ColumnRole_t::type:
+			switch (variable->getType())
+			{
+			case MachineValue::Type_t::boolean:
+				return "BOOLEAN";
+				break;
+			case MachineValue::Type_t::bitVector:
+			{
+				QString text = "BITVECTOR";
+				text += ":";
+				text += QString::number(variable->getInitialValue().getBitVectorValue().getSize());
+				return text;
+				break;
+			}
+			case MachineValue::Type_t::nullType:
+				break;
+			}
 			break;
-		case ColumnRole::memorized:
+		case ColumnRole_t::memorized:
 			return variable->getMemorized();
 			break;
-		case ColumnRole::value:
+		case ColumnRole_t::value:
+		{
+			auto variableValue = variable->getInitialValue();
+
+			// Provide various fields representing value
+			QString text;
+
+			// First field is type
+			switch (variableValue.getType())
 			{
-				// Provide various fields representing value
-				QString text;
-				auto variableValue = variable->getInitialValue();
+			case MachineValue::Type_t::boolean:
+				text += "BOOLEAN";
+				break;
+			case MachineValue::Type_t::bitVector:
+				text += "BITVECTOR";
+				break;
+			case MachineValue::Type_t::nullType:
+				text += "NULL";
+				break;
+			}
 
-				// First field is variable value
-				text = variableValue.toString();
+			// Second field is variable value
+			text += ":" + variableValue.toRawString();
 
-				// Second field is variable size
-				text += ":" + QString::number(variableValue.getSize());
+			// Third field (only for bit vectors) is variable size
+			if (variableValue.getType() == MachineValue::Type_t::bitVector)
+			{
+				text += ":" + QString::number(variableValue.getBitVectorValue().getSize());
+			}
 
-				return text;
+			return text;
 			}
 			break;
 		}
@@ -232,7 +263,7 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 	{
 		switch (columnRole)
 		{
-		case ColumnRole::name:
+		case ColumnRole_t::name:
 		{
 			auto valueAsString = value.toString();
 
@@ -248,28 +279,56 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 			}
 			break;
 		}
-		case ColumnRole::size:
+		case ColumnRole_t::type:
 		{
-			bool ok;
-			auto valueAsInt = value.toInt(&ok);
+			auto valueAsString = value.toString();
 
-			if ( (ok == true) && (valueAsInt > 0) )
+			if (valueAsString == "BOOLEAN")
 			{
 				// Machine is about to be edited
 				machineManager->notifyMachineAboutToBeDiffEdited();
 
-				// Change variable size
-				variable->setSize(valueAsInt);
+				variable->setType(MachineValue::Type_t::boolean);
 
-				// Check that size vas correctly changed
-				if ((int)variable->getSize() == valueAsInt)
+				dataSucessfullyChanged = true;
+			}
+			else if (valueAsString.startsWith("BITVECTOR"))
+			{
+				auto stringBits = valueAsString.split(":");
+				bool ok;
+				int size = stringBits[1].toInt(&ok);
+				if ( (ok == true) && (size > 0) )
 				{
+					// Machine is about to be edited
+					machineManager->notifyMachineAboutToBeDiffEdited();
+
 					dataSucessfullyChanged = true;
+
+					// A type change can be the type itself and/or the Bit Vector size
+					if (variable->getType() != MachineValue::Type_t::bitVector)
+					{
+						variable->setType(MachineValue::Type_t::bitVector);
+					}
+
+					auto initialValue = variable->getInitialValue().getBitVectorValue();
+					if (initialValue.getSize() != size)
+					{
+						initialValue.resize(size);
+						// Check that new size was accepted
+						if (initialValue.getSize() == size)
+						{
+							variable->setInitialValue(initialValue);
+						}
+						else
+						{
+							dataSucessfullyChanged = false;
+						}
+					}
 				}
 			}
 			break;
 		}
-		case ColumnRole::memorized:
+		case ColumnRole_t::memorized:
 			// Machine is about to be edited
 			machineManager->notifyMachineAboutToBeDiffEdited();
 
@@ -278,19 +337,35 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 
 			dataSucessfullyChanged = true;
 			break;
-		case ColumnRole::value:
+		case ColumnRole_t::value:
 		{
 			auto valueAsString = value.toString();
-			auto newVariableValue = LogicValue::fromString(valueAsString);
 
-			auto oldVariableValue = variable->getInitialValue();
-			if (oldVariableValue.isNull() == false)
+			MachineValue newVariableValue{};
+			switch (variable->getType())
 			{
-				auto oldVariableValueSize = oldVariableValue.getSize();
-				if (newVariableValue.getSize() != oldVariableValueSize)
+			case MachineValue::Type_t::boolean:
+			{
+				newVariableValue = BooleanValue::fromRawString(valueAsString);
+				break;
+			}
+			case MachineValue::Type_t::bitVector:
+			{
+				auto newBitVectorVariableValue = BitVectorValue::fromRawString(valueAsString);
+
+				if (variable->getInitialValue().isNull() == false)
 				{
-					newVariableValue.resize(oldVariableValueSize);
+					auto oldVariableValueSize = variable->getInitialValue().getBitVectorValue().getSize();
+					if (newBitVectorVariableValue.getSize() != oldVariableValueSize)
+					{
+						newBitVectorVariableValue.resize(oldVariableValueSize);
+					}
 				}
+				newVariableValue = newBitVectorVariableValue;
+				break;
+			}
+			case MachineValue::Type_t::nullType:
+				break;
 			}
 
 			if (newVariableValue.isNull() == false)
@@ -301,11 +376,7 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 				// Change variable initial value
 				variable->setInitialValue(newVariableValue);
 
-				// Check that value vas correctly changed
-				if (variable->getInitialValue() == newVariableValue)
-				{
-					dataSucessfullyChanged = true;
-				}
+				dataSucessfullyChanged = true;
 			}
 			break;
 		}
@@ -314,7 +385,20 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 
 	if (dataSucessfullyChanged == true)
 	{
-		emit this->dataChanged(index, index);
+		switch (columnRole)
+		{
+		case ColumnRole_t::name:
+		case ColumnRole_t::memorized:
+		case ColumnRole_t::value:
+			emit this->dataChanged(index, index);
+			break;
+		case ColumnRole_t::type:
+			// Changing type has side effects on value
+			auto leftIndex  = this->index(index.row(), this->columnsRoles.indexOf(ColumnRole_t::type));
+			auto rightIndex = this->index(index.row(), this->columnsRoles.indexOf(ColumnRole_t::value));
+			emit this->dataChanged(leftIndex, rightIndex);
+			break;
+		}
 
 		// Machine has been edited
 		machineManager->notifyMachineEdited();
@@ -442,7 +526,7 @@ bool VariableTableModel::insertRows(int row, int count, const QModelIndex& paren
 		} while (nameIsValid == false);
 
 		// Add variable
-		auto newVarId = machine->addVariable(this->editorNature, initialName);
+		auto newVarId = machine->addVariable(this->editorNature, initialName, MachineValue::Type_t::boolean);
 
 		// Make internal variables memorized by default
 		if (this->editorNature == VariableNature_t::internal)
@@ -554,4 +638,6 @@ void VariableTableModel::machineUpdatedEventHandler()
 {
 	this->beginResetModel();
 	this->endResetModel();
+
+	emit this->refreshPersistentEditorsEvent();
 }

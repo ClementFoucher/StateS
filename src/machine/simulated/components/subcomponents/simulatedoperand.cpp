@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -25,7 +25,6 @@
 // StateS
 #include "machinemanager.h"
 #include "simulatedmachine.h"
-#include "operand.h"
 #include "simulatedequation.h"
 #include "simulatedvariable.h"
 
@@ -39,55 +38,66 @@ SimulatedOperand::SimulatedOperand(shared_ptr<const Operand> sourceOperand)
 
 	switch (this->source)
 	{
-	case OperandSource_t::variable:
+	case Operand::Source_t::variable:
 	{
-		this->variableId = sourceOperand->getVariableId();
+		this->value = sourceOperand->getVariableId();
 
 		auto simulatedMachine = machineManager->getSimulatedMachine();
 		if (simulatedMachine == nullptr) return;
 
-		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
+		auto simulatedVariable = simulatedMachine->getSimulatedVariable(sourceOperand->getVariableId());
 		if (simulatedVariable == nullptr) return;
 
 
 		connect(simulatedVariable.get(), &SimulatedVariable::variableCurrentValueChangedEvent, this, &SimulatedOperand::operandCurrentValueChangedEvent);
 		break;
 	}
-	case OperandSource_t::equation:
-		this->equation = make_shared<SimulatedEquation>(sourceOperand->getEquation());
+	case Operand::Source_t::equation:
+	{
+		auto equation = make_shared<SimulatedEquation>(sourceOperand->getEquation());
+		this->value = equation;
 
 		connect(equation.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedOperand::operandCurrentValueChangedEvent);
 		break;
-	case OperandSource_t::constant:
-		this->constant = sourceOperand->getConstant();
+	}
+	case Operand::Source_t::constant:
+		this->value = sourceOperand->getConstant();
 		break;
 	}
 }
 
-LogicValue SimulatedOperand::getCurrentValue() const
+MachineValue SimulatedOperand::getCurrentValue() const
 {
 	switch (this->source)
 	{
-	case OperandSource_t::variable:
+	case Operand::Source_t::variable:
 	{
 		auto simulatedMachine = machineManager->getSimulatedMachine();
-		if (simulatedMachine == nullptr) return LogicValue::getNullValue();
+		if (simulatedMachine == nullptr) return MachineValue{};
 
-		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-		if (simulatedVariable == nullptr) return LogicValue::getNullValue();
+		auto simulatedVariable = simulatedMachine->getSimulatedVariable(std::get<componentId_t>(this->value));
+		if (simulatedVariable == nullptr) return MachineValue{};
 
 
 		return simulatedVariable->getCurrentValue();
 		break;
 	}
-	case OperandSource_t::equation:
-		if (this->equation == nullptr) return LogicValue::getNullValue();
+	case Operand::Source_t::equation:
+	{
+		auto equation = std::get<shared_ptr<SimulatedEquation>>(this->value);
+		if (equation == nullptr) return MachineValue{};
 
 
-		return this->equation->getCurrentValue();
-		break;
-	case OperandSource_t::constant:
-		return this->constant;
+		return equation->getCurrentValue();
 		break;
 	}
+	case Operand::Source_t::constant:
+		return std::get<MachineValue>(this->value);
+		break;
+	}
+}
+
+MachineValue::Type_t SimulatedOperand::getType() const
+{
+	return this->getCurrentValue().getType();
 }

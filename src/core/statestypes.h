@@ -53,53 +53,6 @@ enum class MachineBuilderTool_t          { none, initialState, state, transition
 enum class MachineBuilderSingleUseTool_t { none, drawTransitionFromScene, editTransitionSource, editTransitionTarget };
 enum class SimulationBehavior_t          { prepare, immediately, after };
 
-enum class OperandSource_t
-{
-	variable, // Reference (using componentId) to a variable defined in the machine (including constants)
-	equation, // Operand is itself an equation
-	constant  // Constant defined on-the-fly in equation editor. Not to confuse with constants defined in the machine, which are variables (try to follow here!).
-};
-
-// This enum must always be treated using a switch in order to obtain
-// a warning when adding a new member in all places it is used.
-enum class OperatorType_t
-{
-	notOp,  // Not equations always have exactly one operand
-	andOp,
-	orOp,
-	xorOp,
-	nandOp,
-	norOp,
-	xnorOp,
-	equalOp, // Equal equations always have exactly two operand and are size one
-	diffOp,  // Diff  equations always have exactly two operand and are size one
-	extractOp, // Extract equations always have exacly one operand
-	concatOp,
-	identity // For internal use only, exactly one operand
-};
-
-enum class EquationComputationFailureCause_t
-{
-	nofail,
-	nullOperand,
-	invalidOperand,
-	sizeMismatch,
-	missingParameter,
-	incorrectParameter
-};
-
-enum class ActionOnVariableType_t : uint
-{
-	none       = 0x0,
-	continuous = 0x1,
-	pulse      = 0x2,
-	set        = 0x4,
-	reset      = 0x8,
-	assign     = 0x10,
-	increment  = 0x20,
-	decrement  = 0x40
-};
-
 enum class UndoCommandId_t : int32_t
 {
 	// Default value

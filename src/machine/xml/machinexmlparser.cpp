@@ -111,9 +111,9 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Get variable name
-	QString variableName = this->getCurrentNodeStringAttribute("Name");
+	auto variableName = this->getCurrentNodeStringAttribute("Name");
 
-	shared_ptr<Variable> variable = this->getVariableByName(variableName);
+	auto variable = this->getVariableByName(variableName);
 	if (variable == nullptr)
 	{
 		this->addIssue(tr("Error!") + " " + tr("Reference to undeclared variable encountered while parsing action list."));
@@ -124,36 +124,36 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Get action type
-	ActionOnVariableType_t actionType;
-	QString actionTypeText = this->getCurrentNodeStringAttribute("ActionType");
+	ActionOnVariable::Type_t actionType;
+	auto actionTypeText = this->getCurrentNodeStringAttribute("ActionType");
 
 	if (actionTypeText == "Pulse")
 	{
-		actionType = ActionOnVariableType_t::pulse;
+		actionType = ActionOnVariable::Type_t::pulse;
 	}
 	else if (actionTypeText == "ActiveOnState")
 	{
-		actionType = ActionOnVariableType_t::continuous;
+		actionType = ActionOnVariable::Type_t::continuous;
 	}
 	else if (actionTypeText == "Set")
 	{
-		actionType = ActionOnVariableType_t::set;
+		actionType = ActionOnVariable::Type_t::set;
 	}
 	else if (actionTypeText == "Reset")
 	{
-		actionType = ActionOnVariableType_t::reset;
+		actionType = ActionOnVariable::Type_t::reset;
 	}
 	else if (actionTypeText == "Assign")
 	{
-		actionType = ActionOnVariableType_t::assign;
+		actionType = ActionOnVariable::Type_t::assign;
 	}
 	else if (actionTypeText == "Increment")
 	{
-		actionType = ActionOnVariableType_t::increment;
+		actionType = ActionOnVariable::Type_t::increment;
 	}
 	else if (actionTypeText == "Decrement")
 	{
-		actionType = ActionOnVariableType_t::decrement;
+		actionType = ActionOnVariable::Type_t::decrement;
 	}
 	else
 	{
@@ -165,8 +165,8 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Get action range
-	QString srangel = this->getCurrentNodeStringAttribute("RangeL");
-	QString sranger = this->getCurrentNodeStringAttribute("RangeR");
+	auto srangel = this->getCurrentNodeStringAttribute("RangeL");
+	auto sranger = this->getCurrentNodeStringAttribute("RangeR");
 
 	int rangeL;
 	int rangeR;
@@ -189,32 +189,42 @@ void MachineXmlParser::parseActionNode()
 		rangeR = -1;
 	}
 
-	// Get action value
-	QString sactval = this->getCurrentNodeStringAttribute("ActionValue");
-	LogicValue actionValue;
-	if (sactval.isEmpty() == false)
+	// Get action value type
+	auto actionValueType = MachineValue::Type_t::nullType;
+
+	auto sactvaltype = this->getCurrentNodeStringAttribute("ActionValueType");
+	if (sactvaltype.isEmpty() == false)
 	{
-		actionValue = LogicValue::fromString(sactval);
-		if (actionValue.isNull() == true)
+		if (sactvaltype == "Boolean")
 		{
-			uint avsize;
-			if ( (rangeL != -1) && (rangeR == -1) )
-			{
-				avsize = 1;
-			}
-			else if ( (rangeL != -1) && (rangeR != -1) )
-			{
-				avsize = rangeL - rangeR + 1;
-			}
-			else
-			{
-				avsize = variable->getSize();
-			}
+			actionValueType = MachineValue::Type_t::boolean;
+		}
+		else if (sactvaltype == "BitVector")
+		{
+			actionValueType = MachineValue::Type_t::bitVector;
+		}
+	}
 
-			actionValue = LogicValue::getValue0(avsize);
+	// Get action value
+	MachineValue actionValue{};
 
-			this->addIssue(tr("Warning:") + " " + tr("Error in action value for variable") + " \"" + variableName + "\".");
-			this->addIssue("    " + tr("Value ignored and set to") + " \"" + actionValue.toString() + "\".");
+	if (actionValueType != MachineValue::Type_t::nullType)
+	{
+		auto sactval = this->getCurrentNodeStringAttribute("ActionValue");
+		if (sactval.isEmpty() == false)
+		{
+			switch (actionValueType)
+			{
+			case MachineValue::Type_t::boolean:
+				actionValue = BooleanValue::fromRawString(sactval);
+				break;
+			case MachineValue::Type_t::bitVector:
+				actionValue = BitVectorValue::fromRawString(sactval);
+				break;
+			case MachineValue::Type_t::nullType:
+				// Value is not null (checked before): should not happen
+				break;
+			}
 		}
 	}
 
@@ -225,7 +235,7 @@ void MachineXmlParser::parseActionNode()
 
 void MachineXmlParser::parseLogicEquationNode()
 {
-	OperatorType_t operatorType;
+	Equation::Operator_t operatorType;
 	int rangeL = -1;
 	int rangeR = -1;
 
@@ -239,54 +249,54 @@ void MachineXmlParser::parseLogicEquationNode()
 		operandCount = -1;
 	}
 
-	QString valueOperator = this->getCurrentNodeStringAttribute("Operator");
+	auto valueOperator = this->getCurrentNodeStringAttribute("Operator");
 	if (valueOperator == "not")
 	{
-		operatorType = OperatorType_t::notOp;
+		operatorType = Equation::Operator_t::notOp;
 	}
 	else if (valueOperator == "and")
 	{
-		operatorType = OperatorType_t::andOp;
+		operatorType = Equation::Operator_t::andOp;
 	}
 	else if (valueOperator == "or")
 	{
-		operatorType = OperatorType_t::orOp;
+		operatorType = Equation::Operator_t::orOp;
 	}
 	else if (valueOperator == "xor")
 	{
-		operatorType = OperatorType_t::xorOp;
+		operatorType = Equation::Operator_t::xorOp;
 	}
 	else if (valueOperator == "nand")
 	{
-		operatorType = OperatorType_t::nandOp;
+		operatorType = Equation::Operator_t::nandOp;
 	}
 	else if (valueOperator == "nor")
 	{
-		operatorType = OperatorType_t::norOp;
+		operatorType = Equation::Operator_t::norOp;
 	}
 	else if (valueOperator == "xnor")
 	{
-		operatorType = OperatorType_t::xnorOp;
+		operatorType = Equation::Operator_t::xnorOp;
 	}
 	else if (valueOperator == "equals")
 	{
-		operatorType = OperatorType_t::equalOp;
+		operatorType = Equation::Operator_t::equalOp;
 	}
 	else if (valueOperator == "differs")
 	{
-		operatorType = OperatorType_t::diffOp;
+		operatorType = Equation::Operator_t::diffOp;
 	}
 	else if (valueOperator == "concatenate")
 	{
-		operatorType = OperatorType_t::concatOp;
+		operatorType = Equation::Operator_t::concatOp;
 	}
 	else if (valueOperator == "identity")
 	{
-		operatorType = OperatorType_t::identity;
+		operatorType = Equation::Operator_t::identity;
 	}
 	else if (valueOperator == "extract")
 	{
-		operatorType = OperatorType_t::extractOp;
+		operatorType = Equation::Operator_t::extractOp;
 
 		auto srangel = this->getCurrentNodeStringAttribute("RangeL");
 		auto sranger = this->getCurrentNodeStringAttribute("RangeR");
@@ -306,7 +316,7 @@ void MachineXmlParser::parseLogicEquationNode()
 	// Build equation
 	auto equation = make_shared<Equation>(operatorType, operandCount);
 
-	if (operatorType == OperatorType_t::extractOp)
+	if (operatorType == Equation::Operator_t::extractOp)
 	{
 		equation->setRange(rangeL, rangeR);
 	}
@@ -323,7 +333,7 @@ void MachineXmlParser::parseOperandNode()
 		return;
 	}
 
-	QString operandSource = this->getCurrentNodeStringAttribute("Source");
+	auto operandSource = this->getCurrentNodeStringAttribute("Source");
 	if ( (operandSource != "Equation") &&
 	     (operandSource != "Variable") &&
 	     (operandSource != "Constant") )
@@ -376,7 +386,7 @@ void MachineXmlParser::parseOperandVariableNode()
 
 	auto variableName = this->getCurrentNodeStringAttribute("Name");
 
-	shared_ptr<Variable> variable = this->getVariableByName(variableName);
+	auto variable = this->getVariableByName(variableName);
 	if (variable == nullptr)
 	{
 		this->addIssue(tr("Error!") + " " + tr("Reference to undeclared variable encountered while parsing an equation."));
@@ -405,18 +415,31 @@ void MachineXmlParser::parseOperandConstantNode()
 	}
 
 
-	auto constantValue = LogicValue::fromString(this->getCurrentNodeStringAttribute("Value"));
-
-	if (constantValue.isNull() == true)
+	auto typeStr = this->getCurrentNodeStringAttribute("Type");
+	auto valueStr = this->getCurrentNodeStringAttribute("Value");
+	MachineValue constantValue{};
+	if (typeStr == "Boolean")
 	{
-		constantValue = LogicValue::getValue0(1);
-
-		this->addIssue(tr("Warning:") + " " + tr("Error in constant value while parsing equation."));
-		this->addIssue("    " + tr("Value ignored and set to") + " \"" + constantValue.toString() + "\".");
+		constantValue = BooleanValue::fromRawString(valueStr);
+	}
+	else if (typeStr == "BitVector")
+	{
+		constantValue = BitVectorValue::fromRawString(valueStr);
 	}
 
-	auto parentEquation = this->equationStack.top();
-	parentEquation->setOperand(this->operandRankStack.pop(), constantValue);
+	if (constantValue.isNull() == false)
+	{
+		auto parentEquation = this->equationStack.top();
+		parentEquation->setOperand(this->operandRankStack.pop(), constantValue);
+	}
+	else // (constantValue.isNull() == true)
+	{
+		this->operandRankStack.pop();
+
+		this->addIssue(tr("Warning:") + " " + tr("Error in constant value while parsing equation."));
+		this->addIssue("    " + tr("Value") + " \"" + valueStr + "\" " + tr("of type") + " \"" + typeStr + "\" " + tr("couldn't be parsed."));
+		this->addIssue("    " + tr("Value ignored, the operand will be left empty."));
+	}
 }
 
 /**
@@ -719,7 +742,7 @@ void MachineXmlParser::parseEndElement()
 
 void MachineXmlParser::parseMachineName()
 {
-	QString nameAttribute = this->getCurrentNodeStringAttribute("Name");
+	auto nameAttribute = this->getCurrentNodeStringAttribute("Name");
 	if (nameAttribute.isNull() == false)
 	{
 		this->machine->setName(nameAttribute);
@@ -788,7 +811,7 @@ void MachineXmlParser::parseConfigurationViewCentralPoint()
 void MachineXmlParser::parseVariableNode()
 {
 	// Get name
-	QString variableName = this->getCurrentNodeStringAttribute("Name");
+	auto variableName = this->getCurrentNodeStringAttribute("Name");
 	if (variableName.isNull())
 	{
 		this->addIssue(tr("Error!") + " " + tr("Name missing for a variable."));
@@ -822,8 +845,35 @@ void MachineXmlParser::parseVariableNode()
 	// Get ID if it is defined
 	auto extractedId = this->getCurrentNodeIdAttribute();
 
+	// Get type
+	auto typeStr = this->getCurrentNodeStringAttribute("Type");
+	auto variableType = MachineValue::Type_t::boolean; // Default to boolean
+	if (typeStr.isNull() == false)
+	{
+		if (typeStr == "Boolean")
+		{
+			variableType = MachineValue::Type_t::boolean;
+		}
+		else if (typeStr == "BitVector")
+		{
+			variableType = MachineValue::Type_t::bitVector;
+		}
+		else
+		{
+			this->addIssue(tr("Error!") + " " + tr("Unknown type") + " \"" + typeStr + "\" " + tr("found for variable while parsing variable list."));
+			this->addIssue("    " + tr("Defaulting to Boolean type."));
+			this->addIssue("    " + tr("Variable name was:") + " " + variableName + ".");
+		}
+	}
+	else // (typeStr.isNull() == true)
+	{
+		this->addIssue(tr("Error!") + " " + tr("No type found for variable while parsing variable list."));
+		this->addIssue("    " + tr("Defaulting to Boolean type."));
+		this->addIssue("    " + tr("Variable name was:") + " " + variableName + ".");
+	}
+
 	// Create variable
-	auto variableId = machine->addVariable(nature, variableName, extractedId);
+	auto variableId = machine->addVariable(nature, variableName, variableType, extractedId);
 
 	// Check if variable was successfully added
 	auto variable = machine->getVariable(variableId);
@@ -836,7 +886,7 @@ void MachineXmlParser::parseVariableNode()
 		return;
 	}
 
-	QString actualVariableName = variable->getName();
+	auto actualVariableName = variable->getName();
 	if (actualVariableName != variableName)
 	{
 		this->addIssue(tr("Warning:") + " " + tr("The variable named") + " \"" + variableName + "\" " + tr("in save file was added under name") + " \"" + actualVariableName + "\".");
@@ -851,57 +901,32 @@ void MachineXmlParser::parseVariableNode()
 		variable->setMemorized(true);
 	}
 
-	// Get size
-	bool ok;
-	uint size = this->getCurrentNodeUintAttribute("Size", &ok);
-	if (ok == true)
-	{
-		if (size != 1)
-		{
-			variable->setSize(size);
-
-			uint variableNewSize = variable->getSize();
-			if (size != variableNewSize)
-			{
-				this->addIssue(tr("Warning:") + " " + tr("Unable to resize variable") + " \"" + variableName + "\".");
-				this->addIssue("    " + tr("Requested size was:") + " " + QString::number(size) + ".");
-				this->addIssue("    " + tr("Variable size ignored and defaulted to") + " " + QString::number(variable->getSize()) + ".");
-			}
-		}
-	}
-	else
-	{
-		this->addIssue(tr("Warning:") + " " + tr("Unable to extract variable size for variable") + " \"" + variableName + "\".");
-		this->addIssue("    " + tr("Variable size defaulted to") + " " + QString::number(variable->getSize()) + ".");
-	}
-
 	// Get value
-	QString variableValueStr = this->getCurrentNodeStringAttribute("Value");
+	auto variableValueStr = this->getCurrentNodeStringAttribute("Value");
 	if (variableValueStr.isEmpty() == false)
 	{
-		auto initialValue = LogicValue::fromString(variableValueStr);
-
-		if (initialValue.isNull() == false)
+		switch (variableType)
 		{
-			variable->setInitialValue(initialValue);
-		}
-		else // (initialValue.isNull() == true)
-		{
-			this->addIssue(tr("Warning:") + " " + tr("The extracted initial value for variable") + " \"" + actualVariableName + "\" " + tr("was incorrect."));
-			this->addIssue("    " + tr("Requested initial value was") + " \"" + variableValueStr + "\".");
-			this->addIssue("    " + tr("Initial value ignored and defaulted to") + " \"" + variable->getInitialValue().toString() + "\".");
+		case MachineValue::Type_t::boolean:
+			variable->setInitialValue(BooleanValue::fromRawString(variableValueStr));
+			break;
+		case MachineValue::Type_t::bitVector:
+			variable->setInitialValue(BitVectorValue::fromRawString(variableValueStr));
+			break;
+		case MachineValue::Type_t::nullType:
+			// Should not happen: defaulted to boolean
+			break;
 		}
 	}
 	else // (variableValueStr.isEmpty() == true)
 	{
-		this->addIssue(tr("Warning:") + " " + tr("No value was defined for variable:") + " \"" + actualVariableName + "\".");
-		this->addIssue("    " + tr("Value defaulted to") + " \"" + variable->getInitialValue().toString() + "\".");
+		this->addIssue(tr("Warning:") + " " + tr("No initial value was defined for variable:") + " \"" + actualVariableName + "\".");
+		this->addIssue("    " + tr("Initial value defaulted to") + " \"" + variable->getInitialValue().toDisplayString() + "\".");
 	}
 }
 
 shared_ptr<Variable> MachineXmlParser::getVariableByName(const QString& variableName) const
 {
-	shared_ptr<Variable> variable;
 	for (auto& variableId : this->machine->getAllVariablesIds())
 	{
 		auto currentVariable = this->machine->getVariable(variableId);
@@ -910,9 +935,9 @@ shared_ptr<Variable> MachineXmlParser::getVariableByName(const QString& variable
 
 		if (currentVariable->getName() == variableName)
 		{
-			variable = currentVariable;
+			return currentVariable;
 		}
 	}
 
-	return variable;
+	return nullptr;
 }

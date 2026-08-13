@@ -1,7 +1,7 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2026 Clément Foucher
  *
- * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
+ * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
  *
  * This file is part of StateS.
@@ -19,21 +19,24 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VARIABLETABLESIZEDELEGATE_H
-#define VARIABLETABLESIZEDELEGATE_H
+#ifndef VARIABLETABLETYPEDELEGATE_H
+#define VARIABLETABLETYPEDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
 
+// StateS
+class TypeEditor;
 
-class VariableTableSizeDelegate : public QStyledItemDelegate
+
+class VariableTableTypeDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableSizeDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
+	explicit VariableTableTypeDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -41,7 +44,16 @@ public:
 	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+	virtual QSize    sizeHint(const QStyleOptionViewItem&, const QModelIndex&)                          const override;
+
+private slots:
+	void typeChangedEventHandler(TypeEditor* editor);
+
+	/////
+	// Object variables
+private:
+	TypeEditor* dummyEditor = nullptr;
 
 };
 
-#endif // VARIABLETABLESIZEDELEGATE_H
+#endif // VARIABLETABLETYPEDELEGATE_H

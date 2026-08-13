@@ -29,7 +29,7 @@
 class QLabel;
 
 // StateS
-#include "logicvalue.h"
+#include "machinevalue.h"
 class ValueEditor;
 
 
@@ -40,7 +40,7 @@ class ConstantEditorWidget : public EquationPartEditorWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit ConstantEditorWidget(LogicValue initialValue, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
+	explicit ConstantEditorWidget(MachineValue initialValue, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
 
 	/////
 	// Object functions
@@ -74,7 +74,7 @@ private:
 	/////
 	// Object variables
 private:
-	LogicValue currentValue;
+	MachineValue currentValue;
 
 	ValueEditor* valueEditor = nullptr;
 	QLabel*      valueText   = nullptr;

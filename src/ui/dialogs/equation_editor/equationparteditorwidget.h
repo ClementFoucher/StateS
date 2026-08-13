@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,6 +27,7 @@
 
 // Stdlib
 #include <memory>
+#include <variant>
 using namespace std;
 
 // Qt
@@ -34,7 +35,7 @@ class QDrag;
 
 // StateS
 #include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 class EquationEditorWidget;
 class Equation;
 
@@ -79,12 +80,21 @@ protected:
 		AddExtractor         = 0x100
 	};
 
+	enum class TempValueNature_t
+	{
+		empty,
+		variable,
+		equation,
+		constant
+	};
+
 	/////
 	// Static variables
 protected:
 	static const QString passiveStyleSheet;
 	static const QString activeStyleSheet;
 	static const QString erroneousStyleSheet;
+	static const QString warningStyleSheet;
 	static const QString editableStyleSheet;
 
 	/////
@@ -129,16 +139,17 @@ protected:
 	virtual void processSpecificMenuAction(ContextAction_t action) = 0;
 	virtual void processSpecificDropAction(DropAction_t    action) = 0;
 
-	// Functions for editable parts
+	// Virtual functions with default implementation
 	virtual bool getIsEditable() const;
+	virtual bool getHasWarning() const;
 
 	// Functions accessible to children
 	void replaceByTempValue();
 	bool isRootEquation() const;
+	void updateBorderColor();
 
 private:
 	void setHighlighted(bool highlighted);
-	void updateBorderColor();
 
 	void processMenuAction(ContextAction_t action);
 	void processDropAction(DropAction_t action);
@@ -156,10 +167,8 @@ protected:
 	EquationEditorWidget* parentEquationEditor = nullptr;
 
 	// Temporary storage
-	OperandSource_t      tempValueNature;
-	shared_ptr<Equation> tempEquation;
-	componentId_t        tempVariableId = nullId;
-	LogicValue           tempConstant   = LogicValue();
+	TempValueNature_t tempValueNature = TempValueNature_t::empty;
+	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> tempValue;
 
 private:
 	bool isHighlighted = false;

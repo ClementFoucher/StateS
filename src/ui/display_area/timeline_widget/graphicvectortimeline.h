@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Clément Foucher
+ * Copyright © 2024-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@
 #include <QVector>
 
 // StateS
-#include "logicvalue.h"
+#include "bitvectorvalue.h"
 
 
 class GraphicVectorTimeLine : public GraphicTimeLine
@@ -48,20 +48,20 @@ class GraphicVectorTimeLine : public GraphicTimeLine
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicVectorTimeLine(uint eventDelay, const LogicValue& initialValue, QWidget* parent = nullptr);
-	explicit GraphicVectorTimeLine(uint eventDelay, const QString&    initialState, QWidget* parent = nullptr);
+	explicit GraphicVectorTimeLine(uint eventDelay, BitVectorValue initialValue, QWidget* parent = nullptr);
+	explicit GraphicVectorTimeLine(uint eventDelay, const QString& initialState, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void addPoint(const LogicValue& newValue);
-	void addPoint(const QString&    newState);
+	void addPoint(BitVectorValue newValue);
+	void addPoint(const QString& newState);
 
-	void updateLastPoint(const LogicValue& value);
-	void updateLastPoint(const QString&    state);
+	void updateLastPoint(BitVectorValue value);
+	void updateLastPoint(const QString& state);
 
-	void reset(const LogicValue& initialValue);
-	void reset(const QString&    initialState);
+	void reset(BitVectorValue initialValue);
+	void reset(const QString& initialState);
 
 protected:
 	virtual void paintEvent(QPaintEvent*) override;
@@ -77,10 +77,12 @@ private:
 	// Object variables
 private:
 	DisplayMode_t mode;
+
 	QPolygon timeLinePoly1;
 	QPolygon timeLinePoly2;
-	QVector<LogicValue> values;
-	QVector<QString>    states;
+
+	QVector<BitVectorValue> values;
+	QVector<QString>        states;
 
 };
 

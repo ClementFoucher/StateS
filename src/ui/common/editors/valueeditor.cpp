@@ -26,9 +26,9 @@
 #include <QHBoxLayout>
 #include <QRegularExpressionValidator>
 #include <QKeyEvent>
+#include <QComboBox>
 
 // StateS
-#include "logicvalue.h"
 #include "coloredlineeditor.h"
 
 
@@ -39,21 +39,123 @@ ValueEditor::ValueEditor(QWidget* parent) :
 	sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 	this->setSizePolicy(sizePolicy);
 
-	this->lineEdit = new ColoredLineEditor();
-	connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
-
 	auto editorLayout = new QHBoxLayout(this);
 	editorLayout->setContentsMargins(0, 0, 0, 0);
-	editorLayout->addWidget(this->lineEdit);
 }
 
-void ValueEditor::setFocusOnShow(bool autoFocusOnNextShow)
+void ValueEditor::setMachineValue(MachineValue value)
 {
-	this->autoFocusOnNextShow = autoFocusOnNextShow;
+	auto newValueType = value.getType();
+	if (newValueType == MachineValue::Type_t::nullType) return;
+
+
+	if (newValueType != this->valueType)
+	{
+		delete this->comboBox;
+		delete this->lineEdit;
+
+		this->comboBox = nullptr;
+		this->lineEdit = nullptr;
+	}
+
+	this->valueType = newValueType;
+
+	switch (newValueType)
+	{
+	case MachineValue::Type_t::boolean:
+	{
+		if (this->comboBox == nullptr)
+		{
+			this->comboBox = new QComboBox();
+			this->comboBox->insertItem(static_cast<int>(indexType::falseValue), tr("False"));
+			this->comboBox->insertItem(static_cast<int>(indexType::trueValue),  tr("True"));
+
+			this->layout()->addWidget(this->comboBox);
+		}
+		else
+		{
+			disconnect(this->comboBox, &QComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
+		}
+
+		if (value.getBooleanValue() == false)
+		{
+			this->comboBox->setCurrentIndex(static_cast<int>(indexType::falseValue));
+		}
+		else
+		{
+			this->comboBox->setCurrentIndex(static_cast<int>(indexType::trueValue));
+		}
+
+		connect(this->comboBox, &QComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
+		break;
+	}
+	case MachineValue::Type_t::bitVector:
+	{
+		if (this->lineEdit == nullptr)
+		{
+			this->lineEdit = new ColoredLineEditor();
+
+			this->layout()->addWidget(this->lineEdit);
+		}
+		else
+		{
+			disconnect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
+		}
+
+		this->lineEdit->setText(value.toDisplayString());
+
+		connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
+		break;
+	}
+	case MachineValue::Type_t::nullType:
+		// Checked before, should not happen
+		break;
+	}
 }
 
-void ValueEditor::setBitVectorValue(LogicValue value, uint size)
+MachineValue ValueEditor::getMachineValue() const
 {
+	if (this->valueType == MachineValue::Type_t::nullType) return MachineValue{};
+
+
+	switch (this->valueType)
+	{
+	case MachineValue::Type_t::boolean:
+		if (this->comboBox->currentIndex() == static_cast<int>(indexType::falseValue))
+		{
+			return BooleanValue::falseValue();
+		}
+		else
+		{
+			return BooleanValue::trueValue();
+		}
+		break;
+	case MachineValue::Type_t::bitVector:
+	{
+		auto currentValue = BitVectorValue::fromRawString(this->lineEdit->text());
+
+		if (this->bitVectorSize != 0)
+		{
+			if (currentValue.getSize() != this->bitVectorSize)
+			{
+				currentValue.resize(this->bitVectorSize);
+			}
+		}
+
+		return currentValue;
+		break;
+	}
+	case MachineValue::Type_t::nullType:
+		// Checked before, should not happen
+		break;
+	}
+}
+
+void ValueEditor::setBitVectorSize(uint size)
+{
+	if (this->valueType != MachineValue::Type_t::bitVector) return;
+
+
 	this->bitVectorSize = size;
 
 	QRegularExpression re;
@@ -67,22 +169,11 @@ void ValueEditor::setBitVectorValue(LogicValue value, uint size)
 	}
 
 	this->lineEdit->setValidator(new QRegularExpressionValidator(re));
-	this->lineEdit->setText(value.toString());
 }
 
-LogicValue ValueEditor::getBitVectorValue() const
+void ValueEditor::setFocusOnShow(bool autoFocusOnNextShow)
 {
-	auto currentValue = LogicValue::fromString(this->lineEdit->text());
-
-	if (this->bitVectorSize != 0)
-	{
-		if (currentValue.getSize() != this->bitVectorSize)
-		{
-			currentValue.resize(this->bitVectorSize);
-		}
-	}
-
-	return currentValue;
+	this->autoFocusOnNextShow = autoFocusOnNextShow;
 }
 
 void ValueEditor::showEvent(QShowEvent* event)
@@ -100,8 +191,11 @@ void ValueEditor::focusInEvent(QFocusEvent* event)
 {
 	QWidget::focusInEvent(event);
 
-	this->lineEdit->setFocus();
-	this->lineEdit->selectAll();
+	if (this->lineEdit != nullptr)
+	{
+		this->lineEdit->setFocus();
+		this->lineEdit->selectAll();
+	}
 }
 
 void ValueEditor::keyPressEvent(QKeyEvent* event)
@@ -114,6 +208,11 @@ void ValueEditor::keyPressEvent(QKeyEvent* event)
 	{
 		QWidget::keyPressEvent(event);
 	}
+}
+
+void ValueEditor::comboBoxIndexChangedEventHandler(int)
+{
+	emit this->valueChangedEvent(this);
 }
 
 void ValueEditor::textEditChangedEventHandler()

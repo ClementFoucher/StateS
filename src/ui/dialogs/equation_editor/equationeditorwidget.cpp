@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -65,13 +65,13 @@ void EquationEditorWidget::replaceOperand(uint operandRank, shared_ptr<Equation>
 	this->equation->setOperand(operandRank, newOperand);
 	this->updateOperandWidget(operandRank);
 
-	if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		this->fixExtractorRange();
 	}
 }
 
-void EquationEditorWidget::replaceOperand(uint operandRank, LogicValue newConstant, bool isProcessingDrop)
+void EquationEditorWidget::replaceOperand(uint operandRank, MachineValue newConstant, bool isProcessingDrop)
 {
 	if (this->equation == nullptr) return;
 
@@ -79,7 +79,7 @@ void EquationEditorWidget::replaceOperand(uint operandRank, LogicValue newConsta
 	this->equation->setOperand(operandRank, newConstant);
 	this->updateOperandWidget(operandRank);
 
-	if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		this->fixExtractorRange();
 	}
@@ -102,7 +102,7 @@ void EquationEditorWidget::replaceOperand(uint operandRank, componentId_t newVar
 	this->equation->setOperand(operandRank, newVariable);
 	this->updateOperandWidget(operandRank);
 
-	if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		this->fixExtractorRange();
 	}
@@ -116,7 +116,7 @@ void EquationEditorWidget::clearOperand(uint operandRank)
 	this->equation->clearOperand(operandRank);
 	this->updateOperandWidget(operandRank);
 
-	if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		this->fixExtractorRange();
 	}
@@ -210,63 +210,63 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 	if (this->equation == nullptr) return 0;
 
 
-	uint allowedActions = (uint)ContextAction_t::Remove;
+	uint allowedActions = static_cast<uint>(ContextAction_t::Remove);
 
-	switch(this->equation->getOperatorType())
+	switch(this->equation->getOperator())
 	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
-		allowedActions |= (uint)ContextAction_t::IncreaseOperandCount;
+	case Equation::Operator_t::andOp:
+	case Equation::Operator_t::orOp:
+	case Equation::Operator_t::xorOp:
+	case Equation::Operator_t::nandOp:
+	case Equation::Operator_t::norOp:
+	case Equation::Operator_t::xnorOp:
+	case Equation::Operator_t::concatOp:
+		allowedActions |= static_cast<uint>(ContextAction_t::IncreaseOperandCount);
 		if (this->equation->getOperandCount() > 2)
 		{
-			allowedActions |= (uint)ContextAction_t::DecreaseOperandCount;
+			allowedActions |= static_cast<uint>(ContextAction_t::DecreaseOperandCount);
 		}
 		break;
-	case OperatorType_t::extractOp:
-		allowedActions |= (uint)ContextAction_t::Edit;
+	case Equation::Operator_t::extractOp:
+		allowedActions |= static_cast<uint>(ContextAction_t::Edit);
 		if (this->equation->getRangeR() != -1)
 		{
-			allowedActions |= (uint)ContextAction_t::ExtractSwitchSingle;
+			allowedActions |= static_cast<uint>(ContextAction_t::ExtractSwitchSingle);
 		}
 		else
 		{
 			auto operand = this->equation->getOperand(0);
-			if (operand->getInitialValue().getSize() > 1)
+			if ( (operand->getInitialValue().getType() == MachineValue::Type_t::bitVector) && (operand->getInitialValue().getBitVectorValue().getSize() > 1) )
 			{
-				allowedActions |= (uint)ContextAction_t::ExtractSwitchRange;
+				allowedActions |= static_cast<uint>(ContextAction_t::ExtractSwitchRange);
 			}
 		}
 		break;
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Equation::Operator_t::notOp:
+	case Equation::Operator_t::identity:
+	case Equation::Operator_t::equalOp:
+	case Equation::Operator_t::diffOp:
 		break;
 	}
 
-	switch(this->equation->getOperatorType())
+	switch(this->equation->getOperator())
 	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::concatOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-		allowedActions |= (uint)ContextAction_t::Invert;
+	case Equation::Operator_t::andOp:
+	case Equation::Operator_t::orOp:
+	case Equation::Operator_t::xorOp:
+	case Equation::Operator_t::concatOp:
+	case Equation::Operator_t::extractOp:
+	case Equation::Operator_t::equalOp:
+	case Equation::Operator_t::diffOp:
+		allowedActions |= static_cast<uint>(ContextAction_t::Invert);
 		break;
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::notOp:
-		allowedActions |= (uint)ContextAction_t::RemoveInverter;
+	case Equation::Operator_t::nandOp:
+	case Equation::Operator_t::norOp:
+	case Equation::Operator_t::xnorOp:
+	case Equation::Operator_t::notOp:
+		allowedActions |= static_cast<uint>(ContextAction_t::RemoveInverter);
 		break;
-	case OperatorType_t::identity:
+	case Equation::Operator_t::identity:
 		break;
 	}
 
@@ -278,25 +278,25 @@ uint EquationEditorWidget::getAllowedDropActions() const
 	if (this->equation == nullptr) return 0;
 
 
-	uint allowedActions = (uint)DropAction_t::ReplaceExisting |
-	                      (uint)DropAction_t::ExistingAsOperand;
+	uint allowedActions = static_cast<uint>(DropAction_t::ReplaceExisting) |
+	                      static_cast<uint>(DropAction_t::ExistingAsOperand);
 
-	switch(this->equation->getOperatorType())
+	switch(this->equation->getOperator())
 	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-		allowedActions |= (uint)DropAction_t::RemoveInverter;
+	case Equation::Operator_t::notOp:
+	case Equation::Operator_t::nandOp:
+	case Equation::Operator_t::norOp:
+	case Equation::Operator_t::xnorOp:
+		allowedActions |= static_cast<uint>(DropAction_t::RemoveInverter);
 		break;
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::concatOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Equation::Operator_t::andOp:
+	case Equation::Operator_t::orOp:
+	case Equation::Operator_t::xorOp:
+	case Equation::Operator_t::concatOp:
+	case Equation::Operator_t::extractOp:
+	case Equation::Operator_t::identity:
+	case Equation::Operator_t::equalOp:
+	case Equation::Operator_t::diffOp:
 		// Nothing more
 		break;
 	}
@@ -319,27 +319,117 @@ QString EquationEditorWidget::getToolTipText() const
 	if (this->equation == nullptr) return QString();
 
 
+	QString toolTipText;
 	switch (this->equation->getComputationFailureCause())
 	{
-	case EquationComputationFailureCause_t::nofail:
-		return QString(tr("Equation:") + " " + this->equation->getColoredText());
+	case Equation::ComputationFailureCause_t::nofail:
+		switch (this->equation->getComputationWarning())
+		{
+		case Equation::ComputationWarning_t::differentTypeComparison:
+			toolTipText += "<b>" + tr("Warning:") + "</b> ";
+			toolTipText += "<br>";
+			toolTipText += tr("Comparison is done between variables that have different types.");
+			switch (this->equation->getOperator())
+			{
+			case Equation::Operator_t::equalOp:
+				toolTipText += "<br>";
+				toolTipText += tr("As a result, they will never be equal and this equation will always be false.");
+				break;
+			case Equation::Operator_t::diffOp:
+				toolTipText += "<br>";
+				toolTipText += tr("As a result, they will always be different and this equation will always be true.");
+				break;
+			default:
+				break;
+			}
+			break;
+		case Equation::ComputationWarning_t::differentSizeComparison:
+			toolTipText += "<b>" + tr("Warning:") + "</b> ";
+			toolTipText += "<br>";
+			toolTipText += tr("Comparison is done between bit vector variables that have different sizes.");
+			switch (this->equation->getOperator())
+			{
+			case Equation::Operator_t::equalOp:
+				toolTipText += "<br>";
+				toolTipText += tr("As a result, they will never be equal and this equation will always be false.");
+				break;
+			case Equation::Operator_t::diffOp:
+				toolTipText += "<br>";
+				toolTipText += tr("As a result, they will always be different and this equation will always be true.");
+				break;
+			default:
+				break;
+			}
+			break;
+		case Equation::ComputationWarning_t::noWarning:
+			toolTipText = tr("Equation:") + " " + this->equation->getColoredText();
+			break;
+		}
 		break;
-	case EquationComputationFailureCause_t::nullOperand:
-		return "<b>" + tr("Error:") + "</b> " + tr("One of the operands is empty");
+	case Equation::ComputationFailureCause_t::nullOperand:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText += tr("At least one of the operands is empty.");
 		break;
-	case EquationComputationFailureCause_t::invalidOperand:
-		return "<b>" + tr("Error:") + "</b> " + tr("One of the operands is invalid");
+	case Equation::ComputationFailureCause_t::invalidOperandValue:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("At least one of the operands has an invalid value.");
 		break;
-	case EquationComputationFailureCause_t::sizeMismatch:
-		return "<b>" + tr("Error:") + "</b> " + tr("The sizes of the operands do not match between each other");
+	case Equation::ComputationFailureCause_t::incorrectOperandType:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("At least one of the operands has an invalid type.");
+		switch (this->equation->getOperator())
+		{
+		case Equation::Operator_t::extractOp:
+			toolTipText += "<br>";
+			toolTipText +=  tr("The current operator can only act on a bit vector operand.");
+			break;
+		case Equation::Operator_t::concatOp:
+		case Equation::Operator_t::andOp:
+		case Equation::Operator_t::nandOp:
+		case Equation::Operator_t::orOp:
+		case Equation::Operator_t::norOp:
+		case Equation::Operator_t::xorOp:
+		case Equation::Operator_t::xnorOp:
+		case Equation::Operator_t::notOp:
+			toolTipText += "<br>";
+			toolTipText +=  tr("The current operator can only have boolean or bit vector operands.");
+			break;
+		case Equation::Operator_t::equalOp:
+		case Equation::Operator_t::diffOp:
+		case Equation::Operator_t::identity:
+			break;
+		}
 		break;
-	case EquationComputationFailureCause_t::missingParameter:
-		return "<b>" + tr("Error:") + "</b> " + tr("A parameter is missing its value");
+	case Equation::ComputationFailureCause_t::operandsSizesMismatch:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("The sizes of the operands do not match between each other.");
+		toolTipText += "<br>";
+		toolTipText +=  tr("All bit vector operands must have the same size.");
 		break;
-	case EquationComputationFailureCause_t::incorrectParameter:
-		return "<b>" + tr("Error:") + "</b> " + tr("The value of a parameter is incorrect");
+	case Equation::ComputationFailureCause_t::operandsTypesMismatch:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("The types of the operands do not match between each other.");
+		toolTipText += "<br>";
+		toolTipText +=  tr("All operands must have the same type.");
+		break;
+	case Equation::ComputationFailureCause_t::missingParameter:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("A parameter is missing its value.");
+		break;
+	case Equation::ComputationFailureCause_t::incorrectParameterValue:
+		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += "<br>";
+		toolTipText +=  tr("The value of a parameter is incorrect.");
 		break;
 	}
+
+	return toolTipText;
 }
 
 bool EquationEditorWidget::getReplaceWithoutAsking() const
@@ -361,7 +451,22 @@ bool EquationEditorWidget::getIsErroneous() const
 	if (this->equation == nullptr) return true;
 
 
-	if (this->equation->getComputationFailureCause() == EquationComputationFailureCause_t::nofail)
+	if (this->equation->getComputationFailureCause() == Equation::ComputationFailureCause_t::nofail)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+bool EquationEditorWidget::getHasWarning() const
+{
+	if (this->equation == nullptr) return false;
+
+
+	if (this->equation->getComputationWarning() == Equation::ComputationWarning_t::noWarning)
 	{
 		return false;
 	}
@@ -379,11 +484,11 @@ QDrag* EquationEditorWidget::buildDrag()
 	auto drag = new QDrag(this);
 
 	uint availableActions = (uint)DropAction_t::ReplaceExisting;
-	if (this->equation->getOperatorType() == OperatorType_t::notOp)
+	if (this->equation->getOperator() == Equation::Operator_t::notOp)
 	{
 		availableActions |= (uint)DropAction_t::RemoveInverter;
 	}
-	if (this->equation->getOperatorType() != OperatorType_t::extractOp)
+	if (this->equation->getOperator() != Equation::Operator_t::extractOp)
 	{
 		availableActions |= (uint)DropAction_t::ExistingAsOperand;
 	}
@@ -393,7 +498,7 @@ QDrag* EquationEditorWidget::buildDrag()
 	drag->setMimeData(mimeData);
 
 	// If this is an extract operator, drag image will not match template display: create a correct equation
-	if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		// Build a dummy display with no parent so that it is rendered as independent window
 		EquationEditorWidget displayGraphicEquation(this->equation->clone(), 0, false);
@@ -489,16 +594,21 @@ void EquationEditorWidget::processSpecificDropAction(DropAction_t action)
 	switch (action)
 	{
 	case DropAction_t::ExistingAsOperand:
-		if (this->tempEquation == nullptr) return;
+	{
+		if (this->tempValueNature != TempValueNature_t::equation) return;
+
+		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		if (tempEquation == nullptr) return;
 
 		if (this->equation == nullptr) return;
 
 
-		this->tempEquation->setOperand(0, this->equation);
-
+		tempEquation->setOperand(0, this->equation);
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case DropAction_t::RemoveInverter:
 		this->setInverted(false);
 		// Do NOT do anything after, as this may cease to exist
@@ -518,6 +628,7 @@ void EquationEditorWidget::rangeEditorBeginEditEventHandler()
 void EquationEditorWidget::equationChangedEventHandler()
 {
 	this->setToolTip(this->getToolTipText());
+	this->updateBorderColor();
 }
 
 void EquationEditorWidget::clear()
@@ -560,7 +671,7 @@ void EquationEditorWidget::buildCompleteEquation()
 	auto equationLayout = new QHBoxLayout();
 	equationLayout->setAlignment(Qt::AlignVCenter);
 
-	if (this->equation->getOperatorType() == OperatorType_t::concatOp)
+	if (this->equation->getOperator() == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("{"));
 	}
@@ -575,32 +686,32 @@ void EquationEditorWidget::buildCompleteEquation()
 	{
 		// Add operator
 		QString operatorText;
-		switch(this->equation->getOperatorType())
+		switch(this->equation->getOperator())
 		{
-		case OperatorType_t::andOp:
-		case OperatorType_t::nandOp:
+		case Equation::Operator_t::andOp:
+		case Equation::Operator_t::nandOp:
 			operatorText = "•";
 			break;
-		case OperatorType_t::orOp:
-		case OperatorType_t::norOp:
+		case Equation::Operator_t::orOp:
+		case Equation::Operator_t::norOp:
 			operatorText = "+";
 			break;
-		case OperatorType_t::xorOp:
-		case OperatorType_t::xnorOp:
+		case Equation::Operator_t::xorOp:
+		case Equation::Operator_t::xnorOp:
 			operatorText = "⊕";
 			break;
-		case OperatorType_t::equalOp:
+		case Equation::Operator_t::equalOp:
 			operatorText = "=";
 			break;
-		case OperatorType_t::diffOp:
+		case Equation::Operator_t::diffOp:
 			operatorText = "≠";
 			break;
-		case OperatorType_t::concatOp:
+		case Equation::Operator_t::concatOp:
 			operatorText = ":";
 			break;
-		case OperatorType_t::notOp:
-		case OperatorType_t::identity:
-		case OperatorType_t::extractOp:
+		case Equation::Operator_t::notOp:
+		case Equation::Operator_t::identity:
+		case Equation::Operator_t::extractOp:
 			// Single operand operators
 			break;
 		}
@@ -615,11 +726,11 @@ void EquationEditorWidget::buildCompleteEquation()
 		equationLayout->addWidget(operandWidget);
 	}
 
-	if (this->equation->getOperatorType() == OperatorType_t::concatOp)
+	if (this->equation->getOperator() == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("}"));
 	}
-	else if (this->equation->getOperatorType() == OperatorType_t::extractOp)
+	else if (this->equation->getOperator() == Equation::Operator_t::extractOp)
 	{
 		this->rangeEditor = new RangeEditor(this->equation, this);
 
@@ -675,48 +786,48 @@ void EquationEditorWidget::setInverted(bool invert)
 
 	if (invert == true)
 	{
-		switch(this->equation->getOperatorType())
+		switch(this->equation->getOperator())
 		{
-		case OperatorType_t::andOp:
-		case OperatorType_t::orOp:
-		case OperatorType_t::xorOp:
-		case OperatorType_t::equalOp:
-		case OperatorType_t::diffOp:
+		case Equation::Operator_t::andOp:
+		case Equation::Operator_t::orOp:
+		case Equation::Operator_t::xorOp:
+		case Equation::Operator_t::equalOp:
+		case Equation::Operator_t::diffOp:
 			reverseOperand = true;
 			break;
-		case OperatorType_t::concatOp:
-		case OperatorType_t::extractOp:
-		case OperatorType_t::identity:
+		case Equation::Operator_t::concatOp:
+		case Equation::Operator_t::extractOp:
+		case Equation::Operator_t::identity:
 			addInverter = true;
 			break;
-		case OperatorType_t::notOp:
-		case OperatorType_t::nandOp:
-		case OperatorType_t::norOp:
-		case OperatorType_t::xnorOp:
+		case Equation::Operator_t::notOp:
+		case Equation::Operator_t::nandOp:
+		case Equation::Operator_t::norOp:
+		case Equation::Operator_t::xnorOp:
 			// Should not happen
 			break;
 		}
 	}
 	else // (invert == false)
 	{
-		switch(this->equation->getOperatorType())
+		switch(this->equation->getOperator())
 		{
-		case OperatorType_t::notOp:
+		case Equation::Operator_t::notOp:
 			removeInverter = true;
 			break;
-		case OperatorType_t::nandOp:
-		case OperatorType_t::norOp:
-		case OperatorType_t::xnorOp:
+		case Equation::Operator_t::nandOp:
+		case Equation::Operator_t::norOp:
+		case Equation::Operator_t::xnorOp:
 			reverseOperand = true;
 			break;
-		case OperatorType_t::andOp:
-		case OperatorType_t::orOp:
-		case OperatorType_t::xorOp:
-		case OperatorType_t::concatOp:
-		case OperatorType_t::extractOp:
-		case OperatorType_t::equalOp:
-		case OperatorType_t::diffOp:
-		case OperatorType_t::identity:
+		case Equation::Operator_t::andOp:
+		case Equation::Operator_t::orOp:
+		case Equation::Operator_t::xorOp:
+		case Equation::Operator_t::concatOp:
+		case Equation::Operator_t::extractOp:
+		case Equation::Operator_t::equalOp:
+		case Equation::Operator_t::diffOp:
+		case Equation::Operator_t::identity:
 			// Should not happen
 			break;
 		}
@@ -724,10 +835,11 @@ void EquationEditorWidget::setInverted(bool invert)
 
 	if (addInverter == true)
 	{
-		this->tempValueNature = OperandSource_t::equation;
-		this->tempEquation = make_shared<Equation>(OperatorType_t::notOp);
-		this->tempEquation->setOperand(0, this->equation);
+		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		tempEquation->setOperand(0, this->equation);
 
+		this->tempValueNature = TempValueNature_t::equation;
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 	}
 	else if (removeInverter == true)
@@ -737,68 +849,68 @@ void EquationEditorWidget::setInverted(bool invert)
 		{
 			switch (operand->getSource())
 			{
-			case OperandSource_t::variable:
-				this->tempValueNature = OperandSource_t::variable;
-				this->tempVariableId = operand->getVariableId();
+			case Operand::Source_t::variable:
+				this->tempValueNature = TempValueNature_t::variable;
+				this->tempValue = operand->getVariableId();
 				break;
-			case OperandSource_t::equation:
-				this->tempValueNature = OperandSource_t::equation;
-				this->tempEquation = operand->getEquation();
+			case Operand::Source_t::equation:
+				this->tempValueNature = TempValueNature_t::equation;
+				this->tempValue = operand->getEquation();
 				break;
-			case OperandSource_t::constant:
-				this->tempValueNature = OperandSource_t::constant;
-				this->tempConstant = operand->getConstant();
+			case Operand::Source_t::constant:
+				this->tempValueNature = TempValueNature_t::constant;
+				this->tempValue = operand->getConstant();
 				break;
 			}
 		}
 		else // (operand == nullptr)
 		{
-			this->tempValueNature = OperandSource_t::equation;
-			this->tempEquation = nullptr;
+			this->tempValueNature = TempValueNature_t::equation;
+			this->tempValue = nullptr;
 		}
 
 		this->replaceByTempValue();
 	}
 	else if (reverseOperand == true)
 	{
-		OperatorType_t newOperator;
+		Equation::Operator_t newOperator;
 
-		switch(this->equation->getOperatorType())
+		switch(this->equation->getOperator())
 		{
-		case OperatorType_t::andOp:
-			newOperator = OperatorType_t::nandOp;
+		case Equation::Operator_t::andOp:
+			newOperator = Equation::Operator_t::nandOp;
 			break;
-		case OperatorType_t::orOp:
-			newOperator = OperatorType_t::norOp;
+		case Equation::Operator_t::orOp:
+			newOperator = Equation::Operator_t::norOp;
 			break;
-		case OperatorType_t::xorOp:
-			newOperator = OperatorType_t::xnorOp;
+		case Equation::Operator_t::xorOp:
+			newOperator = Equation::Operator_t::xnorOp;
 			break;
-		case OperatorType_t::nandOp:
-			newOperator = OperatorType_t::andOp;
+		case Equation::Operator_t::nandOp:
+			newOperator = Equation::Operator_t::andOp;
 			break;
-		case OperatorType_t::norOp:
-			newOperator = OperatorType_t::orOp;
+		case Equation::Operator_t::norOp:
+			newOperator = Equation::Operator_t::orOp;
 			break;
-		case OperatorType_t::xnorOp:
-			newOperator = OperatorType_t::xorOp;
+		case Equation::Operator_t::xnorOp:
+			newOperator = Equation::Operator_t::xorOp;
 			break;
-		case OperatorType_t::equalOp:
-			newOperator = OperatorType_t::diffOp;
+		case Equation::Operator_t::equalOp:
+			newOperator = Equation::Operator_t::diffOp;
 			break;
-		case OperatorType_t::diffOp:
-			newOperator = OperatorType_t::equalOp;
+		case Equation::Operator_t::diffOp:
+			newOperator = Equation::Operator_t::equalOp;
 			break;
-		case OperatorType_t::notOp:
-		case OperatorType_t::concatOp:
-		case OperatorType_t::extractOp:
-		case OperatorType_t::identity:
+		case Equation::Operator_t::notOp:
+		case Equation::Operator_t::concatOp:
+		case Equation::Operator_t::extractOp:
+		case Equation::Operator_t::identity:
 			// Should not happen
-			newOperator = this->equation->getOperatorType();
+			newOperator = this->equation->getOperator();
 			break;
 		}
 
-		this->equation->setOperatorType(newOperator);
+		this->equation->setOperator(newOperator);
 		this->clear();
 		this->buildCompleteEquation();
 	}
@@ -808,7 +920,7 @@ void EquationEditorWidget::fixExtractorRange()
 {
 	if (this->equation == nullptr) return;
 
-	if (this->equation->getOperatorType() != OperatorType_t::extractOp) return;
+	if (this->equation->getOperator() != Equation::Operator_t::extractOp) return;
 
 	if (this->rangeEditor == nullptr) return;
 
@@ -819,9 +931,13 @@ void EquationEditorWidget::fixExtractorRange()
 	{
 		this->equation->setRange(0, -1);
 	}
-	else // (operand != nullptr)
+	else if (operand->getType() != MachineValue::Type_t::bitVector)
 	{
-		auto operandValue = operand->getInitialValue();
+		this->equation->setRange(0, -1);
+	}
+	else // (operand != nullptr) and (operand->getInitialValue().isBitVectorValue() == true)
+	{
+		auto operandValue = operand->getInitialValue().getBitVectorValue();
 		int operandSize = operandValue.getSize();
 
 		if (operandSize == 1)
@@ -877,13 +993,13 @@ EquationPartEditorWidget* EquationEditorWidget::buildOperandEditorWidget(uint op
 	{
 		switch (operand->getSource())
 		{
-		case OperandSource_t::equation:
+		case Operand::Source_t::equation:
 			return new EquationEditorWidget(operand->getEquation(), operandRank, false, this);
 			break;
-		case OperandSource_t::variable:
+		case Operand::Source_t::variable:
 			return new VariableEditorWidget(operand->getVariableId(), operandRank, false, this);
 			break;
-		case OperandSource_t::constant:
+		case Operand::Source_t::constant:
 			return new ConstantEditorWidget(operand->getInitialValue(), operandRank, false, this);
 			break;
 		}
@@ -901,62 +1017,62 @@ QString EquationEditorWidget::getTemplateText() const
 
 	QString text;
 
-	switch(this->equation->getOperatorType())
+	switch(this->equation->getOperator())
 	{
-	case OperatorType_t::notOp:
+	case Equation::Operator_t::notOp:
 		text += tr("not");
 		break;
-	case OperatorType_t::andOp:
+	case Equation::Operator_t::andOp:
 		text += tr("and");
 		break;
-	case OperatorType_t::orOp:
+	case Equation::Operator_t::orOp:
 		text += tr("or");
 		break;
-	case OperatorType_t::xorOp:
+	case Equation::Operator_t::xorOp:
 		text += tr("xor");
 		break;
-	case OperatorType_t::nandOp:
+	case Equation::Operator_t::nandOp:
 		text += tr("nand");
 		break;
-	case OperatorType_t::norOp:
+	case Equation::Operator_t::norOp:
 		text += tr("nor");
 		break;
-	case OperatorType_t::xnorOp:
+	case Equation::Operator_t::xnorOp:
 		text += tr("xnor");
 		break;
-	case OperatorType_t::equalOp:
+	case Equation::Operator_t::equalOp:
 		text += tr("Equality");
 		break;
-	case OperatorType_t::diffOp:
+	case Equation::Operator_t::diffOp:
 		text += tr("Difference");
 		break;
-	case OperatorType_t::concatOp:
+	case Equation::Operator_t::concatOp:
 		text += tr("Concatenate");
 		break;
-	case OperatorType_t::extractOp:
+	case Equation::Operator_t::extractOp:
 		text += "[…]";
 		break;
-	case OperatorType_t::identity:
+	case Equation::Operator_t::identity:
 		// Nothing to do: special case.
 		break;
 	}
 
-	switch(this->equation->getOperatorType())
+	switch(this->equation->getOperator())
 	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
+	case Equation::Operator_t::andOp:
+	case Equation::Operator_t::orOp:
+	case Equation::Operator_t::xorOp:
+	case Equation::Operator_t::nandOp:
+	case Equation::Operator_t::norOp:
+	case Equation::Operator_t::xnorOp:
 		text += " " + QString::number(this->equation->getOperandCount());
 		break;
-	case OperatorType_t::notOp:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-	case OperatorType_t::concatOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::identity:
+	case Equation::Operator_t::notOp:
+	case Equation::Operator_t::equalOp:
+	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::concatOp:
+	case Equation::Operator_t::extractOp:
+	case Equation::Operator_t::identity:
 		break;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include "simulatedcomponent.h"
 
 // StateS
-#include "logicvalue.h"
+#include "machinevalue.h"
 
 
 class SimulatedVariable : public SimulatedComponent
@@ -45,18 +45,17 @@ public:
 	///
 	// Mutators
 
-	void setCurrentValue(const LogicValue& value);
-	void setCurrentValueSubRange(const LogicValue& value, int rangeL, int rangeR);
+	void setCurrentValue(MachineValue value);
 	void reinitialize();
 
 	///
 	// Accessors
 
-	QString    getName()         const;
-	uint       getSize()         const;
-	LogicValue getInitialValue() const;
-	LogicValue getCurrentValue() const;
-	bool       getMemorized()    const;
+	QString                   getName()         const;
+	MachineValue::Type_t getType()         const;
+	MachineValue              getInitialValue() const;
+	MachineValue              getCurrentValue() const;
+	bool                      getMemorized()    const;
 
 	/////
 	// Signals
@@ -66,10 +65,10 @@ signals:
 	/////
 	// Object variables
 protected:
-	QString    name;
-	LogicValue initialValue;
-	LogicValue currentValue;
-	bool       memorized;
+	QString      name;
+	MachineValue initialValue;
+	MachineValue currentValue;
+	bool         memorized;
 
 };
 

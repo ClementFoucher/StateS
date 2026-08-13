@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,7 @@
 
 // StateS
 #include "truthtable.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 
 
 TruthTableOutputTableModel::TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
@@ -86,7 +86,7 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 				if (index.column() < (int)l_truthTable->getOutputCount())
 				{
 					auto outputValue = l_truthTable->getOutputValue(index.row(), index.column());
-					variant = QVariant(outputValue.toString());
+					variant = QVariant(outputValue.toDisplayString());
 				}
 			}
 		}

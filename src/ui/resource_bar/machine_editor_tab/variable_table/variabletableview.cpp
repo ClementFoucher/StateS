@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,9 +30,10 @@
 #include "variabletablemodel.h"
 #include "variabletablememorizeddelegate.h"
 #include "variabletablenamedelegate.h"
-#include "variabletablesizedelegate.h"
+#include "variabletabletypedelegate.h"
 #include "variabletablevaluedelegate.h"
 #include "contextmenu.h"
+#include "typeeditor.h"
 
 
 VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* parent) :
@@ -48,25 +49,27 @@ VariableTableView::VariableTableView(VariableNature_t tableNature, QWidget* pare
 		QString role = this->tableModel->headerData(column, Qt::Horizontal, Qt::UserRole).toString();
 		if (role == "NAME")
 		{
-			this->columnsRoles[ColumnRole::name] = column;
+			this->columnsRoles[ColumnRole_t::name] = column;
 			this->setItemDelegateForColumn(column, new VariableTableNameDelegate(this));
 		}
-		else if (role == "SIZE")
+		else if (role == "TYPE")
 		{
-			this->columnsRoles[ColumnRole::size] = column;
-			this->setItemDelegateForColumn(column, new VariableTableSizeDelegate(this));
+			this->columnsRoles[ColumnRole_t::type] = column;
+			this->setItemDelegateForColumn(column, new VariableTableTypeDelegate(this));
 		}
 		else if (role == "MEMORIZED")
 		{
-			this->columnsRoles[ColumnRole::memorized] = column;
+			this->columnsRoles[ColumnRole_t::memorized] = column;
 			this->setItemDelegateForColumn(column, new VariableTableMemorizedDelegate(this));
 		}
 		else if (role == "VALUE")
 		{
-			this->columnsRoles[ColumnRole::value] = column;
+			this->columnsRoles[ColumnRole_t::value] = column;
 			this->setItemDelegateForColumn(column, new VariableTableValueDelegate(this));
 		}
 	}
+
+	connect(this->tableModel, &VariableTableModel::refreshPersistentEditorsEvent, this, &VariableTableView::refreshPersistentEditorsEventHandler);
 }
 
 void VariableTableView::initialize()
@@ -100,7 +103,7 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	if (selectedRowsCount == 1)
 	{
 		this->currentMenuRow = this->rowAt(event->pos().y());
-		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles.value(ColumnRole::name));
+		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles.value(ColumnRole_t::name));
 		auto variableName = this->tableModel->data(index, Qt::DisplayRole).toString();
 		menu->addTitle(tr("Edit variable") + " <i>" + variableName + "</i>");
 	}
@@ -113,14 +116,14 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	if (this->getSelectionCanBeRaised() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move up"));
-		data.setValue((int)ContextAction_t::raise);
+		data.setValue(static_cast<int>(ContextAction_t::raise));
 		actionBeingAdded->setData(data);
 	}
 
 	if (this->getSelectionCanBeLowered() == true)
 	{
 		actionBeingAdded = menu->addAction(tr("Move down"));
-		data.setValue((int)ContextAction_t::lower);
+		data.setValue(static_cast<int>(ContextAction_t::lower));
 		actionBeingAdded->setData(data);
 	}
 
@@ -132,34 +135,42 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	if (selectedRowsCount == 1)
 	{
 		actionBeingAdded = menu->addAction(tr("Rename variable"));
-		data.setValue((int)ContextAction_t::rename);
+		data.setValue(static_cast<int>(ContextAction_t::rename));
 		actionBeingAdded->setData(data);
 
-		actionBeingAdded = menu->addAction(tr("Change bit vector size"));
-		data.setValue((int)ContextAction_t::resizeBitVector);
-		actionBeingAdded->setData(data);
+		auto index = this->tableModel->index(currentMenuRow, this->columnsRoles.value(ColumnRole_t::type));
 
-		actionBeingAdded = menu->addAction(tr("Change variable value"));
-		data.setValue((int)ContextAction_t::changeValue);
-		actionBeingAdded->setData(data);
+		if (this->tableModel->data(index, Qt::EditRole).toString().startsWith("BITVECTOR"))
+		{
+			actionBeingAdded = menu->addAction(tr("Change bit vector size"));
+			data.setValue(static_cast<int>(ContextAction_t::resizeBitVector));
+			actionBeingAdded->setData(data);
+		}
+
+		if (this->tableModel->data(index, Qt::EditRole) != "BOOLEAN")
+		{
+			actionBeingAdded = menu->addAction(tr("Change variable value"));
+			data.setValue(static_cast<int>(ContextAction_t::changeValue));
+			actionBeingAdded->setData(data);
+		}
 
 		menu->addSeparator();
 
 		actionBeingAdded = menu->addAction(tr("Delete variable"));
-		data.setValue((int)ContextAction_t::deleteVar);
+		data.setValue(static_cast<int>(ContextAction_t::deleteVar));
 		actionBeingAdded->setData(data);
 	}
 	else // (selectedRowsCount > 1)
 	{
 		actionBeingAdded = menu->addAction(tr("Delete variables"));
-		data.setValue((int)ContextAction_t::deleteVar);
+		data.setValue(static_cast<int>(ContextAction_t::deleteVar));
 		actionBeingAdded->setData(data);
 	}
 
 	menu->addSeparator();
 
 	actionBeingAdded = menu->addAction(tr("Cancel"));
-	data.setValue((int)ContextAction_t::cancel);
+	data.setValue(static_cast<int>(ContextAction_t::cancel));
 	actionBeingAdded->setData(data);
 
 	// Adjust event position wrt. headers
@@ -174,7 +185,7 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 
 void VariableTableView::processMenuEventHandler(QAction* action)
 {
-	ContextAction_t dataValue = ContextAction_t(action->data().toInt());
+	ContextAction_t dataValue = static_cast<ContextAction_t>(action->data().toInt());
 
 	switch (dataValue)
 	{
@@ -191,50 +202,69 @@ void VariableTableView::processMenuEventHandler(QAction* action)
 		break;
 	case ContextAction_t::rename:
 	{
-		auto col = this->columnsRoles.value(ColumnRole::name);
+		auto col = this->columnsRoles.value(ColumnRole_t::name);
 		this->edit(this->tableModel->index(this->currentMenuRow, col));
 	}
 	break;
 	case ContextAction_t::changeValue:
 	{
-		auto col = this->columnsRoles.value(ColumnRole::value);
+		auto col = this->columnsRoles.value(ColumnRole_t::value);
 		this->edit(this->tableModel->index(this->currentMenuRow, col));
 	}
 	break;
 	case ContextAction_t::resizeBitVector:
 	{
-		auto col = this->columnsRoles.value(ColumnRole::size);
-		this->edit(this->tableModel->index(this->currentMenuRow, col));
+		auto col = this->columnsRoles.value(ColumnRole_t::type);
+		auto editor = dynamic_cast<TypeEditor*>(this->indexWidget(this->tableModel->index(currentMenuRow, col)));
+		if (editor != nullptr)
+		{
+			editor->triggerEditBitVectorSize();
+		}
 	}
 	break;
 	}
 }
 
+void VariableTableView::refreshPersistentEditorsEventHandler()
+{
+	this->closePersistentEditors();
+	this->openPersistentEditors();
+}
+
 void VariableTableView::openPersistentEditors(int firstRow, int lastRow)
 {
-	if (this->columnsRoles.contains(ColumnRole::memorized))
-	{
-		if (firstRow == -1) firstRow = 0;
-		if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+	if (firstRow == -1) firstRow = 0;
+	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
 
-		for (int row = firstRow ; row <= lastRow ; row++)
+	for (int row = firstRow ; row <= lastRow ; row++)
+	{
+		auto typeIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::type));
+		this->openPersistentEditor(typeIndex);
+
+		if (this->columnsRoles.contains(ColumnRole_t::memorized))
 		{
-			auto memIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole::memorized));
+			auto memIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::memorized));
 			this->openPersistentEditor(memIndex);
+		}
+
+		if (this->tableModel->data(typeIndex, Qt::EditRole) == "BOOLEAN")
+		{
+			auto valIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::value));
+			this->openPersistentEditor(valIndex);
 		}
 	}
 }
 
 void VariableTableView::closePersistentEditors(int firstRow, int lastRow)
 {
-	if (this->columnsRoles.contains(ColumnRole::memorized))
-	{
-		if (firstRow == -1) firstRow = 0;
-		if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+	if (firstRow == -1) firstRow = 0;
+	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
 
-		for (int row = firstRow ; row <= lastRow ; row++)
+	for (int row = firstRow ; row <= lastRow ; row++)
+	{
+		for (int col = 0 ; col < this->tableModel->columnCount() ; col++)
 		{
-			auto index = this->tableModel->index(row, this->columnsRoles.value(ColumnRole::memorized));
+			auto index = this->tableModel->index(row, col);
 			if (this->isPersistentEditorOpen(index) == true)
 			{
 				this->closePersistentEditor(index);

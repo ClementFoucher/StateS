@@ -22,11 +22,8 @@
 // Current class header
 #include "actiontablevaluedelegate.h"
 
-// Qt
-#include <QRegularExpressionValidator>
-
 // StateS
-#include "logicvalue.h"
+#include "machinevalue.h"
 #include "valueeditor.h"
 
 
@@ -42,13 +39,29 @@ void ActionTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex&
 
 
 	auto valueAsString = index.data(Qt::EditRole).toString();
+	auto stringBits = valueAsString.split(":");
 
-	auto initialValue = LogicValue::fromString(valueAsString);
+	if (stringBits.at(0) == "BOOLEAN")
+	{
+		if (stringBits.length() < 2) return;
 
-	if (initialValue.isNull()) return;
+
+		valueEditor->setMachineValue(BooleanValue::fromRawString(stringBits.at(1)));
+	}
+	else if (stringBits.at(0) == "BITVECTOR")
+	{
+		if (stringBits.length() < 3) return;
 
 
-	valueEditor->setBitVectorValue(initialValue, initialValue.getSize());
+		valueEditor->setMachineValue(BitVectorValue::fromRawString(stringBits.at(1)));
+
+		bool ok;
+		int variableSize = stringBits.at(2).toInt(&ok);
+		if (ok == true)
+		{
+			valueEditor->setBitVectorSize(variableSize);
+		}
+	}
 
 	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &ActionTableValueDelegate::valueChangedEventHandler);
 }
@@ -59,8 +72,8 @@ void ActionTableValueDelegate::setModelData(QWidget* editor, QAbstractItemModel*
 	if (valueEditor == nullptr) return;
 
 
-	auto newValue = valueEditor->getBitVectorValue();
-	model->setData(index, newValue.toString(), Qt::EditRole);
+	auto newValue = valueEditor->getMachineValue();
+	model->setData(index, newValue.toRawString(), Qt::EditRole);
 }
 
 void ActionTableValueDelegate::valueChangedEventHandler(ValueEditor* editor)

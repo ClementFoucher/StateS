@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -79,8 +79,10 @@ bool Machine::setName(const QString& newName)
 	return true;
 }
 
-componentId_t Machine::addVariable(VariableNature_t nature, const QString& name, componentId_t id)
+componentId_t Machine::addVariable(VariableNature_t nature, const QString& name, MachineValue::Type_t type, componentId_t id)
 {
+	if (type == MachineValue::Type_t::nullType) return nullId;
+
 	// First clean name
 	auto cleanedName = name;
 	this->cleanName(cleanedName);
@@ -101,16 +103,17 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 		}
 	}
 
+
 	// Create variable
 	shared_ptr<Variable> variable;
 	componentId_t componentId = id;
 	if (id != nullId)
 	{
-		variable = make_shared<Variable>(id, cleanedName);
+		variable = make_shared<Variable>(id, cleanedName, type);
 	}
 	else
 	{
-		variable = make_shared<Variable>(cleanedName);
+		variable = make_shared<Variable>(cleanedName, type);
 		componentId = variable->getId();
 	}
 
@@ -120,8 +123,9 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 	switch(nature)
 	{
 	case VariableNature_t::input:
-		connect(variable.get(), &Variable::variableRenamedEvent, this, &Machine::machineExternalViewChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent, this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableTypeChangedEvent,         this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineExternalViewChangedEvent);
 
 		this->inputVariables.append(componentId);
 
@@ -129,8 +133,9 @@ componentId_t Machine::addVariable(VariableNature_t nature, const QString& name,
 
 		break;
 	case VariableNature_t::output:
-		connect(variable.get(), &Variable::variableRenamedEvent, this, &Machine::machineExternalViewChangedEvent);
-		connect(variable.get(), &Variable::variableResizedEvent, this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableRenamedEvent,             this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableTypeChangedEvent,         this, &Machine::machineExternalViewChangedEvent);
+		connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Machine::machineExternalViewChangedEvent);
 
 		this->outputVariables.append(componentId);
 

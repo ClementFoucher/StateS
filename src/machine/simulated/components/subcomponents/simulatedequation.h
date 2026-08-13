@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,25 +30,11 @@
 using namespace std;
 
 // StateS
-#include "statestypes.h"
-#include "logicvalue.h"
-class Equation;
-class SimulatedVariable;
+#include "machinevalue.h"
+#include "equation.h"
 class SimulatedOperand;
 
 
-/**
- * @brief
- * An equation is a gathering of operands linked by an operator.
- * Equations are thus "dynamic variables", which value will
- * depend on the values of its operands.
- *
- * Equation size in bits is also dynamic and depends on operands size,
- * except for equality and difference operators, which size is always 1.
- *
- * An equation with any of its operands undefined always returns
- * an undefined value.
- */
 class SimulatedEquation : public QObject
 {
 	Q_OBJECT
@@ -61,7 +47,7 @@ public:
 	/////
 	// Object functions
 public:
-	LogicValue getCurrentValue() const;
+	MachineValue getCurrentValue() const;
 
 	// Concept of true is only applicable to size 1 results
 	// An equation whose result size is > 1 will never be true
@@ -73,9 +59,6 @@ private slots:
 private:
 	bool isInverted() const;
 
-	shared_ptr<SimulatedOperand> getOperand(uint i) const;
-	uint getOperandCount() const;
-
 	/////
 	// Signals
 signals:
@@ -85,16 +68,15 @@ signals:
 	// Object variables
 private:
 	// Equation parameters
-	OperatorType_t operatorType;
+	Equation::Operator_t operatorType;
 	QList<shared_ptr<SimulatedOperand>> operands;
-	bool isValid = true;
 
 	// Parameters specific to Extract operator type
 	int rangeL = -1;
 	int rangeR = -1;
 
 	// Equation state recomputed dynamically
-	LogicValue currentValue;
+	MachineValue currentValue{};
 
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -43,7 +43,7 @@ class ActionTableView : public ReorderableTableView
 	/////
 	// Type declarations
 private:
-	enum ContextAction
+	enum ContextAction_t
 	{
 		Cancel             = 0,
 		DeleteAction       = 1,
@@ -54,6 +54,13 @@ private:
 		EditValue          = 6,
 		MoveUp             = 7,
 		MoveDown           = 8
+	};
+
+	enum class ColumnRole_t
+	{
+		actionType,
+		variableName,
+		actionValue
 	};
 
 	/////
@@ -68,7 +75,7 @@ public:
 	void addAction(const QString& variableName);
 
 protected slots:
-	virtual void rowsInserted(const QModelIndex& parent, int start, int end)         override;
+	virtual void rowsInserted        (const QModelIndex& parent, int start, int end) override;
 	virtual void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) override;
 
 protected:
@@ -78,6 +85,7 @@ protected:
 private slots:
 	void processContextMenuEventHandler(QAction* action);
 	void rangeEditorClosedEventHandler(int result);
+	void refreshPersistentEditorsEventHandler();
 
 private:
 	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
@@ -94,6 +102,7 @@ private:
 	componentId_t actuatorId = nullId;
 
 	ActionTableModel* tableModel = nullptr;
+	QMap<ColumnRole_t, int> columnsRoles;
 
 	shared_ptr<ActionOnVariable> actionBeingEdited;
 	RangeEditorDialog* rangeEditorDialog = nullptr;

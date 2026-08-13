@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -39,18 +39,6 @@ class InputsSelector : public QWidget
 public:
 	explicit InputsSelector(QWidget* parent = nullptr);
 
-	/////
-	// Object functions
-protected:
-	virtual void resizeEvent(QResizeEvent*) override;
-
-	/////
-	// Object variables
-private:
-	QScrollArea* scrollArea       = nullptr;
-	QWidget*     scrollAreaWidget = nullptr;
-
-	QVBoxLayout* scrollAreaWidgetLayout = nullptr;
 };
 
 #endif // INPUTSSELECTOR_H

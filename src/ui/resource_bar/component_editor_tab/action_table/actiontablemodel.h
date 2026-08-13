@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,6 +42,16 @@ class ActionTableModel : public QAbstractTableModel
 	Q_OBJECT
 
 	/////
+	// Type declarations
+private:
+	enum class ColumnRole_t
+	{
+		actionType,
+		variableName,
+		actionValue
+	};
+
+	/////
 	// Constructors/destructors
 public:
 	explicit ActionTableModel(componentId_t actuatorId, QObject* parent = nullptr);
@@ -50,7 +60,7 @@ public:
 	// Object functions
 public:
 	virtual int columnCount(const QModelIndex& parent = QModelIndex())              const override;
-	virtual int rowCount(const QModelIndex& parent = QModelIndex())                 const override;
+	virtual int rowCount   (const QModelIndex& parent = QModelIndex())              const override;
 	virtual QVariant data(const QModelIndex& index, int role)                       const override;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
@@ -62,9 +72,16 @@ public:
 	void addAction(const QString& variableName);
 
 	/////
+	// Signals
+signals:
+	void refreshPersistentEditorsEvent();
+
+	/////
 	// Object variables
 private:
 	componentId_t actuatorId = nullId;
+
+	QList<ColumnRole_t> columnsRoles;
 
 };
 

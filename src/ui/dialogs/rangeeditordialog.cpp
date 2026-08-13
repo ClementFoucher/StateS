@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -50,7 +50,7 @@ RangeEditorDialog::RangeEditorDialog(componentId_t variableId, int rangeL, int r
 	// Build object
 	this->setWindowTitle(tr("Edit range"));
 
-	this->equation = make_shared<Equation>(OperatorType_t::extractOp, 1);
+	this->equation = make_shared<Equation>(Equation::Operator_t::extractOp, 1);
 	this->equation->setOperand(0, variableId);
 	this->equation->setRange(rangeL, rangeR);
 

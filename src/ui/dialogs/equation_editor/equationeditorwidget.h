@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -42,7 +42,7 @@ public:
 	// Object functions
 public:
 	void replaceOperand(uint operandRank, shared_ptr<Equation> newOperand);
-	void replaceOperand(uint operandRank, LogicValue newConstant, bool isProcessingDrop = false);
+	void replaceOperand(uint operandRank, MachineValue newConstant, bool isProcessingDrop = false);
 	void replaceOperand(uint operandRank, componentId_t newVariable);
 	void clearOperand(uint operandRank);
 
@@ -61,6 +61,7 @@ protected:
 	virtual QString getToolTipText()          const override;
 	virtual bool    getReplaceWithoutAsking() const override;
 	virtual bool    getIsErroneous()          const override;
+	virtual bool    getHasWarning()           const override;
 
 	virtual QDrag* buildDrag() override;
 

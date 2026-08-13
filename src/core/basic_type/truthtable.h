@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
-class LogicValue;
+class MachineValue;
 class Equation;
 class Variable;
 
@@ -68,8 +68,8 @@ public:
 	QString getInputVariableText (uint column) const;
 	QString getOutputEquationText(uint column) const;
 
-	LogicValue getInputValue (uint row, uint column) const;
-	LogicValue getOutputValue(uint row, uint column) const;
+	MachineValue getInputValue (uint row, uint column) const;
+	MachineValue getOutputValue(uint row, uint column) const;
 
 	uint getRowsCount()   const;
 	uint getInputCount()  const;
@@ -83,7 +83,7 @@ public:
 private:
 	void prepareTable();
 
-	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const;
+	void replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, MachineValue constantValue) const;
 
 	/////
 	// Object variables
@@ -98,13 +98,13 @@ private:
 	QList<QString> outputEquationsTexts;
 
 	// Members valid only once the table has been built
-	QList<QList<LogicValue>> inputValuesTable;
-	QList<QList<LogicValue>> outputValuesTable;
+	QList<QList<MachineValue>> inputValuesTable;
+	QList<QList<MachineValue>> outputValuesTable;
 
-	// Temporary members, useless once table has been built
+	// Temporary members, useless and cleared once table has been built
 	QList<shared_ptr<const Equation>> equations;
 	QList<shared_ptr<const Variable>> variablesList;
-	QList<LogicValue> currentInputRow;
+	QList<MachineValue> currentInputRow;
 	uint currentRowRank = 0;
 
 };

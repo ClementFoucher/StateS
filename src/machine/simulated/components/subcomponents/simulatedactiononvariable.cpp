@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -47,7 +47,28 @@ void SimulatedActionOnVariable::doAction()
 	if (simulatedVariable == nullptr) return;
 
 
-	simulatedVariable->setCurrentValueSubRange(this->getActionValue(), this->rangeL, this->rangeR);
+	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL !=-1) )
+	{
+		auto variableCurrentValue = simulatedVariable->getCurrentValue().getBitVectorValue();
+		auto actionValue = this->getActionValue();
+		switch (actionValue.getType())
+		{
+		case MachineValue::Type_t::boolean:
+			variableCurrentValue.setBit(actionValue.getBooleanValue(), this->rangeL);
+			break;
+		case MachineValue::Type_t::bitVector:
+			variableCurrentValue.setSubrange(actionValue.getBitVectorValue(), this->rangeL, this->rangeR);
+			break;
+		case MachineValue::Type_t::nullType:
+			// Should not happen
+			break;
+		}
+		simulatedVariable->setCurrentValue(variableCurrentValue);
+	}
+	else
+	{
+		simulatedVariable->setCurrentValue(this->getActionValue());
+	}
 }
 
 bool SimulatedActionOnVariable::isActionMemorized() const
@@ -67,41 +88,44 @@ componentId_t SimulatedActionOnVariable::getVariableId() const
 	return this->variableId;
 }
 
-LogicValue SimulatedActionOnVariable::getActionValue() const
+MachineValue SimulatedActionOnVariable::getActionValue() const
 {
 	switch (this->actionType)
 	{
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::continuous:
-	case ActionOnVariableType_t::pulse:
-	case ActionOnVariableType_t::assign:
+	case ActionOnVariable::Type_t::reset:
+	case ActionOnVariable::Type_t::set:
+	case ActionOnVariable::Type_t::continuous:
+	case ActionOnVariable::Type_t::pulse:
+	case ActionOnVariable::Type_t::assign:
 		return this->actionValue;
 		break;
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
+	case ActionOnVariable::Type_t::increment:
+	case ActionOnVariable::Type_t::decrement:
 	{
 		auto simulatedMachine = machineManager->getSimulatedMachine();
-		if (simulatedMachine == nullptr) return LogicValue::getNullValue();
+		if (simulatedMachine == nullptr) return MachineValue{};
 
 		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-		if (simulatedVariable == nullptr) return LogicValue::getNullValue();
+		if (simulatedVariable == nullptr) return MachineValue{};
+
+		auto simulatedVariableValue = simulatedVariable->getCurrentValue();
+		if (simulatedVariableValue.getType() != MachineValue::Type_t::bitVector) return MachineValue{};
 
 
-		auto publicActionValue = simulatedVariable->getCurrentValue();
-		if (this->actionType == ActionOnVariableType_t::increment)
+		auto publicActionValue = simulatedVariableValue.getBitVectorValue();
+		if (this->actionType == ActionOnVariable::Type_t::increment)
 		{
 			publicActionValue.increment();
 		}
-		else // (this->actionType == ActionOnVariableType_t::decrement)
+		else // (this->actionType == ActionOnVariable::Type_t::decrement)
 		{
 			publicActionValue.decrement();
 		}
 		return publicActionValue;
 		break;
 	}
-	case ActionOnVariableType_t::none:
-		return LogicValue::getNullValue();
+	case ActionOnVariable::Type_t::none:
+		return MachineValue{};
 		break;
 	}
 }

@@ -371,7 +371,7 @@ void GraphicFsmTransition::updateConditionText()
 		// An empty condition is always true
 		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
 	}
-	else if (condition->getOperatorType() != OperatorType_t::identity)
+	else if (condition->getOperator() != Equation::Operator_t::identity)
 	{
 		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + condition->getColoredText() + "</div>");
 	}

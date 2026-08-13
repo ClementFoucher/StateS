@@ -6,12 +6,12 @@
     </Configuration>
     <Machine Name="Burst emitter" Type="FSM">
         <Variables>
-            <Input Name="Trigger" Size="1" Value="0"/>
-            <Internal Name="period counter" Size="3" Value="000" Memorized="true"/>
-            <Internal Name="event counter" Size="3" Value="000" Memorized="true"/>
-            <Output Name="Burst" Size="1" Value="0"/>
-            <Constant Name="period length" Size="3" Value="011"/>
-            <Constant Name="period count" Size="3" Value="100"/>
+            <Input Name="Trigger" Type="Boolean" Value="FALSE"/>
+            <Internal Name="period counter" Type="BitVector" Value="000" Memorized="true"/>
+            <Internal Name="event counter" Type="BitVector" Value="000" Memorized="true"/>
+            <Output Name="Burst" Type="Boolean" Value="FALSE"/>
+            <Constant Name="period length" Type="BitVector" Value="011"/>
+            <Constant Name="period count" Type="BitVector" Value="100"/>
         </Variables>
         <States>
             <State Name="Wait trig" IsInitial="true" X="151.5" Y="389.627"/>
@@ -43,7 +43,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
                 </Actions>
             </Transition>
             <Transition Source="Burst low" Target="Burst high" SliderPos="76">
@@ -64,7 +64,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
                     <Action Name="period counter" ActionType="Increment"/>
                 </Actions>
             </Transition>
@@ -86,8 +86,8 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="period counter" ActionType="Assign" ActionValue="000"/>
-                    <Action Name="event counter" ActionType="Assign" ActionValue="000"/>
+                    <Action Name="period counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
                 </Actions>
             </Transition>
         </Transitions>

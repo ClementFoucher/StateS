@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,44 +23,33 @@
 #define INPUTBITSELECTOR_H
 
 // Parent
-#include <QFrame>
-
-// Qt
-class QLabel;
+#include "inputtoggleselector.h"
 
 // StateS
 #include "statestypes.h"
 
 
-class InputBitSelector : public QFrame
+class InputBitSelector : public InputToggleSelector
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit InputBitSelector(componentId_t variableToCommandId, uint bitNumber, QWidget* parent = nullptr);
+	explicit InputBitSelector(componentId_t variableId, uint bitNumber, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 protected:
-	virtual void enterEvent           (QEnterEvent* event) override;
-	virtual void leaveEvent           (QEvent* event)      override;
-	virtual void mousePressEvent      (QMouseEvent*)       override;
-	virtual void mouseMoveEvent       (QMouseEvent*)       override;
-	virtual void mouseReleaseEvent    (QMouseEvent*)       override;
-	virtual void mouseDoubleClickEvent(QMouseEvent*)       override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
 
 private slots:
-	void variableValueChangedEventHandler();
+	virtual void variableValueChangedEventHandler() override;
 
 	/////
 	// Object variables
 private:
-	componentId_t variableToCommandId = nullId;
 	uint bitNumber = 0;
-
-	QLabel* bitValue = nullptr;
 
 };
 

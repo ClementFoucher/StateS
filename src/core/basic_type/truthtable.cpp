@@ -31,15 +31,14 @@
 #include "variable.h"
 #include "equation.h"
 #include "operand.h"
-#include "logicvalue.h"
 
 
 TruthTable::TruthTable(shared_ptr<const Equation> equation)
 {
-	if (equation != nullptr)
-	{
-		this->equations.append(equation);
-	}
+	if (equation == nullptr) return;
+
+
+	this->equations.append(equation);
 
 	this->prepareTable();
 }
@@ -73,27 +72,27 @@ QString TruthTable::getOutputEquationText(uint column) const
 	return this->outputEquationsTexts.at(column);
 }
 
-LogicValue TruthTable::getInputValue(uint row, uint column) const
+MachineValue TruthTable::getInputValue(uint row, uint column) const
 {
-	if (this->tableBuilt == false) return LogicValue::getNullValue();
+	if (this->tableBuilt == false) return MachineValue{};
 
-	if (row >= this->inputValuesTable.count()) return LogicValue::getNullValue();
+	if (row >= this->inputValuesTable.count()) return MachineValue{};
 
 	auto selectedRow = this->inputValuesTable.at(row);
-	if (column >= selectedRow.count()) return LogicValue::getNullValue();
+	if (column >= selectedRow.count()) return MachineValue{};
 
 
 	return selectedRow.at(column);
 }
 
-LogicValue TruthTable::getOutputValue(uint row, uint column) const
+MachineValue TruthTable::getOutputValue(uint row, uint column) const
 {
-	if (this->tableBuilt == false) return LogicValue::getNullValue();
+	if (this->tableBuilt == false) return MachineValue{};
 
-	if (row >= this->outputValuesTable.count()) return LogicValue::getNullValue();
+	if (row >= this->outputValuesTable.count()) return MachineValue{};
 
 	auto selectedRow = this->outputValuesTable.at(row);
-	if (column >= selectedRow.count()) return LogicValue::getNullValue();
+	if (column >= selectedRow.count()) return MachineValue{};
 
 
 	return selectedRow.at(column);
@@ -144,12 +143,60 @@ bool TruthTable::buildRow()
 	if (this->tableBuilt == true) return true;
 
 
+	// Prepare input values table current row
 	if (this->currentRowRank == 0)
 	{
-		// Prepare input values table first row
+		// Build input values table first row
 		for (auto& variable : this->variablesList)
 		{
-			this->currentInputRow.append(LogicValue(variable->getSize(), false));
+			switch (variable->getType())
+			{
+			case MachineValue::Type_t::boolean:
+				this->currentInputRow.append(BooleanValue::falseValue());
+				break;
+			case MachineValue::Type_t::bitVector:
+				this->currentInputRow.append(BitVectorValue::allZeros(variable->getInitialValue().getBitVectorValue().getSize()));
+				break;
+			case MachineValue::Type_t::nullType:
+				// Checked previously in prepareTable(): should not happen
+				break;
+			}
+		}
+	}
+	else // (this->currentRowRank > 0)
+	{
+		// Increment latest row by 1
+		for (int inputRank = this->currentInputRow.count() - 1 ; inputRank >= 0 ; inputRank--)
+		{
+			bool carry = false;
+			switch (this->currentInputRow[inputRank].getType())
+			{
+			case MachineValue::Type_t::boolean:
+			{
+				auto currentBooleanValue = this->currentInputRow[inputRank].getBooleanValue();
+				carry = currentBooleanValue;
+
+				this->currentInputRow[inputRank] = !currentBooleanValue;
+				break;
+			}
+			case MachineValue::Type_t::bitVector:
+			{
+				auto currentBitVectorValue = this->currentInputRow[inputRank].getBitVectorValue();
+				carry = currentBitVectorValue.increment();
+
+				this->currentInputRow[inputRank] = currentBitVectorValue;
+				break;
+			}
+			case MachineValue::Type_t::nullType:
+				// Checked previously in prepareTable(): should not happen
+				break;
+			}
+
+			// End the loop when there is no more carry
+			if (carry == false)
+			{
+				break;
+			}
 		}
 	}
 
@@ -157,7 +204,7 @@ bool TruthTable::buildRow()
 	this->inputValuesTable.append(this->currentInputRow);
 
 	// Compute outputs values for this row
-	QList<LogicValue> currentOutputRow;
+	QList<MachineValue> currentOutputRow;
 	for (auto& equation : this->equations)
 	{
 		// Build an equation in which we replace variables with constants
@@ -174,16 +221,7 @@ bool TruthTable::buildRow()
 	}
 	this->outputValuesTable.append(currentOutputRow);
 
-	// Prepare input values table next row
-	for (int inputRank = this->currentInputRow.count() - 1 ; inputRank >= 0 ; inputRank--)
-	{
-		bool carry = this->currentInputRow[inputRank].increment();
-		if (carry == false)
-		{
-			break;
-		}
-	}
-
+	// Prepare next row and check if done
 	this->currentRowRank++;
 	if (this->currentRowRank == this->rowsCount)
 	{
@@ -198,8 +236,7 @@ bool TruthTable::buildRow()
 
 void TruthTable::prepareTable()
 {
-	// this->equations is guaranteed to contain no nullptr
-	// when this function is called
+	// PRE: this->equations is guaranteed to contain no nullptr
 
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -224,7 +261,12 @@ void TruthTable::prepareTable()
 	for (auto& variableId : std::as_const(variablesIds))
 	{
 		auto variable = machine->getVariable(variableId);
-		if (variable == nullptr) continue;
+		if (variable == nullptr)
+		{
+			this->equations.clear();
+			this->variablesList.clear();
+			return;
+		}
 
 
 		this->variablesList.append(variable);
@@ -234,7 +276,19 @@ void TruthTable::prepareTable()
 	uint inputBitsCount = 0;
 	for (auto& variable : this->variablesList)
 	{
-		inputBitsCount += variable->getSize();
+		switch (variable->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			inputBitsCount++;
+			break;
+		case MachineValue::Type_t::bitVector:
+			inputBitsCount += variable->getInitialValue().getBitVectorValue().getSize();
+			break;
+		case MachineValue::Type_t::nullType:
+			this->equations.clear();
+			this->variablesList.clear();
+			return;
+		}
 	}
 
 	// Make sure equation is computable
@@ -262,7 +316,7 @@ void TruthTable::prepareTable()
 	}
 }
 
-void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, LogicValue constantValue) const
+void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, componentId_t variableId, MachineValue constantValue) const
 {
 	if (equation == nullptr) return;
 
@@ -274,14 +328,14 @@ void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, compon
 
 
 		auto operandSource = operand->getSource();
-		if (operandSource == OperandSource_t::variable)
+		if (operandSource == Operand::Source_t::variable)
 		{
 			if (operand->getVariableId() == variableId)
 			{
 				equation->setOperand(i, constantValue);
 			}
 		}
-		else if (operandSource == OperandSource_t::equation)
+		else if (operandSource == Operand::Source_t::equation)
 		{
 			this->replaceVariableByConstant(operand->getEquation(), variableId, constantValue);
 		}

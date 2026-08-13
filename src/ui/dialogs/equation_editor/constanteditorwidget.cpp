@@ -34,7 +34,7 @@
 #include "equationeditorwidget.h"
 
 
-ConstantEditorWidget::ConstantEditorWidget(LogicValue initialValue, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
+ConstantEditorWidget::ConstantEditorWidget(MachineValue initialValue, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
 	EquationPartEditorWidget(rankInParentOperands, isTemplate, parent)
 {
 	this->currentValue = initialValue;
@@ -71,8 +71,8 @@ bool ConstantEditorWidget::validEdit()
 	if (this->valueEditor == nullptr) return false;
 
 
-	this->tempConstant = this->valueEditor->getBitVectorValue();
-	this->tempValueNature = OperandSource_t::constant;
+	this->tempValueNature = TempValueNature_t::constant;
+	this->tempValue = this->valueEditor->getMachineValue();
 	this->replaceByTempValue();
 	// Do NOT do anything after, as this ceases to exist
 
@@ -93,15 +93,15 @@ bool ConstantEditorWidget::cancelEdit()
 
 uint ConstantEditorWidget::getAllowedMenuActions() const
 {
-	return (uint)ContextAction_t::Remove |
-	       (uint)ContextAction_t::Edit   |
-	       (uint)ContextAction_t::Invert;
+	return static_cast<uint>(ContextAction_t::Remove) |
+	       static_cast<uint>(ContextAction_t::Edit)   |
+	       static_cast<uint>(ContextAction_t::Invert);
 }
 
 uint ConstantEditorWidget::getAllowedDropActions() const
 {
-	return (uint)DropAction_t::ReplaceExisting |
-	       (uint)DropAction_t::ExistingAsOperand;
+	return static_cast<uint>(DropAction_t::ReplaceExisting) |
+	       static_cast<uint>(DropAction_t::ExistingAsOperand);
 }
 
 QString ConstantEditorWidget::getText() const
@@ -109,7 +109,7 @@ QString ConstantEditorWidget::getText() const
 	if (this->currentValue.isNull() == true) return QString();
 
 
-	return this->currentValue.toString();
+	return this->currentValue.toDisplayString();
 }
 
 QString ConstantEditorWidget::getToolTipText() const
@@ -136,7 +136,7 @@ QDrag* ConstantEditorWidget::buildDrag()
 {
 	auto drag = new QDrag(this);
 
-	uint availableAction = (uint)DropAction_t::ReplaceExisting;
+	uint availableAction = static_cast<uint>(DropAction_t::ReplaceExisting);
 
 	auto mimeData = new EquationPartMimeData(tr("Custom constant"), availableAction, this->currentValue);
 	drag->setMimeData(mimeData);
@@ -150,12 +150,16 @@ void ConstantEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	switch (action)
 	{
 	case ContextAction_t::Invert:
-		this->tempValueNature = OperandSource_t::equation;
-		this->tempEquation = make_shared<Equation>(OperatorType_t::notOp);
-		this->tempEquation->setOperand(0, this->currentValue);
+	{
+		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		tempEquation->setOperand(0, this->currentValue);
+
+		this->tempValueNature = TempValueNature_t::equation;
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case ContextAction_t::IncreaseOperandCount:
 	case ContextAction_t::DecreaseOperandCount:
 	case ContextAction_t::ExtractSwitchRange:
@@ -177,13 +181,19 @@ void ConstantEditorWidget::processSpecificDropAction(DropAction_t action)
 	switch (action)
 	{
 	case DropAction_t::ExistingAsOperand:
-		if (this->tempEquation == nullptr) return;
+	{
+		if (this->tempValueNature != TempValueNature_t::equation) return;
+
+		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		if (tempEquation == nullptr) return;
 
 
-		this->tempEquation->setOperand(0, this->currentValue);
+		tempEquation->setOperand(0, this->currentValue);
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case DropAction_t::RemoveInverter:
 		//  This action is not supported by this class
 		break;
@@ -231,7 +241,7 @@ void ConstantEditorWidget::build()
 
 		if (this->isEditing == false)
 		{
-			this->valueText = new QLabel(this->currentValue.toString());
+			this->valueText = new QLabel(this->currentValue.toDisplayString());
 
 			layout->addWidget(this->valueText);
 		}
@@ -239,7 +249,7 @@ void ConstantEditorWidget::build()
 		{
 			this->valueEditor = new ValueEditor();
 			this->valueEditor->setFocusOnShow(true);
-			this->valueEditor->setBitVectorValue(this->currentValue);
+			this->valueEditor->setMachineValue(this->currentValue);
 
 			connect(this->valueEditor, &ValueEditor::valueChangedEvent, this, &ConstantEditorWidget::valueChangedEventHandler);
 			connect(this->valueEditor, &ValueEditor::cancelEditEvent,   this, &ConstantEditorWidget::cancelEditEventHandler);
@@ -251,7 +261,25 @@ void ConstantEditorWidget::build()
 	{
 		auto layout = new QVBoxLayout(this);
 
-		this->valueText = new QLabel(tr("Custom constant"));
+		QString templateText = tr("Custom constant");
+		templateText += "<br>";
+		templateText += "(";
+		switch (this->currentValue.getType())
+		{
+		case MachineValue::Type_t::boolean:
+			templateText += tr("boolean");
+			break;
+		case MachineValue::Type_t::bitVector:
+			templateText += tr("bit vector");
+			break;
+		case MachineValue::Type_t::nullType:
+			// As long as we don't explicitly add a null variable
+			// in the template list, this should not happen.
+			break;
+		}
+		templateText += ")";
+
+		this->valueText = new QLabel(templateText);
 		this->valueText->setAlignment(Qt::AlignCenter);
 
 		layout->addWidget(this->valueText);

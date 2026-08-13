@@ -6,18 +6,18 @@
     </Configuration>
     <Machine Name="Demo machine" Type="FSM">
         <Variables>
-            <Input Name="boot ok" Size="1" Value="0"/>
-            <Input Name="stop" Size="1" Value="0"/>
-            <Input Name="start" Size="1" Value="0"/>
-            <Input Name="suspend" Size="1" Value="0"/>
-            <Input Name="error" Size="1" Value="0"/>
-            <Input Name="reset errors" Size="1" Value="0"/>
-            <Internal Name="error counter" Size="4" Value="0000" Memorized="true"/>
-            <Internal Name="init duration" Size="4" Value="0000" Memorized="true"/>
-            <Output Name="boot" Size="1" Value="0"/>
-            <Output Name="leds" Size="2" Value="00"/>
-            <Output Name="alarm" Size="1" Value="0"/>
-            <Output Name="power" Size="1" Value="0"/>
+            <Input Name="boot ok" Type="Boolean" Value="FALSE"/>
+            <Input Name="stop" Type="Boolean" Value="FALSE"/>
+            <Input Name="start" Type="Boolean" Value="FALSE"/>
+            <Input Name="suspend" Type="Boolean" Value="FALSE"/>
+            <Input Name="error" Type="Boolean" Value="FALSE"/>
+            <Input Name="reset errors" Type="Boolean" Value="FALSE"/>
+            <Internal Name="error counter" Type="BitVector" Value="0000" Memorized="true"/>
+            <Internal Name="init duration" Type="BitVector" Value="0000" Memorized="true"/>
+            <Output Name="boot" Type="Boolean" Value="FALSE"/>
+            <Output Name="leds" Type="BitVector" Value="00"/>
+            <Output Name="alarm" Type="Boolean" Value="FALSE"/>
+            <Output Name="power" Type="Boolean" Value="FALSE"/>
         </Variables>
         <States>
             <State Name="Init" X="558.787" Y="151.5">
@@ -56,7 +56,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="init duration" ActionType="Assign" ActionValue="0000"/>
+                    <Action Name="init duration" ActionType="Assign" ActionValueType="BitVector" ActionValue="0000"/>
                 </Actions>
             </Transition>
             <Transition Source="On" Target="Error">
@@ -102,7 +102,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="error counter" ActionType="Assign" ActionValue="0000"/>
+                    <Action Name="error counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="0000"/>
                 </Actions>
             </Transition>
             <Transition Source="Off" Target="Error" SliderPos="24">

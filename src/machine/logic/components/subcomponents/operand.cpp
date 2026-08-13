@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,8 @@
 
 
 Operand::Operand(componentId_t variableId) :
-	Operand(OperandSource_t::variable)
+	source{Source_t::variable},
+	value{nullId}
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -39,8 +40,9 @@ Operand::Operand(componentId_t variableId) :
 	if (variable == nullptr) return;
 
 
-	this->variableId = variableId;
+	this->value = variableId;
 
+	connect(variable.get(), &Variable::variableTypeChangedEvent,         this, &Operand::operandInitialValueChangedEvent);
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
 	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
 
@@ -48,148 +50,158 @@ Operand::Operand(componentId_t variableId) :
 }
 
 Operand::Operand(shared_ptr<Equation> equation) :
-	Operand(OperandSource_t::equation)
+	source{Source_t::equation},
+	value{equation}
 {
-	this->equation = equation;
+	if (equation == nullptr) return;
+
 
 	connect(equation.get(), &Equation::equationInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
 	connect(equation.get(), &Equation::equationTextChangedEvent,         this, &Operand::operandTextChangedEvent);
 }
 
-Operand::Operand(LogicValue constant) :
-	Operand(OperandSource_t::constant)
+Operand::Operand(MachineValue constant) :
+	source{Source_t::constant},
+	value{constant}
 {
-	this->constant = constant;
 }
 
 Operand::Operand(shared_ptr<Variable> variable) :
-	Operand(OperandSource_t::variable)
+	source{Source_t::variable},
+	value{nullId}
 {
 	if (variable == nullptr) return;
 
 
-	this->variableId = variable->getId();
+	this->value = variable->getId();
 
+	connect(variable.get(), &Variable::variableTypeChangedEvent,         this, &Operand::operandInitialValueChangedEvent);
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent, this, &Operand::operandInitialValueChangedEvent);
 	connect(variable.get(), &Variable::variableRenamedEvent,             this, &Operand::operandTextChangedEvent);
 
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
 }
 
-Operand::Operand(OperandSource_t operandSource)
-{
-	// The source MUST be defined, even if there is a failure on the machine
-	// This private constructor ensures it.
-
-	this->source = operandSource;
-}
-
 shared_ptr<Operand> Operand::clone() const
 {
 	switch (this->source)
 	{
-	case OperandSource_t::variable:
-		return make_shared<Operand>(this->variableId);
+	case Source_t::variable:
+		return make_shared<Operand>(this->getVariableId());
 		break;
-	case OperandSource_t::equation:
-		return make_shared<Operand>(this->equation->clone());
+	case Source_t::equation:
+		return make_shared<Operand>(this->getEquation()->clone());
 		break;
-	case OperandSource_t::constant:
-		return make_shared<Operand>(this->constant);
+	case Source_t::constant:
+		return make_shared<Operand>(this->getConstant());
 		break;
 	}
 }
 
-OperandSource_t Operand::getSource() const
+Operand::Source_t Operand::getSource() const
 {
 	return this->source;
 }
 
-LogicValue Operand::getInitialValue() const
+MachineValue Operand::getInitialValue() const
 {
 	switch (this->source)
 	{
-	case OperandSource_t::variable:
+	case Source_t::variable:
 	{
 		auto machine = machineManager->getMachine();
-		if (machine == nullptr) return LogicValue::getNullValue();
+		if (machine == nullptr) return MachineValue{};
 
-		auto variable = machine->getVariable(this->variableId);
-		if (variable == nullptr) return LogicValue::getNullValue();
+		auto variable = machine->getVariable(this->getVariableId());
+		if (variable == nullptr) return MachineValue{};
 
 
 		return variable->getInitialValue();
 		break;
 	}
-	case OperandSource_t::equation:
-		if (this->equation == nullptr) return LogicValue::getNullValue();
+	case Source_t::equation:
+	{
+		auto equation = this->getEquation();
+		if (equation == nullptr) return MachineValue{};
 
 
-		return this->equation->getInitialValue();
+		return equation->getInitialValue();
 		break;
-	case OperandSource_t::constant:
-		return this->constant;
+	}
+	case Source_t::constant:
+		return this->getConstant();
 		break;
 	}
 }
 
+MachineValue::Type_t Operand::getType() const
+{
+	return this->getInitialValue().getType();
+}
+
 componentId_t Operand::getVariableId() const
 {
-	if (this->source != OperandSource_t::variable) return nullId;
+	if (this->source != Source_t::variable) return nullId;
 
 
-	return this->variableId;
+	return std::get<componentId_t>(this->value);
 }
 
 shared_ptr<Equation> Operand::getEquation() const
 {
-	if (this->source != OperandSource_t::equation) return nullptr;
+	if (this->source != Source_t::equation) return nullptr;
 
 
-	return this->equation;
+	return std::get<shared_ptr<Equation>>(this->value);
 }
 
-LogicValue Operand::getConstant() const
+MachineValue Operand::getConstant() const
 {
-	if (this->source != OperandSource_t::constant) return LogicValue::getNullValue();
+	if (this->source != Source_t::constant) return MachineValue{};
 
 
-	return this->constant;
+	return std::get<MachineValue>(this->value);
 }
 
 QString Operand::getText() const
 {
 	switch (this->source)
 	{
-	case OperandSource_t::variable:
+	case Source_t::variable:
 	{
 		auto machine = machineManager->getMachine();
 		if (machine == nullptr) return QString();
 
-		auto variable = machine->getVariable(this->variableId);
+		auto variable = machine->getVariable(this->getVariableId());
 		if (variable == nullptr) return QString();
 
 
 		return variable->getName();
 		break;
 	}
-	case OperandSource_t::equation:
-		if (this->equation == nullptr) return QString();
+	case Source_t::equation:
+	{
+		auto equation = this->getEquation();
+		if (equation == nullptr) return QString();
 
 
-		return this->equation->getText();
+		return equation->getText();
 		break;
-	case OperandSource_t::constant:
-		if (this->constant.isNull()) return "...";
+	}
+	case Source_t::constant:
+	{
+		auto constant = this->getConstant();
+		if (constant.isNull() == true) return "...";
 
 
-		return this->constant.toString();
+		return constant.toDisplayString();
 		break;
+	}
 	}
 }
 
 void Operand::variableDeletedEventHandler(componentId_t)
 {
-	this->variableId = nullId;
+	this->value = nullId;
 	emit this->operandInvalidatedEvent();
 }

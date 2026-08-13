@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2025 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,45 +36,45 @@
 // Static members
 //
 
-QString ActionOnVariable::getActionTypeText(ActionOnVariableType_t type)
+QString ActionOnVariable::getActionTypeText(ActionOnVariable::Type_t type)
 {
 	switch (type)
 	{
-	case ActionOnVariableType_t::assign:
+	case ActionOnVariable::Type_t::assign:
 		return tr("Assign");
 		break;
-	case ActionOnVariableType_t::pulse:
+	case ActionOnVariable::Type_t::pulse:
 		return tr("Pulse");
 		break;
-	case ActionOnVariableType_t::continuous:
+	case ActionOnVariable::Type_t::continuous:
 		return tr("Active on state");
 		break;
-	case ActionOnVariableType_t::increment:
+	case ActionOnVariable::Type_t::increment:
 		return tr("Increment");
 		break;
-	case ActionOnVariableType_t::decrement:
+	case ActionOnVariable::Type_t::decrement:
 		return tr("Decrement");
 		break;
-	case ActionOnVariableType_t::reset:
+	case ActionOnVariable::Type_t::reset:
 		return tr("Reset");
 		break;
-	case ActionOnVariableType_t::set:
+	case ActionOnVariable::Type_t::set:
 		return tr("Set");
 		break;
-	case ActionOnVariableType_t::none:
+	case ActionOnVariable::Type_t::none:
 		return QString();
 		break;
 	}
 }
 
-QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t type, bool isDown)
+QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariable::Type_t type, bool isDown)
 {
 	switch (type)
 	{
-	case ActionOnVariableType_t::assign:
+	case ActionOnVariable::Type_t::assign:
 		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/assign")));
 		break;
-	case ActionOnVariableType_t::pulse:
+	case ActionOnVariable::Type_t::pulse:
 		if (isDown == false)
 		{
 			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse")));
@@ -84,7 +84,7 @@ QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t type, bool isDo
 			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse_down")));
 		}
 		break;
-	case ActionOnVariableType_t::continuous:
+	case ActionOnVariable::Type_t::continuous:
 		if (isDown == false)
 		{
 			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state")));
@@ -94,19 +94,19 @@ QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariableType_t type, bool isDo
 			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state_down")));
 		}
 		break;
-	case ActionOnVariableType_t::increment:
+	case ActionOnVariable::Type_t::increment:
 		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/increment")));
 		break;
-	case ActionOnVariableType_t::decrement:
+	case ActionOnVariable::Type_t::decrement:
 		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/decrement")));
 		break;
-	case ActionOnVariableType_t::reset:
+	case ActionOnVariable::Type_t::reset:
 		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/falling_edge")));
 		break;
-	case ActionOnVariableType_t::set:
+	case ActionOnVariable::Type_t::set:
 		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/rising_edge")));
 		break;
-	case ActionOnVariableType_t::none:
+	case ActionOnVariable::Type_t::none:
 		return QIcon();
 		break;
 	}
@@ -131,25 +131,25 @@ ActionOnVariable::ActionOnVariable(componentId_t variableId, uint actuatorAllowe
 	// Assign a default action type.
 	// These 4 cases *should* cover all possible situations
 	uint allowedActions = this->getAllowedActionTypes();
-	if ((allowedActions & (uint)ActionOnVariableType_t::continuous) != 0)
+	if ((allowedActions & (uint)ActionOnVariable::Type_t::continuous) != 0)
 	{
 		// Non memorized on state
-		this->actionType = ActionOnVariableType_t::continuous;
+		this->actionType = ActionOnVariable::Type_t::continuous;
 	}
-	else if ((allowedActions & (uint)ActionOnVariableType_t::pulse) != 0)
+	else if ((allowedActions & (uint)ActionOnVariable::Type_t::pulse) != 0)
 	{
 		// Non memorized on transition
-		this->actionType = ActionOnVariableType_t::pulse;
+		this->actionType = ActionOnVariable::Type_t::pulse;
 	}
-	else if ((allowedActions & (uint)ActionOnVariableType_t::assign) != 0)
+	else if ((allowedActions & (uint)ActionOnVariable::Type_t::assign) != 0)
 	{
 		// Memorized with size > 1
-		this->actionType = ActionOnVariableType_t::assign;
+		this->actionType = ActionOnVariable::Type_t::assign;
 	}
 	else
 	{
 		// Memorized with size = 1
-		this->actionType = ActionOnVariableType_t::set;
+		this->actionType = ActionOnVariable::Type_t::set;
 	}
 
 	// Provide a default initial action value
@@ -158,7 +158,7 @@ ActionOnVariable::ActionOnVariable(componentId_t variableId, uint actuatorAllowe
 	this->connectSignals(variable);
 }
 
-ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariableType_t actionType, LogicValue actionValue, int rangeL, int rangeR)
+ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR)
 {
 	// Perform absolutely no checks on values: we are loading a file,
 	// these checks will be performed later.
@@ -185,11 +185,11 @@ void ActionOnVariable::checkAndFixAction()
 	this->checkAndFixActionValue();
 }
 
-void ActionOnVariable::setActionType(ActionOnVariableType_t newType)
+void ActionOnVariable::setActionType(ActionOnVariable::Type_t newType)
 {
 	if (newType == this->actionType) return;
 
-	if ( (this->getAllowedActionTypes() & (uint)newType) == 0) return;
+	if ( (this->getAllowedActionTypes() & static_cast<uint>(newType)) == 0) return;
 
 
 	this->actionType = newType;
@@ -199,21 +199,18 @@ void ActionOnVariable::setActionType(ActionOnVariableType_t newType)
 	emit this->actionChangedEvent();
 }
 
-void ActionOnVariable::setActionValue(LogicValue newValue)
+void ActionOnVariable::setActionValue(MachineValue newValue)
 {
 	if (this->isActionValueEditable() == false) return;
 
-
-	uint actionSize = this->getActionSize();
-	if (actionSize != newValue.getSize())
-	{
-		newValue.resize(actionSize);
-	}
-
 	if (newValue == this->actionValue) return;
+
+	if (newValue.getType() != this->getExpectedActionType()) return;
 
 
 	this->actionValue = newValue;
+
+	this->checkAndFixActionValue();
 
 	emit this->actionChangedEvent();
 }
@@ -238,12 +235,12 @@ componentId_t ActionOnVariable::getVariableActedOnId() const
 	return this->variableId;
 }
 
-ActionOnVariableType_t ActionOnVariable::getActionType() const
+ActionOnVariable::Type_t ActionOnVariable::getActionType() const
 {
 	return this->actionType;
 }
 
-LogicValue ActionOnVariable::getActionValue() const
+MachineValue ActionOnVariable::getActionValue() const
 {
 	return this->actionValue;
 }
@@ -258,46 +255,16 @@ int ActionOnVariable::getActionRangeR() const
 	return this->rangeR;
 }
 
-uint ActionOnVariable::getActionSize() const
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return 0;
-
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return 0;
-
-
-	if (variable->getSize() == 1)
-	{
-		return 1;
-	}
-	else
-	{
-		if ( (this->rangeL < 0) && (this->rangeR < 0) )
-		{
-			return variable->getSize();
-		}
-		else if ( (this->rangeL >= 0) && (this->rangeR < 0) )
-		{
-			return 1;
-		}
-		else
-		{
-			return (uint)(this->rangeL - this->rangeR + 1);
-		}
-	}
-}
-
 bool ActionOnVariable::isActionValueEditable() const
 {
 	switch (this->actionType)
 	{
-	case ActionOnVariableType_t::assign:
+	case ActionOnVariable::Type_t::assign:
 		return true;
 		break;
-	case ActionOnVariableType_t::continuous:
-	case ActionOnVariableType_t::pulse:
-		if (this->getActionSize() > 1)
+	case ActionOnVariable::Type_t::continuous:
+	case ActionOnVariable::Type_t::pulse:
+		if (this->getExpectedBitVectorActionSize() > 1)
 		{
 			return true;
 		}
@@ -306,11 +273,11 @@ bool ActionOnVariable::isActionValueEditable() const
 			return false;
 		}
 		break;
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
-	case ActionOnVariableType_t::none:
+	case ActionOnVariable::Type_t::set:
+	case ActionOnVariable::Type_t::reset:
+	case ActionOnVariable::Type_t::increment:
+	case ActionOnVariable::Type_t::decrement:
+	case ActionOnVariable::Type_t::none:
 		return false;
 		break;
 	}
@@ -319,31 +286,31 @@ bool ActionOnVariable::isActionValueEditable() const
 uint ActionOnVariable::getAllowedActionTypes() const
 {
 	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return (uint)ActionOnVariableType_t::none;
+	if (machine == nullptr) return (uint)ActionOnVariable::Type_t::none;
 
 	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return (uint)ActionOnVariableType_t::none;
+	if (variable == nullptr) return (uint)ActionOnVariable::Type_t::none;
 
 
-	uint allowedActionTypes = (uint)ActionOnVariableType_t::none;
+	uint allowedActionTypes = (uint)ActionOnVariable::Type_t::none;
 	if (variable->getMemorized() == true)
 	{
-		if (this->getActionSize() == 1)
+		allowedActionTypes |= (uint)ActionOnVariable::Type_t::assign;
+		allowedActionTypes |= (uint)ActionOnVariable::Type_t::reset;
+		if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 		{
-			allowedActionTypes |= (uint)ActionOnVariableType_t::set;
-			allowedActionTypes |= (uint)ActionOnVariableType_t::reset;
+			allowedActionTypes |= (uint)ActionOnVariable::Type_t::set;
 		}
-		else // (this->getActionSize() > 1)
+		else // (this->getExpectedActionType() == MachineValue::ValueType_t::bitVector)
 		{
-			allowedActionTypes |= (uint)ActionOnVariableType_t::assign;
-			allowedActionTypes |= (uint)ActionOnVariableType_t::increment;
-			allowedActionTypes |= (uint)ActionOnVariableType_t::decrement;
+			allowedActionTypes |= (uint)ActionOnVariable::Type_t::increment;
+			allowedActionTypes |= (uint)ActionOnVariable::Type_t::decrement;
 		}
 	}
 	else // (variable->getMemorized() == false)
 	{
-		allowedActionTypes |= (uint)ActionOnVariableType_t::pulse;
-		allowedActionTypes |= (uint)ActionOnVariableType_t::continuous;
+		allowedActionTypes |= (uint)ActionOnVariable::Type_t::pulse;
+		allowedActionTypes |= (uint)ActionOnVariable::Type_t::continuous;
 	}
 
 	allowedActionTypes &= this->actuatorAllowedActions;
@@ -360,10 +327,11 @@ QIcon ActionOnVariable::getCurrentActionTypeIcon() const
 {
 	switch (this->actionType)
 	{
-	case ActionOnVariableType_t::pulse:
-	case ActionOnVariableType_t::continuous:
-		if ( (this->getActionSize() == 1) && (this->actionValue == LogicValue::getValue0(1)) )
+	case ActionOnVariable::Type_t::pulse:
+	case ActionOnVariable::Type_t::continuous:
+		if ( (this->getExpectedActionType() == MachineValue::Type_t::boolean) && (this->actionValue == BooleanValue::falseValue()) )
 		{
+			// Return inverted icon for 1-bit actions whose action value is false
 			return ActionOnVariable::getActionTypeIcon(this->actionType, true);
 		}
 		else
@@ -371,18 +339,18 @@ QIcon ActionOnVariable::getCurrentActionTypeIcon() const
 			return ActionOnVariable::getActionTypeIcon(this->actionType, false);
 		}
 		break;
-	case ActionOnVariableType_t::assign:
-	case ActionOnVariableType_t::increment:
-	case ActionOnVariableType_t::decrement:
-	case ActionOnVariableType_t::reset:
-	case ActionOnVariableType_t::set:
-	case ActionOnVariableType_t::none:
+	case ActionOnVariable::Type_t::assign:
+	case ActionOnVariable::Type_t::increment:
+	case ActionOnVariable::Type_t::decrement:
+	case ActionOnVariable::Type_t::reset:
+	case ActionOnVariable::Type_t::set:
+	case ActionOnVariable::Type_t::none:
 		return ActionOnVariable::getActionTypeIcon(this->actionType);
 		break;
 	}
 }
 
-void ActionOnVariable::variableResizedEventHandler()
+void ActionOnVariable::variableTypeChangedEventHandler()
 {
 	auto previousRangeL      = this->rangeL;
 	auto previousRangeR      = this->rangeR;
@@ -396,9 +364,10 @@ void ActionOnVariable::variableResizedEventHandler()
 	if ( (previousRangeL      != this->rangeL)     ||
 	     (previousRangeR      != this->rangeR)     ||
 	     (previousActionType  != this->actionType) ||
-	     (previousActionValue != this->actionValue) )
+	     (previousActionValue != this->actionValue)
+	   )
 	{
-		emit this->actionChangedEvent();
+		emit this->actionFixedEvent();
 	}
 }
 
@@ -411,9 +380,10 @@ void ActionOnVariable::variableMemorizedStateChangedEventHandler()
 	this->checkAndFixActionValue();
 
 	if ( (previousActionType  != this->actionType) ||
-	     (previousActionValue != this->actionValue) )
+	     (previousActionValue != this->actionValue)
+	   )
 	{
-		emit this->actionChangedEvent();
+		emit this->actionFixedEvent();
 	}
 }
 
@@ -425,19 +395,22 @@ void ActionOnVariable::variableInitialValueChangedEventHandler()
 
 	if (previousActionValue != this->actionValue)
 	{
-		emit this->actionChangedEvent();
+		emit this->actionFixedEvent();
 	}
 }
 
 void ActionOnVariable::connectSignals(shared_ptr<Variable> variable)
 {
-	connect(variable.get(), &Variable::variableResizedEvent,               this, &ActionOnVariable::variableResizedEventHandler);
+	connect(variable.get(), &Variable::variableTypeChangedEvent,           this, &ActionOnVariable::variableTypeChangedEventHandler);
 	connect(variable.get(), &Variable::variableMemorizedStateChangedEvent, this, &ActionOnVariable::variableMemorizedStateChangedEventHandler);
 	connect(variable.get(), &Variable::variableInitialValueChangedEvent,   this, &ActionOnVariable::variableInitialValueChangedEventHandler);
 
 	// This doesn't actually change the action configuration,
 	// but it changes the way the action is displayed: trigger an actionChangedEvent
 	connect(variable.get(), &Variable::variableRenamedEvent, this, &ActionOnVariable::actionChangedEvent);
+
+	// Action being fixed results in an action change
+	connect(this, &ActionOnVariable::actionFixedEvent, this, &ActionOnVariable::actionChangedEvent);
 }
 
 bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
@@ -448,6 +421,11 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return false;
 
+	auto variableValue = variable->getInitialValue();
+	if (variableValue.getType() != MachineValue::Type_t::bitVector) return false;
+
+
+	int variableSize = static_cast<int>(variableValue.getBitVectorValue().getSize());
 
 	if ( (rangeL < 0 ) && (rangeR < 0) )
 	{
@@ -457,7 +435,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 	else if ( (rangeL >= 0) && (rangeR < 0) )
 	{
 		// Single-bit action: check if in range
-		if (rangeL < (int)variable->getSize())
+		if (rangeL < variableSize)
 		{
 			return true;
 		}
@@ -469,7 +447,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 		{
 			// We know both parameters are positive, and their order is correct.
 			// Check if left side is in range.
-			if (rangeL < (int)variable->getSize())
+			if (rangeL < variableSize)
 			{
 				return true;
 			}
@@ -487,29 +465,39 @@ void ActionOnVariable::checkAndFixActionRange()
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
+	auto variableValue = variable->getInitialValue();
+	if (variableValue.getType() != MachineValue::Type_t::bitVector)
+	{
+		this->rangeL = -1;
+		this->rangeR = -1;
+		return;
+	}
 
-	if (variable->getSize() == 1) // We are acting on a 1-bit variable
+
+	int variableSize = static_cast<int>(variableValue.getBitVectorValue().getSize());
+
+	if (variableSize == 1) // We are acting on a 1-bit vector
 	{
 		// Just clear range
 		this->rangeL = -1;
 		this->rangeR = -1;
 	}
-	else // We are acting on a vector variable
+	else // We are acting on a multi-bit vector
 	{
 		if ( (this->rangeL >= 0) && (this->rangeR < 0) ) // Single bit action
 		{
 			// Check if bit extracted is in range
-			if (this->rangeL >= (int)variable->getSize())
+			if (this->rangeL >= variableSize)
 			{
-				this->rangeL = variable->getSize()-1;
+				this->rangeL = variableSize-1;
 			}
 		}
 		else if ( (this->rangeL >= 0) && (this->rangeR >= 0) ) // Sub-range action
 		{
 			// Check if parameters are in range
-			if (this->rangeL >= (int)variable->getSize())
+			if (this->rangeL >= variableSize)
 			{
-				this->rangeL = variable->getSize()-1;
+				this->rangeL = variableSize-1;
 
 				// Make sure R param is always lower than L param
 				if (this->rangeR >= this->rangeL)
@@ -524,7 +512,7 @@ void ActionOnVariable::checkAndFixActionRange()
 void ActionOnVariable::checkAndFixActionType()
 {
 	// If current type is allowed, nothing to fix
-	if ( ((uint)this->actionType & this->getAllowedActionTypes()) != 0) return;
+	if ( (static_cast<uint>(this->actionType )& this->getAllowedActionTypes()) != 0) return;
 
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -536,97 +524,248 @@ void ActionOnVariable::checkAndFixActionType()
 	if (variable->getMemorized() == false)
 	{
 		// Always one or the other allowed, but not both
-		if ( (this->getAllowedActionTypes() & (uint)ActionOnVariableType_t::pulse) != 0)
+		if ( (this->getAllowedActionTypes() & static_cast<uint>(ActionOnVariable::Type_t::pulse)) != 0)
 		{
-			this->actionType = ActionOnVariableType_t::pulse;
+			this->actionType = ActionOnVariable::Type_t::pulse;
 		}
-		else // if ( (this->getAllowedActionTypes() & (uint)ActionOnVariableType_t::continuous) != 0)
+		else // if ( (this->getAllowedActionTypes() & static_cast<uint>(ActionOnVariable::Type_t::continuous)) != 0)
 		{
-			this->actionType = ActionOnVariableType_t::continuous;
+			this->actionType = ActionOnVariable::Type_t::continuous;
 		}
 	}
 	else // (variable->getMemorized() == true)
 	{
-		if (this->getActionSize() == 1) // Action is a 1-bit action
+		if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 		{
-			// Try to determine the best action depending on value
-			if (this->actionValue == LogicValue::getValue0(this->actionValue.getSize()))
+			// Try to determine the best action depending on current action value
+			if (this->actionValue == BooleanValue::trueValue())
 			{
-				this->actionType = ActionOnVariableType_t::reset;
+				this->actionType = ActionOnVariable::Type_t::set;
 			}
 			else
 			{
-				this->actionType = ActionOnVariableType_t::set;
+				this->actionType = ActionOnVariable::Type_t::reset;
 			}
 		}
-		else // We are acting on a vector variable
+		else // (this->getExpectedActionType() == MachineValue::ValueType_t::bitVector)
 		{
 			// Default to assign
-			this->actionType = ActionOnVariableType_t::assign;
+			this->actionType = ActionOnVariable::Type_t::assign;
 		}
 	}
 }
 
 void ActionOnVariable::checkAndFixActionValue()
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+	if (variable->getType() == MachineValue::Type_t::nullType) return;
+
+
 	if (this->isActionValueEditable() == true)
 	{
 		if (this->actionValue.isNull() == false)
 		{
-			// Make sure action value size is correct
-			this->actionValue.resize(this->getActionSize());
+			// There is currently an action value: check if it is still correct
+			if (this->getExpectedActionType() != this->actionValue.getType())
+			{
+				this->setDefaultActionValue();
+			}
+			else // (this->getExpectedActionType() == this->actionValue.getType())
+			{
+				// Current action type is correct.
+				// Make sure its size is also correct for Bit Vectors
+				if (this->actionValue.getType() == MachineValue::Type_t::bitVector)
+				{
+					uint expectedActionSize = this->getExpectedBitVectorActionSize();
+					auto currentBitVectorValue = this->actionValue.getBitVectorValue();
+
+					if (expectedActionSize != currentBitVectorValue.getSize())
+					{
+						currentBitVectorValue.resize(expectedActionSize);
+						this->actionValue = currentBitVectorValue;
+					}
+				}
+			}
 		}
-		else
+		else // (this->actionValue.isNull() == true)
 		{
 			// This used to be an implicit value: create action value
-			this->actionValue = LogicValue::getValue0(this->getActionSize());
+			this->setDefaultActionValue();
 		}
 	}
 	else // (this->isActionValueEditable() == false)
 	{
 		switch (this->actionType)
 		{
-		case ActionOnVariableType_t::reset:
-			this->actionValue = LogicValue::getValue0(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::set:
-			this->actionValue = LogicValue::getValue1(this->getActionSize());
-			break;
-		case ActionOnVariableType_t::continuous:
-		case ActionOnVariableType_t::pulse:
-			if (this->getActionSize() == 1)
+		case ActionOnVariable::Type_t::reset:
+			switch (this->getExpectedActionType())
 			{
-				auto machine = machineManager->getMachine();
-				if (machine == nullptr) return;
-
-				auto variable = machine->getVariable(variableId);
-				if (variable == nullptr) return;
-
-
-				auto variableValue = variable->getInitialValue();
-				// Action being size 1 can be the consequence of extracting a single bit
-				if (this->rangeL != -1)
-				{
-					variableValue = variableValue.getSubrange(this->rangeL, this->rangeR);
-				}
-
-				this->actionValue = !variableValue;
+			case MachineValue::Type_t::boolean:
+				this->actionValue = BooleanValue::falseValue();
+				break;
+			case MachineValue::Type_t::bitVector:
+				this->actionValue = BitVectorValue::allZeros(this->getExpectedBitVectorActionSize());
+				break;
+			case MachineValue::Type_t::nullType:
+				// Checked previously: should not happen
+				break;
 			}
-			// Else value is editable, should not happen
 			break;
-		case ActionOnVariableType_t::increment:
-		case ActionOnVariableType_t::decrement:
+		case ActionOnVariable::Type_t::set:
+			switch (this->getExpectedActionType())
+			{
+			case MachineValue::Type_t::boolean:
+				this->actionValue = BooleanValue::trueValue();
+				break;
+			case MachineValue::Type_t::bitVector:
+				// Set not allowed on Bit Vectors
+				break;
+			case MachineValue::Type_t::nullType:
+				// Checked previously: should not happen
+				break;
+			}
+			break;
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+			// Only one-bit values are non editable: use the default value.
+			// actions that are more than one bit are editable thus not handled here.
+			this->setDefaultActionValue();
+			break;
+		case ActionOnVariable::Type_t::increment:
+		case ActionOnVariable::Type_t::decrement:
 			// No value for these action types:
-			// the value is determined dymanically during simulation.
-			this->actionValue = LogicValue::getNullValue();
+			// the value is determined dynamically during simulation.
+			this->actionValue = MachineValue{};
 			break;
-		case ActionOnVariableType_t::none:
+		case ActionOnVariable::Type_t::none:
 			// Just clear value
-			this->actionValue = LogicValue::getNullValue();
+			this->actionValue = MachineValue{};
 			break;
-		case ActionOnVariableType_t::assign:
+		case ActionOnVariable::Type_t::assign:
 			// Value is editable, should not happen
 			break;
+		}
+	}
+}
+
+/**
+ * @brief ActionOnVariable::setDefaultActionValue computes
+ *        a default value for the action when the current
+ *        action value is unfixable. By default, use the
+ *        opposite of the initial value, as it is most
+ *        likely what the user wanted, plus it is the
+ *        value that is used for one-bit continuous and
+ *        pulse actions.
+ */
+void ActionOnVariable::setDefaultActionValue()
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+	auto variableValue = variable->getInitialValue();
+	if (variableValue.isNull() == true) return;
+
+
+	switch (this->getExpectedActionType())
+	{
+	case MachineValue::Type_t::boolean:
+		switch (variable->getType())
+		{
+		case MachineValue::Type_t::boolean:
+			this->actionValue = !variableValue.getBooleanValue();
+			break;
+		case MachineValue::Type_t::bitVector:
+		{
+			// For boolean actions over Bit Vectors, get the opposite of the bit acted on
+			auto subRangeValue = variableValue.getBitVectorValue().getSubrange(this->rangeL, -1);
+			this->actionValue = BooleanValue{!subRangeValue[0]};
+			break;
+		}
+		case MachineValue::Type_t::nullType:
+			// Should not happen
+			break;
+		}
+		break;
+	case MachineValue::Type_t::bitVector:
+		// For vector values, there is no way of determining the value the user want.
+		// Default to a full 0 vector.
+		this->actionValue = BitVectorValue::allZeros(this->getExpectedBitVectorActionSize());
+		break;
+	case MachineValue::Type_t::nullType:
+		// Should not happen
+		break;
+	}
+}
+
+MachineValue::Type_t ActionOnVariable::getExpectedActionType() const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return MachineValue::Type_t::nullType;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return MachineValue::Type_t::nullType;
+
+
+	switch (variable->getType())
+	{
+	case MachineValue::Type_t::boolean:
+		return MachineValue::Type_t::boolean;
+		break;
+	case MachineValue::Type_t::bitVector:
+		// Action value is Boolean for 1-bit actions, Bit Vector otherwise
+		if (this->getExpectedBitVectorActionSize() == 1)
+		{
+			return MachineValue::Type_t::boolean;
+		}
+		else // (this->getExpectedBitVectorActionSize() > 1)
+		{
+			return MachineValue::Type_t::bitVector;
+		}
+		break;
+	case MachineValue::Type_t::nullType:
+		return MachineValue::Type_t::nullType;
+		break;
+	}
+}
+
+uint ActionOnVariable::getExpectedBitVectorActionSize() const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return 0;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return 0;
+
+	if (variable->getType() != MachineValue::Type_t::bitVector) return 0;
+
+
+	uint variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+
+	if (variableSize == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		if ( (this->rangeL < 0) && (this->rangeR < 0) )
+		{
+			return variableSize;
+		}
+		else if ( (this->rangeL >= 0) && (this->rangeR < 0) )
+		{
+			return 1;
+		}
+		else
+		{
+			return (uint)(this->rangeL - this->rangeR + 1);
 		}
 	}
 }

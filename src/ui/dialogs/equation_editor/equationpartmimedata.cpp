@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,36 +23,9 @@
 #include "equationpartmimedata.h"
 
 
-EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation)
+QString EquationPartMimeData::getText() const
 {
-	this->text = text;
-	this->availableActions = availableActions;
-
-	this->source = OperandSource_t::equation;
-	this->equation = equation;
-}
-
-EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId)
-{
-	this->text = text;
-	this->availableActions = availableActions;
-
-	this->source = OperandSource_t::variable;
-	this->variableId = variableId;
-}
-
-EquationPartMimeData::EquationPartMimeData(const QString& text, uint availableActions, LogicValue constant)
-{
-	this->text = text;
-	this->availableActions = availableActions;
-
-	this->source = OperandSource_t::constant;
-	this->constant = constant;
-}
-
-OperandSource_t EquationPartMimeData::getSource() const
-{
-	return this->source;
+	return this->text;
 }
 
 uint EquationPartMimeData::getAvailableActions() const
@@ -60,22 +33,31 @@ uint EquationPartMimeData::getAvailableActions() const
 	return this->availableActions;
 }
 
+EquationPartMimeData::ContentType_t EquationPartMimeData::getContentType() const
+{
+	return this->contentType;
+}
+
 shared_ptr<Equation> EquationPartMimeData::getEquation() const
 {
-	return this->equation;
+	if (this->contentType != ContentType_t::equation) return nullptr;
+
+
+	return std::get<shared_ptr<Equation>>(this->content);
 }
 
 componentId_t EquationPartMimeData::getVariableId() const
 {
-	return this->variableId;
+	if (this->contentType != ContentType_t::variable) return nullId;
+
+
+	return std::get<componentId_t>(this->content);
 }
 
-LogicValue EquationPartMimeData::getConstant() const
+MachineValue EquationPartMimeData::getConstant() const
 {
-	return this->constant;
-}
+	if (this->contentType != ContentType_t::constant) return MachineValue{};
 
-QString EquationPartMimeData::getText() const
-{
-	return this->text;
+
+	return std::get<MachineValue>(this->content);
 }

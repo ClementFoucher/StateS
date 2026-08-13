@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -48,29 +48,44 @@ VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, Q
 	if (simulatedVariable == nullptr) return;
 
 
+	auto initialValue = simulatedVariable->getInitialValue();
+	int variableSize;
+	switch (simulatedVariable->getType())
+	{
+	case MachineValue::Type_t::boolean:
+		variableSize = 1;
+		break;
+	case MachineValue::Type_t::bitVector:
+		variableSize = initialValue.getBitVectorValue().getSize();
+		break;
+	case MachineValue::Type_t::nullType:
+		return;
+	}
+
+
 	this->variableId = variableId;
 
-	QHBoxLayout* globalLayout = new QHBoxLayout(this);
+	auto globalLayout = new QHBoxLayout(this);
 
-	QLabel* varName = new QLabel(simulatedVariable->getName());
+	auto varName = new QLabel(simulatedVariable->getName());
 	globalLayout->addWidget(varName);
 
-	QVBoxLayout* bitsLayout = new QVBoxLayout();
+	auto bitsLayout = new QVBoxLayout();
 
 	// Global value display for vectors
-	if (simulatedVariable->getSize() > 1)
+	if (variableSize > 1)
 	{
 		auto line = new QFrame();
 		line->setFrameShape(QFrame::VLine);
 		line->setFrameShadow(QFrame::Plain);
 		globalLayout->addWidget(line);
 
-		QHBoxLayout* innerLayout = new QHBoxLayout();
+		auto innerLayout = new QHBoxLayout();
 
-		QLabel* valueLabel = new QLabel(tr("Value"));
+		auto valueLabel = new QLabel(tr("Value"));
 		innerLayout->addWidget(valueLabel);
 
-		GraphicVectorTimeLine* timeLineDisplay = new GraphicVectorTimeLine(outputDelay, simulatedVariable->getCurrentValue());
+		auto timeLineDisplay = new GraphicVectorTimeLine(outputDelay, initialValue.getBitVectorValue());
 		timeLineDisplay->setMinimumHeight(30);
 		timeLineDisplay->setMaximumHeight(30);
 		this->variableLineDisplay.append(timeLineDisplay);
@@ -80,17 +95,32 @@ VariableTimeline::VariableTimeline(uint outputDelay, componentId_t variableId, Q
 	}
 
 	// Individual bits display
-	for (uint i = 0 ; i < simulatedVariable->getSize() ; i++)
+	for (int i = 0 ; i < variableSize ; i++)
 	{
-		QHBoxLayout* innerLayout = new QHBoxLayout();
+		auto innerLayout = new QHBoxLayout();
 
-		if (simulatedVariable->getSize() > 1)
+		GraphicBitTimeLine* timeLineDisplay = nullptr;
+		switch (simulatedVariable->getType())
 		{
-			QLabel* bitNumberLabel = new QLabel(tr("Bit") + " #" + QString::number(i));
-			innerLayout->addWidget(bitNumberLabel);
+		case MachineValue::Type_t::boolean:
+			timeLineDisplay = new GraphicBitTimeLine(outputDelay, initialValue.getBooleanValue());
+			break;
+		case MachineValue::Type_t::bitVector:
+		{
+			if (variableSize > 1)
+			{
+				auto bitNumberLabel = new QLabel(tr("Bit") + " #" + QString::number(i));
+				innerLayout->addWidget(bitNumberLabel);
+			}
+
+			timeLineDisplay = new GraphicBitTimeLine(outputDelay, initialValue.getBitVectorValue()[i]);
+			break;
+		}
+		case MachineValue::Type_t::nullType:
+			// Checked before: should not happen
+			break;
 		}
 
-		GraphicBitTimeLine* timeLineDisplay = new GraphicBitTimeLine(outputDelay, simulatedVariable->getCurrentValue()[i]);
 		timeLineDisplay->setMinimumHeight(20);
 		timeLineDisplay->setMaximumHeight(20);
 		this->variableLineDisplay.append(timeLineDisplay);
@@ -120,20 +150,33 @@ void VariableTimeline::doStepEventHandler()
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
+		if ( (i == 0) &&
+		     ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (simulatedVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
+		   )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
+			auto vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->addPoint(simulatedVariable->getCurrentValue());
+				vectorTimeLine->addPoint(simulatedVariable->getCurrentValue().getBitVectorValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
+			auto timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->addPoint(simulatedVariable->getCurrentValue()[bitNumber]);
+				switch (simulatedVariable->getType())
+				{
+				case MachineValue::Type_t::boolean:
+					timeLine->addPoint(simulatedVariable->getCurrentValue().getBooleanValue());
+					break;
+				case MachineValue::Type_t::bitVector:
+					timeLine->addPoint(simulatedVariable->getCurrentValue().getBitVectorValue()[bitNumber]);
+					break;
+				case MachineValue::Type_t::nullType:
+					// Checked in constructor: should not happen
+					break;
+				}
 			}
 			bitNumber++;
 		}
@@ -153,20 +196,33 @@ void VariableTimeline::updateCurrentValue()
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
+		if ( (i == 0) &&
+		     ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (simulatedVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
+		   )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
+			auto vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->updateLastPoint(simulatedVariable->getCurrentValue());
+				vectorTimeLine->updateLastPoint(simulatedVariable->getCurrentValue().getBitVectorValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
+			auto timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->updateLastPoint(simulatedVariable->getCurrentValue()[bitNumber]);
+				switch (simulatedVariable->getType())
+				{
+				case MachineValue::Type_t::boolean:
+					timeLine->updateLastPoint(simulatedVariable->getCurrentValue().getBooleanValue());
+					break;
+				case MachineValue::Type_t::bitVector:
+					timeLine->updateLastPoint(simulatedVariable->getCurrentValue().getBitVectorValue()[bitNumber]);
+					break;
+				case MachineValue::Type_t::nullType:
+					// Checked in constructor: should not happen
+					break;
+				}
 			}
 			bitNumber++;
 		}
@@ -185,20 +241,33 @@ void VariableTimeline::resetEventHandler()
 	uint bitNumber = 0;
 	for (uint i = 0 ; i < this->variableLineDisplay.count() ; i++)
 	{
-		if ( (simulatedVariable->getSize() > 1) && (i == 0) )
+		if ( (i == 0) &&
+		     ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (simulatedVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
+		   )
 		{
-			GraphicVectorTimeLine* vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
+			auto vectorTimeLine = dynamic_cast<GraphicVectorTimeLine*>(this->variableLineDisplay[0]);
 			if (vectorTimeLine != nullptr)
 			{
-				vectorTimeLine->reset(simulatedVariable->getCurrentValue());
+				vectorTimeLine->reset(simulatedVariable->getCurrentValue().getBitVectorValue());
 			}
 		}
 		else
 		{
-			GraphicBitTimeLine* timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
+			auto timeLine = dynamic_cast<GraphicBitTimeLine*>(this->variableLineDisplay[i]);
 			if (timeLine != nullptr)
 			{
-				timeLine->reset(simulatedVariable->getCurrentValue()[bitNumber]);
+				switch (simulatedVariable->getType())
+				{
+				case MachineValue::Type_t::boolean:
+					timeLine->reset(simulatedVariable->getCurrentValue().getBooleanValue());
+					break;
+				case MachineValue::Type_t::bitVector:
+					timeLine->reset(simulatedVariable->getCurrentValue().getBitVectorValue()[bitNumber]);
+					break;
+				case MachineValue::Type_t::nullType:
+					// Checked in constructor: should not happen
+					break;
+				}
 			}
 			bitNumber++;
 		}

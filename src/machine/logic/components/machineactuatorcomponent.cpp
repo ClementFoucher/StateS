@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -150,6 +150,8 @@ void MachineActuatorComponent::addActionInternal(shared_ptr<ActionOnVariable> ac
 	// To remove destroyed variables from the action list
 	// Use UniqueConnection as multiple actions on the same variable are possible due to actions on sub-vectors
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler, Qt::UniqueConnection);
+
+	connect(action.get(), &ActionOnVariable::actionFixedEvent, this, &MachineActuatorComponent::actionFixedEvent);
 
 	this->actionList.append(action);
 }

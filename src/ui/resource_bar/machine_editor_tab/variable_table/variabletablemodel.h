@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -36,10 +36,10 @@ class VariableTableModel : public QAbstractTableModel
 	/////
 	// Type declarations
 private:
-	enum class ColumnRole
+	enum class ColumnRole_t
 	{
 		name,
-		size,
+		type,
 		memorized,
 		value
 	};
@@ -52,7 +52,7 @@ public:
 	/////
 	// Object functions
 public:
-	virtual int rowCount(const QModelIndex& parent = QModelIndex())    const override;
+	virtual int rowCount   (const QModelIndex& parent = QModelIndex()) const override;
 	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
@@ -72,10 +72,15 @@ private slots:
 	void machineUpdatedEventHandler();
 
 	/////
+	// Signals
+signals:
+	void refreshPersistentEditorsEvent();
+
+	/////
 	// Object variables
 private:
 	VariableNature_t editorNature;
-	QList<ColumnRole> columnsRoles;
+	QList<ColumnRole_t> columnsRoles;
 
 	// Temporary storage to retrieve erroneous name and relaunch edit
 	QString failedVariableName;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,18 +23,6 @@
 #include "variable.h"
 
 
-Variable::Variable(const QString& name) :
-	MachineComponent()
-{
-	this->name = name;
-}
-
-Variable::Variable(componentId_t id, const QString& name) :
-	MachineComponent(id)
-{
-	this->name = name;
-}
-
 /**
  * @brief Variable::setName changes the name of the variable.
  * Only the Machine is allowed to call this function.
@@ -52,29 +40,43 @@ void Variable::setName(const QString& newName)
 	emit this->variableRenamedEvent();
 }
 
-void Variable::setSize(uint newSize)
+void Variable::setType(MachineValue::Type_t newType)
 {
-	if (newSize == 0) return;
-
-	if (newSize == this->getSize()) return;
+	if (newType == MachineValue::Type_t::nullType) return;
 
 
-	this->initialValue.resize(newSize);
+	this->initialValue = MachineValue::fromType(newType);
 
-	emit this->variableResizedEvent();
-	emit this->variableInitialValueChangedEvent();
+	emit this->variableTypeChangedEvent();
 }
 
-void Variable::setInitialValue(const LogicValue& newInitialValue)
+void Variable::setInitialValue(MachineValue newInitialValue)
 {
-	if (newInitialValue.getSize() != this->getSize()) return;
+	if (newInitialValue.getType() != this->getType()) return;
 
 	if (newInitialValue == this->initialValue) return;
 
 
+	// A change in size is considered a type change
+	bool typeChanged = false;
+	if (this->getType() == MachineValue::Type_t::bitVector)
+	{
+		if (this->initialValue.getBitVectorValue().getSize() != newInitialValue.getBitVectorValue().getSize())
+		{
+			typeChanged = true;
+		}
+	}
+
 	this->initialValue = newInitialValue;
 
-	emit this->variableInitialValueChangedEvent();
+	if (typeChanged == false)
+	{
+		emit this->variableInitialValueChangedEvent();
+	}
+	else // (typeChanged == true)
+	{
+		emit this->variableTypeChangedEvent();
+	}
 }
 
 void Variable::setMemorized(bool memorized)
@@ -92,12 +94,12 @@ QString Variable::getName() const
 	return this->name;
 }
 
-uint Variable::getSize() const
+MachineValue::Type_t Variable::getType() const
 {
-	return this->initialValue.getSize();
+	return this->initialValue.getType();
 }
 
-LogicValue Variable::getInitialValue() const
+MachineValue Variable::getInitialValue() const
 {
 	return this->initialValue;
 }

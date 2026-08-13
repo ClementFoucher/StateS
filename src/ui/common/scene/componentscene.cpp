@@ -75,13 +75,17 @@ void ComponentScene::build()
 		qreal currentLineY = currentInputY + textItem->boundingRect().height()/2;
 		inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth, currentLineY, 0, currentLineY));
 
-		if (input->getSize() > 1)
+		if (input->getType() == MachineValue::Type_t::bitVector)
 		{
-			inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+			uint inputSize = input->getInitialValue().getBitVectorValue().getSize();
+			if (inputSize > 1)
+			{
+				inputsGroup->addToGroup(new QGraphicsLineItem(-variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, -variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
 
-			auto sizeTextItem = this->buildGraphicsTextItem(QString::number(input->getSize()));
-			inputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(-variablesLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
+				auto sizeTextItem = this->buildGraphicsTextItem(QString::number(inputSize));
+				inputsGroup->addToGroup(sizeTextItem);
+				sizeTextItem->setPos(-variablesLinesWidth/2 - sizeTextItem->boundingRect().width(), currentLineY - sizeTextItem->boundingRect().height());
+			}
 		}
 
 		currentInputY += textItem->boundingRect().height();
@@ -111,13 +115,17 @@ void ComponentScene::build()
 		qreal currentLineY = currentOutputY + textItem->boundingRect().height()/2;
 		outputsGroup->addToGroup(new QGraphicsLineItem(0, currentLineY, variablesLinesWidth, currentLineY));
 
-		if (output->getSize() > 1)
+		if (output->getType() == MachineValue::Type_t::bitVector)
 		{
-			outputsGroup->addToGroup(new QGraphicsLineItem(variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
+			uint outputSize = output->getInitialValue().getBitVectorValue().getSize();
+			if (outputSize > 1)
+			{
+				outputsGroup->addToGroup(new QGraphicsLineItem(variablesLinesWidth/2 - busesLineWidth/2 , currentLineY + busesLineHeight/2, variablesLinesWidth/2 + busesLineWidth/2, currentLineY - busesLineHeight/2));
 
-			auto sizeTextItem = this->buildGraphicsTextItem(QString::number(output->getSize()));
-			outputsGroup->addToGroup(sizeTextItem);
-			sizeTextItem->setPos(variablesLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
+				auto sizeTextItem = this->buildGraphicsTextItem(QString::number(outputSize));
+				outputsGroup->addToGroup(sizeTextItem);
+				sizeTextItem->setPos(variablesLinesWidth/2, currentLineY - sizeTextItem->boundingRect().height());
+			}
 		}
 
 		currentOutputY += textItem->boundingRect().height();

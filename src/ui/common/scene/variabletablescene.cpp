@@ -79,10 +79,16 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	auto varNameFunc = [](shared_ptr<Variable> variable)
 	{
 		QString varText = variable->getName();
-		if (variable->getSize() > 1)
+
+		if (variable->getType() == MachineValue::Type_t::bitVector)
 		{
-			varText += "[" + QString::number(variable->getSize()-1) + "..0]";
+			uint variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+			if (variableSize > 1)
+			{
+				varText += "[" + QString::number(variableSize-1) + "..0]";
+			}
 		}
+
 		return varText;
 	};
 
@@ -238,7 +244,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 		{
 			if (variable->getMemorized() == true)
 			{
-				return variable->getInitialValue().toString();
+				return variable->getInitialValue().toDisplayString();
 			}
 			else
 			{
@@ -267,7 +273,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 		{
 			if (variable->getMemorized() == false)
 			{
-				return variable->getInitialValue().toString();
+				return variable->getInitialValue().toDisplayString();
 			}
 			else
 			{
@@ -292,7 +298,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	{
 		auto constantValueFunc = [](shared_ptr<Variable> variable)
 		{
-			return variable->getInitialValue().toString();
+			return variable->getInitialValue().toDisplayString();
 		};
 
 		this->drawVerticalLine(constantValueHorizontalPos, constantsTop, constantsBottom);

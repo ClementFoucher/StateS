@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,11 +27,12 @@
 
 // Stdlib
 #include <memory>
+#include <variant>
 using namespace std;
 
 // StateS
 #include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 class Equation;
 class Variable;
 
@@ -41,28 +42,36 @@ class Operand : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class Source_t
+	{
+		variable, // Reference (using componentId) to a variable defined in the machine (including constants).
+		equation, // Operand is itself an equation.
+		constant  // Constant defined on-the-fly in equation editor. Not to confuse with constants defined in the machine, which are variables (try to follow here!).
+	};
+
+	/////
 	// Constructors/destructors
 public:
 	explicit Operand(componentId_t variableId);      // Defines an operand whose source is a variable
 	explicit Operand(shared_ptr<Equation> equation); // Defines an operand whose source is an equation
-	explicit Operand(LogicValue constant);           // Defines an operand whose source is a constant
+	explicit Operand(MachineValue constant);         // Defines an operand whose source is a constant
 	explicit Operand(shared_ptr<Variable> variable); // Defines an operand whose source is a variable (when machine is still being parsed)
-
-private:
-	explicit Operand(OperandSource_t operandSource);
 
 	/////
 	// Object functions
 public:
 	shared_ptr<Operand> clone() const;
 
-	OperandSource_t getSource() const;
+	Source_t getSource() const;
 
-	LogicValue getInitialValue() const;
+	MachineValue getInitialValue() const;
+	MachineValue::Type_t getType() const;
 
 	componentId_t        getVariableId() const;
 	shared_ptr<Equation> getEquation()   const;
-	LogicValue           getConstant()   const;
+	MachineValue         getConstant()   const;
 
 	QString getText() const;
 
@@ -79,11 +88,9 @@ signals:
 	/////
 	// Object variables
 private:
-	OperandSource_t source;
+	Source_t source;
 
-	componentId_t        variableId = nullId;
-	shared_ptr<Equation> equation;
-	LogicValue           constant   = LogicValue();
+	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> value;
 
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Clément Foucher
+ * Copyright © 2024-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QPainter>
 
 
-GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, const LogicValue& initialValue, QWidget* parent) :
+GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, BitVectorValue initialValue, QWidget* parent) :
 	GraphicTimeLine(eventDelay, parent)
 {
 	this->mode = DisplayMode_t::vector;
@@ -40,8 +40,11 @@ GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, const QString& ini
 	this->reset(initialState);
 }
 
-void GraphicVectorTimeLine::addPoint(const LogicValue& newValue)
+void GraphicVectorTimeLine::addPoint(BitVectorValue newValue)
 {
+	if (this->mode != DisplayMode_t::vector) return;
+
+
 	auto previousValue = this->values.last();
 	this->values.append(newValue);
 
@@ -53,6 +56,9 @@ void GraphicVectorTimeLine::addPoint(const LogicValue& newValue)
 
 void GraphicVectorTimeLine::addPoint(const QString& newState)
 {
+	if (this->mode != DisplayMode_t::state) return;
+
+
 	auto previousState = this->states.last();
 	this->states.append(newState);
 
@@ -62,11 +68,13 @@ void GraphicVectorTimeLine::addPoint(const QString& newState)
 	this->update();
 }
 
-void GraphicVectorTimeLine::updateLastPoint(const LogicValue& value)
+void GraphicVectorTimeLine::updateLastPoint(BitVectorValue value)
 {
+	if (this->mode != DisplayMode_t::vector) return;
+
 	// If no change to do, return
-	if (this->values.last() == value)
-		return;
+	if (this->values.last() == value) return;
+
 
 	// Else change last point
 	if (this->values.count() > 1)
@@ -83,9 +91,11 @@ void GraphicVectorTimeLine::updateLastPoint(const LogicValue& value)
 
 void GraphicVectorTimeLine::updateLastPoint(const QString& state)
 {
+	if (this->mode != DisplayMode_t::state) return;
+
 	// If no change to do, return
-	if (this->states.last() == state)
-		return;
+	if (this->states.last() == state) return;
+
 
 	// Else change last point
 	if (this->states.count() > 1)
@@ -100,8 +110,11 @@ void GraphicVectorTimeLine::updateLastPoint(const QString& state)
 	}
 }
 
-void GraphicVectorTimeLine::reset(const LogicValue& initialValue)
+void GraphicVectorTimeLine::reset(BitVectorValue initialValue)
 {
+	if (this->mode != DisplayMode_t::vector) return;
+
+
 	this->values.clear();
 	this->values.append(initialValue);
 
@@ -111,6 +124,9 @@ void GraphicVectorTimeLine::reset(const LogicValue& initialValue)
 
 void GraphicVectorTimeLine::reset(const QString& initialState)
 {
+	if (this->mode != DisplayMode_t::state) return;
+
+
 	this->states.clear();
 	this->states.append(initialState);
 
@@ -129,10 +145,10 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 		QPoint target;
 
 		source.setX(timeLinePoly1[i].x()*stepLength + stepLength/2);
-		source.setY( (timeLinePoly1[i].y() == 1)?5:this->height()-5 );
+		source.setY( (timeLinePoly1[i].y() == 1) ? 5 : this->height()-5 );
 
 		target.setX(timeLinePoly1[i+1].x()*stepLength + stepLength/2);
-		target.setY( (timeLinePoly1[i+1].y() == 1)?5:this->height()-5 );
+		target.setY( (timeLinePoly1[i+1].y() == 1) ? 5 : this->height()-5 );
 
 		painter.drawLine(source, target);
 	}
@@ -144,10 +160,10 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 		QPoint target;
 
 		source.setX(timeLinePoly2[i].x()*stepLength + stepLength/2);
-		source.setY( (timeLinePoly2[i].y() == 1)?5:this->height()-5 );
+		source.setY( (timeLinePoly2[i].y() == 1) ? 5 : this->height()-5 );
 
 		target.setX(timeLinePoly2[i+1].x()*stepLength + stepLength/2);
-		target.setY( (timeLinePoly2[i+1].y() == 1)?5:this->height()-5 );
+		target.setY( (timeLinePoly2[i+1].y() == 1) ? 5 : this->height()-5 );
 
 		painter.drawLine(source, target);
 	}
@@ -179,19 +195,19 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 			switch (this->mode)
 			{
 			case DisplayMode_t::vector:
-				{
-					auto currentValue = this->values[i];
-					auto nextValue    = this->values[i+1];
-					valueChanged = (currentValue == nextValue) ? false : true;
-				}
+			{
+				auto currentValue = this->values[i];
+				auto nextValue    = this->values[i+1];
+				valueChanged = (currentValue == nextValue) ? false : true;
 				break;
+			}
 			case DisplayMode_t::state:
-				{
-					auto currentValue = this->states[i];
-					auto nextValue    = this->states[i+1];
-					valueChanged = (currentValue == nextValue) ? false : true;
-				}
+			{
+				auto currentValue = this->states[i];
+				auto nextValue    = this->states[i+1];
+				valueChanged = (currentValue == nextValue) ? false : true;
 				break;
+			}
 			}
 
 			if (valueChanged == false)
@@ -270,9 +286,11 @@ void GraphicVectorTimeLine::resetPoly()
 {
 	this->timeLinePoly1.clear();
 	this->timeLinePoly2.clear();
+
 	// Starting point of graphic vector: not a real point
 	this->timeLinePoly1.append(QPoint(0, 0));
 	this->timeLinePoly2.append(QPoint(0, 1));
+
 	// Actual initial point
 	this->timeLinePoly1.append(QPoint(1, 0));
 	this->timeLinePoly2.append(QPoint(1, 1));
@@ -283,32 +301,31 @@ void GraphicVectorTimeLine::resetPoly()
 
 void GraphicVectorTimeLine::removeLastPoint()
 {
-	int values;
+	// First point can't be handled: the initial value is required
 	switch (this->mode)
 	{
 	case DisplayMode_t::vector:
-		values = this->values.count();
+		if (this->values.count() < 2) return;
 		break;
 	case DisplayMode_t::state:
-		values = this->states.count();
+		if (this->states.count() < 2) return;
 		break;
 	}
 
-	if (values > 1) // First point can't be handled: we need an initial value
+
+	for (uint i = 0 ; i < this->pointsPerCycle ; i++)
 	{
-		for (uint i = 0 ; i < this->pointsPerCycle ; i++)
-		{
-			this->timeLinePoly1.removeLast();
-			this->timeLinePoly2.removeLast();
-		}
-		switch (this->mode)
-		{
-		case DisplayMode_t::vector:
-			this->values.removeLast();
-			break;
-		case DisplayMode_t::state:
-			this->states.removeLast();
-			break;
-		}
+		this->timeLinePoly1.removeLast();
+		this->timeLinePoly2.removeLast();
+	}
+
+	switch (this->mode)
+	{
+	case DisplayMode_t::vector:
+		this->values.removeLast();
+		break;
+	case DisplayMode_t::state:
+		this->states.removeLast();
+		break;
 	}
 }

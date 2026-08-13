@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,9 +24,8 @@
 
 // Qt
 #include <QScrollArea>
-#include <QVBoxLayout>
-#include <QStyle>
 #include <QLabel>
+#include <QVBoxLayout>
 
 // StateS
 #include "machinemanager.h"
@@ -41,30 +40,32 @@ InputsSelector::InputsSelector(QWidget* parent) :
 	if (machine == nullptr) return;
 
 
-	auto mainLayout = new QVBoxLayout();
-	this->setLayout(mainLayout);
+	auto mainLayout = new QVBoxLayout(this);
 	mainLayout->setAlignment(Qt::AlignTop);
 
 	auto inputIds = machine->getInputVariablesIds();
 	if (inputIds.count() != 0)
 	{
-		auto inputListHint = new QLabel(tr("Click on bits from the list below to switch input value:"));
+		auto inputListHint = new QLabel(tr("Click on framed values below to change input values:"));
 		inputListHint->setAlignment(Qt::AlignCenter);
 		inputListHint->setWordWrap(true);
 		mainLayout->addWidget(inputListHint);
 
-		this->scrollArea = new QScrollArea();
-		mainLayout->addWidget(this->scrollArea);
+		auto scrollArea = new QScrollArea();
+		scrollArea->setWidgetResizable(true);
+		mainLayout->addWidget(scrollArea);
 
-		this->scrollAreaWidget = new QWidget();
-		this->scrollAreaWidgetLayout = new QVBoxLayout(this->scrollAreaWidget);
-		this->scrollArea->setWidget(this->scrollAreaWidget);
+		auto scrollAreaWidget = new QWidget();
+		auto scrollAreaWidgetLayout = new QVBoxLayout(scrollAreaWidget);
+		scrollArea->setWidget(scrollAreaWidget);
 
 		for (auto& inputId : inputIds)
 		{
-			auto currentVariableSelector = new InputVariableSelector(inputId, this);
-			this->scrollAreaWidgetLayout->addWidget(currentVariableSelector);
+			auto currentVariableSelector = new InputVariableSelector(inputId);
+			scrollAreaWidgetLayout->addWidget(currentVariableSelector);
 		}
+
+		scrollAreaWidgetLayout->addStretch();
 	}
 	else
 	{
@@ -72,16 +73,5 @@ InputsSelector::InputsSelector(QWidget* parent) :
 		noInputHint->setAlignment(Qt::AlignCenter);
 		noInputHint->setWordWrap(true);
 		mainLayout->addWidget(noInputHint);
-	}
-}
-
-void InputsSelector::resizeEvent(QResizeEvent*)
-{
-	if (this->scrollAreaWidget != nullptr)
-	{
-		int width  = this->scrollArea->width() - this->scrollArea->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - this->scrollArea->style()->pixelMetric(QStyle::PM_DockWidgetSeparatorExtent);
-		int height = this->scrollAreaWidgetLayout->itemAt(0)->sizeHint().height() * this->scrollAreaWidgetLayout->count();
-
-		this->scrollAreaWidget->resize(width, height);
 	}
 }

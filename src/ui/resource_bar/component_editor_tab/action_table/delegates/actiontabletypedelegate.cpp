@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -33,7 +33,7 @@ ActionTableTypeDelegate::ActionTableTypeDelegate(QWidget* parent) :
 	QStyledItemDelegate(parent)
 {
 	this->dummyEditor = new ActionTypeEditor(parent);
-	this->dummyEditor->fillActionList(0xFFFF, ActionOnVariableType_t::none);
+	this->dummyEditor->fillActionList(0xFFFF, ActionOnVariable::Type_t::none);
 	this->dummyEditor->setVisible(false);
 }
 
@@ -51,7 +51,7 @@ void ActionTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& 
 	uint32_t valueAsInt = index.data(Qt::EditRole).toUInt();
 
 	uint16_t allowedActionTypes = (valueAsInt & 0xFFFF0000) >> 16;
-	ActionOnVariableType_t currentActionType = (ActionOnVariableType_t)(valueAsInt & 0xFFFF);
+	ActionOnVariable::Type_t currentActionType = static_cast<ActionOnVariable::Type_t>(valueAsInt & 0xFFFF);
 
 	actionTypeEditor->fillActionList(allowedActionTypes, currentActionType);
 
@@ -66,7 +66,7 @@ void ActionTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* 
 
 	auto newActionType = actionTypeEditor->getActionType();
 
-	model->setData(index, (uint)newActionType, Qt::EditRole);
+	model->setData(index, static_cast<uint>(newActionType), Qt::EditRole);
 }
 
 QSize ActionTableTypeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const

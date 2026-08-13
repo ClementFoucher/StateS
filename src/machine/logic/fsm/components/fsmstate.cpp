@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -21,6 +21,9 @@
 
 // Current class header
 #include "fsmstate.h"
+
+// StateS
+#include "actiononvariable.h"
 
 
 FsmState::FsmState(const QString& name) :
@@ -87,11 +90,11 @@ const QList<componentId_t> FsmState::getIncomingTransitionsIds() const
 
 uint FsmState::getAllowedActionTypes() const
 {
-	return ((uint)ActionOnVariableType_t::continuous |
-	        (uint)ActionOnVariableType_t::set        |
-	        (uint)ActionOnVariableType_t::reset      |
-	        (uint)ActionOnVariableType_t::assign     |
-	        (uint)ActionOnVariableType_t::increment  |
-	        (uint)ActionOnVariableType_t::decrement
+	return (static_cast<uint>(ActionOnVariable::Type_t::continuous) |
+	        static_cast<uint>(ActionOnVariable::Type_t::set)        |
+	        static_cast<uint>(ActionOnVariable::Type_t::reset)      |
+	        static_cast<uint>(ActionOnVariable::Type_t::assign)     |
+	        static_cast<uint>(ActionOnVariable::Type_t::increment)  |
+	        static_cast<uint>(ActionOnVariable::Type_t::decrement)
 	       );
 }

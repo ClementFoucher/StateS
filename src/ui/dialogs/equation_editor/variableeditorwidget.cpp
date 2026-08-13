@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -59,16 +59,16 @@ uint VariableEditorWidget::getAllowedMenuActions() const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return 0;
 
-	auto variable = machine->getVariable(variableId);
+	auto variable = machine->getVariable(this->variableId);
 	if (variable == nullptr) return 0;
 
 
-	uint allowedActions = (uint)ContextAction_t::Remove |
-	                      (uint)ContextAction_t::Invert;
+	uint allowedActions = static_cast<uint>(ContextAction_t::Remove) |
+	                      static_cast<uint>(ContextAction_t::Invert);
 
-	if (variable->getSize() > 1)
+	if ( (variable->getType() == MachineValue::Type_t::bitVector) && (variable->getInitialValue().getBitVectorValue().getSize() > 1) )
 	{
-		allowedActions |= (uint)ContextAction_t::AddExtractor;
+		allowedActions |= (static_cast<uint>(ContextAction_t::AddExtractor));
 	}
 
 	return allowedActions;
@@ -76,8 +76,8 @@ uint VariableEditorWidget::getAllowedMenuActions() const
 
 uint VariableEditorWidget::getAllowedDropActions() const
 {
-	return (uint)DropAction_t::ReplaceExisting |
-	       (uint)DropAction_t::ExistingAsOperand;
+	return static_cast<uint>(DropAction_t::ReplaceExisting) |
+	       static_cast<uint>(DropAction_t::ExistingAsOperand);
 }
 
 QString VariableEditorWidget::getText() const
@@ -97,20 +97,28 @@ QString VariableEditorWidget::getToolTipText() const
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return QString();
 
-	auto variable = machine->getVariable(variableId);
+	auto variable = machine->getVariable(this->variableId);
 	if (variable == nullptr) return QString();
+
+	if (variable->getInitialValue().isNull() == true) return QString();
 
 
 	auto toolTipText = tr("Variable") + " <b>" + variable->getName() + "</b> " + tr("has type") + " ";
-	auto value = variable->getInitialValue();
-	uint size = value.getSize();
-	if (size > 1)
+
+	switch (variable->getType())
 	{
-		toolTipText += tr("bit vector") + " " + tr("of") + " " + QString::number(size) + " " + tr("bits");
+	case MachineValue::Type_t::boolean:
+		toolTipText += tr("boolan");
+		break;
+	case MachineValue::Type_t::bitVector:
+	{
+		uint variableSize = variable->getInitialValue().getBitVectorValue().getSize();
+		toolTipText += tr("bit vector") + " " + tr("of") + " " + QString::number(variableSize) + " " + tr("bits");
+		break;
 	}
-	else
-	{
-		toolTipText += tr("bit");
+	case MachineValue::Type_t::nullType:
+		// Checked previously: should not happen
+		break;
 	}
 
 	return toolTipText;
@@ -133,7 +141,7 @@ QDrag* VariableEditorWidget::buildDrag()
 {
 	auto drag = new QDrag(this);
 
-	uint availableAction = (uint)DropAction_t::ReplaceExisting;
+	uint availableAction = static_cast<uint>(DropAction_t::ReplaceExisting);
 
 	auto mimeData = new EquationPartMimeData(this->getText(), availableAction, this->variableId);
 	drag->setMimeData(mimeData);
@@ -147,20 +155,28 @@ void VariableEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	switch (action)
 	{
 	case ContextAction_t::Invert:
-		this->tempValueNature = OperandSource_t::equation;
-		this->tempEquation = make_shared<Equation>(OperatorType_t::notOp);
-		this->tempEquation->setOperand(0, this->variableId);
+	{
+		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		tempEquation->setOperand(0, this->variableId);
+
+		this->tempValueNature = TempValueNature_t::equation;
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case ContextAction_t::AddExtractor:
-		this->tempValueNature = OperandSource_t::equation;
-		this->tempEquation = make_shared<Equation>(OperatorType_t::extractOp);
-		this->tempEquation->setOperand(0, this->variableId);
-		this->tempEquation->setRange(0);
+	{
+		auto tempEquation = make_shared<Equation>(Equation::Operator_t::extractOp);
+		tempEquation->setOperand(0, this->variableId);
+		tempEquation->setRange(0);
+
+		this->tempValueNature = TempValueNature_t::equation;
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case ContextAction_t::IncreaseOperandCount:
 	case ContextAction_t::DecreaseOperandCount:
 	case ContextAction_t::ExtractSwitchRange:
@@ -181,13 +197,20 @@ void VariableEditorWidget::processSpecificDropAction(DropAction_t action)
 	switch (action)
 	{
 	case DropAction_t::ExistingAsOperand:
-		if (this->tempEquation == nullptr) return;
+	{
+		if (this->tempValueNature != TempValueNature_t::equation) return;
+
+		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		if (tempEquation == nullptr) return;
 
 
-		this->tempEquation->setOperand(0, this->variableId);
+		tempEquation->setOperand(0, this->variableId);
+
+		this->tempValue = tempEquation;
 		this->replaceByTempValue();
 		// Do NOT do anything after, as this ceases to exist
 		break;
+	}
 	case DropAction_t::RemoveInverter:
 		// This action is not supported by this class
 		break;

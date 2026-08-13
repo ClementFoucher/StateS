@@ -113,7 +113,7 @@ void ConditionEditor::editCondition()
 
 		this->equationEditor->open();
 	}
-	else
+	else // (machine->getReadableVariablesIds().count() == 0)
 	{
 		auto textList = QStringList();
 		textList.append(tr("No compatible variable!"));
@@ -182,7 +182,7 @@ void ConditionEditor::updateContent()
 	auto condition = transition->getCondition();
 	if (condition != nullptr)
 	{
-		if (condition->getOperatorType() != OperatorType_t::identity)
+		if (condition->getOperator() != Equation::Operator_t::identity)
 		{
 			this->conditionText->setText(condition->getColoredText());
 		}
@@ -195,7 +195,9 @@ void ConditionEditor::updateContent()
 			this->conditionText->setText(operand->getText());
 		}
 
-		if (condition->getSize() == 1)
+		if ( (condition->getType() == MachineValue::Type_t::boolean) ||
+		     ( (condition->getType() == MachineValue::Type_t::bitVector) && (condition->getInitialValue().getBitVectorValue().getSize() == 1) )
+		   )
 		{
 			if (condition->getVariablesIdsSet().count() > 0)
 			{
@@ -207,24 +209,24 @@ void ConditionEditor::updateContent()
 				}
 			}
 		}
-		else
+		else // Condition is neither a Boolean nor a Bit Vector of size 1
 		{
-			if (condition->getSize() == 0)
+			if (condition->isValid() == false)
 			{
 				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
 				                                        tr("Warning: the current condition is not valid.") +
-				                                        "<br />" + tr("Thus, this transition will never be crossed.") +
-				                                        "<br />" + tr("Edit condition and hover over errors for more information.") +
+				                                        "<br>" + tr("Thus, this transition will never be crossed.") +
+				                                        "<br>" + tr("Edit condition and hover over errors for more information.") +
 				                                        "</span>"
 				                                        );
 				this->conditionWarningText->setWordWrap(true);
 			}
-			else
+			else // (condition->isValid() == true)
 			{
 				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
-				                                        tr("Warning: equation representing condition is size") + " " + QString::number(condition->getSize()) +
-				                                        "<br />" + tr("Conditions must be size one to allow being treated as booleans.") +
-				                                        "<br />" + tr("Thus, the current transition will never be crossed.") +
+				                                        tr("Warning: the equation representing the condition can't be interpreted as a boolean.") +
+				                                        "<br>" + tr("Thus, this transition will never be crossed.") +
+				                                        "<br>" + tr("The result of the equation must be a boolean or a bit vector of size 1.") +
 				                                        "</span>"
 				                                        );
 				this->conditionWarningText->setWordWrap(true);
@@ -234,7 +236,7 @@ void ConditionEditor::updateContent()
 			this->layout->addWidget(conditionWarningText, 1, 0, 1, 2);
 		}
 	}
-	else
+	else // (condition == nullptr)
 	{
 		this->conditionText->setText("1");
 	}

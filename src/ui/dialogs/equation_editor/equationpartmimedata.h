@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,11 +27,12 @@
 
 // Stdlib
 #include <memory>
+#include <variant>
 using namespace std;
 
 // StateS
 #include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 class Equation;
 
 
@@ -40,35 +41,57 @@ class EquationPartMimeData : public QMimeData
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class ContentType_t
+	{
+		variable,
+		equation,
+		constant
+	};
+
+	/////
 	// Constructors/destructors
 public:
-	explicit EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation);
-	explicit EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId);
-	explicit EquationPartMimeData(const QString& text, uint availableActions, LogicValue constant);
+	explicit EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation) :
+		text{text},
+		availableActions{availableActions},
+		contentType{ContentType_t::equation},
+		content{equation}
+	{}
+	explicit EquationPartMimeData(const QString& text, uint availableActions, componentId_t variableId) :
+		text{text},
+		availableActions{availableActions},
+		contentType{ContentType_t::variable},
+		content{variableId}
+	{}
+	explicit EquationPartMimeData(const QString& text, uint availableActions, MachineValue constant) :
+		text{text},
+		availableActions{availableActions},
+		contentType{ContentType_t::constant},
+		content{constant}
+	{}
 
 	/////
 	// Object functions
 public:
-	OperandSource_t getSource() const;
+	QString getText() const;
 	uint getAvailableActions() const;
+
+	ContentType_t getContentType() const;
 
 	shared_ptr<Equation> getEquation()   const;
 	componentId_t        getVariableId() const;
-	LogicValue           getConstant()   const;
-
-	QString getText() const;
+	MachineValue         getConstant()   const;
 
 	/////
 	// Object variables
 private:
-	OperandSource_t source;
+	QString text;
 	uint availableActions;
 
-	shared_ptr<Equation> equation;
-	componentId_t        variableId = nullId;
-	LogicValue           constant   = LogicValue();
-
-	QString text;
+	ContentType_t contentType;
+	std::variant<componentId_t, shared_ptr<Equation>, MachineValue> content;
 
 };
 

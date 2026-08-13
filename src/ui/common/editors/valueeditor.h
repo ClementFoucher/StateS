@@ -25,14 +25,26 @@
 // Parent
 #include <QWidget>
 
+// Qt
+class QComboBox;
+
 // StateS
-class LogicValue;
+#include "machinevalue.h"
 class ColoredLineEditor;
 
 
 class ValueEditor : public QWidget
 {
 	Q_OBJECT
+
+	/////
+	// Type declarations
+private:
+	enum class indexType : int
+	{
+		falseValue = 0,
+		trueValue  = 1
+	};
 
 	/////
 	// Constructors/destructors
@@ -42,10 +54,12 @@ public:
 	/////
 	// Object functions
 public:
-	void setFocusOnShow(bool autoFocusOnNextShow);
+	void setMachineValue(MachineValue value);
+	MachineValue getMachineValue() const;
 
-	void setBitVectorValue(LogicValue value, uint size = 0); // Size 0 means no constraint on size
-	LogicValue getBitVectorValue() const;
+	void setBitVectorSize(uint size); // Size 0 (default) means no constraint on size
+
+	void setFocusOnShow(bool autoFocusOnNextShow);
 
 protected:
 	void showEvent(QShowEvent* event) override;
@@ -55,6 +69,7 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
+	void comboBoxIndexChangedEventHandler(int);
 	void textEditChangedEventHandler();
 
 	/////
@@ -66,10 +81,13 @@ signals:
 	/////
 	// Object variables
 private:
+	QComboBox*         comboBox = nullptr;
 	ColoredLineEditor* lineEdit = nullptr;
 
 	uint bitVectorSize = 0;
 	bool autoFocusOnNextShow = false;
+
+	MachineValue::Type_t valueType = MachineValue::Type_t::nullType;
 
 };
 

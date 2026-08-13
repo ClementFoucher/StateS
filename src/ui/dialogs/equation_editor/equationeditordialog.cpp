@@ -105,14 +105,14 @@ shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
 	auto rootEquation = this->equationDisplay->getLogicEquation();
 
 	// Root equation is supposed to be an identity
-	if (rootEquation->getOperatorType() != OperatorType_t::identity) return nullptr;
+	if (rootEquation->getOperator() != Equation::Operator_t::identity) return nullptr;
 
 	// Make sure the operand is valid: it may have been deleted
 	auto rootEquationOperand = rootEquation->getOperand(0);
 	if (rootEquationOperand == nullptr) return nullptr;
 
 
-	if (rootEquationOperand->getSource() == OperandSource_t::equation)
+	if (rootEquationOperand->getSource() == Operand::Source_t::equation)
 	{
 		// Unwrap the equation
 		return rootEquationOperand->getEquation();
@@ -216,7 +216,7 @@ shared_ptr<Equation> EquationEditorDialog::buildRootEquation(shared_ptr<const Eq
 	shared_ptr<Equation> rootEquation;
 	if (initialEquation != nullptr)
 	{
-		if (initialEquation->getOperatorType() == OperatorType_t::identity)
+		if (initialEquation->getOperator() == Equation::Operator_t::identity)
 		{
 			// Equation is already an identity (either variable or constant)
 			rootEquation = initialEquation->clone();
@@ -224,14 +224,14 @@ shared_ptr<Equation> EquationEditorDialog::buildRootEquation(shared_ptr<const Eq
 		else
 		{
 			// This is a standard equation: add identity wrapper
-			rootEquation = make_shared<Equation>(OperatorType_t::identity);
+			rootEquation = make_shared<Equation>(Equation::Operator_t::identity);
 			rootEquation->setOperand(0, initialEquation->clone());
 		}
 	}
 	else
 	{
 		// The equation is currently undefined: define an empty identity
-		rootEquation = make_shared<Equation>(OperatorType_t::identity);
+		rootEquation = make_shared<Equation>(Equation::Operator_t::identity);
 	}
 
 	return rootEquation;

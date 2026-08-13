@@ -31,7 +31,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
-#include "logicvalue.h"
+#include "machinevalue.h"
 class Variable;
 class Operand;
 
@@ -39,13 +39,10 @@ class Operand;
 /**
  * @brief
  * An equation is a gathering of operands linked by an operator.
- * Equations are thus "dynamic variables", which value will
+ * Equations are thus "dynamic variables", whose value will
  * depend on the values of its operands.
  *
- * Equation size in bits is also dynamic and depends on operands size,
- * except for equality and difference operators, which size is always 1.
- *
- * An equation with any of its operands undefined or erroneous
+ * An equation that have any of its operands undefined or erroneous
  * always returns a null value.
  */
 class Equation : public QObject
@@ -53,35 +50,75 @@ class Equation : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class Operator_t
+	{
+		notOp,  // Not equations always have exactly one operand
+		andOp,
+		orOp,
+		xorOp,
+		nandOp,
+		norOp,
+		xnorOp,
+		equalOp, // Equal equations always have exactly two operand and are size one
+		diffOp,  // Diff  equations always have exactly two operand and are size one
+		extractOp, // Extract equations always have exacly one operand
+		concatOp,
+		identity // For internal use only, exactly one operand
+	};
+
+	enum class ComputationFailureCause_t
+	{
+		nofail,
+		nullOperand,
+		invalidOperandValue,
+		incorrectOperandType,
+		operandsSizesMismatch,
+		operandsTypesMismatch,
+		missingParameter,
+		incorrectParameterValue
+	};
+
+	enum class ComputationWarning_t
+	{
+		noWarning,
+		differentTypeComparison,
+		differentSizeComparison
+	};
+
+	/////
 	// Constructors/destructors
 public:
-	explicit Equation(OperatorType_t operatorType, int operandCount = -1);
+	explicit Equation(Operator_t operatorType, int operandCount = -1);
 
 	/////
 	// Object functions
 public:
 	shared_ptr<Equation> clone() const;
 
-	uint getSize() const;
+	bool isValid() const;
+	MachineValue::Type_t getType() const;
 
-	LogicValue getInitialValue() const;
+	MachineValue getInitialValue() const;
 
 	QString getText() const;
 	QString getColoredText(bool raw = false) const;
 
-	EquationComputationFailureCause_t getComputationFailureCause() const;
+	ComputationFailureCause_t getComputationFailureCause() const;
+	ComputationWarning_t      getComputationWarning()      const;
 
-	void setOperatorType(OperatorType_t newOperator);
-	OperatorType_t getOperatorType() const;
+	void setOperator(Operator_t newOperator);
+	Operator_t getOperator() const;
 
 	QSet<componentId_t> getVariablesIdsSet() const;
 
 	bool isInverted() const;
 
 	shared_ptr<Operand> getOperand(uint i) const;
-	void setOperand(uint i, componentId_t newOperand);        // Set variable operand
+	void setOperand(uint i, componentId_t        newOperand); // Set variable operand
 	void setOperand(uint i, shared_ptr<Equation> newOperand); // Set equation operand
-	void setOperand(uint i, LogicValue newOperand);           // Set constant operand
+	void setOperand(uint i, MachineValue         newOperand); // Set constant operand
 	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand (when machine is still being parsed)
 	void clearOperand(uint i);
 
@@ -102,13 +139,13 @@ private slots:
 
 private:
 	void setOperand(uint i, shared_ptr<Operand> newOperand);
-	LogicValue computeInitialValue();
+	void checkForErrors();
+	MachineValue computeInitialValue();
 
 	/////
 	// Signals
 signals:
 	void equationInitialValueChangedEvent();
-	void equationCurrentValueChangedEvent();
 	void equationTextChangedEvent();
 	void equationInvalidatedEvent();
 
@@ -116,7 +153,7 @@ signals:
 	// Object variables
 private:
 	// Equation parameters
-	OperatorType_t operatorType;
+	Operator_t operatorType;
 	QList<shared_ptr<Operand>> operands;
 
 	// Parameters specific to Extract operator type
@@ -124,8 +161,10 @@ private:
 	int rangeR = -1;
 
 	// Equation state recomputed dynamically
-	LogicValue initialValue;
-	EquationComputationFailureCause_t failureCause;
+	MachineValue initialValue{};
+
+	ComputationFailureCause_t failureCause;
+	ComputationWarning_t      warning;
 
 };
 

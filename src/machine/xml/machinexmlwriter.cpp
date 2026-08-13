@@ -31,15 +31,15 @@
 #include "states.h"
 #include "machinemanager.h"
 #include "machine.h"
-#include "viewconfiguration.h"
 #include "machinestatus.h"
+#include "viewconfiguration.h"
 #include "machineactuatorcomponent.h"
 #include "variable.h"
 #include "equation.h"
+#include "operand.h"
 #include "actiononvariable.h"
 #include "statesexception.h"
 #include "exceptiontypes.h"
-#include "operand.h"
 
 
 MachineXmlWriter::MachineXmlWriter(MachineXmlWriterMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
@@ -85,7 +85,6 @@ void MachineXmlWriter::writeMachineToStream()
 
 	this->stream->writeEndElement(); // End Machine tag
 
-
 	if (this->mode == MachineXmlWriterMode_t::writeToFile)
 	{
 		this->stream->writeEndElement(); // End StateS tag
@@ -98,12 +97,12 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	if (machine == nullptr) return;
 
 
-	QList<shared_ptr<ActionOnVariable>> actions = component->getActions();
+	auto actions = component->getActions();
 
 	if (actions.count() != 0)
 	{
 		this->stream->writeStartElement("Actions");
-		for (shared_ptr<ActionOnVariable>& action : actions)
+		for (auto& action : actions)
 		{
 			auto variableId = action->getVariableActedOnId();
 
@@ -117,28 +116,28 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 
 			switch(action->getActionType())
 			{
-			case ActionOnVariableType_t::continuous:
+			case ActionOnVariable::Type_t::continuous:
 				this->stream->writeAttribute("ActionType", "ActiveOnState");
 				break;
-			case ActionOnVariableType_t::pulse:
+			case ActionOnVariable::Type_t::pulse:
 				this->stream->writeAttribute("ActionType", "Pulse");
 				break;
-			case ActionOnVariableType_t::set:
+			case ActionOnVariable::Type_t::set:
 				this->stream->writeAttribute("ActionType", "Set");
 				break;
-			case ActionOnVariableType_t::reset:
+			case ActionOnVariable::Type_t::reset:
 				this->stream->writeAttribute("ActionType", "Reset");
 				break;
-			case ActionOnVariableType_t::assign:
+			case ActionOnVariable::Type_t::assign:
 				this->stream->writeAttribute("ActionType", "Assign");
 				break;
-			case ActionOnVariableType_t::increment:
+			case ActionOnVariable::Type_t::increment:
 				this->stream->writeAttribute("ActionType", "Increment");
 				break;
-			case ActionOnVariableType_t::decrement:
+			case ActionOnVariable::Type_t::decrement:
 				this->stream->writeAttribute("ActionType", "Decrement");
 				break;
-			case ActionOnVariableType_t::none:
+			case ActionOnVariable::Type_t::none:
 				break;
 			}
 
@@ -147,7 +146,20 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 				auto actionValue = action->getActionValue();
 				if (actionValue.isNull() == false)
 				{
-					this->stream->writeAttribute("ActionValue", actionValue.toString());
+					switch (actionValue.getType())
+					{
+					case MachineValue::Type_t::boolean:
+						this->stream->writeAttribute("ActionValueType", "Boolean");
+						break;
+					case MachineValue::Type_t::bitVector:
+						this->stream->writeAttribute("ActionValueType", "BitVector");
+						break;
+					case MachineValue::Type_t::nullType:
+						// Value is not null (checked before): should not happen
+						break;
+					}
+
+					this->stream->writeAttribute("ActionValue", actionValue.toRawString());
 				}
 			}
 			if (action->getActionRangeL() != -1)
@@ -174,51 +186,51 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 
 
 	this->stream->writeStartElement("LogicEquation");
-	switch (equation->getOperatorType())
+	switch (equation->getOperator())
 	{
-	case OperatorType_t::andOp:
+	case Equation::Operator_t::andOp:
 		this->stream->writeAttribute("Operator", "and");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::nandOp:
+	case Equation::Operator_t::nandOp:
 		this->stream->writeAttribute("Operator", "nand");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::norOp:
+	case Equation::Operator_t::norOp:
 		this->stream->writeAttribute("Operator", "nor");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::notOp:
+	case Equation::Operator_t::notOp:
 		this->stream->writeAttribute("Operator", "not");
 		break;
-	case OperatorType_t::orOp:
+	case Equation::Operator_t::orOp:
 		this->stream->writeAttribute("Operator", "or");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::xnorOp:
+	case Equation::Operator_t::xnorOp:
 		this->stream->writeAttribute("Operator", "xnor");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::xorOp:
+	case Equation::Operator_t::xorOp:
 		this->stream->writeAttribute("Operator", "xor");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::equalOp:
+	case Equation::Operator_t::equalOp:
 		this->stream->writeAttribute("Operator", "equals");
 		break;
-	case OperatorType_t::diffOp:
+	case Equation::Operator_t::diffOp:
 		this->stream->writeAttribute("Operator", "differs");
 		break;
-	case OperatorType_t::extractOp:
+	case Equation::Operator_t::extractOp:
 		this->stream->writeAttribute("Operator", "extract");
 		this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));
 		this->stream->writeAttribute("RangeR", QString::number(equation->getRangeR()));
 		break;
-	case OperatorType_t::concatOp:
+	case Equation::Operator_t::concatOp:
 		this->stream->writeAttribute("Operator", "concatenate");
 		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 		break;
-	case OperatorType_t::identity:
+	case Equation::Operator_t::identity:
 		this->stream->writeAttribute("Operator", "identity");
 		break;
 	}
@@ -234,11 +246,11 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 
 		switch (operand->getSource())
 		{
-		case OperandSource_t::equation:
+		case Operand::Source_t::equation:
 			this->stream->writeAttribute("Source", "Equation");
 			this->writeLogicEquation(operand->getEquation());
 			break;
-		case OperandSource_t::variable:
+		case Operand::Source_t::variable:
 		{
 			auto variableId = operand->getVariableId();
 			auto variable = machine->getVariable(variableId);
@@ -249,14 +261,31 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 			}
 			break;
 		}
-		case OperandSource_t::constant:
+		case Operand::Source_t::constant:
+		{
 			auto constantValue = operand->getConstant();
 			if (constantValue.isNull() == false)
 			{
 				this->stream->writeAttribute("Source", "Constant");
-				this->stream->writeAttribute("Value", constantValue.toString());
+
+				switch (constantValue.getType())
+				{
+				case MachineValue::Type_t::boolean:
+					this->stream->writeAttribute("Type", "Boolean");
+					break;
+				case MachineValue::Type_t::bitVector:
+					this->stream->writeAttribute("Type", "BitVector");
+					break;
+				case MachineValue::Type_t::nullType:
+					// Constant is not null (checked before): should not happen
+					break;
+				}
+
+				this->stream->writeAttribute("Value", constantValue.toRawString());
 			}
+
 			break;
+		}
 		}
 
 		this->stream->writeEndElement(); // Operand
@@ -267,13 +296,13 @@ void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
 
 void MachineXmlWriter::createSaveFile() // Throws StatesException
 {
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	QFileInfo fileInfo(machineStatus->getSaveFileFullPath());
-	if ( (fileInfo.exists()) && (!fileInfo.isWritable()) ) // Replace existing file
+	if ( (fileInfo.exists() == true) && (fileInfo.isWritable() == false) ) // Replace existing file
 	{
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unable_to_replace, tr("Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights."));
 	}
-	else if ( !fileInfo.absoluteDir().exists() )
+	else if (fileInfo.absoluteDir().exists() == false)
 	{
 		throw StatesException("MachineXmlWriter", MachineaveFileManagerError_t::unkown_directory, tr("Specified directory doesn't exist."));
 	}
@@ -363,6 +392,9 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
+	auto variableValue = variable->getInitialValue();
+	if (variableValue.isNull()) return;
+
 
 	switch (nature)
 	{
@@ -383,11 +415,22 @@ void MachineXmlWriter::writeMachineVariable(VariableNature_t nature, componentId
 	// Name
 	this->stream->writeAttribute("Name", variable->getName());
 
-	// Size
-	this->stream->writeAttribute("Size", QString::number(variable->getSize()));
+	// Type
+	switch (variable->getType())
+	{
+	case MachineValue::Type_t::boolean:
+		this->stream->writeAttribute("Type", "Boolean");
+		break;
+	case MachineValue::Type_t::bitVector:
+		this->stream->writeAttribute("Type", "BitVector");
+		break;
+	case MachineValue::Type_t::nullType:
+		// Variable is not null (checked before): should not happen
+		break;
+	}
 
 	// Value
-	this->stream->writeAttribute("Value", variable->getInitialValue().toString());
+	this->stream->writeAttribute("Value", variable->getInitialValue().toRawString());
 
 	// Memorized
 	if (variable->getMemorized() == true)

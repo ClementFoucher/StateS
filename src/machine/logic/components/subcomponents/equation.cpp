@@ -37,32 +37,32 @@
  * Omitting this value for a variable-size operator results in
  * an equation with 2 operands for variable operand functions.
  */
-Equation::Equation(OperatorType_t operatorType, int operandCount)
+Equation::Equation(Operator_t operatorType, int operandCount)
 {
 	this->operatorType = operatorType;
-	this->failureCause = EquationComputationFailureCause_t::nullOperand;
-	this->initialValue = LogicValue::getNullValue();
+	this->failureCause = ComputationFailureCause_t::nullOperand;
+	this->warning      = ComputationWarning_t::noWarning;
 
 	// Compute operand count
 	uint actualOperandCount;
 	switch(this->operatorType)
 	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::extractOp:
+	case Operator_t::notOp:
+	case Operator_t::identity:
+	case Operator_t::extractOp:
 		actualOperandCount = 1;
 		break;
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
 		actualOperandCount = 2;
 		break;
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
+	case Operator_t::concatOp:
 		if (operandCount >= 2)
 		{
 			actualOperandCount = operandCount;
@@ -94,7 +94,7 @@ shared_ptr<Equation> Equation::clone() const
 		}
 	}
 
-	if (this->operatorType == OperatorType_t::extractOp)
+	if (this->operatorType == Operator_t::extractOp)
 	{
 		clonedEquation->setRange(this->rangeL, this->rangeR);
 	}
@@ -102,17 +102,17 @@ shared_ptr<Equation> Equation::clone() const
 	return clonedEquation;
 }
 
-/**
- * @brief getSize returns the apparent size of the equation.
- * 0 means current size is not defined => result will be a null variable.
- * @return
- */
-uint Equation::getSize() const
+bool Equation::isValid() const
 {
-	return this->initialValue.getSize();
+	return !this->initialValue.isNull();
 }
 
-LogicValue Equation::getInitialValue() const
+MachineValue::Type_t Equation::getType() const
+{
+	return this->initialValue.getType();
+}
+
+MachineValue Equation::getInitialValue() const
 {
 	return this->initialValue;
 }
@@ -127,7 +127,7 @@ QString Equation::getColoredText(bool raw) const
 	QString text;
 	if (raw == false)
 	{
-		if (this->getSize() == 0)
+		if (this->isValid() == false)
 		{
 			text += "<span style=\"color:red;\">";
 		}
@@ -140,15 +140,19 @@ QString Equation::getColoredText(bool raw) const
 	uint operandCount = this->getOperandCount();
 
 	// Inversion oeprator
-	if (this->isInverted())
+	if (this->isInverted() == true)
+	{
 		text += '/';
+	}
 
 	if (operandCount > 1)
+	{
 		text += "( ";
+	}
 
 	for (uint i = 0 ; i < operandCount ; i++)
 	{
-		auto operand = this->getOperand(i);
+		auto operand = this->operands[i];
 		if (operand == nullptr)
 		{
 			text += "…";
@@ -163,43 +167,47 @@ QString Equation::getColoredText(bool raw) const
 		{
 			switch(operatorType)
 			{
-			case OperatorType_t::andOp:
-			case OperatorType_t::nandOp:
+			case Operator_t::andOp:
+			case Operator_t::nandOp:
 				text += " • ";
 				break;
-			case OperatorType_t::orOp:
-			case OperatorType_t::norOp:
+			case Operator_t::orOp:
+			case Operator_t::norOp:
 				text += " + ";
 				break;
-			case OperatorType_t::xorOp:
-			case OperatorType_t::xnorOp:
+			case Operator_t::xorOp:
+			case Operator_t::xnorOp:
 				text += " ⊕ ";
 				break;
-			case OperatorType_t::equalOp:
+			case Operator_t::equalOp:
 				text += " = ";
 				break;
-			case OperatorType_t::diffOp:
+			case Operator_t::diffOp:
 				text += " ≠ ";
 				break;
-			case OperatorType_t::concatOp:
+			case Operator_t::concatOp:
 				text += " : ";
 				break;
-			case OperatorType_t::notOp:
-			case OperatorType_t::identity:
-			case OperatorType_t::extractOp:
+			case Operator_t::notOp:
+			case Operator_t::identity:
+			case Operator_t::extractOp:
 				break;
 			}
 		}
 	}
 
-	if (this->operatorType == OperatorType_t::extractOp)
+	if (this->operatorType == Operator_t::extractOp)
 	{
 		text += "[";
 
 		if (this->rangeL != -1)
+		{
 			text += QString::number(this->rangeL);
+		}
 		else
+		{
 			text += "…";
+		}
 
 		if (this->rangeR != -1)
 		{
@@ -210,7 +218,9 @@ QString Equation::getColoredText(bool raw) const
 	}
 
 	if (operandCount > 1)
+	{
 		text += " )";
+	}
 
 	if (raw == false)
 	{
@@ -220,20 +230,67 @@ QString Equation::getColoredText(bool raw) const
 	return text;
 }
 
-EquationComputationFailureCause_t Equation::getComputationFailureCause() const
+Equation::ComputationFailureCause_t Equation::getComputationFailureCause() const
 {
 	return this->failureCause;
 }
 
-void Equation::setOperatorType(OperatorType_t newOperator)
+Equation::ComputationWarning_t Equation::getComputationWarning() const
 {
+	return this->warning;
+}
+
+void Equation::setOperator(Operator_t newOperator)
+{
+	if (newOperator == this->operatorType) return;
+
+
+	// Update operator
 	this->operatorType = newOperator;
 
+	// Make sure operand count is correct for the new operator
+	switch(this->operatorType)
+	{
+	case Operator_t::notOp:
+	case Operator_t::identity:
+	case Operator_t::extractOp:
+		while (this->operands.size() > 1)
+		{
+			this->operands.removeLast();
+		}
+		break;
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
+		while (this->operands.size() < 2)
+		{
+			this->operands.append(nullptr);
+		}
+		while (this->operands.size() > 2)
+		{
+			this->operands.removeLast();
+		}
+		break;
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
+	case Operator_t::concatOp:
+		while (this->operands.size() < 2)
+		{
+			this->operands.append(nullptr);
+		}
+		break;
+	}
+
+	// Compute new value
 	this->checkAndComputeInitialValue();
+
 	emit this->equationTextChangedEvent();
 }
 
-OperatorType_t Equation::getOperatorType() const
+Equation::Operator_t Equation::getOperator() const
 {
 	return this->operatorType;
 }
@@ -247,7 +304,7 @@ QSet<componentId_t> Equation::getVariablesIdsSet() const
 		if (operand == nullptr) continue;
 
 
-		if (operand->getSource() == OperandSource_t::equation)
+		if (operand->getSource() == Operand::Source_t::equation)
 		{
 			auto equation = operand->getEquation();
 			if (equation == nullptr) continue;
@@ -255,7 +312,7 @@ QSet<componentId_t> Equation::getVariablesIdsSet() const
 
 			variablesIds += equation->getVariablesIdsSet();
 		}
-		else if (operand->getSource() == OperandSource_t::variable)
+		else if (operand->getSource() == Operand::Source_t::variable)
 		{
 			variablesIds.insert(operand->getVariableId());
 		}
@@ -268,20 +325,20 @@ bool Equation::isInverted() const
 {
 	switch (this->operatorType)
 	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
+	case Operator_t::notOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
 		return true;
 		break;
-	case OperatorType_t::identity:
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
-	case OperatorType_t::extractOp:
-	case OperatorType_t::concatOp:
+	case Operator_t::identity:
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
+	case Operator_t::extractOp:
+	case Operator_t::concatOp:
 		return false;
 		break;
 	}
@@ -311,7 +368,7 @@ void Equation::setOperand(uint i, shared_ptr<Equation> newOperand)
 	this->setOperand(i, operand);
 }
 
-void Equation::setOperand(uint i, LogicValue newOperand)
+void Equation::setOperand(uint i, MachineValue newOperand)
 {
 	auto operand = make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
@@ -332,22 +389,22 @@ uint Equation::getOperandCount() const
 {
 	switch(this->operatorType)
 	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::extractOp:
+	case Operator_t::notOp:
+	case Operator_t::identity:
+	case Operator_t::extractOp:
 		return 1;
 		break;
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
 		return 2;
 		break;
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
+	case Operator_t::concatOp:
 		return this->operands.size();
 		break;
 	}
@@ -359,20 +416,20 @@ void Equation::increaseOperandCount()
 
 	switch (this->operatorType)
 	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
+	case Operator_t::concatOp:
 		doIncrease = true;
 		break;
-	case OperatorType_t::extractOp:
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Operator_t::extractOp:
+	case Operator_t::notOp:
+	case Operator_t::identity:
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
 		// Do not allow modifying operand count for these fixed-size operators
 		break;
 	}
@@ -391,23 +448,23 @@ void Equation::decreaseOperandCount()
 
 	switch (this->operatorType)
 	{
-	case OperatorType_t::andOp:
-	case OperatorType_t::orOp:
-	case OperatorType_t::xorOp:
-	case OperatorType_t::nandOp:
-	case OperatorType_t::norOp:
-	case OperatorType_t::xnorOp:
-	case OperatorType_t::concatOp:
+	case Operator_t::andOp:
+	case Operator_t::orOp:
+	case Operator_t::xorOp:
+	case Operator_t::nandOp:
+	case Operator_t::norOp:
+	case Operator_t::xnorOp:
+	case Operator_t::concatOp:
 		if (this->getOperandCount() > 2)
 		{
 			doDecrease = true;
 		}
 		break;
-	case OperatorType_t::extractOp:
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
-	case OperatorType_t::equalOp:
-	case OperatorType_t::diffOp:
+	case Operator_t::extractOp:
+	case Operator_t::notOp:
+	case Operator_t::identity:
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
 		// Do not allow modifying operand count for these fixed-size operators
 		break;
 	}
@@ -422,7 +479,7 @@ void Equation::decreaseOperandCount()
 
 void Equation::setRange(int rangeL, int rangeR)
 {
-	if (this->operatorType == OperatorType_t::extractOp)
+	if (this->operatorType == Operator_t::extractOp)
 	{
 		this->rangeL = rangeL;
 		this->rangeR = rangeR;
@@ -449,7 +506,7 @@ void Equation::doFullStackRecomputation()
 		if (operand == nullptr) continue;
 
 
-		if (operand->getSource() == OperandSource_t::equation)
+		if (operand->getSource() == Operand::Source_t::equation)
 		{
 			auto equation = operand->getEquation();
 			if (equation != nullptr)
@@ -464,98 +521,16 @@ void Equation::doFullStackRecomputation()
 
 void Equation::checkAndComputeInitialValue()
 {
-	bool doCompute = true;
+	this->checkForErrors();
 
-	// Check for null or incomplete operands
-	for (auto& currentOperand : this->operands)
+	auto previousValue = this->initialValue;
+	if (this->failureCause != ComputationFailureCause_t::nofail)
 	{
-		if (currentOperand == nullptr)
-		{
-			this->failureCause = EquationComputationFailureCause_t::nullOperand;
-			doCompute = false;
-			break;
-		}
-		else
-		{
-			auto currentOperandValue = currentOperand->getInitialValue();
-			if (currentOperandValue.getSize() == 0)
-			{
-				this->failureCause = EquationComputationFailureCause_t::invalidOperand;
-				doCompute = false;
-				break;
-			}
-		}
-	}
-
-	// Check for size mismatchs between operands
-	if (doCompute == true)
-	{
-		if ( (this->operatorType != OperatorType_t::concatOp)  &&
-		     (this->operatorType != OperatorType_t::extractOp) &&
-		     (this->operatorType != OperatorType_t::notOp)     &&
-		     (this->operatorType != OperatorType_t::identity)  )
-		{
-			uint operandsSize = 0;
-			for (auto& currentOperand : this->operands)
-			{
-				auto currentOperandValue = currentOperand->getInitialValue();
-				auto currentOperandSize = currentOperandValue.getSize();
-				if ( (operandsSize != 0) && (currentOperandSize != operandsSize) )
-				{
-					this->failureCause = EquationComputationFailureCause_t::sizeMismatch;
-					doCompute = false;
-					break;
-				}
-				else if (operandsSize == 0)
-				{
-					operandsSize = currentOperandSize;
-				}
-			}
-		}
-	}
-
-	// Check ranges for extract operand
-	if (doCompute == true)
-	{
-		if (this->operatorType == OperatorType_t::extractOp)
-		{
-			if (this->rangeL == -1)
-			{
-				this->failureCause = EquationComputationFailureCause_t::missingParameter;
-				doCompute = false;
-			}
-			else // (this->rangeL != -1)
-			{
-				if (this->rangeR != -1)
-				{
-					if (this->rangeL < this->rangeR)
-					{
-						this->failureCause = EquationComputationFailureCause_t::incorrectParameter;
-						doCompute = false;
-					}
-				}
-
-				auto operand = this->getOperand(0);
-				auto operandValue = operand->getInitialValue();
-				auto operandSize = operandValue.getSize();
-				if ((uint)rangeL >= operandSize)
-				{
-					this->failureCause = EquationComputationFailureCause_t::incorrectParameter;
-					doCompute = false;
-				}
-			}
-		}
-	}
-
-	LogicValue previousValue = this->initialValue;
-	if (doCompute == true)
-	{
-		this->failureCause = EquationComputationFailureCause_t::nofail;
-		this->initialValue = this->computeInitialValue();
+		this->initialValue = MachineValue{};
 	}
 	else
 	{
-		this->initialValue = LogicValue::getNullValue();
+		this->initialValue = this->computeInitialValue();
 	}
 
 	if (previousValue != this->initialValue)
@@ -566,14 +541,15 @@ void Equation::checkAndComputeInitialValue()
 
 void Equation::operandInvalidatedEventHandler()
 {
-	if (this->operatorType != OperatorType_t::identity)
+	if (this->operatorType != Operator_t::identity)
 	{
 		for (int operandNumber = 0 ; operandNumber < this->operands.count() ; operandNumber++)
 		{
-			auto operand = this->getOperand(operandNumber);
+			auto operand = this->operands[operandNumber];
 			if (operand == nullptr) continue;
 
-			if (operand->getSource() == OperandSource_t::variable)
+
+			if (operand->getSource() == Operand::Source_t::variable)
 			{
 				auto variableId = operand->getVariableId();
 				if (variableId == nullId)
@@ -585,6 +561,7 @@ void Equation::operandInvalidatedEventHandler()
 		}
 
 		this->checkAndComputeInitialValue();
+
 		emit this->equationTextChangedEvent();
 	}
 	else // (this->operatorType == OperatorType_t::identity)
@@ -631,135 +608,413 @@ void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
 	emit this->equationTextChangedEvent();
 }
 
-LogicValue Equation::computeInitialValue()
+void Equation::checkForErrors()
 {
-	LogicValue computedValue;
+	// PRE: operand count is correct wrt. operator (enforced elsewhere in the class)
+
+	this->warning      = ComputationWarning_t::noWarning;
+	this->failureCause = ComputationFailureCause_t::nofail;
+
+	// Check for null or invalid operands
+	for (auto& currentOperand : this->operands)
+	{
+		if (currentOperand == nullptr)
+		{
+			this->failureCause = ComputationFailureCause_t::nullOperand;
+			return;
+		}
+		else
+		{
+			if (currentOperand->getType() == MachineValue::Type_t::nullType)
+			{
+				this->failureCause = ComputationFailureCause_t::invalidOperandValue;
+				return;
+			}
+		}
+	}
+	// POST: all operands are valid
+
+	// Check operands types and sizes
 	switch (this->operatorType)
 	{
-	case OperatorType_t::notOp:
-	case OperatorType_t::identity:
+	case Operator_t::extractOp:
+	{
+		if (this->operands[0]->getType() != MachineValue::Type_t::bitVector)
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
+		}
+		// POST: operand 0 is of type Bit Vector
+		break;
+	}
+	case Operator_t::concatOp:
+	{
+		for (auto& currentOperand : this->operands)
+		{
+			auto currentOperandType = currentOperand->getType();
+			if ( (currentOperandType != MachineValue::Type_t::boolean) &&
+			     (currentOperandType != MachineValue::Type_t::bitVector)
+			   )
+			{
+				this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+				return;
+			}
+		}
+		// POST: all operands are either Boolean or Bit Vector
+		break;
+	}
+	case Operator_t::andOp:
+	case Operator_t::nandOp:
+	case Operator_t::orOp:
+	case Operator_t::norOp:
+	case Operator_t::xorOp:
+	case Operator_t::xnorOp:
+	{
+		auto operandsType = MachineValue::Type_t::nullType;
+		uint bitVectorOperandsSize = 0;
+
+		// First check for unauthorized types
+		for (auto& currentOperand : this->operands)
+		{
+			auto currentOperandType = currentOperand->getType();
+
+			if ( (currentOperandType != MachineValue::Type_t::boolean) &&
+			     (currentOperandType != MachineValue::Type_t::bitVector)
+			   )
+			{
+				this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+				return;
+			}
+			else if (operandsType == MachineValue::Type_t::nullType)
+			{
+				// The first operand is used as reference for the expected type...
+				operandsType = currentOperandType;
+
+				// ... and size for Bit Vector operands
+				if (operandsType == MachineValue::Type_t::bitVector)
+				{
+					bitVectorOperandsSize = currentOperand->getInitialValue().getBitVectorValue().getSize();
+				}
+			}
+		}
+		// POST: all operands are either Boolean or Bit Vector
+
+		// Then check for types and sizes mismatchs
+		for (auto& currentOperand : this->operands)
+		{
+			auto currentOperandType = currentOperand->getType();
+
+			if (currentOperandType != operandsType)
+			{
+				this->failureCause = ComputationFailureCause_t::operandsTypesMismatch;
+				return;
+			}
+			else if ( (operandsType == MachineValue::Type_t::bitVector) &&
+			          (currentOperand->getInitialValue().getBitVectorValue().getSize() != bitVectorOperandsSize)
+			        )
+			{
+				this->failureCause = ComputationFailureCause_t::operandsSizesMismatch;
+				return;
+			}
+		}
+		// POST: all operands have the same type
+		// POST: Bit Vector operands have the same size
+
+		break;
+	}
+	case Operator_t::equalOp:
+	case Operator_t::diffOp:
+	{
+		auto operand0Type = this->operands[0]->getType();
+		auto operand1Type = this->operands[1]->getType();
+		if (operand0Type != operand1Type)
+		{
+			this->warning = ComputationWarning_t::differentTypeComparison;
+		}
+		else if (operand0Type == MachineValue::Type_t::bitVector)
+		{
+			auto operand0Size = this->operands[0]->getInitialValue().getBitVectorValue().getSize();
+			auto operand1Size = this->operands[1]->getInitialValue().getBitVectorValue().getSize();
+			if (operand0Size != operand1Size)
+			{
+				this->warning = ComputationWarning_t::differentSizeComparison;
+			}
+		}
+		break;
+	}
+	case Operator_t::notOp:
+	{
+		auto operand0Type = this->operands[0]->getType();
+		if ( (operand0Type != MachineValue::Type_t::boolean) &&
+		     (operand0Type != MachineValue::Type_t::bitVector)
+		   )
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
+		}
+		break;
+	}
+	case Operator_t::identity:
+		// Nothing to check here
+		break;
+	}
+
+	// Check ranges for extract operand
+	if (this->operatorType == Operator_t::extractOp)
+	{
+		// PRE: operand 0 is of type Bit Vector
+
+		if (this->rangeL == -1)
+		{
+			this->failureCause = ComputationFailureCause_t::missingParameter;
+			return;
+		}
+		else // (this->rangeL != -1)
+		{
+			if (this->rangeR != -1)
+			{
+				if (this->rangeL < this->rangeR)
+				{
+					this->failureCause = ComputationFailureCause_t::incorrectParameterValue;
+					return;
+				}
+			}
+
+			if (static_cast<uint>(rangeL) >= this->operands[0]->getInitialValue().getBitVectorValue().getSize())
+			{
+				this->failureCause = ComputationFailureCause_t::incorrectParameterValue;
+				return;
+			}
+		}
+	}
+	// POST: right range is -1 and left range is < to Bit Vector size and > to 0
+	//       OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
+}
+
+MachineValue Equation::computeInitialValue()
+{
+	MachineValue computedValue{};
+	switch (this->operatorType)
+	{
+	case Operator_t::notOp:
+	case Operator_t::identity:
+		// PRE: there is one operand
+		// PRE: the operand is valid
+
 		computedValue = this->operands[0]->getInitialValue();
 		break;
-	case OperatorType_t::equalOp:
+	case Operator_t::equalOp:
 	{
-		LogicValue oneBitResult(1);
-		oneBitResult[0] = ((this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue()));
+		// PRE: there are two operands
+		// PRE: the two operands are valid
 
-		computedValue = oneBitResult;
+		computedValue = BooleanValue{(this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue())};
+		break;
 	}
-	break;
-	case OperatorType_t::diffOp:
+	case Operator_t::diffOp:
 	{
-		LogicValue oneBitResult(1);
-		oneBitResult[0] = ((this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue()));
+		// PRE: there are two operands
+		// PRE: the two operands are valid
 
-		computedValue = oneBitResult;
+		computedValue = BooleanValue{(this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue())};
+		break;
 	}
-	break;
-	case OperatorType_t::extractOp:
+	case Operator_t::extractOp:
+	{
+		// PRE: there is one operand
+		// PRE: the operand is valid
+		// PRE: the operand is of type Bit Vector
+		// PRE: right range is -1 and left range is < to Bit Vector size and > to 0
+		//      OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
+
+		auto operandValue = this->operands[0]->getInitialValue().getBitVectorValue();
 		if (this->rangeR != -1)
 		{
 			int range = this->rangeL - this->rangeR + 1;
-			LogicValue subVector(range);
-			LogicValue originalValue = this->operands[0]->getInitialValue();
+			auto subVector = BitVectorValue::allZeros(range);
 
 			for (int i = 0 ; i < range ; i++)
 			{
-				subVector[i] = originalValue[this->rangeR + i];
+				subVector.setBit(i, operandValue[this->rangeR + i]);
 			}
 
 			computedValue = subVector;
 		}
 		else
 		{
-			auto operand = this->operands[0];
-			LogicValue operandValue = operand->getInitialValue();
-
-			LogicValue result(1);
-			result[0] = operandValue[rangeL];
-
-			computedValue = result;
+			computedValue = BooleanValue{operandValue[rangeL]};
 		}
 		break;
-	case OperatorType_t::concatOp:
+	}
+	case Operator_t::concatOp:
 	{
+		// PRE: there are two or more operands
+		// PRE: the operands are all valid
+		// PRE: all operands are either Boolean or Bit Vector
+
 		int sizeCount = 0;
 		for (auto& currentOperand : this->operands)
 		{
-			LogicValue currentOperandValue = currentOperand->getInitialValue();
-
-			sizeCount += currentOperandValue.getSize();
+			if (currentOperand->getType() == MachineValue::Type_t::bitVector)
+			{
+				sizeCount += currentOperand->getInitialValue().getBitVectorValue().getSize();
+			}
+			else // (currentOperandValue.getValueType() == MachineValue::ValueType_t::boolean)
+			{
+				sizeCount++;
+			}
 		}
 
-		LogicValue concatVector(sizeCount);
+		auto concatVector = BitVectorValue::allZeros(sizeCount);
 
 		int currentBit = sizeCount - 1;
 		for (auto& currentOperand : this->operands)
 		{
-			LogicValue currentOperandValue = currentOperand->getInitialValue();
-
-			for (int i = currentOperandValue.getSize()-1 ; i >= 0 ; i--)
+			if (currentOperand->getType() == MachineValue::Type_t::bitVector)
 			{
-				concatVector[currentBit] = currentOperand->getInitialValue()[i];
+				auto currentOperandBitVectorValue = currentOperand->getInitialValue().getBitVectorValue();
+				for (int i = static_cast<int>(currentOperandBitVectorValue.getSize())-1 ; i >= 0 ; i--)
+				{
+					concatVector.setBit(currentBit, currentOperandBitVectorValue[i]);
+					currentBit--;
+				}
+			}
+			else // (currentOperandValue.getValueType() == MachineValue::ValueType_t::boolean)
+			{
+				auto currentOperandBooleanValue = currentOperand->getInitialValue().getBooleanValue();
+				concatVector.setBit(currentBit, currentOperandBooleanValue);
 				currentBit--;
 			}
 		}
 
 		computedValue = concatVector;
+		break;
 	}
-	break;
-	case OperatorType_t::andOp:
-	case OperatorType_t::nandOp:
+	case Operator_t::andOp:
+	case Operator_t::nandOp:
+	case Operator_t::orOp:
+	case Operator_t::norOp:
+	case Operator_t::xorOp:
+	case Operator_t::xnorOp:
 	{
-		auto operand = this->getOperand(0);
-		uint operandsSize = operand->getInitialValue().getSize();
+		// PRE: there are two or more operands
+		// PRE: the operands are all valid
+		// PRE: operands are either Boolean or Bit Vector
+		// PRE: all operands have the same type
+		// PRE: Bit Vector operands have the same size
 
-		LogicValue partialResult(operandsSize, true);
-		for (auto& operand : this->operands)
+		auto firstOperand = this->operands[0];
+		if (firstOperand->getType() == MachineValue::Type_t::bitVector)
 		{
-			partialResult &= operand->getInitialValue();
+			auto firstOperandBitVectorValue = firstOperand->getInitialValue().getBitVectorValue();
+			uint firstOperandsSize = firstOperandBitVectorValue.getSize();
+
+			BitVectorValue partialResult{};
+
+			switch (this->operatorType)
+			{
+			case Operator_t::andOp:
+			case Operator_t::nandOp:
+				partialResult = BitVectorValue::allOnes(firstOperandsSize);
+				break;
+			case Operator_t::orOp:
+			case Operator_t::norOp:
+			case Operator_t::xorOp:
+			case Operator_t::xnorOp:
+				partialResult = BitVectorValue::allZeros(firstOperandsSize);
+				break;
+			default:
+				break;
+			}
+
+			for (auto& operand : this->operands)
+			{
+				auto currentOperandValue = operand->getInitialValue();
+				auto bitVectorOperandValue = currentOperandValue.getBitVectorValue();
+
+				switch (this->operatorType)
+				{
+				case Operator_t::andOp:
+				case Operator_t::nandOp:
+					partialResult &= bitVectorOperandValue;
+					break;
+				case Operator_t::orOp:
+				case Operator_t::norOp:
+					partialResult |= bitVectorOperandValue;
+					break;
+				case Operator_t::xorOp:
+				case Operator_t::xnorOp:
+					partialResult ^= bitVectorOperandValue;
+					break;
+				default:
+					break;
+				}
+			}
+
+			computedValue = partialResult;
+		}
+		else // (firstOperand->getType() == MachineValue::ValueType_t::boolean)
+		{
+			BooleanValue partialResult{};
+
+			switch (this->operatorType)
+			{
+			case Operator_t::andOp:
+			case Operator_t::nandOp:
+				partialResult = BooleanValue::trueValue();
+				break;
+			case Operator_t::orOp:
+			case Operator_t::norOp:
+			case Operator_t::xorOp:
+			case Operator_t::xnorOp:
+				partialResult = BooleanValue::falseValue();
+				break;
+			default:
+				break;
+			}
+
+			for (auto& operand : this->operands)
+			{
+				auto currentOperandValue = operand->getInitialValue();
+				auto booleanOperandValue = currentOperandValue.getBooleanValue();
+
+				switch (this->operatorType)
+				{
+				case Operator_t::andOp:
+				case Operator_t::nandOp:
+					partialResult &= booleanOperandValue;
+					break;
+				case Operator_t::orOp:
+				case Operator_t::norOp:
+					partialResult |= booleanOperandValue;
+					break;
+				case Operator_t::xorOp:
+				case Operator_t::xnorOp:
+					partialResult ^= booleanOperandValue;
+					break;
+				default:
+					break;
+				}
+			}
+
+			computedValue = partialResult;
 		}
 
-		computedValue = partialResult;
+		break;
 	}
-	break;
+	}
 
-	case OperatorType_t::orOp:
-	case OperatorType_t::norOp:
+	if (this->isInverted() == true)
 	{
-		auto operand = this->getOperand(0);
-		uint operandsSize = operand->getInitialValue().getSize();
-
-		LogicValue partialResult(operandsSize);
-		for (auto& operand : this->operands)
+		// PRE: the result is either Boolean or Bit Vector
+		if (computedValue.getType() == MachineValue::Type_t::bitVector)
 		{
-			partialResult |= operand->getInitialValue();
+			computedValue = ~(computedValue.getBitVectorValue());
 		}
-
-		computedValue = partialResult;
-	}
-	break;
-
-	case OperatorType_t::xorOp:
-	case OperatorType_t::xnorOp:
-	{
-		auto operand = this->getOperand(0);
-		uint operandsSize = operand->getInitialValue().getSize();
-
-		LogicValue partialResult(operandsSize);
-		for (auto& operand : this->operands)
+		else // (computedValue.getType() == MachineValue::ValueType_t::boolean)
 		{
-			partialResult ^= operand->getInitialValue();
+			computedValue = !(computedValue.getBooleanValue());
 		}
-
-		computedValue = partialResult;
-	}
-	break;
-	}
-
-	if (this->isInverted())
-	{
-		computedValue = !computedValue;
 	}
 
 	return computedValue;

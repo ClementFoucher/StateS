@@ -91,6 +91,8 @@ void ActionBox::buildActionBox()
 		auto currentVariable = machine->getVariable(currentVariableId);
 		if (currentVariable == nullptr) continue;
 
+		if (currentVariable->getInitialValue().isNull() == true) continue;
+
 
 		qreal xPos = boxLeft;
 		qreal currentTextWidth = 0;
@@ -122,14 +124,13 @@ void ActionBox::buildActionBox()
 			xPos += memorizedText->boundingRect().width();
 		}
 
-
 		QString currentActionText = "<span style=\"color:black;\">";
 
 		// Variable name
 		currentActionText += currentVariable->getName();
 
 		// Variable range
-		if (currentVariable->getSize() > 1)
+		if ( (currentVariable->getType() == MachineValue::Type_t::bitVector) && (currentVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
 		{
 			int rangeL = currentAction->getActionRangeL();
 			int rangeR = currentAction->getActionRangeR();
@@ -152,34 +153,36 @@ void ActionBox::buildActionBox()
 		// Action value
 		switch (currentAction->getActionType())
 		{
-		case ActionOnVariableType_t::set:
-		case ActionOnVariableType_t::reset:
-		case ActionOnVariableType_t::assign:
-			currentActionText += " ← " + currentAction->getActionValue().toString();
+		case ActionOnVariable::Type_t::set:
+		case ActionOnVariable::Type_t::reset:
+		case ActionOnVariable::Type_t::assign:
+			currentActionText += " ← " + currentAction->getActionValue().toDisplayString();
 			break;
-		case ActionOnVariableType_t::continuous:
-		case ActionOnVariableType_t::pulse:
-			currentActionText += " ← " + currentAction->getActionValue().toString();
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+			currentActionText += " ← " + currentAction->getActionValue().toDisplayString();
 			break;
-		case ActionOnVariableType_t::increment:
+		case ActionOnVariable::Type_t::increment:
 			currentActionText += " ← " + currentVariable->getName() + " + 1";
 			break;
-		case ActionOnVariableType_t::decrement:
+		case ActionOnVariable::Type_t::decrement:
 			currentActionText += " ← " + currentVariable->getName() + " - 1";
 			break;
-		case ActionOnVariableType_t::none:
+		case ActionOnVariable::Type_t::none:
 			// Nothing
 			break;
 		}
 
 		currentActionText += "</span>";
 
-		QGraphicsTextItem* actionText = new QGraphicsTextItem(this);
+		auto actionText = new QGraphicsTextItem(this);
 		actionText->setHtml(currentActionText);
 		currentTextWidth += actionText->boundingRect().width();
 
 		if (maxTextWidth < currentTextWidth)
+		{
 			maxTextWidth = currentTextWidth;
+		}
 
 		actionText->setPos(QPointF(xPos, i*this->textHeight));
 		actionText->setZValue(1);
