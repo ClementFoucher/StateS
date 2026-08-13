@@ -188,19 +188,19 @@ void VerifierTab::checkFinished()
 
 			switch (issues[i]->type)
 			{
-			case VerifierSeverityLevel_t::blocking:
+			case FsmVerifier::SeverityLevel_t::blocking:
 				brush.setColor(Qt::red);
 				hasRed = true;
 				break;
-			case VerifierSeverityLevel_t::structure:
+			case FsmVerifier::SeverityLevel_t::structure:
 				brush.setColor(Qt::blue);
 				hasBlue = true;
 				break;
-			case VerifierSeverityLevel_t::tool:
+			case FsmVerifier::SeverityLevel_t::tool:
 				brush.setColor(Qt::darkGreen);
 				hasGreen = true;
 				break;
-			case VerifierSeverityLevel_t::hint:
+			case FsmVerifier::SeverityLevel_t::hint:
 				break;
 			}
 

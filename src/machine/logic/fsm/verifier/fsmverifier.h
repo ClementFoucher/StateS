@@ -33,7 +33,6 @@ using namespace std;
 #include <QList>
 
 // StateS
-#include "statestypes.h"
 class TruthTable;
 
 
@@ -45,11 +44,13 @@ class FsmVerifier : public QThread
 	// Type declarations
 public:
 
+	enum class SeverityLevel_t { blocking, structure, tool, hint };
+
 	class Issue
 	{
 	public:
 		QString text;
-		VerifierSeverityLevel_t type = VerifierSeverityLevel_t::hint;
+		SeverityLevel_t type = SeverityLevel_t::hint;
 		shared_ptr<TruthTable> proof;
 		QList<int> proofsHighlight;
 	};

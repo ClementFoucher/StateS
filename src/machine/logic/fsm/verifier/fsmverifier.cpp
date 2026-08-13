@@ -59,14 +59,14 @@ void FsmVerifier::run()
 	{
 		auto issue = make_shared<Issue>();
 		issue->text = tr("No FSM.");
-		issue->type = VerifierSeverityLevel_t::blocking;
+		issue->type = SeverityLevel_t::blocking;
 		this->issues.append(issue);
 	}
 	else if (fsm->getAllStatesIds().isEmpty() == true)
 	{
 		auto issue = make_shared<Issue>();
 		issue->text = tr("Empty FSM.");
-		issue->type = VerifierSeverityLevel_t::blocking;
+		issue->type = SeverityLevel_t::blocking;
 		this->issues.append(issue);
 	}
 	else
@@ -76,7 +76,7 @@ void FsmVerifier::run()
 		{
 			auto issue = make_shared<Issue>();
 			issue->text = tr("No initial state.");
-			issue->type = VerifierSeverityLevel_t::blocking;
+			issue->type = SeverityLevel_t::blocking;
 			this->issues.append(issue);
 		}
 
@@ -120,7 +120,7 @@ void FsmVerifier::run()
 							issue->text += " " + tr("Equation is a bit vector whose size is > 1.");
 							issue->text += " " + tr("Bit vector equation size must be 1 to be a valid condition.");
 							issue->text += " " + tr("Please correct this equation:") + " " + condition->getText();
-							issue->type = VerifierSeverityLevel_t::structure;
+							issue->type = SeverityLevel_t::structure;
 							this->issues.append(issue);
 
 							break;
@@ -136,7 +136,7 @@ void FsmVerifier::run()
 						issue->text += " " + tr("Equation type is not valid as a condition.");
 						issue->text += " " + tr("It should be a boolean or a bit vector of size 1.");
 						issue->text += " " + tr("Please correct this equation:") + " " + condition->getText();
-						issue->type = VerifierSeverityLevel_t::structure;
+						issue->type = SeverityLevel_t::structure;
 						this->issues.append(issue);
 
 						break;
@@ -151,7 +151,7 @@ void FsmVerifier::run()
 					issue->text  = tr("Error on transition condition from state") + " \"" + state->getName() + "\".";
 					issue->text += " " + tr("Equation is invalid.");
 					issue->text += " " + tr("Please correct this equation:") + " " + condition->getText();
-					issue->type = VerifierSeverityLevel_t::structure;
+					issue->type = SeverityLevel_t::structure;
 					this->issues.append(issue);
 
 					break;
@@ -167,7 +167,7 @@ void FsmVerifier::run()
 				{
 					auto issue = make_shared<Issue>();
 					issue->text = tr("Multiple transitions from state") + " \"" + state->getName() + "\" " + tr("have a condition value always true.");
-					issue->type = VerifierSeverityLevel_t::structure;
+					issue->type = SeverityLevel_t::structure;
 					this->issues.append(issue);
 				}
 				else if ( (constantToOneConditions == 1) && (state->getOutgoingTransitionsIds().count() > 1) )
@@ -175,7 +175,7 @@ void FsmVerifier::run()
 					auto issue = make_shared<Issue>();
 					issue->text  = tr("One transition from state") + " \"" + state->getName() + "\" " + tr("has a condition value always true.");
 					issue->text += " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.");
-					issue->type = VerifierSeverityLevel_t::structure;
+					issue->type = SeverityLevel_t::structure;
 					this->issues.append(issue);
 				}
 				else if (state->getOutgoingTransitionsIds().count() > 1)
@@ -198,7 +198,7 @@ void FsmVerifier::run()
 						issue->text  = tr("StateS was unable to build the truth table for transitions going out of state") + " \"" + state->getName() + "\".";
 						issue->text += " " + tr("This is probably because there are too many combinations to compute.");
 						issue->text += " " + tr("This means that there may be transitions going out of this state that are not mutually exclusive.");
-						issue->type = VerifierSeverityLevel_t::tool;
+						issue->type = SeverityLevel_t::tool;
 						this->issues.append(issue);
 						continue;
 					}
@@ -225,7 +225,7 @@ void FsmVerifier::run()
 								currentIssue->text  = tr("Transitions from state") + " \"" + state->getName() + "\" " + tr("are not mutually exclusive.");
 								currentIssue->text += " " + tr("At least two transitions can be active at the same time.");
 								currentIssue->proof = currentTruthTable;
-								currentIssue->type = VerifierSeverityLevel_t::structure;
+								currentIssue->type = SeverityLevel_t::structure;
 								this->issues.append(currentIssue);
 
 								detected = true;
@@ -258,7 +258,7 @@ void FsmVerifier::run()
 					issue->text  = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has both Moore and Mealy behaviors.");
 					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " + tr("This variable will be ignored on VHDL export.");
-					issue->type = VerifierSeverityLevel_t::tool;
+					issue->type = SeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 				for (auto& variableId : compat->rangeAdressed)
@@ -271,7 +271,7 @@ void FsmVerifier::run()
 					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " +  tr("has range-adressed output generation.");
 					issue->text += " " +  tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " +  tr("This variable will be ignored on VHDL export.");
-					issue->type = VerifierSeverityLevel_t::tool;
+					issue->type = SeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 				for (auto& variableId : compat->mealyWithKeep)
@@ -284,7 +284,7 @@ void FsmVerifier::run()
 					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has Mealy outputs affectation (remembered value).");
 					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " +  tr("This variable will be ignored on VHDL export.");
-					issue->type = VerifierSeverityLevel_t::tool;
+					issue->type = SeverityLevel_t::tool;
 					this->issues.append(issue);
 				}
 			}

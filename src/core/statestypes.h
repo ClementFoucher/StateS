@@ -41,7 +41,6 @@ const componentId_t nullId = 0;
 /////
 // Enums
 
-enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
 enum class VariableNature_t              { input, output, internal, constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };
 enum class MachineType_t                 { none, fsm };
