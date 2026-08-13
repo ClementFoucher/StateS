@@ -62,10 +62,10 @@ ImageExportDialog::ImageExportDialog(StatesScene* stateGraphScene, const QString
 	this->imageFormatComboBox->addItem("Pdf");
 	this->imageFormatComboBox->addItem("Png");
 	this->imageFormatComboBox->addItem("Jpeg");
-	this->imageFormatComboBox->setItemData(0, static_cast<int>(ImageFormat_t::svg));
-	this->imageFormatComboBox->setItemData(1, static_cast<int>(ImageFormat_t::pdf));
-	this->imageFormatComboBox->setItemData(2, static_cast<int>(ImageFormat_t::png));
-	this->imageFormatComboBox->setItemData(3, static_cast<int>(ImageFormat_t::jpg));
+	this->imageFormatComboBox->setItemData(0, static_cast<int>(MachineImageExporter::ImageFormat_t::svg));
+	this->imageFormatComboBox->setItemData(1, static_cast<int>(MachineImageExporter::ImageFormat_t::pdf));
+	this->imageFormatComboBox->setItemData(2, static_cast<int>(MachineImageExporter::ImageFormat_t::png));
+	this->imageFormatComboBox->setItemData(3, static_cast<int>(MachineImageExporter::ImageFormat_t::jpg));
 
 	this->imageSizeEditor = new DocumentSizeEditor();
 
@@ -236,16 +236,16 @@ void ImageExportDialog::accept()
 	QString saveFilePath;
 	switch (imageFormat)
 	{
-	case ImageFormat_t::pdf:
+	case MachineImageExporter::ImageFormat_t::pdf:
 		saveFilePath = SaveFileDialog::getSaveFileName(this, tr("Export machine to Pdf"),  this->baseFilePath, this->baseFileName, "pdf");
 		break;
-	case ImageFormat_t::svg:
+	case MachineImageExporter::ImageFormat_t::svg:
 		saveFilePath = SaveFileDialog::getSaveFileName(this, tr("Export machine to Svg"),  this->baseFilePath, this->baseFileName, "svg");
 		break;
-	case ImageFormat_t::png:
+	case MachineImageExporter::ImageFormat_t::png:
 		saveFilePath = SaveFileDialog::getSaveFileName(this, tr("Export machine to Png"),  this->baseFilePath, this->baseFileName, "png");
 		break;
-	case ImageFormat_t::jpg:
+	case MachineImageExporter::ImageFormat_t::jpg:
 		saveFilePath = SaveFileDialog::getSaveFileName(this, tr("Export machine to Jpeg"), this->baseFilePath, this->baseFileName, "jpg");
 		break;
 	}
@@ -275,7 +275,7 @@ void ImageExportDialog::includeAdditionalInfoCheckBoxChanged(bool doInclude)
 			this->includeConstantsCheckBox->setChecked(true);
 			this->addBorderCheckBox       ->setChecked(true);
 
-			this->imageExporter->setInfoPosition(LeftRight_t::right);
+			this->imageExporter->setInfoPosition(MachineImageExporter::LeftRight_t::right);
 
 			this->haveAdditionalInfoBeenConfigured = true;
 		}
@@ -346,12 +346,12 @@ void ImageExportDialog::imageFormatComboBoxChanged(int)
 
 	switch (format)
 	{
-	case ImageFormat_t::pdf:
-	case ImageFormat_t::svg:
+	case MachineImageExporter::ImageFormat_t::pdf:
+	case MachineImageExporter::ImageFormat_t::svg:
 		this->imageSizeEditor->setImageType(DocumentSizeEditor::ImageType_t::vector);
 		break;
-	case ImageFormat_t::png:
-	case ImageFormat_t::jpg:
+	case MachineImageExporter::ImageFormat_t::png:
+	case MachineImageExporter::ImageFormat_t::jpg:
 		this->imageSizeEditor->setImageType(DocumentSizeEditor::ImageType_t::bitmap);
 		break;
 	}
@@ -364,11 +364,11 @@ void ImageExportDialog::additionalInfoPositionComboBoxChanged(int)
 {
     if (this->additionalInfoPositionComboBox->currentData() == "LEFT")
 	{
-		this->imageExporter->setInfoPosition(LeftRight_t::left);
+		this->imageExporter->setInfoPosition(MachineImageExporter::LeftRight_t::left);
 	}
 	else // (this->additionalInfoPositionComboBox->currentData() == "RIGHT")
 	{
-		this->imageExporter->setInfoPosition(LeftRight_t::right);
+		this->imageExporter->setInfoPosition(MachineImageExporter::LeftRight_t::right);
 	}
 	this->updatePreview();
 }
@@ -397,8 +397,8 @@ void ImageExportDialog::selectedSizeChangedEventHandler()
 
 	switch (format)
 	{
-	case ImageFormat_t::pdf:
-	case ImageFormat_t::svg:
+	case MachineImageExporter::ImageFormat_t::pdf:
+	case MachineImageExporter::ImageFormat_t::svg:
 	{
 		auto pageLayout = this->imageSizeEditor->getVectorPageLayout();
 		if (pageLayout.isValid() == false) return;
@@ -409,8 +409,8 @@ void ImageExportDialog::selectedSizeChangedEventHandler()
 
 		break;
 	}
-	case ImageFormat_t::png:
-	case ImageFormat_t::jpg:
+	case MachineImageExporter::ImageFormat_t::png:
+	case MachineImageExporter::ImageFormat_t::jpg:
 	{
 		auto bitmapSize = this->imageSizeEditor->getBitmapSize();
 		if (bitmapSize.isNull() == true) return;
@@ -424,9 +424,9 @@ void ImageExportDialog::selectedSizeChangedEventHandler()
 	}
 }
 
-ImageFormat_t ImageExportDialog::getImageFormat() const
+MachineImageExporter::MachineImageExporter::ImageFormat_t ImageExportDialog::getImageFormat() const
 {
-	return static_cast<ImageFormat_t>(this->imageFormatComboBox->currentData().toInt());
+	return static_cast<MachineImageExporter::ImageFormat_t>(this->imageFormatComboBox->currentData().toInt());
 }
 
 void ImageExportDialog::updatePreview()

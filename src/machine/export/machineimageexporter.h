@@ -46,6 +46,12 @@ class MachineImageExporter : public QObject
 	Q_OBJECT
 
 	/////
+	// Type declarations
+public:
+	enum class ImageFormat_t { pdf, svg, png, jpg };
+	enum class LeftRight_t   { left, right };
+
+	/////
 	// Constructors/destructors
 public:
 	explicit MachineImageExporter(StatesScene* stateGraphScene) :

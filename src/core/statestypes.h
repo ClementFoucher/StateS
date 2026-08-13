@@ -41,8 +41,6 @@ const componentId_t nullId = 0;
 /////
 // Enums
 
-enum class ImageFormat_t                 { pdf, svg, png, jpg };
-enum class LeftRight_t                   { left, right };
 enum class VerifierSeverityLevel_t       { blocking, structure, tool, hint };
 enum class VariableNature_t              { input, output, internal, constant };
 enum class MachineXmlWriterMode_t        { writeToFile, writeToUndo };

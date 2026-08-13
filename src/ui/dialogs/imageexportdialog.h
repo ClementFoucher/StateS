@@ -36,8 +36,7 @@ class QCheckBox;
 class QGroupBox;
 
 // StateS
-#include "statestypes.h"
-class MachineImageExporter;
+#include "machineimageexporter.h"
 class DocumentSizeEditor;
 class SliderWithTitleAndValue;
 class StatesScene;
@@ -78,7 +77,7 @@ private slots:
 	void selectedSizeChangedEventHandler();
 
 private:
-	ImageFormat_t getImageFormat() const;
+	MachineImageExporter::ImageFormat_t getImageFormat() const;
 	void updatePreview();
 
 	/////
