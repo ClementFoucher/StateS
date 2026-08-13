@@ -37,10 +37,4 @@ typedef ulong componentId_t;
 
 const componentId_t nullId = 0;
 
-
-/////
-// Enums
-
-enum class SimulationBehavior_t          { prepare, immediately, after };
-
 #endif // STATESTYPES_H

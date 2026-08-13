@@ -98,11 +98,11 @@ void SimulatedFsm::forceStateActivation(componentId_t stateToActivate)
 			if (action == nullptr) continue;
 
 
-			if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately) )
+			if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 			{
 				action->doAction();
 			}
-			else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::immediately) )
+			else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 			{
 				action->doAction();
 				this->variablesToResetAfterNextStep.append(action->getVariableId());
@@ -260,11 +260,11 @@ void SimulatedFsm::subMachinePrepareActions()
 			if (action == nullptr) continue;
 
 
-			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == MachineSimulator::SimulationBehavior_t::prepare) )
 			{
 				action->doAction();
 			}
-			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::prepare) )
+			else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == MachineSimulator::SimulationBehavior_t::prepare) )
 			{
 				action->doAction();
 				this->variablesToResetBeforeNextStep.append(action->getVariableId());
@@ -296,11 +296,11 @@ void SimulatedFsm::subMachineDoStep()
 		if (action == nullptr) continue;
 
 
-		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::after) )
+		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == MachineSimulator::SimulationBehavior_t::after) )
 		{
 			action->doAction();
 		}
-		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::after) )
+		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == MachineSimulator::SimulationBehavior_t::after) )
 		{
 			action->doAction();
 			this->variablesToResetAfterNextStep.append(action->getVariableId());
@@ -326,11 +326,11 @@ void SimulatedFsm::subMachineDoStep()
 				if (action == nullptr) continue;
 
 
-				if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == SimulationBehavior_t::immediately) )
+				if ( (action->isActionMemorized() == true) && (this->memorizedTransitionActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 				{
 					action->doAction();
 				}
-				else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == SimulationBehavior_t::immediately) )
+				else if ( (action->isActionMemorized() == false) && (this->pulseTransitionActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 				{
 					action->doAction();
 					this->variablesToResetAfterNextStep.append(action->getVariableId());
@@ -356,11 +356,11 @@ void SimulatedFsm::subMachineDoStep()
 		if (action == nullptr) continue;
 
 
-		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == SimulationBehavior_t::immediately) )
+		if ( (action->isActionMemorized() == true) && (this->memorizedStateActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 		{
 			action->doAction();
 		}
-		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == SimulationBehavior_t::immediately) )
+		else if ( (action->isActionMemorized() == false) && (this->continuousStateActionBehavior == MachineSimulator::SimulationBehavior_t::immediately) )
 		{
 			action->doAction();
 			auto variableId = action->getVariableId();

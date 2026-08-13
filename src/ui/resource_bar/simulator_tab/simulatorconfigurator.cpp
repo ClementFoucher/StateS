@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -82,50 +82,50 @@ SimulatorConfigurator::SimulatorConfigurator(QWidget* parent) :
 	mainLayout->addWidget(pulseTransition);
 }
 
-SimulationBehavior_t SimulatorConfigurator::getMemorizedStateActionBehavior() const
+MachineSimulator::SimulationBehavior_t SimulatorConfigurator::getMemorizedStateActionBehavior() const
 {
 	if (this->memorizedState->currentIndex() == 0)
 	{
-		return SimulationBehavior_t::after;
+		return MachineSimulator::SimulationBehavior_t::after;
 	}
 	else
 	{
-		return SimulationBehavior_t::immediately;
+		return MachineSimulator::SimulationBehavior_t::immediately;
 	}
 }
 
-SimulationBehavior_t SimulatorConfigurator::getContinuousStateActionBehavior() const
+MachineSimulator::SimulationBehavior_t SimulatorConfigurator::getContinuousStateActionBehavior() const
 {
 	if (this->continuousState->currentIndex() == 0)
 	{
-		return SimulationBehavior_t::immediately;
+		return MachineSimulator::SimulationBehavior_t::immediately;
 	}
 	else
 	{
-		return SimulationBehavior_t::after;
+		return MachineSimulator::SimulationBehavior_t::after;
 	}
 }
 
-SimulationBehavior_t SimulatorConfigurator::getMemorizedTransitionActionBehavior() const
+MachineSimulator::SimulationBehavior_t SimulatorConfigurator::getMemorizedTransitionActionBehavior() const
 {
 	if (this->memorizedTransition->currentIndex() == 0)
 	{
-		return SimulationBehavior_t::immediately;
+		return MachineSimulator::SimulationBehavior_t::immediately;
 	}
 	else
 	{
-		return SimulationBehavior_t::prepare;
+		return MachineSimulator::SimulationBehavior_t::prepare;
 	}
 }
 
-SimulationBehavior_t SimulatorConfigurator::getPulseTransitionActionBehavior() const
+MachineSimulator::SimulationBehavior_t SimulatorConfigurator::getPulseTransitionActionBehavior() const
 {
 	if (this->pulseTransition->currentIndex() == 0)
 	{
-		return SimulationBehavior_t::prepare;
+		return MachineSimulator::SimulationBehavior_t::prepare;
 	}
 	else
 	{
-		return SimulationBehavior_t::immediately;
+		return MachineSimulator::SimulationBehavior_t::immediately;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -33,13 +33,17 @@ using namespace std;
 class QTimer;
 
 // SateS
-#include "statestypes.h"
 class SimulatedMachine;
 
 
 class MachineSimulator : public QObject
 {
 	Q_OBJECT
+
+	/////
+	// Type declarations
+public:
+	enum class SimulationBehavior_t { prepare, immediately, after };
 
 	/////
 	// Constructors/destructors

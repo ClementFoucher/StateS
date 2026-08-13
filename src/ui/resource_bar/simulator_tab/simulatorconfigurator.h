@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -29,7 +29,7 @@
 class QComboBox;
 
 // StateS
-#include <statestypes.h>
+#include "machinesimulator.h"
 
 
 class SimulatorConfigurator : public QWidget
@@ -44,10 +44,10 @@ public:
 	/////
 	// Object functions
 public:
-	SimulationBehavior_t getMemorizedStateActionBehavior()      const;
-	SimulationBehavior_t getContinuousStateActionBehavior()     const;
-	SimulationBehavior_t getMemorizedTransitionActionBehavior() const;
-	SimulationBehavior_t getPulseTransitionActionBehavior()     const;
+	MachineSimulator::SimulationBehavior_t getMemorizedStateActionBehavior()      const;
+	MachineSimulator::SimulationBehavior_t getContinuousStateActionBehavior()     const;
+	MachineSimulator::SimulationBehavior_t getMemorizedTransitionActionBehavior() const;
+	MachineSimulator::SimulationBehavior_t getPulseTransitionActionBehavior()     const;
 
 	/////
 	// Object variables

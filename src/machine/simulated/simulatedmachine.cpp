@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -99,22 +99,22 @@ void SimulatedMachine::doStep()
 	this->subMachineDoStep();
 }
 
-void SimulatedMachine::setMemorizedStateActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setMemorizedStateActionBehavior(MachineSimulator::SimulationBehavior_t behv)
 {
 	this->memorizedStateActionBehavior = behv;
 }
 
-void SimulatedMachine::setContinuousStateActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setContinuousStateActionBehavior(MachineSimulator::SimulationBehavior_t behv)
 {
 	this->continuousStateActionBehavior = behv;
 }
 
-void SimulatedMachine::setMemorizedTransitionActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setMemorizedTransitionActionBehavior(MachineSimulator::SimulationBehavior_t behv)
 {
 	this->memorizedTransitionActionBehavior = behv;
 }
 
-void SimulatedMachine::setPulseTransitionActionBehavior(SimulationBehavior_t behv)
+void SimulatedMachine::setPulseTransitionActionBehavior(MachineSimulator::SimulationBehavior_t behv)
 {
 	this->pulseTransitionActionBehavior = behv;
 }

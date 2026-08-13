@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -34,6 +34,7 @@ using namespace std;
 
 // StateS
 #include "statestypes.h"
+#include "machinesimulator.h"
 class SimulatedComponent;
 class SimulatedActuatorComponent;
 class SimulatedVariable;
@@ -61,10 +62,10 @@ public:
 	void prepareActions();
 	void doStep();
 
-	void setMemorizedStateActionBehavior     (SimulationBehavior_t behv);
-	void setContinuousStateActionBehavior    (SimulationBehavior_t behv);
-	void setMemorizedTransitionActionBehavior(SimulationBehavior_t behv);
-	void setPulseTransitionActionBehavior    (SimulationBehavior_t behv);
+	void setMemorizedStateActionBehavior     (MachineSimulator::SimulationBehavior_t behv);
+	void setContinuousStateActionBehavior    (MachineSimulator::SimulationBehavior_t behv);
+	void setMemorizedTransitionActionBehavior(MachineSimulator::SimulationBehavior_t behv);
+	void setPulseTransitionActionBehavior    (MachineSimulator::SimulationBehavior_t behv);
 
 protected:
 	void registerSimulatedComponent(componentId_t componentId, shared_ptr<SimulatedComponent> component);
@@ -86,10 +87,10 @@ signals:
 	/////
 	// Object variables
 protected:
-	SimulationBehavior_t memorizedStateActionBehavior;
-	SimulationBehavior_t continuousStateActionBehavior;
-	SimulationBehavior_t memorizedTransitionActionBehavior;
-	SimulationBehavior_t pulseTransitionActionBehavior;
+	MachineSimulator::SimulationBehavior_t memorizedStateActionBehavior;
+	MachineSimulator::SimulationBehavior_t continuousStateActionBehavior;
+	MachineSimulator::SimulationBehavior_t memorizedTransitionActionBehavior;
+	MachineSimulator::SimulationBehavior_t pulseTransitionActionBehavior;
 
 private:
 	QMap<componentId_t, shared_ptr<SimulatedComponent>> simulatedComponents;
