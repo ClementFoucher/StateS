@@ -308,7 +308,7 @@ void MachineManager::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updat
 	this->setMachineInternal(updatedMachine, updatedGraphicAttributes);
 
 	// Clear tool if there was one currently in use
-	this->machineBuilder->setTool(MachineBuilderTool_t::none);
+	this->machineBuilder->setTool(MachineBuilder::Tool_t::none);
 
 	// Notify machine updated
 	emit this->machineUpdatedEvent();

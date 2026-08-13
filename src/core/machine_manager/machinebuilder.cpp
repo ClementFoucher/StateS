@@ -26,27 +26,27 @@
 /////
 // Mutators
 
-void MachineBuilder::setTool(MachineBuilderTool_t newTool)
+void MachineBuilder::setTool(Tool_t newTool)
 {
 	this->currentTool = newTool;
 	emit this->changedToolEvent(this->currentTool);
 }
 
-void MachineBuilder::setSingleUseTool(MachineBuilderSingleUseTool_t t)
+void MachineBuilder::setSingleUseTool(SingleUseTool_t t)
 {
 	emit this->singleUseToolSelected(t);
 }
 
 void MachineBuilder::resetTool()
 {
-	this->setSingleUseTool(MachineBuilderSingleUseTool_t::none);
-	this->setTool(MachineBuilderTool_t::none);
+	this->setSingleUseTool(SingleUseTool_t::none);
+	this->setTool(Tool_t::none);
 }
 
 /////
 // Accesors
 
-MachineBuilderTool_t MachineBuilder::getTool() const
+MachineBuilder::Tool_t MachineBuilder::getTool() const
 {
 	return this->currentTool;
 }

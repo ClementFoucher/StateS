@@ -36,6 +36,7 @@ class QLabel;
 // StateS
 #include "statestypes.h"
 #include "machinemanager.h"
+#include "machinebuilder.h"
 class GenericScene;
 class ViewConfiguration;
 
@@ -95,8 +96,8 @@ private slots:
 	void requestSaveViewEventHandler();
 	void requestRestoreViewEventHandler();
 
-	void toolChangedEventHandler(MachineBuilderTool_t tool);
-	void singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool);
+	void toolChangedEventHandler(MachineBuilder::Tool_t tool);
+	void singleUseToolChangedEventHandler(MachineBuilder::SingleUseTool_t tool);
 
 	void zoomIn();
 	void zoomOut();

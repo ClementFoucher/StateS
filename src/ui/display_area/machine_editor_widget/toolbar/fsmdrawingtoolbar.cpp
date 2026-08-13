@@ -72,13 +72,13 @@ FsmDrawingToolBar::FsmDrawingToolBar(QWidget* parent) :
 	connect(this->actionAddTransition,   &QAction::triggered, this, &FsmDrawingToolBar::transitionToolRequestedEvent);
 }
 
-bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
+bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::Tool_t newTool)
 {
 	bool result = false;
 
 	switch (newTool)
 	{
-	case MachineBuilderTool_t::state:
+	case MachineBuilder::Tool_t::state:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(false);
 		this->actionAddState->       setChecked(true);
@@ -88,7 +88,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 		result = true;
 		break;
 
-	case MachineBuilderTool_t::transition:
+	case MachineBuilder::Tool_t::transition:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(false);
 		this->actionAddState->       setChecked(false);
@@ -98,7 +98,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 		result = true;
 		break;
 
-	case MachineBuilderTool_t::initialState:
+	case MachineBuilder::Tool_t::initialState:
 		this->actionMouse->          setChecked(false);
 		this->actionAddInitialState->setChecked(true);
 		this->actionAddState->       setChecked(false);
@@ -108,7 +108,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilderTool_t newTool)
 		result = true;
 		break;
 
-	case MachineBuilderTool_t::none:
+	case MachineBuilder::Tool_t::none:
 		this->actionMouse->          setChecked(true);
 		this->actionAddInitialState->setChecked(false);
 		this->actionAddState->       setChecked(false);
@@ -127,7 +127,7 @@ void FsmDrawingToolBar::mouseToolRequestedEvent(bool)
 	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
 	if (l_machineBuilder == nullptr) return;
 
-	l_machineBuilder->setTool(MachineBuilderTool_t::none);
+	l_machineBuilder->setTool(MachineBuilder::Tool_t::none);
 }
 
 void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
@@ -136,9 +136,9 @@ void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
-		l_machineBuilder->setTool(MachineBuilderTool_t::initialState);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::initialState);
 	else
-		l_machineBuilder->setTool(MachineBuilderTool_t::none);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::none);
 }
 
 void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
@@ -147,9 +147,9 @@ void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
-		l_machineBuilder->setTool(MachineBuilderTool_t::state);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::state);
 	else
-		l_machineBuilder->setTool(MachineBuilderTool_t::none);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::none);
 }
 
 void FsmDrawingToolBar::transitionToolRequestedEvent(bool activated)
@@ -158,7 +158,7 @@ void FsmDrawingToolBar::transitionToolRequestedEvent(bool activated)
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
-		l_machineBuilder->setTool(MachineBuilderTool_t::transition);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::transition);
 	else
-		l_machineBuilder->setTool(MachineBuilderTool_t::none);
+		l_machineBuilder->setTool(MachineBuilder::Tool_t::none);
 }

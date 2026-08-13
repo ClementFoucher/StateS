@@ -31,6 +31,7 @@ class QAction;
 // StateS
 #include "statestypes.h"
 #include "machinemanager.h"
+#include "machinebuilder.h"
 class GraphicFsmTransition;
 class GraphicFsmState;
 
@@ -92,7 +93,7 @@ private slots:
 	void machineUpdatedEventHandler();
 
 	// Machine builder signal
-	void toolChangeEventHandler(MachineBuilderTool_t newTool);
+	void toolChangeEventHandler(MachineBuilder::Tool_t newTool);
 
 	// States signals
 	void stateCallsEditEventHandler(componentId_t stateId);

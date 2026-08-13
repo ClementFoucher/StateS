@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -47,7 +47,7 @@ HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QW
 	// Hints
 	this->hintDisplay = new HintWidget(this);
 
-	this->updateHint(MachineBuilderTool_t::none);
+	this->updateHint(MachineBuilder::Tool_t::none);
 
 	//
 	// Machine visualization
@@ -73,14 +73,14 @@ void HintTab::showEvent(QShowEvent* event)
 	QWidget::showEvent(event);
 }
 
-void HintTab::toolChangedEventHandler(MachineBuilderTool_t newTool)
+void HintTab::toolChangedEventHandler(MachineBuilder::Tool_t newTool)
 {
 	this->updateHint(newTool);
 }
 
-void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tempTool)
+void HintTab::singleUsetoolChangedEventHandler(MachineBuilder::SingleUseTool_t tempTool)
 {
-	if (tempTool == MachineBuilderSingleUseTool_t::none)
+	if (tempTool == MachineBuilder::SingleUseTool_t::none)
 	{
 		auto machineBuiler = machineManager->getMachineBuilder();
 
@@ -90,7 +90,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 		}
 		else
 		{
-			this->updateHint(MachineBuilderTool_t::none);
+			this->updateHint(MachineBuilder::Tool_t::none);
 		}
 	}
 	else
@@ -102,7 +102,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 
 		switch(tempTool)
 		{
-		case MachineBuilderSingleUseTool_t::drawTransitionFromScene:
+		case MachineBuilder::SingleUseTool_t::drawTransitionFromScene:
 			title +=  tr("Drawing a transition");
 
 			hint += "<br />";
@@ -113,7 +113,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 			hint += "<br />";
 
 			break;
-		case MachineBuilderSingleUseTool_t::editTransitionSource:
+		case MachineBuilder::SingleUseTool_t::editTransitionSource:
 			title +=  tr("Editing a transition");
 
 			hint += "<br />";
@@ -124,7 +124,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 			hint += "<br />";
 
 			break;
-		case MachineBuilderSingleUseTool_t::editTransitionTarget:
+		case MachineBuilder::SingleUseTool_t::editTransitionTarget:
 			title +=  tr("Editing a transition");
 
 			hint += "<br />";
@@ -143,7 +143,7 @@ void HintTab::singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tem
 	}
 }
 
-void HintTab::updateHint(MachineBuilderTool_t newTool)
+void HintTab::updateHint(MachineBuilder::Tool_t newTool)
 {
 	QString title;
 	QString hint;
@@ -152,7 +152,7 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 
 	switch(newTool)
 	{
-	case MachineBuilderTool_t::none:
+	case MachineBuilder::Tool_t::none:
 		title +=  tr("Navigation");
 
 		hint += "<br />";
@@ -185,7 +185,7 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		hint += tr("Verify tab provide tools for machine correctness verification") + ".";
 
 		break;
-	case MachineBuilderTool_t::initialState:
+	case MachineBuilder::Tool_t::initialState:
 		title +=  tr("Adding an initial state");
 
 		hint += "<br />";
@@ -198,7 +198,7 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		hint += "<br />";
 
 		break;
-	case MachineBuilderTool_t::state:
+	case MachineBuilder::Tool_t::state:
 		title +=  tr("Adding a state");
 
 		hint += "<br />";
@@ -209,7 +209,7 @@ void HintTab::updateHint(MachineBuilderTool_t newTool)
 		hint += "<br />";
 
 		break;
-	case MachineBuilderTool_t::transition:
+	case MachineBuilder::Tool_t::transition:
 		title +=  tr("Drawing a transition");
 
 		hint += "<br />";

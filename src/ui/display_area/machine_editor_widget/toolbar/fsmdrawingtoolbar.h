@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include "drawingtoolbar.h"
 
 // StateS
-#include "statestypes.h"
+#include "machinebuilder.h"
 
 
 class FsmDrawingToolBar : public DrawingToolBar
@@ -41,7 +41,7 @@ public:
 	/////
 	// Object functions
 protected slots:
-	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) override;
+	virtual bool toolChangedEventHandler(MachineBuilder::Tool_t newTool) override;
 
 private slots:
 	void mouseToolRequestedEvent(bool activated);

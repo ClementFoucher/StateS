@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2023 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,7 @@
 #include <QToolBar>
 
 // StateS
-#include "statestypes.h"
+#include "machinebuilder.h"
 
 
 class DrawingToolBar : public QToolBar
@@ -45,7 +45,7 @@ protected:
 	void endAddActions();
 
 protected slots:
-	virtual bool toolChangedEventHandler(MachineBuilderTool_t newTool) = 0;
+	virtual bool toolChangedEventHandler(MachineBuilder::Tool_t newTool) = 0;
 
 };
 

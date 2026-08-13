@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -30,7 +30,7 @@ using namespace std;
 #include <memory.h>
 
 // StateS
-#include "statestypes.h"
+#include "machinebuilder.h"
 class CollapsibleWidgetWithTitle;
 class HintWidget;
 class MachineComponentVisualizer;
@@ -51,11 +51,11 @@ protected:
 	virtual void showEvent(QShowEvent* event) override;
 
 private slots:
-	void toolChangedEventHandler(MachineBuilderTool_t newTool);
-	void singleUsetoolChangedEventHandler(MachineBuilderSingleUseTool_t tempTool);
+	void toolChangedEventHandler(MachineBuilder::Tool_t newTool);
+	void singleUsetoolChangedEventHandler(MachineBuilder::SingleUseTool_t tempTool);
 
 private:
-	void updateHint(MachineBuilderTool_t newTool);
+	void updateHint(MachineBuilder::Tool_t newTool);
 
 	/////
 	// Object variables

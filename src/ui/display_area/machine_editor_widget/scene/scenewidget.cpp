@@ -359,37 +359,37 @@ void SceneWidget::requestRestoreViewEventHandler()
 	this->viewConfigurationSave.reset();
 }
 
-void SceneWidget::toolChangedEventHandler(MachineBuilderTool_t tool)
+void SceneWidget::toolChangedEventHandler(MachineBuilder::Tool_t tool)
 {
 	switch (tool)
 	{
-	case MachineBuilderTool_t::none:
+	case MachineBuilder::Tool_t::none:
 		this->updateMouseCursor(MouseCursor_t::none);
 		this->updateSceneAction(SceneAction_t::usingTool, false);
 		break;
-	case MachineBuilderTool_t::initialState:
-	case MachineBuilderTool_t::state:
+	case MachineBuilder::Tool_t::initialState:
+	case MachineBuilder::Tool_t::state:
 		this->updateMouseCursor(MouseCursor_t::state);
 		this->updateSceneAction(SceneAction_t::usingTool, true);
 		break;
-	case MachineBuilderTool_t::transition:
+	case MachineBuilder::Tool_t::transition:
 		this->updateMouseCursor(MouseCursor_t::transition);
 		this->updateSceneAction(SceneAction_t::usingTool, true);
 		break;
 	}
 }
 
-void SceneWidget::singleUseToolChangedEventHandler(MachineBuilderSingleUseTool_t tool)
+void SceneWidget::singleUseToolChangedEventHandler(MachineBuilder::SingleUseTool_t tool)
 {
 	switch (tool)
 	{
-	case MachineBuilderSingleUseTool_t::none:
+	case MachineBuilder::SingleUseTool_t::none:
 		this->updateMouseCursor(MouseCursor_t::none);
 		this->updateSceneAction(SceneAction_t::usingTool, false);
 		break;
-	case MachineBuilderSingleUseTool_t::drawTransitionFromScene:
-	case MachineBuilderSingleUseTool_t::editTransitionSource:
-	case MachineBuilderSingleUseTool_t::editTransitionTarget:
+	case MachineBuilder::SingleUseTool_t::drawTransitionFromScene:
+	case MachineBuilder::SingleUseTool_t::editTransitionSource:
+	case MachineBuilder::SingleUseTool_t::editTransitionTarget:
 		this->updateMouseCursor(MouseCursor_t::transition);
 		this->updateSceneAction(SceneAction_t::usingTool, true);
 		break;
