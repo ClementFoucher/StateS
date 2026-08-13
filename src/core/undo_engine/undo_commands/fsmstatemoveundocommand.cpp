@@ -54,10 +54,13 @@ void FsmStateMoveUndoCommand::undo()
 
 
 	machineManager->setUndoRedoMode(true);
-	for (auto& stateId : this->previousStatesPositions.keys())
+	for (auto key = this->previousStatesPositions.keyBegin() ; key != this->previousStatesPositions.keyEnd() ; key++)
 	{
+		auto stateId = *key;
+
 		auto graphicState = graphicfsm->getState(stateId);
 		if (graphicState == nullptr) continue;
+
 
 		// Compute redo
 		this->nextStatesPositions[stateId] = graphicState->pos();
@@ -83,8 +86,10 @@ void FsmStateMoveUndoCommand::redo()
 
 	// Apply redo
 	machineManager->setUndoRedoMode(true);
-	for (auto& stateId : this->nextStatesPositions.keys())
+	for (auto key = this->nextStatesPositions.keyBegin() ; key != this->nextStatesPositions.keyEnd() ; key++)
 	{
+		auto stateId = *key;
+
 		auto graphicState = graphicfsm->getState(stateId);
 		if (graphicState == nullptr) continue;
 
@@ -105,9 +110,11 @@ bool FsmStateMoveUndoCommand::mergeWith(const QUndoCommand* command)
 	if (otherCommand->text() != this->text()) return false;
 
 
-	for (auto& stateId : otherCommand->previousStatesPositions.keys())
+	for (auto key = otherCommand->previousStatesPositions.keyBegin() ; key != otherCommand->previousStatesPositions.keyEnd() ; key++)
 	{
-		if (this->previousStatesPositions.keys().contains(stateId) == false)
+		auto stateId = *key;
+
+		if (this->previousStatesPositions.contains(stateId) == false)
 		{
 			this->previousStatesPositions[stateId] = otherCommand->previousStatesPositions.value(stateId);
 		}
