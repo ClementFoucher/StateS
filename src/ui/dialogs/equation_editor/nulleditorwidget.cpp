@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -43,7 +43,7 @@ uint NullEditorWidget::getAllowedMenuActions() const
 
 uint NullEditorWidget::getAllowedDropActions() const
 {
-	return (uint)DropAction_t::ReplaceExisting;
+	return static_cast<uint>(DropAction_t::ReplaceExisting);
 }
 
 QString NullEditorWidget::getText() const

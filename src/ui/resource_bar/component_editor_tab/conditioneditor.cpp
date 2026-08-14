@@ -251,7 +251,7 @@ void ConditionEditor::conditionTextPositionSliderChanged(int newValue)
 	if (graphicTransition == nullptr) return;
 
 
-	qreal realValue = ((qreal)newValue)/100;
+	qreal realValue = static_cast<qreal>(newValue)/100;
 	graphicTransition->setConditionLineSliderPosition(realValue);
 
 	// Machine has been edited

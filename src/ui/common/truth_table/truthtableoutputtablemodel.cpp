@@ -41,9 +41,9 @@ int TruthTableOutputTableModel::columnCount(const QModelIndex& parent) const
 {
 	int columns = 0;
 
-	if (!parent.isValid())
+	if (parent.isValid() == false)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
@@ -58,9 +58,9 @@ int TruthTableOutputTableModel::rowCount(const QModelIndex& parent) const
 {
 	int rows = 0;
 
-	if (!parent.isValid())
+	if (parent.isValid() == false)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
@@ -73,17 +73,17 @@ int TruthTableOutputTableModel::rowCount(const QModelIndex& parent) const
 
 QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) const
 {
-	QVariant variant = QVariant();
+	QVariant variant{};
 
-	if (index.isValid())
+	if (index.isValid() == true)
 	{
 		if (role == Qt::DisplayRole)
 		{
-			shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+			auto l_truthTable = this->truthTable.lock();
 
 			if (l_truthTable != nullptr)
 			{
-				if (index.column() < (int)l_truthTable->getOutputCount())
+				if (index.column() < static_cast<int>(l_truthTable->getOutputCount()))
 				{
 					auto outputValue = l_truthTable->getOutputValue(index.row(), index.column());
 					variant = QVariant(outputValue.toDisplayString());
@@ -115,11 +115,11 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 		{
 			if (this->highlights.contains(index.row()))
 			{
-				shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+				auto l_truthTable = this->truthTable.lock();
 
 				if (l_truthTable != nullptr)
 				{
-					if (index.column() < (int)l_truthTable->getOutputCount())
+					if (index.column() < static_cast<int>(l_truthTable->getOutputCount()))
 					{
 						variant = QVariant(QColor(255, 0, 0, 255));
 					}
@@ -133,17 +133,17 @@ QVariant TruthTableOutputTableModel::data(const QModelIndex& index, int role) co
 
 QVariant TruthTableOutputTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	QVariant variant = QVariant();
+	QVariant variant{};
 
 	if (role == Qt::DisplayRole)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
 			if (orientation == Qt::Horizontal)
 			{
-				if (section < (int)l_truthTable->getOutputCount())
+				if (section < static_cast<int>(l_truthTable->getOutputCount()))
 				{
 					auto equationText = l_truthTable->getOutputEquationText(section);
 					variant = QVariant(equationText);
@@ -163,7 +163,7 @@ Qt::ItemFlags TruthTableOutputTableModel::flags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::NoItemFlags;
 
-	if (index.isValid())
+	if (index.isValid() == true)
 	{
 		if (this->truthTable.expired() == false)
 		{

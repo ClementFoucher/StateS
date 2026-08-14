@@ -127,7 +127,7 @@ signals:
 	// Object variables
 private:
 	ComponentId variableId = nullId;
-	uint actuatorAllowedActions = (uint)ActionOnVariable::Type_t::none;
+	uint actuatorAllowedActions = static_cast<uint>(ActionOnVariable::Type_t::none);
 
 	ActionOnVariable::Type_t actionType;
 	MachineValue actionValue;

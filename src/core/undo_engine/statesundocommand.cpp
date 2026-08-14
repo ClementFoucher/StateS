@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -23,7 +23,7 @@
 #include "statesundocommand.h"
 
 
-int StatesUndoCommand::id() const
+int32_t StatesUndoCommand::id() const
 {
-	return (int)this->undoType;
+	return static_cast<int32_t>(this->undoType);
 }

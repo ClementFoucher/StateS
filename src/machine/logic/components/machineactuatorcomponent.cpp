@@ -57,7 +57,7 @@ void MachineActuatorComponent::removeAction(uint actionRank)
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
 
-	if (actionRank >= (uint)this->actionList.count()) return;
+	if (actionRank >= static_cast<uint>(this->actionList.count())) return;
 
 
 	auto variableId = actionList.at(actionRank)->getVariableActedOnId();
@@ -74,7 +74,7 @@ void MachineActuatorComponent::removeAction(uint actionRank)
 
 shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const
 {
-	if (actionRank >= (uint)this->actionList.count()) return nullptr;
+	if (actionRank >= static_cast<uint>(this->actionList.count())) return nullptr;
 
 
 	return this->actionList.at(actionRank);
@@ -87,9 +87,9 @@ const QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions(
 
 void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActionRank)
 {
-	if (oldActionRank >= (uint)this->actionList.count()) return;
+	if (oldActionRank >= static_cast<uint>(this->actionList.count())) return;
 
-	if (newActionRank >= (uint)this->actionList.count()) return;
+	if (newActionRank >= static_cast<uint>(this->actionList.count())) return;
 
 	if (oldActionRank == newActionRank) return;
 

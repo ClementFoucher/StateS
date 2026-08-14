@@ -234,7 +234,7 @@ QVariant GraphicFsmState::itemChange(GraphicsItemChange change, const QVariant& 
 			{
 				if (dynamic_cast<GraphicFsmTransition*>(selectedItem) != nullptr)
 				{
-					return (QVariant)false;
+					return QVariant{false};
 				}
 			}
 		}

@@ -131,17 +131,17 @@ ActionOnVariable::ActionOnVariable(ComponentId variableId, uint actuatorAllowedA
 	// Assign a default action type.
 	// These 4 cases *should* cover all possible situations
 	uint allowedActions = this->getAllowedActionTypes();
-	if ((allowedActions & (uint)ActionOnVariable::Type_t::continuous) != 0)
+	if ((allowedActions & static_cast<uint>(ActionOnVariable::Type_t::continuous)) != 0)
 	{
 		// Non memorized on state
 		this->actionType = ActionOnVariable::Type_t::continuous;
 	}
-	else if ((allowedActions & (uint)ActionOnVariable::Type_t::pulse) != 0)
+	else if ((allowedActions & static_cast<uint>(ActionOnVariable::Type_t::pulse)) != 0)
 	{
 		// Non memorized on transition
 		this->actionType = ActionOnVariable::Type_t::pulse;
 	}
-	else if ((allowedActions & (uint)ActionOnVariable::Type_t::assign) != 0)
+	else if ((allowedActions & static_cast<uint>(ActionOnVariable::Type_t::assign)) != 0)
 	{
 		// Memorized with size > 1
 		this->actionType = ActionOnVariable::Type_t::assign;
@@ -286,31 +286,31 @@ bool ActionOnVariable::isActionValueEditable() const
 uint ActionOnVariable::getAllowedActionTypes() const
 {
 	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return (uint)ActionOnVariable::Type_t::none;
+	if (machine == nullptr) return static_cast<uint>(ActionOnVariable::Type_t::none);
 
 	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return (uint)ActionOnVariable::Type_t::none;
+	if (variable == nullptr) return static_cast<uint>(ActionOnVariable::Type_t::none);
 
 
-	uint allowedActionTypes = (uint)ActionOnVariable::Type_t::none;
+	uint allowedActionTypes = static_cast<uint>(ActionOnVariable::Type_t::none);
 	if (variable->getMemorized() == true)
 	{
-		allowedActionTypes |= (uint)ActionOnVariable::Type_t::assign;
-		allowedActionTypes |= (uint)ActionOnVariable::Type_t::reset;
+		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::assign);
+		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::reset);
 		if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 		{
-			allowedActionTypes |= (uint)ActionOnVariable::Type_t::set;
+			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::set);
 		}
 		else // (this->getExpectedActionType() == MachineValue::ValueType_t::bitVector)
 		{
-			allowedActionTypes |= (uint)ActionOnVariable::Type_t::increment;
-			allowedActionTypes |= (uint)ActionOnVariable::Type_t::decrement;
+			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::increment);
+			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::decrement);
 		}
 	}
 	else // (variable->getMemorized() == false)
 	{
-		allowedActionTypes |= (uint)ActionOnVariable::Type_t::pulse;
-		allowedActionTypes |= (uint)ActionOnVariable::Type_t::continuous;
+		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::pulse);
+		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::continuous);
 	}
 
 	allowedActionTypes &= this->actuatorAllowedActions;
@@ -765,7 +765,7 @@ uint ActionOnVariable::getExpectedBitVectorActionSize() const
 		}
 		else
 		{
-			return (uint)(this->rangeL - this->rangeR + 1);
+			return static_cast<uint>(this->rangeL - this->rangeR + 1);
 		}
 	}
 }

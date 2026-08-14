@@ -63,7 +63,7 @@ public:
 	/////
 	// Object functions
 public:
-	virtual int id() const override;
+	virtual int32_t id() const override;
 
 	/////
 	// Object variables

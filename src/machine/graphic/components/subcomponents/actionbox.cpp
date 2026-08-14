@@ -191,8 +191,8 @@ void ActionBox::buildActionBox()
 	}
 
 	QPainterPath actionBorderPath;
-	actionBorderPath.lineTo(0,            ((qreal)actions.count())*this->textHeight);
-	actionBorderPath.lineTo(maxTextWidth, ((qreal)actions.count())*this->textHeight);
+	actionBorderPath.lineTo(0,            static_cast<qreal>(actions.count())*this->textHeight);
+	actionBorderPath.lineTo(maxTextWidth, static_cast<qreal>(actions.count())*this->textHeight);
 	actionBorderPath.lineTo(maxTextWidth, 0);
 	actionBorderPath.lineTo(0,            0);
 

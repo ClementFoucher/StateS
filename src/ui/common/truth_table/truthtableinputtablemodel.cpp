@@ -41,9 +41,9 @@ int TruthTableInputTableModel::columnCount(const QModelIndex& parent) const
 {
 	int columns = 0;
 
-	if (!parent.isValid())
+	if (parent.isValid() == false)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
@@ -58,9 +58,9 @@ int TruthTableInputTableModel::rowCount(const QModelIndex& parent) const
 {
 	int rows = 0;
 
-	if (!parent.isValid())
+	if (parent.isValid() == false)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
@@ -73,17 +73,17 @@ int TruthTableInputTableModel::rowCount(const QModelIndex& parent) const
 
 QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) const
 {
-	QVariant variant = QVariant();
+	QVariant variant{};
 
-	if (index.isValid())
+	if (index.isValid() == true)
 	{
 		if (role == Qt::DisplayRole)
 		{
-			shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+			auto l_truthTable = this->truthTable.lock();
 
 			if (l_truthTable != nullptr)
 			{
-				if (index.column() < (int)l_truthTable->getInputCount())
+				if (index.column() < static_cast<int>(l_truthTable->getInputCount()))
 				{
 					auto inputValue = l_truthTable->getInputValue(index.row(), index.column());
 					variant = QVariant(inputValue.toDisplayString());
@@ -118,17 +118,17 @@ QVariant TruthTableInputTableModel::data(const QModelIndex& index, int role) con
 
 QVariant TruthTableInputTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	QVariant variant = QVariant();
+	QVariant variant{};
 
 	if (role == Qt::DisplayRole)
 	{
-		shared_ptr<TruthTable> l_truthTable = this->truthTable.lock();
+		auto l_truthTable = this->truthTable.lock();
 
 		if (l_truthTable != nullptr)
 		{
 			if (orientation == Qt::Horizontal)
 			{
-				if (section < (int)l_truthTable->getInputCount())
+				if (section < static_cast<int>(l_truthTable->getInputCount()))
 				{
 					auto inputText = l_truthTable->getInputVariableText(section);
 					variant = QVariant(inputText);
@@ -148,7 +148,7 @@ Qt::ItemFlags TruthTableInputTableModel::flags(const QModelIndex& index) const
 {
 	Qt::ItemFlags flags = Qt::NoItemFlags;
 
-	if (index.isValid())
+	if (index.isValid() == true)
 	{
 		if (this->truthTable.expired() == false)
 		{

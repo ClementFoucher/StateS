@@ -203,8 +203,8 @@ void TimelineWidget::exportToPDF()
 		QPainter painter(&printer);
 
 		painter.begin(&printer);
-		double xscale = printer.pageRect(QPrinter::DevicePixel).width()/((double)(this->displayWidget->width()));
-		double yscale = printer.pageRect(QPrinter::DevicePixel).height()/((double)(this->displayWidget->height()));
+		double xscale = printer.pageRect(QPrinter::DevicePixel).width() /static_cast<double>(this->displayWidget->width());
+		double yscale = printer.pageRect(QPrinter::DevicePixel).height()/static_cast<double>(this->displayWidget->height());
 		double scale = qMin(xscale, yscale);
 		painter.scale(scale, scale);
 		this->displayWidget->render(&painter, QPoint(), QRegion(), RenderFlag::DrawChildren);

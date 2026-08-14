@@ -483,14 +483,14 @@ QDrag* EquationEditorWidget::buildDrag()
 
 	auto drag = new QDrag(this);
 
-	uint availableActions = (uint)DropAction_t::ReplaceExisting;
+	uint availableActions = static_cast<uint>(DropAction_t::ReplaceExisting);
 	if (this->equation->getOperator() == Equation::Operator_t::notOp)
 	{
-		availableActions |= (uint)DropAction_t::RemoveInverter;
+		availableActions |= static_cast<uint>(DropAction_t::RemoveInverter);
 	}
 	if (this->equation->getOperator() != Equation::Operator_t::extractOp)
 	{
-		availableActions |= (uint)DropAction_t::ExistingAsOperand;
+		availableActions |= static_cast<uint>(DropAction_t::ExistingAsOperand);
 	}
 
 	QMimeData* mimeData = new EquationPartMimeData(this->getTemplateText(), availableActions, this->equation->clone());

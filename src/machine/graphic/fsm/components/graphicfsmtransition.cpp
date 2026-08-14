@@ -305,7 +305,7 @@ QVariant GraphicFsmTransition::itemChange(QGraphicsItem::GraphicsItemChange chan
 		{
 			// Refuse selection if there are other item(s) already selected
 			if (this->scene()->selectedItems().count() != 0)
-				return (QVariant)false;
+				return QVariant{false};
 		}
 	}
 
@@ -619,7 +619,7 @@ void GraphicFsmTransition::rebuildBoundingShape()
 	else if (this->sourceStateId == this->targetStateId)
 	{
 		// Auto-transition
-		QPainterPath arrowPath = ((QGraphicsPathItem*)arrowBody)->path();
+		QPainterPath arrowPath = dynamic_cast<QGraphicsPathItem*>(arrowBody)->path();
 
 		qreal outterScale = (arrowPath.boundingRect().height() + 3*GraphicFsmTransition::conditionLineLength/4) / arrowPath.boundingRect().height();
 		qreal innerScale  = (arrowPath.boundingRect().height() - 3*GraphicFsmTransition::conditionLineLength/4) / arrowPath.boundingRect().height();
@@ -649,7 +649,7 @@ void GraphicFsmTransition::rebuildBoundingShape()
 		// Arc transiton
 		auto neighborhood = graphicFsm->getTransitionNeighborhood(this->getLogicComponentId());
 
-		QPainterPath arrowPath = ((QGraphicsPathItem*)this->arrowBody)->path();
+		QPainterPath arrowPath = dynamic_cast<QGraphicsPathItem*>(this->arrowBody)->path();
 
 		qreal outterScale = (arrowPath.boundingRect().width() + GraphicFsmTransition::conditionLineLength/2) / arrowPath.boundingRect().width();
 		qreal innerScale  = (arrowPath.boundingRect().width() - GraphicFsmTransition::conditionLineLength/2) / arrowPath.boundingRect().width();
