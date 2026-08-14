@@ -82,9 +82,9 @@ ActionEditor::ActionEditor(ComponentId actuatorId, QWidget* parent) :
 
 	QString hint;
 	hint += "<br />";
-	hint += tr("If action value is editable,") + " " + tr("double-click on it") + " " + tr("to edit it.");
+	hint += tr("If action value is editable, click on it to edit it.");
 	hint += "<br />";
-	hint += tr("Right-click") + " " + tr("on an action") + " " + tr("to display more edit options.");
+	hint += tr("Right-click on an action to display more edit options.");
 	hint += "<br />";
 
 	this->hintDisplay = new HintWidget(hintTitle, hint, this);

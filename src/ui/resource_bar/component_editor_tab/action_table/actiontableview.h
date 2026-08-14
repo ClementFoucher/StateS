@@ -81,14 +81,12 @@ protected:
 	virtual void keyPressEvent   (QKeyEvent*         ev) override;
 	virtual void contextMenuEvent(QContextMenuEvent* ev) override;
 
+	virtual void openPersistentEditors(int firstRow = -1, int firstColumn = -1, int lastRow = -1, int lastColumn = -1) override;
+
 private slots:
 	void processContextMenuEventHandler(QAction* action);
 	void rangeEditorClosedEventHandler(int result);
 	void refreshPersistentEditorsEventHandler();
-
-private:
-	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
-	virtual void closePersistentEditors(int firstRow = -1, int lastRow = -1) override;
 
 	/////
 	// Signals

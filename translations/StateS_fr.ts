@@ -170,28 +170,13 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
-        <source>If action value is editable,</source>
-        <translation>Si la valeur d&apos;une action est éditable,</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
-        <source>double-click on it</source>
-        <translation>double-cliquez dessus</translation>
+        <source>If action value is editable, click on it to edit it.</source>
+        <translation>Si la valeur de l&apos;action peut être éditée, cliquez dessus pour la modifier.</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
-        <source>Right-click</source>
-        <translation>Faites un clic-droit</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
-        <source>on an action</source>
-        <translation>sur une action</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="87"/>
-        <source>to display more edit options.</source>
-        <translation>pour afficher plus d&apos;options d&apos;édition.</translation>
+        <source>Right-click on an action to display more edit options.</source>
+        <translation>Faites un clic-droit sur une action pour afficher plus d&apos;options d&apos;édition.</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="208"/>
@@ -212,11 +197,6 @@
         <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="81"/>
         <source>Editing actions</source>
         <translation>Éditer les actions</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="85"/>
-        <source>to edit it.</source>
-        <translation>pour l&apos;éditer.</translation>
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/actioneditor.cpp" line="137"/>
@@ -929,18 +909,18 @@
     <name>FsmScene</name>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="317"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="883"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="884"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="318"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="888"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="889"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1160"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1161"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -1954,47 +1934,42 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="99"/>
-        <source>Double-click on a field to edit it.</source>
-        <translation>Double-cliquez sur un champ pour le modifier.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="101"/>
         <source>Variables memorization:</source>
         <translation>Mémorisation des variables :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="103"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="101"/>
         <source>Variables can be memorized or not.</source>
         <translation>Les variables peuvent être mémorisées ou non.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="102"/>
         <source>Memorized variables retain the value they are affected even after the affectation is over.</source>
         <translation>Les variables mémorisées conservent la valeur qui leur est affectée une fois que l&apos;opération d&apos;affectation est terminée.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="105"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="103"/>
         <source>They have an initial value, which is overwritten by the first affectation.</source>
         <translation>Elles disposent d&apos;une valeur initiale, qui est écrasée dès la première affectation.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="106"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="104"/>
         <source>Other variables only hold the value they are affected for one cycle.</source>
         <translation>Les autres variables ne conservent la valeur qui leur est affectée que pour un cycle.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="107"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="105"/>
         <source>They fall back to their default value when they are not being affected.</source>
         <translation>Elle reprennent leur valeur par défaut lorqu&apos;aucune opération d&apos;affectation n&apos;est en cours.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="114"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="143"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="112"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="141"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="209"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="207"/>
         <source>No machine</source>
         <translation>Aucune machine</translation>
     </message>
@@ -2381,17 +2356,17 @@
 <context>
     <name>MachineXmlWriter</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="303"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="302"/>
         <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
         <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="307"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="306"/>
         <source>Specified directory doesn&apos;t exist.</source>
         <translation>Le dossier spécifié n&apos;existe pas.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="314"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="313"/>
         <source>Unable to open file in write mode.</source>
         <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>
@@ -3217,12 +3192,12 @@
 <context>
     <name>VariableListEditor</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="47"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="46"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="48"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variablelisteditor.cpp" line="47"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>

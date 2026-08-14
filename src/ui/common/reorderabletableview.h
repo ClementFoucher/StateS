@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -56,7 +56,12 @@ protected slots:
 	virtual void rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)                                             override;
 
 protected:
+	virtual void mousePressEvent(QMouseEvent* event) override;
+
 	virtual void resizeEvent(QResizeEvent* event) override;
+
+	virtual void openPersistentEditors(int firstRow = -1, int firstColumn = -1, int lastRow = -1, int lastColumn = -1) = 0;
+	void closePersistentEditors(int firstRow = -1, int firstColumn = -1, int lastRow = -1, int lastColumn = -1);
 
 private slots:
 	void rowsAboutToMoveEventHandler(const QModelIndex&, int sourceStart, int sourceEnd, const QModelIndex&, int);
@@ -65,9 +70,6 @@ private slots:
 private:
 	QList<int>             getSelectedRowsRanks()   const;
 	QList<QPair<int, int>> getSelectedRanksBlocks() const;
-
-	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) = 0;
-	virtual void closePersistentEditors(int firstRow = -1, int lastRow = -1) = 0;
 
 	void updateSelectionFlags();
 

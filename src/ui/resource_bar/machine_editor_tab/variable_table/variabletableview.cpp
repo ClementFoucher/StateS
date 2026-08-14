@@ -183,6 +183,39 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	connect(menu, &QMenu::triggered, this, &VariableTableView::processMenuEventHandler);
 }
 
+void VariableTableView::openPersistentEditors(int firstRow, int firstColumn, int lastRow, int lastColumn)
+{
+	if (firstRow == -1) firstRow = 0;
+	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+	if (firstColumn == -1) firstColumn = 0;
+	if (lastColumn  == -1) lastColumn  = this->tableModel->columnCount()-1;
+
+	for (int row = firstRow ; row <= lastRow ; row++)
+	{
+		for (int col = firstColumn ; col <= lastColumn ; col++)
+		{
+			if (col == this->columnsRoles[ColumnRole_t::type])
+			{
+				auto typeIndex = this->tableModel->index(row, col);
+				this->openPersistentEditor(typeIndex);
+			}
+			else if ( (this->columnsRoles.contains(ColumnRole_t::memorized) == true) && (col == this->columnsRoles[ColumnRole_t::memorized]) )
+			{
+				auto memIndex = this->tableModel->index(row, col);
+				this->openPersistentEditor(memIndex);
+			}
+			else if (col == this->columnsRoles[ColumnRole_t::value])
+			{
+				auto valIndex = this->tableModel->index(row, col);
+				if (this->tableModel->data(valIndex, Qt::EditRole).toString().startsWith("BOOLEAN") == true)
+				{
+					this->openPersistentEditor(valIndex);
+				}
+			}
+		}
+	}
+}
+
 void VariableTableView::processMenuEventHandler(QAction* action)
 {
 	ContextAction_t dataValue = static_cast<ContextAction_t>(action->data().toInt());
@@ -203,21 +236,27 @@ void VariableTableView::processMenuEventHandler(QAction* action)
 	case ContextAction_t::rename:
 	{
 		auto col = this->columnsRoles.value(ColumnRole_t::name);
-		this->edit(this->tableModel->index(this->currentMenuRow, col));
+		auto index = this->tableModel->index(this->currentMenuRow, col);
+		this->setCurrentIndex(index);
+		this->edit(index);
 	}
 	break;
 	case ContextAction_t::changeValue:
 	{
 		auto col = this->columnsRoles.value(ColumnRole_t::value);
-		this->edit(this->tableModel->index(this->currentMenuRow, col));
+		auto index = this->tableModel->index(this->currentMenuRow, col);
+		this->setCurrentIndex(index);
+		this->edit(index);
 	}
 	break;
 	case ContextAction_t::resizeBitVector:
 	{
 		auto col = this->columnsRoles.value(ColumnRole_t::type);
-		auto editor = dynamic_cast<TypeEditor*>(this->indexWidget(this->tableModel->index(currentMenuRow, col)));
+		auto index = this->tableModel->index(currentMenuRow, col);
+		auto editor = dynamic_cast<TypeEditor*>(this->indexWidget(index));
 		if (editor != nullptr)
 		{
+			this->setCurrentIndex(index);
 			editor->triggerEditBitVectorSize();
 		}
 	}
@@ -229,46 +268,4 @@ void VariableTableView::refreshPersistentEditorsEventHandler()
 {
 	this->closePersistentEditors();
 	this->openPersistentEditors();
-}
-
-void VariableTableView::openPersistentEditors(int firstRow, int lastRow)
-{
-	if (firstRow == -1) firstRow = 0;
-	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
-
-	for (int row = firstRow ; row <= lastRow ; row++)
-	{
-		auto typeIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::type));
-		this->openPersistentEditor(typeIndex);
-
-		if (this->columnsRoles.contains(ColumnRole_t::memorized))
-		{
-			auto memIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::memorized));
-			this->openPersistentEditor(memIndex);
-		}
-
-		if (this->tableModel->data(typeIndex, Qt::EditRole) == "BOOLEAN")
-		{
-			auto valIndex = this->tableModel->index(row, this->columnsRoles.value(ColumnRole_t::value));
-			this->openPersistentEditor(valIndex);
-		}
-	}
-}
-
-void VariableTableView::closePersistentEditors(int firstRow, int lastRow)
-{
-	if (firstRow == -1) firstRow = 0;
-	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
-
-	for (int row = firstRow ; row <= lastRow ; row++)
-	{
-		for (int col = 0 ; col < this->tableModel->columnCount() ; col++)
-		{
-			auto index = this->tableModel->index(row, col);
-			if (this->isPersistentEditorOpen(index) == true)
-			{
-				this->closePersistentEditor(index);
-			}
-		}
-	}
 }

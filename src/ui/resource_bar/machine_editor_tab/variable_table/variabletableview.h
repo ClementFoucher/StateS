@@ -72,13 +72,11 @@ protected slots:
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
+	virtual void openPersistentEditors(int firstRow = -1, int firstColumn = -1, int lastRow = -1, int lastColumn = -1) override;
+
 private slots:
 	void processMenuEventHandler(QAction* action);
 	void refreshPersistentEditorsEventHandler();
-
-private:
-	virtual void openPersistentEditors (int firstRow = -1, int lastRow = -1) override;
-	virtual void closePersistentEditors(int firstRow = -1, int lastRow = -1) override;
 
 	/////
 	// Object variables

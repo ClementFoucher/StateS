@@ -67,7 +67,7 @@ public:
 	bool getIsErroneous() const;
 
 protected:
-	virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
 
 	virtual bool eventFilter(QObject* watched, QEvent* event) override;
 

@@ -127,7 +127,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 	}
 
 
-	ContextMenu* menu = new ContextMenu();
+	auto menu = new ContextMenu();
 
 	// Title
 	if (selectedRowsCount == 1)
@@ -148,7 +148,7 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 		{
 			actionBeingAdded = menu->addAction(tr("Edit value"));
 			data.setValue(static_cast<int>(ContextAction_t::EditValue));
-			actionBeingAdded->setData(QVariant());
+			actionBeingAdded->setData(data);
 		}
 	}
 
@@ -241,6 +241,41 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 
 
 	connect(menu, &QMenu::triggered, this, &ActionTableView::processContextMenuEventHandler);
+}
+
+void ActionTableView::openPersistentEditors(int firstRow, int firstColumn, int lastRow, int lastColumn)
+{
+	if (firstRow == -1) firstRow = 0;
+	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
+	if (firstColumn == -1) firstColumn = 0;
+	if (lastColumn  == -1) lastColumn  = this->tableModel->columnCount()-1;
+
+	for (int row = firstRow ; row <= lastRow ; row++)
+	{
+		for (int col = firstColumn ; col <= lastColumn ; col++)
+		{
+			if (col == this->columnsRoles[ColumnRole_t::actionType])
+			{
+				auto typeIndex = this->tableModel->index(row, col);
+				uint32_t actions = typeIndex.data(Qt::EditRole).toUInt();
+
+				// Open a persistent editor for actions that have
+				// more than one allowed action type.
+				if (std::popcount(actions & 0xFFFF0000) > 1)
+				{
+					this->openPersistentEditor(typeIndex);
+				}
+			}
+			else if (col == this->columnsRoles[ColumnRole_t::actionValue])
+			{
+				auto valueIndex = this->tableModel->index(row, col);
+				if (this->tableModel->data(valueIndex, Qt::EditRole).toString().startsWith("BOOLEAN"))
+				{
+					this->openPersistentEditor(valueIndex);
+				}
+			}
+		}
+	}
 }
 
 void ActionTableView::processContextMenuEventHandler(QAction* action)
@@ -426,47 +461,4 @@ void ActionTableView::refreshPersistentEditorsEventHandler()
 {
 	this->closePersistentEditors();
 	this->openPersistentEditors();
-}
-
-void ActionTableView::openPersistentEditors(int firstRow, int lastRow)
-{
-	if (firstRow == -1) firstRow = 0;
-	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
-
-	for (int row = firstRow ; row <= lastRow ; row++)
-	{
-		auto typeIndex = this->tableModel->index(row, this->columnsRoles[ColumnRole_t::actionType]);
-		uint32_t actions = typeIndex.data(Qt::EditRole).toUInt();
-
-		// Open a persistent editor for actions that have
-		// more than one allowed action type.
-		if (std::popcount(actions & 0xFFFF0000) > 1)
-		{
-			this->openPersistentEditor(typeIndex);
-		}
-
-		auto valueIndex = this->tableModel->index(row, this->columnsRoles[ColumnRole_t::actionValue]);
-		if (this->tableModel->data(valueIndex, Qt::EditRole).toString().startsWith("BOOLEAN"))
-		{
-			this->openPersistentEditor(valueIndex);
-		}
-	}
-}
-
-void ActionTableView::closePersistentEditors(int firstRow, int lastRow)
-{
-	if (firstRow == -1) firstRow = 0;
-	if (lastRow  == -1) lastRow  = this->tableModel->rowCount()-1;
-
-	for (int row = firstRow ; row <= lastRow ; row++)
-	{
-		for (int col = 0 ; col < this->tableModel->columnCount() ; col++)
-		{
-			auto index = this->tableModel->index(row, col);
-			if (this->isPersistentEditorOpen(index) == true)
-			{
-				this->closePersistentEditor(index);
-			}
-		}
-	}
 }

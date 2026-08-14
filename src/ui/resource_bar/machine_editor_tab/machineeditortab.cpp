@@ -95,8 +95,6 @@ MachineEditorTab::MachineEditorTab(std::shared_ptr<MachineComponentVisualizer> m
 	                 + "<p><b>" + tr("Variables editor:") + "</b></p>"
 	                 + "<p>"
 	                 + tr("Switch between variable natures using tabs.")
-	                 + "<br>"
-	                 + tr("Double-click on a field to edit it.")
 	                 + "</p>"
 	                 + "<p><b>" + tr("Variables memorization:") + "</b></p>"
 	                 + "<p>"

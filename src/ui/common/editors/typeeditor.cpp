@@ -200,11 +200,14 @@ bool TypeEditor::getIsErroneous() const
 	return this->sizeLineEdit->getIsErroneous();
 }
 
-void TypeEditor::mouseDoubleClickEvent(QMouseEvent* event)
+void TypeEditor::mousePressEvent(QMouseEvent* event)
 {
-	QWidget::mouseDoubleClickEvent(event);
+	if (event->button() == Qt::MouseButton::LeftButton)
+	{
+		this->triggerEditBitVectorSize();
+	}
 
-	this->triggerEditBitVectorSize();
+	QWidget::mousePressEvent(event);
 }
 
 bool TypeEditor::eventFilter(QObject* watched, QEvent* event)

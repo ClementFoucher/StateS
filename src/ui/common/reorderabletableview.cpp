@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -25,6 +25,7 @@
 // Qt
 #include <QAbstractTableModel>
 #include <QHeaderView>
+#include <QMouseEvent>
 
 
 ReorderableTableView::ReorderableTableView(QWidget* parent) :
@@ -118,25 +119,38 @@ void ReorderableTableView::selectionChanged(const QItemSelection& selected, cons
 
 void ReorderableTableView::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles)
 {
-	this->closePersistentEditors(topLeft.row(), bottomRight.row());
+	this->closePersistentEditors(topLeft.row(), topLeft.column(), bottomRight.row(), bottomRight.column());
 
 	QTableView::dataChanged(topLeft, bottomRight, roles);
 
-	this->openPersistentEditors(topLeft.row(), bottomRight.row());
+	this->openPersistentEditors(topLeft.row(), topLeft.column(), bottomRight.row(), bottomRight.column());
 }
 
 void ReorderableTableView::rowsInserted(const QModelIndex& parent, int start, int end)
 {
 	QTableView::rowsInserted(parent, start, end);
 
-	this->openPersistentEditors(start, end);
+	this->openPersistentEditors(start, -1, end, -1);
 }
 
 void ReorderableTableView::rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end)
 {
-	this->closePersistentEditors(start, end);
+	this->closePersistentEditors(start, -1, end, -1);
 
 	QTableView::rowsAboutToBeRemoved(parent, start, end);
+}
+
+void ReorderableTableView::mousePressEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		auto index = this->indexAt(event->pos());
+		if ( ( (index.flags() & Qt::ItemIsEditable) != 0) && (this->isPersistentEditorOpen(index) == false) )
+		{
+			this->edit(index);
+		}
+	}
+	QTableView::mousePressEvent(event);
 }
 
 void ReorderableTableView::resizeEvent(QResizeEvent* event)
@@ -151,9 +165,29 @@ void ReorderableTableView::resizeEvent(QResizeEvent* event)
 	}
 }
 
+void ReorderableTableView::closePersistentEditors(int firstRow, int firstColumn, int lastRow, int lastColumn)
+{
+	if (firstRow == -1) firstRow = 0;
+	if (lastRow  == -1) lastRow  = this->model()->rowCount()-1;
+	if (firstColumn == -1) firstColumn = 0;
+	if (lastColumn  == -1) lastColumn  = this->model()->columnCount()-1;
+
+	for (int row = firstRow ; row <= lastRow ; row++)
+	{
+		for (int col = firstColumn ; col <= lastColumn ; col++)
+		{
+			auto index = this->model()->index(row, col);
+			if (this->isPersistentEditorOpen(index) == true)
+			{
+				this->closePersistentEditor(index);
+			}
+		}
+	}
+}
+
 void ReorderableTableView::rowsAboutToMoveEventHandler(const QModelIndex&, int sourceStart, int sourceEnd, const QModelIndex&, int)
 {
-	this->closePersistentEditors(sourceStart, sourceEnd);
+	this->closePersistentEditors(sourceStart, -1, sourceEnd, -1);
 }
 
 void ReorderableTableView::rowsMovedEventHandler(const QModelIndex&, int sourceStart, int sourceEnd, const QModelIndex&, int destinationRow)
@@ -171,7 +205,7 @@ void ReorderableTableView::rowsMovedEventHandler(const QModelIndex&, int sourceS
 	}
 	int lastRow = firstRow + rowCount;
 
-	this->openPersistentEditors(firstRow, lastRow);
+	this->openPersistentEditors(firstRow, -1, lastRow, -1);
 
 	this->updateSelectionFlags();
 }
