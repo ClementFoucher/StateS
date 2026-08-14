@@ -93,7 +93,7 @@ private:
 	/////
 	// Signals
 signals:
-	void rowCountChanged(uint newCount);
+	void rowCountChangedEvent(uint newCount);
 
 	/////
 	// Object variables

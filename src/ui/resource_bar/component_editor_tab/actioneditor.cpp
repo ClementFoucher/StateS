@@ -58,7 +58,7 @@ ActionEditor::ActionEditor(ComponentId actuatorId, QWidget* parent) :
 	}
 
 	connect(this->actionTable, &ActionTableView::selectionFlagsChangedEvent, this, &ActionEditor::updateButtonsEnableState);
-	connect(this->actionTable, &ActionTableView::rowCountChanged,            this, &ActionEditor::rowCountChangedEventHandler);
+	connect(this->actionTable, &ActionTableView::rowCountChangedEvent,       this, &ActionEditor::rowCountChangedEventHandler);
 
 	//
 	// Buttons
