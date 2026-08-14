@@ -56,7 +56,7 @@ void FsmXmlWriter::writeMachineType()
 	this->stream->writeAttribute("Type", "FSM");
 }
 
-void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes)
+void FsmXmlWriter::writeFsmStates(std::shared_ptr<Fsm> fsm, std::shared_ptr<GraphicAttributes> fsmGraphicAttributes)
 {
 	this->stream->writeStartElement("States");
 
@@ -104,7 +104,7 @@ void FsmXmlWriter::writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttribu
 	this->stream->writeEndElement();
 }
 
-void FsmXmlWriter::writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes)
+void FsmXmlWriter::writeFsmTransitions(std::shared_ptr<Fsm> fsm, std::shared_ptr<GraphicAttributes> fsmGraphicAttributes)
 {
 	this->stream->writeStartElement("Transitions");
 

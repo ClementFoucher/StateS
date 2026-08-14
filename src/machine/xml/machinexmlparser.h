@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QStack>
@@ -91,17 +90,17 @@ private:
 
 protected:
 	explicit MachineXmlParser(const QString& xmlString);
-	explicit MachineXmlParser(shared_ptr<QFile> file);
+	explicit MachineXmlParser(std::shared_ptr<QFile> file);
 
 	/////
 	// Object functions
 public:
 	void doParse();
 
-	shared_ptr<Machine>           getMachine();
-	shared_ptr<GraphicAttributes> getGraphicMachineConfiguration();
-	shared_ptr<ViewConfiguration> getViewConfiguration();
-	QList<QString>                getIssues();
+	std::shared_ptr<Machine>           getMachine();
+	std::shared_ptr<GraphicAttributes> getGraphicMachineConfiguration();
+	std::shared_ptr<ViewConfiguration> getViewConfiguration();
+	QList<QString>                     getIssues();
 
 protected:
 	void parseActionNode();
@@ -123,7 +122,7 @@ protected:
 	bool getCurrentNodeBoolAttribute(const QString& name) const;
 	ComponentId getCurrentNodeIdAttribute() const;
 
-	shared_ptr<Equation> getCurrentEquation();
+	std::shared_ptr<Equation> getCurrentEquation();
 
 	void addGraphicAttribute(ComponentId componentId, QString name, QString value);
 
@@ -139,23 +138,23 @@ private:
 	void parseConfigurationViewCentralPoint();
 	void parseVariableNode();
 
-	shared_ptr<Variable> getVariableByName(const QString& variableName) const;
+	std::shared_ptr<Variable> getVariableByName(const QString& variableName) const;
 
 	/////
 	// Object variables
 protected:
-	shared_ptr<Machine> machine;
+	std::shared_ptr<Machine> machine;
 
 	ComponentId currentComponentId;
 
 private:
-	shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed
-	shared_ptr<QXmlStreamReader> xmlReader;
+	std::shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed
+	std::shared_ptr<QXmlStreamReader> xmlReader;
 
-	shared_ptr<ViewConfiguration> viewConfiguration;
-	shared_ptr<GraphicAttributes> graphicAttributes;
+	std::shared_ptr<ViewConfiguration> viewConfiguration;
+	std::shared_ptr<GraphicAttributes> graphicAttributes;
 
-	QStack<shared_ptr<Equation>> equationStack;
+	QStack<std::shared_ptr<Equation>> equationStack;
 	QStack<uint> operandRankStack;
 
 	QList<QString> issues;

@@ -26,7 +26,6 @@
 #include <QWidget>
 
 // Stdlib
-using namespace std;
 #include <memory.h>
 
 // StateS
@@ -43,7 +42,7 @@ class HintTab : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit HintTab(std::shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -63,7 +62,7 @@ private:
 	HintWidget*                 hintDisplay    = nullptr;
 	CollapsibleWidgetWithTitle* machineDisplay = nullptr;
 
-	weak_ptr<MachineComponentVisualizer> machineComponentView;
+	std::weak_ptr<MachineComponentVisualizer> machineComponentView;
 
 };
 

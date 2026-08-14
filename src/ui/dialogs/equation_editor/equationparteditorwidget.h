@@ -28,7 +28,6 @@
 // Stdlib
 #include <memory>
 #include <variant>
-using namespace std;
 
 // Qt
 class QDrag;
@@ -168,7 +167,7 @@ protected:
 
 	// Temporary storage
 	TempValueNature_t tempValueNature = TempValueNature_t::empty;
-	std::variant<ComponentId, shared_ptr<Equation>, MachineValue> tempValue;
+	std::variant<ComponentId, std::shared_ptr<Equation>, MachineValue> tempValue;
 
 private:
 	bool isHighlighted = false;

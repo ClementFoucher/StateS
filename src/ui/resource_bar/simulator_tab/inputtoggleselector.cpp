@@ -54,7 +54,7 @@ InputToggleSelector::InputToggleSelector(ComponentId variableId, QWidget* parent
 	connect(variable.get(), &SimulatedVariable::variableCurrentValueChangedEvent, this, &InputToggleSelector::variableValueChangedEventHandler);
 }
 
-shared_ptr<SimulatedVariable> InputToggleSelector::getVariable() const
+std::shared_ptr<SimulatedVariable> InputToggleSelector::getVariable() const
 {
 	auto simulatedMachine = machineManager->getSimulatedMachine();
 	if (simulatedMachine == nullptr) return nullptr;

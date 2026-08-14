@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -41,7 +41,7 @@ MachineSimulator::MachineSimulator()
 	auto fsm = dynamic_pointer_cast<Fsm>(machine);
 	if (fsm != nullptr) // Only fsm type existing for now
 	{
-		this->simulatedMachine = make_shared<SimulatedFsm>();
+		this->simulatedMachine = std::make_shared<SimulatedFsm>();
 	}
 	else
 	{
@@ -115,7 +115,7 @@ void MachineSimulator::start(uint period)
 {
 	if (this->timer == nullptr)
 	{
-		this->timer = make_shared<QTimer>();
+		this->timer = std::make_shared<QTimer>();
 		connect(this->timer.get(), &QTimer::timeout, this, &MachineSimulator::timerTimeoutEventHandler);
 	}
 
@@ -169,7 +169,7 @@ void MachineSimulator::setPulseTransitionActionBehavior(SimulationBehavior_t beh
 	this->simulatedMachine->setPulseTransitionActionBehavior(behv);
 }
 
-shared_ptr<SimulatedMachine> MachineSimulator::getSimulatedMachine() const
+std::shared_ptr<SimulatedMachine> MachineSimulator::getSimulatedMachine() const
 {
 	return this->simulatedMachine;
 }

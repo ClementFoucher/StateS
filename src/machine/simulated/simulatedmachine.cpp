@@ -47,17 +47,17 @@ void SimulatedMachine::build()
 	auto variablesIds = machine->getAllVariablesIds();
 	for (auto variableId : variablesIds)
 	{
-		auto simulatedVariable = make_shared<SimulatedVariable>(variableId);
+		auto simulatedVariable = std::make_shared<SimulatedVariable>(variableId);
 		this->registerSimulatedComponent(variableId, simulatedVariable);
 	}
 }
 
-shared_ptr<SimulatedActuatorComponent> SimulatedMachine::getSimulatedActuatorComponent(ComponentId actuatorId) const
+std::shared_ptr<SimulatedActuatorComponent> SimulatedMachine::getSimulatedActuatorComponent(ComponentId actuatorId) const
 {
 	return dynamic_pointer_cast<SimulatedActuatorComponent>(this->getSimulatedComponent(actuatorId));
 }
 
-shared_ptr<SimulatedVariable> SimulatedMachine::getSimulatedVariable(ComponentId variableId) const
+std::shared_ptr<SimulatedVariable> SimulatedMachine::getSimulatedVariable(ComponentId variableId) const
 {
 	return dynamic_pointer_cast<SimulatedVariable>(this->getSimulatedComponent(variableId));
 }
@@ -119,14 +119,14 @@ void SimulatedMachine::setPulseTransitionActionBehavior(MachineSimulator::Simula
 	this->pulseTransitionActionBehavior = behv;
 }
 
-void SimulatedMachine::registerSimulatedComponent(ComponentId componentId, shared_ptr<SimulatedComponent> component)
+void SimulatedMachine::registerSimulatedComponent(ComponentId componentId, std::shared_ptr<SimulatedComponent> component)
 {
 	this->simulatedComponents[componentId] = component;
 
 	connect(component.get(), &SimulatedComponent::simulatedComponentUpdatedEvent, this, &SimulatedMachine::simulatedComponentUpdatedEvent);
 }
 
-shared_ptr<SimulatedComponent> SimulatedMachine::getSimulatedComponent(ComponentId componentId) const
+std::shared_ptr<SimulatedComponent> SimulatedMachine::getSimulatedComponent(ComponentId componentId) const
 {
 	if (this->simulatedComponents.contains(componentId) == false) return nullptr;
 

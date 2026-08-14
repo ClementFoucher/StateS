@@ -158,7 +158,7 @@ ActionOnVariable::ActionOnVariable(ComponentId variableId, uint actuatorAllowedA
 	this->connectSignals(variable);
 }
 
-ActionOnVariable::ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR)
+ActionOnVariable::ActionOnVariable(std::shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR)
 {
 	// Perform absolutely no checks on values: we are loading a file,
 	// these checks will be performed later.
@@ -399,7 +399,7 @@ void ActionOnVariable::variableInitialValueChangedEventHandler()
 	}
 }
 
-void ActionOnVariable::connectSignals(shared_ptr<Variable> variable)
+void ActionOnVariable::connectSignals(std::shared_ptr<Variable> variable)
 {
 	connect(variable.get(), &Variable::variableTypeChangedEvent,           this, &ActionOnVariable::variableTypeChangedEventHandler);
 	connect(variable.get(), &Variable::variableMemorizedStateChangedEvent, this, &ActionOnVariable::variableMemorizedStateChangedEventHandler);

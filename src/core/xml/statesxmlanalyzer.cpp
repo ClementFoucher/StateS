@@ -27,7 +27,7 @@
 #include <QFile>
 
 
-StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file)
+StateSXmlAnalyzer::StateSXmlAnalyzer(std::shared_ptr<QFile> file)
 {
 	if (file->isOpen() == false)
 	{
@@ -38,13 +38,13 @@ StateSXmlAnalyzer::StateSXmlAnalyzer(shared_ptr<QFile> file)
 		file->reset();
 	}
 
-	this->xmlReader = make_shared<QXmlStreamReader>(file.get());
+	this->xmlReader = std::make_shared<QXmlStreamReader>(file.get());
 	this->parse();
 }
 
 StateSXmlAnalyzer::StateSXmlAnalyzer(const QString& xmlSource)
 {
-	this->xmlReader = make_shared<QXmlStreamReader>(xmlSource);
+	this->xmlReader = std::make_shared<QXmlStreamReader>(xmlSource);
 	this->parse();
 }
 

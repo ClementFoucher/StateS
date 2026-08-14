@@ -30,7 +30,7 @@
 #include "machinevalue.h"
 
 
-TruthTableOutputTableModel::TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
+TruthTableOutputTableModel::TruthTableOutputTableModel(std::shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent) :
 	QAbstractTableModel(parent)
 {
 	this->truthTable = truthTable;

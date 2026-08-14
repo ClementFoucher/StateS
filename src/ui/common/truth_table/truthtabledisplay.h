@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,6 @@
 #include <QTableWidget>
 
 // Stdlib
-using namespace std;
 #include <memory>
 
 // StateS
@@ -40,7 +39,7 @@ class TruthTableDisplay : public QTableWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights = QList<int>(), QWidget* parent = nullptr);
+	explicit TruthTableDisplay(std::shared_ptr<TruthTable> truthTable, QList<int> highlights = QList<int>(), QWidget* parent = nullptr);
 
 	/////
 	// Object functions

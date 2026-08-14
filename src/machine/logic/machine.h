@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QHash>
@@ -76,10 +75,10 @@ public:
 
 	QString getName() const;
 
-	shared_ptr<MachineComponent> getComponent(ComponentId componentId) const;
-	shared_ptr<MachineActuatorComponent> getActuatorComponent(ComponentId componentId) const;
+	std::shared_ptr<MachineComponent> getComponent(ComponentId componentId) const;
+	std::shared_ptr<MachineActuatorComponent> getActuatorComponent(ComponentId componentId) const;
 
-	shared_ptr<Variable> getVariable(ComponentId variableId) const;
+	std::shared_ptr<Variable> getVariable(ComponentId variableId) const;
 
 	// Ordered lists for each nature of variable
 	const QList<ComponentId> getInputVariablesIds()    const;
@@ -97,7 +96,7 @@ public:
 	ComponentId getVariableId(VariableNature_t nature, uint rank) const;
 
 protected:
-	void registerComponent(shared_ptr<MachineComponent> newComponent);
+	void registerComponent(std::shared_ptr<MachineComponent> newComponent);
 	void removeComponent(ComponentId componentId);
 
 	void cleanName(QString& nameToClean) const;
@@ -118,7 +117,7 @@ signals:
 private:
 	QString name;
 
-	QHash<ComponentId, shared_ptr<MachineComponent>> components;
+	QHash<ComponentId, std::shared_ptr<MachineComponent>> components;
 
 	QList<ComponentId> inputVariables;
 	QList<ComponentId> outputVariables;

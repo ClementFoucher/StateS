@@ -46,7 +46,7 @@ SimulatedActuatorComponent::SimulatedActuatorComponent(ComponentId componentId) 
 	}
 }
 
-const QList<shared_ptr<SimulatedActionOnVariable>> SimulatedActuatorComponent::getActions() const
+const QList<std::shared_ptr<SimulatedActionOnVariable> > SimulatedActuatorComponent::getActions() const
 {
 	return this->actionList;
 }

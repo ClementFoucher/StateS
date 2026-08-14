@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QLabel;
@@ -49,7 +48,7 @@ public:
 	/////
 	// Object functions
 protected:
-	shared_ptr<SimulatedVariable> getVariable() const;
+	std::shared_ptr<SimulatedVariable> getVariable() const;
 
 	virtual void enterEvent(QEnterEvent* event) override;
 	virtual void leaveEvent(QEvent*      event) override;

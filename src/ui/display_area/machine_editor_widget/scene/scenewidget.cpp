@@ -98,7 +98,7 @@ GenericScene* SceneWidget::getScene() const
 	return dynamic_cast<GenericScene*>(this->scene());
 }
 
-void SceneWidget::setView(shared_ptr<ViewConfiguration> viewConfiguration)
+void SceneWidget::setView(std::shared_ptr<ViewConfiguration> viewConfiguration)
 {
 	if (viewConfiguration != nullptr)
 	{
@@ -112,9 +112,9 @@ void SceneWidget::setView(shared_ptr<ViewConfiguration> viewConfiguration)
 	}
 }
 
-shared_ptr<ViewConfiguration> SceneWidget::getView() const
+std::shared_ptr<ViewConfiguration> SceneWidget::getView() const
 {
-	auto viewConfiguration = make_shared<ViewConfiguration>();
+	auto viewConfiguration = std::make_shared<ViewConfiguration>();
 
 	viewConfiguration->viewCenter = this->getVisibleArea().center();
 	viewConfiguration->zoomLevel  = this->getZoomLevel();
@@ -421,7 +421,7 @@ void SceneWidget::zoomFit()
 	qreal scaleDiffWidth  = currentView.width()  / idealView.width();
 	qreal scaleDiffHeight = currentView.height() / idealView.height();
 
-	qreal scaleDiff = min(scaleDiffWidth, scaleDiffHeight);
+	qreal scaleDiff = std::min(scaleDiffWidth, scaleDiffHeight);
 	this->scale(scaleDiff, scaleDiff);
 
 	this->centerOn(idealView.center());

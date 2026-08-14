@@ -76,7 +76,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	//
 	// Build sections titles and variables names
 
-	auto varNameFunc = [](shared_ptr<Variable> variable)
+	auto varNameFunc = [](std::shared_ptr<Variable> variable)
 	{
 		QString varText = variable->getName();
 
@@ -168,7 +168,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 
 	memorizedHorizontalPos = this->rightestHorizontalPos;
 
-	auto varMemorizedFunc = [](shared_ptr<Variable> variable)
+	auto varMemorizedFunc = [](std::shared_ptr<Variable> variable)
 	{
 		if (variable->getMemorized() == true)
 		{
@@ -209,7 +209,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 		variablesIds += machine->getOutputVariablesIds();
 	}
 
-	for (auto variableId : as_const(variablesIds))
+	for (auto variableId : std::as_const(variablesIds))
 	{
 		auto variable = machine->getVariable(variableId);
 		if (variable == nullptr) continue;
@@ -240,7 +240,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	{
 		initialValueHorizontalPos = this->rightestHorizontalPos;
 
-		auto varInitialValueFunc = [](shared_ptr<Variable> variable)
+		auto varInitialValueFunc = [](std::shared_ptr<Variable> variable)
 		{
 			if (variable->getMemorized() == true)
 			{
@@ -269,7 +269,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 	{
 		defaultValueHorizontalPos =this->rightestHorizontalPos;
 
-		auto varDefaultValueFunc = [](shared_ptr<Variable> variable)
+		auto varDefaultValueFunc = [](std::shared_ptr<Variable> variable)
 		{
 			if (variable->getMemorized() == false)
 			{
@@ -296,7 +296,7 @@ void VariableTableScene::buildScene(bool displayInputs, bool displayOutputs, boo
 
 	if (displayConstants == true)
 	{
-		auto constantValueFunc = [](shared_ptr<Variable> variable)
+		auto constantValueFunc = [](std::shared_ptr<Variable> variable)
 		{
 			return variable->getInitialValue().toDisplayString();
 		};
@@ -348,7 +348,7 @@ QGraphicsTextItem* VariableTableScene::buildSectionTitle(const QString& titleTex
 	return titleGraphicObject;
 }
 
-qreal VariableTableScene::buildColumn(const QString& header, const QList<ComponentId> variablesIds, qreal horizontalPos, qreal verticalPos, function<QString (shared_ptr<Variable>)> textFunc)
+qreal VariableTableScene::buildColumn(const QString& header, const QList<ComponentId> variablesIds, qreal horizontalPos, qreal verticalPos, std::function<QString (std::shared_ptr<Variable>)> textFunc)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return 0;

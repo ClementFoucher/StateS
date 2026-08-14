@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QList>
@@ -46,12 +45,12 @@ public:
 	/////
 	// Object functions
 public:
-	const QList<shared_ptr<SimulatedActionOnVariable>> getActions() const;
+	const QList<std::shared_ptr<SimulatedActionOnVariable>> getActions() const;
 
 	/////
 	// Object variables
 private:
-	QList<shared_ptr<SimulatedActionOnVariable>> actionList;
+	QList<std::shared_ptr<SimulatedActionOnVariable>> actionList;
 
 };
 

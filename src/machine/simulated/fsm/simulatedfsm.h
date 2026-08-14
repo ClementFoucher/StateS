@@ -49,8 +49,8 @@ public:
 public:
 	virtual void build() override;
 
-	shared_ptr<SimulatedFsmState>      getSimulatedState     (ComponentId componentId) const;
-	shared_ptr<SimulatedFsmTransition> getSimulatedTransition(ComponentId componentId) const;
+	std::shared_ptr<SimulatedFsmState>      getSimulatedState     (ComponentId componentId) const;
+	std::shared_ptr<SimulatedFsmTransition> getSimulatedTransition(ComponentId componentId) const;
 
 	void forceStateActivation(ComponentId stateToActivate);
 

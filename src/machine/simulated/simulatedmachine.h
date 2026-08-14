@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QMap>
@@ -54,8 +53,8 @@ public:
 public:
 	virtual void build();
 
-	shared_ptr<SimulatedActuatorComponent> getSimulatedActuatorComponent(ComponentId actuatorId) const;
-	shared_ptr<SimulatedVariable>          getSimulatedVariable         (ComponentId variableId) const;
+	std::shared_ptr<SimulatedActuatorComponent> getSimulatedActuatorComponent(ComponentId actuatorId) const;
+	std::shared_ptr<SimulatedVariable>          getSimulatedVariable         (ComponentId variableId) const;
 
 	void reset();
 	void prepareStep();
@@ -68,8 +67,8 @@ public:
 	void setPulseTransitionActionBehavior    (MachineSimulator::SimulationBehavior_t behv);
 
 protected:
-	void registerSimulatedComponent(ComponentId componentId, shared_ptr<SimulatedComponent> component);
-	shared_ptr<SimulatedComponent> getSimulatedComponent(ComponentId componentId) const;
+	void registerSimulatedComponent(ComponentId componentId, std::shared_ptr<SimulatedComponent> component);
+	std::shared_ptr<SimulatedComponent> getSimulatedComponent(ComponentId componentId) const;
 
 private:
 	virtual void subMachineReset()          = 0;
@@ -93,7 +92,7 @@ protected:
 	MachineSimulator::SimulationBehavior_t pulseTransitionActionBehavior;
 
 private:
-	QMap<ComponentId, shared_ptr<SimulatedComponent>> simulatedComponents;
+	QMap<ComponentId, std::shared_ptr<SimulatedComponent>> simulatedComponents;
 
 };
 

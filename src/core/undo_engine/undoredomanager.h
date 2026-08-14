@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2025 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QUndoStack>
@@ -62,7 +61,7 @@ public:
 	void notifyMachineReplaced();
 
 signals:
-	void freshMachineAvailableEvent(shared_ptr<Machine> machine, shared_ptr<GraphicAttributes> machineConfiguration);
+	void freshMachineAvailableEvent(std::shared_ptr<Machine> machine, std::shared_ptr<GraphicAttributes> machineConfiguration);
 
 	void undoActionAvailabilityChangeEvent(bool undoAvailable);
 	void redoActionAvailabilityChangeEvent(bool redoAvailable);

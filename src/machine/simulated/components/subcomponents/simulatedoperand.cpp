@@ -29,7 +29,7 @@
 #include "simulatedvariable.h"
 
 
-SimulatedOperand::SimulatedOperand(shared_ptr<const Operand> sourceOperand)
+SimulatedOperand::SimulatedOperand(std::shared_ptr<const Operand> sourceOperand)
 {
 	if (sourceOperand == nullptr) return;
 
@@ -84,7 +84,7 @@ MachineValue SimulatedOperand::getCurrentValue() const
 	}
 	case Operand::Source_t::equation:
 	{
-		auto equation = std::get<shared_ptr<SimulatedEquation>>(this->value);
+		auto equation = std::get<std::shared_ptr<SimulatedEquation>>(this->value);
 		if (equation == nullptr) return MachineValue{};
 
 

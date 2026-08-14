@@ -382,7 +382,7 @@ void EquationPartEditorWidget::replaceByTempValue()
 	}
 	case TempValueNature_t::equation:
 	{
-		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		auto tempEquation = std::get<std::shared_ptr<Equation>>(this->tempValue);
 		if (tempEquation == nullptr)
 		{
 			// Empty equation is possible in certain cases

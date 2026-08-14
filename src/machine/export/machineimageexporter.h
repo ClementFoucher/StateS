@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QRectF>
@@ -54,9 +53,9 @@ public:
 	// Constructors/destructors
 public:
 	explicit MachineImageExporter(StatesScene* stateGraphScene) :
-		stateGraphScene(stateGraphScene                  ),
-		componentScene (make_shared<ComponentScene>()    ),
-		variableScene  (make_shared<VariableTableScene>())
+		stateGraphScene(stateGraphScene                       ),
+		componentScene (std::make_shared<ComponentScene>()    ),
+		variableScene  (std::make_shared<VariableTableScene>())
 	{}
 
 	/////
@@ -81,13 +80,13 @@ public:
 
 	void setInfoPosition(LeftRight_t infoPosition);
 
-	shared_ptr<QPixmap> renderPreview(uint sideInPixels);
+	std::shared_ptr<QPixmap> renderPreview(uint sideInPixels);
 	void doExport(const QString& path);
 
 private:
 	void renderPdf(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin);
 	void renderSvg(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin);
-	shared_ptr<QPixmap> renderBitmap(qreal width, qreal height);
+	std::shared_ptr<QPixmap> renderBitmap(qreal width, qreal height);
 
 	void generatePrintingRects(QRectF renderAreaRect);
 
@@ -107,8 +106,8 @@ private:
 private:
 	// Input scenes
 	StatesScene*                   stateGraphScene;
-	shared_ptr<StatesScene>        componentScene;
-	shared_ptr<VariableTableScene> variableScene;
+	std::shared_ptr<StatesScene>        componentScene;
+	std::shared_ptr<VariableTableScene> variableScene;
 
 	// Configuration
 	ImageFormat_t format = ImageFormat_t::svg;

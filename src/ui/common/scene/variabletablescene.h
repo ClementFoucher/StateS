@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -50,7 +49,7 @@ public:
 
 private:
 	QGraphicsTextItem* buildSectionTitle(const QString& titleText, qreal verticalPos);
-	qreal buildColumn(const QString& header, const QList<ComponentId> variablesIds, qreal horizontalPos, qreal verticalPos, function<QString(shared_ptr<Variable> variable)> textFunc);
+	qreal buildColumn(const QString& header, const QList<ComponentId> variablesIds, qreal horizontalPos, qreal verticalPos, std::function<QString(std::shared_ptr<Variable> variable)> textFunc);
 
 	void drawVerticalLine(qreal x, qreal y1, qreal y2);
 	void centerAndFrameTitle(QGraphicsTextItem* title);

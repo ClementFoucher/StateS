@@ -28,7 +28,6 @@
 // Stdlib
 #include <memory>
 #include <variant>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -53,7 +52,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationPartMimeData(const QString& text, uint availableActions, shared_ptr<Equation> equation) :
+	explicit EquationPartMimeData(const QString& text, uint availableActions, std::shared_ptr<Equation> equation) :
 		text{text},
 		availableActions{availableActions},
 		contentType{ContentType_t::equation},
@@ -80,9 +79,9 @@ public:
 
 	ContentType_t getContentType() const;
 
-	shared_ptr<Equation> getEquation()   const;
-	ComponentId          getVariableId() const;
-	MachineValue         getConstant()   const;
+	std::shared_ptr<Equation> getEquation()   const;
+	ComponentId               getVariableId() const;
+	MachineValue              getConstant()   const;
 
 	/////
 	// Object variables
@@ -91,7 +90,7 @@ private:
 	uint availableActions;
 
 	ContentType_t contentType;
-	std::variant<ComponentId, shared_ptr<Equation>, MachineValue> content;
+	std::variant<ComponentId, std::shared_ptr<Equation>, MachineValue> content;
 
 };
 

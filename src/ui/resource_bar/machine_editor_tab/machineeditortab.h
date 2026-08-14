@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QGroupBox;
@@ -45,7 +44,7 @@ class MachineEditorTab : public QWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
+	explicit MachineEditorTab(std::shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -61,7 +60,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	weak_ptr<MachineComponentVisualizer> machineComponentView;
+	std::weak_ptr<MachineComponentVisualizer> machineComponentView;
 
 	SelfManagedDynamicLineEditor* machineName     = nullptr;
 	QGroupBox*                    variablesEditor = nullptr;

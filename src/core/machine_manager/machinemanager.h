@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -76,17 +75,17 @@ public:
 public:
 
 	// Mutators
-	void setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
+	void setMachine(std::shared_ptr<Machine> newMachine, std::shared_ptr<GraphicAttributes> newGraphicAttributes);
 	void clearMachine();
 
 	// Acessors
-	shared_ptr<Machine>          getMachine()          const;
-	shared_ptr<GraphicMachine>   getGraphicMachine()   const;
-	shared_ptr<SimulatedMachine> getSimulatedMachine() const;
+	std::shared_ptr<Machine>          getMachine()          const;
+	std::shared_ptr<GraphicMachine>   getGraphicMachine()   const;
+	std::shared_ptr<SimulatedMachine> getSimulatedMachine() const;
 
-	shared_ptr<MachineStatus>    getMachineStatus()    const;
-	shared_ptr<MachineBuilder>   getMachineBuilder()   const;
-	shared_ptr<MachineSimulator> getMachineSimulator() const;
+	std::shared_ptr<MachineStatus>    getMachineStatus()    const;
+	std::shared_ptr<MachineBuilder>   getMachineBuilder()   const;
+	std::shared_ptr<MachineSimulator> getMachineSimulator() const;
 
 	// Undo/redo
 	void undo();
@@ -105,7 +104,7 @@ public:
 
 private slots:
 	// Undo/redo
-	void freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes);
+	void freshMachineAvailableFromUndoRedo(std::shared_ptr<Machine> updatedMachine, std::shared_ptr<GraphicAttributes> updatedGraphicAttributes);
 	void machineUnsavedFlagChangedEventHandler();
 
 	void componentDeletedEventHandler(ComponentId componentId);
@@ -113,7 +112,7 @@ private slots:
 	void simulatedComponentUpdatedEventHandler(ComponentId componentId);
 
 private:
-	void setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes);
+	void setMachineInternal(std::shared_ptr<Machine> newMachine, std::shared_ptr<GraphicAttributes> newGraphicAttributes);
 
 	/////
 	// Signals
@@ -147,14 +146,14 @@ signals:
 	// Object variables
 private:
 	// Holders
-	shared_ptr<Machine>          machine;
-	shared_ptr<MachineStatus>    machineStatus;
-	shared_ptr<MachineBuilder>   machineBuilder;
-	shared_ptr<GraphicMachine>   graphicMachine;
-	shared_ptr<MachineSimulator> machineSimulator;
+	std::shared_ptr<Machine>          machine;
+	std::shared_ptr<MachineStatus>    machineStatus;
+	std::shared_ptr<MachineBuilder>   machineBuilder;
+	std::shared_ptr<GraphicMachine>   graphicMachine;
+	std::shared_ptr<MachineSimulator> machineSimulator;
 
 	// Undo/redo
-	unique_ptr<UndoRedoManager> undoRedoManager;
+	std::unique_ptr<UndoRedoManager> undoRedoManager;
 	bool undoRedoMode = false;
 
 	// Interface
@@ -166,7 +165,7 @@ private:
 /////
 // Public global object: most classes need access
 // to machine manager, so make it a global object
-extern unique_ptr<MachineManager> machineManager;
+extern std::unique_ptr<MachineManager> machineManager;
 
 
 #endif // MACHINEMANAGER_H

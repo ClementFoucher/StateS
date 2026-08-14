@@ -53,7 +53,7 @@ FsmScene::FsmScene() :
 	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,       this, &FsmScene::machineUpdatedEventHandler);
 	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &FsmScene::interfaceModeChangedEventHandler);
 
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	auto machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmScene::toolChangeEventHandler);
 
 	// Add scene content
@@ -90,7 +90,7 @@ void FsmScene::mousePressEvent(QGraphicsSceneMouseEvent* me)
 		return;
 	}
 
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	auto machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder == nullptr)
 	{
 		GenericScene::mousePressEvent(me);
@@ -382,7 +382,7 @@ void FsmScene::keyPressEvent(QKeyEvent* ke)
 {
 	if (ke->key() == Qt::Key_Escape)
 	{
-		shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+		auto machineBuilder = machineManager->getMachineBuilder();
 		if (machineBuilder == nullptr) return;
 
 
@@ -579,7 +579,7 @@ void FsmScene::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t 
 	}
 
 	// Get rid of any tool on mode change
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	auto machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder != nullptr)
 	{
 		machineBuilder->resetTool();
@@ -699,7 +699,7 @@ void FsmScene::stateCallsSetInitialStateEventHandler(ComponentId stateId)
 
 void FsmScene::stateCallsBeginTransitionEventHandler(ComponentId stateId)
 {
-	shared_ptr<MachineBuilder> machineBuilder = machineManager->getMachineBuilder();
+	auto machineBuilder = machineManager->getMachineBuilder();
 	if (machineBuilder == nullptr) return;
 
 	auto graphicFsm = dynamic_pointer_cast<GraphicFsm>(machineManager->getGraphicMachine());

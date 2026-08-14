@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class FsmState;
@@ -65,7 +64,7 @@ private:
 	// Constructors/destructors
 public:
 	explicit FsmXmlParser(const QString& xmlString);
-	explicit FsmXmlParser(shared_ptr<QFile> file);
+	explicit FsmXmlParser(std::shared_ptr<QFile> file);
 
 	/////
 	// Object functions
@@ -79,7 +78,7 @@ private:
 
 	void processEndCondition();
 
-	shared_ptr<FsmState> getStateByName(const QString& name) const;
+	std::shared_ptr<FsmState> getStateByName(const QString& name) const;
 
 	/////
 	// Object variables

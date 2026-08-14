@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QMap>
@@ -56,7 +55,7 @@ public:
 
 	// Graphic objects creation can't be done in constructor, as their
 	// creation requires access to the graphic machine itself.
-	virtual void build(shared_ptr<GraphicAttributes> graphicAttributes) = 0;
+	virtual void build(std::shared_ptr<GraphicAttributes> graphicAttributes) = 0;
 	virtual void buildSimulation() = 0;
 	void clearSimulation();
 
@@ -64,7 +63,7 @@ public:
 	virtual GenericScene* getGraphicScene() const = 0;
 
 	// Extract graphic attributes from the current graphic objects
-	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const = 0;
+	virtual std::shared_ptr<GraphicAttributes> getGraphicAttributes() const = 0;
 
 	GraphicComponent* getGraphicComponent(ComponentId componentId) const;
 	GraphicSimulatedComponent* getSimulatedGraphicComponent(ComponentId componentId) const;

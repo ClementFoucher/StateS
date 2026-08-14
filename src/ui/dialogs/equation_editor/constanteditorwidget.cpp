@@ -151,7 +151,7 @@ void ConstantEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	{
 	case ContextAction_t::Invert:
 	{
-		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::notOp);
 		tempEquation->setOperand(0, this->currentValue);
 
 		this->tempValueNature = TempValueNature_t::equation;
@@ -184,7 +184,7 @@ void ConstantEditorWidget::processSpecificDropAction(DropAction_t action)
 	{
 		if (this->tempValueNature != TempValueNature_t::equation) return;
 
-		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		auto tempEquation = std::get<std::shared_ptr<Equation>>(this->tempValue);
 		if (tempEquation == nullptr) return;
 
 

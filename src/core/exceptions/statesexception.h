@@ -24,13 +24,12 @@
 
 // Stdlib
 #include <exception>
-using namespace std;
 
 // Qt
 #include <QString>
 
 
-class StatesException : exception
+class StatesException : std::exception
 {
 	/////
 	// Type declarations
@@ -58,9 +57,9 @@ public:
 	/////
 	// Object variables
 private:
-	QString sourceClass;
-	uint    errorEnumValue;
-	string  errorText;
+	QString     sourceClass;
+	uint        errorEnumValue;
+	std::string errorText;
 
 };
 

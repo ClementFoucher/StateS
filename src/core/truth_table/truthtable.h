@@ -24,7 +24,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QList>
@@ -59,8 +58,8 @@ class TruthTable
 	/////
 	// Constructors/destructors
 public:
-	explicit TruthTable(shared_ptr<const Equation> equation);
-	explicit TruthTable(QList<shared_ptr<const Equation>> equations);
+	explicit TruthTable(std::shared_ptr<const Equation> equation);
+	explicit TruthTable(QList<std::shared_ptr<const Equation>> equations);
 
 	/////
 	// Object functions
@@ -83,7 +82,7 @@ public:
 private:
 	void prepareTable();
 
-	void replaceVariableByConstant(shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const;
+	void replaceVariableByConstant(std::shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const;
 
 	/////
 	// Object variables
@@ -102,8 +101,8 @@ private:
 	QList<QList<MachineValue>> outputValuesTable;
 
 	// Temporary members, useless and cleared once table has been built
-	QList<shared_ptr<const Equation>> equations;
-	QList<shared_ptr<const Variable>> variablesList;
+	QList<std::shared_ptr<const Equation>> equations;
+	QList<std::shared_ptr<const Variable>> variablesList;
 	QList<MachineValue> currentInputRow;
 	uint currentRowRank = 0;
 

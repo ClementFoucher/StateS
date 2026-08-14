@@ -37,7 +37,7 @@
 #include "templateequationpartswidget.h"
 
 
-EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEquation, QWidget* parent) :
+EquationEditorDialog::EquationEditorDialog(std::shared_ptr<const Equation> initialEquation, QWidget* parent) :
 	StatesDialog(parent)
 {
 	//
@@ -100,7 +100,7 @@ EquationEditorDialog::EquationEditorDialog(shared_ptr<const Equation> initialEqu
 	mainLayout->addLayout(buttonsLayout);
 }
 
-shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
+std::shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
 {
 	auto rootEquation = this->equationDisplay->getLogicEquation();
 
@@ -209,11 +209,11 @@ void EquationEditorDialog::showEvent(QShowEvent* event)
 	}
 }
 
-shared_ptr<Equation> EquationEditorDialog::buildRootEquation(shared_ptr<const Equation> initialEquation)
+std::shared_ptr<Equation> EquationEditorDialog::buildRootEquation(std::shared_ptr<const Equation> initialEquation)
 {
 	// The root equation will *always* be an identity equation,
 	// so that equation parts always have a parent equation.
-	shared_ptr<Equation> rootEquation;
+	std::shared_ptr<Equation> rootEquation;
 	if (initialEquation != nullptr)
 	{
 		if (initialEquation->getOperator() == Equation::Operator_t::identity)
@@ -224,14 +224,14 @@ shared_ptr<Equation> EquationEditorDialog::buildRootEquation(shared_ptr<const Eq
 		else
 		{
 			// This is a standard equation: add identity wrapper
-			rootEquation = make_shared<Equation>(Equation::Operator_t::identity);
+			rootEquation = std::make_shared<Equation>(Equation::Operator_t::identity);
 			rootEquation->setOperand(0, initialEquation->clone());
 		}
 	}
 	else
 	{
 		// The equation is currently undefined: define an empty identity
-		rootEquation = make_shared<Equation>(Equation::Operator_t::identity);
+		rootEquation = std::make_shared<Equation>(Equation::Operator_t::identity);
 	}
 
 	return rootEquation;

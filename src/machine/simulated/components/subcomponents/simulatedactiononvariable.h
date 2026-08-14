@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "machinevalue.h"
@@ -41,7 +40,7 @@ class SimulatedActionOnVariable : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedActionOnVariable(shared_ptr<const ActionOnVariable> sourceAction);
+	explicit SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction);
 
 	/////
 	// Object functions

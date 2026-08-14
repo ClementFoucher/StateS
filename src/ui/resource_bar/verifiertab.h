@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QListWidgetItem;
@@ -68,7 +67,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	unique_ptr<FsmVerifier> verifier;
+	std::unique_ptr<FsmVerifier> verifier;
 	QTimer* timer = nullptr;
 
 	QVBoxLayout* mainLayout = nullptr;

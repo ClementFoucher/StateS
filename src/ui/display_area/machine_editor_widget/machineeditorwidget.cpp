@@ -57,12 +57,12 @@ GenericScene* MachineEditorWidget::getScene() const
 	return this->machineDisplayArea->getScene();
 }
 
-void MachineEditorWidget::setView(shared_ptr<ViewConfiguration> viewConfiguration)
+void MachineEditorWidget::setView(std::shared_ptr<ViewConfiguration> viewConfiguration)
 {
 	this->machineDisplayArea->setView(viewConfiguration);
 }
 
-shared_ptr<ViewConfiguration> MachineEditorWidget::getView() const
+std::shared_ptr<ViewConfiguration> MachineEditorWidget::getView() const
 {
 	return this->machineDisplayArea->getView();
 }

@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "machinevalue.h"
@@ -42,7 +41,7 @@ class SimulatedEquation : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedEquation(shared_ptr<const Equation> sourceEquation);
+	explicit SimulatedEquation(std::shared_ptr<const Equation> sourceEquation);
 
 	/////
 	// Object functions
@@ -69,7 +68,7 @@ signals:
 private:
 	// Equation parameters
 	Equation::Operator_t operatorType;
-	QList<shared_ptr<SimulatedOperand>> operands;
+	QList<std::shared_ptr<SimulatedOperand>> operands;
 
 	// Parameters specific to Extract operator type
 	int rangeL = -1;

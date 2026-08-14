@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2025 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Third-party
 #include "dtl.hpp"
@@ -86,7 +85,7 @@ signals:
 	// As applying a diff undo command reloads a complete machine,
 	// this signal is used to communicate with the main Machine Manager
 	// object which monitors it, applying a machine refresh.
-	void applyUndoRedo(shared_ptr<Machine> machine, shared_ptr<GraphicAttributes> machineConfiguration);
+	void applyUndoRedo(std::shared_ptr<Machine> machine, std::shared_ptr<GraphicAttributes> machineConfiguration);
 
 	/////
 	// Object variables

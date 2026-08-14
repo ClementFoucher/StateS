@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QLabel;
@@ -60,7 +59,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	shared_ptr<Equation> equation;
+	std::shared_ptr<Equation> equation;
 
 	QLabel* title = nullptr;
 	RangeEditor* rangeExtractor = nullptr;

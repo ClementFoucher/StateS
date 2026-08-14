@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QXmlStreamReader;
@@ -60,7 +59,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit StateSXmlAnalyzer(shared_ptr<QFile> file);
+	explicit StateSXmlAnalyzer(std::shared_ptr<QFile> file);
 	explicit StateSXmlAnalyzer(const QString& xmlSource);
 
 	/////
@@ -78,7 +77,7 @@ private:
 	/////
 	// Object variables
 private:
-	shared_ptr<QXmlStreamReader> xmlReader;
+	std::shared_ptr<QXmlStreamReader> xmlReader;
 
 	MachineType_t type = MachineType_t::none;
 

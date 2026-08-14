@@ -33,7 +33,7 @@
 #include "variable.h"
 
 
-const QList<shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
+const QList<std::shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
 {
 	return this->issues;
 }
@@ -57,14 +57,14 @@ void FsmVerifier::run()
 
 	if (fsm == nullptr)
 	{
-		auto issue = make_shared<Issue>();
+		auto issue = std::make_shared<Issue>();
 		issue->text = tr("No FSM.");
 		issue->type = SeverityLevel_t::blocking;
 		this->issues.append(issue);
 	}
 	else if (fsm->getAllStatesIds().isEmpty() == true)
 	{
-		auto issue = make_shared<Issue>();
+		auto issue = std::make_shared<Issue>();
 		issue->text = tr("Empty FSM.");
 		issue->type = SeverityLevel_t::blocking;
 		this->issues.append(issue);
@@ -74,7 +74,7 @@ void FsmVerifier::run()
 		// Check initial state
 		if (fsm->getInitialStateId() == nullId)
 		{
-			auto issue = make_shared<Issue>();
+			auto issue = std::make_shared<Issue>();
 			issue->text = tr("No initial state.");
 			issue->type = SeverityLevel_t::blocking;
 			this->issues.append(issue);
@@ -85,7 +85,7 @@ void FsmVerifier::run()
 		{
 			auto state = fsm->getState(stateId);
 
-			QList<shared_ptr<const Equation>> equations;
+			QList<std::shared_ptr<const Equation>> equations;
 
 			bool errorOnTransition = false;
 
@@ -115,7 +115,7 @@ void FsmVerifier::run()
 							errorOnTransition = true;
 							equations.clear();
 
-							auto issue = make_shared<Issue>();
+							auto issue = std::make_shared<Issue>();
 							issue->text  = tr("Error on transition condition from state") + " \"" + state->getName() + "\".";
 							issue->text += " " + tr("Equation is a bit vector whose size is > 1.");
 							issue->text += " " + tr("Bit vector equation size must be 1 to be a valid condition.");
@@ -131,7 +131,7 @@ void FsmVerifier::run()
 						errorOnTransition = true;
 						equations.clear();
 
-						auto issue = make_shared<Issue>();
+						auto issue = std::make_shared<Issue>();
 						issue->text  = tr("Error on transition condition from state") + " \"" + state->getName() + "\".";
 						issue->text += " " + tr("Equation type is not valid as a condition.");
 						issue->text += " " + tr("It should be a boolean or a bit vector of size 1.");
@@ -147,7 +147,7 @@ void FsmVerifier::run()
 					errorOnTransition = true;
 					equations.clear();
 
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text  = tr("Error on transition condition from state") + " \"" + state->getName() + "\".";
 					issue->text += " " + tr("Equation is invalid.");
 					issue->text += " " + tr("Please correct this equation:") + " " + condition->getText();
@@ -165,14 +165,14 @@ void FsmVerifier::run()
 
 				if (constantToOneConditions > 1)
 				{
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text = tr("Multiple transitions from state") + " \"" + state->getName() + "\" " + tr("have a condition value always true.");
 					issue->type = SeverityLevel_t::structure;
 					this->issues.append(issue);
 				}
 				else if ( (constantToOneConditions == 1) && (state->getOutgoingTransitionsIds().count() > 1) )
 				{
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text  = tr("One transition from state") + " \"" + state->getName() + "\" " + tr("has a condition value always true.");
 					issue->text += " " + tr("Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.");
 					issue->type = SeverityLevel_t::structure;
@@ -180,7 +180,7 @@ void FsmVerifier::run()
 				}
 				else if (state->getOutgoingTransitionsIds().count() > 1)
 				{
-					auto currentTruthTable = make_shared<TruthTable>(equations);
+					auto currentTruthTable = std::make_shared<TruthTable>(equations);
 					bool finished = false;
 					while (finished == false)
 					{
@@ -194,7 +194,7 @@ void FsmVerifier::run()
 
 					if (currentTruthTable->getTableBuiltSuccessfully() == false)
 					{
-						auto issue = make_shared<Issue>();
+						auto issue = std::make_shared<Issue>();
 						issue->text  = tr("StateS was unable to build the truth table for transitions going out of state") + " \"" + state->getName() + "\".";
 						issue->text += " " + tr("This is probably because there are too many combinations to compute.");
 						issue->text += " " + tr("This means that there may be transitions going out of this state that are not mutually exclusive.");
@@ -205,7 +205,7 @@ void FsmVerifier::run()
 
 					bool detected = false;
 					uint rowcount = 0;
-					auto currentIssue = make_shared<Issue>();
+					auto currentIssue = std::make_shared<Issue>();
 					for (uint rowRank = 0 ; rowRank < currentTruthTable->getRowsCount() ; rowRank++)
 					{
 						uint trueCount = 0;
@@ -254,7 +254,7 @@ void FsmVerifier::run()
 					if (variable == nullptr) continue;
 
 
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text  = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has both Moore and Mealy behaviors.");
 					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " + tr("This variable will be ignored on VHDL export.");
@@ -267,7 +267,7 @@ void FsmVerifier::run()
 					if (variable == nullptr) continue;
 
 
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " +  tr("has range-adressed output generation.");
 					issue->text += " " +  tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " +  tr("This variable will be ignored on VHDL export.");
@@ -280,7 +280,7 @@ void FsmVerifier::run()
 					if (variable == nullptr) continue;
 
 
-					auto issue = make_shared<Issue>();
+					auto issue = std::make_shared<Issue>();
 					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has Mealy outputs affectation (remembered value).");
 					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
 					issue->text += " " +  tr("This variable will be ignored on VHDL export.");

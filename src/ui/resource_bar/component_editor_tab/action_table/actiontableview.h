@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -104,7 +103,7 @@ private:
 	ActionTableModel* tableModel = nullptr;
 	QMap<ColumnRole_t, int> columnsRoles;
 
-	shared_ptr<ActionOnVariable> actionBeingEdited;
+	std::shared_ptr<ActionOnVariable> actionBeingEdited;
 	RangeEditorDialog* rangeEditorDialog = nullptr;
 	int currentMenuRow = -1;
 

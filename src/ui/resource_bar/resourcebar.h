@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "machinemanager.h"
@@ -81,7 +80,7 @@ private:
 	/////
 	// Object variables
 private:
-	shared_ptr<MachineComponentVisualizer> machineComponentScene;
+	std::shared_ptr<MachineComponentVisualizer> machineComponentScene;
 
 };
 

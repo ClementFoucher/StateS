@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,10 +24,6 @@
 
 // Parent
 #include <QMainWindow>
-
-// Stdlib
-#include <memory>
-using namespace std;
 
 // Qt
 class QTabWidget;
@@ -59,7 +55,7 @@ public:
 	/////
 	// Object variables
 private:
-	QList<tuple<QString, QWidget*>> widgets;
+	QList<std::tuple<QString, QWidget*>> widgets;
 	QToolBar* toolbar = nullptr;
 	QTabWidget* tabWidget = nullptr;
 

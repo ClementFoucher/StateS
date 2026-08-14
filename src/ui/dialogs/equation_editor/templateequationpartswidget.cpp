@@ -199,26 +199,26 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	auto otherTitle = new QLabel("<b>" + tr("Other") + "</b>");
 
 	// Operators
-	auto equalOperator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::equalOp),   0, true);
-	auto diffOperator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::diffOp),    0, true);
+	auto equalOperator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::equalOp),   0, true);
+	auto diffOperator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::diffOp),    0, true);
 
-	auto notOperator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::notOp),     0, true);
+	auto notOperator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::notOp),     0, true);
 
-	auto and2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::andOp,  2), 0, true);
-	auto or2Operator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::orOp,   2), 0, true);
-	auto xor2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xorOp,  2), 0, true);
-	auto nand2Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::nandOp, 2), 0, true);
-	auto nor2Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::norOp,  2), 0, true);
-	auto xnor2Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xnorOp, 2), 0, true);
+	auto and2Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::andOp,  2), 0, true);
+	auto or2Operator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::orOp,   2), 0, true);
+	auto xor2Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::xorOp,  2), 0, true);
+	auto nand2Operator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::nandOp, 2), 0, true);
+	auto nor2Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::norOp,  2), 0, true);
+	auto xnor2Operator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::xnorOp, 2), 0, true);
 
-	auto and3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::andOp,  3), 0, true);
-	auto or3Operator    = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::orOp,   3), 0, true);
-	auto xor3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xorOp,  3), 0, true);
-	auto nand3Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::nandOp, 3), 0, true);
-	auto nor3Operator   = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::norOp,  3), 0, true);
-	auto xnor3Operator  = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::xnorOp, 3), 0, true);
+	auto and3Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::andOp,  3), 0, true);
+	auto or3Operator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::orOp,   3), 0, true);
+	auto xor3Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::xorOp,  3), 0, true);
+	auto nand3Operator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::nandOp, 3), 0, true);
+	auto nor3Operator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::norOp,  3), 0, true);
+	auto xnor3Operator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::xnorOp, 3), 0, true);
 
-	auto concatOperator = new EquationEditorWidget(make_shared<Equation>(Equation::Operator_t::concatOp),  0, true);
+	auto concatOperator = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::concatOp),  0, true);
 
 	//
 	// Build complete rendering
@@ -277,7 +277,7 @@ void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<C
 			auto hLayout = new QHBoxLayout();
 			hLayout->addWidget(variableEditorWidget);
 
-			auto rangeEquation = make_shared<Equation>(Equation::Operator_t::extractOp);
+			auto rangeEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp);
 			rangeEquation->setOperand(0, varId);
 			rangeEquation->setRange(0);
 			auto rangeEditorWidget = new EquationEditorWidget(rangeEquation, 0, true);

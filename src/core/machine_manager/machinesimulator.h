@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QTimer;
@@ -65,7 +64,7 @@ public:
 	void setMemorizedTransitionActionBehavior(SimulationBehavior_t behv);
 	void setPulseTransitionActionBehavior    (SimulationBehavior_t behv);
 
-	shared_ptr<SimulatedMachine> getSimulatedMachine() const;
+	std::shared_ptr<SimulatedMachine> getSimulatedMachine() const;
 
 private slots:
 	void timerTimeoutEventHandler();
@@ -84,8 +83,8 @@ signals:
 	/////
 	// Object variables
 private:
-	shared_ptr<SimulatedMachine> simulatedMachine;
-	shared_ptr<QTimer> timer;
+	std::shared_ptr<SimulatedMachine> simulatedMachine;
+	std::shared_ptr<QTimer> timer;
 	bool emergencyShutDown = false;
 	bool wasAutoSimulatingBeforeShutDown;
 

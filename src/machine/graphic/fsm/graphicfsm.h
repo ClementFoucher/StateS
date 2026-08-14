@@ -50,10 +50,10 @@ public:
 	/////
 	// Object functions
 public:
-	virtual void build(shared_ptr<GraphicAttributes> graphicAttributes) override;
+	virtual void build(std::shared_ptr<GraphicAttributes> graphicAttributes) override;
 	virtual void buildSimulation() override;
 
-	virtual shared_ptr<GraphicAttributes> getGraphicAttributes() const override;
+	virtual std::shared_ptr<GraphicAttributes> getGraphicAttributes() const override;
 	virtual GenericScene* getGraphicScene() const override;
 
 	virtual void removeGraphicComponent(ComponentId id) override;
@@ -73,11 +73,11 @@ public:
 
 	// Neighborhood
 	int getTransitionRank(ComponentId transitionId) const;
-	shared_ptr<GraphicFsmTransitionNeighborhood> getTransitionNeighborhood(ComponentId transitionId) const;
+	std::shared_ptr<GraphicFsmTransitionNeighborhood> getTransitionNeighborhood(ComponentId transitionId) const;
 
 private:
-	void buildStates(shared_ptr<GraphicAttributes> configuration);
-	void buildTransitions(shared_ptr<GraphicAttributes> configuration);
+	void buildStates(std::shared_ptr<GraphicAttributes> configuration);
+	void buildTransitions(std::shared_ptr<GraphicAttributes> configuration);
 
 	void addTransitionToNeighborhood(ComponentId transitionId);
 	void removeTransitionFromNeighborhood(ComponentId transitionId);
@@ -87,7 +87,7 @@ private:
 private:
 	// Neighborhoods are stored for each pair of FsmState
 	// First key is the lowest state ID, second key the other state ID.
-	QHash<ComponentId, QHash<ComponentId, shared_ptr<GraphicFsmTransitionNeighborhood>>> neighborhoods;
+	QHash<ComponentId, QHash<ComponentId, std::shared_ptr<GraphicFsmTransitionNeighborhood>>> neighborhoods;
 
 };
 

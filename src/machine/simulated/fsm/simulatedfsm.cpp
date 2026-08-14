@@ -53,23 +53,23 @@ void SimulatedFsm::build()
 
 	for (const auto& stateId : fsm->getAllStatesIds())
 	{
-		auto simulatedState = make_shared<SimulatedFsmState>(stateId);
+		auto simulatedState = std::make_shared<SimulatedFsmState>(stateId);
 		this->registerSimulatedComponent(stateId, simulatedState);
 	}
 
 	for (const auto& transitionId : fsm->getAllTransitionsIds())
 	{
-		auto simulatedTransition = make_shared<SimulatedFsmTransition>(transitionId);
+		auto simulatedTransition = std::make_shared<SimulatedFsmTransition>(transitionId);
 		this->registerSimulatedComponent(transitionId, simulatedTransition);
 	}
 }
 
-shared_ptr<SimulatedFsmState> SimulatedFsm::getSimulatedState(ComponentId componentId) const
+std::shared_ptr<SimulatedFsmState> SimulatedFsm::getSimulatedState(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<SimulatedFsmState>(this->getSimulatedComponent(componentId));
 }
 
-shared_ptr<SimulatedFsmTransition> SimulatedFsm::getSimulatedTransition(ComponentId componentId) const
+std::shared_ptr<SimulatedFsmTransition> SimulatedFsm::getSimulatedTransition(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<SimulatedFsmTransition>(this->getSimulatedComponent(componentId));
 }

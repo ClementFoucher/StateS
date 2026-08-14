@@ -41,7 +41,7 @@
 #include "statesexception.h"
 
 
-MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration)
+MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, std::shared_ptr<ViewConfiguration> viewConfiguration)
 {
 	this->mode = mode;
 	this->viewConfiguration = viewConfiguration;
@@ -90,7 +90,7 @@ void MachineXmlWriter::writeMachineToStream()
 	}
 }
 
-void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent> component)
+void MachineXmlWriter::writeActuatorActions(std::shared_ptr<MachineActuatorComponent> component)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -176,7 +176,7 @@ void MachineXmlWriter::writeActuatorActions(shared_ptr<MachineActuatorComponent>
 	}
 }
 
-void MachineXmlWriter::writeLogicEquation(shared_ptr<Equation> equation)
+void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 {
 	if (equation == nullptr) return;
 
@@ -306,14 +306,14 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 		throw StatesException("MachineXmlWriter", static_cast<uint>(StatesException::FileError_t::unkown_directory), tr("Specified directory doesn't exist."));
 	}
 
-	this->file = make_unique<QFile>(machineStatus->getSaveFileFullPath());
+	this->file = std::make_unique<QFile>(machineStatus->getSaveFileFullPath());
 	bool fileOpened = file->open(QIODevice::WriteOnly);
 	if (fileOpened == false)
 	{
 		throw StatesException("MachineXmlWriter", static_cast<uint>(StatesException::FileError_t::unable_to_open), tr("Unable to open file in write mode."));
 	}
 
-	this->stream = make_shared<QXmlStreamWriter>(this->file.get());
+	this->stream = std::make_shared<QXmlStreamWriter>(this->file.get());
 
 	this->stream->setAutoFormatting(true);
 	this->stream->writeStartDocument();
@@ -322,7 +322,7 @@ void MachineXmlWriter::createSaveFile() // Throws StatesException
 void MachineXmlWriter::createSaveString()
 {
 	this->xmlString = QString();
-	this->stream = make_shared<QXmlStreamWriter>(&this->xmlString);
+	this->stream = std::make_shared<QXmlStreamWriter>(&this->xmlString);
 	this->stream->setAutoFormatting(true);
 	this->stream->setAutoFormattingIndent(0);
 }

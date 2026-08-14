@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QGraphicsView;
@@ -61,7 +60,7 @@ private slots:
 	/////
 	// Object variables
 private:
-	shared_ptr<ComponentScene> scene;
+	std::shared_ptr<ComponentScene> scene;
 
 	QGraphicsView* view = nullptr;
 

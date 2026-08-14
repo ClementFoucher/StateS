@@ -38,12 +38,12 @@ EquationPartMimeData::ContentType_t EquationPartMimeData::getContentType() const
 	return this->contentType;
 }
 
-shared_ptr<Equation> EquationPartMimeData::getEquation() const
+std::shared_ptr<Equation> EquationPartMimeData::getEquation() const
 {
 	if (this->contentType != ContentType_t::equation) return nullptr;
 
 
-	return std::get<shared_ptr<Equation>>(this->content);
+	return std::get<std::shared_ptr<Equation>>(this->content);
 }
 
 ComponentId EquationPartMimeData::getVariableId() const

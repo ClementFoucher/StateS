@@ -40,7 +40,7 @@
 
 /////
 // Public global object
-unique_ptr<MachineManager> machineManager = make_unique<MachineManager>();
+std::unique_ptr<MachineManager> machineManager = std::make_unique<MachineManager>();
 
 /////
 // Constructors/destructors
@@ -48,8 +48,8 @@ unique_ptr<MachineManager> machineManager = make_unique<MachineManager>();
 MachineManager::MachineManager() :
 	QObject()
 {
-	this->machineStatus   = make_shared<MachineStatus>();
-	this->undoRedoManager = make_unique<UndoRedoManager>();
+	this->machineStatus   = std::make_shared<MachineStatus>();
+	this->undoRedoManager = std::make_unique<UndoRedoManager>();
 
 	connect(this->machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent, this, &MachineManager::machineUnsavedFlagChangedEventHandler);
 
@@ -92,7 +92,7 @@ MachineManager::~MachineManager()
 /////
 // Mutators
 
-void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
+void MachineManager::setMachine(std::shared_ptr<Machine> newMachine, std::shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
 	// Close any open mode before changing the machine
 	if (this->currentInterfaceMode != InterfaceMode_t::editMode)
@@ -107,7 +107,7 @@ void MachineManager::setMachine(shared_ptr<Machine> newMachine, shared_ptr<Graph
 	this->machineBuilder.reset();
 	if (newMachine != nullptr)
 	{
-		this->machineBuilder = make_shared<MachineBuilder>();
+		this->machineBuilder = std::make_shared<MachineBuilder>();
 	}
 
 	// Reset the undo/redo manager
@@ -130,17 +130,17 @@ void MachineManager::clearMachine()
  * @return The current machine.
  * May be null pointer, so returned object has to be checked for nullness.
  */
-shared_ptr<Machine> MachineManager::getMachine() const
+std::shared_ptr<Machine> MachineManager::getMachine() const
 {
 	return this->machine;
 }
 
-shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
+std::shared_ptr<GraphicMachine> MachineManager::getGraphicMachine() const
 {
 	return this->graphicMachine;
 }
 
-shared_ptr<SimulatedMachine> MachineManager::getSimulatedMachine() const
+std::shared_ptr<SimulatedMachine> MachineManager::getSimulatedMachine() const
 {
 	if (this->machineSimulator == nullptr) return nullptr;
 
@@ -154,7 +154,7 @@ shared_ptr<SimulatedMachine> MachineManager::getSimulatedMachine() const
  * Is never null. However, its values may be
  * irrelevent if current machine is null.
  */
-shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
+std::shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
 {
 	return this->machineStatus;
 }
@@ -164,12 +164,12 @@ shared_ptr<MachineStatus> MachineManager::getMachineStatus() const
  * @return The machine builder associated to the current machine.
  * May be null pointer, so returned object has to be checked for nullness.
  */
-shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
+std::shared_ptr<MachineBuilder> MachineManager::getMachineBuilder() const
 {
 	return this->machineBuilder;
 }
 
-shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
+std::shared_ptr<MachineSimulator> MachineManager::getMachineSimulator() const
 {
 	return this->machineSimulator;
 }
@@ -274,7 +274,7 @@ void MachineManager::setInterfaceMode(InterfaceMode_t newMode)
 	case InterfaceMode_t::simulateMode:
 	{
 		// Build simulator
-		this->machineSimulator = make_shared<MachineSimulator>();
+		this->machineSimulator = std::make_shared<MachineSimulator>();
 		this->machineSimulator->initialize();
 
 		// Build graphic simulated machine
@@ -303,7 +303,7 @@ MachineManager::InterfaceMode_t MachineManager::getCurrentInterfaceMode() const
 /////
 // Slots
 
-void MachineManager::freshMachineAvailableFromUndoRedo(shared_ptr<Machine> updatedMachine, shared_ptr<GraphicAttributes> updatedGraphicAttributes)
+void MachineManager::freshMachineAvailableFromUndoRedo(std::shared_ptr<Machine> updatedMachine, std::shared_ptr<GraphicAttributes> updatedGraphicAttributes)
 {
 	this->setMachineInternal(updatedMachine, updatedGraphicAttributes);
 
@@ -350,7 +350,7 @@ void MachineManager::simulatedComponentUpdatedEventHandler(ComponentId component
 /////
 // Private functions
 
-void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_ptr<GraphicAttributes> newGraphicAttributes)
+void MachineManager::setMachineInternal(std::shared_ptr<Machine> newMachine, std::shared_ptr<GraphicAttributes> newGraphicAttributes)
 {
 	// Cleanup
 	if (this->machine != nullptr)
@@ -380,10 +380,10 @@ void MachineManager::setMachineInternal(shared_ptr<Machine> newMachine, shared_p
 		this->machine->finalizeLoading();
 
 		// Build graphic machine
-		shared_ptr<Fsm> fsm = dynamic_pointer_cast<Fsm>(newMachine);
+		auto fsm = dynamic_pointer_cast<Fsm>(newMachine);
 		if (fsm != nullptr)
 		{
-			this->graphicMachine = make_shared<GraphicFsm>();
+			this->graphicMachine = std::make_shared<GraphicFsm>();
 			this->graphicMachine->build(newGraphicAttributes);
 		}
 

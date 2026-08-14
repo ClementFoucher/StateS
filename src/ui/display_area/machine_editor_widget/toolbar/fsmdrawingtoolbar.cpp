@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2025 Clément Foucher
+ * Copyright © 2020-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -124,7 +124,7 @@ bool FsmDrawingToolBar::toolChangedEventHandler(MachineBuilder::Tool_t newTool)
 
 void FsmDrawingToolBar::mouseToolRequestedEvent(bool)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	auto l_machineBuilder = machineManager->getMachineBuilder();
 	if (l_machineBuilder == nullptr) return;
 
 	l_machineBuilder->setTool(MachineBuilder::Tool_t::none);
@@ -132,7 +132,7 @@ void FsmDrawingToolBar::mouseToolRequestedEvent(bool)
 
 void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	auto l_machineBuilder = machineManager->getMachineBuilder();
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
@@ -143,7 +143,7 @@ void FsmDrawingToolBar::initialStateToolRequestedEvent(bool activated)
 
 void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	auto l_machineBuilder = machineManager->getMachineBuilder();
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)
@@ -154,7 +154,7 @@ void FsmDrawingToolBar::stateToolRequestedEvent(bool activated)
 
 void FsmDrawingToolBar::transitionToolRequestedEvent(bool activated)
 {
-	shared_ptr<MachineBuilder> l_machineBuilder = machineManager->getMachineBuilder();
+	auto l_machineBuilder = machineManager->getMachineBuilder();
 	if (l_machineBuilder == nullptr) return;
 
 	if (activated)

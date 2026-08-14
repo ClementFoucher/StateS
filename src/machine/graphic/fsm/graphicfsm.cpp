@@ -39,7 +39,7 @@
 #include "graphicfsmtransitionneighborhood.h"
 
 
-void GraphicFsm::build(shared_ptr<GraphicAttributes> graphicAttributes)
+void GraphicFsm::build(std::shared_ptr<GraphicAttributes> graphicAttributes)
 {
 	if (graphicAttributes == nullptr) return;
 
@@ -67,9 +67,9 @@ void GraphicFsm::buildSimulation()
 	}
 }
 
-shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
+std::shared_ptr<GraphicAttributes> GraphicFsm::getGraphicAttributes() const
 {
-	auto machineConfiguration = make_shared<GraphicAttributes>();
+	auto machineConfiguration = std::make_shared<GraphicAttributes>();
 
 	auto states = this->getStates();
 	for (auto state : states)
@@ -231,7 +231,7 @@ int GraphicFsm::getTransitionRank(ComponentId transitionId) const
 	return rank;
 }
 
-shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(ComponentId transitionId) const
+std::shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborhood(ComponentId transitionId) const
 {
 	auto graphicTransition = this->getTransition(transitionId);
 	if (graphicTransition == nullptr) return nullptr;
@@ -240,11 +240,11 @@ shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborho
 	auto sourceStateId = graphicTransition->getSourceStateId();
 	auto targetStateId = graphicTransition->getTargetStateId();
 
-	auto stateId1 = min(sourceStateId, targetStateId);
-	auto stateId2 = max(sourceStateId, targetStateId);
+	auto stateId1 = std::min(sourceStateId, targetStateId);
+	auto stateId2 = std::max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
+	std::shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))
@@ -256,7 +256,7 @@ shared_ptr<GraphicFsmTransitionNeighborhood> GraphicFsm::getTransitionNeighborho
 	return neighborhood;
 }
 
-void GraphicFsm::buildStates(shared_ptr<GraphicAttributes> configuration)
+void GraphicFsm::buildStates(std::shared_ptr<GraphicAttributes> configuration)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -293,7 +293,7 @@ void GraphicFsm::buildStates(shared_ptr<GraphicAttributes> configuration)
 	}
 }
 
-void GraphicFsm::buildTransitions(shared_ptr<GraphicAttributes> configuration)
+void GraphicFsm::buildTransitions(std::shared_ptr<GraphicAttributes> configuration)
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return;
@@ -330,11 +330,11 @@ void GraphicFsm::addTransitionToNeighborhood(ComponentId transitionId)
 	auto sourceStateId = graphicTransition->getSourceStateId();
 	auto targetStateId = graphicTransition->getTargetStateId();
 
-	auto stateId1 = min(sourceStateId, targetStateId);
-	auto stateId2 = max(sourceStateId, targetStateId);
+	auto stateId1 = std::min(sourceStateId, targetStateId);
+	auto stateId2 = std::max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
+	std::shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))
@@ -347,7 +347,7 @@ void GraphicFsm::addTransitionToNeighborhood(ComponentId transitionId)
 	// between the two states already exists
 	if (neighborhood == nullptr)
 	{
-		shared_ptr<FsmTransition> newFriend;
+		std::shared_ptr<FsmTransition> newFriend;
 
 		// Transitions from source to trarget
 		auto logicState1 = fsm->getState(stateId1);
@@ -392,11 +392,11 @@ void GraphicFsm::addTransitionToNeighborhood(ComponentId transitionId)
 		if (newFriend != nullptr)
 		{
 			// Build neighborhood and act as if it already existed
-			neighborhood = make_shared<GraphicFsmTransitionNeighborhood>(this->getState(stateId1), this->getState(stateId2));
+			neighborhood = std::make_shared<GraphicFsmTransitionNeighborhood>(this->getState(stateId1), this->getState(stateId2));
 
 			if (this->neighborhoods.contains(stateId1) == false)
 			{
-				this->neighborhoods[stateId1] = QHash<ComponentId, shared_ptr<GraphicFsmTransitionNeighborhood>>();
+				this->neighborhoods[stateId1] = QHash<ComponentId, std::shared_ptr<GraphicFsmTransitionNeighborhood>>();
 			}
 			this->neighborhoods[stateId1][stateId2] = neighborhood;
 
@@ -426,11 +426,11 @@ void GraphicFsm::removeTransitionFromNeighborhood(ComponentId transitionId)
 	auto sourceStateId = graphicTransition->getSourceStateId();
 	auto targetStateId = graphicTransition->getTargetStateId();
 
-	auto stateId1 = min(sourceStateId, targetStateId);
-	auto stateId2 = max(sourceStateId, targetStateId);
+	auto stateId1 = std::min(sourceStateId, targetStateId);
+	auto stateId2 = std::max(sourceStateId, targetStateId);
 
 	// Get neighborhood if it exists
-	shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
+	std::shared_ptr<GraphicFsmTransitionNeighborhood> neighborhood;
 	if (this->neighborhoods.contains(stateId1))
 	{
 		if (this->neighborhoods[stateId1].contains(stateId2))

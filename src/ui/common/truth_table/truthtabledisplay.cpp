@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,7 +32,7 @@
 #include "truthtable.h"
 
 
-TruthTableDisplay::TruthTableDisplay(shared_ptr<TruthTable> truthTable, QList<int> highlights, QWidget* parent) :
+TruthTableDisplay::TruthTableDisplay(std::shared_ptr<TruthTable> truthTable, QList<int> highlights, QWidget* parent) :
 	QTableWidget(parent)
 {
 	this->insertColumn(0);

@@ -69,13 +69,13 @@ bool FsmVhdlExport::writeToFile(const QString& path)
 	return true;
 }
 
-shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility()
+std::shared_ptr<FsmVhdlExport::ExportCompatibility> FsmVhdlExport::checkCompatibility()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm == nullptr) return nullptr;
 
 
-	shared_ptr<ExportCompatibility> compatibility(new ExportCompatibility());
+	auto compatibility = std::make_shared<ExportCompatibility>();
 	WrittableVariableCharacteristics_t charac;
 
 	for (auto& outputId : fsm->getOutputVariablesIds())
@@ -681,7 +681,7 @@ void FsmVhdlExport::writeMealyOutputs(QTextStream& stream) const
 	{
 		if (this->tempValueVariables.contains(variableId))
 		{
-			QList<shared_ptr<FsmTransition>> transitions;
+			QList<std::shared_ptr<FsmTransition>> transitions;
 
 			for (auto& transitionId : fsm->getAllTransitionsIds())
 			{
@@ -790,7 +790,7 @@ void FsmVhdlExport::writeAsynchronousProcessSensitivityList(QTextStream& stream)
 	}
 }
 
-void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const
+void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, std::shared_ptr<ActionOnVariable> action) const
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -866,7 +866,7 @@ void FsmVhdlExport::writeSignalAffectationValue(QTextStream& stream, shared_ptr<
 	stream << ";\n";
 }
 
-QString FsmVhdlExport::generateEquationText(shared_ptr<Equation> equation) const
+QString FsmVhdlExport::generateEquationText(std::shared_ptr<Equation> equation) const
 {
 	if (equation == nullptr)  return "[" + tr("Error: empty equation") + "]";
 
@@ -962,7 +962,7 @@ QString FsmVhdlExport::generateEquationText(shared_ptr<Equation> equation) const
 	return text;
 }
 
-QString FsmVhdlExport::generateOperandText(shared_ptr<Operand> operand) const
+QString FsmVhdlExport::generateOperandText(std::shared_ptr<Operand> operand) const
 {
 	if (operand == nullptr) return "[" + tr("Error: empty operand") + "]";
 

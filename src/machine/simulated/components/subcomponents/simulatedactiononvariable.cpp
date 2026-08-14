@@ -29,7 +29,7 @@
 #include "simulatedvariable.h"
 
 
-SimulatedActionOnVariable::SimulatedActionOnVariable(shared_ptr<const ActionOnVariable> sourceAction)
+SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction)
 {
 	this->variableId  = sourceAction->getVariableActedOnId();
 	this->actionType  = sourceAction->getActionType();

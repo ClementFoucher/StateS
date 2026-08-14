@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class ActionOnVariable;
@@ -54,11 +53,11 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<ActionOnVariable> addAction(ComponentId variableId);
-	void addAction(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable); // Add action when machine is still being parsed
+	std::shared_ptr<ActionOnVariable> addAction(ComponentId variableId);
+	void addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable); // Add action when machine is still being parsed
 	void removeAction(uint actionRank);
-	shared_ptr<ActionOnVariable> getAction(uint actionRank) const;
-	const QList<shared_ptr<ActionOnVariable>> getActions() const;
+	std::shared_ptr<ActionOnVariable> getAction(uint actionRank) const;
+	const QList<std::shared_ptr<ActionOnVariable>> getActions() const;
 
 	void changeActionRank(uint oldActionRank, uint newActionRank);
 
@@ -69,7 +68,7 @@ private slots:
 	void variableInActionListModifiedEventHandler();
 
 private:
-	void addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable);
+	void addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable);
 
 	/////
 	// Signals
@@ -79,7 +78,7 @@ signals:
 	/////
 	// Object variables
 private:
-	QList<shared_ptr<ActionOnVariable>> actionList;
+	QList<std::shared_ptr<ActionOnVariable>> actionList;
 
 };
 

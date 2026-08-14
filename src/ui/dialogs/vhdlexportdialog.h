@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QComboBox;
@@ -55,7 +54,7 @@ public:
 	bool prefixIOs() const;
 	QString getFilePath() const;
 
-	shared_ptr<FsmVhdlExport> getFsmVhdlExport() const;
+	std::shared_ptr<FsmVhdlExport> getFsmVhdlExport() const;
 
 	/////
 	// Object variables
@@ -67,7 +66,7 @@ private:
 	QString searchPath;
 	QString filePath;
 
-	shared_ptr<FsmVhdlExport> fsmVhdlExport;
+	std::shared_ptr<FsmVhdlExport> fsmVhdlExport;
 
 };
 

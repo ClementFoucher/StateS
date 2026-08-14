@@ -176,7 +176,7 @@ void ResourceBar::build()
 	auto machine = machineManager->getMachine();
 	if (machine != nullptr)
 	{
-		this->machineComponentScene = make_shared<MachineComponentVisualizer>();
+		this->machineComponentScene = std::make_shared<MachineComponentVisualizer>();
 
 		auto  hintTab          = new HintTab         (this->machineComponentScene);
 		auto  machineEditorTab = new MachineEditorTab(this->machineComponentScene);

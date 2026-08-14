@@ -88,7 +88,7 @@ void VerifierTab::beginCheck()
 	this->mainLayout->addWidget(this->buttonCancel);
 
 	// Build verifier
-	this->verifier = make_unique<FsmVerifier>();
+	this->verifier = std::make_unique<FsmVerifier>();
 	if (this->checkVhdlExport->isChecked() == true)
 	{
 		this->verifier->setCheckVhdl();

@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "machinemanager.h"
@@ -50,8 +49,8 @@ public:
 	// Object functions
 public:
 	GenericScene* getScene() const;
-	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
-	shared_ptr<ViewConfiguration> getView() const;
+	void setView(std::shared_ptr<ViewConfiguration> viewConfiguration);
+	std::shared_ptr<ViewConfiguration> getView() const;
 
 	void clearSelection();
 

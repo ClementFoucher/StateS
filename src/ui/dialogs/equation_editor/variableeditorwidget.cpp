@@ -156,7 +156,7 @@ void VariableEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	{
 	case ContextAction_t::Invert:
 	{
-		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::notOp);
 		tempEquation->setOperand(0, this->variableId);
 
 		this->tempValueNature = TempValueNature_t::equation;
@@ -167,7 +167,7 @@ void VariableEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	}
 	case ContextAction_t::AddExtractor:
 	{
-		auto tempEquation = make_shared<Equation>(Equation::Operator_t::extractOp);
+		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp);
 		tempEquation->setOperand(0, this->variableId);
 		tempEquation->setRange(0);
 
@@ -200,7 +200,7 @@ void VariableEditorWidget::processSpecificDropAction(DropAction_t action)
 	{
 		if (this->tempValueNature != TempValueNature_t::equation) return;
 
-		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		auto tempEquation = std::get<std::shared_ptr<Equation>>(this->tempValue);
 		if (tempEquation == nullptr) return;
 
 

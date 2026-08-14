@@ -188,7 +188,7 @@ void TimelineWidget::paintEvent(QPaintEvent*)
 
 void TimelineWidget::exportToPDF()
 {
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 
 	QString fileName = SaveFileDialog::getSaveFileName(this, tr("Export time line to PDF"), machineStatus->getImageExportFolderPath(), tr("timeline"), "pdf");
 

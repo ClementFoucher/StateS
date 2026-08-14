@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class SimulatedEquation;
@@ -45,7 +44,7 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<SimulatedEquation> getCondition();
+	std::shared_ptr<SimulatedEquation> getCondition();
 
 	ComponentId getSourceStateId() const;
 	ComponentId getTargetStateId() const;
@@ -59,7 +58,7 @@ private:
 	ComponentId sourceStateId = nullId;
 	ComponentId targetStateId = nullId;
 
-	shared_ptr<SimulatedEquation> condition;
+	std::shared_ptr<SimulatedEquation> condition;
 
 };
 

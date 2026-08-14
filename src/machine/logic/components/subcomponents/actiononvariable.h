@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -75,7 +74,7 @@ public:
 	// Constructors/destructors
 public:
 	explicit ActionOnVariable(ComponentId variableId, uint actuatorAllowedActions);
-	explicit ActionOnVariable(shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
+	explicit ActionOnVariable(std::shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
 	// Object functions
@@ -104,7 +103,7 @@ private slots:
 	void variableInitialValueChangedEventHandler();
 
 private:
-	void connectSignals(shared_ptr<Variable> variable);
+	void connectSignals(std::shared_ptr<Variable> variable);
 
 	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
 

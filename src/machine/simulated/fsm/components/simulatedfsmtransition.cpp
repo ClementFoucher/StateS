@@ -55,7 +55,7 @@ SimulatedFsmTransition::SimulatedFsmTransition(ComponentId logicComponentId) :
 	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);
 }
 
-shared_ptr<SimulatedEquation> SimulatedFsmTransition::getCondition()
+std::shared_ptr<SimulatedEquation> SimulatedFsmTransition::getCondition()
 {
 	return this->condition;
 }

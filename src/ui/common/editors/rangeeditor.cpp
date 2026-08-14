@@ -33,7 +33,7 @@
 #include "operand.h"
 
 
-RangeEditor::RangeEditor(shared_ptr<Equation> equation, QWidget* parent) :
+RangeEditor::RangeEditor(std::shared_ptr<Equation> equation, QWidget* parent) :
 	QWidget(parent)
 {
 	if (equation->getOperator() != Equation::Operator_t::extractOp) return;

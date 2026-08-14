@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 		res = -1;
 	}
-	catch (const exception& e)
+	catch (const std::exception& e)
 	{
 		QString errorText = "The following exception occured in a standard library: ";
 		errorText += e.what();

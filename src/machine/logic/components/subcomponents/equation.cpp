@@ -81,9 +81,9 @@ Equation::Equation(Operator_t operatorType, int operandCount)
 	}
 }
 
-shared_ptr<Equation> Equation::clone() const
+std::shared_ptr<Equation> Equation::clone() const
 {
-	auto clonedEquation = make_shared<Equation>(this->operatorType, this->operands.count());
+	auto clonedEquation = std::make_shared<Equation>(this->operatorType, this->operands.count());
 
 	for (uint i = 0 ; i < this->operands.count() ; i++)
 	{
@@ -344,7 +344,7 @@ bool Equation::isInverted() const
 	}
 }
 
-shared_ptr<Operand> Equation::getOperand(uint i) const
+std::shared_ptr<Operand> Equation::getOperand(uint i) const
 {
 	if (i < this->getOperandCount())
 	{
@@ -358,31 +358,31 @@ shared_ptr<Operand> Equation::getOperand(uint i) const
 
 void Equation::setOperand(uint i, ComponentId newOperand)
 {
-	auto operand = make_shared<Operand>(newOperand);
+	auto operand = std::make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
-void Equation::setOperand(uint i, shared_ptr<Equation> newOperand)
+void Equation::setOperand(uint i, std::shared_ptr<Equation> newOperand)
 {
-	auto operand = make_shared<Operand>(newOperand);
+	auto operand = std::make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
 void Equation::setOperand(uint i, MachineValue newOperand)
 {
-	auto operand = make_shared<Operand>(newOperand);
+	auto operand = std::make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
-void Equation::setOperand(uint i, shared_ptr<Variable> newOperand)
+void Equation::setOperand(uint i, std::shared_ptr<Variable> newOperand)
 {
-	auto operand = make_shared<Operand>(newOperand);
+	auto operand = std::make_shared<Operand>(newOperand);
 	this->setOperand(i, operand);
 }
 
 void Equation::clearOperand(uint i)
 {
-	this->setOperand(i, shared_ptr<Operand>(nullptr));
+	this->setOperand(i, std::shared_ptr<Operand>(nullptr));
 }
 
 uint Equation::getOperandCount() const
@@ -574,7 +574,7 @@ void Equation::operandInvalidatedEventHandler()
 	}
 }
 
-void Equation::setOperand(uint i, shared_ptr<Operand> newOperand)
+void Equation::setOperand(uint i, std::shared_ptr<Operand> newOperand)
 {
 	// Do not allow placing an operand outside defined range
 	if (i >= this->getOperandCount()) return;

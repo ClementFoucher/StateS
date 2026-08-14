@@ -42,7 +42,7 @@
 ImageExportDialog::ImageExportDialog(StatesScene* stateGraphScene, const QString& baseFilePath, const QString& baseFileName, QWidget* parent) :
 	StatesDialog(parent)
 {
-	this->imageExporter = make_shared<MachineImageExporter>(stateGraphScene);
+	this->imageExporter = std::make_shared<MachineImageExporter>(stateGraphScene);
 	this->baseFilePath  = baseFilePath;
 	this->baseFileName  = baseFileName;
 
@@ -224,7 +224,7 @@ QString ImageExportDialog::getFilePath() const
 	return this->outputFilePath;
 }
 
-shared_ptr<MachineImageExporter> ImageExportDialog::getImageExporter() const
+std::shared_ptr<MachineImageExporter> ImageExportDialog::getImageExporter() const
 {
 	return this->imageExporter;
 }

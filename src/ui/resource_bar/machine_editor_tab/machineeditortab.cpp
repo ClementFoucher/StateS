@@ -39,7 +39,7 @@
 #include "machinerenameundocommand.h"
 
 
-MachineEditorTab::MachineEditorTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+MachineEditorTab::MachineEditorTab(std::shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
 	QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;

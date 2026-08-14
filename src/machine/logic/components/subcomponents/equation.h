@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 #include "componentid.h"
@@ -95,7 +94,7 @@ public:
 	/////
 	// Object functions
 public:
-	shared_ptr<Equation> clone() const;
+	std::shared_ptr<Equation> clone() const;
 
 	bool isValid() const;
 	MachineValue::Type_t getType() const;
@@ -115,11 +114,11 @@ public:
 
 	bool isInverted() const;
 
-	shared_ptr<Operand> getOperand(uint i) const;
-	void setOperand(uint i, ComponentId          newOperand); // Set variable operand
-	void setOperand(uint i, shared_ptr<Equation> newOperand); // Set equation operand
-	void setOperand(uint i, MachineValue         newOperand); // Set constant operand
-	void setOperand(uint i, shared_ptr<Variable> newOperand); // Set variable operand (when machine is still being parsed)
+	std::shared_ptr<Operand> getOperand(uint i) const;
+	void setOperand(uint i, ComponentId               newOperand); // Set variable operand
+	void setOperand(uint i, std::shared_ptr<Equation> newOperand); // Set equation operand
+	void setOperand(uint i, MachineValue              newOperand); // Set constant operand
+	void setOperand(uint i, std::shared_ptr<Variable> newOperand); // Set variable operand (when machine is still being parsed)
 	void clearOperand(uint i);
 
 	uint getOperandCount() const;
@@ -138,7 +137,7 @@ private slots:
 	void operandInvalidatedEventHandler();
 
 private:
-	void setOperand(uint i, shared_ptr<Operand> newOperand);
+	void setOperand(uint i, std::shared_ptr<Operand> newOperand);
 	void checkForErrors();
 	MachineValue computeInitialValue();
 
@@ -154,7 +153,7 @@ signals:
 private:
 	// Equation parameters
 	Operator_t operatorType;
-	QList<shared_ptr<Operand>> operands;
+	QList<std::shared_ptr<Operand>> operands;
 
 	// Parameters specific to Extract operator type
 	int rangeL = -1;

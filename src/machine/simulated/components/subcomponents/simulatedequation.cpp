@@ -26,7 +26,7 @@
 #include "simulatedoperand.h"
 
 
-SimulatedEquation::SimulatedEquation(shared_ptr<const Equation> sourceEquation)
+SimulatedEquation::SimulatedEquation(std::shared_ptr<const Equation> sourceEquation)
 {
 	if (sourceEquation == nullptr) return;
 

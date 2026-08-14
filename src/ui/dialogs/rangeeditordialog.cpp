@@ -50,7 +50,7 @@ RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int ran
 	// Build object
 	this->setWindowTitle(tr("Edit range"));
 
-	this->equation = make_shared<Equation>(Equation::Operator_t::extractOp, 1);
+	this->equation = std::make_shared<Equation>(Equation::Operator_t::extractOp, 1);
 	this->equation->setOperand(0, variableId);
 	this->equation->setRange(rangeL, rangeR);
 

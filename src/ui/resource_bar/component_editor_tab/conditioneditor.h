@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QLabel;
@@ -73,7 +72,7 @@ private:
 	// Object variables
 private:
 	ComponentId transitionId = nullId;
-	shared_ptr<TruthTable> truthTable;
+	std::shared_ptr<TruthTable> truthTable;
 
 	// Widgets
 	QGridLayout* layout = nullptr;

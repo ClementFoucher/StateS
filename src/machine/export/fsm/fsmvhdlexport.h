@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QMap>
@@ -92,7 +91,7 @@ public:
 	void setOptions(bool resetLogicPositive, bool prefixSignals);
 
 	bool writeToFile(const QString& path);
-	shared_ptr<ExportCompatibility> checkCompatibility();
+	std::shared_ptr<ExportCompatibility> checkCompatibility();
 
 private:
 	void generateVhdlCharacteristics();
@@ -107,10 +106,10 @@ private:
 	void writeMealyOutputs(QTextStream& stream) const;
 
 	void writeAsynchronousProcessSensitivityList(QTextStream& stream) const;
-	void writeSignalAffectationValue(QTextStream& stream, shared_ptr<ActionOnVariable> action) const;
+	void writeSignalAffectationValue(QTextStream& stream, std::shared_ptr<ActionOnVariable> action) const;
 
-	QString generateEquationText(shared_ptr<Equation> equation) const;
-	QString generateOperandText(shared_ptr<Operand> operand) const;
+	QString generateEquationText(std::shared_ptr<Equation> equation) const;
+	QString generateOperandText(std::shared_ptr<Operand> operand) const;
 
 	/////
 	// Object variables

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QLabel;
@@ -53,7 +52,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit RangeEditor(shared_ptr<Equation> equation, QWidget* parent = nullptr);
+	explicit RangeEditor(std::shared_ptr<Equation> equation, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -90,7 +89,7 @@ signals:
 	/////
 	// Object variables
 private:
-	shared_ptr<Equation> equation;
+	std::shared_ptr<Equation> equation;
 
 	QLabel* rangeLText = nullptr;
 	QLabel* rangeRText = nullptr;

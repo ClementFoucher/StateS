@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 #include <QList>
@@ -51,7 +50,7 @@ public:
 	public:
 		QString text;
 		SeverityLevel_t type = SeverityLevel_t::hint;
-		shared_ptr<TruthTable> proof;
+		std::shared_ptr<TruthTable> proof;
 		QList<int> proofsHighlight;
 	};
 
@@ -67,7 +66,7 @@ public:
 	/////
 	// Object functions
 public:
-	const QList<shared_ptr<Issue>>& getIssues();
+	const QList<std::shared_ptr<Issue>>& getIssues();
 
 protected:
 	virtual void run() override;
@@ -83,7 +82,7 @@ private:
 	bool checkVhdl = false;
 	bool doAbort = false;
 
-	QList<shared_ptr<Issue>> issues;
+	QList<std::shared_ptr<Issue>> issues;
 
 };
 

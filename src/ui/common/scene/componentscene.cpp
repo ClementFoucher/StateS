@@ -153,7 +153,7 @@ void ComponentScene::build()
 
 	// Height
 
-	qreal maxVariablesHeight = max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
+	qreal maxVariablesHeight = std::max(inputsGroup->boundingRect().height(), outputsGroup->boundingRect().height());
 
 	qreal componentHeight =
 	    verticalElementsSpacer +

@@ -105,15 +105,15 @@ ComponentId Machine::addVariable(VariableNature_t nature, const QString& name, M
 
 
 	// Create variable
-	shared_ptr<Variable> variable;
+	std::shared_ptr<Variable> variable;
 	auto componentId = id;
 	if (id != nullId)
 	{
-		variable = make_shared<Variable>(id, cleanedName, type);
+		variable = std::make_shared<Variable>(id, cleanedName, type);
 	}
 	else
 	{
-		variable = make_shared<Variable>(cleanedName, type);
+		variable = std::make_shared<Variable>(cleanedName, type);
 		componentId = variable->getId();
 	}
 
@@ -258,7 +258,7 @@ QString Machine::getName() const
 	return this->name;
 }
 
-shared_ptr<MachineComponent> Machine::getComponent(ComponentId componentId) const
+std::shared_ptr<MachineComponent> Machine::getComponent(ComponentId componentId) const
 {
 	if (this->components.contains(componentId) == false) return nullptr;
 
@@ -266,12 +266,12 @@ shared_ptr<MachineComponent> Machine::getComponent(ComponentId componentId) cons
 	return this->components[componentId];
 }
 
-shared_ptr<MachineActuatorComponent> Machine::getActuatorComponent(ComponentId componentId) const
+std::shared_ptr<MachineActuatorComponent> Machine::getActuatorComponent(ComponentId componentId) const
 {
 	return dynamic_pointer_cast<MachineActuatorComponent>(this->getComponent(componentId));
 }
 
-shared_ptr<Variable> Machine::getVariable(ComponentId variableId) const
+std::shared_ptr<Variable> Machine::getVariable(ComponentId variableId) const
 {
 	return dynamic_pointer_cast<Variable>(this->getComponent(variableId));
 }
@@ -361,7 +361,7 @@ ComponentId Machine::getVariableId(VariableNature_t nature, uint rank) const
 /////
 // Protected functions
 
-void Machine::registerComponent(shared_ptr<MachineComponent> newComponent)
+void Machine::registerComponent(std::shared_ptr<MachineComponent> newComponent)
 {
 	this->components[newComponent->getId()] = newComponent;
 
@@ -379,7 +379,7 @@ void Machine::cleanName(QString& nameToClean) const
 	QString nameBeingCleaned = nameToClean.trimmed();
 	QString cleanName;
 
-	for (QChar c : as_const(nameBeingCleaned))
+	for (QChar c : std::as_const(nameBeingCleaned))
 	{
 		if ( ( (c.isLetterOrNumber()) ) ||
 		     ( (c == '_')             ) ||

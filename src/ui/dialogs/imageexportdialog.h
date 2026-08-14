@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QComboBox;
@@ -59,7 +58,7 @@ public slots:
 public:
 	QString getFilePath() const;
 
-	shared_ptr<MachineImageExporter> getImageExporter() const;
+	std::shared_ptr<MachineImageExporter> getImageExporter() const;
 
 private slots:
 	void includeAdditionalInfoCheckBoxChanged(bool doInclude);
@@ -107,7 +106,7 @@ private:
 	QLabel* previewWidget = nullptr;
 
 	// Other objects
-	shared_ptr<MachineImageExporter> imageExporter;
+	std::shared_ptr<MachineImageExporter> imageExporter;
 
 	// Paths
 	QString baseFilePath;

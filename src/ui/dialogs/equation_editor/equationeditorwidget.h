@@ -36,17 +36,17 @@ class EquationEditorWidget : public EquationPartEditorWidget
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditorWidget(shared_ptr<Equation> equation, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
+	explicit EquationEditorWidget(std::shared_ptr<Equation> equation, uint rankInParentOperands, bool isTemplate, QWidget* parent = nullptr); // Parent is mandatory if this is an operand of another equation
 
 	/////
 	// Object functions
 public:
-	void replaceOperand(uint operandRank, shared_ptr<Equation> newOperand);
+	void replaceOperand(uint operandRank, std::shared_ptr<Equation> newOperand);
 	void replaceOperand(uint operandRank, MachineValue newConstant, bool isProcessingDrop = false);
 	void replaceOperand(uint operandRank, ComponentId newVariable);
 	void clearOperand(uint operandRank);
 
-	shared_ptr<Equation> getLogicEquation() const;
+	std::shared_ptr<Equation> getLogicEquation() const;
 
 	void closeOpenEditors();
 
@@ -86,7 +86,7 @@ private:
 	/////
 	// Object variables
 private:
-	shared_ptr<Equation> equation;
+	std::shared_ptr<Equation> equation;
 
 	QList<EquationPartEditorWidget*> operands;
 	RangeEditor* rangeEditor = nullptr;

@@ -29,7 +29,7 @@
 #include "actiononvariable.h"
 
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId variableId)
+std::shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId variableId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
@@ -38,7 +38,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId var
 	if (variable == nullptr) return nullptr;
 
 
-	auto action = make_shared<ActionOnVariable>(variableId, this->getAllowedActionTypes());
+	auto action = std::make_shared<ActionOnVariable>(variableId, this->getAllowedActionTypes());
 
 	this->addActionInternal(action, variable);
 
@@ -47,7 +47,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId var
 	return action;
 }
 
-void MachineActuatorComponent::addAction(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable)
+void MachineActuatorComponent::addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable)
 {
 	this->addActionInternal(action, variable);
 }
@@ -72,7 +72,7 @@ void MachineActuatorComponent::removeAction(uint actionRank)
 	emit this->componentEditedEvent(this->id);
 }
 
-shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const
+std::shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank) const
 {
 	if (actionRank >= static_cast<uint>(this->actionList.count())) return nullptr;
 
@@ -80,7 +80,7 @@ shared_ptr<ActionOnVariable> MachineActuatorComponent::getAction(uint actionRank
 	return this->actionList.at(actionRank);
 }
 
-const QList<shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
+const QList<std::shared_ptr<ActionOnVariable> > MachineActuatorComponent::getActions() const
 {
 	return this->actionList;
 }
@@ -94,7 +94,7 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 	if (oldActionRank == newActionRank) return;
 
 
-	shared_ptr<ActionOnVariable> action = this->actionList.at(oldActionRank);
+	auto action = this->actionList.at(oldActionRank);
 	this->actionList.removeAt(oldActionRank);
 	this->actionList.insert(newActionRank, action);
 
@@ -103,7 +103,7 @@ void MachineActuatorComponent::changeActionRank(uint oldActionRank, uint newActi
 
 void MachineActuatorComponent::variableDeletedEventHandler(ComponentId deletedVariableId)
 {
-	QList<shared_ptr<ActionOnVariable>> newActionList;
+	QList<std::shared_ptr<ActionOnVariable>> newActionList;
 
 	bool listChanged = false;
 	for (auto& action : this->actionList)
@@ -139,7 +139,7 @@ void MachineActuatorComponent::variableInActionListModifiedEventHandler()
 	emit this->componentEditedEvent(this->id);
 }
 
-void MachineActuatorComponent::addActionInternal(shared_ptr<ActionOnVariable> action, shared_ptr<Variable> variable)
+void MachineActuatorComponent::addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable)
 {
 	if (action == nullptr) return;
 

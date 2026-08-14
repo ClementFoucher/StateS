@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QPushButton;
@@ -76,8 +75,8 @@ public:
 public:
 	GenericScene* getScene() const;
 
-	void setView(shared_ptr<ViewConfiguration> viewConfiguration);
-	shared_ptr<ViewConfiguration> getView() const;
+	void setView(std::shared_ptr<ViewConfiguration> viewConfiguration);
+	std::shared_ptr<ViewConfiguration> getView() const;
 	void clearSelection();
 
 protected:
@@ -137,7 +136,7 @@ private:
 	MouseCursor_t currentCursor = MouseCursor_t::none;
 
 	// Temporary state
-	shared_ptr<ViewConfiguration> viewConfigurationSave;
+	std::shared_ptr<ViewConfiguration> viewConfigurationSave;
 
 };
 

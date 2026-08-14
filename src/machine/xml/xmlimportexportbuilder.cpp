@@ -38,14 +38,14 @@
  * @param machineManager
  * @return
  */
-shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRedo()
+std::shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRedo()
 {
-	shared_ptr<MachineXmlWriter> machineWriter;
+	std::shared_ptr<MachineXmlWriter> machineWriter;
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToUndo);
+		machineWriter = std::make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToUndo);
 	}
 
 	return machineWriter;
@@ -59,14 +59,14 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForUndoRe
  * @param viewConfiguration
  * @return
  */
-shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFile(shared_ptr<ViewConfiguration> viewConfiguration)
+std::shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFile(std::shared_ptr<ViewConfiguration> viewConfiguration)
 {
-	shared_ptr<MachineXmlWriter> machineWriter;
+	std::shared_ptr<MachineXmlWriter> machineWriter;
 
 	auto fsm = dynamic_pointer_cast<Fsm>(machineManager->getMachine());
 	if (fsm != nullptr)
 	{
-		machineWriter = make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToFile, viewConfiguration);
+		machineWriter = std::make_shared<FsmXmlWriter>(MachineXmlWriter::WriteMode_t::writeToFile, viewConfiguration);
 	}
 
 	return machineWriter;
@@ -78,15 +78,15 @@ shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForSaveFi
  * @param xmlString
  * @return
  */
-shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QString& xmlString)
+std::shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QString& xmlString)
 {
-	shared_ptr<MachineXmlParser> machineParser;
+	std::shared_ptr<MachineXmlParser> machineParser;
 
 	StateSXmlAnalyzer analyzer{xmlString};
 
 	if (analyzer.getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
 	{
-		machineParser = make_shared<FsmXmlParser>(xmlString);
+		machineParser = std::make_shared<FsmXmlParser>(xmlString);
 	}
 
 	return machineParser;
@@ -98,16 +98,16 @@ shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QSt
  * @param file
  * @return
  */
-shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(shared_ptr<QFile> file, shared_ptr<StateSXmlAnalyzer> analyzer)
+std::shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(std::shared_ptr<QFile> file, std::shared_ptr<StateSXmlAnalyzer> analyzer)
 {
 	if (analyzer == nullptr) return nullptr;
 
 
-	shared_ptr<MachineXmlParser> machineParser;
+	std::shared_ptr<MachineXmlParser> machineParser;
 
 	if (analyzer->getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
 	{
-		machineParser = make_shared<FsmXmlParser>(file);
+		machineParser = std::make_shared<FsmXmlParser>(file);
 	}
 
 	return machineParser;

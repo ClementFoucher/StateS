@@ -34,7 +34,7 @@
 #include "hintwidget.h"
 
 
-HintTab::HintTab(shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
+HintTab::HintTab(std::shared_ptr<MachineComponentVisualizer> machineComponentView, QWidget* parent) :
 	QWidget(parent)
 {
 	this->machineComponentView = machineComponentView;

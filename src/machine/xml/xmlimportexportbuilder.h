@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2025 Clément Foucher
+ * Copyright © 2021-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QFile;
@@ -47,12 +46,12 @@ class XmlImportExportBuilder : public QObject
 	// Static functions
 public:
 	// Writer
-	static shared_ptr<MachineXmlWriter> buildMachineWriterForUndoRedo();
-	static shared_ptr<MachineXmlWriter> buildMachineWriterForSaveFile(shared_ptr<ViewConfiguration> viewConfiguration);
+	static std::shared_ptr<MachineXmlWriter> buildMachineWriterForUndoRedo();
+	static std::shared_ptr<MachineXmlWriter> buildMachineWriterForSaveFile(std::shared_ptr<ViewConfiguration> viewConfiguration);
 
 	// Parser
-	static shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
-	static shared_ptr<MachineXmlParser> buildFileParser(shared_ptr<QFile> file, shared_ptr<StateSXmlAnalyzer> analyzer);
+	static std::shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
+	static std::shared_ptr<MachineXmlParser> buildFileParser(std::shared_ptr<QFile> file, std::shared_ptr<StateSXmlAnalyzer> analyzer);
 
 };
 

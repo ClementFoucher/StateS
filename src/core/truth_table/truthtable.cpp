@@ -33,7 +33,7 @@
 #include "operand.h"
 
 
-TruthTable::TruthTable(shared_ptr<const Equation> equation)
+TruthTable::TruthTable(std::shared_ptr<const Equation> equation)
 {
 	if (equation == nullptr) return;
 
@@ -43,7 +43,7 @@ TruthTable::TruthTable(shared_ptr<const Equation> equation)
 	this->prepareTable();
 }
 
-TruthTable::TruthTable(QList<shared_ptr<const Equation>> equations)
+TruthTable::TruthTable(QList<std::shared_ptr<const Equation> > equations)
 {
 	for (auto& equation : equations)
 	{
@@ -316,7 +316,7 @@ void TruthTable::prepareTable()
 	}
 }
 
-void TruthTable::replaceVariableByConstant(shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const
+void TruthTable::replaceVariableByConstant(std::shared_ptr<Equation> equation, ComponentId variableId, MachineValue constantValue) const
 {
 	if (equation == nullptr) return;
 

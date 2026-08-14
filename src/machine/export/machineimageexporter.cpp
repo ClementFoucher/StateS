@@ -98,7 +98,7 @@ void MachineImageExporter::setInfoPosition(LeftRight_t infoPosition)
 	this->infoPosition = infoPosition;
 }
 
-shared_ptr<QPixmap> MachineImageExporter::renderPreview(uint sideInPixels)
+std::shared_ptr<QPixmap> MachineImageExporter::renderPreview(uint sideInPixels)
 {
 	// Get current width and height
 	qreal width;
@@ -178,7 +178,7 @@ void MachineImageExporter::doExport(const QString& path)
 void MachineImageExporter::renderPdf(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin)
 {
 	// Build and configure PDF printer
-	auto pdfPrinter = make_shared<QPrinter>(QPrinter::HighResolution);
+	auto pdfPrinter = std::make_shared<QPrinter>(QPrinter::HighResolution);
 	pdfPrinter->setOutputFormat(QPrinter::PdfFormat);
 	pdfPrinter->setPageLayout(pageLayoutWithMargin);
 	pdfPrinter->setOutputFileName(path);
@@ -202,7 +202,7 @@ void MachineImageExporter::renderPdf(const QString& path, const QString& title, 
 void MachineImageExporter::renderSvg(const QString& path, const QString& title, const QString& creator, QPageLayout pageLayoutWithMargin)
 {
 	// Build and configure SVG generator
-	auto svgGenerator = make_shared<QSvgGenerator>();
+	auto svgGenerator = std::make_shared<QSvgGenerator>();
 	auto pageFullRect = pageLayoutWithMargin.fullRect(QPageLayout::Unit::Point);
 	svgGenerator->setSize(pageFullRect.size().toSize());
 	svgGenerator->setViewBox(pageFullRect);
@@ -218,10 +218,10 @@ void MachineImageExporter::renderSvg(const QString& path, const QString& title, 
 	this->renderOnDevice(svgGenerator.get());
 }
 
-shared_ptr<QPixmap> MachineImageExporter::renderBitmap(qreal width, qreal height)
+std::shared_ptr<QPixmap> MachineImageExporter::renderBitmap(qreal width, qreal height)
 {
 	// Build and fill pixmap
-	auto pixmap = make_shared<QPixmap>(width, height);
+	auto pixmap = std::make_shared<QPixmap>(width, height);
 	pixmap->fill();
 
 	// Compute printing rects
@@ -231,7 +231,7 @@ shared_ptr<QPixmap> MachineImageExporter::renderBitmap(qreal width, qreal height
 	this->generatePrintingRects(renderAreaRect);
 
 	// Compute bitmap pen size (used for border) to be 0.1 % of the image size (min 1 pixel)
-	int bitmapPenWidth = min(width, height)*0.1/100;
+	int bitmapPenWidth = std::min(width, height)*0.1/100;
 	if (bitmapPenWidth < 1)
 	{
 		bitmapPenWidth = 1;

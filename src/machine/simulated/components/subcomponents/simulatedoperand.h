@@ -28,7 +28,6 @@
 // Stdlib
 #include <memory>
 #include <variant>
-using namespace std;
 
 // StateS
 #include "operand.h"
@@ -44,7 +43,7 @@ class SimulatedOperand : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedOperand(shared_ptr<const Operand> sourceOperand);
+	explicit SimulatedOperand(std::shared_ptr<const Operand> sourceOperand);
 
 	/////
 	// Object functions
@@ -63,7 +62,7 @@ signals:
 private:
 	Operand::Source_t source;
 
-	std::variant<ComponentId, shared_ptr<SimulatedEquation>, MachineValue> value;
+	std::variant<ComponentId, std::shared_ptr<SimulatedEquation>, MachineValue> value;
 
 };
 

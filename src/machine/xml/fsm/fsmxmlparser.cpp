@@ -31,13 +31,13 @@
 FsmXmlParser::FsmXmlParser(const QString& xmlString) :
 	MachineXmlParser(xmlString)
 {
-	this->machine = make_shared<Fsm>();
+	this->machine = std::make_shared<Fsm>();
 }
 
-FsmXmlParser::FsmXmlParser(shared_ptr<QFile> file) :
+FsmXmlParser::FsmXmlParser(std::shared_ptr<QFile> file) :
 	MachineXmlParser(file)
 {
-	this->machine = make_shared<Fsm>();
+	this->machine = std::make_shared<Fsm>();
 }
 
 void FsmXmlParser::parseSubmachineStartElement()
@@ -380,8 +380,8 @@ void FsmXmlParser::parseTransitionNode()
 	QString targetName = this->getCurrentNodeStringAttribute("Target");
 
 	// Check if states exist
-	shared_ptr<FsmState> source = this->getStateByName(sourceName);
-	shared_ptr<FsmState> target = this->getStateByName(targetName);
+	auto source = this->getStateByName(sourceName);
+	auto target = this->getStateByName(targetName);
 	if ( (source == nullptr) || (target == nullptr) )
 	{
 		this->addIssue(tr("Error!") + " " + tr("Unable to parse a transition: either source or target state do not exist."));
@@ -438,13 +438,13 @@ void FsmXmlParser::processEndCondition()
 	transition->setCondition(this->getCurrentEquation());
 }
 
-shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const
+std::shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
 	if (fsm == nullptr) return nullptr;
 
 
-	shared_ptr<FsmState> ret = nullptr;
+	std::shared_ptr<FsmState> ret = nullptr;
 	for (auto& stateId : fsm->getAllStatesIds())
 	{
 		auto state = fsm->getState(stateId);

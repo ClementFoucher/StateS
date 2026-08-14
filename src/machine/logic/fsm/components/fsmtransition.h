@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class Equation;
@@ -52,9 +51,9 @@ public:
 	void setTargetStateId(ComponentId targetStateId);
 	ComponentId getTargetStateId() const;
 
-	void setCondition(shared_ptr<Equation> newCondition);
+	void setCondition(std::shared_ptr<Equation> newCondition);
 	void clearCondition();
-	shared_ptr<Equation> getCondition() const;
+	std::shared_ptr<Equation> getCondition() const;
 
 	virtual uint getAllowedActionTypes() const override;
 
@@ -73,7 +72,7 @@ private:
 	ComponentId sourceStateId;
 	ComponentId targetStateId;
 
-	shared_ptr<Equation> condition;
+	std::shared_ptr<Equation> condition;
 
 };
 

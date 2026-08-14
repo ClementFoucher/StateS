@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2023 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -26,7 +26,6 @@
 #include <QAbstractTableModel>
 
 // Stdlib
-using namespace std;
 #include <memory>
 
 // StateS
@@ -40,7 +39,7 @@ class TruthTableOutputTableModel : public QAbstractTableModel
 	/////
 	// Constructors/destructors
 public:
-	explicit TruthTableOutputTableModel(shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
+	explicit TruthTableOutputTableModel(std::shared_ptr<TruthTable> truthTable, QList<int> highlights, QObject* parent = nullptr);
 
 	/////
 	// Object functions
@@ -54,7 +53,7 @@ public:
 	/////
 	// Object variables
 private:
-	weak_ptr<TruthTable> truthTable;
+	std::weak_ptr<TruthTable> truthTable;
 	QList<int> highlights;
 
 };

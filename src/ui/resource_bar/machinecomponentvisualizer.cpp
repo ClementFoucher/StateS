@@ -135,6 +135,6 @@ void MachineComponentVisualizer::wheelEvent(QWheelEvent* event)
 
 void MachineComponentVisualizer::updateMachineVisualization()
 {
-	this->scene = make_shared<ComponentScene>();
+	this->scene = std::make_shared<ComponentScene>();
 	this->setScene(this->scene.get());
 }

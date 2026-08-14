@@ -56,7 +56,7 @@ StatesUi::StatesUi() :
 	connect(machineManager.get(), &MachineManager::redoActionAvailabilityChangedEvent, this, &StatesUi::redoActionAvailabilityChangeEventHandler);
 	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent,          this, &StatesUi::interfaceModeChangedEventHandler);
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	connect(machineStatus.get(), &MachineStatus::saveFilePathChangedEvent, this, &StatesUi::machineFilePathUpdated);
 	connect(machineStatus.get(), &MachineStatus::unsavedFlagChangedEvent,  this, &StatesUi::machineUnsavedStateUpdated);
 
@@ -115,12 +115,12 @@ StatesUi::StatesUi() :
 	this->resetUi();
 }
 
-void StatesUi::setView(shared_ptr<ViewConfiguration> viewConfiguration)
+void StatesUi::setView(std::shared_ptr<ViewConfiguration> viewConfiguration)
 {
 	this->editor->setView(viewConfiguration);
 }
 
-shared_ptr<ViewConfiguration> StatesUi::getView() const
+std::shared_ptr<ViewConfiguration> StatesUi::getView() const
 {
 	return this->editor->getView();
 }
@@ -157,7 +157,7 @@ void StatesUi::keyPressEvent(QKeyEvent* event)
 
 	if ( ((event->modifiers() & Qt::CTRL) != 0) && (event->key() == Qt::Key_S) )
 	{
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+		auto machineStatus = machineManager->getMachineStatus();
 		if (machineStatus->getHasSaveFile() == true)
 		{
 			emit this->saveMachineInCurrentFileRequestEvent();
@@ -345,7 +345,7 @@ void StatesUi::beginExportImageProcedure()
 	if (machine == nullptr) return;
 
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 
 	this->editor->clearSelection();
 
@@ -361,7 +361,7 @@ void StatesUi::beginExportVhdlProcedure()
 	if (machine == nullptr) return;
 
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 
 	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportFolderPath(), this);
 	connect(this->vhdlExportDialog, &VhdlExportDialog::finished, this, &StatesUi::vhdlExportDialogClosedEventHandler);
@@ -398,7 +398,7 @@ void StatesUi::machineFilePathUpdated()
 {
 	this->updateTitle();
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	if (machineStatus->getHasSaveFile() == true)
 	{
 		this->toolbar->setSaveActionEnabled(machineStatus->getUnsavedFlag());
@@ -409,7 +409,7 @@ void StatesUi::machineUnsavedStateUpdated()
 {
 	this->updateTitle();
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	if (machineStatus->getHasSaveFile() == true)
 	{
 		this->toolbar->setSaveActionEnabled(machineStatus->getUnsavedFlag());
@@ -603,7 +603,7 @@ void StatesUi::updateTitle()
 	else
 	{
 		QString title;
-		shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+		auto machineStatus = machineManager->getMachineStatus();
 		if (machineStatus->getHasSaveFile() == false)
 		{
 			title = "StateS — (" + tr("Unsaved machine") + ")";
@@ -631,7 +631,7 @@ bool StatesUi::displayUnsavedConfirmation(const QString& cause)
 		return true;
 	}
 
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	if (machineStatus->getUnsavedFlag() == false)
 	{
 		// Saved machine: do not ask, implicit confirmation.

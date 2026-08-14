@@ -102,8 +102,8 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 	uint selectedRowsCount = this->selectionModel()->selectedRows().count();
 	if (selectedRowsCount == 0) return;
 
-	shared_ptr<ActionOnVariable> actionActedOn;
-	shared_ptr<Variable> variableActedOn;
+	std::shared_ptr<ActionOnVariable> actionActedOn;
+	std::shared_ptr<Variable> variableActedOn;
 	if (selectedRowsCount == 1)
 	{
 		auto machine = machineManager->getMachine();
@@ -247,7 +247,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 {
 	auto dataValue = static_cast<ContextAction_t>(action->data().toInt());
 
-	shared_ptr<ActionOnVariable> actionOnVariable;
+	std::shared_ptr<ActionOnVariable> actionOnVariable;
 	if (this->currentMenuRow >= 0)
 	{
 		auto machine = machineManager->getMachine();

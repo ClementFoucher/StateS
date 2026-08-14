@@ -56,7 +56,7 @@ ComponentId Fsm::addState(const QString& name, ComponentId id)
 	if (cleanedName.isEmpty() == true) return nullId;
 
 	// Check if name doesn't already exist
-	for (auto existingStateId : as_const(this->states))
+	for (auto existingStateId : std::as_const(this->states))
 	{
 		auto existingState = this->getState(existingStateId);
 		if (existingState->getName() == cleanedName)
@@ -67,16 +67,16 @@ ComponentId Fsm::addState(const QString& name, ComponentId id)
 
 
 	// Build state
-	shared_ptr<FsmState> state = nullptr;
+	std::shared_ptr<FsmState> state = nullptr;
 	ComponentId stateId;
 	if (id != nullId)
 	{
-		state = make_shared<FsmState>(id, cleanedName);
+		state = std::make_shared<FsmState>(id, cleanedName);
 		stateId = id;
 	}
 	else
 	{
-		state = make_shared<FsmState>(cleanedName);
+		state = std::make_shared<FsmState>(cleanedName);
 		stateId = state->getId();
 	}
 
@@ -94,17 +94,17 @@ ComponentId Fsm::addTransition(ComponentId sourceStateId, ComponentId targetStat
 	if ( (source == nullptr) || (target == nullptr) ) return nullId;
 
 
-	shared_ptr<FsmTransition> transition;
+	std::shared_ptr<FsmTransition> transition;
 	ComponentId transitionId;
 
 	if (id != nullId)
 	{
-		transition = make_shared<FsmTransition>(id, source->getId(), target->getId());
+		transition = std::make_shared<FsmTransition>(id, source->getId(), target->getId());
 		transitionId = id;
 	}
 	else
 	{
-		transition = make_shared<FsmTransition>(source->getId(), target->getId());
+		transition = std::make_shared<FsmTransition>(source->getId(), target->getId());
 		transitionId = transition->getId();
 	}
 
@@ -154,12 +154,12 @@ void Fsm::removeTransition(ComponentId transitionId)
 	this->removeComponent(transitionId);
 }
 
-shared_ptr<FsmState> Fsm::getState(ComponentId stateId) const
+std::shared_ptr<FsmState> Fsm::getState(ComponentId stateId) const
 {
 	return dynamic_pointer_cast<FsmState>(this->getComponent(stateId));
 }
 
-shared_ptr<FsmTransition> Fsm::getTransition(ComponentId transitionId) const
+std::shared_ptr<FsmTransition> Fsm::getTransition(ComponentId transitionId) const
 {
 	return dynamic_pointer_cast<FsmTransition>(this->getComponent(transitionId));
 }
@@ -190,7 +190,7 @@ bool Fsm::renameState(ComponentId stateId, const QString& newName)
 	if (cleanedName.isEmpty() == true) return false;
 
 	// Check if name doesn't already exist
-	for (auto otherStateId : as_const(this->states))
+	for (auto otherStateId : std::as_const(this->states))
 	{
 		auto otherState = this->getState(otherStateId);
 		if (otherState->getName() == cleanedName)

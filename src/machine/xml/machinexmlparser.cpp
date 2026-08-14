@@ -38,17 +38,17 @@
 
 MachineXmlParser::MachineXmlParser()
 {
-	this->graphicAttributes = make_shared<GraphicAttributes>();
-	this->viewConfiguration = make_shared<ViewConfiguration>();
+	this->graphicAttributes = std::make_shared<GraphicAttributes>();
+	this->viewConfiguration = std::make_shared<ViewConfiguration>();
 }
 
 MachineXmlParser::MachineXmlParser(const QString& xmlString) :
 	MachineXmlParser()
 {
-	this->xmlReader = make_shared<QXmlStreamReader>(xmlString);
+	this->xmlReader = std::make_shared<QXmlStreamReader>(xmlString);
 }
 
-MachineXmlParser::MachineXmlParser(shared_ptr<QFile> file) :
+MachineXmlParser::MachineXmlParser(std::shared_ptr<QFile> file) :
 	MachineXmlParser()
 {
 	this->file = file;
@@ -61,7 +61,7 @@ MachineXmlParser::MachineXmlParser(shared_ptr<QFile> file) :
 		file->reset();
 	}
 
-	this->xmlReader = make_shared<QXmlStreamReader>(file.get());
+	this->xmlReader = std::make_shared<QXmlStreamReader>(file.get());
 }
 
 void MachineXmlParser::doParse()
@@ -81,17 +81,17 @@ void MachineXmlParser::doParse()
 	}
 }
 
-shared_ptr<Machine> MachineXmlParser::getMachine()
+std::shared_ptr<Machine> MachineXmlParser::getMachine()
 {
 	return this->machine;
 }
 
-shared_ptr<GraphicAttributes> MachineXmlParser::getGraphicMachineConfiguration()
+std::shared_ptr<GraphicAttributes> MachineXmlParser::getGraphicMachineConfiguration()
 {
 	return this->graphicAttributes;
 }
 
-shared_ptr<ViewConfiguration> MachineXmlParser::getViewConfiguration()
+std::shared_ptr<ViewConfiguration> MachineXmlParser::getViewConfiguration()
 {
 	return this->viewConfiguration;
 }
@@ -314,7 +314,7 @@ void MachineXmlParser::parseLogicEquationNode()
 	}
 
 	// Build equation
-	auto equation = make_shared<Equation>(operatorType, operandCount);
+	auto equation = std::make_shared<Equation>(operatorType, operandCount);
 
 	if (operatorType == Equation::Operator_t::extractOp)
 	{
@@ -532,7 +532,7 @@ ComponentId MachineXmlParser::getCurrentNodeIdAttribute() const
 	}
 }
 
-shared_ptr<Equation> MachineXmlParser::getCurrentEquation()
+std::shared_ptr<Equation> MachineXmlParser::getCurrentEquation()
 {
 	if (this->equationStack.isEmpty() == true) return nullptr;
 
@@ -925,7 +925,7 @@ void MachineXmlParser::parseVariableNode()
 	}
 }
 
-shared_ptr<Variable> MachineXmlParser::getVariableByName(const QString& variableName) const
+std::shared_ptr<Variable> MachineXmlParser::getVariableByName(const QString& variableName) const
 {
 	for (auto& variableId : this->machine->getAllVariablesIds())
 	{

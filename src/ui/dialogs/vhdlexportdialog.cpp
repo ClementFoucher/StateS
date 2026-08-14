@@ -38,7 +38,7 @@ VhdlExportDialog::VhdlExportDialog(const QString& baseFileName, const QString& s
 {
 	this->baseFileName  = baseFileName;
 	this->searchPath    = searchPath;
-	this->fsmVhdlExport = make_shared<FsmVhdlExport>();
+	this->fsmVhdlExport = std::make_shared<FsmVhdlExport>();
 
 	this->setWindowTitle(tr("VHDL export"));
 
@@ -128,7 +128,7 @@ QString VhdlExportDialog::getFilePath() const
 	return this->filePath;
 }
 
-shared_ptr<FsmVhdlExport> VhdlExportDialog::getFsmVhdlExport() const
+std::shared_ptr<FsmVhdlExport> VhdlExportDialog::getFsmVhdlExport() const
 {
 	return this->fsmVhdlExport;
 }

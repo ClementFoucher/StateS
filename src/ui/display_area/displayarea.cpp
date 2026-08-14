@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -47,7 +47,7 @@ void DisplayArea::addWidget(QWidget* widget, QString title)
 {
 	int previousWidgetCount = this->widgets.count();
 
-	tuple<QString, QWidget*> t(title, widget);
+	std::tuple<QString, QWidget*> t(title, widget);
 	this->widgets.append(t);
 
 	if (previousWidgetCount == 0)
@@ -75,7 +75,7 @@ void DisplayArea::addWidget(QWidget* widget, QString title)
 
 void DisplayArea::removeWidget(QWidget* widget)
 {
-	for (tuple<QString, QWidget*> t : as_const(this->widgets))
+	for (std::tuple<QString, QWidget*> t : as_const(this->widgets))
 	{
 		QWidget* currentWidget = get<1>(t);
 		if (currentWidget == widget)

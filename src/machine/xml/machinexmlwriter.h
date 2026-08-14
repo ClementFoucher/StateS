@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // Qt
 class QXmlStreamWriter;
@@ -52,7 +51,7 @@ public:
 	/////
 	// Constructors/destructors
 protected:
-	explicit MachineXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration);
+	explicit MachineXmlWriter(WriteMode_t mode, std::shared_ptr<ViewConfiguration> viewConfiguration);
 
 	/////
 	// Object functions
@@ -65,8 +64,8 @@ protected:
 	virtual void writeSubmachineToStream() = 0;
 	virtual void writeMachineType() = 0;
 
-	void writeActuatorActions(shared_ptr<MachineActuatorComponent> component);
-	void writeLogicEquation(shared_ptr<Equation> equation);
+	void writeActuatorActions(std::shared_ptr<MachineActuatorComponent> component);
+	void writeLogicEquation(std::shared_ptr<Equation> equation);
 
 private:
 	void createSaveFile(); // Throws StatesException
@@ -80,15 +79,15 @@ private:
 	/////
 	// Object variables
 protected:
-	shared_ptr<ViewConfiguration> viewConfiguration;
+	std::shared_ptr<ViewConfiguration> viewConfiguration;
 
-	shared_ptr<QXmlStreamWriter> stream;
+	std::shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;
 
 	WriteMode_t mode;
 
 private:
-	shared_ptr<QFile> file;
+	std::shared_ptr<QFile> file;
 
 };
 

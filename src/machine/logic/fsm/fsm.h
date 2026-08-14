@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class FsmState;
@@ -59,8 +58,8 @@ public:
 	void removeState     (ComponentId stateId);
 	void removeTransition(ComponentId transitionId);
 
-	shared_ptr<FsmState>      getState     (ComponentId stateId)      const;
-	shared_ptr<FsmTransition> getTransition(ComponentId transitionId) const;
+	std::shared_ptr<FsmState>      getState     (ComponentId stateId)      const;
+	std::shared_ptr<FsmTransition> getTransition(ComponentId transitionId) const;
 
 	const QList<ComponentId> getAllStatesIds()      const;
 	const QList<ComponentId> getAllTransitionsIds() const;

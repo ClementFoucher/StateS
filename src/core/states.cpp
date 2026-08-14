@@ -156,13 +156,13 @@ void StateS::languageSelected(QTranslator* translator)
  */
 void StateS::generateNewFsm()
 {
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
 	machineManager->clearMachine();
-	auto newMachine = make_shared<Fsm>();
-	machineManager->setMachine(newMachine, make_shared<GraphicAttributes>());
+	auto newMachine = std::make_shared<Fsm>();
+	machineManager->setMachine(newMachine, std::make_shared<GraphicAttributes>());
 }
 
 /**
@@ -172,7 +172,7 @@ void StateS::generateNewFsm()
  */
 void StateS::clearMachine()
 {
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	machineStatus->setHasSaveFile(false);
 	machineStatus->setUnsavedFlag(false);
 
@@ -213,9 +213,9 @@ void StateS::loadMachine(const QString& path)
 	}
 
 	// Build file parser
-	auto file = make_shared<QFile>(path);
+	auto file = std::make_shared<QFile>(path);
 	auto analyzer = make_shared<StateSXmlAnalyzer>(file);
-	shared_ptr<MachineXmlParser> parser = XmlImportExportBuilder::buildFileParser(file, analyzer);
+	auto parser = XmlImportExportBuilder::buildFileParser(file, analyzer);
 	if (parser == nullptr)
 	{
 		issues.append(tr("Error!") + " " + tr("StateS couldn't read the selected file."));
@@ -267,7 +267,7 @@ void StateS::loadMachine(const QString& path)
 	this->statesUi->setView(parser->getViewConfiguration());
 
 	// Update status
-	shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+	auto machineStatus = machineManager->getMachineStatus();
 	machineStatus->setHasSaveFile(true);
 	machineStatus->setUnsavedFlag(false);
 	machineStatus->setSaveFilePath(path);
@@ -298,7 +298,7 @@ void StateS::saveCurrentMachine(const QString& path)
 
 		if (fileOk)
 		{
-			shared_ptr<MachineStatus> machineStatus = machineManager->getMachineStatus();
+			auto machineStatus = machineManager->getMachineStatus();
 			machineStatus->setHasSaveFile(true);
 			machineStatus->setSaveFilePath(path);
 			this->saveCurrentMachineInCurrentFile();

@@ -65,7 +65,7 @@ ComponentId FsmTransition::getTargetStateId() const
 	return this->targetStateId;
 }
 
-void FsmTransition::setCondition(shared_ptr<Equation> newCondition)
+void FsmTransition::setCondition(std::shared_ptr<Equation> newCondition)
 {
 	if (this->condition != nullptr)
 	{
@@ -93,7 +93,7 @@ void FsmTransition::clearCondition()
 	this->setCondition(nullptr);
 }
 
-shared_ptr<Equation> FsmTransition::getCondition() const
+std::shared_ptr<Equation> FsmTransition::getCondition() const
 {
 	return this->condition;
 }

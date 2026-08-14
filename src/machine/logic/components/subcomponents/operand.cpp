@@ -49,7 +49,7 @@ Operand::Operand(ComponentId variableId) :
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
 }
 
-Operand::Operand(shared_ptr<Equation> equation) :
+Operand::Operand(std::shared_ptr<Equation> equation) :
 	source{Source_t::equation},
 	value{equation}
 {
@@ -66,7 +66,7 @@ Operand::Operand(MachineValue constant) :
 {
 }
 
-Operand::Operand(shared_ptr<Variable> variable) :
+Operand::Operand(std::shared_ptr<Variable> variable) :
 	source{Source_t::variable},
 	value{nullId}
 {
@@ -82,18 +82,18 @@ Operand::Operand(shared_ptr<Variable> variable) :
 	connect(variable.get(), &Variable::componentDeletedEvent, this, &Operand::variableDeletedEventHandler);
 }
 
-shared_ptr<Operand> Operand::clone() const
+std::shared_ptr<Operand> Operand::clone() const
 {
 	switch (this->source)
 	{
 	case Source_t::variable:
-		return make_shared<Operand>(this->getVariableId());
+		return std::make_shared<Operand>(this->getVariableId());
 		break;
 	case Source_t::equation:
-		return make_shared<Operand>(this->getEquation()->clone());
+		return std::make_shared<Operand>(this->getEquation()->clone());
 		break;
 	case Source_t::constant:
-		return make_shared<Operand>(this->getConstant());
+		return std::make_shared<Operand>(this->getConstant());
 		break;
 	}
 }
@@ -147,12 +147,12 @@ ComponentId Operand::getVariableId() const
 	return std::get<ComponentId>(this->value);
 }
 
-shared_ptr<Equation> Operand::getEquation() const
+std::shared_ptr<Equation> Operand::getEquation() const
 {
 	if (this->source != Source_t::equation) return nullptr;
 
 
-	return std::get<shared_ptr<Equation>>(this->value);
+	return std::get<std::shared_ptr<Equation>>(this->value);
 }
 
 MachineValue Operand::getConstant() const

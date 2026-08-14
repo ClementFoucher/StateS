@@ -40,7 +40,7 @@
 #include "nulleditorwidget.h"
 
 
-EquationEditorWidget::EquationEditorWidget(shared_ptr<Equation> equation, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
+EquationEditorWidget::EquationEditorWidget(std::shared_ptr<Equation> equation, uint rankInParentOperands, bool isTemplate, QWidget* parent) :
 	EquationPartEditorWidget(rankInParentOperands, isTemplate, parent)
 {
 	this->equation = equation;
@@ -57,7 +57,7 @@ EquationEditorWidget::EquationEditorWidget(shared_ptr<Equation> equation, uint r
 	connect(this->equation.get(), &Equation::equationTextChangedEvent, this, &EquationEditorWidget::equationChangedEventHandler);
 }
 
-void EquationEditorWidget::replaceOperand(uint operandRank, shared_ptr<Equation> newOperand)
+void EquationEditorWidget::replaceOperand(uint operandRank, std::shared_ptr<Equation> newOperand)
 {
 	if (this->equation == nullptr) return;
 
@@ -122,7 +122,7 @@ void EquationEditorWidget::clearOperand(uint operandRank)
 	}
 }
 
-shared_ptr<Equation> EquationEditorWidget::getLogicEquation() const
+std::shared_ptr<Equation> EquationEditorWidget::getLogicEquation() const
 {
 	return this->equation;
 }
@@ -597,7 +597,7 @@ void EquationEditorWidget::processSpecificDropAction(DropAction_t action)
 	{
 		if (this->tempValueNature != TempValueNature_t::equation) return;
 
-		auto tempEquation = std::get<shared_ptr<Equation>>(this->tempValue);
+		auto tempEquation = std::get<std::shared_ptr<Equation>>(this->tempValue);
 		if (tempEquation == nullptr) return;
 
 		if (this->equation == nullptr) return;
@@ -835,7 +835,7 @@ void EquationEditorWidget::setInverted(bool invert)
 
 	if (addInverter == true)
 	{
-		auto tempEquation = make_shared<Equation>(Equation::Operator_t::notOp);
+		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::notOp);
 		tempEquation->setOperand(0, this->equation);
 
 		this->tempValueNature = TempValueNature_t::equation;

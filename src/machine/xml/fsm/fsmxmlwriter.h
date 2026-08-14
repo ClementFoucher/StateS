@@ -27,7 +27,6 @@
 
 // Stdlib
 #include <memory>
-using namespace std;
 
 // StateS
 class ViewConfiguration;
@@ -42,7 +41,7 @@ class FsmXmlWriter : public MachineXmlWriter
 	/////
 	// Constructors/destructors
 public:
-	explicit FsmXmlWriter(WriteMode_t mode, shared_ptr<ViewConfiguration> viewConfiguration = nullptr) : MachineXmlWriter(mode, viewConfiguration) {}
+	explicit FsmXmlWriter(WriteMode_t mode, std::shared_ptr<ViewConfiguration> viewConfiguration = nullptr) : MachineXmlWriter(mode, viewConfiguration) {}
 
 	/////
 	// Object functions
@@ -51,8 +50,8 @@ protected:
 	virtual void writeMachineType() override;
 
 private:
-	void writeFsmStates(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes);
-	void writeFsmTransitions(shared_ptr<Fsm> fsm, shared_ptr<GraphicAttributes> fsmGraphicAttributes);
+	void writeFsmStates(std::shared_ptr<Fsm> fsm, std::shared_ptr<GraphicAttributes> fsmGraphicAttributes);
+	void writeFsmTransitions(std::shared_ptr<Fsm> fsm, std::shared_ptr<GraphicAttributes> fsmGraphicAttributes);
 
 };
 
