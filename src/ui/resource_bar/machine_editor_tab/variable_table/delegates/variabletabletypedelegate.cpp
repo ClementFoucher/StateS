@@ -38,7 +38,13 @@ VariableTableTypeDelegate::VariableTableTypeDelegate(QWidget* parent) :
 
 QWidget* VariableTableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	return new TypeEditor(parent);
+	auto typeEditor = new TypeEditor(parent);
+
+	// Ideally, the wheel event should only be ignored if the table
+	// has vertical scrollbars, but this is far easier this way.
+	typeEditor->setIgnoreWheelEvents(true);
+
+	return typeEditor;
 }
 
 void VariableTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const

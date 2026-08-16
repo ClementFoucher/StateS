@@ -29,7 +29,13 @@
 
 QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	return new ValueEditor(parent);
+	auto valueEditor = new ValueEditor(parent);
+
+	// Ideally, the wheel event should only be ignored if the table
+	// has vertical scrollbars, but this is far easier this way.
+	valueEditor->setIgnoreWheelEvents(true);
+
+	return valueEditor;
 }
 
 void VariableTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const

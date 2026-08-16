@@ -24,12 +24,12 @@
 
 // Qt
 #include <QHBoxLayout>
-#include <QComboBox>
 #include <QLabel>
 #include <QFocusEvent>
 
 // StateS
 #include "selfmanageddynamiclineeditor.h"
+#include "discreetcombobox.h"
 
 
 TypeEditor::TypeEditor(QWidget* parent) :
@@ -37,7 +37,7 @@ TypeEditor::TypeEditor(QWidget* parent) :
 {
 	//
 	// Build subwidget
-	this->typeComboBox = new QComboBox();
+	this->typeComboBox = new DiscreetComboBox();
 	this->typeComboBox->insertItem(static_cast<int>(indexType::boolean),   tr("Boolean"));
 	this->typeComboBox->insertItem(static_cast<int>(indexType::bitVector), tr("Bit vector"));
 
@@ -50,7 +50,7 @@ TypeEditor::TypeEditor(QWidget* parent) :
 
 	//
 	// Connect signals
-	connect(this->typeComboBox, &QComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
+	connect(this->typeComboBox, &DiscreetComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
 }
 
 TypeEditor::~TypeEditor()
@@ -82,7 +82,7 @@ void TypeEditor::setCurrentType(MachineValue::Type_t type)
 		this->closingBracket = nullptr;
 	}
 
-	disconnect(this->typeComboBox, &QComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
+	disconnect(this->typeComboBox, &DiscreetComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
 	switch (type)
 	{
 	case MachineValue::Type_t::boolean:
@@ -107,7 +107,7 @@ void TypeEditor::setCurrentType(MachineValue::Type_t type)
 		// Checked previously: should not happen
 		break;
 	}
-	connect(this->typeComboBox, &QComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
+	connect(this->typeComboBox, &DiscreetComboBox::currentIndexChanged, this, &TypeEditor::selectedTypeChangedEventHandler);
 }
 
 MachineValue::Type_t TypeEditor::getCurrentType() const
@@ -198,6 +198,11 @@ bool TypeEditor::getIsErroneous() const
 
 
 	return this->sizeLineEdit->getIsErroneous();
+}
+
+void TypeEditor::setIgnoreWheelEvents(bool ignoreWheelEvents)
+{
+	this->typeComboBox->setIgnoreWheelEvents(true);
 }
 
 void TypeEditor::mousePressEvent(QMouseEvent* event)

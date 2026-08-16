@@ -26,10 +26,10 @@
 #include <QHBoxLayout>
 #include <QRegularExpressionValidator>
 #include <QKeyEvent>
-#include <QComboBox>
 
 // StateS
 #include "coloredlineeditor.h"
+#include "discreetcombobox.h"
 
 
 ValueEditor::ValueEditor(QWidget* parent) :
@@ -66,15 +66,20 @@ void ValueEditor::setMachineValue(MachineValue value)
 	{
 		if (this->comboBox == nullptr)
 		{
-			this->comboBox = new QComboBox();
+			this->comboBox = new DiscreetComboBox();
 			this->comboBox->insertItem(static_cast<int>(indexType::falseValue), tr("False"));
 			this->comboBox->insertItem(static_cast<int>(indexType::trueValue),  tr("True"));
+
+			if (this->ignoreWheelEvents == true)
+			{
+				this->comboBox->setIgnoreWheelEvents(true);
+			}
 
 			this->layout()->addWidget(this->comboBox);
 		}
 		else
 		{
-			disconnect(this->comboBox, &QComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
+			disconnect(this->comboBox, &DiscreetComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
 		}
 
 		if (value.getBooleanValue() == false)
@@ -86,7 +91,7 @@ void ValueEditor::setMachineValue(MachineValue value)
 			this->comboBox->setCurrentIndex(static_cast<int>(indexType::trueValue));
 		}
 
-		connect(this->comboBox, &QComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
+		connect(this->comboBox, &DiscreetComboBox::currentIndexChanged, this, &ValueEditor::comboBoxIndexChangedEventHandler);
 		break;
 	}
 	case MachineValue::Type_t::bitVector:
@@ -174,6 +179,16 @@ void ValueEditor::setBitVectorSize(uint size)
 void ValueEditor::setFocusOnShow(bool autoFocusOnNextShow)
 {
 	this->autoFocusOnNextShow = autoFocusOnNextShow;
+}
+
+void ValueEditor::setIgnoreWheelEvents(bool ignoreWheelEvents)
+{
+	this->ignoreWheelEvents = ignoreWheelEvents;
+
+	if (this->comboBox != nullptr)
+	{
+		this->comboBox->setIgnoreWheelEvents(ignoreWheelEvents);
+	}
 }
 
 void ValueEditor::showEvent(QShowEvent* event)

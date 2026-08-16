@@ -26,12 +26,12 @@
 #include <QWidget>
 
 // Qt
-class QComboBox;
 class QLabel;
 
 // StateS
 #include "machinevalue.h"
 class SelfManagedDynamicLineEditor;
+class DiscreetComboBox;
 
 
 class TypeEditor : public QWidget
@@ -66,6 +66,8 @@ public:
 	void setErroneous(bool erroneous);
 	bool getIsErroneous() const;
 
+	void setIgnoreWheelEvents(bool ignoreWheelEvents);
+
 protected:
 	virtual void mousePressEvent(QMouseEvent* event) override;
 
@@ -86,7 +88,7 @@ signals:
 private:
 	uint bitVectorSize = 2; // Default to 2 if no value provided
 
-	QComboBox* typeComboBox = nullptr;
+	DiscreetComboBox* typeComboBox = nullptr;
 
 	// Bit vector size related widgets
 	SelfManagedDynamicLineEditor* sizeLineEdit   = nullptr;

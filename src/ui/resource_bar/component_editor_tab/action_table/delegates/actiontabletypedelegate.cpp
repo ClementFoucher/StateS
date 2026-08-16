@@ -39,7 +39,13 @@ ActionTableTypeDelegate::ActionTableTypeDelegate(QWidget* parent) :
 
 QWidget* ActionTableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	return new ActionTypeEditor(parent);
+	auto actionTypeEditor = new ActionTypeEditor(parent);
+
+	// Ideally, the wheel event should only be ignored if the table
+	// has vertical scrollbars, but this is far easier this way.
+	actionTypeEditor->setIgnoreWheelEvents(true);
+
+	return actionTypeEditor;
 }
 
 void ActionTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const

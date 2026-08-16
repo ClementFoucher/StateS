@@ -23,7 +23,7 @@
 #define ACTIONTYPEEDITOR_H
 
 // Parent
-#include <QComboBox>
+#include "discreetcombobox.h"
 
 // StateS
 #include "actiononvariable.h"
@@ -33,14 +33,14 @@
  * @brief The ActionTypeEditor class displays
  * a drop-down list of action types.
  */
-class ActionTypeEditor : public QComboBox
+class ActionTypeEditor : public DiscreetComboBox
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeEditor(QWidget* parent = nullptr) : QComboBox(parent) {}
+	explicit ActionTypeEditor(QWidget* parent = nullptr) : DiscreetComboBox(parent) {}
 
 	/////
 	// Object functions

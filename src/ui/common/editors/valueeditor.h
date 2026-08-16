@@ -25,12 +25,10 @@
 // Parent
 #include <QWidget>
 
-// Qt
-class QComboBox;
-
 // StateS
 #include "machinevalue.h"
 class ColoredLineEditor;
+class DiscreetComboBox;
 
 
 class ValueEditor : public QWidget
@@ -61,6 +59,8 @@ public:
 
 	void setFocusOnShow(bool autoFocusOnNextShow);
 
+	void setIgnoreWheelEvents(bool ignoreWheelEvents);
+
 protected:
 	void showEvent(QShowEvent* event) override;
 
@@ -81,11 +81,12 @@ signals:
 	/////
 	// Object variables
 private:
-	QComboBox*         comboBox = nullptr;
+	DiscreetComboBox*  comboBox = nullptr;
 	ColoredLineEditor* lineEdit = nullptr;
 
 	uint bitVectorSize = 0;
 	bool autoFocusOnNextShow = false;
+	bool ignoreWheelEvents = false;
 
 	MachineValue::Type_t valueType = MachineValue::Type_t::nullType;
 
