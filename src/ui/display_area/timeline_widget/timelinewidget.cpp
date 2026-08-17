@@ -63,7 +63,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	this->toolBar->setIconSize(QSize(64, 64));
 
 	QIcon exportPdfIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
-	QAction* action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
+	auto action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
 	connect(action, &QAction::triggered, this, &TimelineWidget::exportToPDF);
 
 	QIcon detachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
@@ -75,7 +75,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	/////
 	// Add timelines in a scroll area
-	QScrollArea* scrollArea = new QScrollArea();
+	auto scrollArea = new QScrollArea();
 	scrollArea->setWidgetResizable(true);
 	scrollArea->setFrameShape(QFrame::NoFrame);
 	scrollArea->setStyleSheet("background-color: transparent");
@@ -91,7 +91,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	hLayout->addStretch();
 
 	// Clock
-	QLabel* titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
+	auto titleClock = new QLabel("<b>" + tr("Clock") + "</b>");
 	titleClock->setAlignment(Qt::AlignCenter);
 
 	vLayout->addWidget(titleClock);
@@ -101,20 +101,20 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	auto inputIds = machine->getInputVariablesIds();
 	if (inputIds.count() != 0)
 	{
-		QLabel* titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
+		auto titleInputs = new QLabel("<b>" + tr("Inputs") + "</b>");
 		titleInputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleInputs);
 
 		for (auto& varId : inputIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(3, varId);
+			auto varTL = new VariableTimeline(3, varId);
 			vLayout->addWidget(varTL);
 		}
 	}
 
 	// Internal variables
-	QLabel* titleVariables = new QLabel("<b>" + tr("Internal variables") + "</b>");
+	auto titleVariables = new QLabel("<b>" + tr("Internal variables") + "</b>");
 	titleVariables->setAlignment(Qt::AlignCenter);
 	vLayout->addWidget(titleVariables);
 
@@ -122,7 +122,7 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 
 	for (auto& varId : machine->getInternalVariablesIds())
 	{
-		VariableTimeline* varTL = new VariableTimeline(0, varId);
+		auto varTL = new VariableTimeline(0, varId);
 		vLayout->addWidget(varTL);
 	}
 
@@ -130,14 +130,14 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	auto outputsIds = machine->getOutputVariablesIds();
 	if (outputsIds.count() != 0)
 	{
-		QLabel* titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
+		auto titleOutputs = new QLabel("<b>" + tr("Outputs") + "</b>");
 		titleOutputs->setAlignment(Qt::AlignCenter);
 
 		vLayout->addWidget(titleOutputs);
 
 		for (auto& varId : outputsIds)
 		{
-			VariableTimeline* varTL = new VariableTimeline(0, varId);
+			auto varTL = new VariableTimeline(0, varId);
 			vLayout->addWidget(varTL);
 		}
 	}
@@ -158,14 +158,27 @@ void TimelineWidget::showEvent(QShowEvent* event)
 {
 	StatesMainWindow::showEvent(event);
 
-	this->restoreWindowGeometry();
+	if (this->isWindow() == true)
+	{
+		// Update button action
+		disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
+		this->actionDetach->setText(tr("Attach to main window"));
+		QIcon attachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+		this->actionDetach->setIcon(attachWindowIcon);
+		connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
+
+		// Restore window position and size
+		this->restoreWindowGeometry();
+	}
 }
 
 void TimelineWidget::mousePressEvent(QMouseEvent* event)
 {
-	// TODO: handle only left button
-	this->separatorPosition = event->pos().x();
-	repaint();
+	if (event->button() == Qt::LeftButton)
+	{
+		this->separatorPosition = event->pos().x();
+		this->repaint();
+	}
 
 	QWidget::mousePressEvent(event);
 }
@@ -173,8 +186,11 @@ void TimelineWidget::mousePressEvent(QMouseEvent* event)
 void TimelineWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	// This event is only called if we have clicked first
-	this->separatorPosition = event->pos().x();
-	repaint();
+	if ( (event->buttons() & Qt::LeftButton) != 0)
+	{
+		this->separatorPosition = event->pos().x();
+		this->repaint();
+	}
 
 	QWidget::mouseMoveEvent(event);
 }
@@ -190,7 +206,7 @@ void TimelineWidget::exportToPDF()
 {
 	auto machineStatus = machineManager->getMachineStatus();
 
-	QString fileName = SaveFileDialog::getSaveFileName(this, tr("Export time line to PDF"), machineStatus->getImageExportFolderPath(), tr("timeline"), "pdf");
+	auto fileName = SaveFileDialog::getSaveFileName(this, tr("Export time line to PDF"), machineStatus->getImageExportFolderPath(), tr("timeline"), "pdf");
 
 	if (fileName.isEmpty() == false)
 	{
