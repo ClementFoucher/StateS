@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -31,36 +31,42 @@
 CollapsibleWidgetWithTitle::CollapsibleWidgetWithTitle(const QString& title, QWidget* content, QWidget* parent) :
 	QFrame(parent)
 {
-	this->layout         = new QGridLayout(this);
-	this->buttonCollapse = new QPushButton(this);
-	this->title          = new QLabel(this);
-
+	//
 	// Define style
-
 	this->setFrameStyle(QFrame::Box | QFrame::Raised);
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-	this->buttonCollapse->setCheckable(true);
-	this->buttonCollapse->setChecked(true);
-	connect(this->buttonCollapse, &QPushButton::toggled, this, &CollapsibleWidgetWithTitle::buttonCollapseToggledEventHander);
-
+	//
+	// Build widgets
+	this->title = new QLabel();
 	this->title->setAlignment(Qt::AlignCenter);
 
-	// Add content
+	this->buttonCollapse = new QPushButton();
+	this->buttonCollapse->setCheckable(true);
+	this->buttonCollapse->setChecked(true);
+
+	//
+	// Build complete rendering
+	this->layout  = new QGridLayout(this);
 
 	this->layout->addWidget(this->title,          0, 0, 1, 3);
 	this->layout->addWidget(this->buttonCollapse, 0, 3, 1, 1);
 
+	//
 	// Update view
-
 	this->setContent(title, content);
-	this->extend();
+	this->expand();
+
+	//
+	// Connect signals
+	connect(this->buttonCollapse, &QPushButton::toggled, this, &CollapsibleWidgetWithTitle::buttonCollapseToggledEventHander);
 }
 
 void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* content, bool deletePreviousContent)
 {
 	if (this->content != nullptr)
 	{
-		if (deletePreviousContent)
+		if (deletePreviousContent == true)
 		{
 			delete this->content;
 		}
@@ -102,19 +108,39 @@ void CollapsibleWidgetWithTitle::setContent(const QString& title, QWidget* conte
 
 void CollapsibleWidgetWithTitle::setCollapsed(bool collapse)
 {
-	if (collapse)
+	if (collapse == true)
 	{
 		this->collapse();
 	}
 	else
 	{
-		this->extend();
+		this->expand();
 	}
 }
 
 bool CollapsibleWidgetWithTitle::getCollapsed()
 {
 	return !(this->buttonCollapse->isChecked());
+}
+
+void CollapsibleWidgetWithTitle::setMinimalHeightWhenExpanded(uint minimalHeightWhenExpanded)
+{
+	this->minimalHeightWhenExpanded = minimalHeightWhenExpanded;
+}
+
+QSize CollapsibleWidgetWithTitle::sizeHint() const
+{
+	auto defaultSizeHint = QFrame::sizeHint();
+
+	if (this->content->isVisible() == true)
+	{
+		if (defaultSizeHint.height() < this->minimalHeightWhenExpanded)
+		{
+			defaultSizeHint.setHeight(this->minimalHeightWhenExpanded);
+		}
+	}
+
+	return defaultSizeHint;
 }
 
 void CollapsibleWidgetWithTitle::buttonCollapseToggledEventHander(bool buttonPushed)
@@ -133,7 +159,7 @@ void CollapsibleWidgetWithTitle::collapse()
 	}
 }
 
-void CollapsibleWidgetWithTitle::extend()
+void CollapsibleWidgetWithTitle::expand()
 {
 	this->buttonCollapse->setText(tr("Hide"));
 	this->buttonCollapse->setChecked(true);

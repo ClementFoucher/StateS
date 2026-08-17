@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -50,12 +50,16 @@ public:
 	void setCollapsed(bool collapse);
 	bool getCollapsed();
 
+	void setMinimalHeightWhenExpanded(uint minimalHeightWhenExpanded);
+
+	virtual QSize sizeHint() const override;
+
 private slots:
 	void buttonCollapseToggledEventHander(bool buttonPushed);
 
 private:
 	void collapse();
-	void extend();
+	void expand();
 
 	/////
 	// Object variables
@@ -64,6 +68,8 @@ private:
 	QPushButton* buttonCollapse = nullptr;
 	QLabel*      title          = nullptr;
 	QWidget*     content        = nullptr;
+
+	uint minimalHeightWhenExpanded = 0;
 
 };
 

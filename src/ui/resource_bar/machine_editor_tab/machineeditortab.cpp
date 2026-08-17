@@ -73,7 +73,7 @@ MachineEditorTab::MachineEditorTab(std::shared_ptr<MachineComponentVisualizer> m
 	// Machine variables
 	this->variablesEditor = new QGroupBox(tr("Variable editor"));
 	auto variablesEditorLayout = new QVBoxLayout(this->variablesEditor);
-	this->variablesEditor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	this->variablesEditor->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
 	auto variablesTabs = new QTabWidget();
 	variablesTabs->insertTab(0, new VariableListEditor(Machine::VariableNature_t::input),    tr("Inputs"));
@@ -110,7 +110,6 @@ MachineEditorTab::MachineEditorTab(std::shared_ptr<MachineComponentVisualizer> m
 	//
 	// Machine visualization
 	this->machineDisplay = new CollapsibleWidgetWithTitle(tr("Component visualization"), machineComponentView.get());
-	this->machineDisplay->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
 	//
 	// Build complete rendering
@@ -162,7 +161,7 @@ void MachineEditorTab::resizeEvent(QResizeEvent* event)
 	QWidget::resizeEvent(event);
 
 	this->variablesEditor->setMinimumSize(0, this->height()/3);
-	this->machineDisplay ->setMinimumSize(0, this->height()/3);
+	this->machineDisplay->setMinimalHeightWhenExpanded(this->height()/3);
 }
 
 void MachineEditorTab::nameTextChangedEventHandler(const QString& newName)
