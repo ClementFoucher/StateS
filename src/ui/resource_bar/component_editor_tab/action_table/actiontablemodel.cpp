@@ -46,8 +46,8 @@ ActionTableModel::ActionTableModel(ComponentId actuatorId, QObject* parent) :
 
 	this->actuatorId = actuatorId;
 
-	this->columnsRoles.append(ColumnRole_t::actionType);
 	this->columnsRoles.append(ColumnRole_t::variableName);
+	this->columnsRoles.append(ColumnRole_t::actionType);
 	this->columnsRoles.append(ColumnRole_t::actionValue);
 
 	connect(actuator.get(), &MachineActuatorComponent::actionFixedEvent, this, &ActionTableModel::refreshPersistentEditorsEvent);
@@ -364,35 +364,50 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 
 QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role != Qt::DisplayRole) return QVariant();
-
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return QVariant();
-
-
 	if (orientation == Qt::Horizontal)
 	{
-		auto columnRole = this->columnsRoles.at(section);
-		switch (columnRole)
+		if (role == Qt::DisplayRole)
 		{
-		case ColumnRole_t::actionType:
-			return QVariant(tr("Type"));
-			break;
-		case ColumnRole_t::variableName:
-			return QVariant(tr("Variable"));
-			break;
-		case ColumnRole_t::actionValue:
-			return QVariant(tr("Value"));
-			break;
+			auto columnRole = this->columnsRoles.at(section);
+			switch (columnRole)
+			{
+			case ColumnRole_t::variableName:
+				return QVariant(tr("Variable"));
+				break;
+			case ColumnRole_t::actionType:
+				return QVariant(tr("Action"));
+				break;
+			case ColumnRole_t::actionValue:
+				return QVariant(tr("Value"));
+				break;
+			}
+		}
+		else if (role == Qt::UserRole)
+		{
+			auto columnRole = this->columnsRoles.at(section);
+			switch (columnRole)
+			{
+			case ColumnRole_t::variableName:
+				return "VARIABLENAME";
+				break;
+			case ColumnRole_t::actionType:
+				return "ACTIONTYPE";
+				break;
+			case ColumnRole_t::actionValue:
+				return "ACTIONVALUE";
+				break;
+			}
 		}
 	}
-	else
+	else // (orientation == Qt::Vertical)
 	{
-		return QVariant(section+1);
+		if (role == Qt::DisplayRole)
+		{
+			return QVariant(section+1);
+		}
 	}
+
+	return QVariant();
 }
 
 Qt::ItemFlags ActionTableModel::flags(const QModelIndex& index) const

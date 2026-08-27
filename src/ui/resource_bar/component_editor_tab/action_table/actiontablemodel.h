@@ -46,8 +46,8 @@ class ActionTableModel : public QAbstractTableModel
 private:
 	enum class ColumnRole_t
 	{
-		actionType,
 		variableName,
+		actionType,
 		actionValue
 	};
 

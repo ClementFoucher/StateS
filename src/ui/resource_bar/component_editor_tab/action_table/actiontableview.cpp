@@ -48,17 +48,27 @@ ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
 	this->tableModel = new ActionTableModel(actuatorId, this);
 	this->setModel(this->tableModel);
 
-	// Fill column roles
-	this->columnsRoles[ColumnRole_t::actionType]   = 0;
-	this->columnsRoles[ColumnRole_t::variableName] = 1;
-	this->columnsRoles[ColumnRole_t::actionValue]  = 2;
+	// Determine columns roles and build delegates accordingly
+	for (int column = 0 ; column < this->tableModel->columnCount() ; column++)
+	{
+		QString role = this->tableModel->headerData(column, Qt::Horizontal, Qt::UserRole).toString();
+		if (role == "VARIABLENAME")
+		{
+			this->columnsRoles[ColumnRole_t::variableName] = column;
+		}
+		else if (role == "ACTIONTYPE")
+		{
+			this->columnsRoles[ColumnRole_t::actionType] = column;
+			this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionType], new ActionTableTypeDelegate(this));
+		}
+		else if (role == "ACTIONVALUE")
+		{
+			this->columnsRoles[ColumnRole_t::actionValue] = column;
+			this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionValue], new ActionTableValueDelegate(this));
+		}
+	}
 
-	// Build delegates
-	auto typeColDelegate = new ActionTableTypeDelegate(this);
-	this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionType], typeColDelegate);
-	auto valueColDelegate = new ActionTableValueDelegate(this);
-	this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionValue], valueColDelegate);
-
+	// Connect signals
 	connect(this->tableModel, &ActionTableModel::refreshPersistentEditorsEvent, this, &ActionTableView::refreshPersistentEditorsEventHandler);
 }
 

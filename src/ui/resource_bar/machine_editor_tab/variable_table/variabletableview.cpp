@@ -69,6 +69,7 @@ VariableTableView::VariableTableView(Machine::VariableNature_t tableNature, QWid
 		}
 	}
 
+	// Connect signals
 	connect(this->tableModel, &VariableTableModel::refreshPersistentEditorsEvent, this, &VariableTableView::refreshPersistentEditorsEventHandler);
 }
 

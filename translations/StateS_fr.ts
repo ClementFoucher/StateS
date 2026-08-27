@@ -255,17 +255,17 @@
 <context>
     <name>ActionTableModel</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="382"/>
-        <source>Type</source>
-        <translation>Type</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="385"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="375"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="388"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="378"/>
+        <source>Action</source>
+        <translation>Action</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontablemodel.cpp" line="381"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
@@ -273,67 +273,67 @@
 <context>
     <name>ActionTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="135"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="145"/>
         <source>Edit action on variable</source>
         <translation>Éditer l&apos;action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="139"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="149"/>
         <source>Edit all selected actions</source>
         <translation>Éditer l&apos;ensemble des actions sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="149"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="159"/>
         <source>Edit value</source>
         <translation>Éditer la valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="157"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="167"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="164"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="174"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="175"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="185"/>
         <source>Affect whole variable</source>
         <translation>Affecter la totalité de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="184"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="194"/>
         <source>Affect variable single bit</source>
         <translation>Affecter un seul bit de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="193"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="203"/>
         <source>Affect variable range</source>
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="206"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="216"/>
         <source>Edit affected bit</source>
         <translation>Éditer le bit affecté</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="210"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="220"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="230"/>
         <source>Delete action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="226"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="236"/>
         <source>Delete actions</source>
         <translation>Supprimer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="231"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="241"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -370,22 +370,22 @@
 <context>
     <name>CollapsibleWidgetWithTitle</name>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="97"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="103"/>
         <source>no content</source>
         <translation>aucun contenu</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="127"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="153"/>
         <source>Show</source>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="138"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="164"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
     <message>
-        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="91"/>
+        <location filename="../src/ui/common/collapsiblewidgetwithtitle.cpp" line="97"/>
         <source>no title</source>
         <translation>aucun titre</translation>
     </message>
@@ -1964,12 +1964,12 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="112"/>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="141"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="140"/>
         <source>Component visualization</source>
         <translation>Visualisation du composant</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="207"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/machineeditortab.cpp" line="206"/>
         <source>No machine</source>
         <translation>Aucune machine</translation>
     </message>
@@ -3049,7 +3049,7 @@
     </message>
     <message>
         <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="70"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="237"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="253"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
@@ -3074,17 +3074,18 @@
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="193"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="209"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="193"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="209"/>
         <source>timeline</source>
         <translation>chronogramme</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="221"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="165"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="237"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>
@@ -3321,52 +3322,52 @@
 <context>
     <name>VariableTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="108"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="109"/>
         <source>Edit variable</source>
         <translation>Éditer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="112"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="113"/>
         <source>Edit all selected variables</source>
         <translation>Éditer toutes les variables sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="118"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="119"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="125"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="126"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="137"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="138"/>
         <source>Rename variable</source>
         <translation>Renommer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="145"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="146"/>
         <source>Change bit vector size</source>
         <translation>Changer la taille du vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="152"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="153"/>
         <source>Change variable value</source>
         <translation>Changer la valeur de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="159"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="160"/>
         <source>Delete variable</source>
         <translation>Supprimer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="165"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="166"/>
         <source>Delete variables</source>
         <translation>Supprimer les variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="172"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="173"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
