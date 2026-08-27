@@ -2167,7 +2167,7 @@
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="863"/>
         <source>Unknown type</source>
-        <translation>Type inconnu</translation>
+        <translation>Le type inconnu</translation>
     </message>
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="863"/>
@@ -2878,18 +2878,23 @@
     </message>
     <message>
         <location filename="../src/core/states.cpp" line="236"/>
+        <location filename="../src/core/states.cpp" line="272"/>
         <source>Please use a newer version of StateS to open this file.</source>
         <translation>Merci d&apos;utiliser une version de StateS plus récente pour ouvrir ce fichier.</translation>
     </message>
     <message>
         <location filename="../src/core/states.cpp" line="237"/>
         <location filename="../src/core/states.cpp" line="243"/>
+        <location filename="../src/core/states.cpp" line="273"/>
+        <location filename="../src/core/states.cpp" line="281"/>
         <source>File version:</source>
         <translation>Version du fichier :</translation>
     </message>
     <message>
         <location filename="../src/core/states.cpp" line="237"/>
         <location filename="../src/core/states.cpp" line="243"/>
+        <location filename="../src/core/states.cpp" line="273"/>
+        <location filename="../src/core/states.cpp" line="281"/>
         <source>StateS version:</source>
         <translation>Version de StateS :</translation>
     </message>
@@ -2904,12 +2909,44 @@
         <translation>Ce fichier ne semble pas être une sauvegarde StateS.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="261"/>
+        <location filename="../src/core/states.cpp" line="269"/>
+        <location filename="../src/core/states.cpp" line="278"/>
+        <source>Warning:</source>
+        <translation>Attention :</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="269"/>
+        <location filename="../src/core/states.cpp" line="278"/>
+        <source>version mismatch.</source>
+        <translation>version différente.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="270"/>
+        <source>This file has been created with a newer version of StateS.</source>
+        <translation>Ce fichier a été créé avec une version de StateS plus récente.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="271"/>
+        <source>The issues below may be due to features that were not yet implemented in your version.</source>
+        <translation>Les problèmes ci-dessous peuvent être dus à des fonctionnalités qui n&apos;étaient pas encore implémentées dans votre version.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="279"/>
+        <source>This file has been created with an ancient version of StateS.</source>
+        <translation>Ce fichier a été créé avec une version de StateS plus ancienne.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="280"/>
+        <source>The issues below may be due to old features that were changed or removed in your version.</source>
+        <translation>Les problèmes ci-dessous peuvent être dus à des fonctionnalités qui ont été modifiées ou supprimées dans votre version.</translation>
+    </message>
+    <message>
+        <location filename="../src/core/states.cpp" line="291"/>
         <source>Issues occured reading the file. StateS still managed to load machine.</source>
         <translation>Des problèmes ont été rencontrés lors de la lecture du fichier. StateS est tout de même parvenu à charger la machine.</translation>
     </message>
     <message>
-        <location filename="../src/core/states.cpp" line="331"/>
+        <location filename="../src/core/states.cpp" line="361"/>
         <source>Unable to save file.</source>
         <translation>Impossible de sauvegarder le fichier.</translation>
     </message>

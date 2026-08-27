@@ -258,6 +258,36 @@ void StateS::loadMachine(const QString& path)
 	issues += parser->getIssues();
 	if (issues.isEmpty() == false)
 	{
+		if (analyzer->getHasVersion() == true)
+		{
+			QList<QString> versionInfo;
+			switch (analyzer->getVersionCompatibility())
+			{
+			case StateSXmlAnalyzer::VersionCompatibility_t::major_newer:
+			case StateSXmlAnalyzer::VersionCompatibility_t::minor_newer:
+			case StateSXmlAnalyzer::VersionCompatibility_t::patch_newer:
+				versionInfo.append(tr("Warning:") + " " + tr("version mismatch."));
+				versionInfo.append("    " + tr("This file has been created with a newer version of StateS."));
+				versionInfo.append("    " + tr("The issues below may be due to features that were not yet implemented in your version."));
+				versionInfo.append("    " + tr("Please use a newer version of StateS to open this file."));
+				versionInfo.append("    " + tr("File version:") + " " + analyzer->getStateSVersion() + " - " + tr("StateS version:") + " " + StateS::getVersion());
+				break;
+			case StateSXmlAnalyzer::VersionCompatibility_t::major_older:
+			case StateSXmlAnalyzer::VersionCompatibility_t::minor_older:
+			case StateSXmlAnalyzer::VersionCompatibility_t::patch_older:
+				versionInfo.append(tr("Warning:") + " " + tr("version mismatch."));
+				versionInfo.append("    " + tr("This file has been created with an ancient version of StateS."));
+				versionInfo.append("    " + tr("The issues below may be due to old features that were changed or removed in your version."));
+				versionInfo.append("    " + tr("File version:") + " " + analyzer->getStateSVersion() + " - " + tr("StateS version:") + " " + StateS::getVersion());
+				break;
+			case StateSXmlAnalyzer::VersionCompatibility_t::same_version:
+				break;
+			}
+			if (versionInfo.isEmpty() == false)
+			{
+				issues =  versionInfo + issues;
+			}
+		}
 		this->displayErrorMessages(tr("Issues occured reading the file. StateS still managed to load machine."), issues);
 	}
 
