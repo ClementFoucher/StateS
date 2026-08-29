@@ -55,7 +55,10 @@ void VariableTableNameDelegate::setEditorData(QWidget* editor, const QModelIndex
 	else
 	{
 		nameEditor->setText(failedName);
-		nameEditor->setErroneous(true);
+		QList<QString> errorMessage;
+		errorMessage += tr("Unable to use this name!");
+		errorMessage += tr("This name is probably already used by another variable.");
+		nameEditor->setErroneous(true, errorMessage);
 	}
 }
 

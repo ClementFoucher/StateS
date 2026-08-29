@@ -50,7 +50,7 @@ public:
 	/////
 	// Object functions
 public:
-	void setErroneous(bool erroneous);
+	void setErroneous(bool erroneous, QList<QString> message = QList<QString>());
 	bool getIsErroneous() const;
 
 protected:

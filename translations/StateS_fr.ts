@@ -3309,6 +3309,19 @@
     </message>
 </context>
 <context>
+    <name>VariableTableNameDelegate</name>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp" line="59"/>
+        <source>Unable to use this name!</source>
+        <translation>Impossible d&apos;utiliser ce nom !</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp" line="60"/>
+        <source>This name is probably already used by another variable.</source>
+        <translation>Ce nom est probablement déjà utilisé par une autre variable.</translation>
+    </message>
+</context>
+<context>
     <name>VariableTableScene</name>
     <message>
         <location filename="../src/ui/common/scene/variabletablescene.cpp" line="100"/>

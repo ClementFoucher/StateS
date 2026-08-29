@@ -22,6 +22,9 @@
 // Current class header
 #include "coloredlineeditor.h"
 
+// StateS
+#include "contextmenu.h"
+
 
 //
 // Static elements
@@ -34,7 +37,7 @@ const QString ColoredLineEditor::errorStyle = QString("QLineEdit {background-col
 // Class object definition
 //
 
-void ColoredLineEditor::setErroneous(bool erroneous)
+void ColoredLineEditor::setErroneous(bool erroneous, QList<QString> message)
 {
 	this->erroneous = erroneous;
 
@@ -55,6 +58,12 @@ void ColoredLineEditor::setErroneous(bool erroneous)
 		{
 			this->setStyleSheet(QString());
 		}
+	}
+
+	if (message.isEmpty() == false)
+	{
+		auto menu = ContextMenu::createErrorMenu(message, this);
+		menu->popup(this->mapToGlobal(QPoint(0, this->height())));
 	}
 }
 
