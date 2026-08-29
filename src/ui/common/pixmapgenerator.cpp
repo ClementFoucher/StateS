@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2025 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -32,20 +32,24 @@
 #include "graphicfsmtransition.h"
 
 
-QPixmap PixmapGenerator::getPixmapFromSvg(const QString& path)
+QPixmap PixmapGenerator::getStatesLogo(int size, double angle)
 {
-	QSvgRenderer svgRenderer(path);
-	QPixmap pixmap(svgRenderer.defaultSize());
+	QSvgRenderer svgRenderer(QString(":/icons/StateS"));
+	QPixmap pixmap(size, size);
 	pixmap.fill(Qt::transparent);
 	QPainter painter(&pixmap);
 	svgRenderer.render(&painter);
 
-	return pixmap;
-}
-
-QPixmap PixmapGenerator::getStatesWindowIcon()
-{
-	return PixmapGenerator::getPixmapFromSvg(QString(":/icons/StateS"));
+	if (angle != 0)
+	{
+		QTransform rotation;
+		rotation.rotate(angle);
+		return pixmap.transformed(rotation);
+	}
+	else
+	{
+		return pixmap;
+	}
 }
 
 QPixmap PixmapGenerator::getFsmStateCursor()

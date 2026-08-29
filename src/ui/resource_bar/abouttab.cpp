@@ -43,66 +43,65 @@ AboutTab::AboutTab(QWidget* parent) :
 	//
 	// Header
 
-	this->icon = new QPushButton();
-	this->icon->setIcon(QIcon(PixmapGenerator::getStatesWindowIcon()));
-	this->icon->setIconSize(QSize(100,100));
-	this->icon->setCheckable(true);
-	this->icon->setStyleSheet("border:0px");
-	connect(this->icon, &QPushButton::clicked, this, &AboutTab::iconClicked);
+	this->logo = new QPushButton();
+	this->logo->setIcon(QIcon(PixmapGenerator::getStatesLogo(100)));
+	this->logo->setIconSize(QSize(100,100));
+	this->logo->setCheckable(true);
+	this->logo->setStyleSheet("border:0px");
 
-	QLabel* title = new QLabel("<b>StateS</b>");
+	auto title = new QLabel("<b>StateS</b>");
 	title->setAlignment(Qt::AlignCenter);
 
-	QLabel* versionLabel = new QLabel(tr("Version") + " " + StateS::getVersion());
+	auto versionLabel = new QLabel(tr("Version") + " " + StateS::getVersion());
 	versionLabel->setAlignment(Qt::AlignCenter);
 	versionLabel->setWordWrap(true);
 
 	// Package in a layout
 	auto headerLayout = new QVBoxLayout();
-	headerLayout->addWidget(this->icon);
+	headerLayout->addWidget(this->logo);
 	headerLayout->addWidget(title);
 	headerLayout->addWidget(versionLabel);
 
 	//
 	// Copyright info
 
-	QLabel* copyrightLabel = new QLabel("© " + StateS::getCopyrightYears() + " " + "Clément Foucher");
+	auto copyrightLabel = new QLabel("© " + StateS::getCopyrightYears() + " " + "Clément Foucher");
 	copyrightLabel->setAlignment(Qt::AlignCenter);
 	copyrightLabel->setWordWrap(true);
 
-	QLabel* licenseLabel = new QLabel(tr("Distributed under the terms of the")
-	                                  + " "
-	                                  + "<a href=\"https://www.gnu.org/licenses/gpl-2.0.html\">" + tr("GNU General Public Licence") + " " + tr("version") + " " + "2" + "</a>"
-	                                 );
+	auto licenseLabel = new QLabel(tr("Distributed under the terms of the")
+	                               + " "
+	                               + "<a href=\"https://www.gnu.org/licenses/gpl-2.0.html\">" + tr("GNU General Public Licence") + " " + tr("version") + " " + "2" + "</a>"
+	                              );
 	licenseLabel->setAlignment(Qt::AlignCenter);
 	licenseLabel->setWordWrap(true);
 	licenseLabel->setTextFormat(Qt::RichText);
 	licenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	licenseLabel->setOpenExternalLinks(true);
 
-	QLabel* artLicenseLabel = new QLabel(tr("See")
-	                                     + " "
-	                                     + "<a href=\"https://github.com/ClementFoucher/StateS/blob/main/art/AUTHORS.md\">" + tr("credits for art used in StateS") + "</a>"
-	                                    );
+	auto artLicenseLabel = new QLabel(tr("See")
+	                                  + " "
+	                                  + "<a href=\"https://github.com/ClementFoucher/StateS/blob/main/art/AUTHORS.md\">" + tr("credits for art used in StateS") + "</a>"
+	                                 );
 	artLicenseLabel->setAlignment(Qt::AlignCenter);
 	artLicenseLabel->setWordWrap(true);
 	artLicenseLabel->setTextFormat(Qt::RichText);
 	artLicenseLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	artLicenseLabel->setOpenExternalLinks(true);
 
-	QLabel* thirdPartyLicenseLabel = new QLabel(tr("This software makes use of:")
-	                                            + "<br>"
-	                                            + "<a href=\"https://code.qt.io/cgit/qt/qt5.git\">" + "Qt 6" + "</a>" + " "
-	                                            + tr("which is licensed under the")
-	                                            + " "
-	                                            + "<a href=\"https://www.gnu.org/licenses/lgpl-3.0.html\">" + tr("LGPLv3 license") + "</a>"
-	                                            + "<br>"
-	                                            + "<a href=\"https://github.com/cubicdaiya/dtl\">" + tr("the Diff Template Library") + "</a>"
-	                                            + " "
-	                                            + tr("which is licensed under the")
-	                                            + " "
-	                                            + "<a href=\"https://opensource.org/license/BSD-3-Clause\">" + tr("BSD-3-Clause license") + "</a>"
-	                                           );
+	auto thirdPartyLicenseLabel = new QLabel(tr("This software makes use of:")
+	                                         + "<br>"
+	                                         + "<a href=\"https://code.qt.io/cgit/qt/qt5.git\">" + "Qt 6" + "</a>" + " "
+	                                         + tr("which is licensed under the")
+	                                         + " "
+	                                         + "<a href=\"https://www.gnu.org/licenses/lgpl-3.0.html\">" + tr("LGPLv3 license") + "</a>"
+	                                         + "<br>"
+	                                         + "<a href=\"https://github.com/cubicdaiya/dtl\">" + tr("the Diff Template Library") + "</a>"
+	                                         + " "
+	                                         + tr("which is licensed under the")
+	                                         + " "
+	                                         + "<a href=\"https://opensource.org/license/BSD-3-Clause\">" + tr("BSD-3-Clause license") + "</a>"
+	                                        );
 	thirdPartyLicenseLabel->setAlignment(Qt::AlignCenter);
 	thirdPartyLicenseLabel->setWordWrap(true);
 	thirdPartyLicenseLabel->setTextFormat(Qt::RichText);
@@ -120,49 +119,44 @@ AboutTab::AboutTab(QWidget* parent) :
 	//
 	// Contact info
 
-	QLabel* emailLabel = new QLabel(tr("Contact:")
-	                                + " "
-	                                + "<a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>"
-	                               );
+	auto emailLabel = new QLabel(tr("Contact:")
+	                             + " "
+	                             + "<a href=\"mailto:states-dev@outlook.fr\">StateS-dev@outlook.fr</a>"
+	                            );
 	emailLabel->setAlignment(Qt::AlignCenter);
 	emailLabel->setWordWrap(true);
 	emailLabel->setTextFormat(Qt::RichText);
 	emailLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	emailLabel->setOpenExternalLinks(true);
 
-	QLabel* websiteLabel = new QLabel(tr("StateS sources:")
-	                                  + " "
-	                                  + "<a href=\"https://github.com/ClementFoucher/StateS\">https://github.com/ClementFoucher/StateS</a>"
-	                                 );
+	auto websiteLabel = new QLabel(tr("StateS sources can be downloaded")
+	                               + " "
+	                               + "<a href=\"https://github.com/ClementFoucher/StateS\">" + tr("here") + "</a>"
+	                              );
 	websiteLabel->setAlignment(Qt::AlignCenter);
 	websiteLabel->setWordWrap(true);
 	websiteLabel->setTextFormat(Qt::RichText);
 	websiteLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	websiteLabel->setOpenExternalLinks(true);
 
-	/*
-	QLabel* wikiLabel= new QLabel("<a href=\"https://sourceforge.net/p/states/wiki/Home/\">" + tr("Need help?") + "</a>");
-	wikiLabel->setAlignment(Qt::AlignCenter);
-	wikiLabel->setWordWrap(true);
-	wikiLabel->setTextFormat(Qt::RichText);
-	wikiLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-	wikiLabel->setOpenExternalLinks(true);
-	*/
-
-	QLabel* supportLabel = new QLabel("<a href=\"https://github.com/ClementFoucher/StateS/issues\">" + tr("Found a bug?") + "</a> "
-	                                  + tr("(Please consult the")
-	                                  + " "
-	                                  + "<a href=\"https://raw.githubusercontent.com/ClementFoucher/StateS/main/text/known_bugs.txt\">"+ tr("known bugs list") + "</a>"
-	                                  + " "
-	                                  + tr("before filling an issue)")
-	                                 );
+	auto supportLabel = new QLabel(tr("You found a bug?")
+	                               + " "
+	                               + tr("Please report it on the")
+	                               + " "
+	                               + "<a href=\"https://github.com/ClementFoucher/StateS/issues\">" +  tr("bug tracker") + "</a>"
+	                              );
 	supportLabel->setAlignment(Qt::AlignCenter);
 	supportLabel->setWordWrap(true);
 	supportLabel->setTextFormat(Qt::RichText);
 	supportLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	supportLabel->setOpenExternalLinks(true);
 
-	QLabel* suggestionLabel = new QLabel("<a href=\"https://github.com/ClementFoucher/StateS/issues\">" + tr("Suggestion? Feature request?") + "</a>");
+	auto suggestionLabel = new QLabel(tr("Suggestion? Feature request?")
+	                                  + " "
+	                                  + tr("Open a ticket on the")
+	                                  + " "
+	                                  + "<a href=\"https://github.com/ClementFoucher/StateS/issues\">" +  tr("bug tracker") + "</a>"
+	                                  );
 	suggestionLabel->setAlignment(Qt::AlignCenter);
 	suggestionLabel->setWordWrap(true);
 	suggestionLabel->setTextFormat(Qt::RichText);
@@ -174,7 +168,6 @@ AboutTab::AboutTab(QWidget* parent) :
 	auto contactLayout = new QVBoxLayout(contactGroup);
 	contactLayout->addWidget(emailLabel);
 	contactLayout->addWidget(websiteLabel);
-	//contactLayout->addWidget(wikiLabel);
 	contactLayout->addWidget(supportLabel);
 	contactLayout->addWidget(suggestionLabel);
 
@@ -185,11 +178,11 @@ AboutTab::AboutTab(QWidget* parent) :
 	auto textWidget = new QWidget();
 	this->textLayout = new QVBoxLayout(textWidget);
 
-	this->textLayout->addStretch(1);
+	this->textLayout->addStretch();
 	this->textLayout->addWidget(copyrightGroup);
-	this->textLayout->addStretch(1);
+	this->textLayout->addStretch();
 	this->textLayout->addWidget(contactGroup);
-	this->textLayout->addStretch(1);
+	this->textLayout->addStretch();
 
 	auto scrollArea = new QScrollArea();
 	scrollArea->setWidgetResizable(true);
@@ -197,29 +190,23 @@ AboutTab::AboutTab(QWidget* parent) :
 	scrollArea->setWidget(textWidget);
 
 	// Build main layout
-	auto* mainLayout = new QVBoxLayout();
-	mainLayout->addStretch(1);
-	mainLayout->addLayout(headerLayout, 0);
-	mainLayout->addStretch(1);
-	mainLayout->addWidget(scrollArea, 10);
-	mainLayout->addStretch(1);
+	auto mainLayout = new QVBoxLayout(this);
+	mainLayout->addStretch();
+	mainLayout->addLayout(headerLayout);
+	mainLayout->addStretch();
+	mainLayout->addWidget(scrollArea);
+	mainLayout->addStretch();
 
-	auto* rootLayout = new QHBoxLayout(this);
-	rootLayout->addStretch(1);
-	rootLayout->addLayout(mainLayout, 10);
-	rootLayout->addStretch(1);
+	//
+	// Connect signals
+
+	connect(this->logo, &QPushButton::clicked, this, &AboutTab::iconClicked);
 }
 
 void AboutTab::iconClicked()
 {
-	QPixmap pixmap = PixmapGenerator::getStatesWindowIcon();
-	QIcon newIcon;
-
-	if (this->icon->isChecked() == true)
+	if (this->logo->isChecked() == true)
 	{
-		QTransform rotation;
-		rotation.rotate(90);
-		newIcon = QIcon(pixmap.transformed(rotation));
 		if (this->techInfoGroup != nullptr)
 		{
 			this->techInfoGroup->setVisible(true);
@@ -227,15 +214,21 @@ void AboutTab::iconClicked()
 		else
 		{
 			this->buildTechInfo();
+			this->textLayout->addWidget(this->techInfoGroup);
 		}
+		this->textLayout->addStretch();
+
+		this->logo->setIcon(QIcon(PixmapGenerator::getStatesLogo(100, 90)));
 	}
 	else
 	{
-		newIcon = QIcon(pixmap);
 		this->techInfoGroup->setVisible(false);
-	}
 
-	this->icon->setIcon(newIcon);
+		auto lastStretch = this->textLayout->takeAt(this->textLayout->count()-1);
+		delete lastStretch;
+
+		this->logo->setIcon(QIcon(PixmapGenerator::getStatesLogo(100)));
+	}
 }
 
 void AboutTab::buildTechInfo()
@@ -253,7 +246,7 @@ void AboutTab::buildTechInfo()
 		versionText = tr("This application was compiled using") + " Qt " + QT_VERSION_STR + "\n" + tr("Currently running on") + " Qt " + qVersion();
 	}
 
-	QLabel* qtVersionLabel = new QLabel(versionText);
+	auto qtVersionLabel = new QLabel(versionText);
 	qtVersionLabel->setAlignment(Qt::AlignCenter);
 	qtVersionLabel->setWordWrap(true);
 
@@ -299,8 +292,4 @@ void AboutTab::buildTechInfo()
 	techInfoLayout->addWidget(platformInfo);
 	techInfoLayout->addWidget(colorInfo);
 	techInfoLayout->addWidget(stylesInfo);
-
-	// Add to text layout
-	this->textLayout->addWidget(this->techInfoGroup);
-	this->textLayout->addStretch(1);
 }

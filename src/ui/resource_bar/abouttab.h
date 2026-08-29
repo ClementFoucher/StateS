@@ -51,7 +51,7 @@ private:
 	/////
 	// Object variables
 private:
-	QPushButton* icon          = nullptr;
+	QPushButton* logo          = nullptr;
 	QVBoxLayout* textLayout    = nullptr;
 	QGroupBox*   techInfoGroup = nullptr;
 

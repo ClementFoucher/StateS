@@ -4,148 +4,154 @@
 <context>
     <name>AboutTab</name>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="165"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="154"/>
         <source>Suggestion? Feature request?</source>
         <translation>Une suggestion ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="56"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="55"/>
         <source>Version</source>
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="100"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="99"/>
         <source>the Diff Template Library</source>
         <translation>la bibliothèque Diff Template Library</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="96"/>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="102"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="95"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="101"/>
         <source>which is licensed under the</source>
         <translation>distribuée selon les termes de la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="93"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="92"/>
         <source>This software makes use of:</source>
         <translation>Ce logiciel utilise :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="98"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="97"/>
         <source>LGPLv3 license</source>
         <translation>licence LGPLv3</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="104"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="103"/>
         <source>BSD-3-Clause license</source>
         <translation>licence BSD-3-Clause</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="112"/>
         <source>Copyright information</source>
         <translation>Information de copyright</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="152"/>
-        <source>Found a bug?</source>
-        <translation>Vous avez trouvé un bug ?</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="153"/>
-        <source>(Please consult the</source>
-        <translation>(Merci de consulter la</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="155"/>
-        <source>known bugs list</source>
-        <translation>liste des bugs connus</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="260"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="253"/>
         <source>Current platform:</source>
         <translation>Plateforme actuelle :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="265"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="258"/>
         <source>OS color scheme:</source>
         <translation>Mode de couleur du système d&apos;exploitation :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="271"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="264"/>
         <source>dark</source>
         <translation>sombre</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="275"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="268"/>
         <source>light</source>
         <translation>clair</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="281"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="274"/>
         <source>Available Qt themes:</source>
         <translation>Thèmes Qt disponibles :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="296"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="289"/>
         <source>Technical information</source>
         <translation>Informations techniques</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="73"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="72"/>
         <source>Distributed under the terms of the</source>
         <translation>Distribué selon les termes de la</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="74"/>
         <source>version</source>
         <translation>version</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="249"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="132"/>
+        <source>StateS sources can be downloaded</source>
+        <translation>Les sources de StateS peuvet être téléchargées</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="134"/>
+        <source>here</source>
+        <translation>ici</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="142"/>
+        <source>You found a bug?</source>
+        <translation>Vous avez trouvé un bug ?</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="144"/>
+        <source>Please report it on the</source>
+        <translation>Merci de le signaler sur le</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="146"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="158"/>
+        <source>bug tracker</source>
+        <translation>suivi de bugs</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="156"/>
+        <source>Open a ticket on the</source>
+        <translation>Ouvrez un ticket sur le</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="242"/>
         <source>This application was compiled with and runs on</source>
         <translation>Cette application a été compilée avec et utilise actuellement</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="133"/>
-        <source>StateS sources:</source>
-        <translation>Sources de StateS :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="123"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="122"/>
         <source>Contact:</source>
         <translation>Contact :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="253"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="246"/>
         <source>This application was compiled using</source>
         <translation>Cette application a été compilée avec</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="253"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="246"/>
         <source>Currently running on</source>
         <translation>Version actuellement utilisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="157"/>
-        <source>before filling an issue)</source>
-        <translation>avant de soumettre un ticket)</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="173"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="167"/>
         <source>Contact and links</source>
         <translation>Contact et liens</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="75"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="74"/>
         <source>GNU General Public Licence</source>
         <translation>Licence publique générale GNU</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="83"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="82"/>
         <source>See</source>
         <translation>Voir les</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/abouttab.cpp" line="85"/>
+        <location filename="../src/ui/resource_bar/abouttab.cpp" line="84"/>
         <source>credits for art used in StateS</source>
         <translation>crédits d&apos;auteurs pour les images utilisées dans StateS</translation>
     </message>
@@ -217,37 +223,37 @@
 <context>
     <name>ActionOnVariable</name>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="44"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="43"/>
         <source>Assign</source>
         <translation>Affecter</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="47"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="46"/>
         <source>Pulse</source>
         <translation>Impulsion</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="50"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="49"/>
         <source>Active on state</source>
         <translation>Actif sur état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="53"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="52"/>
         <source>Increment</source>
         <translation>Incrémenter</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="56"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="55"/>
         <source>Decrement</source>
         <translation>Décrémenter</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="59"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="58"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="62"/>
+        <location filename="../src/machine/logic/components/subcomponents/actiononvariable.cpp" line="61"/>
         <source>Set</source>
         <translation>Set</translation>
     </message>
@@ -2374,97 +2380,97 @@
 <context>
     <name>MainToolBar</name>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="38"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="35"/>
         <source>Save</source>
         <translation>Enregistrer</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="39"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="36"/>
         <source>Save:</source>
         <translation>Enregistrer :</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="39"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="36"/>
         <source>Save machine in current save file</source>
         <translation>Enregistrer la machine dans le fichier de sauvegarde actuel</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="44"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="41"/>
         <source>Save machine in a new file</source>
         <translation>Enregistrer la machine dans un nouveau fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="43"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="40"/>
         <source>Save as</source>
         <translation>Enregistrer sous</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="44"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="41"/>
         <source>Save as:</source>
         <translation>Enregistrer sous :</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="48"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="45"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="49"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="46"/>
         <source>Open:</source>
         <translation>Ouvrir :</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="49"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="46"/>
         <source>Load a machine from a save file</source>
         <translation>Charger une machine depuis un fichier de sauvegarde</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="54"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="51"/>
         <source>New FSM</source>
         <translation>Nouvelle FSM</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="55"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="52"/>
         <source>Create new FSM</source>
         <translation>Créer une nouvelle FSM</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="64"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="61"/>
         <source>Export to image file</source>
         <translation>Exporter vers un fichier image</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="65"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="62"/>
         <source>Export machine to an image file</source>
         <translation>Exporter la machine vers un fichier image</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="69"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="66"/>
         <source>Export to VHDL</source>
         <translation>Exporter en VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="70"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="67"/>
         <source>Export machine to VHDL</source>
         <translation>Exporter la machine en VHDL</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="74"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="71"/>
         <source>Undo</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="75"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="72"/>
         <source>Undo latest edit</source>
         <translation>Annuler la dernière modification</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="79"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="76"/>
         <source>Redo</source>
         <translation>Refaire</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="80"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="77"/>
         <source>Redo undone edit</source>
         <translation>Ré-appliquer la dernière modification annulée</translation>
     </message>
@@ -3080,59 +3086,59 @@
 <context>
     <name>TimelineWidget</name>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="58"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="57"/>
         <source>StateS timeline visualizer</source>
         <translation>Visualiseur de chronogramme de StateS</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="62"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="61"/>
         <source>Tools</source>
         <translation>Outils</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="66"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="65"/>
         <source>Export to PDF</source>
         <translation>Exporter en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="70"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="253"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="69"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="252"/>
         <source>Detach as independant window</source>
         <translation>Détacher en tant que fenêtre indépendante</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="94"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="93"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="104"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="103"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="117"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="116"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="133"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="132"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="209"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="208"/>
         <source>Export time line to PDF</source>
         <translation>Exporter le chronogramme en PDF</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="209"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="208"/>
         <source>timeline</source>
         <translation>chronogramme</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="165"/>
-        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="237"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="164"/>
+        <location filename="../src/ui/display_area/timeline_widget/timelinewidget.cpp" line="236"/>
         <source>Attach to main window</source>
         <translation>Attacher à la fenêtre principale</translation>
     </message>

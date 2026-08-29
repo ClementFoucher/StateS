@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2023 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -24,7 +24,6 @@
 
 // Qt
 class QPixmap;
-class QString;
 
 
 class PixmapGenerator
@@ -33,9 +32,7 @@ class PixmapGenerator
 	/////
 	// Static functions
 public:
-	static QPixmap getPixmapFromSvg(const QString& path);
-
-	static QPixmap getStatesWindowIcon();
+	static QPixmap getStatesLogo(int size, double angle = 0);
 
 	static QPixmap getFsmStateCursor();
 	static QPixmap getFsmTransitionCursor();
