@@ -33,20 +33,20 @@ MainToolBar::MainToolBar(QWidget* parent) :
 
 	// Build actions
 
-	this->actionSaveAs = new QAction(this);
-	this->actionSaveAs->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/save_as"))));
-	this->actionSaveAs->setText(tr("Save"));
-	this->actionSaveAs->setToolTip(tr("Save machine in a new file"));
-
 	this->actionSave = new QAction(this);
-	this->actionSave->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/save"))));
-	this->actionSave->setText(tr("Save as"));
-	this->actionSave->setToolTip(tr("Update saved file with current content") + " (" + tr("use ctrl+S shortcut to avoid confirm dialog") + ")");
+	this->actionSave->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/save"))));
+	this->actionSave->setText(tr("Save"));
+	this->actionSave->setToolTip(tr("Save:") + " " + tr("Save machine in current save file"));
+
+	this->actionSaveAs = new QAction(this);
+	this->actionSaveAs->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/save_as"))));
+	this->actionSaveAs->setText(tr("Save as"));
+	this->actionSaveAs->setToolTip(tr("Save as:") + " " + tr("Save machine in a new file"));
 
 	this->actionLoad = new QAction(this);
-	this->actionLoad->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/load"))));
-	this->actionLoad->setText(tr("Load"));
-	this->actionLoad->setToolTip(tr("Load machine from file"));
+	this->actionLoad->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/load"))));
+	this->actionLoad->setText(tr("Open"));
+	this->actionLoad->setToolTip(tr("Open:") + " " + tr("Load a machine from a save file"));
 
 	this->actionNewFsm = new QAction(this);
 	//this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/new_FSM"))));
@@ -87,8 +87,8 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	this->actionRedo->setEnabled(false);
 
 	// Add actions
-	this->addAction(this->actionSaveAs);
 	this->addAction(this->actionSave);
+	this->addAction(this->actionSaveAs);
 	this->addAction(this->actionLoad);
 	this->addSeparator();
 	this->addAction(this->actionNewFsm);
@@ -102,8 +102,8 @@ MainToolBar::MainToolBar(QWidget* parent) :
 
 
 	// Connect actions
-	connect(this->actionSaveAs,      &QAction::triggered, this, &MainToolBar::saveAsRequestedEvent);
 	connect(this->actionSave,        &QAction::triggered, this, &MainToolBar::saveRequestedEvent);
+	connect(this->actionSaveAs,      &QAction::triggered, this, &MainToolBar::saveAsRequestedEvent);
 	connect(this->actionLoad,        &QAction::triggered, this, &MainToolBar::loadRequestedEvent);
 	connect(this->actionNewFsm,      &QAction::triggered, this, &MainToolBar::newMachineRequestedEvent);
 	//connect(this->actionClear,       &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);

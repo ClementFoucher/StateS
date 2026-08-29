@@ -2380,6 +2380,16 @@
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="39"/>
+        <source>Save:</source>
+        <translation>Enregistrer :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="39"/>
+        <source>Save machine in current save file</source>
+        <translation>Enregistrer la machine dans le fichier de sauvegarde actuel</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="44"/>
         <source>Save machine in a new file</source>
         <translation>Enregistrer la machine dans un nouveau fichier</translation>
     </message>
@@ -2390,23 +2400,23 @@
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="44"/>
-        <source>Update saved file with current content</source>
-        <translation>Mettre à jour le fichier de sauvegarde avec le contenu actuel</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="44"/>
-        <source>use ctrl+S shortcut to avoid confirm dialog</source>
-        <translation>utilisez le raccourci ctrl+S pour éviter la fenêtre de confirmation</translation>
+        <source>Save as:</source>
+        <translation>Enregistrer sous :</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="48"/>
-        <source>Load</source>
-        <translation>Charger</translation>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="49"/>
-        <source>Load machine from file</source>
-        <translation>Charger une machine depuis un fichier</translation>
+        <source>Open:</source>
+        <translation>Ouvrir :</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="49"/>
+        <source>Load a machine from a save file</source>
+        <translation>Charger une machine depuis un fichier de sauvegarde</translation>
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="54"/>
