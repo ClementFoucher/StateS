@@ -22,9 +22,6 @@
 // Current class header
 #include "maintoolbar.h"
 
-// StateS
-#include "pixmapgenerator.h"
-
 
 MainToolBar::MainToolBar(QWidget* parent) :
 	QToolBar(parent)
@@ -34,48 +31,48 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	// Build actions
 
 	this->actionSave = new QAction(this);
-	this->actionSave->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/save"))));
+	this->actionSave->setIcon(QIcon(QString(":/icons/save")));
 	this->actionSave->setText(tr("Save"));
 	this->actionSave->setToolTip(tr("Save:") + " " + tr("Save machine in current save file"));
 
 	this->actionSaveAs = new QAction(this);
-	this->actionSaveAs->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/save_as"))));
+	this->actionSaveAs->setIcon(QIcon(QString(":/icons/save_as")));
 	this->actionSaveAs->setText(tr("Save as"));
 	this->actionSaveAs->setToolTip(tr("Save as:") + " " + tr("Save machine in a new file"));
 
 	this->actionLoad = new QAction(this);
-	this->actionLoad->setIcon(PixmapGenerator::getPixmapFromSvg(QIcon(QString(":/icons/load"))));
+	this->actionLoad->setIcon(QIcon(QString(":/icons/load")));
 	this->actionLoad->setText(tr("Open"));
 	this->actionLoad->setToolTip(tr("Open:") + " " + tr("Load a machine from a save file"));
 
 	this->actionNewFsm = new QAction(this);
-	//this->actionNewFsm->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/new_FSM"))));
-	this->actionNewFsm->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
+	//this->actionNewFsm->setIcon(QString(":/icons/new_FSM")));
+	this->actionNewFsm->setIcon(QIcon(QString(":/icons/clear")));
 	this->actionNewFsm->setText(tr("New FSM"));
 	this->actionNewFsm->setToolTip(tr("Create new FSM"));
 
    /* this->actionClear = new QAction(this);
-	this->actionClear->setIcon(QIcon(SvgImageGenerator::getPixmapFromSvg(QString(":/icons/clear"))));
+	this->actionClear->setIcon(QIcon(QString(":/icons/clear")));
 	this->actionClear->setText(tr("Clear"));
 	this->actionClear->setToolTip(tr("Clear machine"));*/
 
 	this->actionExportImage = new QAction(this);
-	this->actionExportImage->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_image"))));
+	this->actionExportImage->setIcon(QIcon(QString(":/icons/export_image")));
 	this->actionExportImage->setText(tr("Export to image file"));
 	this->actionExportImage->setToolTip(tr("Export machine to an image file"));
 
 	this->actionExportCode = new QAction(this);
-	this->actionExportCode->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_VHDL"))));
+	this->actionExportCode->setIcon(QIcon(QString(":/icons/export_VHDL")));
 	this->actionExportCode->setText(tr("Export to VHDL"));
 	this->actionExportCode->setToolTip(tr("Export machine to VHDL"));
 
 	this->actionUndo = new QAction(this);
-	this->actionUndo->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/undo"))));
+	this->actionUndo->setIcon(QIcon(QString(":/icons/undo")));
 	this->actionUndo->setText(tr("Undo"));
 	this->actionUndo->setToolTip(tr("Undo latest edit"));
 
 	this->actionRedo = new QAction(this);
-	this->actionRedo->setIcon(QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/redo"))));
+	this->actionRedo->setIcon(QIcon(QString(":/icons/redo")));
 	this->actionRedo->setText(tr("Redo"));
 	this->actionRedo->setToolTip(tr("Redo undone edit"));
 

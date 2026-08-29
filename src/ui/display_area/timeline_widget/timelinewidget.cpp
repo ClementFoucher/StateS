@@ -43,7 +43,6 @@
 #include "clocktimeline.h"
 #include "statetimeline.h"
 #include "simulatedmachine.h"
-#include "pixmapgenerator.h"
 
 
 TimelineWidget::TimelineWidget(QWidget* parent) :
@@ -62,11 +61,11 @@ TimelineWidget::TimelineWidget(QWidget* parent) :
 	this->toolBar = this->addToolBar(tr("Tools"));
 	this->toolBar->setIconSize(QSize(64, 64));
 
-	QIcon exportPdfIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/export_PDF")));
+	QIcon exportPdfIcon(QString(":/icons/export_PDF"));
 	auto action = new QAction(exportPdfIcon, tr("Export to PDF"), this);
 	connect(action, &QAction::triggered, this, &TimelineWidget::exportToPDF);
 
-	QIcon detachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	QIcon detachWindowIcon(QString(":/icons/detach_window"));
 	this->actionDetach = new QAction(detachWindowIcon, tr("Detach as independant window"), this);
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 
@@ -163,7 +162,7 @@ void TimelineWidget::showEvent(QShowEvent* event)
 		// Update button action
 		disconnect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);
 		this->actionDetach->setText(tr("Attach to main window"));
-		QIcon attachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+		QIcon attachWindowIcon(QString(":/icons/attach_window"));
 		this->actionDetach->setIcon(attachWindowIcon);
 		connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
 
@@ -236,7 +235,7 @@ void TimelineWidget::setMeFree()
 
 	this->actionDetach->setText(tr("Attach to main window"));
 
-	QIcon attachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/attach_window")));
+	QIcon attachWindowIcon(QString(":/icons/attach_window"));
 	this->actionDetach->setIcon(attachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::bindMe);
@@ -252,7 +251,7 @@ void TimelineWidget::bindMe()
 
 	this->actionDetach->setText(tr("Detach as independant window"));
 
-	QIcon detachWindowIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/detach_window")));
+	QIcon detachWindowIcon(QString(":/icons/detach_window"));
 	this->actionDetach->setIcon(detachWindowIcon);
 
 	connect(this->actionDetach, &QAction::triggered, this, &TimelineWidget::setMeFree);

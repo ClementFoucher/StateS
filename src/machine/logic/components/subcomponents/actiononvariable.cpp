@@ -29,7 +29,6 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"
-#include "pixmapgenerator.h"
 
 
 //
@@ -72,39 +71,39 @@ QIcon ActionOnVariable::getActionTypeIcon(ActionOnVariable::Type_t type, bool is
 	switch (type)
 	{
 	case ActionOnVariable::Type_t::assign:
-		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/assign")));
+		return QIcon(QString(":/icons/assign"));
 		break;
 	case ActionOnVariable::Type_t::pulse:
 		if (isDown == false)
 		{
-			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse")));
+			return QIcon(QString(":/icons/pulse"));
 		}
 		else
 		{
-			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/pulse_down")));
+			return QIcon(QString(":/icons/pulse_down"));
 		}
 		break;
 	case ActionOnVariable::Type_t::continuous:
 		if (isDown == false)
 		{
-			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state")));
+			return QIcon(QString(":/icons/active_on_state"));
 		}
 		else
 		{
-			return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/active_on_state_down")));
+			return QIcon(QString(":/icons/active_on_state_down"));
 		}
 		break;
 	case ActionOnVariable::Type_t::increment:
-		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/increment")));
+		return QIcon(QString(":/icons/increment"));
 		break;
 	case ActionOnVariable::Type_t::decrement:
-		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/decrement")));
+		return QIcon(QString(":/icons/decrement"));
 		break;
 	case ActionOnVariable::Type_t::reset:
-		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/falling_edge")));
+		return QIcon(QString(":/icons/falling_edge"));
 		break;
 	case ActionOnVariable::Type_t::set:
-		return QIcon(PixmapGenerator::getPixmapFromSvg(QString(":/icons/rising_edge")));
+		return QIcon(QString(":/icons/rising_edge"));
 		break;
 	case ActionOnVariable::Type_t::none:
 		return QIcon();
