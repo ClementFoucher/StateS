@@ -59,8 +59,6 @@ public:
 public:
 	explicit FsmVerifier() = default;
 
-	void setCheckVhdl();
-
 	void abort();
 
 	/////
@@ -79,7 +77,6 @@ signals:
 	/////
 	// Object variables
 private:
-	bool checkVhdl = false;
 	bool doAbort = false;
 
 	QList<std::shared_ptr<Issue>> issues;

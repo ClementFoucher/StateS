@@ -37,10 +37,8 @@
 #include "maintoolbar.h"
 #include "displayarea.h"
 #include "resourcebar.h"
-#include "vhdlexportdialog.h"
 #include "imageexportdialog.h"
 #include "savefiledialog.h"
-#include "fsmvhdlexport.h"
 #include "machinestatus.h"
 #include "machineeditorwidget.h"
 #include "timelinewidget.h"
@@ -102,7 +100,6 @@ StatesUi::StatesUi() :
 	connect(this->toolbar, &MainToolBar::loadRequestedEvent,        this, &StatesUi::beginLoadProcedure);
 	connect(this->toolbar, &MainToolBar::newMachineRequestedEvent,  this, &StatesUi::beginNewMachineProcedure);
 	connect(this->toolbar, &MainToolBar::exportImageRequestedEvent, this, &StatesUi::beginExportImageProcedure);
-	connect(this->toolbar, &MainToolBar::exportCodeRequestedEvent,  this, &StatesUi::beginExportVhdlProcedure);
 	connect(this->toolbar, &MainToolBar::undo,                      this, &StatesUi::undo);
 	connect(this->toolbar, &MainToolBar::redo,                      this, &StatesUi::redo);
 
@@ -355,20 +352,6 @@ void StatesUi::beginExportImageProcedure()
 	this->imageExportDialog->open();
 }
 
-void StatesUi::beginExportVhdlProcedure()
-{
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return;
-
-
-	auto machineStatus = machineManager->getMachineStatus();
-
-	this->vhdlExportDialog = new VhdlExportDialog(machine->getName(), machineStatus->getVhdlExportFolderPath(), this);
-	connect(this->vhdlExportDialog, &VhdlExportDialog::finished, this, &StatesUi::vhdlExportDialogClosedEventHandler);
-
-	this->vhdlExportDialog->open();
-}
-
 void StatesUi::undo()
 {
 	machineManager->undo();
@@ -433,7 +416,6 @@ void StatesUi::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t 
 		this->toolbar->setLoadActionEnabled(true);
 		this->toolbar->setNewFsmActionEnabled(true);
 		this->toolbar->setExportImageEnabled(true);
-		this->toolbar->setExportCodeEnabled(true);
 		this->toolbar->setUndoActionEnabled(isUndoEnabled);
 		this->toolbar->setRedoActionEnabled(isRedoEnabled);
 	}
@@ -447,7 +429,6 @@ void StatesUi::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t 
 		this->toolbar->setSaveActionEnabled(false);
 		this->toolbar->setLoadActionEnabled(false);
 		this->toolbar->setNewFsmActionEnabled(false);
-		this->toolbar->setExportCodeEnabled(false);
 		this->toolbar->setUndoActionEnabled(false);
 		this->toolbar->setRedoActionEnabled(false);
 	}
@@ -547,31 +528,6 @@ void StatesUi::imageExportDialogClosedEventHandler(int result)
 	this->imageExportDialog = nullptr;
 }
 
-void StatesUi::vhdlExportDialogClosedEventHandler(int result)
-{
-	if (this->vhdlExportDialog == nullptr) return;
-
-	auto exporter = this->vhdlExportDialog->getFsmVhdlExport();
-	if (exporter == nullptr) return;
-
-
-	if (result == QDialog::Accepted)
-	{
-		auto filePath = this->vhdlExportDialog->getFilePath();
-
-		exporter->setOptions(this->vhdlExportDialog->isResetPositive(), this->vhdlExportDialog->prefixIOs());
-		exporter->writeToFile(filePath);
-
-		auto machineStatus = machineManager->getMachineStatus();
-
-		QFileInfo fileInfo(filePath);
-		machineStatus->setVhdlExportFolderPath(fileInfo.absolutePath());
-	}
-
-	delete this->vhdlExportDialog;
-	this->vhdlExportDialog = nullptr;
-}
-
 void StatesUi::resetUi()
 {
 	this->updateTitle();
@@ -579,13 +535,11 @@ void StatesUi::resetUi()
 	{
 		this->toolbar->setSaveAsActionEnabled(true);
 		this->toolbar->setExportImageEnabled(true);
-		this->toolbar->setExportCodeEnabled(true);
 	}
 	else
 	{
 		this->toolbar->setSaveAsActionEnabled(false);
 		this->toolbar->setExportImageEnabled(false);
-		this->toolbar->setExportCodeEnabled(false);
 	}
 
 	this->toolbar->setUndoActionEnabled(false);

@@ -934,162 +934,113 @@
 <context>
     <name>FsmVerifier</name>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="61"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="55"/>
         <source>No FSM.</source>
         <translation>Aucune FSM.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="68"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="62"/>
         <source>Empty FSM.</source>
         <translation>FSM vide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="78"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="72"/>
         <source>No initial state.</source>
         <translation>Aucun état initial défini.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="119"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="135"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="151"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="113"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="129"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="145"/>
         <source>Error on transition condition from state</source>
         <translation>Erreur sur la condition d&apos;une transition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="120"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="114"/>
         <source>Equation is a bit vector whose size is &gt; 1.</source>
         <translation>L&apos;équation est un vecteur de bits de taille &gt; 1.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="121"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="115"/>
         <source>Bit vector equation size must be 1 to be a valid condition.</source>
         <translation>Les équations de type vecteur de bits doivent avoir une taille de 1 pour être une condition valide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="122"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="138"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="153"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="116"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="132"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="147"/>
         <source>Please correct this equation:</source>
         <translation>Veuillez corriger cette équation :</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="136"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="130"/>
         <source>Equation type is not valid as a condition.</source>
         <translation>Le type de l&apos;équation n&apos;est pas valide pour une condition.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="137"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="131"/>
         <source>It should be a boolean or a bit vector of size 1.</source>
         <translation>Il devrait être soit un booléen, soit un vecteur de bits de taille 1.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="152"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="146"/>
         <source>Equation is invalid.</source>
         <translation>L&apos;équation est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="169"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="163"/>
         <source>Multiple transitions from state</source>
         <translation>Plusieurs transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="169"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="163"/>
         <source>have a condition value always true.</source>
         <translation>ont une condition définie comme toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="176"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="170"/>
         <source>One transition from state</source>
         <translation>Une trnsition venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="176"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="170"/>
         <source>has a condition value always true.</source>
         <translation>a une condition toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="177"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="171"/>
         <source>Using an always true condition on a transition is only allowed if there is no other transition that origins from the same state.</source>
         <translation>Utiliser une condition toujours vraie sur une transition n&apos;est admis qu&apos;a condition qu&apos;il n&apos;y ait aucune autre transtion venant du même état.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="198"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="192"/>
         <source>StateS was unable to build the truth table for transitions going out of state</source>
         <translation>StateS n&apos;a pas réussi à construire la table de vérité pour les transitions ayant pour origine l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="199"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="193"/>
         <source>This is probably because there are too many combinations to compute.</source>
         <translation>C&apos;est probablement dû à un trop grand nombre de combinaisons à calculer.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="200"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="194"/>
         <source>This means that there may be transitions going out of this state that are not mutually exclusive.</source>
         <translation>Cela signifie qu&apos;il y a potentiellement des transitions ayant pour origine cet état qui ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="225"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="219"/>
         <source>Transitions from state</source>
         <translation>Les transitions venant de l&apos;état</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="225"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="219"/>
         <source>are not mutually exclusive.</source>
         <translation>ne sont pas mutuellement exclusives.</translation>
     </message>
     <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="226"/>
+        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="220"/>
         <source>At least two transitions can be active at the same time.</source>
         <translation>Au moins deux transitions peuvent être actives au même moment.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="258"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="271"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="284"/>
-        <source>Variable</source>
-        <translation>Variable</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="259"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="272"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="285"/>
-        <source>StateS VHDL exporter is currently unable to handle these variables.</source>
-        <translation>L&apos;export VHDL de StateS est n&apos;est pour l&apos;instant pas capable de gérer ces variables.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="260"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="273"/>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="286"/>
-        <source>This variable will be ignored on VHDL export.</source>
-        <translation>Cette variable sera ignorée lors de l&apos;export VHDL.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="271"/>
-        <source>has range-adressed output generation.</source>
-        <translation>génère des sorties sur des bits indépendants.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="284"/>
-        <source>has Mealy outputs affectation (remembered value).</source>
-        <translation>est une sortie de Mealy avec mémorisation.</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/logic/fsm/verifier/fsmverifier.cpp" line="258"/>
-        <source>has both Moore and Mealy behaviors.</source>
-        <translation>a un comportement à la fois de Moore et de Mealy.</translation>
-    </message>
-</context>
-<context>
-    <name>FsmVhdlExport</name>
-    <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="871"/>
-        <source>Error: empty equation</source>
-        <translation>Erreur : équation vide</translation>
-    </message>
-    <message>
-        <location filename="../src/machine/export/fsm/fsmvhdlexport.cpp" line="967"/>
-        <source>Error: empty operand</source>
-        <translation>Erreur : opérande vide</translation>
     </message>
 </context>
 <context>
@@ -2446,31 +2397,21 @@
     </message>
     <message>
         <location filename="../src/ui/display_area/maintoolbar.cpp" line="66"/>
-        <source>Export to VHDL</source>
-        <translation>Exporter en VHDL</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="67"/>
-        <source>Export machine to VHDL</source>
-        <translation>Exporter la machine en VHDL</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="71"/>
         <source>Undo</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="72"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="67"/>
         <source>Undo latest edit</source>
         <translation>Annuler la dernière modification</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="76"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="71"/>
         <source>Redo</source>
         <translation>Refaire</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/maintoolbar.cpp" line="77"/>
+        <location filename="../src/ui/display_area/maintoolbar.cpp" line="72"/>
         <source>Redo undone edit</source>
         <translation>Ré-appliquer la dernière modification annulée</translation>
     </message>
@@ -2978,69 +2919,69 @@
 <context>
     <name>StatesUi</name>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="288"/>
+        <location filename="../src/ui/statesui.cpp" line="285"/>
         <source>Save machine</source>
         <translation>Enregistrer la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="310"/>
+        <location filename="../src/ui/statesui.cpp" line="307"/>
         <source>Load machine</source>
         <translation>Charger une machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="642"/>
+        <location filename="../src/ui/statesui.cpp" line="596"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="324"/>
+        <location filename="../src/ui/statesui.cpp" line="321"/>
         <source>Clear current machine?</source>
         <translation>Effacer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="334"/>
+        <location filename="../src/ui/statesui.cpp" line="331"/>
         <source>Delete current machine?</source>
         <translation>Supprimer la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="643"/>
+        <location filename="../src/ui/statesui.cpp" line="597"/>
         <source>Unsaved changes will be lost.</source>
         <translation>Les changements non enregistrés seront perdus.</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="609"/>
+        <location filename="../src/ui/statesui.cpp" line="563"/>
         <source>Unsaved machine</source>
         <translation>Machine non enregistrée</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="135"/>
+        <location filename="../src/ui/statesui.cpp" line="132"/>
         <source>Quit StateS?</source>
         <translation>Quitter StateS ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="252"/>
+        <location filename="../src/ui/statesui.cpp" line="249"/>
         <source>Load file</source>
         <translation>Charger un fichier</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="252"/>
+        <location filename="../src/ui/statesui.cpp" line="249"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="303"/>
+        <location filename="../src/ui/statesui.cpp" line="300"/>
         <source>Discard current machine?</source>
         <translation>Abandonner la machine courante ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="87"/>
+        <location filename="../src/ui/statesui.cpp" line="85"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/statesui.cpp" line="465"/>
-        <location filename="../src/ui/statesui.cpp" line="475"/>
-        <location filename="../src/ui/statesui.cpp" line="504"/>
+        <location filename="../src/ui/statesui.cpp" line="446"/>
+        <location filename="../src/ui/statesui.cpp" line="456"/>
+        <location filename="../src/ui/statesui.cpp" line="485"/>
         <source>Timeline</source>
         <translation>Chronogramme</translation>
     </message>
@@ -3459,167 +3400,84 @@
         <translation>Outil de vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="57"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="55"/>
         <source>Check machine</source>
         <translation>Vérifier la machine</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="161"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="152"/>
         <source>No errors!</source>
         <translation>Aucune erreur !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="55"/>
-        <source>Check for VHDL export restrictions</source>
-        <translation>Vérifier les restrictions d&apos;export VHDL</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="81"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="77"/>
         <source>Verification in progress...</source>
         <translation>Vérification en cours...</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="86"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="82"/>
         <source>Cancel verification</source>
         <translation>Annuler la vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="152"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="143"/>
         <source>Clear verification results</source>
         <translation>Effacer les résultats de la vérification</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="170"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="161"/>
         <source>The following issues were found:</source>
         <translation>Les problèmes suivants ont été trouvés :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="222"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="213"/>
         <source>Issues in red are blocking for the machine to work.</source>
         <translation>Les problèmes en rouge sont bloquants pour le fonctionnement de la machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="230"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="221"/>
         <source>Issues in green are not machine errors but have restriction in StateS.</source>
         <translation>Les problèmes en vert ne sont pas des erreurs de la machine mais ont des restrictions dans StateS.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="234"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="225"/>
         <source>Yellow highlighted issues can be double-clicked for more details on the error.</source>
         <translation>Vous pouvez double-cliquer sur les erreurs surlignées en jaune pour obtenir plus de détails sur l&apos;erreur.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="237"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="228"/>
         <source>Hint</source>
         <translation>Astuce</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="278"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="268"/>
         <source>Warning: The verification has been running for an anormal duration.</source>
         <translation>Attention : la vérification prend un temps anormal à arriver à son terme.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="280"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="270"/>
         <source>This looks like the number of combinations to test is very high.</source>
         <translation>Il semble que le nombre de combinaisons à tester est très élevé.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="282"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="272"/>
         <source>Consider canceling the verification.</source>
         <translation>Envisagez d&apos;annuler la vérification.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="309"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="299"/>
         <source>Details on error</source>
         <translation>Détails sur l&apos;erreur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="226"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="217"/>
         <source>Issues in blue won&apos;t block machine, but are structural errors that will lead to impredictible behavior at some point and must be corrected.</source>
         <translation>Les problèmes en bleu ne bloqueront pas le fonctionnement de la machine, mais sont des erreurs structurelles qui mènent à un comportement non défini, et doivent donc être corrigées.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="307"/>
+        <location filename="../src/ui/resource_bar/verifiertab.cpp" line="297"/>
         <source>Lines highlighted in red in the truth table are conflicts resulting in multiple simultaneous transitions being activated.</source>
         <translation>Les lignes en rouge dans la table de vérité sont des conflits menant à l&apos;activation simultanée de plusieurs transitions.</translation>
-    </message>
-</context>
-<context>
-    <name>VhdlExportDialog</name>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="57"/>
-        <source>Please run machine verifier to identify affected variables.</source>
-        <translation>Veuillez utiliser le vérificateur pour identifier les variables affectées.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="61"/>
-        <source>Choose export options:</source>
-        <translation>Choisissez les options pour l&apos;export :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="65"/>
-        <source>Positive</source>
-        <translation>Positive</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="66"/>
-        <source>Negative</source>
-        <translation>Négative</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="79"/>
-        <source>Reset logic:</source>
-        <translation>Logique du reset :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="69"/>
-        <source>No</source>
-        <translation>Non</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="70"/>
-        <source>Yes</source>
-        <translation>Oui</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="80"/>
-        <source>Prefix inputs and outputs with &apos;I_&apos; and &apos;O_&apos; respectively:</source>
-        <translation>Ajouter un préfixe &apos;I_&apos; ou &apos;O_&apos; respectivement aux entrées et aux sorties :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="72"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="73"/>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="138"/>
-        <source>Export machine to VHDL</source>
-        <translation>Exporter la machine en VHDL</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="54"/>
-        <source>Warning! Experimental feature.</source>
-        <translation>Attention ! Fonctionnalité expériementale.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="55"/>
-        <source>Output generation has strong restrictions:</source>
-        <translation>La génération des sorties ne gère pas toutes les possibilités :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="56"/>
-        <source>some of the current machine&apos;s outputs won&apos;t be correctly handled.</source>
-        <translation>certaines sorties de la machine actuelle ne seront pas correctement générées.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/vhdlexportdialog.cpp" line="43"/>
-        <source>VHDL export</source>
-        <translation>Exporter en VHDL</translation>
     </message>
 </context>
 </TS>

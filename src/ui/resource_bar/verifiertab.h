@@ -72,9 +72,8 @@ private:
 
 	QVBoxLayout* mainLayout = nullptr;
 
-	// Permanent widgets
-	QCheckBox*   checkVhdlExport = nullptr;
-	QPushButton* buttonVerify    = nullptr;
+	// Permanent widget
+	QPushButton* buttonVerify = nullptr;
 
 	// Verification in progress widgets
 	QLabel*      verificationRunningLabel = nullptr;

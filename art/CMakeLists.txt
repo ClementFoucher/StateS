@@ -26,9 +26,6 @@ set_source_files_properties("svg/Detach_window.svg"
 set_source_files_properties("svg/Export_PDF.svg"
     PROPERTIES QT_RESOURCE_ALIAS "export_PDF"
 )
-set_source_files_properties("svg/Export_VHDL.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "export_VHDL"
-)
 set_source_files_properties("svg/Export_image.svg"
     PROPERTIES QT_RESOURCE_ALIAS "export_image"
 )
@@ -76,7 +73,6 @@ set(art_files
     "svg/Decrement.svg"
     "svg/Detach_window.svg"
     "svg/Export_PDF.svg"
-    "svg/Export_VHDL.svg"
     "svg/Export_image.svg"
     "svg/Falling_edge.svg"
     "svg/Increment.svg"

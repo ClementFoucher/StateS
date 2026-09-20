@@ -29,18 +29,12 @@
 #include "fsmtransition.h"
 #include "truthtable.h"
 #include "equation.h"
-#include "fsmvhdlexport.h"
 #include "variable.h"
 
 
 const QList<std::shared_ptr<FsmVerifier::Issue> >& FsmVerifier::getIssues()
 {
 	return this->issues;
-}
-
-void FsmVerifier::setCheckVhdl()
-{
-	this->checkVhdl = true;
 }
 
 void FsmVerifier::abort()
@@ -236,56 +230,6 @@ void FsmVerifier::run()
 
 						rowcount++;
 					}
-				}
-			}
-		}
-
-		// Check VHDL export support
-		if (this->checkVhdl == true)
-		{
-			FsmVhdlExport vhdlExporter{};
-			auto compat = vhdlExporter.checkCompatibility();
-
-			if (compat->isCompatible() == false)
-			{
-				for (auto& variableId : compat->bothMooreAndMealy)
-				{
-					auto variable = fsm->getVariable(variableId);
-					if (variable == nullptr) continue;
-
-
-					auto issue = std::make_shared<Issue>();
-					issue->text  = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has both Moore and Mealy behaviors.");
-					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
-					issue->text += " " + tr("This variable will be ignored on VHDL export.");
-					issue->type = SeverityLevel_t::tool;
-					this->issues.append(issue);
-				}
-				for (auto& variableId : compat->rangeAdressed)
-				{
-					auto variable = fsm->getVariable(variableId);
-					if (variable == nullptr) continue;
-
-
-					auto issue = std::make_shared<Issue>();
-					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " +  tr("has range-adressed output generation.");
-					issue->text += " " +  tr("StateS VHDL exporter is currently unable to handle these variables.");
-					issue->text += " " +  tr("This variable will be ignored on VHDL export.");
-					issue->type = SeverityLevel_t::tool;
-					this->issues.append(issue);
-				}
-				for (auto& variableId : compat->mealyWithKeep)
-				{
-					auto variable = fsm->getVariable(variableId);
-					if (variable == nullptr) continue;
-
-
-					auto issue = std::make_shared<Issue>();
-					issue->text = tr("Variable") + " \"" + variable->getName() + "\" " + tr("has Mealy outputs affectation (remembered value).");
-					issue->text += " " + tr("StateS VHDL exporter is currently unable to handle these variables.");
-					issue->text += " " +  tr("This variable will be ignored on VHDL export.");
-					issue->type = SeverityLevel_t::tool;
-					this->issues.append(issue);
 				}
 			}
 		}

@@ -1,6 +1,5 @@
 set(machine_header_files
     "export/machineimageexporter.h"
-    "export/fsm/fsmvhdlexport.h"
     "graphic/graphicmachine.h"
     "graphic/components/graphiccomponent.h"
     "graphic/components/graphicsimulatedcomponent.h"
@@ -42,7 +41,6 @@ set(machine_header_files
 
 set(machine_source_files
     "export/machineimageexporter.cpp"
-    "export/fsm/fsmvhdlexport.cpp"
     "graphic/graphicmachine.cpp"
     "graphic/components/graphiccomponent.cpp"
     "graphic/components/graphicsimulatedcomponent.cpp"
@@ -84,7 +82,6 @@ set(machine_source_files
 
 set(machine_include_directories
     "export"
-    "export/fsm"
     "graphic"
     "graphic/components"
     "graphic/components/subcomponents"

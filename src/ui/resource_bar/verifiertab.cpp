@@ -52,8 +52,6 @@ VerifierTab::VerifierTab(QWidget* parent) :
 	//
 	// Content
 
-	this->checkVhdlExport = new QCheckBox(tr("Check for VHDL export restrictions"), this);
-
 	this->buttonVerify = new QPushButton(tr("Check machine"), this);
 	connect(this->buttonVerify, &QPushButton::clicked, this, &VerifierTab::beginCheck);
 
@@ -64,7 +62,6 @@ VerifierTab::VerifierTab(QWidget* parent) :
 	this->mainLayout->setAlignment(Qt::AlignTop);
 
 	this->mainLayout->addWidget(title);
-	this->mainLayout->addWidget(this->checkVhdlExport);
 	this->mainLayout->addWidget(this->buttonVerify);
 }
 
@@ -73,9 +70,8 @@ void VerifierTab::beginCheck()
 	// Reset any content from a previous verification
 	this->resetContent();
 
-	// Hide initial widgets
-	this->checkVhdlExport->setVisible(false);
-	this->buttonVerify   ->setVisible(false);
+	// Hide initial widget
+	this->buttonVerify->setVisible(false);
 
 	// Add verification in progress widgets
 	this->verificationRunningLabel = new QLabel(tr("Verification in progress..."), this);
@@ -89,10 +85,6 @@ void VerifierTab::beginCheck()
 
 	// Build verifier
 	this->verifier = std::make_unique<FsmVerifier>();
-	if (this->checkVhdlExport->isChecked() == true)
-	{
-		this->verifier->setCheckVhdl();
-	}
 	connect(this->verifier.get(), &FsmVerifier::verificationOver, this, &VerifierTab::checkFinished);
 
 	// Build timer
@@ -144,9 +136,8 @@ void VerifierTab::checkFinished()
 	// Unlock interface
 	machineManager->setInterfaceMode(MachineManager::InterfaceMode_t::editMode);
 
-	// Restore initial widgets visibility
-	this->checkVhdlExport->setVisible(true);
-	this->buttonVerify   ->setVisible(true);
+	// Restore initial widget visibility
+	this->buttonVerify->setVisible(true);
 
 	// Add clear button
 	this->buttonClear = new QPushButton(tr("Clear verification results"), this);
@@ -267,9 +258,8 @@ void VerifierTab::resetContent()
 	delete this->timer;
 	this->timer = nullptr;
 
-	// Restore initial widgets visibility
-	this->checkVhdlExport->setVisible(true);
-	this->buttonVerify   ->setVisible(true);
+	// Restore initial widget visibility
+	this->buttonVerify->setVisible(true);
 }
 
 void VerifierTab::timeout()

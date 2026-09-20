@@ -14,8 +14,6 @@ Currently, StateS allows you to:
     - as PDF
     - as vector image (SVG)
     - as bitmap image (PNG or Jpeg)
-- Export it to code (**very experimental feature**)
-    - VHDL
 
 You can test interacting with a machine by loading one of the [demo files ](samples) (select a file then hit the "Download raw file" button on the top right).
 

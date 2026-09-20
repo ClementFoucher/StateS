@@ -84,7 +84,6 @@ private slots:
 	void beginNewMachineProcedure();
 	void beginClearMachineProcedure();
 	void beginExportImageProcedure();
-	void beginExportVhdlProcedure();
 
 	void undo();
 	void redo();
@@ -103,7 +102,6 @@ private slots:
 	void redoActionAvailabilityChangeEventHandler(bool redoAvailable);
 
 	void imageExportDialogClosedEventHandler(int result);
-	void vhdlExportDialogClosedEventHandler(int result);
 
 private:
 	void resetUi();

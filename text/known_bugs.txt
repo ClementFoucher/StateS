@@ -6,15 +6,3 @@
 ** The following behaviors are known: **
 
 - Time line PDF export creates heavy, slow and ugly PDF (unlike machine PDF export),
-
-
-** VHDL export issues: **
-
-- Output generation is very partially implemented!
--> Sub-range adressed variables are ignored,
--> Variables mixing Moore and Mealy behaviors are ignored,
--> Mealy actions on memorized variables are ignored.
-
-=> Thus currently, the only handled outputs are:
--> Moore-only, full-range affected outputs,
--> Mealy-only, unmemorized, full-range affected outputs.

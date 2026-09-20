@@ -61,11 +61,6 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	this->actionExportImage->setText(tr("Export to image file"));
 	this->actionExportImage->setToolTip(tr("Export machine to an image file"));
 
-	this->actionExportCode = new QAction(this);
-	this->actionExportCode->setIcon(QIcon(QString(":/icons/export_VHDL")));
-	this->actionExportCode->setText(tr("Export to VHDL"));
-	this->actionExportCode->setToolTip(tr("Export machine to VHDL"));
-
 	this->actionUndo = new QAction(this);
 	this->actionUndo->setIcon(QIcon(QString(":/icons/undo")));
 	this->actionUndo->setText(tr("Undo"));
@@ -79,7 +74,6 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	this->actionSaveAs->setEnabled(false);
 	this->actionSave->setEnabled(false);
 	this->actionExportImage->setEnabled(false);
-	this->actionExportCode->setEnabled(false);
 	this->actionUndo->setEnabled(false);
 	this->actionRedo->setEnabled(false);
 
@@ -92,7 +86,6 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	//this->addAction(this->actionClear);
 	this->addSeparator();
 	this->addAction(this->actionExportImage);
-	this->addAction(this->actionExportCode);
 	this->addSeparator();
 	this->addAction(this->actionUndo);
 	this->addAction(this->actionRedo);
@@ -105,7 +98,6 @@ MainToolBar::MainToolBar(QWidget* parent) :
 	connect(this->actionNewFsm,      &QAction::triggered, this, &MainToolBar::newMachineRequestedEvent);
 	//connect(this->actionClear,       &QAction::triggered, this, &ToolBar::beginClearMachineProcedure);
 	connect(this->actionExportImage, &QAction::triggered, this, &MainToolBar::exportImageRequestedEvent);
-	connect(this->actionExportCode,  &QAction::triggered, this, &MainToolBar::exportCodeRequestedEvent);
 	connect(this->actionUndo,        &QAction::triggered, this, &MainToolBar::undo);
 	connect(this->actionRedo,        &QAction::triggered, this, &MainToolBar::redo);
 }
@@ -135,11 +127,6 @@ void MainToolBar::setExportImageEnabled(bool enable)
 	this->actionExportImage->setEnabled(enable);
 }
 
-void MainToolBar::setExportCodeEnabled(bool enable)
-{
-	this->actionExportCode->setEnabled(enable);
-}
-
 void MainToolBar::setUndoActionEnabled(bool enable)
 {
 	this->actionUndo->setEnabled(enable);
@@ -163,9 +150,4 @@ bool MainToolBar::getRedoActionEnabled() const
 bool MainToolBar::getSaveActionEnabled() const
 {
 	return this->actionSave->isEnabled();
-}
-
-bool MainToolBar::getExportCodeEnabled() const
-{
-	return this->actionExportCode->isEnabled();
 }
