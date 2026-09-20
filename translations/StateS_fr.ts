@@ -1828,12 +1828,12 @@
 <context>
     <name>InputBitSelector</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="45"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/input_selectors/inputbitselector.cpp" line="45"/>
         <source>Bit</source>
         <translation>Bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputbitselector.cpp" line="45"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/input_selectors/inputbitselector.cpp" line="45"/>
         <source>of variable</source>
         <translation>de la variable</translation>
     </message>
@@ -1841,7 +1841,7 @@
 <context>
     <name>InputBooleanSelector</name>
     <message>
-        <location filename="../src/ui/resource_bar/simulator_tab/inputbooleanselector.cpp" line="43"/>
+        <location filename="../src/ui/resource_bar/simulator_tab/input_selectors/inputbooleanselector.cpp" line="43"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>

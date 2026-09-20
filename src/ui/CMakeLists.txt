@@ -83,14 +83,14 @@ set(ui_header_files
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.h"
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletabletypedelegate.h"
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.h"
-    "resource_bar/simulator_tab/inputbitselector.h"
-    "resource_bar/simulator_tab/inputbooleanselector.h"
     "resource_bar/simulator_tab/inputsselector.h"
-    "resource_bar/simulator_tab/inputtoggleselector.h"
     "resource_bar/simulator_tab/inputvariableselector.h"
     "resource_bar/simulator_tab/simulatorconfigurator.h"
     "resource_bar/simulator_tab/simulatortab.h"
     "resource_bar/simulator_tab/simulatortimecontroller.h"
+    "resource_bar/simulator_tab/input_selectors/inputbitselector.h"
+    "resource_bar/simulator_tab/input_selectors/inputbooleanselector.h"
+    "resource_bar/simulator_tab/input_selectors/inputtoggleselector.h"
 )
 
 set(ui_source_files
@@ -178,14 +178,14 @@ set(ui_source_files
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp"
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletabletypedelegate.cpp"
     "resource_bar/machine_editor_tab/variable_table/delegates/variabletablevaluedelegate.cpp"
-    "resource_bar/simulator_tab/inputbitselector.cpp"
-    "resource_bar/simulator_tab/inputbooleanselector.cpp"
     "resource_bar/simulator_tab/inputsselector.cpp"
-    "resource_bar/simulator_tab/inputtoggleselector.cpp"
     "resource_bar/simulator_tab/inputvariableselector.cpp"
     "resource_bar/simulator_tab/simulatorconfigurator.cpp"
     "resource_bar/simulator_tab/simulatortab.cpp"
     "resource_bar/simulator_tab/simulatortimecontroller.cpp"
+    "resource_bar/simulator_tab/input_selectors/inputbitselector.cpp"
+    "resource_bar/simulator_tab/input_selectors/inputbooleanselector.cpp"
+    "resource_bar/simulator_tab/input_selectors/inputtoggleselector.cpp"
 )
 
 set(ui_include_directories
@@ -209,6 +209,7 @@ set(ui_include_directories
     "resource_bar/machine_editor_tab/variable_table"
     "resource_bar/machine_editor_tab/variable_table/delegates"
     "resource_bar/simulator_tab"
+    "resource_bar/simulator_tab/input_selectors"
 )
 
 qt_add_library(ui INTERFACE)
