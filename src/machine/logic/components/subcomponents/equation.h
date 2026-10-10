@@ -112,8 +112,6 @@ public:
 
 	QSet<ComponentId> getVariablesIdsSet() const;
 
-	bool isInverted() const;
-
 	std::shared_ptr<Operand> getOperand(uint i) const;
 	void setOperand(uint i, ComponentId               newOperand); // Set variable operand
 	void setOperand(uint i, std::shared_ptr<Equation> newOperand); // Set equation operand
@@ -139,7 +137,6 @@ private slots:
 private:
 	void setOperand(uint i, std::shared_ptr<Operand> newOperand);
 	void checkForErrors();
-	MachineValue computeInitialValue();
 
 	/////
 	// Signals

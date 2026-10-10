@@ -31,6 +31,7 @@
 // StateS
 #include "equationpartmimedata.h"
 #include "equation.h"
+#include "equationcomputer.h"
 #include "operand.h"
 #include "inverterbarwidget.h"
 #include "equationeditordialog.h"
@@ -668,10 +669,12 @@ void EquationEditorWidget::buildCompleteEquation()
 	if (this->equation == nullptr) return;
 
 
+	auto equationOperator = this->equation->getOperator();
+
 	auto equationLayout = new QHBoxLayout();
 	equationLayout->setAlignment(Qt::AlignVCenter);
 
-	if (this->equation->getOperator() == Equation::Operator_t::concatOp)
+	if (equationOperator == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("{"));
 	}
@@ -686,7 +689,7 @@ void EquationEditorWidget::buildCompleteEquation()
 	{
 		// Add operator
 		QString operatorText;
-		switch(this->equation->getOperator())
+		switch(equationOperator)
 		{
 		case Equation::Operator_t::andOp:
 		case Equation::Operator_t::nandOp:
@@ -726,11 +729,11 @@ void EquationEditorWidget::buildCompleteEquation()
 		equationLayout->addWidget(operandWidget);
 	}
 
-	if (this->equation->getOperator() == Equation::Operator_t::concatOp)
+	if (equationOperator == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("}"));
 	}
-	else if (this->equation->getOperator() == Equation::Operator_t::extractOp)
+	else if (equationOperator == Equation::Operator_t::extractOp)
 	{
 		this->rangeEditor = new RangeEditor(this->equation, this);
 
@@ -739,11 +742,11 @@ void EquationEditorWidget::buildCompleteEquation()
 		connect(this->rangeEditor, &RangeEditor::beginEditEvent, this, &EquationEditorWidget::rangeEditorBeginEditEventHandler);
 	}
 
-	if (this->equation->isInverted() == false)
+	if (EquationComputer::isInverted(equationOperator) == false)
 	{
 		this->setLayout(equationLayout);
 	}
-	else
+	else // (EquationComputer::isInverted(equationOperator) == true)
 	{
 		auto verticalLayout = new QVBoxLayout();
 

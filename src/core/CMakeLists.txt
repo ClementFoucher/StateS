@@ -1,12 +1,13 @@
 set(core_header_files
     "componentid.h"
     "states.h"
+    "equations/equationcomputer.h"
+    "equations/truthtable.h"
     "exceptions/statesexception.h"
     "machine_manager/machinebuilder.h"
     "machine_manager/machinemanager.h"
     "machine_manager/machinesimulator.h"
     "machine_manager/machinestatus.h"
-    "truth_table/truthtable.h"
     "undo_engine/statesundocommand.h"
     "undo_engine/undoredomanager.h"
     "undo_engine/undo_commands/diffundocommand.h"
@@ -22,12 +23,13 @@ set(core_header_files
 
 set(core_source_files
     "states.cpp"
+    "equations/equationcomputer.cpp"
+    "equations/truthtable.cpp"
     "exceptions/statesexception.cpp"
     "machine_manager/machinebuilder.cpp"
     "machine_manager/machinemanager.cpp"
     "machine_manager/machinesimulator.cpp"
     "machine_manager/machinestatus.cpp"
-    "truth_table/truthtable.cpp"
     "undo_engine/statesundocommand.cpp"
     "undo_engine/undoredomanager.cpp"
     "undo_engine/undo_commands/diffundocommand.cpp"
@@ -43,10 +45,10 @@ set(core_source_files
 
 set(core_include_directories
     "."
+    "equations"
     "exceptions"
     "machine_manager"
     "simulation"
-    "truth_table"
     "undo_engine"
     "undo_engine/undo_commands"
     "values"

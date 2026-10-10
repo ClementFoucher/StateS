@@ -61,10 +61,10 @@ public:
 	///
 	// Accessors
 
-	QString                   getName()         const;
+	QString              getName()         const;
 	MachineValue::Type_t getType()         const;
-	MachineValue              getInitialValue() const;
-	bool                      getMemorized()    const;
+	MachineValue         getInitialValue() const;
+	bool                 getMemorized()    const;
 
 	/////
 	// Signals

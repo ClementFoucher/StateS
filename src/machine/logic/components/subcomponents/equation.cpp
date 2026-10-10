@@ -27,6 +27,7 @@
 
 // StateS
 #include "operand.h"
+#include "equationcomputer.h"
 
 
 /**
@@ -140,7 +141,7 @@ QString Equation::getColoredText(bool raw) const
 	uint operandCount = this->getOperandCount();
 
 	// Inversion oeprator
-	if (this->isInverted() == true)
+	if (EquationComputer::isInverted(this->operatorType) == true)
 	{
 		text += '/';
 	}
@@ -319,29 +320,6 @@ QSet<ComponentId> Equation::getVariablesIdsSet() const
 	}
 
 	return variablesIds;
-}
-
-bool Equation::isInverted() const
-{
-	switch (this->operatorType)
-	{
-	case Operator_t::notOp:
-	case Operator_t::nandOp:
-	case Operator_t::norOp:
-	case Operator_t::xnorOp:
-		return true;
-		break;
-	case Operator_t::identity:
-	case Operator_t::andOp:
-	case Operator_t::orOp:
-	case Operator_t::xorOp:
-	case Operator_t::equalOp:
-	case Operator_t::diffOp:
-	case Operator_t::extractOp:
-	case Operator_t::concatOp:
-		return false;
-		break;
-	}
 }
 
 std::shared_ptr<Operand> Equation::getOperand(uint i) const
@@ -530,7 +508,16 @@ void Equation::checkAndComputeInitialValue()
 	}
 	else
 	{
-		this->initialValue = this->computeInitialValue();
+		// PRE: all operands are valid
+		int operandsCount = this->operands.count();
+		std::vector<MachineValue> operandsValues{static_cast<size_t>(operandsCount)};
+
+		for (int i = 0 ; i < operandsCount ; i++)
+		{
+			operandsValues[i] = this->operands[i]->getInitialValue();
+		}
+
+		this->initialValue = EquationComputer::computeValue(this->operatorType, operandsValues, this->rangeL, this->rangeR);
 	}
 
 	if (previousValue != this->initialValue)
@@ -789,233 +776,4 @@ void Equation::checkForErrors()
 	}
 	// POST: right range is -1 and left range is < to Bit Vector size and > to 0
 	//       OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
-}
-
-MachineValue Equation::computeInitialValue()
-{
-	MachineValue computedValue{};
-	switch (this->operatorType)
-	{
-	case Operator_t::notOp:
-	case Operator_t::identity:
-		// PRE: there is one operand
-		// PRE: the operand is valid
-
-		computedValue = this->operands[0]->getInitialValue();
-		break;
-	case Operator_t::equalOp:
-	{
-		// PRE: there are two operands
-		// PRE: the two operands are valid
-
-		computedValue = BooleanValue{(this->operands[0]->getInitialValue() == this->operands[1]->getInitialValue())};
-		break;
-	}
-	case Operator_t::diffOp:
-	{
-		// PRE: there are two operands
-		// PRE: the two operands are valid
-
-		computedValue = BooleanValue{(this->operands[0]->getInitialValue() != this->operands[1]->getInitialValue())};
-		break;
-	}
-	case Operator_t::extractOp:
-	{
-		// PRE: there is one operand
-		// PRE: the operand is valid
-		// PRE: the operand is of type Bit Vector
-		// PRE: right range is -1 and left range is < to Bit Vector size and > to 0
-		//      OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
-
-		auto operandValue = this->operands[0]->getInitialValue().getBitVectorValue();
-		if (this->rangeR != -1)
-		{
-			int range = this->rangeL - this->rangeR + 1;
-			auto subVector = BitVectorValue::allZeros(range);
-
-			for (int i = 0 ; i < range ; i++)
-			{
-				subVector.setBit(i, operandValue[this->rangeR + i]);
-			}
-
-			computedValue = subVector;
-		}
-		else
-		{
-			computedValue = BooleanValue{operandValue[rangeL]};
-		}
-		break;
-	}
-	case Operator_t::concatOp:
-	{
-		// PRE: there are two or more operands
-		// PRE: the operands are all valid
-		// PRE: all operands are either Boolean or Bit Vector
-
-		int sizeCount = 0;
-		for (auto& currentOperand : this->operands)
-		{
-			if (currentOperand->getType() == MachineValue::Type_t::bitVector)
-			{
-				sizeCount += currentOperand->getInitialValue().getBitVectorValue().getSize();
-			}
-			else // (currentOperandValue.getValueType() == MachineValue::ValueType_t::boolean)
-			{
-				sizeCount++;
-			}
-		}
-
-		auto concatVector = BitVectorValue::allZeros(sizeCount);
-
-		int currentBit = sizeCount - 1;
-		for (auto& currentOperand : this->operands)
-		{
-			if (currentOperand->getType() == MachineValue::Type_t::bitVector)
-			{
-				auto currentOperandBitVectorValue = currentOperand->getInitialValue().getBitVectorValue();
-				for (int i = static_cast<int>(currentOperandBitVectorValue.getSize())-1 ; i >= 0 ; i--)
-				{
-					concatVector.setBit(currentBit, currentOperandBitVectorValue[i]);
-					currentBit--;
-				}
-			}
-			else // (currentOperandValue.getValueType() == MachineValue::ValueType_t::boolean)
-			{
-				auto currentOperandBooleanValue = currentOperand->getInitialValue().getBooleanValue();
-				concatVector.setBit(currentBit, currentOperandBooleanValue);
-				currentBit--;
-			}
-		}
-
-		computedValue = concatVector;
-		break;
-	}
-	case Operator_t::andOp:
-	case Operator_t::nandOp:
-	case Operator_t::orOp:
-	case Operator_t::norOp:
-	case Operator_t::xorOp:
-	case Operator_t::xnorOp:
-	{
-		// PRE: there are two or more operands
-		// PRE: the operands are all valid
-		// PRE: operands are either Boolean or Bit Vector
-		// PRE: all operands have the same type
-		// PRE: Bit Vector operands have the same size
-
-		auto firstOperand = this->operands[0];
-		if (firstOperand->getType() == MachineValue::Type_t::bitVector)
-		{
-			auto firstOperandBitVectorValue = firstOperand->getInitialValue().getBitVectorValue();
-			uint firstOperandsSize = firstOperandBitVectorValue.getSize();
-
-			BitVectorValue partialResult{};
-
-			switch (this->operatorType)
-			{
-			case Operator_t::andOp:
-			case Operator_t::nandOp:
-				partialResult = BitVectorValue::allOnes(firstOperandsSize);
-				break;
-			case Operator_t::orOp:
-			case Operator_t::norOp:
-			case Operator_t::xorOp:
-			case Operator_t::xnorOp:
-				partialResult = BitVectorValue::allZeros(firstOperandsSize);
-				break;
-			default:
-				break;
-			}
-
-			for (auto& operand : this->operands)
-			{
-				auto currentOperandValue = operand->getInitialValue();
-				auto bitVectorOperandValue = currentOperandValue.getBitVectorValue();
-
-				switch (this->operatorType)
-				{
-				case Operator_t::andOp:
-				case Operator_t::nandOp:
-					partialResult &= bitVectorOperandValue;
-					break;
-				case Operator_t::orOp:
-				case Operator_t::norOp:
-					partialResult |= bitVectorOperandValue;
-					break;
-				case Operator_t::xorOp:
-				case Operator_t::xnorOp:
-					partialResult ^= bitVectorOperandValue;
-					break;
-				default:
-					break;
-				}
-			}
-
-			computedValue = partialResult;
-		}
-		else // (firstOperand->getType() == MachineValue::ValueType_t::boolean)
-		{
-			BooleanValue partialResult{};
-
-			switch (this->operatorType)
-			{
-			case Operator_t::andOp:
-			case Operator_t::nandOp:
-				partialResult = BooleanValue::trueValue();
-				break;
-			case Operator_t::orOp:
-			case Operator_t::norOp:
-			case Operator_t::xorOp:
-			case Operator_t::xnorOp:
-				partialResult = BooleanValue::falseValue();
-				break;
-			default:
-				break;
-			}
-
-			for (auto& operand : this->operands)
-			{
-				auto currentOperandValue = operand->getInitialValue();
-				auto booleanOperandValue = currentOperandValue.getBooleanValue();
-
-				switch (this->operatorType)
-				{
-				case Operator_t::andOp:
-				case Operator_t::nandOp:
-					partialResult &= booleanOperandValue;
-					break;
-				case Operator_t::orOp:
-				case Operator_t::norOp:
-					partialResult |= booleanOperandValue;
-					break;
-				case Operator_t::xorOp:
-				case Operator_t::xnorOp:
-					partialResult ^= booleanOperandValue;
-					break;
-				default:
-					break;
-				}
-			}
-
-			computedValue = partialResult;
-		}
-
-		break;
-	}
-	}
-
-	if (this->isInverted() == true)
-	{
-		// PRE: the result is either Boolean or Bit Vector
-		if (computedValue.getType() == MachineValue::Type_t::bitVector)
-		{
-			computedValue = ~(computedValue.getBitVectorValue());
-		}
-		else // (computedValue.getType() == MachineValue::ValueType_t::boolean)
-		{
-			computedValue = !(computedValue.getBooleanValue());
-		}
-	}
-
-	return computedValue;
 }

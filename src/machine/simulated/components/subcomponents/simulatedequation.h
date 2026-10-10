@@ -55,9 +55,6 @@ public:
 private slots:
 	void computeCurrentValue();
 
-private:
-	bool isInverted() const;
-
 	/////
 	// Signals
 signals:
