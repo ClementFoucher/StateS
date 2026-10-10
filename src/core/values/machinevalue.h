@@ -79,12 +79,6 @@ public:
 	MachineValue operator=(const MachineValue&  otherValue);
 	MachineValue operator=(const MachineValue&& otherValue);
 
-	MachineValue operator=(const BooleanValue&  otherValue);
-	MachineValue operator=(const BooleanValue&& otherValue);
-
-	MachineValue operator=(const BitVectorValue&  otherValue);
-	MachineValue operator=(const BitVectorValue&& otherValue);
-
 	bool operator==(const MachineValue& otherValue) const;
 	bool operator!=(const MachineValue& otherValue) const;
 

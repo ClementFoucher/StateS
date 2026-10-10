@@ -25,6 +25,9 @@
 // Qt
 #include <QString>
 
+// StateS
+#include "booleanvalue.h"
+
 
 BitVectorValue BitVectorValue::fromRawString(const QString& textValue)
 {
@@ -100,6 +103,11 @@ BitVectorValue::BitVectorValue(uint64_t value, uint size)
 
 QString BitVectorValue::toDisplayString() const
 {
+	return this->toRawString();
+}
+
+QString BitVectorValue::toRawString() const
+{
 	QString text;
 
 	for (int i = this->vectorSize-1 ; i >= 0 ; i--)
@@ -115,11 +123,6 @@ QString BitVectorValue::toDisplayString() const
 	}
 
 	return text;
-}
-
-QString BitVectorValue::toRawString() const
-{
-	return this->toDisplayString();
 }
 
 uint64_t BitVectorValue::toInt() const
@@ -274,12 +277,34 @@ void BitVectorValue::setBit(int rank, bool value)
 
 bool BitVectorValue::operator==(const BitVectorValue& otherValue) const
 {
-	if (this->vectorSize != otherValue.vectorSize) return false;
-	else if (this->value != otherValue.value) return false;
-	else return true;
+	if (this->vectorSize != otherValue.vectorSize)
+	{
+		return false;
+	}
+	else
+	{
+		return this->value == otherValue.value;
+	}
 }
 
 bool BitVectorValue::operator!=(const BitVectorValue& otherValue) const
+{
+	return !(*this == otherValue);
+}
+
+bool BitVectorValue::operator==(const BooleanValue& otherValue) const
+{
+	if (this->vectorSize != 1)
+	{
+		return false;
+	}
+	else
+	{
+		return this->getBit(0) == bool{otherValue};
+	}
+}
+
+bool BitVectorValue::operator!=(const BooleanValue& otherValue) const
 {
 	return !(*this == otherValue);
 }

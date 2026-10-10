@@ -114,64 +114,36 @@ MachineValue MachineValue::operator=(const MachineValue& otherValue)
 
 bool MachineValue::operator==(const MachineValue& otherValue) const
 {
-	if ( (this->valueType != otherValue.valueType) || (this->value != otherValue.value) )
+	if (this->valueType == otherValue.valueType)
 	{
-		return false;
+		return this->value == otherValue.value;
 	}
-	else
+	else // (this->valueType != otherValue.valueType)
 	{
-		return true;
+		if ( (this->valueType == Type_t::boolean) && (otherValue.valueType == Type_t::bitVector) )
+		{
+			return this->getBooleanValue() == otherValue.getBitVectorValue();
+		}
+		else if ( (this->valueType == Type_t::bitVector) && (otherValue.valueType == Type_t::boolean) )
+		{
+			return this->getBitVectorValue() == otherValue.getBooleanValue();
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
 bool MachineValue::operator!=(const MachineValue& otherValue) const
 {
-	if ( (this->valueType != otherValue.valueType) || (this->value != otherValue.value) )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return !(*this == otherValue);
 }
 
 MachineValue MachineValue::operator=(const MachineValue&& otherValue)
 {
 	this->valueType = otherValue.valueType;
 	this->value     = otherValue.value;
-
-	return *this;
-}
-
-MachineValue MachineValue::operator=(const BooleanValue& otherValue)
-{
-	this->valueType = Type_t::boolean;
-	this->value     = otherValue;
-
-	return *this;
-}
-
-MachineValue MachineValue::operator=(const BooleanValue&& otherValue)
-{
-	this->valueType = Type_t::boolean;
-	this->value     = otherValue;
-
-	return *this;
-}
-
-MachineValue MachineValue::operator=(const BitVectorValue& otherValue)
-{
-	this->valueType = Type_t::bitVector;
-	this->value     = otherValue;
-
-	return *this;
-}
-
-MachineValue MachineValue::operator=(const BitVectorValue&& otherValue)
-{
-	this->valueType = Type_t::bitVector;
-	this->value     = otherValue;
 
 	return *this;
 }

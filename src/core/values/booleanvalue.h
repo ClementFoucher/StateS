@@ -25,6 +25,9 @@
 // Parent
 #include <QObject>
 
+// StateS
+class BitVectorValue;
+
 
 class BooleanValue : public QObject
 {
@@ -58,6 +61,9 @@ public:
 
 	bool operator==(const BooleanValue& otherValue) const;
 	bool operator!=(const BooleanValue& otherValue) const;
+
+	bool operator==(const BitVectorValue& otherValue) const;
+	bool operator!=(const BitVectorValue& otherValue) const;
 
 	BooleanValue operator!() const;
 	BooleanValue operator&(const BooleanValue& otherValue) const;

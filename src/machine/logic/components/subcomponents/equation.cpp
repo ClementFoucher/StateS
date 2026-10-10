@@ -735,9 +735,18 @@ void Equation::checkForErrors()
 		auto operand1Type = this->operands[1]->getType();
 		if (operand0Type != operand1Type)
 		{
-			this->warning = ComputationWarning_t::differentTypeComparison;
+			if ( ( (operand0Type == MachineValue::Type_t::boolean)   && (operand1Type == MachineValue::Type_t::bitVector) && (this->operands[1]->getInitialValue().getBitVectorValue().getSize() == 1) ) ||
+			     ( (operand0Type == MachineValue::Type_t::bitVector) && (operand1Type == MachineValue::Type_t::boolean)   && (this->operands[0]->getInitialValue().getBitVectorValue().getSize() == 1) )
+			   )
+			{
+				// Everything is ok
+			}
+			else
+			{
+				this->warning = ComputationWarning_t::differentTypeComparison;
+			}
 		}
-		else if (operand0Type == MachineValue::Type_t::bitVector)
+		else if (operand0Type == MachineValue::Type_t::bitVector) // (operand0Type == operand1Type)
 		{
 			auto operand0Size = this->operands[0]->getInitialValue().getBitVectorValue().getSize();
 			auto operand1Size = this->operands[1]->getInitialValue().getBitVectorValue().getSize();

@@ -25,6 +25,9 @@
 // Qt
 #include <QString>
 
+// StateS
+#include "bitvectorvalue.h"
+
 
 BooleanValue BooleanValue::fromRawString(const QString& textValue)
 {
@@ -61,12 +64,34 @@ BooleanValue::BooleanValue(const BooleanValue&& valueToCopy)
 	this->value = valueToCopy.value;
 }
 
+BooleanValue::operator bool() const
+{
+	return this->value;
+}
+
 bool BooleanValue::operator==(const BooleanValue& otherValue) const
 {
 	return this->value == otherValue.value;
 }
 
 bool BooleanValue::operator!=(const BooleanValue& otherValue) const
+{
+	return !(*this == otherValue);
+}
+
+bool BooleanValue::operator==(const BitVectorValue& otherValue) const
+{
+	if (otherValue.getSize() != 1)
+	{
+		return false;
+	}
+	else
+	{
+		return otherValue.getBit(0) == this->value;
+	}
+}
+
+bool BooleanValue::operator!=(const BitVectorValue& otherValue) const
 {
 	return !(*this == otherValue);
 }
@@ -143,7 +168,3 @@ QString BooleanValue::toRawString() const
 	}
 }
 
-BooleanValue::operator bool() const
-{
-	return this->value;
-}
