@@ -26,6 +26,8 @@
 #include <QSet>
 
 // StateS
+#include "machinemanager.h"
+#include "machine.h"
 #include "operand.h"
 #include "equationcomputer.h"
 
@@ -296,9 +298,22 @@ Equation::Operator_t Equation::getOperator() const
 	return this->operatorType;
 }
 
+/**
+ * @brief Equation::getVariablesIdsSet is used to extract
+ *        the set containing all IDs of variables involved
+ *        in the equation. It contains input, internal and
+ *        output variables. Constants are not in this list.
+ * @return The set of IDs of all input, internal and output
+ *         variables involved in the equation.
+ */
 QSet<ComponentId> Equation::getVariablesIdsSet() const
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return QSet<ComponentId>();
+
+
 	QSet<ComponentId> variablesIds;
+	auto constantsList = machine->getConstantsIds();
 
 	for (const auto& operand : this->operands)
 	{
@@ -315,7 +330,11 @@ QSet<ComponentId> Equation::getVariablesIdsSet() const
 		}
 		else if (operand->getSource() == Operand::Source_t::variable)
 		{
-			variablesIds.insert(operand->getVariableId());
+			auto variableId = operand->getVariableId();
+			if (constantsList.contains(variableId) == false)
+			{
+				variablesIds.insert(variableId);
+			}
 		}
 	}
 
