@@ -114,7 +114,31 @@ QString ConstantEditorWidget::getText() const
 
 QString ConstantEditorWidget::getToolTipText() const
 {
-	return QString(tr("Constant:") + " " + this->getText());
+	QString toolTipText;
+
+	toolTipText += tr("Custom constant of type");
+	toolTipText += " ";
+	switch (this->currentValue.getType())
+	{
+	case MachineValue::Type_t::boolean:
+		toolTipText += tr("boolean");
+		break;
+	case MachineValue::Type_t::bitVector:
+		toolTipText += tr("bit vector");
+		break;
+	case MachineValue::Type_t::natural:
+		toolTipText += tr("natural integer");
+		break;
+	case MachineValue::Type_t::relative:
+		toolTipText += tr("relative integer");
+		break;
+	case MachineValue::Type_t::nullType:
+		// No constant of this type available in editor:
+		// should not happen
+		break;
+	}
+
+	return toolTipText;
 }
 
 bool ConstantEditorWidget::getReplaceWithoutAsking() const

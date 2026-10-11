@@ -103,12 +103,25 @@ QString VariableEditorWidget::getToolTipText() const
 	if (variable->getInitialValue().isNull() == true) return QString();
 
 
-	auto toolTipText = tr("Variable") + " <b>" + variable->getName() + "</b> " + tr("has type") + " ";
+	auto constants = machine->getConstantsIds();
+	bool isConstant = constants.contains(this->variableId);
 
+	QString toolTipText;
+	if (isConstant == false)
+	{
+		toolTipText = tr("Variable");
+	}
+	else
+	{
+		toolTipText = tr("Constant");
+	}
+	toolTipText += " <b>" + variable->getName() + "</b>";
+
+	toolTipText += " " + tr("has type") + " ";
 	switch (variable->getType())
 	{
 	case MachineValue::Type_t::boolean:
-		toolTipText += tr("boolan");
+		toolTipText += tr("boolean");
 		break;
 	case MachineValue::Type_t::bitVector:
 	{
@@ -125,6 +138,12 @@ QString VariableEditorWidget::getToolTipText() const
 	case MachineValue::Type_t::nullType:
 		// Checked previously: should not happen
 		break;
+	}
+	toolTipText += ".";
+
+	if (isConstant == true)
+	{
+		toolTipText += " " + tr("Its value is") + " <b>" + variable->getInitialValue().toDisplayString() + "</b>.";
 	}
 
 	return toolTipText;

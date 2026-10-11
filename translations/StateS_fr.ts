@@ -510,33 +510,37 @@
 <context>
     <name>ConstantEditorWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="117"/>
-        <source>Constant:</source>
-        <translation>Constante :</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="141"/>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="264"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="165"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="288"/>
         <source>Custom constant</source>
         <translation>Constante personnalisée</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="270"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="124"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="294"/>
         <source>boolean</source>
         <translation>booléen</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="273"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="127"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="297"/>
         <source>bit vector</source>
         <translation>vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="276"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="119"/>
+        <source>Custom constant of type</source>
+        <translation>Constante personnalisée de type</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="130"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="300"/>
         <source>natural integer</source>
         <translation>entier naturel</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="279"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="133"/>
+        <location filename="../src/ui/dialogs/equation_editor/constanteditorwidget.cpp" line="303"/>
         <source>relative integer</source>
         <translation>entier relatif</translation>
     </message>
@@ -3265,44 +3269,54 @@
 <context>
     <name>VariableEditorWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="106"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="112"/>
         <source>Variable</source>
         <translation>La variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="106"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="116"/>
+        <source>Constant</source>
+        <translation>Constante</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="120"/>
         <source>has type</source>
         <translation>est de type</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="111"/>
-        <source>boolan</source>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="124"/>
+        <source>boolean</source>
         <translation>booléen</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="116"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="129"/>
         <source>bit vector</source>
         <translation>vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="116"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="129"/>
         <source>of</source>
         <translation>de taille</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="116"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="129"/>
         <source>bits</source>
         <translation>bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="120"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="133"/>
         <source>natural integer</source>
         <translation>entier naturel</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="123"/>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="136"/>
         <source>relative integer</source>
         <translation>entier relatif</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/variableeditorwidget.cpp" line="146"/>
+        <source>Its value is</source>
+        <translation>Sa valeur est</translation>
     </message>
 </context>
 <context>
