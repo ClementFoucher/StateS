@@ -207,8 +207,12 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	auto otherTitle = new QLabel("<b>" + tr("Other") + "</b>");
 
 	// Operators
-	auto equalOperator  = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::equalOp),   0, true);
-	auto diffOperator   = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::diffOp),    0, true);
+	auto equalOperator          = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::equalOp),                0, true);
+	auto diffOperator           = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::diffOp),                 0, true);
+	auto lessOperator           = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::lessThanOp),             0, true);
+	auto greaterOperator        = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::greaterThanOp),          0, true);
+	auto lessOrEqualOperator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::lessThanOrEqualToOp),    0, true);
+	auto greaterOrEqualOperator = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::greaterThanOrEqualToOp), 0, true);
 
 	auto notOperator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::notOp),     0, true);
 
@@ -237,31 +241,35 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	// Comparison
 	operatorsLayout->addWidget(comparisonOPeratorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
 
-	operatorsLayout->addWidget(equalOperator,  1, 0, 1, 1);
-	operatorsLayout->addWidget(diffOperator,   1, 1, 1, 1);
+	operatorsLayout->addWidget(equalOperator,          1, 0, 1, 1);
+	operatorsLayout->addWidget(diffOperator,           1, 1, 1, 1);
+	operatorsLayout->addWidget(lessOperator,           2, 0, 1, 1);
+	operatorsLayout->addWidget(greaterOperator,        2, 1, 1, 1);
+	operatorsLayout->addWidget(lessOrEqualOperator,    3, 0, 1, 1);
+	operatorsLayout->addWidget(greaterOrEqualOperator, 3, 1, 1, 1);
 
 	// Logic operators
-	operatorsLayout->addWidget(logicFunctionsTitle, 2, 0, 1, 2, Qt::AlignHCenter);
+	operatorsLayout->addWidget(logicFunctionsTitle, 4, 0, 1, 2, Qt::AlignHCenter);
 
-	operatorsLayout->addWidget(notOperator,    3, 0, 1, 2);
+	operatorsLayout->addWidget(notOperator,    5,  0, 1, 2);
 
-	operatorsLayout->addWidget(and2Operator,   4, 0, 1, 1);
-	operatorsLayout->addWidget(and3Operator,   4, 1, 1, 1);
-	operatorsLayout->addWidget(or2Operator,    5, 0, 1, 1);
-	operatorsLayout->addWidget(or3Operator,    5, 1, 1, 1);
-	operatorsLayout->addWidget(xor2Operator,   6, 0, 1, 1);
-	operatorsLayout->addWidget(xor3Operator,   6, 1, 1, 1);
-	operatorsLayout->addWidget(nand2Operator,  7, 0, 1, 1);
-	operatorsLayout->addWidget(nand3Operator,  7, 1, 1, 1);
-	operatorsLayout->addWidget(nor2Operator,   8, 0, 1, 1);
-	operatorsLayout->addWidget(nor3Operator,   8, 1, 1, 1);
-	operatorsLayout->addWidget(xnor2Operator,  9, 0, 1, 1);
-	operatorsLayout->addWidget(xnor3Operator,  9, 1, 1, 1);
+	operatorsLayout->addWidget(and2Operator,   6,  0, 1, 1);
+	operatorsLayout->addWidget(and3Operator,   6,  1, 1, 1);
+	operatorsLayout->addWidget(or2Operator,    7,  0, 1, 1);
+	operatorsLayout->addWidget(or3Operator,    7,  1, 1, 1);
+	operatorsLayout->addWidget(xor2Operator,   8,  0, 1, 1);
+	operatorsLayout->addWidget(xor3Operator,   8,  1, 1, 1);
+	operatorsLayout->addWidget(nand2Operator,  9,  0, 1, 1);
+	operatorsLayout->addWidget(nand3Operator,  9,  1, 1, 1);
+	operatorsLayout->addWidget(nor2Operator,   10, 0, 1, 1);
+	operatorsLayout->addWidget(nor3Operator,   10, 1, 1, 1);
+	operatorsLayout->addWidget(xnor2Operator,  11, 0, 1, 1);
+	operatorsLayout->addWidget(xnor3Operator,  11, 1, 1, 1);
 
 	// Other operators
-	operatorsLayout->addWidget(otherTitle, 10, 0, 1, 2, Qt::AlignHCenter);
+	operatorsLayout->addWidget(otherTitle, 12, 0, 1, 2, Qt::AlignHCenter);
 
-	operatorsLayout->addWidget(concatOperator, 11, 0, 1, 2);
+	operatorsLayout->addWidget(concatOperator, 13, 0, 1, 2);
 
 	return operatorsWidget;
 }

@@ -65,6 +65,16 @@ public:
 	bool operator==(const NaturalValue& otherValue) const;
 	bool operator!=(const NaturalValue& otherValue) const;
 
+	bool operator>(const RelativeValue& otherValue) const;
+	bool operator<(const RelativeValue& otherValue) const;
+	bool operator>=(const RelativeValue& otherValue) const;
+	bool operator<=(const RelativeValue& otherValue) const;
+
+	bool operator>(const NaturalValue& otherValue) const;
+	bool operator<(const NaturalValue& otherValue) const;
+	bool operator>=(const NaturalValue& otherValue) const;
+	bool operator<=(const NaturalValue& otherValue) const;
+
 	RelativeValue operator=(const RelativeValue& otherValue);
 
 	/////

@@ -247,6 +247,10 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 	case Equation::Operator_t::identity:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::lessThanOp:
+	case Equation::Operator_t::lessThanOrEqualToOp:
+	case Equation::Operator_t::greaterThanOp:
+	case Equation::Operator_t::greaterThanOrEqualToOp:
 		break;
 	}
 
@@ -259,6 +263,10 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 	case Equation::Operator_t::extractOp:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::lessThanOp:
+	case Equation::Operator_t::lessThanOrEqualToOp:
+	case Equation::Operator_t::greaterThanOp:
+	case Equation::Operator_t::greaterThanOrEqualToOp:
 		allowedActions |= static_cast<uint>(ContextAction_t::Invert);
 		break;
 	case Equation::Operator_t::nandOp:
@@ -298,6 +306,10 @@ uint EquationEditorWidget::getAllowedDropActions() const
 	case Equation::Operator_t::identity:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::lessThanOp:
+	case Equation::Operator_t::lessThanOrEqualToOp:
+	case Equation::Operator_t::greaterThanOp:
+	case Equation::Operator_t::greaterThanOrEqualToOp:
 		// Nothing more
 		break;
 	}
@@ -397,6 +409,13 @@ QString EquationEditorWidget::getToolTipText() const
 		case Equation::Operator_t::notOp:
 			toolTipText += "<br>";
 			toolTipText +=  tr("The current operator can only have boolean or bit vector operands.");
+			break;
+		case Equation::Operator_t::lessThanOp:
+		case Equation::Operator_t::lessThanOrEqualToOp:
+		case Equation::Operator_t::greaterThanOp:
+		case Equation::Operator_t::greaterThanOrEqualToOp:
+			toolTipText += "<br>";
+			toolTipText +=  tr("The current operator can only have natural or relative operands.");
 			break;
 		case Equation::Operator_t::equalOp:
 		case Equation::Operator_t::diffOp:
@@ -709,6 +728,18 @@ void EquationEditorWidget::buildCompleteEquation()
 		case Equation::Operator_t::diffOp:
 			operatorText = "≠";
 			break;
+		case Equation::Operator_t::lessThanOp:
+			operatorText = "<";
+			break;
+		case Equation::Operator_t::lessThanOrEqualToOp:
+			operatorText = "≤";
+			break;
+		case Equation::Operator_t::greaterThanOp:
+			operatorText = ">";
+			break;
+		case Equation::Operator_t::greaterThanOrEqualToOp:
+			operatorText = "≥";
+			break;
 		case Equation::Operator_t::concatOp:
 			operatorText = ":";
 			break;
@@ -796,6 +827,10 @@ void EquationEditorWidget::setInverted(bool invert)
 		case Equation::Operator_t::xorOp:
 		case Equation::Operator_t::equalOp:
 		case Equation::Operator_t::diffOp:
+		case Equation::Operator_t::lessThanOp:
+		case Equation::Operator_t::lessThanOrEqualToOp:
+		case Equation::Operator_t::greaterThanOp:
+		case Equation::Operator_t::greaterThanOrEqualToOp:
 			reverseOperand = true;
 			break;
 		case Equation::Operator_t::concatOp:
@@ -830,6 +865,10 @@ void EquationEditorWidget::setInverted(bool invert)
 		case Equation::Operator_t::extractOp:
 		case Equation::Operator_t::equalOp:
 		case Equation::Operator_t::diffOp:
+		case Equation::Operator_t::lessThanOp:
+		case Equation::Operator_t::lessThanOrEqualToOp:
+		case Equation::Operator_t::greaterThanOp:
+		case Equation::Operator_t::greaterThanOrEqualToOp:
 		case Equation::Operator_t::identity:
 			// Should not happen
 			break;
@@ -903,6 +942,18 @@ void EquationEditorWidget::setInverted(bool invert)
 			break;
 		case Equation::Operator_t::diffOp:
 			newOperator = Equation::Operator_t::equalOp;
+			break;
+		case Equation::Operator_t::lessThanOp:
+			newOperator = Equation::Operator_t::greaterThanOp;
+			break;
+		case Equation::Operator_t::lessThanOrEqualToOp:
+			newOperator = Equation::Operator_t::greaterThanOrEqualToOp;
+			break;
+		case Equation::Operator_t::greaterThanOp:
+			newOperator = Equation::Operator_t::lessThanOp;
+			break;
+		case Equation::Operator_t::greaterThanOrEqualToOp:
+			newOperator = Equation::Operator_t::lessThanOrEqualToOp;
 			break;
 		case Equation::Operator_t::notOp:
 		case Equation::Operator_t::concatOp:
@@ -1049,6 +1100,18 @@ QString EquationEditorWidget::getTemplateText() const
 	case Equation::Operator_t::diffOp:
 		text += tr("Difference");
 		break;
+	case Equation::Operator_t::lessThanOp:
+		text += tr("Less than");
+		break;
+	case Equation::Operator_t::lessThanOrEqualToOp:
+		text += tr("Less than")  + "<br>" + tr("or equal");
+		break;
+	case Equation::Operator_t::greaterThanOp:
+		text += tr("Greater than");
+		break;
+	case Equation::Operator_t::greaterThanOrEqualToOp:
+		text += tr("Greater than")  + "<br>" + tr("or equal");
+		break;
 	case Equation::Operator_t::concatOp:
 		text += tr("Concatenate");
 		break;
@@ -1073,6 +1136,10 @@ QString EquationEditorWidget::getTemplateText() const
 	case Equation::Operator_t::notOp:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::lessThanOp:
+	case Equation::Operator_t::lessThanOrEqualToOp:
+	case Equation::Operator_t::greaterThanOp:
+	case Equation::Operator_t::greaterThanOrEqualToOp:
 	case Equation::Operator_t::concatOp:
 	case Equation::Operator_t::extractOp:
 	case Equation::Operator_t::identity:

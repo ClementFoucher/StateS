@@ -302,6 +302,22 @@ void MachineXmlParser::parseLogicEquationNode()
 	{
 		operatorType = Equation::Operator_t::diffOp;
 	}
+	else if (valueOperator == "greater")
+	{
+		operatorType = Equation::Operator_t::greaterThanOp;
+	}
+	else if (valueOperator == "greaterOrEqual")
+	{
+		operatorType = Equation::Operator_t::greaterThanOrEqualToOp;
+	}
+	else if (valueOperator == "less")
+	{
+		operatorType = Equation::Operator_t::lessThanOp;
+	}
+	else if (valueOperator == "lessOrEqual")
+	{
+		operatorType = Equation::Operator_t::lessThanOrEqualToOp;
+	}
 	else if (valueOperator == "concatenate")
 	{
 		operatorType = Equation::Operator_t::concatOp;

@@ -92,6 +92,11 @@ public:
 	bool operator==(const MachineValue& otherValue) const;
 	bool operator!=(const MachineValue& otherValue) const;
 
+	bool operator>(const MachineValue& otherValue) const;
+	bool operator<(const MachineValue& otherValue) const;
+	bool operator>=(const MachineValue& otherValue) const;
+	bool operator<=(const MachineValue& otherValue) const;
+
 	/////
 	// Object variables
 private:

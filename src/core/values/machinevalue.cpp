@@ -173,6 +173,102 @@ bool MachineValue::operator!=(const MachineValue& otherValue) const
 	return !(*this == otherValue);
 }
 
+bool MachineValue::operator>(const MachineValue& otherValue) const
+{
+	if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getNaturalValue() > otherValue.getNaturalValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getRelativeValue() > otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getNaturalValue() > otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getRelativeValue() > otherValue.getNaturalValue();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool MachineValue::operator<(const MachineValue& otherValue) const
+{
+	if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getNaturalValue() < otherValue.getNaturalValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getRelativeValue() < otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getNaturalValue() < otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getRelativeValue() < otherValue.getNaturalValue();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool MachineValue::operator>=(const MachineValue& otherValue) const
+{
+	if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getNaturalValue() >= otherValue.getNaturalValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getRelativeValue() >= otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getNaturalValue() >= otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getRelativeValue() >= otherValue.getNaturalValue();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool MachineValue::operator<=(const MachineValue& otherValue) const
+{
+	if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getNaturalValue() <= otherValue.getNaturalValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getRelativeValue() <= otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::relative) )
+	{
+		return this->getNaturalValue() <= otherValue.getRelativeValue();
+	}
+	else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::natural) )
+	{
+		return this->getRelativeValue() <= otherValue.getNaturalValue();
+	}
+	else
+	{
+		return false;
+	}
+}
+
 MachineValue MachineValue::operator=(const MachineValue&& otherValue)
 {
 	this->valueType = otherValue.valueType;

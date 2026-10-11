@@ -57,6 +57,10 @@ Equation::Equation(Operator_t operatorType, int operandCount)
 		break;
 	case Operator_t::equalOp:
 	case Operator_t::diffOp:
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
 		actualOperandCount = 2;
 		break;
 	case Operator_t::andOp:
@@ -188,6 +192,18 @@ QString Equation::getColoredText(bool raw) const
 			case Operator_t::diffOp:
 				text += " ≠ ";
 				break;
+			case Operator_t::lessThanOp:
+				text += " < ";
+				break;
+			case Operator_t::lessThanOrEqualToOp:
+				text += " ≤ ";
+				break;
+			case Operator_t::greaterThanOp:
+				text += " > ";
+				break;
+			case Operator_t::greaterThanOrEqualToOp:
+				text += " ≥ ";
+				break;
 			case Operator_t::concatOp:
 				text += " : ";
 				break;
@@ -264,6 +280,10 @@ void Equation::setOperator(Operator_t newOperator)
 		break;
 	case Operator_t::equalOp:
 	case Operator_t::diffOp:
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
 		while (this->operands.size() < 2)
 		{
 			this->operands.append(nullptr);
@@ -409,6 +429,10 @@ uint Equation::getOperandCount() const
 		break;
 	case Operator_t::equalOp:
 	case Operator_t::diffOp:
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
 		return 2;
 		break;
 	case Operator_t::andOp:
@@ -443,6 +467,10 @@ void Equation::increaseOperandCount()
 	case Operator_t::identity:
 	case Operator_t::equalOp:
 	case Operator_t::diffOp:
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
 		// Do not allow modifying operand count for these fixed-size operators
 		break;
 	}
@@ -478,6 +506,10 @@ void Equation::decreaseOperandCount()
 	case Operator_t::identity:
 	case Operator_t::equalOp:
 	case Operator_t::diffOp:
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
 		// Do not allow modifying operand count for these fixed-size operators
 		break;
 	}
@@ -776,6 +808,25 @@ void Equation::checkForErrors()
 			{
 				this->warning = ComputationWarning_t::differentSizeComparison;
 			}
+		}
+		break;
+	}
+	case Operator_t::lessThanOp:
+	case Operator_t::lessThanOrEqualToOp:
+	case Operator_t::greaterThanOp:
+	case Operator_t::greaterThanOrEqualToOp:
+	{
+		auto operand0Type = this->operands[0]->getType();
+		auto operand1Type = this->operands[1]->getType();
+		if ( (operand0Type != MachineValue::Type_t::natural) && (operand0Type != MachineValue::Type_t::relative) )
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
+		}
+		else if ( (operand1Type != MachineValue::Type_t::natural) && (operand1Type != MachineValue::Type_t::relative) )
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
 		}
 		break;
 	}

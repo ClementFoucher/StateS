@@ -226,6 +226,18 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 	case Equation::Operator_t::diffOp:
 		this->stream->writeAttribute("Operator", "differs");
 		break;
+	case Equation::Operator_t::greaterThanOp:
+		this->stream->writeAttribute("Operator", "greater");
+		break;
+	case Equation::Operator_t::greaterThanOrEqualToOp:
+		this->stream->writeAttribute("Operator", "greaterOrEqual");
+		break;
+	case Equation::Operator_t::lessThanOp:
+		this->stream->writeAttribute("Operator", "less");
+		break;
+	case Equation::Operator_t::lessThanOrEqualToOp:
+		this->stream->writeAttribute("Operator", "lessOrEqual");
+		break;
 	case Equation::Operator_t::extractOp:
 		this->stream->writeAttribute("Operator", "extract");
 		this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));

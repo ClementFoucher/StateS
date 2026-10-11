@@ -96,6 +96,46 @@ bool NaturalValue::operator!=(const RelativeValue& otherValue) const
 	return !(*this == otherValue);
 }
 
+bool NaturalValue::operator>(const NaturalValue& otherValue) const
+{
+	return this->value > otherValue.value;
+}
+
+bool NaturalValue::operator<(const NaturalValue& otherValue) const
+{
+	return this->value < otherValue.value;
+}
+
+bool NaturalValue::operator>=(const NaturalValue& otherValue) const
+{
+	return this->value >= otherValue.value;
+}
+
+bool NaturalValue::operator<=(const NaturalValue& otherValue) const
+{
+	return this->value <= otherValue.value;
+}
+
+bool NaturalValue::operator>(const RelativeValue& otherValue) const
+{
+	return static_cast<int>(this->value) > otherValue.value;
+}
+
+bool NaturalValue::operator<(const RelativeValue& otherValue) const
+{
+	return static_cast<int>(this->value) > otherValue.value;
+}
+
+bool NaturalValue::operator>=(const RelativeValue& otherValue) const
+{
+	return static_cast<int>(this->value) > otherValue.value;
+}
+
+bool NaturalValue::operator<=(const RelativeValue& otherValue) const
+{
+	return static_cast<int>(this->value) > otherValue.value;
+}
+
 NaturalValue NaturalValue::operator=(const NaturalValue& otherValue)
 {
 	this->value = otherValue.value;

@@ -47,6 +47,34 @@ MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, cons
 
 		computedValue = BooleanValue{(operands[0] != operands[1])};
 		break;
+	case Equation::Operator_t::lessThanOp:
+		// PRE: there are two operands
+		// PRE: the two operands are valid
+		// PRE: the two operands are either Natural or Relative
+
+		computedValue = BooleanValue{(operands[0] < operands[1])};
+		break;
+	case Equation::Operator_t::lessThanOrEqualToOp:
+		// PRE: there are two operands
+		// PRE: the two operands are valid
+		// PRE: the two operands are either Natural or Relative
+
+		computedValue = BooleanValue{(operands[0] <= operands[1])};
+		break;
+	case Equation::Operator_t::greaterThanOp:
+		// PRE: there are two operands
+		// PRE: the two operands are valid
+		// PRE: the two operands are either Natural or Relative
+
+		computedValue = BooleanValue{(operands[0] > operands[1])};
+		break;
+	case Equation::Operator_t::greaterThanOrEqualToOp:
+		// PRE: there are two operands
+		// PRE: the two operands are valid
+		// PRE: the two operands are either Natural or Relative
+
+		computedValue = BooleanValue{(operands[0] >= operands[1])};
+		break;
 	case Equation::Operator_t::extractOp:
 	{
 		// PRE: there is one operand
@@ -262,6 +290,10 @@ bool EquationComputer::isInverted(Equation::Operator_t op)
 	case Equation::Operator_t::xorOp:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
+	case Equation::Operator_t::lessThanOp:
+	case Equation::Operator_t::lessThanOrEqualToOp:
+	case Equation::Operator_t::greaterThanOp:
+	case Equation::Operator_t::greaterThanOrEqualToOp:
 	case Equation::Operator_t::extractOp:
 	case Equation::Operator_t::concatOp:
 		return false;

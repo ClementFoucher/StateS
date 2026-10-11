@@ -68,6 +68,10 @@ public:
 		// They always have exactly two operands and return a boolean
 		equalOp,
 		diffOp,
+		lessThanOp,
+		lessThanOrEqualToOp,
+		greaterThanOp,
+		greaterThanOrEqualToOp,
 		// Extract equations always have exacly one bit vector operand
 		extractOp,
 		// Concatenation apply to boolean and bit vectors operands
