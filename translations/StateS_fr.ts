@@ -596,8 +596,8 @@
     </message>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="51"/>
-        <source>Drag and drop equation components from here</source>
-        <translation>Glissez puis déposez les composants d&apos;équation depuis le cadre ci-dessous</translation>
+        <source>Drag and drop equation components from the frames below</source>
+        <translation>Glissez puis déposez les composants d&apos;équation depuis les cadres ci-dessous</translation>
     </message>
     <message>
         <location filename="../src/ui/dialogs/equation_editor/equationeditordialog.cpp" line="65"/>
@@ -3075,44 +3075,54 @@
 <context>
     <name>TemplateEquationPartsWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="102"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="208"/>
         <source>Inputs</source>
         <translation>Entrées</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="126"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="232"/>
         <source>Internal variables</source>
         <translation>Variables internes</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="150"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="256"/>
         <source>Outputs</source>
         <translation>Sorties</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="171"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="277"/>
         <source>Constants</source>
         <translation>Constantes</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="205"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="67"/>
         <source>Comparision</source>
         <translation>Comparaison</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="206"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="64"/>
+        <source>Operators</source>
+        <translation>Opérateurs</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="68"/>
         <source>Logic functions</source>
         <translation>Fonctions logiques</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="207"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="69"/>
         <source>Arithmetic functions</source>
         <translation>Fonctions arithmétiques</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="208"/>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="70"/>
         <source>Other</source>
         <translation>Autres</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/templateequationpartswidget.cpp" line="161"/>
+        <source>Variables</source>
+        <translation>Variables</translation>
     </message>
 </context>
 <context>

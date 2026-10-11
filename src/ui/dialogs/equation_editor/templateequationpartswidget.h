@@ -44,11 +44,13 @@ public:
 	/////
 	// Object functions
 private:
+	QWidget* getOperators() const;
+	QWidget* getVariables() const;
+
 	QWidget* getInputs()            const;
 	QWidget* getInternalVariables() const;
 	QWidget* getOutputVariables()   const;
 	QWidget* getConstants()         const;
-	QWidget* getOperators()         const;
 
 	void buildVariableList(QVBoxLayout* layout, QList<ComponentId> variableList) const;
 

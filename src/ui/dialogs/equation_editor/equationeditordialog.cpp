@@ -48,7 +48,7 @@ EquationEditorDialog::EquationEditorDialog(std::shared_ptr<const Equation> initi
 	// Templates
 
 	// Title text
-	auto templatesTitle = new QLabel("<i>" + tr("Drag and drop equation components from here") + "…</i>");
+	auto templatesTitle = new QLabel("<i>" + tr("Drag and drop equation components from the frames below") + "…</i>");
 
 	// Widget
 	this->templatesWidget = new TemplateEquationPartsWidget();
