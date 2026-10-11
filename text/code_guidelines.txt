@@ -8,18 +8,18 @@
 
 In headers, avoid includes when possible, prefering classes declarations.
 
-* Headers:
-  - Parent classes
-  - C++ classes
-  - Qt classes
-  - Third-party classes
-  - StateS classes
-* Sources:
+* Include order in headers:
+  - Parent
+  - Stdlib
+  - Qt
+  - Third-party
+  - StateS
+* Include order in sources:
   - Current class header
-  - C++ classes
-  - Qt classes
-  - Third-party classes
-  - StateS classes
+  - Stdlib
+  - Qt
+  - Third-party
+  - StateS
 
 ---------------------
 - Declaration order -

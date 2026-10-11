@@ -22,9 +22,6 @@
 #ifndef GRAPHICATTRIBUTES_H
 #define GRAPHICATTRIBUTES_H
 
-// Parent
-#include <QObject>
-
 // Qt
 #include <QMap>
 
@@ -32,14 +29,13 @@
 #include "componentid.h"
 
 
-class GraphicAttributes : public QObject
+class GraphicAttributes
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicAttributes(QObject* parent = nullptr) : QObject(parent) {}
+	explicit GraphicAttributes() {}
 
 	/////
 	// Object functions

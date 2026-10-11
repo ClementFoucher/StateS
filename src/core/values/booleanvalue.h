@@ -22,16 +22,18 @@
 #ifndef BOOLEANVALUE_H
 #define BOOLEANVALUE_H
 
-// Parent
-#include <QObject>
+// Qt
+#include <QCoreApplication>
+#include <QtTypes>
+class QString;
 
 // StateS
 class BitVectorValue;
 
 
-class BooleanValue : public QObject
+class BooleanValue
 {
-	Q_OBJECT;
+	Q_DECLARE_TR_FUNCTIONS(BooleanValue)
 
 	/////
 	// Static functions

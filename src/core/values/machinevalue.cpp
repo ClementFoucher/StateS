@@ -22,6 +22,9 @@
 // Current class header
 #include "machinevalue.h"
 
+// Qt
+#include <QString>
+
 
 MachineValue MachineValue::fromType(Type_t type)
 {

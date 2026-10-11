@@ -37,6 +37,8 @@ class SimulatedActionOnVariable;
 
 class SimulatedActuatorComponent : public SimulatedComponent
 {
+	Q_OBJECT
+
 	/////
 	// Constructors/destructors
 public:

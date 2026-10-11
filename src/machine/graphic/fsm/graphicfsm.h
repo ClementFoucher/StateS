@@ -36,11 +36,11 @@ class GenericScene;
 class GraphicFsmTransitionNeighborhood;
 class GraphicSimulatedFsmState;
 class GraphicSimulatedFsmTransition;
+class QPointF;
 
 
 class GraphicFsm : public GraphicMachine
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors

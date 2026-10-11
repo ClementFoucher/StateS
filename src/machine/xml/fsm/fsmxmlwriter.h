@@ -36,7 +36,6 @@ class GraphicAttributes;
 
 class FsmXmlWriter : public MachineXmlWriter
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors

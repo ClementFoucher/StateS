@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Clément Foucher
+ * Copyright © 2021-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,16 +22,12 @@
 #ifndef DRAWINGTOOLBARBUILDER_H
 #define DRAWINGTOOLBARBUILDER_H
 
-// Parent
-#include <QObject>
-
 // StateS
 class DrawingToolBar;
 
 
-class DrawingToolBarBuilder : public QObject
+class DrawingToolBarBuilder
 {
-	Q_OBJECT
 
 	/////
 	// Static functions

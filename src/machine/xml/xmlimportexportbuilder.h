@@ -22,13 +22,11 @@
 #ifndef XMLIMPORTEXPORTBUILDER_H
 #define XMLIMPORTEXPORTBUILDER_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
 // Qt
+class QString;
 class QFile;
 
 // StateS
@@ -38,9 +36,8 @@ class ViewConfiguration;
 class StateSXmlAnalyzer;
 
 
-class XmlImportExportBuilder : public QObject
+class XmlImportExportBuilder
 {
-	Q_OBJECT
 
 	/////
 	// Static functions

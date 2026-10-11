@@ -22,13 +22,11 @@
 #ifndef MACHINEXMLWRITER_H
 #define MACHINEXMLWRITER_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
 // Qt
+#include <QCoreApplication>
 class QXmlStreamWriter;
 class QFile;
 
@@ -39,9 +37,9 @@ class ViewConfiguration;
 class Equation;
 
 
-class MachineXmlWriter : public QObject
+class MachineXmlWriter
 {
-	Q_OBJECT
+	Q_DECLARE_TR_FUNCTIONS(MachineXmlWriter)
 
 	/////
 	// Type declarations

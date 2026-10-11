@@ -22,9 +22,6 @@
 #ifndef SIMULATEDACTIONONVARIABLE_H
 #define SIMULATEDACTIONONVARIABLE_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
@@ -33,9 +30,8 @@
 #include "actiononvariable.h"
 
 
-class SimulatedActionOnVariable : public QObject
+class SimulatedActionOnVariable
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors

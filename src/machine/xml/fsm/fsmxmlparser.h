@@ -34,7 +34,6 @@ class FsmState;
 
 class FsmXmlParser : public MachineXmlParser
 {
-	Q_OBJECT
 
 	/////
 	// Type declarations

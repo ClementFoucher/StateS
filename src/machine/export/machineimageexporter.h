@@ -22,13 +22,11 @@
 #ifndef MACHINEIMAGEEXPORTER_H
 #define MACHINEIMAGEEXPORTER_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
 // Qt
+#include <QCoreApplication>
 #include <QRectF>
 #include <QPageLayout>
 class QPaintDevice;
@@ -39,9 +37,9 @@ class QPainter;
 #include "componentscene.h"
 
 
-class MachineImageExporter : public QObject
+class MachineImageExporter
 {
-	Q_OBJECT
+	Q_DECLARE_TR_FUNCTIONS(MachineImageExporter)
 
 	/////
 	// Type declarations
@@ -105,7 +103,7 @@ private:
 	// Object variables
 private:
 	// Input scenes
-	StatesScene*                   stateGraphScene;
+	StatesScene*                        stateGraphScene;
 	std::shared_ptr<StatesScene>        componentScene;
 	std::shared_ptr<VariableTableScene> variableScene;
 

@@ -22,13 +22,11 @@
 #ifndef MACHINEXMLPARSER_H
 #define MACHINEXMLPARSER_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
 // Qt
+#include <QCoreApplication>
 #include <QStack>
 class QFile;
 class QXmlStreamReader;
@@ -42,9 +40,9 @@ class Equation;
 class Variable;
 
 
-class MachineXmlParser : public QObject
+class MachineXmlParser
 {
-	Q_OBJECT
+	Q_DECLARE_TR_FUNCTIONS(MachineXmlParser)
 
 	/////
 	// Type declarations

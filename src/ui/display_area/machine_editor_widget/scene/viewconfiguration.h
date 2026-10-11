@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2023 Clément Foucher
+ * Copyright © 2017-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -22,9 +22,6 @@
 #ifndef VIEWCONFIGURATION_H
 #define VIEWCONFIGURATION_H
 
-// Parent
-#include <QObject>
-
 // Qt
 #include <QPointF>
 
@@ -34,9 +31,8 @@
  * temporary storage structure to transmit the view
  * characteristics when saving or loading to/from a file.
  */
-class ViewConfiguration : public QObject
+class ViewConfiguration
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors

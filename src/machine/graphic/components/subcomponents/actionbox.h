@@ -32,9 +32,8 @@
 #include "componentid.h"
 
 
-class ActionBox : public QObject, public QGraphicsItemGroup
+class ActionBox : public QGraphicsItemGroup
 {
-	Q_OBJECT
 
 	/////
 	// Static variables

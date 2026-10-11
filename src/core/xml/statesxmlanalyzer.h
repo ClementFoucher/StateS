@@ -22,20 +22,17 @@
 #ifndef STATESXMLANALYZER_H
 #define STATESXMLANALYZER_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
 // Qt
+class QString;
 class QXmlStreamReader;
 class QFile;
 
 
-class StateSXmlAnalyzer : public QObject
+class StateSXmlAnalyzer
 {
-	Q_OBJECT
 
 	/////
 	// Type declarations

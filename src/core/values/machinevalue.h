@@ -22,13 +22,13 @@
 #ifndef MACHINEVALUE_H
 #define MACHINEVALUE_H
 
-// Parent
-#include <QObject>
-
-// C++ classes
+// Stdlib
 #include <variant>
 
-// States classes
+// Qt
+#include <QtTypes>
+
+// StateS
 #include "booleanvalue.h"
 #include "bitvectorvalue.h"
 
@@ -38,9 +38,8 @@
  *        values types. It also provides a "null type" for
  *        values that are invalid or not initialized.
  */
-class MachineValue : public QObject
+class MachineValue
 {
-	Q_OBJECT;
 
 	/////
 	// Type declarations

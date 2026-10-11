@@ -22,9 +22,6 @@
 #ifndef GRAPHICMACHINE_H
 #define GRAPHICMACHINE_H
 
-// Parent
-#include <QObject>
-
 // Stdlib
 #include <memory>
 
@@ -39,9 +36,8 @@ class GraphicAttributes;
 class GenericScene;
 
 
-class GraphicMachine : public QObject
+class GraphicMachine
 {
-	Q_OBJECT
 
 	/////
 	// Constructors/destructors

@@ -22,16 +22,16 @@
 #ifndef BITVECTORVALUE_H
 #define BITVECTORVALUE_H
 
-// Parent
-#include <QObject>
+// Qt
+#include <QtTypes>
+class QString;
 
 // StateS
 class BooleanValue;
 
 
-class BitVectorValue : public QObject
+class BitVectorValue
 {
-	Q_OBJECT;
 
 	/////
 	// Static functions
