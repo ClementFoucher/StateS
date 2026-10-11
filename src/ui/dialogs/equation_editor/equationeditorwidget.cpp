@@ -381,7 +381,7 @@ QString EquationEditorWidget::getToolTipText() const
 			}
 			break;
 		case Equation::ComputationWarning_t::noWarning:
-			toolTipText = tr("Equation:") + " " + this->equation->getColoredText();
+			toolTipText = tr("Equation:") + " " + this->equation->getText();
 			break;
 		}
 		break;

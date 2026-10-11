@@ -181,12 +181,14 @@ void ConditionEditor::updateContent()
 		this->conditionTextPositionSlider->setValue(sliderPosition);
 	}
 
+	QString conditionString;
 	auto condition = transition->getCondition();
 	if (condition != nullptr)
 	{
+		// Determine condition text
 		if (condition->getOperator() != Equation::Operator_t::identity)
 		{
-			this->conditionText->setText(condition->getColoredText());
+			conditionString = condition->getText();
 		}
 		else // (condition->getOperatorType() == OperatorType_t::identity)
 		{
@@ -194,13 +196,14 @@ void ConditionEditor::updateContent()
 			if (operand == nullptr) return;
 
 
-			this->conditionText->setText(operand->getText());
+			conditionString = operand->getText();
 		}
 
-		if ( (condition->getType() == MachineValue::Type_t::boolean) ||
+		if (   (condition->getType() == MachineValue::Type_t::boolean) ||
 		     ( (condition->getType() == MachineValue::Type_t::bitVector) && (condition->getInitialValue().getBitVectorValue().getSize() == 1) )
 		   )
 		{
+			// Correct condition: allow to display truth table is possible
 			if (condition->getVariablesIdsSet().count() > 0)
 			{
 				if (condition->hasNonLogicVariables() == false)
@@ -223,6 +226,10 @@ void ConditionEditor::updateContent()
 		}
 		else // Condition is neither a Boolean nor a Bit Vector of size 1
 		{
+			// Incorrect condition: display text in red
+			conditionString = "<span style=\"color:red;\">" + conditionString + "</span>";
+
+			// Display an error message
 			if (condition->isValid() == false)
 			{
 				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
@@ -250,8 +257,10 @@ void ConditionEditor::updateContent()
 	}
 	else // (condition == nullptr)
 	{
-		this->conditionText->setText("1");
+		conditionString = tr("True");
 	}
+
+	this->conditionText->setText(conditionString);
 }
 
 void ConditionEditor::conditionTextPositionSliderChanged(int newValue)

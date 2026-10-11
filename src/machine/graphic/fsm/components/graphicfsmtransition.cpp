@@ -365,15 +365,16 @@ void GraphicFsmTransition::updateConditionText()
 	if (logicTransition == nullptr) return;
 
 
+	QString conditionString;
 	auto condition = logicTransition->getCondition();
 	if (condition == nullptr)
 	{
 		// An empty condition is always true
-		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8; color:#000000;\">1</div>");
+		conditionString = tr("True");
 	}
 	else if (condition->getOperator() != Equation::Operator_t::identity)
 	{
-		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;\">" + condition->getColoredText() + "</div>");
+		conditionString = condition->getText();
 	}
 	else // (condition->getOperatorType() == OperatorType_t::identity)
 	{
@@ -382,8 +383,28 @@ void GraphicFsmTransition::updateConditionText()
 		if (operand == nullptr) return;
 
 
-		this->conditionText->setHtml("<div style=\"background-color:#E8E8E8;color:black;\">" + operand->getText() + "</div>");
+		conditionString = operand->getText();
 	}
+
+	QString foregroundColor = "black";
+	if (condition != nullptr)
+	{
+		if (condition->getType() == MachineValue::Type_t::boolean)
+		{
+			// Ok
+		}
+		else if ( (condition->getType() == MachineValue::Type_t::bitVector) && (condition->getInitialValue().getBitVectorValue().getSize() == 1) )
+		{
+			// Ok
+		}
+		else // Condition is neither a boolean nor a bit vector of size 1
+		{
+			foregroundColor = "red";
+		}
+	}
+
+	conditionString = "<div style=\"background-color:#E8E8E8;color:" + foregroundColor + ";\">" + conditionString + "</div>";
+	this->conditionText->setHtml(conditionString);
 }
 
 void GraphicFsmTransition::treatMenu(QAction* action)

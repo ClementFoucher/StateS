@@ -128,23 +128,7 @@ MachineValue Equation::getInitialValue() const
 
 QString Equation::getText() const
 {
-	return this->getColoredText(true);
-}
-
-QString Equation::getColoredText(bool raw) const
-{
 	QString text;
-	if (raw == false)
-	{
-		if (this->isValid() == false)
-		{
-			text += "<span style=\"color:red;\">";
-		}
-		else
-		{
-			text += "<span style=\"color:black;\">";
-		}
-	}
 
 	uint operandCount = this->getOperandCount();
 
@@ -247,11 +231,6 @@ QString Equation::getColoredText(bool raw) const
 	if (operandCount > 1)
 	{
 		text += " )";
-	}
-
-	if (raw == false)
-	{
-		text += "</span>";
 	}
 
 	return text;

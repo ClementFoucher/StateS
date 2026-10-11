@@ -119,7 +119,6 @@ public:
 	MachineValue getInitialValue() const;
 
 	QString getText() const;
-	QString getColoredText(bool raw = false) const;
 
 	ComputationFailureCause_t getComputationFailureCause() const;
 	ComputationWarning_t      getComputationWarning()      const;

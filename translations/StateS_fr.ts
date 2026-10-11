@@ -410,7 +410,7 @@
     </message>
     <message>
         <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="88"/>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="368"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="377"/>
         <source>Display truth table</source>
         <translation>Afficher la table de vérité</translation>
     </message>
@@ -425,53 +425,58 @@
         <translation>Déclarez d&apos;abord des variables dans l&apos;onglet Machine.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="230"/>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="240"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="237"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="247"/>
         <source>Thus, this transition will never be crossed.</source>
         <translation>Ainsi, cette transition ne sera jamais franchie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="239"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="246"/>
         <source>the condition can&apos;t be interpreted as a boolean.</source>
         <translation>la condition ne peut pas être interprétée en tant que booléen.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="241"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="248"/>
         <source>The result of the equation must be a boolean or a bit vector of size 1.</source>
-        <translation>Le résultat d&apos;une équation doit être un booléen ou un vecteur de bits de taille 1.</translation>
+        <translation>Le résultat de l&apos;équation doit être un booléen ou un vecteur de bits de taille 1.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="330"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="260"/>
+        <source>True</source>
+        <translation>Vrai</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="339"/>
         <source>Too much combinations!</source>
         <translation>Trop de combinaisons !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="331"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="340"/>
         <source>StateS will not display the truth table when there is more than 1024 combinations.</source>
         <translation>StateS n&apos;affiche pas la table de vérité lorsqu&apos;elle contient plus de 1024 combinaisons.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="343"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="352"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="344"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="353"/>
         <source>StateS was unable to build the truth table.</source>
         <translation>StateS n&apos;a pas réussi à construire la table de vérité.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="345"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="354"/>
         <source>The equation may be is invalid,</source>
         <translation>L&apos;équation est peut-être invalide,</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="346"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="355"/>
         <source>or there are too many combinations to compute.</source>
         <translation>ou elle a trop de combinaisons possible pour être calculée.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="358"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="367"/>
         <source>Collapse truth table</source>
         <translation>Masquer la table de vérité</translation>
     </message>
@@ -481,28 +486,28 @@
         <translation>Position de la condition</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="217"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="220"/>
         <source>Note:</source>
         <translation>Note :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="217"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="220"/>
         <source>the truth table cannot be displayed when the condition contains integer values.</source>
         <translation>la table de vérité ne peut pas être affichée lorsque la condition contient des entiers.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="229"/>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="239"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="236"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="246"/>
         <source>Warning:</source>
         <translation>Attention :</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="236"/>
         <source>the current condition is not valid.</source>
         <translation>la condition actuelle est invalide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="231"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/conditioneditor.cpp" line="238"/>
         <source>Edit condition and hover over errors for more information.</source>
         <translation>Éditez la condition et survolez les erreurs pour plus de détails.</translation>
     </message>
@@ -1376,27 +1381,32 @@
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="269"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="391"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="412"/>
         <source>Change source</source>
         <translation>Changer de source</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="270"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="395"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="416"/>
         <source>Change target</source>
         <translation>Changer de cible</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="271"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="399"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="420"/>
         <source>Edit</source>
         <translation>Éditer</translation>
     </message>
     <message>
         <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="272"/>
-        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="403"/>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="424"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/graphic/fsm/components/graphicfsmtransition.cpp" line="373"/>
+        <source>True</source>
+        <translation>Vrai</translation>
     </message>
 </context>
 <context>
