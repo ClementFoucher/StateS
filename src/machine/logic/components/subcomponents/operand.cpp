@@ -200,6 +200,54 @@ QString Operand::getText() const
 	}
 }
 
+bool Operand::hasNonLogicVariables() const
+{
+	switch (this->source)
+	{
+	case Source_t::variable:
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return true;
+
+		auto variable = machine->getVariable(this->getVariableId());
+		if (variable == nullptr) return true;
+
+
+		// Constants are not variable for this specific use case
+		if (machine->getConstantsIds().contains(this->getVariableId()))
+		{
+			return false;
+		}
+
+		switch (variable->getType())
+		{
+		case MachineValue::Type_t::boolean:
+		case MachineValue::Type_t::bitVector:
+			return false;
+			break;
+		case MachineValue::Type_t::natural:
+		case MachineValue::Type_t::relative:
+		case MachineValue::Type_t::nullType:
+			return true;
+			break;
+		}
+		break;
+	}
+	case Source_t::equation:
+	{
+		auto equation = this->getEquation();
+		if (equation == nullptr) return true;
+
+
+		return equation->hasNonLogicVariables();
+		break;
+	}
+	case Source_t::constant:
+		return false;
+		break;
+	}
+}
+
 void Operand::variableDeletedEventHandler(ComponentId)
 {
 	this->value = nullId;

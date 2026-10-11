@@ -174,61 +174,84 @@ void FsmVerifier::run()
 				}
 				else if (state->getOutgoingTransitionsIds().count() > 1)
 				{
-					auto currentTruthTable = std::make_shared<TruthTable>(equations);
-					bool finished = false;
-					while (finished == false)
+					bool allEquationsAreLogic = true;
+					for (auto& equation : equations)
 					{
-						finished = currentTruthTable->buildRow();
-						if (this->doAbort == true)
+						if (equation->hasNonLogicVariables() == true)
 						{
-							this->issues.clear();
-							return;
+							allEquationsAreLogic = false;
+							break;
 						}
 					}
 
-					if (currentTruthTable->getTableBuiltSuccessfully() == false)
+					if (allEquationsAreLogic == true)
+					{
+						auto currentTruthTable = std::make_shared<TruthTable>(equations);
+						bool finished = false;
+						while (finished == false)
+						{
+							finished = currentTruthTable->buildRow();
+							if (this->doAbort == true)
+							{
+								this->issues.clear();
+								return;
+							}
+						}
+
+						if (currentTruthTable->getTableBuiltSuccessfully() == false)
+						{
+							auto issue = std::make_shared<Issue>();
+							issue->text  = tr("StateS was unable to build the truth table for transitions going out of state") + " \"" + state->getName() + "\".";
+							issue->text += " " + tr("This is probably because there are too many combinations to compute.");
+							issue->text += " " + tr("This means that there may be transitions going out of this state that are not mutually exclusive.");
+							issue->type = SeverityLevel_t::tool;
+							this->issues.append(issue);
+							continue;
+						}
+
+						bool detected = false;
+						uint rowcount = 0;
+						auto currentIssue = std::make_shared<Issue>();
+						for (uint rowRank = 0 ; rowRank < currentTruthTable->getRowsCount() ; rowRank++)
+						{
+							uint trueCount = 0;
+							for (uint columnRank = 0 ; columnRank < currentTruthTable->getOutputCount() ; columnRank++)
+							{
+								auto value = currentTruthTable->getOutputValue(rowRank, columnRank);
+								if ( (value == BooleanValue::trueValue()) || (value == BitVectorValue::allOnes(1)) )
+								{
+									trueCount++;
+								}
+							}
+
+							if (trueCount > 1)
+							{
+								if (detected == false)
+								{
+									currentIssue->text  = tr("Transitions from state") + " \"" + state->getName() + "\" " + tr("are not mutually exclusive.");
+									currentIssue->text += " " + tr("At least two transitions can be active at the same time.");
+									currentIssue->proof = currentTruthTable;
+									currentIssue->type = SeverityLevel_t::structure;
+									this->issues.append(currentIssue);
+
+									detected = true;
+								}
+
+								currentIssue->proofsHighlight.append(rowcount);
+							}
+
+							rowcount++;
+						}
+					}
+					else // (allEquationsAreLogic == false)
 					{
 						auto issue = std::make_shared<Issue>();
 						issue->text  = tr("StateS was unable to build the truth table for transitions going out of state") + " \"" + state->getName() + "\".";
-						issue->text += " " + tr("This is probably because there are too many combinations to compute.");
-						issue->text += " " + tr("This means that there may be transitions going out of this state that are not mutually exclusive.");
+						issue->text += " " + tr("This is due to the presence of an integer in one of the condition's equation.");
+						issue->text += " " + tr("StateS is not yet able to check equations with non-logic operands.");
 						issue->type = SeverityLevel_t::tool;
 						this->issues.append(issue);
 						continue;
-					}
-
-					bool detected = false;
-					uint rowcount = 0;
-					auto currentIssue = std::make_shared<Issue>();
-					for (uint rowRank = 0 ; rowRank < currentTruthTable->getRowsCount() ; rowRank++)
-					{
-						uint trueCount = 0;
-						for (uint columnRank = 0 ; columnRank < currentTruthTable->getOutputCount() ; columnRank++)
-						{
-							auto value = currentTruthTable->getOutputValue(rowRank, columnRank);
-							if ( (value == BooleanValue::trueValue()) || (value == BitVectorValue::allOnes(1)) )
-							{
-								trueCount++;
-							}
-						}
-
-						if (trueCount > 1)
-						{
-							if (detected == false)
-							{
-								currentIssue->text  = tr("Transitions from state") + " \"" + state->getName() + "\" " + tr("are not mutually exclusive.");
-								currentIssue->text += " " + tr("At least two transitions can be active at the same time.");
-								currentIssue->proof = currentTruthTable;
-								currentIssue->type = SeverityLevel_t::structure;
-								this->issues.append(currentIssue);
-
-								detected = true;
-							}
-
-							currentIssue->proofsHighlight.append(rowcount);
-						}
-
-						rowcount++;
 					}
 				}
 			}

@@ -179,6 +179,14 @@ QWidget* TemplateEquationPartsWidget::getConstants() const
 	auto bitVectorConstant = new ConstantEditorWidget(BitVectorValue::allZeros(1), 0, true, constantsWidget);
 	constantsLayout->addWidget(bitVectorConstant);
 
+	// Custom constant for natural
+	auto naturalConstant = new ConstantEditorWidget(NaturalValue{0}, 0, true, constantsWidget);
+	constantsLayout->addWidget(naturalConstant);
+
+	// Custom constant for relative
+	auto relativeConstant = new ConstantEditorWidget(RelativeValue{0}, 0, true, constantsWidget);
+	constantsLayout->addWidget(relativeConstant);
+
 	// Machine constants (which are actually variables)
 	this->buildVariableList(constantsLayout, machine->getConstantsIds());
 

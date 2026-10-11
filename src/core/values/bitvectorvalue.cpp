@@ -150,36 +150,6 @@ uint BitVectorValue::getSize() const
 	return static_cast<uint>(this->vectorSize);
 }
 
-// Return value for increment indicates if there is a carry
-bool BitVectorValue::increment()
-{
-	if (this->value == this->maxValue())
-	{
-		this->value = 0;
-		return true;
-	}
-	else
-	{
-		this->value++;
-		return false;
-	}
-}
-
-// Return value for decrement indicates if value goes below 0
-bool BitVectorValue::decrement()
-{
-	if (this->value == 0)
-	{
-		this->value = this->maxValue();
-		return true;
-	}
-	else
-	{
-		this->value--;
-		return false;
-	}
-}
-
 BitVectorValue BitVectorValue::getSubrange(uint msb, uint lsb) const
 {
 	if ( (msb < 0) && (lsb >= 0) ) return BitVectorValue{};

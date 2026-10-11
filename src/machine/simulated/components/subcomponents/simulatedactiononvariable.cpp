@@ -49,20 +49,19 @@ void SimulatedActionOnVariable::doAction()
 
 	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL !=-1) )
 	{
+		// Actions on a bit vector can be one-bit (boolean) or act on a sub-range
+
 		auto variableCurrentValue = simulatedVariable->getCurrentValue().getBitVectorValue();
-		auto actionValue = this->getActionValue();
-		switch (actionValue.getType())
+
+		if (actionValue.getType() == MachineValue::Type_t::boolean)
 		{
-		case MachineValue::Type_t::boolean:
 			variableCurrentValue.setBit(actionValue.getBooleanValue(), this->rangeL);
-			break;
-		case MachineValue::Type_t::bitVector:
-			variableCurrentValue.setSubrange(actionValue.getBitVectorValue(), this->rangeL, this->rangeR);
-			break;
-		case MachineValue::Type_t::nullType:
-			// Should not happen
-			break;
 		}
+		else // (actionValue.getType() == MachineValue::Type_t::bitVector)
+		{
+			variableCurrentValue.setSubrange(actionValue.getBitVectorValue(), this->rangeL, this->rangeR);
+		}
+
 		simulatedVariable->setCurrentValue(variableCurrentValue);
 	}
 	else
@@ -108,20 +107,36 @@ MachineValue SimulatedActionOnVariable::getActionValue() const
 		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
 		if (simulatedVariable == nullptr) return MachineValue{};
 
+		if ( (simulatedVariable->getType() != MachineValue::Type_t::natural) &&
+		     (simulatedVariable->getType() != MachineValue::Type_t::relative)
+		   )
+			return MachineValue{};
+
+
 		auto simulatedVariableValue = simulatedVariable->getCurrentValue();
-		if (simulatedVariableValue.getType() != MachineValue::Type_t::bitVector) return MachineValue{};
-
-
-		auto publicActionValue = simulatedVariableValue.getBitVectorValue();
 		if (this->actionType == ActionOnVariable::Type_t::increment)
 		{
-			publicActionValue.increment();
+			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
+			{
+				simulatedVariableValue = NaturalValue{simulatedVariableValue.getNaturalValue() + 1};
+			}
+			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
+			{
+				simulatedVariableValue = RelativeValue{simulatedVariableValue.getRelativeValue() + 1};
+			}
 		}
 		else // (this->actionType == ActionOnVariable::Type_t::decrement)
 		{
-			publicActionValue.decrement();
+			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
+			{
+				simulatedVariableValue = NaturalValue{simulatedVariableValue.getNaturalValue() - 1};
+			}
+			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
+			{
+				simulatedVariableValue = RelativeValue{simulatedVariableValue.getRelativeValue() - 1};
+			}
 		}
-		return publicActionValue;
+		return simulatedVariableValue;
 		break;
 	}
 	case ActionOnVariable::Type_t::none:

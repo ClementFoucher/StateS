@@ -65,32 +65,28 @@ MachineValue SimulatedEquation::getCurrentValue() const
 	return this->currentValue;
 }
 
-// True concept here only apply to boolean and one-bit bit vector results
 bool SimulatedEquation::isTrue() const
 {
-	switch (this->currentValue.getType())
+	if (this->currentValue.getType() == MachineValue::Type_t::boolean)
 	{
-	case MachineValue::Type_t::boolean:
 		return this->currentValue.getBooleanValue();
-		break;
-	case MachineValue::Type_t::bitVector:
+	}
+	else if (this->currentValue.getType() == MachineValue::Type_t::bitVector)
 	{
-		auto bitVectorValue = this->currentValue.getBitVectorValue();
-
-		if (bitVectorValue.getSize() == 1)
+		// Only one-bit vectors can be considered true
+		if (this->currentValue.getBitVectorValue() == BitVectorValue::allOnes(1))
 		{
-			if (bitVectorValue == BitVectorValue::allOnes(1))
-			{
-				return true;
-			}
+			return true;
 		}
-		break;
+		else
+		{
+			return false;
+		}
 	}
-	case MachineValue::Type_t::nullType:
-		break;
+	else // "true" concept doesn't apply to other types
+	{
+		return false;
 	}
-
-	return false;
 }
 
 void SimulatedEquation::computeCurrentValue()

@@ -272,6 +272,12 @@ void ConstantEditorWidget::build()
 		case MachineValue::Type_t::bitVector:
 			templateText += tr("bit vector");
 			break;
+		case MachineValue::Type_t::natural:
+			templateText += tr("natural integer");
+			break;
+		case MachineValue::Type_t::relative:
+			templateText += tr("relative integer");
+			break;
 		case MachineValue::Type_t::nullType:
 			// As long as we don't explicitly add a null variable
 			// in the template list, this should not happen.

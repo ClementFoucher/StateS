@@ -145,7 +145,9 @@ void ConditionEditor::clearCondition()
 void ConditionEditor::updateContent()
 {
 	delete this->conditionWarningText;
-	this->conditionWarningText = nullptr;
+	delete this->truthTableWarningText;
+	this->conditionWarningText  = nullptr;
+	this->truthTableWarningText = nullptr;
 
 	bool truthTableDisplayed = this->isTruthTableDisplayed();
 	if (truthTableDisplayed == true)
@@ -201,11 +203,21 @@ void ConditionEditor::updateContent()
 		{
 			if (condition->getVariablesIdsSet().count() > 0)
 			{
-				this->buttonToggleTruthTable->setEnabled(true);
-
-				if (truthTableDisplayed)
+				if (condition->hasNonLogicVariables() == false)
 				{
-					this->expandTruthTable();
+					this->buttonToggleTruthTable->setEnabled(true);
+
+					if (truthTableDisplayed == true)
+					{
+						this->expandTruthTable();
+					}
+				}
+				else // (condition->hasNonLogicVariables() == true)
+				{
+					this->truthTableWarningText = new QLabel(tr("Note:") + " <i>" + tr("the truth table cannot be displayed when the condition contains integer values.") + "</i>");
+					this->truthTableWarningText->setWordWrap(true);
+					this->truthTableWarningText->setAlignment(Qt::AlignCenter);
+					this->layout->addWidget(truthTableWarningText, 5, 0, 1, 2);
 				}
 			}
 		}
@@ -214,7 +226,7 @@ void ConditionEditor::updateContent()
 			if (condition->isValid() == false)
 			{
 				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
-				                                        tr("Warning: the current condition is not valid.") +
+				                                        tr("Warning:") + " " + tr("the current condition is not valid.") +
 				                                        "<br>" + tr("Thus, this transition will never be crossed.") +
 				                                        "<br>" + tr("Edit condition and hover over errors for more information.") +
 				                                        "</span>"
@@ -224,7 +236,7 @@ void ConditionEditor::updateContent()
 			else // (condition->isValid() == true)
 			{
 				this->conditionWarningText = new QLabel("<span style=\"color:red;\">" +
-				                                        tr("Warning: the equation representing the condition can't be interpreted as a boolean.") +
+				                                        tr("Warning:") + " " + tr("the condition can't be interpreted as a boolean.") +
 				                                        "<br>" + tr("Thus, this transition will never be crossed.") +
 				                                        "<br>" + tr("The result of the equation must be a boolean or a bit vector of size 1.") +
 				                                        "</span>"

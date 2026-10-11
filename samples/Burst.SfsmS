@@ -7,11 +7,11 @@
     <Machine Name="Burst emitter" Type="FSM">
         <Variables>
             <Input Name="Trigger" Type="Boolean" Value="FALSE"/>
-            <Internal Name="period counter" Type="BitVector" Value="000" Memorized="true"/>
-            <Internal Name="event counter" Type="BitVector" Value="000" Memorized="true"/>
+            <Internal Name="period counter" Type="Natural" Value="0" Memorized="true"/>
+            <Internal Name="event counter" Type="Natural" Value="0" Memorized="true"/>
             <Output Name="Burst" Type="Boolean" Value="FALSE"/>
-            <Constant Name="period length" Type="BitVector" Value="011"/>
-            <Constant Name="period count" Type="BitVector" Value="100"/>
+            <Constant Name="period length" Type="Natural" Value="3"/>
+            <Constant Name="period count" Type="Natural" Value="4"/>
         </Variables>
         <States>
             <State Name="Wait trig" IsInitial="true" X="151.5" Y="389.627"/>
@@ -43,7 +43,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Reset"/>
                 </Actions>
             </Transition>
             <Transition Source="Burst low" Target="Burst high" SliderPos="76">
@@ -64,7 +64,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
+                    <Action Name="event counter" ActionType="Reset"/>
                     <Action Name="period counter" ActionType="Increment"/>
                 </Actions>
             </Transition>
@@ -86,8 +86,8 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="period counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
-                    <Action Name="event counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="000"/>
+                    <Action Name="period counter" ActionType="Reset"/>
+                    <Action Name="event counter" ActionType="Reset"/>
                 </Actions>
             </Transition>
         </Transitions>

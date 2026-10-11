@@ -95,6 +95,8 @@ void ValueEditor::setMachineValue(MachineValue value)
 		break;
 	}
 	case MachineValue::Type_t::bitVector:
+	case MachineValue::Type_t::natural:
+	case MachineValue::Type_t::relative:
 	{
 		if (this->lineEdit == nullptr)
 		{
@@ -109,6 +111,15 @@ void ValueEditor::setMachineValue(MachineValue value)
 
 		this->lineEdit->setText(value.toDisplayString());
 
+		if (newValueType == MachineValue::Type_t::natural)
+		{
+			this->lineEdit->setValidator(new QIntValidator(0, NaturalValue::maxValue()));
+		}
+		else if (newValueType == MachineValue::Type_t::relative)
+		{
+			this->lineEdit->setValidator(new QIntValidator(RelativeValue::minValue(), RelativeValue::maxValue()));
+		}
+
 		connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
 		break;
 	}
@@ -120,9 +131,6 @@ void ValueEditor::setMachineValue(MachineValue value)
 
 MachineValue ValueEditor::getMachineValue() const
 {
-	if (this->valueType == MachineValue::Type_t::nullType) return MachineValue{};
-
-
 	switch (this->valueType)
 	{
 	case MachineValue::Type_t::boolean:
@@ -150,8 +158,14 @@ MachineValue ValueEditor::getMachineValue() const
 		return currentValue;
 		break;
 	}
+	case MachineValue::Type_t::natural:
+		return NaturalValue::fromRawString(this->lineEdit->text());
+		break;
+	case MachineValue::Type_t::relative:
+		return RelativeValue::fromRawString(this->lineEdit->text());
+		break;
 	case MachineValue::Type_t::nullType:
-		// Checked before, should not happen
+		return MachineValue{};
 		break;
 	}
 }

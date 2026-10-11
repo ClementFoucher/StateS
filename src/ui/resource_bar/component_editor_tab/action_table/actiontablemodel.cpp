@@ -216,6 +216,12 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 					case MachineValue::Type_t::bitVector:
 						text += "BITVECTOR";
 						break;
+					case MachineValue::Type_t::natural:
+						text += "NATURAL";
+						break;
+					case MachineValue::Type_t::relative:
+						text += "RELATIVE";
+						break;
 					case MachineValue::Type_t::nullType:
 						text += "NULL";
 						break;
@@ -334,6 +340,16 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 				}
 
 				newValue = newBitVectorVariableValue;
+				break;
+			}
+			case MachineValue::Type_t::natural:
+			{
+				newValue = NaturalValue::fromRawString(valueAsString);
+				break;
+			}
+			case MachineValue::Type_t::relative:
+			{
+				newValue = RelativeValue::fromRawString(valueAsString);
 				break;
 			}
 			case MachineValue::Type_t::nullType:

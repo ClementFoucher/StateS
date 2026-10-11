@@ -341,6 +341,22 @@ QSet<ComponentId> Equation::getVariablesIdsSet() const
 	return variablesIds;
 }
 
+bool Equation::hasNonLogicVariables() const
+{
+	for (const auto& operand : this->operands)
+	{
+		if (operand == nullptr) return true;
+
+
+		if (operand->hasNonLogicVariables() == true)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 std::shared_ptr<Operand> Equation::getOperand(uint i) const
 {
 	if (i < this->getOperandCount())
@@ -738,6 +754,12 @@ void Equation::checkForErrors()
 			if ( ( (operand0Type == MachineValue::Type_t::boolean)   && (operand1Type == MachineValue::Type_t::bitVector) && (this->operands[1]->getInitialValue().getBitVectorValue().getSize() == 1) ) ||
 			     ( (operand0Type == MachineValue::Type_t::bitVector) && (operand1Type == MachineValue::Type_t::boolean)   && (this->operands[0]->getInitialValue().getBitVectorValue().getSize() == 1) )
 			   )
+			{
+				// Everything is ok
+			}
+			else if ( ( (operand0Type == MachineValue::Type_t::natural)  && (operand1Type == MachineValue::Type_t::relative) ) ||
+			          ( (operand0Type == MachineValue::Type_t::relative) && (operand1Type == MachineValue::Type_t::natural)  )
+			        )
 			{
 				// Everything is ok
 			}

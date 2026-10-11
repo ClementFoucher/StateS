@@ -53,18 +53,27 @@ class Equation : public QObject
 public:
 	enum class Operator_t
 	{
-		notOp,  // Not equations always have exactly one operand
+		// Logic operators
+		// They apply to boolean and bit vectors operands
+		// Not equations always have exactly one operand,
+		// others have two or more operands
+		notOp,
 		andOp,
 		orOp,
 		xorOp,
 		nandOp,
 		norOp,
 		xnorOp,
-		equalOp, // Equal equations always have exactly two operand and are size one
-		diffOp,  // Diff  equations always have exactly two operand and are size one
-		extractOp, // Extract equations always have exacly one operand
+		// Comparison operators
+		// They always have exactly two operands and return a boolean
+		equalOp,
+		diffOp,
+		// Extract equations always have exacly one bit vector operand
+		extractOp,
+		// Concatenation apply to boolean and bit vectors operands
 		concatOp,
-		identity // For internal use only, exactly one operand
+		// Identity is for internal use only, exactly one operand
+		identity
 	};
 
 	enum class ComputationFailureCause_t
@@ -111,6 +120,8 @@ public:
 	Operator_t getOperator() const;
 
 	QSet<ComponentId> getVariablesIdsSet() const;
+
+	bool hasNonLogicVariables() const;
 
 	std::shared_ptr<Operand> getOperand(uint i) const;
 	void setOperand(uint i, ComponentId               newOperand); // Set variable operand

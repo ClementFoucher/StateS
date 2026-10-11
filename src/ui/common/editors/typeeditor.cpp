@@ -40,6 +40,8 @@ TypeEditor::TypeEditor(QWidget* parent) :
 	this->typeComboBox = new DiscreetComboBox();
 	this->typeComboBox->insertItem(static_cast<int>(indexType::boolean),   tr("Boolean"));
 	this->typeComboBox->insertItem(static_cast<int>(indexType::bitVector), tr("Bit vector"));
+	this->typeComboBox->insertItem(static_cast<int>(indexType::natural),   tr("Natural integer"));
+	this->typeComboBox->insertItem(static_cast<int>(indexType::relative),  tr("Relative integer"));
 
 	//
 	// Build complete rendering
@@ -103,6 +105,12 @@ void TypeEditor::setCurrentType(MachineValue::Type_t type)
 
 		break;
 	}
+	case MachineValue::Type_t::natural:
+		this->typeComboBox->setCurrentIndex(static_cast<int>(indexType::natural));
+		break;
+	case MachineValue::Type_t::relative:
+		this->typeComboBox->setCurrentIndex(static_cast<int>(indexType::relative));
+		break;
 	case MachineValue::Type_t::nullType:
 		// Checked previously: should not happen
 		break;
@@ -112,14 +120,21 @@ void TypeEditor::setCurrentType(MachineValue::Type_t type)
 
 MachineValue::Type_t TypeEditor::getCurrentType() const
 {
-	auto comboBoxIndex = this->typeComboBox->currentIndex();
-	if (comboBoxIndex == static_cast<int>(indexType::boolean))
+	auto comboBoxIndex = static_cast<indexType>(this->typeComboBox->currentIndex());
+	switch (comboBoxIndex)
 	{
+	case indexType::boolean:
 		return MachineValue::Type_t::boolean;
-	}
-	else if (comboBoxIndex == static_cast<int>(indexType::bitVector))
-	{
+		break;
+	case indexType::bitVector:
 		return MachineValue::Type_t::bitVector;
+		break;
+	case indexType::natural:
+		return MachineValue::Type_t::natural;
+		break;
+	case indexType::relative:
+		return MachineValue::Type_t::relative;
+		break;
 	}
 
 	return MachineValue::Type_t::nullType;

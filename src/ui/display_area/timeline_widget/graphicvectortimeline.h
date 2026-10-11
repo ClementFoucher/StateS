@@ -30,7 +30,7 @@
 #include <QVector>
 
 // StateS
-#include "bitvectorvalue.h"
+#include "machinevalue.h"
 
 
 class GraphicVectorTimeLine : public GraphicTimeLine
@@ -48,19 +48,19 @@ class GraphicVectorTimeLine : public GraphicTimeLine
 	/////
 	// Constructors/destructors
 public:
-	explicit GraphicVectorTimeLine(uint eventDelay, BitVectorValue initialValue, QWidget* parent = nullptr);
+	explicit GraphicVectorTimeLine(uint eventDelay, MachineValue initialValue, QWidget* parent = nullptr);
 	explicit GraphicVectorTimeLine(uint eventDelay, const QString& initialState, QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void addPoint(BitVectorValue newValue);
+	void addPoint(MachineValue newValue);
 	void addPoint(const QString& newState);
 
-	void updateLastPoint(BitVectorValue value);
+	void updateLastPoint(MachineValue value);
 	void updateLastPoint(const QString& state);
 
-	void reset(BitVectorValue initialValue);
+	void reset(MachineValue initialValue);
 	void reset(const QString& initialState);
 
 protected:
@@ -81,8 +81,8 @@ private:
 	QPolygon timeLinePoly1;
 	QPolygon timeLinePoly2;
 
-	QVector<BitVectorValue> values;
-	QVector<QString>        states;
+	QVector<MachineValue> values;
+	QVector<QString>      states;
 
 };
 

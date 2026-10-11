@@ -203,6 +203,19 @@ void MachineXmlParser::parseActionNode()
 		{
 			actionValueType = MachineValue::Type_t::bitVector;
 		}
+		else if (sactvaltype == "Natural")
+		{
+			actionValueType = MachineValue::Type_t::natural;
+		}
+		else if (sactvaltype == "Relative")
+		{
+			actionValueType = MachineValue::Type_t::relative;
+		}
+		else
+		{
+			this->addIssue(tr("Error!") + " " + tr("Unknown value type") + " \"" + sactvaltype + "\" " + tr("found for action."));
+			this->addIssue("    " + tr("Action value will set to a default value."));
+		}
 	}
 
 	// Get action value
@@ -211,20 +224,23 @@ void MachineXmlParser::parseActionNode()
 	if (actionValueType != MachineValue::Type_t::nullType)
 	{
 		auto sactval = this->getCurrentNodeStringAttribute("ActionValue");
-		if (sactval.isEmpty() == false)
+		switch (actionValueType)
 		{
-			switch (actionValueType)
-			{
-			case MachineValue::Type_t::boolean:
-				actionValue = BooleanValue::fromRawString(sactval);
-				break;
-			case MachineValue::Type_t::bitVector:
-				actionValue = BitVectorValue::fromRawString(sactval);
-				break;
-			case MachineValue::Type_t::nullType:
-				// Value is not null (checked before): should not happen
-				break;
-			}
+		case MachineValue::Type_t::boolean:
+			actionValue = BooleanValue::fromRawString(sactval);
+			break;
+		case MachineValue::Type_t::bitVector:
+			actionValue = BitVectorValue::fromRawString(sactval);
+			break;
+		case MachineValue::Type_t::natural:
+			actionValue = NaturalValue::fromRawString(sactval);
+			break;
+		case MachineValue::Type_t::relative:
+			actionValue = RelativeValue::fromRawString(sactval);
+			break;
+		case MachineValue::Type_t::nullType:
+			// Value is not null (checked before): should not happen
+			break;
 		}
 	}
 
@@ -416,28 +432,71 @@ void MachineXmlParser::parseOperandConstantNode()
 
 
 	auto typeStr = this->getCurrentNodeStringAttribute("Type");
-	auto valueStr = this->getCurrentNodeStringAttribute("Value");
-	MachineValue constantValue{};
-	if (typeStr == "Boolean")
+	MachineValue::Type_t variableType = MachineValue::Type_t::nullType;
+	if (typeStr.isNull() == false)
 	{
-		constantValue = BooleanValue::fromRawString(valueStr);
+		if (typeStr == "Boolean")
+		{
+			variableType = MachineValue::Type_t::boolean;
+		}
+		else if (typeStr == "BitVector")
+		{
+			variableType = MachineValue::Type_t::bitVector;
+		}
+		else if (typeStr == "Natural")
+		{
+			variableType = MachineValue::Type_t::natural;
+		}
+		else if (typeStr == "Relative")
+		{
+			variableType = MachineValue::Type_t::relative;
+		}
+		else
+		{
+			this->addIssue(tr("Error!") + " " + tr("Unknown type") + " \"" + typeStr + "\" " + tr("found for a constant while parsing an equation."));
+			this->addIssue("    " + tr("Value ignored, the operand will be left empty."));
+			return;
+		}
 	}
-	else if (typeStr == "BitVector")
+	else // (typeStr.isNull() == true)
 	{
-		constantValue = BitVectorValue::fromRawString(valueStr);
+		this->addIssue(tr("Error!") + " " + tr("No type found for a constant while parsing an equation."));
+		this->addIssue("    " + tr("Value ignored, the operand will be left empty."));
+		return;
 	}
 
-	if (constantValue.isNull() == false)
+	auto valueStr = this->getCurrentNodeStringAttribute("Value");
+	if (valueStr.isEmpty() == false)
 	{
+		MachineValue constantValue{};
+
+		switch (variableType)
+		{
+		case MachineValue::Type_t::boolean:
+			constantValue = BooleanValue::fromRawString(valueStr);
+			break;
+		case MachineValue::Type_t::bitVector:
+			constantValue = BitVectorValue::fromRawString(valueStr);
+			break;
+		case MachineValue::Type_t::natural:
+			constantValue = NaturalValue::fromRawString(valueStr);
+			break;
+		case MachineValue::Type_t::relative:
+			constantValue = RelativeValue::fromRawString(valueStr);
+			break;
+		case MachineValue::Type_t::nullType:
+			// Returned from function if type is invalid: should not happen
+			break;
+		}
+
 		auto parentEquation = this->equationStack.top();
 		parentEquation->setOperand(this->operandRankStack.pop(), constantValue);
 	}
-	else // (constantValue.isNull() == true)
+	else // (valueStr.isEmpty() == true)
 	{
 		this->operandRankStack.pop();
 
-		this->addIssue(tr("Warning:") + " " + tr("Error in constant value while parsing equation."));
-		this->addIssue("    " + tr("Value") + " \"" + valueStr + "\" " + tr("of type") + " \"" + typeStr + "\" " + tr("couldn't be parsed."));
+		this->addIssue(tr("Warning:") + " " + tr("No value found for a constant while parsing an equation."));
 		this->addIssue("    " + tr("Value ignored, the operand will be left empty."));
 	}
 }
@@ -858,6 +917,14 @@ void MachineXmlParser::parseVariableNode()
 		{
 			variableType = MachineValue::Type_t::bitVector;
 		}
+		else if (typeStr == "Natural")
+		{
+			variableType = MachineValue::Type_t::natural;
+		}
+		else if (typeStr == "Relative")
+		{
+			variableType = MachineValue::Type_t::relative;
+		}
 		else
 		{
 			this->addIssue(tr("Error!") + " " + tr("Unknown type") + " \"" + typeStr + "\" " + tr("found for variable while parsing variable list."));
@@ -912,6 +979,12 @@ void MachineXmlParser::parseVariableNode()
 			break;
 		case MachineValue::Type_t::bitVector:
 			variable->setInitialValue(BitVectorValue::fromRawString(variableValueStr));
+			break;
+		case MachineValue::Type_t::natural:
+			variable->setInitialValue(NaturalValue::fromRawString(variableValueStr));
+			break;
+		case MachineValue::Type_t::relative:
+			variable->setInitialValue(RelativeValue::fromRawString(variableValueStr));
 			break;
 		case MachineValue::Type_t::nullType:
 			// Should not happen: defaulted to boolean

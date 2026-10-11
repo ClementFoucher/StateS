@@ -26,7 +26,7 @@
 #include <QPainter>
 
 
-GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, BitVectorValue initialValue, QWidget* parent) :
+GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, MachineValue initialValue, QWidget* parent) :
 	GraphicTimeLine(eventDelay, parent)
 {
 	this->mode = DisplayMode_t::vector;
@@ -40,7 +40,7 @@ GraphicVectorTimeLine::GraphicVectorTimeLine(uint eventDelay, const QString& ini
 	this->reset(initialState);
 }
 
-void GraphicVectorTimeLine::addPoint(BitVectorValue newValue)
+void GraphicVectorTimeLine::addPoint(MachineValue newValue)
 {
 	if (this->mode != DisplayMode_t::vector) return;
 
@@ -68,7 +68,7 @@ void GraphicVectorTimeLine::addPoint(const QString& newState)
 	this->update();
 }
 
-void GraphicVectorTimeLine::updateLastPoint(BitVectorValue value)
+void GraphicVectorTimeLine::updateLastPoint(MachineValue value)
 {
 	if (this->mode != DisplayMode_t::vector) return;
 
@@ -110,7 +110,7 @@ void GraphicVectorTimeLine::updateLastPoint(const QString& state)
 	}
 }
 
-void GraphicVectorTimeLine::reset(BitVectorValue initialValue)
+void GraphicVectorTimeLine::reset(MachineValue initialValue)
 {
 	if (this->mode != DisplayMode_t::vector) return;
 
@@ -229,7 +229,7 @@ void GraphicVectorTimeLine::paintEvent(QPaintEvent*)
 			switch (this->mode)
 			{
 			case DisplayMode_t::vector:
-				text = QString::number(this->values[i].toInt());
+				text = this->values[i].toDisplayString();
 				break;
 			case DisplayMode_t::state:
 				text = this->states[i];

@@ -18,6 +18,8 @@ set(core_header_files
     "values/bitvectorvalue.h"
     "values/booleanvalue.h"
     "values/machinevalue.h"
+    "values/naturalvalue.h"
+    "values/relativevalue.h"
     "xml/statesxmlanalyzer.h"
 )
 
@@ -40,6 +42,8 @@ set(core_source_files
     "values/bitvectorvalue.cpp"
     "values/booleanvalue.cpp"
     "values/machinevalue.cpp"
+    "values/naturalvalue.cpp"
+    "values/relativevalue.cpp"
     "xml/statesxmlanalyzer.cpp"
 )
 

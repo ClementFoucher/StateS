@@ -116,6 +116,12 @@ QString VariableEditorWidget::getToolTipText() const
 		toolTipText += tr("bit vector") + " " + tr("of") + " " + QString::number(variableSize) + " " + tr("bits");
 		break;
 	}
+	case MachineValue::Type_t::natural:
+		toolTipText += tr("natural integer");
+		break;
+	case MachineValue::Type_t::relative:
+		toolTipText += tr("relative integer");
+		break;
 	case MachineValue::Type_t::nullType:
 		// Checked previously: should not happen
 		break;

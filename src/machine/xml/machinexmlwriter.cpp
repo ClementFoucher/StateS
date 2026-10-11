@@ -153,6 +153,12 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<MachineActuatorCompo
 					case MachineValue::Type_t::bitVector:
 						this->stream->writeAttribute("ActionValueType", "BitVector");
 						break;
+					case MachineValue::Type_t::natural:
+						this->stream->writeAttribute("ActionValueType", "Natural");
+						break;
+					case MachineValue::Type_t::relative:
+						this->stream->writeAttribute("ActionValueType", "Relative");
+						break;
 					case MachineValue::Type_t::nullType:
 						// Value is not null (checked before): should not happen
 						break;
@@ -274,6 +280,12 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 					break;
 				case MachineValue::Type_t::bitVector:
 					this->stream->writeAttribute("Type", "BitVector");
+					break;
+				case MachineValue::Type_t::natural:
+					this->stream->writeAttribute("Type", "Natural");
+					break;
+				case MachineValue::Type_t::relative:
+					this->stream->writeAttribute("Type", "Relative");
 					break;
 				case MachineValue::Type_t::nullType:
 					// Constant is not null (checked before): should not happen
@@ -422,6 +434,12 @@ void MachineXmlWriter::writeMachineVariable(Machine::VariableNature_t nature, Co
 		break;
 	case MachineValue::Type_t::bitVector:
 		this->stream->writeAttribute("Type", "BitVector");
+		break;
+	case MachineValue::Type_t::natural:
+		this->stream->writeAttribute("Type", "Natural");
+		break;
+	case MachineValue::Type_t::relative:
+		this->stream->writeAttribute("Type", "Relative");
 		break;
 	case MachineValue::Type_t::nullType:
 		// Variable is not null (checked before): should not happen

@@ -31,6 +31,8 @@
 // StateS
 #include "booleanvalue.h"
 #include "bitvectorvalue.h"
+#include "naturalvalue.h"
+#include "relativevalue.h"
 
 
 /**
@@ -44,7 +46,7 @@ class MachineValue
 	/////
 	// Type declarations
 public:
-	enum class Type_t { nullType, boolean, bitVector };
+	enum class Type_t { nullType, boolean, bitVector, natural, relative };
 
 	/////
 	// Static functions
@@ -61,6 +63,13 @@ public:
 
 	MachineValue(const BooleanValue&   value) : value{value}, valueType{Type_t::boolean  } {}
 	MachineValue(const BitVectorValue& value) : value{value}, valueType{Type_t::bitVector} {}
+	MachineValue(const NaturalValue&   value) : value{value}, valueType{Type_t::natural  } {}
+	MachineValue(const RelativeValue&  value) : value{value}, valueType{Type_t::relative } {}
+
+	MachineValue(const BooleanValue&&   value) : value{value}, valueType{Type_t::boolean  } {}
+	MachineValue(const BitVectorValue&& value) : value{value}, valueType{Type_t::bitVector} {}
+	MachineValue(const NaturalValue&&   value) : value{value}, valueType{Type_t::natural  } {}
+	MachineValue(const RelativeValue&&  value) : value{value}, valueType{Type_t::relative } {}
 
 	/////
 	// Object functions
@@ -74,6 +83,8 @@ public:
 
 	BooleanValue   getBooleanValue()   const;
 	BitVectorValue getBitVectorValue() const;
+	NaturalValue   getNaturalValue()   const;
+	RelativeValue  getRelativeValue()  const;
 
 	MachineValue operator=(const MachineValue&  otherValue);
 	MachineValue operator=(const MachineValue&& otherValue);
@@ -84,7 +95,7 @@ public:
 	/////
 	// Object variables
 private:
-	std::variant<BooleanValue, BitVectorValue> value;
+	std::variant<BooleanValue, BitVectorValue, NaturalValue, RelativeValue> value;
 	Type_t valueType;
 
 };

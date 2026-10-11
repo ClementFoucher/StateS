@@ -74,6 +74,8 @@ public:
 
 	QString getText() const;
 
+	bool hasNonLogicVariables() const;
+
 private slots:
 	void variableDeletedEventHandler(ComponentId);
 

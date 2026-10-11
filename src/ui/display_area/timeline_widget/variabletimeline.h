@@ -27,7 +27,8 @@
 
 // StateS
 #include "componentid.h"
-class GraphicTimeLine;
+class GraphicVectorTimeLine;
+class GraphicBitTimeLine;
 
 
 class VariableTimeline : public QWidget
@@ -51,7 +52,8 @@ private slots:
 private:
 	ComponentId variableId = nullId;
 
-	QList<GraphicTimeLine*> variableLineDisplay;
+	GraphicVectorTimeLine* vectorValueDisplay = nullptr;
+	QList<GraphicBitTimeLine*> individualBitsDisplay;
 
 };
 

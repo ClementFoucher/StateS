@@ -12,8 +12,8 @@
             <Input Name="suspend" Type="Boolean" Value="FALSE"/>
             <Input Name="error" Type="Boolean" Value="FALSE"/>
             <Input Name="reset errors" Type="Boolean" Value="FALSE"/>
-            <Internal Name="error counter" Type="BitVector" Value="0000" Memorized="true"/>
-            <Internal Name="init duration" Type="BitVector" Value="0000" Memorized="true"/>
+            <Internal Name="error counter" Type="Natural" Value="0" Memorized="true"/>
+            <Internal Name="init duration" Type="Natural" Value="0" Memorized="true"/>
             <Output Name="boot" Type="Boolean" Value="FALSE"/>
             <Output Name="leds" Type="BitVector" Value="00"/>
             <Output Name="alarm" Type="Boolean" Value="FALSE"/>
@@ -56,7 +56,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="init duration" ActionType="Assign" ActionValueType="BitVector" ActionValue="0000"/>
+                    <Action Name="init duration" ActionType="Reset"/>
                 </Actions>
             </Transition>
             <Transition Source="On" Target="Error">
@@ -102,7 +102,7 @@
                     </LogicEquation>
                 </Condition>
                 <Actions>
-                    <Action Name="error counter" ActionType="Assign" ActionValueType="BitVector" ActionValue="0000"/>
+                    <Action Name="error counter" ActionType="Reset"/>
                 </Actions>
             </Transition>
             <Transition Source="Off" Target="Error" SliderPos="24">

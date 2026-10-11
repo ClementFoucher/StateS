@@ -44,7 +44,9 @@ private:
 	enum class indexType : int
 	{
 		boolean   = 0,
-		bitVector = 1
+		bitVector = 1,
+		natural   = 2,
+		relative  = 3
 	};
 
 	/////

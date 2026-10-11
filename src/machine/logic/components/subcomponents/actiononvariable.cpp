@@ -142,12 +142,12 @@ ActionOnVariable::ActionOnVariable(ComponentId variableId, uint actuatorAllowedA
 	}
 	else if ((allowedActions & static_cast<uint>(ActionOnVariable::Type_t::assign)) != 0)
 	{
-		// Memorized with size > 1
+		// Memorized for other types than boolean
 		this->actionType = ActionOnVariable::Type_t::assign;
 	}
 	else
 	{
-		// Memorized with size = 1
+		// Memorized for booleans
 		this->actionType = ActionOnVariable::Type_t::set;
 	}
 
@@ -216,6 +216,14 @@ void ActionOnVariable::setActionValue(MachineValue newValue)
 
 void ActionOnVariable::setActionRange(int newRangeL, int newRangeR)
 {
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto variable = machine->getVariable(variableId);
+	if (variable == nullptr) return;
+
+	if (variable->getType() != MachineValue::Type_t::bitVector) return;
+
 	if ( (newRangeL == this->rangeL) && (newRangeR == this->rangeR) ) return;
 
 	if (this->checkIfRangeFitsVariable(newRangeL, newRangeR) == false) return;
@@ -263,13 +271,13 @@ bool ActionOnVariable::isActionValueEditable() const
 		break;
 	case ActionOnVariable::Type_t::continuous:
 	case ActionOnVariable::Type_t::pulse:
-		if (this->getExpectedBitVectorActionSize() > 1)
+		if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 		{
-			return true;
+			return false;
 		}
 		else
 		{
-			return false;
+			return true;
 		}
 		break;
 	case ActionOnVariable::Type_t::set:
@@ -284,23 +292,26 @@ bool ActionOnVariable::isActionValueEditable() const
 
 uint ActionOnVariable::getAllowedActionTypes() const
 {
+	uint allowedActionTypes = static_cast<uint>(ActionOnVariable::Type_t::none);
+
 	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return static_cast<uint>(ActionOnVariable::Type_t::none);
+	if (machine == nullptr) return allowedActionTypes;
 
 	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return static_cast<uint>(ActionOnVariable::Type_t::none);
+	if (variable == nullptr) return allowedActionTypes;
 
 
-	uint allowedActionTypes = static_cast<uint>(ActionOnVariable::Type_t::none);
+	// Add base action types whether they are allowed or not
 	if (variable->getMemorized() == true)
 	{
 		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::assign);
 		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::reset);
+
 		if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 		{
 			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::set);
 		}
-		else // (this->getExpectedActionType() == MachineValue::ValueType_t::bitVector)
+		else if ( (this->getExpectedActionType() == MachineValue::Type_t::natural) || (this->getExpectedActionType() == MachineValue::Type_t::relative) )
 		{
 			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::increment);
 			allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::decrement);
@@ -312,6 +323,7 @@ uint ActionOnVariable::getAllowedActionTypes() const
 		allowedActionTypes |= static_cast<uint>(ActionOnVariable::Type_t::continuous);
 	}
 
+	// Filter for actually allowed types
 	allowedActionTypes &= this->actuatorAllowedActions;
 
 	return allowedActionTypes;
@@ -420,11 +432,8 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return false;
 
-	auto variableValue = variable->getInitialValue();
-	if (variableValue.getType() != MachineValue::Type_t::bitVector) return false;
+	if (variable->getType() != MachineValue::Type_t::bitVector) return false;
 
-
-	int variableSize = static_cast<int>(variableValue.getBitVectorValue().getSize());
 
 	if ( (rangeL < 0 ) && (rangeR < 0) )
 	{
@@ -434,6 +443,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 	else if ( (rangeL >= 0) && (rangeR < 0) )
 	{
 		// Single-bit action: check if in range
+		int variableSize = static_cast<int>(variable->getInitialValue().getBitVectorValue().getSize());
 		if (rangeL < variableSize)
 		{
 			return true;
@@ -446,6 +456,7 @@ bool ActionOnVariable::checkIfRangeFitsVariable(int rangeL, int rangeR) const
 		{
 			// We know both parameters are positive, and their order is correct.
 			// Check if left side is in range.
+			int variableSize = static_cast<int>(variable->getInitialValue().getBitVectorValue().getSize());
 			if (rangeL < variableSize)
 			{
 				return true;
@@ -464,8 +475,7 @@ void ActionOnVariable::checkAndFixActionRange()
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
-	auto variableValue = variable->getInitialValue();
-	if (variableValue.getType() != MachineValue::Type_t::bitVector)
+	if (variable->getType() != MachineValue::Type_t::bitVector)
 	{
 		this->rangeL = -1;
 		this->rangeR = -1;
@@ -473,7 +483,7 @@ void ActionOnVariable::checkAndFixActionRange()
 	}
 
 
-	int variableSize = static_cast<int>(variableValue.getBitVectorValue().getSize());
+	int variableSize = static_cast<int>(variable->getInitialValue().getBitVectorValue().getSize());
 
 	if (variableSize == 1) // We are acting on a 1-bit vector
 	{
@@ -511,7 +521,7 @@ void ActionOnVariable::checkAndFixActionRange()
 void ActionOnVariable::checkAndFixActionType()
 {
 	// If current type is allowed, nothing to fix
-	if ( (static_cast<uint>(this->actionType )& this->getAllowedActionTypes()) != 0) return;
+	if ( (static_cast<uint>(this->actionType) & this->getAllowedActionTypes()) != 0) return;
 
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -546,7 +556,7 @@ void ActionOnVariable::checkAndFixActionType()
 				this->actionType = ActionOnVariable::Type_t::reset;
 			}
 		}
-		else // (this->getExpectedActionType() == MachineValue::ValueType_t::bitVector)
+		else // (this->getExpectedActionType() != MachineValue::ValueType_t::boolean)
 		{
 			// Default to assign
 			this->actionType = ActionOnVariable::Type_t::assign;
@@ -610,29 +620,33 @@ void ActionOnVariable::checkAndFixActionValue()
 			case MachineValue::Type_t::bitVector:
 				this->actionValue = BitVectorValue::allZeros(this->getExpectedBitVectorActionSize());
 				break;
+			case MachineValue::Type_t::natural:
+				this->actionValue = NaturalValue{0};
+				break;
+			case MachineValue::Type_t::relative:
+				this->actionValue = RelativeValue{0};
+				break;
 			case MachineValue::Type_t::nullType:
 				// Checked previously: should not happen
 				break;
 			}
 			break;
 		case ActionOnVariable::Type_t::set:
-			switch (this->getExpectedActionType())
+			// Set action is only allowed on booleans
+			if (this->getExpectedActionType() == MachineValue::Type_t::boolean)
 			{
-			case MachineValue::Type_t::boolean:
 				this->actionValue = BooleanValue::trueValue();
-				break;
-			case MachineValue::Type_t::bitVector:
-				// Set not allowed on Bit Vectors
-				break;
-			case MachineValue::Type_t::nullType:
-				// Checked previously: should not happen
-				break;
+			}
+			else
+			{
+				// Should not happen, but anyway
+				this->actionValue = MachineValue{};
 			}
 			break;
 		case ActionOnVariable::Type_t::continuous:
 		case ActionOnVariable::Type_t::pulse:
-			// Only one-bit values are non editable: use the default value.
-			// actions that are more than one bit are editable thus not handled here.
+			// Only boolean values are non editable: use the default value.
+			// actions that are not boolean are editable thus not handled here.
 			this->setDefaultActionValue();
 			break;
 		case ActionOnVariable::Type_t::increment:
@@ -646,7 +660,8 @@ void ActionOnVariable::checkAndFixActionValue()
 			this->actionValue = MachineValue{};
 			break;
 		case ActionOnVariable::Type_t::assign:
-			// Value is editable, should not happen
+			// Value is editable, should not happen, but anyway
+			this->actionValue = MachineValue{};
 			break;
 		}
 	}
@@ -656,9 +671,9 @@ void ActionOnVariable::checkAndFixActionValue()
  * @brief ActionOnVariable::setDefaultActionValue computes
  *        a default value for the action when the current
  *        action value is unfixable. By default, use the
- *        opposite of the initial value, as it is most
- *        likely what the user wanted, plus it is the
- *        value that is used for one-bit continuous and
+ *        opposite of the initial value for boolean actions,
+ *        as it is most likely what the user wanted, plus it
+ *        is the value that is used for boolean continuous and
  *        pulse actions.
  */
 void ActionOnVariable::setDefaultActionValue()
@@ -669,34 +684,40 @@ void ActionOnVariable::setDefaultActionValue()
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
-	auto variableValue = variable->getInitialValue();
-	if (variableValue.isNull() == true) return;
+	if (variable->getType() == MachineValue::Type_t::nullType) return;
 
 
 	switch (this->getExpectedActionType())
 	{
 	case MachineValue::Type_t::boolean:
-		switch (variable->getType())
+	{
+		auto variableValue = variable->getInitialValue();
+		if (variable->getType() == MachineValue::Type_t::boolean)
 		{
-		case MachineValue::Type_t::boolean:
 			this->actionValue = !variableValue.getBooleanValue();
-			break;
-		case MachineValue::Type_t::bitVector:
+		}
+		else // (variable->getType() == MachineValue::Type_t::bitVector)
 		{
 			// For boolean actions over Bit Vectors, get the opposite of the bit acted on
 			auto subRangeValue = variableValue.getBitVectorValue().getSubrange(this->rangeL, -1);
 			this->actionValue = BooleanValue{!subRangeValue[0]};
-			break;
-		}
-		case MachineValue::Type_t::nullType:
-			// Should not happen
-			break;
 		}
 		break;
+	}
 	case MachineValue::Type_t::bitVector:
 		// For vector values, there is no way of determining the value the user want.
 		// Default to a full 0 vector.
 		this->actionValue = BitVectorValue::allZeros(this->getExpectedBitVectorActionSize());
+		break;
+	case MachineValue::Type_t::natural:
+		// For vector values, there is no way of determining the value the user want.
+		// Default to a full 0 vector.
+		this->actionValue = NaturalValue{0};
+		break;
+	case MachineValue::Type_t::relative:
+		// For vector values, there is no way of determining the value the user want.
+		// Default to a full 0 vector.
+		this->actionValue = RelativeValue{0};
 		break;
 	case MachineValue::Type_t::nullType:
 		// Should not happen
@@ -713,12 +734,8 @@ MachineValue::Type_t ActionOnVariable::getExpectedActionType() const
 	if (variable == nullptr) return MachineValue::Type_t::nullType;
 
 
-	switch (variable->getType())
+	if (variable->getType() == MachineValue::Type_t::bitVector)
 	{
-	case MachineValue::Type_t::boolean:
-		return MachineValue::Type_t::boolean;
-		break;
-	case MachineValue::Type_t::bitVector:
 		// Action value is Boolean for 1-bit actions, Bit Vector otherwise
 		if (this->getExpectedBitVectorActionSize() == 1)
 		{
@@ -728,10 +745,10 @@ MachineValue::Type_t ActionOnVariable::getExpectedActionType() const
 		{
 			return MachineValue::Type_t::bitVector;
 		}
-		break;
-	case MachineValue::Type_t::nullType:
-		return MachineValue::Type_t::nullType;
-		break;
+	}
+	else
+	{
+		return variable->getType();
 	}
 }
 

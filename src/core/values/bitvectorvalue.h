@@ -32,6 +32,7 @@ class BooleanValue;
 
 class BitVectorValue
 {
+	friend class TruthTable;
 
 	/////
 	// Static functions
@@ -61,9 +62,6 @@ public:
 
 	void resize(uint newSize);
 	uint getSize() const;
-
-	bool increment();
-	bool decrement();
 
 	QString toString() const;
 

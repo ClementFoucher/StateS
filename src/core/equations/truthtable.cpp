@@ -157,6 +157,8 @@ bool TruthTable::buildRow()
 			case MachineValue::Type_t::bitVector:
 				this->currentInputRow.append(BitVectorValue::allZeros(variable->getInitialValue().getBitVectorValue().getSize()));
 				break;
+			case MachineValue::Type_t::natural:
+			case MachineValue::Type_t::relative:
 			case MachineValue::Type_t::nullType:
 				// Checked previously in prepareTable(): should not happen
 				break;
@@ -182,11 +184,21 @@ bool TruthTable::buildRow()
 			case MachineValue::Type_t::bitVector:
 			{
 				auto currentBitVectorValue = this->currentInputRow[inputRank].getBitVectorValue();
-				carry = currentBitVectorValue.increment();
+				if (currentBitVectorValue.value < currentBitVectorValue.maxValue())
+				{
+					currentBitVectorValue.value++;
+				}
+				else
+				{
+					currentBitVectorValue.value = 0;
+					carry = true;
+				}
 
 				this->currentInputRow[inputRank] = currentBitVectorValue;
 				break;
 			}
+			case MachineValue::Type_t::natural:
+			case MachineValue::Type_t::relative:
 			case MachineValue::Type_t::nullType:
 				// Checked previously in prepareTable(): should not happen
 				break;
@@ -284,6 +296,9 @@ void TruthTable::prepareTable()
 		case MachineValue::Type_t::bitVector:
 			inputBitsCount += variable->getInitialValue().getBitVectorValue().getSize();
 			break;
+		case MachineValue::Type_t::natural:
+		case MachineValue::Type_t::relative:
+			// Natural and relative type are currently unsupported
 		case MachineValue::Type_t::nullType:
 			this->equations.clear();
 			this->variablesList.clear();

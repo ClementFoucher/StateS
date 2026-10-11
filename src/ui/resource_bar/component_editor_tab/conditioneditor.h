@@ -77,8 +77,9 @@ private:
 	// Widgets
 	QGridLayout* layout = nullptr;
 
-	QLabel* conditionText        = nullptr;
-	QLabel* conditionWarningText = nullptr;
+	QLabel* conditionText         = nullptr;
+	QLabel* conditionWarningText  = nullptr;
+	QLabel* truthTableWarningText = nullptr;
 
 	QSlider* conditionTextPositionSlider = nullptr;
 

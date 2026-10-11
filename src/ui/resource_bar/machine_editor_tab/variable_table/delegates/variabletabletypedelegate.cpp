@@ -67,6 +67,14 @@ void VariableTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex
 
 		typeEditor->setBitVectorSize(stringBits.at(1).toUInt());
 	}
+	else if (valueAsString.startsWith("NATURAL"))
+	{
+		typeEditor->setCurrentType(MachineValue::Type_t::natural);
+	}
+	else if (valueAsString.startsWith("RELATIVE"))
+	{
+		typeEditor->setCurrentType(MachineValue::Type_t::relative);
+	}
 
 	connect(typeEditor, &TypeEditor::typeChangedEvent, this, &VariableTableTypeDelegate::typeChangedEventHandler);
 }
@@ -96,6 +104,12 @@ void VariableTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel
 
 		break;
 	}
+	case MachineValue::Type_t::natural:
+		model->setData(index, "NATURAL", Qt::EditRole);
+		break;
+	case MachineValue::Type_t::relative:
+		model->setData(index, "RELATIVE", Qt::EditRole);
+		break;
 	case MachineValue::Type_t::nullType:
 		break;
 	}

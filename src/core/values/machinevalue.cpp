@@ -36,6 +36,12 @@ MachineValue MachineValue::fromType(Type_t type)
 	case Type_t::bitVector:
 		return BitVectorValue::allZeros(2);
 		break;
+	case Type_t::natural:
+		return NaturalValue{};
+		break;
+	case Type_t::relative:
+		return RelativeValue{};
+		break;
 	case Type_t::nullType:
 		return MachineValue{};
 		break;
@@ -107,6 +113,22 @@ BitVectorValue MachineValue::getBitVectorValue() const
 	return std::get<BitVectorValue>(this->value);
 }
 
+NaturalValue MachineValue::getNaturalValue() const
+{
+	if (this->valueType != Type_t::natural) return NaturalValue{};
+
+
+	return std::get<NaturalValue>(this->value);
+}
+
+RelativeValue MachineValue::getRelativeValue() const
+{
+	if (this->valueType != Type_t::relative) return RelativeValue{};
+
+
+	return std::get<RelativeValue>(this->value);
+}
+
 MachineValue MachineValue::operator=(const MachineValue& otherValue)
 {
 	this->valueType = otherValue.valueType;
@@ -130,6 +152,14 @@ bool MachineValue::operator==(const MachineValue& otherValue) const
 		else if ( (this->valueType == Type_t::bitVector) && (otherValue.valueType == Type_t::boolean) )
 		{
 			return this->getBitVectorValue() == otherValue.getBooleanValue();
+		}
+		else if ( (this->valueType == Type_t::natural) && (otherValue.valueType == Type_t::relative) )
+		{
+			return this->getNaturalValue() == otherValue.getRelativeValue();
+		}
+		else if ( (this->valueType == Type_t::relative) && (otherValue.valueType == Type_t::natural) )
+		{
+			return this->getRelativeValue() == otherValue.getNaturalValue();
 		}
 		else
 		{

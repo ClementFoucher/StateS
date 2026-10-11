@@ -201,6 +201,12 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 				return text;
 				break;
 			}
+			case MachineValue::Type_t::natural:
+				return "NATURAL";
+				break;
+			case MachineValue::Type_t::relative:
+				return "RELATIVE";
+				break;
 			case MachineValue::Type_t::nullType:
 				break;
 			}
@@ -223,6 +229,12 @@ QVariant VariableTableModel::data(const QModelIndex& index, int role) const
 				break;
 			case MachineValue::Type_t::bitVector:
 				text += "BITVECTOR";
+				break;
+			case MachineValue::Type_t::natural:
+				text += "NATURAL";
+				break;
+			case MachineValue::Type_t::relative:
+				text += "RELATIVE";
 				break;
 			case MachineValue::Type_t::nullType:
 				text += "NULL";
@@ -326,6 +338,24 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 					}
 				}
 			}
+			else if (valueAsString.startsWith("NATURAL"))
+			{
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
+				variable->setType(MachineValue::Type_t::natural);
+
+				dataSucessfullyChanged = true;
+			}
+			else if (valueAsString.startsWith("RELATIVE"))
+			{
+				// Machine is about to be edited
+				machineManager->notifyMachineAboutToBeDiffEdited();
+
+				variable->setType(MachineValue::Type_t::relative);
+
+				dataSucessfullyChanged = true;
+			}
 			break;
 		}
 		case ColumnRole_t::memorized:
@@ -362,6 +392,16 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 					}
 				}
 				newVariableValue = newBitVectorVariableValue;
+				break;
+			}
+			case MachineValue::Type_t::natural:
+			{
+				newVariableValue = NaturalValue::fromRawString(valueAsString);
+				break;
+			}
+			case MachineValue::Type_t::relative:
+			{
+				newVariableValue = RelativeValue::fromRawString(valueAsString);
 				break;
 			}
 			case MachineValue::Type_t::nullType:

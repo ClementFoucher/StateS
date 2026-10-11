@@ -30,7 +30,11 @@
 // StateS
 #include "machinemanager.h"
 #include "machine.h"
-#include "inputvariableselector.h"
+#include "simulatedmachine.h"
+#include "simulatedvariable.h"
+#include "inputbitselector.h"
+#include "inputbooleanselector.h"
+#include "inputlitteralvalueselector.h"
 
 
 InputsSelector::InputsSelector(QWidget* parent) :
@@ -38,6 +42,9 @@ InputsSelector::InputsSelector(QWidget* parent) :
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
+
+	auto simulatedMachine = machineManager->getSimulatedMachine();
+	if (simulatedMachine == nullptr) return;
 
 
 	auto mainLayout = new QVBoxLayout(this);
@@ -61,8 +68,43 @@ InputsSelector::InputsSelector(QWidget* parent) :
 
 		for (auto& inputId : inputIds)
 		{
-			auto currentVariableSelector = new InputVariableSelector(inputId);
-			scrollAreaWidgetLayout->addWidget(currentVariableSelector);
+			auto simulatedVariable = simulatedMachine->getSimulatedVariable(inputId);
+			if (simulatedVariable == nullptr) continue;
+
+
+			auto variableLayout = new QHBoxLayout();
+			scrollAreaWidgetLayout->addLayout(variableLayout);
+
+			auto variableName = new QLabel(simulatedVariable->getName());
+			variableLayout->addWidget(variableName);
+
+			variableLayout->addStretch();
+
+			switch (simulatedVariable->getType())
+			{
+			case MachineValue::Type_t::bitVector:
+			{
+				auto bitLayout = new QHBoxLayout();
+				variableLayout->addLayout(bitLayout);
+
+				uint bitVectorSize = simulatedVariable->getCurrentValue().getBitVectorValue().getSize();
+				for (int bitIndex = static_cast<int>(bitVectorSize)-1 ; bitIndex >= 0 ; bitIndex--)
+				{
+					auto currentBit = new InputBitSelector(inputId, bitIndex);
+					bitLayout->addWidget(currentBit);
+				}
+				break;
+			}
+			case MachineValue::Type_t::boolean:
+				variableLayout->addWidget(new InputBooleanSelector(inputId));
+				break;
+			case MachineValue::Type_t::natural:
+			case MachineValue::Type_t::relative:
+				variableLayout->addWidget(new InputLitteralValueSelector(inputId));
+				break;
+			case MachineValue::Type_t::nullType:
+				break;
+			}
 		}
 
 		scrollAreaWidgetLayout->addStretch();
