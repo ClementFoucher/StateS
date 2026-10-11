@@ -318,6 +318,14 @@ void MachineXmlParser::parseLogicEquationNode()
 	{
 		operatorType = Equation::Operator_t::lessThanOrEqualToOp;
 	}
+	else if (valueOperator == "plus")
+	{
+		operatorType = Equation::Operator_t::plusOp;
+	}
+	else if (valueOperator == "minus")
+	{
+		operatorType = Equation::Operator_t::minusOp;
+	}
 	else if (valueOperator == "concatenate")
 	{
 		operatorType = Equation::Operator_t::concatOp;

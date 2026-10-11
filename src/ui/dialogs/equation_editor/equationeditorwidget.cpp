@@ -244,6 +244,8 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 		}
 		break;
 	case Equation::Operator_t::notOp:
+	case Equation::Operator_t::plusOp:
+	case Equation::Operator_t::minusOp:
 	case Equation::Operator_t::identity:
 	case Equation::Operator_t::equalOp:
 	case Equation::Operator_t::diffOp:
@@ -275,6 +277,8 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 	case Equation::Operator_t::notOp:
 		allowedActions |= static_cast<uint>(ContextAction_t::RemoveInverter);
 		break;
+	case Equation::Operator_t::plusOp:
+	case Equation::Operator_t::minusOp:
 	case Equation::Operator_t::identity:
 		break;
 	}
@@ -310,6 +314,8 @@ uint EquationEditorWidget::getAllowedDropActions() const
 	case Equation::Operator_t::lessThanOrEqualToOp:
 	case Equation::Operator_t::greaterThanOp:
 	case Equation::Operator_t::greaterThanOrEqualToOp:
+	case Equation::Operator_t::plusOp:
+	case Equation::Operator_t::minusOp:
 		// Nothing more
 		break;
 	}
@@ -414,6 +420,8 @@ QString EquationEditorWidget::getToolTipText() const
 		case Equation::Operator_t::lessThanOrEqualToOp:
 		case Equation::Operator_t::greaterThanOp:
 		case Equation::Operator_t::greaterThanOrEqualToOp:
+		case Equation::Operator_t::plusOp:
+		case Equation::Operator_t::minusOp:
 			toolTipText += "<br>";
 			toolTipText +=  tr("The current operator can only have natural or relative operands.");
 			break;
@@ -743,6 +751,12 @@ void EquationEditorWidget::buildCompleteEquation()
 		case Equation::Operator_t::concatOp:
 			operatorText = ":";
 			break;
+		case Equation::Operator_t::plusOp:
+			operatorText = "+";
+			break;
+		case Equation::Operator_t::minusOp:
+			operatorText = "−";
+			break;
 		case Equation::Operator_t::notOp:
 		case Equation::Operator_t::identity:
 		case Equation::Operator_t::extractOp:
@@ -842,6 +856,8 @@ void EquationEditorWidget::setInverted(bool invert)
 		case Equation::Operator_t::nandOp:
 		case Equation::Operator_t::norOp:
 		case Equation::Operator_t::xnorOp:
+		case Equation::Operator_t::plusOp:
+		case Equation::Operator_t::minusOp:
 			// Should not happen
 			break;
 		}
@@ -869,6 +885,8 @@ void EquationEditorWidget::setInverted(bool invert)
 		case Equation::Operator_t::lessThanOrEqualToOp:
 		case Equation::Operator_t::greaterThanOp:
 		case Equation::Operator_t::greaterThanOrEqualToOp:
+		case Equation::Operator_t::plusOp:
+		case Equation::Operator_t::minusOp:
 		case Equation::Operator_t::identity:
 			// Should not happen
 			break;
@@ -958,6 +976,8 @@ void EquationEditorWidget::setInverted(bool invert)
 		case Equation::Operator_t::notOp:
 		case Equation::Operator_t::concatOp:
 		case Equation::Operator_t::extractOp:
+		case Equation::Operator_t::plusOp:
+		case Equation::Operator_t::minusOp:
 		case Equation::Operator_t::identity:
 			// Should not happen
 			newOperator = this->equation->getOperator();
@@ -1112,6 +1132,12 @@ QString EquationEditorWidget::getTemplateText() const
 	case Equation::Operator_t::greaterThanOrEqualToOp:
 		text += tr("Greater than")  + "<br>" + tr("or equal");
 		break;
+	case Equation::Operator_t::plusOp:
+		text += tr("Plus");
+		break;
+	case Equation::Operator_t::minusOp:
+		text += tr("Minus");
+		break;
 	case Equation::Operator_t::concatOp:
 		text += tr("Concatenate");
 		break;
@@ -1140,6 +1166,8 @@ QString EquationEditorWidget::getTemplateText() const
 	case Equation::Operator_t::lessThanOrEqualToOp:
 	case Equation::Operator_t::greaterThanOp:
 	case Equation::Operator_t::greaterThanOrEqualToOp:
+	case Equation::Operator_t::plusOp:
+	case Equation::Operator_t::minusOp:
 	case Equation::Operator_t::concatOp:
 	case Equation::Operator_t::extractOp:
 	case Equation::Operator_t::identity:

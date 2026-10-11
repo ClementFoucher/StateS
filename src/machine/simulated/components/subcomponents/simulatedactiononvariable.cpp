@@ -118,22 +118,22 @@ MachineValue SimulatedActionOnVariable::getActionValue() const
 		{
 			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
 			{
-				simulatedVariableValue = NaturalValue{simulatedVariableValue.getNaturalValue() + 1};
+				simulatedVariableValue = simulatedVariableValue + NaturalValue{1};
 			}
 			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
 			{
-				simulatedVariableValue = RelativeValue{simulatedVariableValue.getRelativeValue() + 1};
+				simulatedVariableValue = simulatedVariableValue + RelativeValue{1};
 			}
 		}
 		else // (this->actionType == ActionOnVariable::Type_t::decrement)
 		{
 			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
 			{
-				simulatedVariableValue = NaturalValue{simulatedVariableValue.getNaturalValue() - 1};
+				simulatedVariableValue = simulatedVariableValue - NaturalValue{1};
 			}
 			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
 			{
-				simulatedVariableValue = RelativeValue{simulatedVariableValue.getRelativeValue() - 1};
+				simulatedVariableValue = simulatedVariableValue - RelativeValue{1};
 			}
 		}
 		return simulatedVariableValue;

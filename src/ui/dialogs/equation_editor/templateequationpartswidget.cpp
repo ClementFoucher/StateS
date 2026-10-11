@@ -202,9 +202,10 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	auto operatorsWidget = new QWidget();
 
 	// Sections titles
-	auto comparisonOPeratorsTitle = new QLabel("<b>" + tr("Comparision") + "</b>");
-	auto logicFunctionsTitle = new QLabel("<b>" + tr("Logic functions") + "</b>");
-	auto otherTitle = new QLabel("<b>" + tr("Other") + "</b>");
+	auto comparisonOperatorsTitle = new QLabel("<b>" + tr("Comparision") + "</b>");
+	auto logicFunctionsTitle      = new QLabel("<b>" + tr("Logic functions") + "</b>");
+	auto arithmeticFunctionsTitle = new QLabel("<b>" + tr("Arithmetic functions") + "</b>");
+	auto otherTitle               = new QLabel("<b>" + tr("Other") + "</b>");
 
 	// Operators
 	auto equalOperator          = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::equalOp),                0, true);
@@ -213,6 +214,8 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	auto greaterOperator        = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::greaterThanOp),          0, true);
 	auto lessOrEqualOperator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::lessThanOrEqualToOp),    0, true);
 	auto greaterOrEqualOperator = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::greaterThanOrEqualToOp), 0, true);
+	auto plusOperator           = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::plusOp),                 0, true);
+	auto minusOperator          = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::minusOp),                0, true);
 
 	auto notOperator    = new EquationEditorWidget(std::make_shared<Equation>(Equation::Operator_t::notOp),     0, true);
 
@@ -239,7 +242,7 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	operatorsLayout->setAlignment(Qt::AlignTop);
 
 	// Comparison
-	operatorsLayout->addWidget(comparisonOPeratorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
+	operatorsLayout->addWidget(comparisonOperatorsTitle, 0, 0, 1, 2, Qt::AlignHCenter);
 
 	operatorsLayout->addWidget(equalOperator,          1, 0, 1, 1);
 	operatorsLayout->addWidget(diffOperator,           1, 1, 1, 1);
@@ -266,10 +269,16 @@ QWidget* TemplateEquationPartsWidget::getOperators() const
 	operatorsLayout->addWidget(xnor2Operator,  11, 0, 1, 1);
 	operatorsLayout->addWidget(xnor3Operator,  11, 1, 1, 1);
 
-	// Other operators
-	operatorsLayout->addWidget(otherTitle, 12, 0, 1, 2, Qt::AlignHCenter);
+	// Arithmetic
+	operatorsLayout->addWidget(arithmeticFunctionsTitle, 12, 0, 1, 2, Qt::AlignHCenter);
 
-	operatorsLayout->addWidget(concatOperator, 13, 0, 1, 2);
+	operatorsLayout->addWidget(plusOperator,  13, 0, 1, 1);
+	operatorsLayout->addWidget(minusOperator, 13, 1, 1, 1);
+
+	// Other operators
+	operatorsLayout->addWidget(otherTitle, 14, 0, 1, 2, Qt::AlignHCenter);
+
+	operatorsLayout->addWidget(concatOperator, 15, 0, 1, 2);
 
 	return operatorsWidget;
 }

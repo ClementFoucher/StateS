@@ -72,6 +72,10 @@ public:
 		lessThanOrEqualToOp,
 		greaterThanOp,
 		greaterThanOrEqualToOp,
+		// Arithmetic operators
+		// They apply to naturals and relatives and have two operands
+		plusOp,
+		minusOp,
 		// Extract equations always have exacly one bit vector operand
 		extractOp,
 		// Concatenation apply to boolean and bit vectors operands

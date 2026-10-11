@@ -238,6 +238,12 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 	case Equation::Operator_t::lessThanOrEqualToOp:
 		this->stream->writeAttribute("Operator", "lessOrEqual");
 		break;
+	case Equation::Operator_t::plusOp:
+		this->stream->writeAttribute("Operator", "plus");
+		break;
+	case Equation::Operator_t::minusOp:
+		this->stream->writeAttribute("Operator", "minus");
+		break;
 	case Equation::Operator_t::extractOp:
 		this->stream->writeAttribute("Operator", "extract");
 		this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));

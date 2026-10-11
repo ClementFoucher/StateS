@@ -69,6 +69,8 @@ Equation::Equation(Operator_t operatorType, int operandCount)
 	case Operator_t::nandOp:
 	case Operator_t::norOp:
 	case Operator_t::xnorOp:
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		if (operandCount >= 2)
 		{
@@ -204,6 +206,12 @@ QString Equation::getColoredText(bool raw) const
 			case Operator_t::greaterThanOrEqualToOp:
 				text += " ≥ ";
 				break;
+			case Operator_t::plusOp:
+				text += " + ";
+				break;
+			case Operator_t::minusOp:
+				text += " − ";
+				break;
 			case Operator_t::concatOp:
 				text += " : ";
 				break;
@@ -299,6 +307,8 @@ void Equation::setOperator(Operator_t newOperator)
 	case Operator_t::nandOp:
 	case Operator_t::norOp:
 	case Operator_t::xnorOp:
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		while (this->operands.size() < 2)
 		{
@@ -441,6 +451,8 @@ uint Equation::getOperandCount() const
 	case Operator_t::nandOp:
 	case Operator_t::norOp:
 	case Operator_t::xnorOp:
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		return this->operands.size();
 		break;
@@ -459,6 +471,8 @@ void Equation::increaseOperandCount()
 	case Operator_t::nandOp:
 	case Operator_t::norOp:
 	case Operator_t::xnorOp:
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		doIncrease = true;
 		break;
@@ -495,6 +509,8 @@ void Equation::decreaseOperandCount()
 	case Operator_t::nandOp:
 	case Operator_t::norOp:
 	case Operator_t::xnorOp:
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		if (this->getOperandCount() > 2)
 		{
@@ -826,6 +842,23 @@ void Equation::checkForErrors()
 		else if ( (operand1Type != MachineValue::Type_t::natural) && (operand1Type != MachineValue::Type_t::relative) )
 		{
 			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
+		}
+		break;
+	}
+	case Operator_t::plusOp:
+	case Operator_t::minusOp:
+	{
+		auto operand0Type = this->operands[0]->getType();
+		auto operand1Type = this->operands[1]->getType();
+		if ( (operand0Type != MachineValue::Type_t::natural) && (operand0Type != MachineValue::Type_t::relative) )
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+			return;
+		}
+		else if (operand0Type != operand1Type)
+		{
+			this->failureCause = ComputationFailureCause_t::operandsTypesMismatch;
 			return;
 		}
 		break;

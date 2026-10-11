@@ -75,6 +75,12 @@ MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, cons
 
 		computedValue = BooleanValue{(operands[0] >= operands[1])};
 		break;
+	case Equation::Operator_t::plusOp:
+		computedValue = operands[0] + operands[1];
+		break;
+	case Equation::Operator_t::minusOp:
+		computedValue = operands[0] - operands[1];
+		break;
 	case Equation::Operator_t::extractOp:
 	{
 		// PRE: there is one operand
@@ -294,6 +300,8 @@ bool EquationComputer::isInverted(Equation::Operator_t op)
 	case Equation::Operator_t::lessThanOrEqualToOp:
 	case Equation::Operator_t::greaterThanOp:
 	case Equation::Operator_t::greaterThanOrEqualToOp:
+	case Equation::Operator_t::plusOp:
+	case Equation::Operator_t::minusOp:
 	case Equation::Operator_t::extractOp:
 	case Equation::Operator_t::concatOp:
 		return false;

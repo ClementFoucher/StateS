@@ -138,6 +138,26 @@ bool RelativeValue::operator<=(const NaturalValue& otherValue) const
 	return this->value <= static_cast<int>(otherValue.value);
 }
 
+RelativeValue RelativeValue::operator+(const RelativeValue& otherValue) const
+{
+	return RelativeValue{this->value + otherValue.value};
+}
+
+RelativeValue RelativeValue::operator-(const RelativeValue& otherValue) const
+{
+	return RelativeValue{this->value - otherValue.value};
+}
+
+RelativeValue RelativeValue::operator+(const NaturalValue& otherValue) const
+{
+	return RelativeValue{this->value + static_cast<int>(otherValue.value)};
+}
+
+RelativeValue RelativeValue::operator-(const NaturalValue& otherValue) const
+{
+	return RelativeValue{this->value - static_cast<int>(otherValue.value)};
+}
+
 RelativeValue RelativeValue::operator=(const RelativeValue& otherValue)
 {
 	this->value = otherValue.value;
