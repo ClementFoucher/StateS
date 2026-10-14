@@ -62,6 +62,20 @@ void ActionTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex&
 			valueEditor->setBitVectorSize(variableSize);
 		}
 	}
+	else if (stringBits.at(0) == "NATURAL")
+	{
+		if (stringBits.length() < 2) return;
+
+
+		valueEditor->setMachineValue(NaturalValue::fromRawString(stringBits.at(1)));
+	}
+	else if (stringBits.at(0) == "RELATIVE")
+	{
+		if (stringBits.length() < 2) return;
+
+
+		valueEditor->setMachineValue(RelativeValue::fromRawString(stringBits.at(1)));
+	}
 
 	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &ActionTableValueDelegate::valueChangedEventHandler);
 }
