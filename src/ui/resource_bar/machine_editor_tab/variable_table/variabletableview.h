@@ -27,7 +27,7 @@
 
 // StateS
 #include "machine.h"
-class VariableTableModel;
+#include "variabletablemodel.h"
 
 
 class VariableTableView : public ReorderableTableView
@@ -46,14 +46,6 @@ private:
 		rename          = 4,
 		changeValue     = 5,
 		resizeBitVector = 6
-	};
-
-	enum class ColumnRole_t
-	{
-		name,
-		type,
-		memorized,
-		value
 	};
 
 	/////
@@ -82,7 +74,7 @@ private slots:
 	// Object variables
 private:
 	VariableTableModel* tableModel = nullptr;
-	QMap<ColumnRole_t, int> columnsRoles;
+	QMap<VariableTableModel::ColumnRole_t, int> columnsRoles;
 	int currentMenuRow = 0;
 
 };

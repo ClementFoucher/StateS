@@ -58,7 +58,7 @@ int ActionTableModel::columnCount(const QModelIndex& parent) const
 	if (parent.isValid() == true) return 0;
 
 
-	return 3;
+	return this->columnsRoles.count();
 }
 
 int ActionTableModel::rowCount(const QModelIndex& parent) const

@@ -32,7 +32,6 @@
 #include "machineactuatorcomponent.h"
 #include "actiononvariable.h"
 #include "variable.h"
-#include "actiontablemodel.h"
 #include "actiontabletypedelegate.h"
 #include "actiontablevaluedelegate.h"
 #include "contextmenu.h"
@@ -54,17 +53,17 @@ ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
 		QString role = this->tableModel->headerData(column, Qt::Horizontal, Qt::UserRole).toString();
 		if (role == "VARIABLENAME")
 		{
-			this->columnsRoles[ColumnRole_t::variableName] = column;
+			this->columnsRoles[ActionTableModel::ColumnRole_t::variableName] = column;
 		}
 		else if (role == "ACTIONTYPE")
 		{
-			this->columnsRoles[ColumnRole_t::actionType] = column;
-			this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionType], new ActionTableTypeDelegate(this));
+			this->columnsRoles[ActionTableModel::ColumnRole_t::actionType] = column;
+			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionType], new ActionTableTypeDelegate(this));
 		}
 		else if (role == "ACTIONVALUE")
 		{
-			this->columnsRoles[ColumnRole_t::actionValue] = column;
-			this->setItemDelegateForColumn(this->columnsRoles[ColumnRole_t::actionValue], new ActionTableValueDelegate(this));
+			this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue] = column;
+			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue], new ActionTableValueDelegate(this));
 		}
 	}
 
@@ -264,7 +263,7 @@ void ActionTableView::openPersistentEditors(int firstRow, int firstColumn, int l
 	{
 		for (int col = firstColumn ; col <= lastColumn ; col++)
 		{
-			if (col == this->columnsRoles[ColumnRole_t::actionType])
+			if (col == this->columnsRoles[ActionTableModel::ColumnRole_t::actionType])
 			{
 				auto typeIndex = this->tableModel->index(row, col);
 				uint32_t actions = typeIndex.data(Qt::EditRole).toUInt();
@@ -276,7 +275,7 @@ void ActionTableView::openPersistentEditors(int firstRow, int firstColumn, int l
 					this->openPersistentEditor(typeIndex);
 				}
 			}
-			else if (col == this->columnsRoles[ColumnRole_t::actionValue])
+			else if (col == this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue])
 			{
 				auto valueIndex = this->tableModel->index(row, col);
 				if (this->tableModel->data(valueIndex, Qt::EditRole).toString().startsWith("BOOLEAN"))
@@ -334,7 +333,7 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		if (this->currentMenuRow < 0) return;
 
 
-		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ColumnRole_t::actionValue]);
+		auto index = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue]);
 
 		this->setCurrentIndex(index);
 		this->edit(index);

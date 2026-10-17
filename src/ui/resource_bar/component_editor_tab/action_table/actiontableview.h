@@ -30,7 +30,7 @@
 
 // StateS
 #include "componentid.h"
-class ActionTableModel;
+#include "actiontablemodel.h"
 class RangeEditorDialog;
 class ActionOnVariable;
 
@@ -53,13 +53,6 @@ private:
 		EditValue          = 6,
 		MoveUp             = 7,
 		MoveDown           = 8
-	};
-
-	enum class ColumnRole_t
-	{
-		variableName,
-		actionType,
-		actionValue
 	};
 
 	/////
@@ -99,7 +92,7 @@ private:
 	ComponentId actuatorId = nullId;
 
 	ActionTableModel* tableModel = nullptr;
-	QMap<ColumnRole_t, int> columnsRoles;
+	QMap<ActionTableModel::ColumnRole_t, int> columnsRoles;
 
 	std::shared_ptr<ActionOnVariable> actionBeingEdited;
 	RangeEditorDialog* rangeEditorDialog = nullptr;

@@ -43,7 +43,7 @@ class ActionTableModel : public QAbstractTableModel
 
 	/////
 	// Type declarations
-private:
+public:
 	enum class ColumnRole_t
 	{
 		variableName,

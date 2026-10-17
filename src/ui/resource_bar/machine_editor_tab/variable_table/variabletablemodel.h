@@ -35,7 +35,7 @@ class VariableTableModel : public QAbstractTableModel
 
 	/////
 	// Type declarations
-private:
+public:
 	enum class ColumnRole_t
 	{
 		name,
