@@ -87,7 +87,7 @@ bool BooleanValue::operator==(const BitVectorValue& otherValue) const
 	}
 	else
 	{
-		return otherValue.getBit(0) == this->value;
+		return otherValue[0] == this->value;
 	}
 }
 

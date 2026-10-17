@@ -32,7 +32,7 @@
 NaturalValue NaturalValue::fromRawString(const QString& textValue)
 {
 	bool ok;
-	uint value = textValue.toUInt(&ok);
+	unsigned int value = textValue.toUInt(&ok);
 
 	if (ok == true)
 	{

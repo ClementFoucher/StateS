@@ -24,7 +24,6 @@
 
 // Qt
 #include <QCoreApplication>
-#include <QtTypes>
 class QString;
 
 // StateS

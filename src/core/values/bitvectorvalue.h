@@ -65,10 +65,8 @@ public:
 
 	QString toString() const;
 
-	BitVectorValue getSubrange(uint msb, uint lsb) const;
-	bool getBit(int rank) const;
-	bool setSubrange(BitVectorValue value, int msb, int lsb);
-	void setBit(int rank, bool value);
+	void setSubrange(uint msb, uint lsb, BitVectorValue value);
+	void setBit(uint rank, BooleanValue value);
 
 	// Operator overloading
 
@@ -93,9 +91,11 @@ public:
 	BitVectorValue operator|=(const BitVectorValue& otherValue);
 	BitVectorValue operator^=(const BitVectorValue& otherValue);
 
-	bool operator[](uint memberNumber) const;
+	BooleanValue operator[](uint memberNumber) const;
 
 private:
+	BooleanValue getBit(uint rank) const;
+
 	uint64_t maxValue() const;
 
 	/////

@@ -25,9 +25,6 @@
 // Stdlib
 #include <variant>
 
-// Qt
-#include <QtTypes>
-
 // StateS
 #include "booleanvalue.h"
 #include "bitvectorvalue.h"

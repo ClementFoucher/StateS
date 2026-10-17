@@ -104,7 +104,7 @@ MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, cons
 		}
 		else
 		{
-			computedValue = BooleanValue{operandBitVectorValue[rangeL]};
+			computedValue = operandBitVectorValue[rangeL];
 		}
 		break;
 	}

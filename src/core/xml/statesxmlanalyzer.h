@@ -26,6 +26,7 @@
 #include <memory>
 
 // Qt
+#include <QtTypes>
 class QString;
 class QXmlStreamReader;
 class QFile;

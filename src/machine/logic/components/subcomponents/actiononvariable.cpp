@@ -699,8 +699,8 @@ void ActionOnVariable::setDefaultActionValue()
 		else // (variable->getType() == MachineValue::Type_t::bitVector)
 		{
 			// For boolean actions over Bit Vectors, get the opposite of the bit acted on
-			auto subRangeValue = variableValue.getBitVectorValue().getSubrange(this->rangeL, -1);
-			this->actionValue = BooleanValue{!subRangeValue[0]};
+			auto bitVectorValue = variableValue.getBitVectorValue();
+			this->actionValue = !(bitVectorValue[this->rangeL]);
 		}
 		break;
 	}

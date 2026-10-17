@@ -150,90 +150,20 @@ uint BitVectorValue::getSize() const
 	return static_cast<uint>(this->vectorSize);
 }
 
-BitVectorValue BitVectorValue::getSubrange(uint msb, uint lsb) const
+void BitVectorValue::setSubrange(uint msb, uint lsb, BitVectorValue value)
 {
-	if ( (msb < 0) && (lsb >= 0) ) return BitVectorValue{};
-	if (msb >= this->vectorSize) return BitVectorValue{};
-	if (lsb >= this->vectorSize) return BitVectorValue{};
-	if ( (lsb >= 0) && (lsb > msb) ) return BitVectorValue{};
+	if (msb >= this->vectorSize) return;
+	if (lsb > msb) return;
+	if (value.getSize() != msb-lsb+1) return;
 
 
-	if (msb < 0)
+	for (int i = 0 ; i <= msb-lsb ; i++)
 	{
-		// Get full value
-		return *this;
-	}
-	else if (lsb < 0)
-	{
-		// Get single bit
-		BitVectorValue result{this->getBit(msb), 1};
-
-		return result;
-	}
-	else
-	{
-		// Get sub-range
-		BitVectorValue result{0, msb-lsb+1};
-		for (int i = 0 ; i <= msb-lsb ; i++)
-		{
-			result.setBit(i, this->getBit(lsb+i));
-		}
-
-		return result;
+		this->setBit(i+lsb, value[i]);
 	}
 }
 
-bool BitVectorValue::getBit(int rank) const
-{
-	return (*this)[rank];
-}
-
-bool BitVectorValue::setSubrange(BitVectorValue value, int msb, int lsb)
-{
-	if ( (msb < 0) && (lsb >= 0) ) return false;
-	if (msb >= this->vectorSize) return false;
-	if (lsb >= this->vectorSize) return false;
-	if ( (lsb >= 0) && (lsb > msb) ) return false;
-
-
-	if (msb < 0)
-	{
-		// Full range affectation
-		if (this->vectorSize == value.getSize())
-		{
-			for (int i = 0 ; i < this->vectorSize ; i++)
-			{
-				this->setBit(i, value[i]);
-			}
-			return true;
-		}
-	}
-	else if (lsb < 0)
-	{
-		// Single bit affectation
-		if (value.getSize() == 1)
-		{
-			this->setBit(msb, value[0]);
-			return true;
-		}
-	}
-	else
-	{
-		// Sub-range affectation
-		if (value.getSize() == static_cast<uint>(msb-lsb+1))
-		{
-			for (int i = 0 ; i <= msb-lsb ; i++)
-			{
-				this->setBit(i+lsb, value[i]);
-			}
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void BitVectorValue::setBit(int rank, bool value)
+void BitVectorValue::setBit(uint rank, BooleanValue value)
 {
 	if (value == false)
 	{
@@ -377,15 +307,20 @@ BitVectorValue BitVectorValue::operator^=(const BitVectorValue& otherValue)
 	return *this;
 }
 
-bool BitVectorValue::operator[](uint memberNumber) const
+BooleanValue BitVectorValue::operator[](uint memberNumber) const
 {
 	if (memberNumber < this->vectorSize)
 	{
 		uint64_t result = this->value & (static_cast<uint64_t>(1)<<memberNumber);
-		return (result == 0) ? false : true;
+		return (result == 0) ? BooleanValue::falseValue() : BooleanValue::trueValue();
 	}
 
-	return false;
+	return BooleanValue::falseValue();
+}
+
+BooleanValue BitVectorValue::getBit(uint rank) const
+{
+	return (*this)[rank];
 }
 
 uint64_t BitVectorValue::maxValue() const

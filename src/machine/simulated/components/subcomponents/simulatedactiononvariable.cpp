@@ -47,19 +47,19 @@ void SimulatedActionOnVariable::doAction()
 	if (simulatedVariable == nullptr) return;
 
 
-	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL !=-1) )
+	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL >= 0) )
 	{
-		// Actions on a bit vector can be one-bit (boolean) or act on a sub-range
+		// Actions on part of a bit vector can be one-bit (boolean) or act on a sub-range
 
 		auto variableCurrentValue = simulatedVariable->getCurrentValue().getBitVectorValue();
 
 		if (actionValue.getType() == MachineValue::Type_t::boolean)
 		{
-			variableCurrentValue.setBit(actionValue.getBooleanValue(), this->rangeL);
+			variableCurrentValue.setBit(this->rangeL, actionValue.getBooleanValue());
 		}
 		else // (actionValue.getType() == MachineValue::Type_t::bitVector)
 		{
-			variableCurrentValue.setSubrange(actionValue.getBitVectorValue(), this->rangeL, this->rangeR);
+			variableCurrentValue.setSubrange(this->rangeL, this->rangeR, actionValue.getBitVectorValue());
 		}
 
 		simulatedVariable->setCurrentValue(variableCurrentValue);
