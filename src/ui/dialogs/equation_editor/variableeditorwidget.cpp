@@ -192,9 +192,9 @@ void VariableEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	}
 	case ContextAction_t::AddExtractor:
 	{
-		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp);
+		auto tempEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp, 2);
 		tempEquation->setOperand(0, this->variableId);
-		tempEquation->setRange(0);
+		tempEquation->setOperand(1, NaturalValue{0});
 
 		this->tempValueNature = TempValueNature_t::equation;
 		this->tempValue = tempEquation;

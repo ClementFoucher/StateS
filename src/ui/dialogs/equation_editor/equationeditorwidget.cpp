@@ -35,7 +35,6 @@
 #include "operand.h"
 #include "inverterbarwidget.h"
 #include "equationeditordialog.h"
-#include "rangeeditor.h"
 #include "constanteditorwidget.h"
 #include "variableeditorwidget.h"
 #include "nulleditorwidget.h"
@@ -65,11 +64,6 @@ void EquationEditorWidget::replaceOperand(uint operandRank, std::shared_ptr<Equa
 
 	this->equation->setOperand(operandRank, newOperand);
 	this->updateOperandWidget(operandRank);
-
-	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
-	{
-		this->fixExtractorRange();
-	}
 }
 
 void EquationEditorWidget::replaceOperand(uint operandRank, MachineValue newConstant, bool isProcessingDrop)
@@ -79,11 +73,6 @@ void EquationEditorWidget::replaceOperand(uint operandRank, MachineValue newCons
 
 	this->equation->setOperand(operandRank, newConstant);
 	this->updateOperandWidget(operandRank);
-
-	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
-	{
-		this->fixExtractorRange();
-	}
 
 	if (isProcessingDrop == true)
 	{
@@ -102,11 +91,6 @@ void EquationEditorWidget::replaceOperand(uint operandRank, ComponentId newVaria
 
 	this->equation->setOperand(operandRank, newVariable);
 	this->updateOperandWidget(operandRank);
-
-	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
-	{
-		this->fixExtractorRange();
-	}
 }
 
 void EquationEditorWidget::clearOperand(uint operandRank)
@@ -116,11 +100,6 @@ void EquationEditorWidget::clearOperand(uint operandRank)
 
 	this->equation->clearOperand(operandRank);
 	this->updateOperandWidget(operandRank);
-
-	if (this->equation->getOperator() == Equation::Operator_t::extractOp)
-	{
-		this->fixExtractorRange();
-	}
 }
 
 std::shared_ptr<Equation> EquationEditorWidget::getLogicEquation() const
@@ -142,27 +121,10 @@ void EquationEditorWidget::closeOpenEditors()
 	}
 }
 
-void EquationEditorWidget::beginEdit()
-{
-	if (this->rangeEditor != nullptr)
-	{
-		this->rangeEditor->setMode(RangeEditor::Mode_t::editor_mode);
-	}
-}
-
 bool EquationEditorWidget::validEdit()
 {
 	if (this->equation == nullptr) return false;
 
-
-	if (this->rangeEditor != nullptr)
-	{
-		bool editValidated = this->rangeEditor->setMode(RangeEditor::Mode_t::compact_mode, true);
-		if (editValidated == true)
-		{
-			return true;
-		}
-	}
 
 	const auto operandChildren = this->findChildren<EquationPartEditorWidget*>("", Qt::FindDirectChildrenOnly);
 	for (auto& operand : operandChildren)
@@ -182,15 +144,6 @@ bool EquationEditorWidget::cancelEdit()
 {
 	if (this->equation == nullptr) return false;
 
-
-	if (this->rangeEditor != nullptr)
-	{
-		bool editCanceled = this->rangeEditor->setMode(RangeEditor::Mode_t::compact_mode, false);
-		if (editCanceled == true)
-		{
-			return true;
-		}
-	}
 
 	const auto operandChildren = this->findChildren<EquationPartEditorWidget*>("", Qt::FindDirectChildrenOnly);
 	for (auto& operand : operandChildren)
@@ -229,18 +182,13 @@ uint EquationEditorWidget::getAllowedMenuActions() const
 		}
 		break;
 	case Equation::Operator_t::extractOp:
-		allowedActions |= static_cast<uint>(ContextAction_t::Edit);
-		if (this->equation->getRangeR() != -1)
+		if (this->equation->getOperandCount() == 3)
 		{
 			allowedActions |= static_cast<uint>(ContextAction_t::ExtractSwitchSingle);
 		}
-		else
+		else // (this->equation->getOperandCount() == 2)
 		{
-			auto operand = this->equation->getOperand(0);
-			if ( (operand->getInitialValue().getType() == MachineValue::Type_t::bitVector) && (operand->getInitialValue().getBitVectorValue().getSize() > 1) )
-			{
-				allowedActions |= static_cast<uint>(ContextAction_t::ExtractSwitchRange);
-			}
+			allowedActions |= static_cast<uint>(ContextAction_t::ExtractSwitchRange);
 		}
 		break;
 	case Equation::Operator_t::notOp:
@@ -393,17 +341,26 @@ QString EquationEditorWidget::getToolTipText() const
 	case Equation::ComputationFailureCause_t::invalidOperandValue:
 		toolTipText  = "<b>" + tr("Error:") + "</b> ";
 		toolTipText += "<br>";
-		toolTipText +=  tr("At least one of the operands has an invalid value.");
+		toolTipText += tr("At least one of the operands has an invalid value.");
 		break;
 	case Equation::ComputationFailureCause_t::incorrectOperandType:
 		toolTipText  = "<b>" + tr("Error:") + "</b> ";
 		toolTipText += "<br>";
-		toolTipText +=  tr("At least one of the operands has an invalid type.");
+		toolTipText += tr("At least one of the operands has an invalid type.");
 		switch (this->equation->getOperator())
 		{
 		case Equation::Operator_t::extractOp:
 			toolTipText += "<br>";
-			toolTipText +=  tr("The current operator can only act on a bit vector operand.");
+			toolTipText += tr("The current operator can only have a bit vector as the first operand,");
+			toolTipText += " ";
+			if (this->equation->getOperandCount() == 2)
+			{
+				toolTipText += tr("and a natural integer as second operand.");
+			}
+			else // (this->equation->getOperandCount() == 3)
+			{
+				toolTipText += tr("and natural integers as other operands.");
+			}
 			break;
 		case Equation::Operator_t::concatOp:
 		case Equation::Operator_t::andOp:
@@ -414,7 +371,7 @@ QString EquationEditorWidget::getToolTipText() const
 		case Equation::Operator_t::xnorOp:
 		case Equation::Operator_t::notOp:
 			toolTipText += "<br>";
-			toolTipText +=  tr("The current operator can only have boolean or bit vector operands.");
+			toolTipText += tr("The current operator can only have boolean or bit vector operands.");
 			break;
 		case Equation::Operator_t::lessThanOp:
 		case Equation::Operator_t::lessThanOrEqualToOp:
@@ -423,7 +380,7 @@ QString EquationEditorWidget::getToolTipText() const
 		case Equation::Operator_t::plusOp:
 		case Equation::Operator_t::minusOp:
 			toolTipText += "<br>";
-			toolTipText +=  tr("The current operator can only have natural or relative operands.");
+			toolTipText += tr("The current operator can only have natural or relative operands.");
 			break;
 		case Equation::Operator_t::equalOp:
 		case Equation::Operator_t::diffOp:
@@ -434,26 +391,32 @@ QString EquationEditorWidget::getToolTipText() const
 	case Equation::ComputationFailureCause_t::operandsSizesMismatch:
 		toolTipText  = "<b>" + tr("Error:") + "</b> ";
 		toolTipText += "<br>";
-		toolTipText +=  tr("The sizes of the operands do not match between each other.");
+		toolTipText += tr("The sizes of the operands do not match between each other.");
 		toolTipText += "<br>";
-		toolTipText +=  tr("All bit vector operands must have the same size.");
+		toolTipText += tr("All bit vector operands must have the same size.");
 		break;
 	case Equation::ComputationFailureCause_t::operandsTypesMismatch:
 		toolTipText  = "<b>" + tr("Error:") + "</b> ";
 		toolTipText += "<br>";
-		toolTipText +=  tr("The types of the operands do not match between each other.");
+		toolTipText += tr("The types of the operands do not match between each other.");
 		toolTipText += "<br>";
-		toolTipText +=  tr("All operands must have the same type.");
+		toolTipText += tr("All operands must have the same type.");
 		break;
-	case Equation::ComputationFailureCause_t::missingParameter:
+	case Equation::ComputationFailureCause_t::incorrectOperandValue:
 		toolTipText  = "<b>" + tr("Error:") + "</b> ";
 		toolTipText += "<br>";
-		toolTipText +=  tr("A parameter is missing its value.");
-		break;
-	case Equation::ComputationFailureCause_t::incorrectParameterValue:
-		toolTipText  = "<b>" + tr("Error:") + "</b> ";
+		toolTipText += tr("The value of an operand is incorrect.");
 		toolTipText += "<br>";
-		toolTipText +=  tr("The value of a parameter is incorrect.");
+		if (this->equation->getOperandCount() == 2)
+		{
+			toolTipText += tr("The index of the bit to extract must be within the vector size.");
+		}
+		else // (this->equation->getOperandCount() == 3)
+		{
+			toolTipText += tr("The indexes of the subvector to extract must be within the vector size,");
+			toolTipText += " ";
+			toolTipText += tr("and the first index must be greater than the second index.");
+		}
 		break;
 	}
 
@@ -546,12 +509,12 @@ void EquationEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	if (this->equation == nullptr) return;
 
 
+	bool rebuild = false;
 	switch (action)
 	{
 	case ContextAction_t::IncreaseOperandCount:
 		this->equation->increaseOperandCount();
-		this->clear();
-		this->buildCompleteEquation();
+		rebuild = true;
 		break;
 	case ContextAction_t::DecreaseOperandCount:
 	{
@@ -581,23 +544,40 @@ void EquationEditorWidget::processSpecificMenuAction(ContextAction_t action)
 		if (valid == true)
 		{
 			this->equation->decreaseOperandCount();
-			this->clear();
-			this->buildCompleteEquation();
+			rebuild = true;
 		}
 		break;
 	}
 	case ContextAction_t::ExtractSwitchSingle:
-		if (this->rangeEditor == nullptr) return;
-
-
-		this->rangeEditor->setExtractSingleBit();
+		this->equation->decreaseOperandCount();
+		rebuild = true;
 		break;
 	case ContextAction_t::ExtractSwitchRange:
-		if (this->rangeEditor == nullptr) return;
+	{
+		this->equation->increaseOperandCount();
 
+		unsigned int rangeL = 0;
+		auto operand1 = this->equation->getOperand(1);
+		if (operand1 != nullptr)
+		{
+			if (operand1->getType() == MachineValue::Type_t::natural)
+			{
+				rangeL = operand1->getInitialValue().getNaturalValue();
+			}
+		}
 
-		this->rangeEditor->setExtractRange();
+		if (rangeL > 0)
+		{
+			this->equation->setOperand(2, NaturalValue{rangeL - 1});
+		}
+		else
+		{
+			this->equation->setOperand(1, NaturalValue{1});
+			this->equation->setOperand(2, NaturalValue{0});
+		}
+		rebuild = true;
 		break;
+	}
 	case ContextAction_t::Invert:
 		this->setInverted(true);
 		// Do NOT do anything after, as this may cease to exist
@@ -614,6 +594,12 @@ void EquationEditorWidget::processSpecificMenuAction(ContextAction_t action)
 	case ContextAction_t::Edit:
 		// Common actions: processed by parent class
 		break;
+	}
+
+	if (rebuild == true)
+	{
+		this->clear();
+		this->buildCompleteEquation();
 	}
 }
 
@@ -648,11 +634,6 @@ void EquationEditorWidget::processSpecificDropAction(DropAction_t action)
 	}
 }
 
-void EquationEditorWidget::rangeEditorBeginEditEventHandler()
-{
-	this->closeOpenEditors();
-}
-
 void EquationEditorWidget::equationChangedEventHandler()
 {
 	this->setToolTip(this->getToolTipText());
@@ -676,7 +657,6 @@ void EquationEditorWidget::clear()
 	delete this->layout();
 
 	this->operands.clear();
-	this->rangeEditor = nullptr;
 }
 
 void EquationEditorWidget::buildTemplateEquation()
@@ -701,90 +681,95 @@ void EquationEditorWidget::buildCompleteEquation()
 	auto equationLayout = new QHBoxLayout();
 	equationLayout->setAlignment(Qt::AlignVCenter);
 
+	// Prefix text
 	if (equationOperator == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("{"));
 	}
 
-	// First operand is always there
-	auto operandWidget = this->buildOperandEditorWidget(0);
-	this->operands.append(operandWidget);
-	equationLayout->addWidget(operandWidget);
-
-	// Handle multi-operands operators
-	for (uint operandRank = 1 ; operandRank < this->equation->getOperandCount() ; operandRank++)
+	// Operands and separators texts
+	uint operandCount = this->equation->getOperandCount();
+	for (uint operandRank = 0 ; operandRank < operandCount ; operandRank++)
 	{
-		// Add operator
-		QString operatorText;
-		switch(equationOperator)
-		{
-		case Equation::Operator_t::andOp:
-		case Equation::Operator_t::nandOp:
-			operatorText = "•";
-			break;
-		case Equation::Operator_t::orOp:
-		case Equation::Operator_t::norOp:
-			operatorText = "+";
-			break;
-		case Equation::Operator_t::xorOp:
-		case Equation::Operator_t::xnorOp:
-			operatorText = "⊕";
-			break;
-		case Equation::Operator_t::equalOp:
-			operatorText = "=";
-			break;
-		case Equation::Operator_t::diffOp:
-			operatorText = "≠";
-			break;
-		case Equation::Operator_t::lessThanOp:
-			operatorText = "<";
-			break;
-		case Equation::Operator_t::lessThanOrEqualToOp:
-			operatorText = "≤";
-			break;
-		case Equation::Operator_t::greaterThanOp:
-			operatorText = ">";
-			break;
-		case Equation::Operator_t::greaterThanOrEqualToOp:
-			operatorText = "≥";
-			break;
-		case Equation::Operator_t::concatOp:
-			operatorText = ":";
-			break;
-		case Equation::Operator_t::plusOp:
-			operatorText = "+";
-			break;
-		case Equation::Operator_t::minusOp:
-			operatorText = "−";
-			break;
-		case Equation::Operator_t::notOp:
-		case Equation::Operator_t::identity:
-		case Equation::Operator_t::extractOp:
-			// Single operand operators
-			break;
-		}
-
-		auto operatorLabel = new QLabel(operatorText);
-		operatorLabel->setAlignment(Qt::AlignCenter);
-		equationLayout->addWidget(operatorLabel);
-
 		// Add operand
 		auto operandWidget = this->buildOperandEditorWidget(operandRank);
 		this->operands.append(operandWidget);
 		equationLayout->addWidget(operandWidget);
+
+		// Add operator, except for last operand
+		if (operandRank < operandCount - 1)
+		{
+			QString operatorText;
+			switch (equationOperator)
+			{
+			case Equation::Operator_t::andOp:
+			case Equation::Operator_t::nandOp:
+				operatorText = "•";
+				break;
+			case Equation::Operator_t::orOp:
+			case Equation::Operator_t::norOp:
+				operatorText = "+";
+				break;
+			case Equation::Operator_t::xorOp:
+			case Equation::Operator_t::xnorOp:
+				operatorText = "⊕";
+				break;
+			case Equation::Operator_t::equalOp:
+				operatorText = "=";
+				break;
+			case Equation::Operator_t::diffOp:
+				operatorText = "≠";
+				break;
+			case Equation::Operator_t::lessThanOp:
+				operatorText = "<";
+				break;
+			case Equation::Operator_t::lessThanOrEqualToOp:
+				operatorText = "≤";
+				break;
+			case Equation::Operator_t::greaterThanOp:
+				operatorText = ">";
+				break;
+			case Equation::Operator_t::greaterThanOrEqualToOp:
+				operatorText = "≥";
+				break;
+			case Equation::Operator_t::concatOp:
+				operatorText = ":";
+				break;
+			case Equation::Operator_t::plusOp:
+				operatorText = "+";
+				break;
+			case Equation::Operator_t::minusOp:
+				operatorText = "−";
+				break;
+			case Equation::Operator_t::extractOp:
+				if (operandRank == 0)
+				{
+					operatorText = "[";
+				}
+				else // (operandRank == 1)
+				{
+					operatorText = "‥";
+				}
+			case Equation::Operator_t::notOp:
+			case Equation::Operator_t::identity:
+				// Single operand operators
+				break;
+			}
+
+			auto operatorLabel = new QLabel(operatorText);
+			operatorLabel->setAlignment(Qt::AlignCenter);
+			equationLayout->addWidget(operatorLabel);
+		}
 	}
 
+	// Suffix text
 	if (equationOperator == Equation::Operator_t::concatOp)
 	{
 		equationLayout->addWidget(new QLabel("}"));
 	}
 	else if (equationOperator == Equation::Operator_t::extractOp)
 	{
-		this->rangeEditor = new RangeEditor(this->equation, this);
-
-		equationLayout->addWidget(this->rangeEditor);
-
-		connect(this->rangeEditor, &RangeEditor::beginEditEvent, this, &EquationEditorWidget::rangeEditorBeginEditEventHandler);
+		equationLayout->addWidget(new QLabel("]"));
 	}
 
 	if (EquationComputer::isInverted(equationOperator) == false)
@@ -988,71 +973,6 @@ void EquationEditorWidget::setInverted(bool invert)
 		this->clear();
 		this->buildCompleteEquation();
 	}
-}
-
-void EquationEditorWidget::fixExtractorRange()
-{
-	if (this->equation == nullptr) return;
-
-	if (this->equation->getOperator() != Equation::Operator_t::extractOp) return;
-
-	if (this->rangeEditor == nullptr) return;
-
-
-	auto operand = this->equation->getOperand(0);
-
-	if (operand == nullptr)
-	{
-		this->equation->setRange(0, -1);
-	}
-	else if (operand->getType() != MachineValue::Type_t::bitVector)
-	{
-		this->equation->setRange(0, -1);
-	}
-	else // (operand != nullptr) and (operand->getInitialValue().isBitVectorValue() == true)
-	{
-		auto operandValue = operand->getInitialValue().getBitVectorValue();
-		int operandSize = operandValue.getSize();
-
-		if (operandSize == 1)
-		{
-			this->equation->setRange(0, -1);
-		}
-		else // (operandSize != 1)
-		{
-			int currentRangeL = this->equation->getRangeL();
-			int currentRangeR = this->equation->getRangeR();
-
-			if (currentRangeL > operandSize-1)
-			{
-				currentRangeL = operandSize-1;
-			}
-
-			if (currentRangeR == -1)
-			{
-				if (currentRangeL < 0)
-				{
-					currentRangeL = 0;
-				}
-			}
-			else // (currentRangeR != -1)
-			{
-				if (currentRangeL == 0)
-				{
-					currentRangeL = 1;
-					currentRangeR = 0;
-				}
-				else if (currentRangeL <= currentRangeR)
-				{
-					currentRangeR = currentRangeL-1;
-				}
-			}
-
-			this->equation->setRange(currentRangeL, currentRangeR);
-		}
-	}
-
-	this->rangeEditor->refresh();
 }
 
 EquationPartEditorWidget* EquationEditorWidget::buildOperandEditorWidget(uint operandRank)

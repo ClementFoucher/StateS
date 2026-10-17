@@ -90,10 +90,9 @@ public:
 		nullOperand,
 		invalidOperandValue,
 		incorrectOperandType,
+		incorrectOperandValue,
 		operandsSizesMismatch,
 		operandsTypesMismatch,
-		missingParameter,
-		incorrectParameterValue
 	};
 
 	enum class ComputationWarning_t
@@ -141,11 +140,6 @@ public:
 	void increaseOperandCount();
 	void decreaseOperandCount();
 
-	// Functions specific to Extract operator type
-	void setRange(int rangeL, int rangeR = -1);
-	int getRangeL() const;
-	int getRangeR() const;
-
 	void doFullStackRecomputation();
 
 private slots:
@@ -169,10 +163,6 @@ private:
 	// Equation parameters
 	Operator_t operatorType;
 	QList<std::shared_ptr<Operand>> operands;
-
-	// Parameters specific to Extract operator type
-	int rangeL = -1;
-	int rangeR = -1;
 
 	// Equation state recomputed dynamically
 	MachineValue initialValue{};

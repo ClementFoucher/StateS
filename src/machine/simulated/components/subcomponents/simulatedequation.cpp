@@ -33,11 +33,6 @@ SimulatedEquation::SimulatedEquation(std::shared_ptr<const Equation> sourceEquat
 
 
 	this->operatorType = sourceEquation->getOperator();
-	if (this->operatorType == Equation::Operator_t::extractOp)
-	{
-		this->rangeL = sourceEquation->getRangeL();
-		this->rangeR = sourceEquation->getRangeR();
-	}
 
 	bool isValid = (sourceEquation->getComputationFailureCause() == Equation::ComputationFailureCause_t::nofail) ? true : false;
 
@@ -102,7 +97,7 @@ void SimulatedEquation::computeCurrentValue()
 		operandsValues[i] = this->operands[i]->getCurrentValue();
 	}
 
-	this->currentValue = EquationComputer::computeValue(this->operatorType, operandsValues, this->rangeL, this->rangeR);
+	this->currentValue = EquationComputer::computeValue(this->operatorType, operandsValues);
 
 	if (previousValue != this->currentValue)
 	{

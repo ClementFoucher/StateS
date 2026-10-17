@@ -52,7 +52,6 @@ Equation::Equation(Operator_t operatorType, int operandCount)
 	{
 	case Operator_t::notOp:
 	case Operator_t::identity:
-	case Operator_t::extractOp:
 		actualOperandCount = 1;
 		break;
 	case Operator_t::equalOp:
@@ -73,6 +72,16 @@ Equation::Equation(Operator_t operatorType, int operandCount)
 	case Operator_t::minusOp:
 	case Operator_t::concatOp:
 		if (operandCount >= 2)
+		{
+			actualOperandCount = operandCount;
+		}
+		else
+		{
+			actualOperandCount = 2;
+		}
+		break;
+	case Operator_t::extractOp:
+		if ( (operandCount == 2) || (operandCount == 3) )
 		{
 			actualOperandCount = operandCount;
 		}
@@ -103,11 +112,6 @@ std::shared_ptr<Equation> Equation::clone() const
 		}
 	}
 
-	if (this->operatorType == Operator_t::extractOp)
-	{
-		clonedEquation->setRange(this->rangeL, this->rangeR);
-	}
-
 	return clonedEquation;
 }
 
@@ -130,22 +134,22 @@ QString Equation::getText() const
 {
 	QString text;
 
-	uint operandCount = this->getOperandCount();
+	uint operandCount = this->operands.size();
 
-	// Inversion oeprator
+	// Inversion operator
 	if (EquationComputer::isInverted(this->operatorType) == true)
 	{
 		text += '/';
 	}
 
-	if (operandCount > 1)
+	if ( (operandCount > 1) && (this->operatorType != Operator_t::extractOp) )
 	{
 		text += "( ";
 	}
 
-	for (uint i = 0 ; i < operandCount ; i++)
+	for (uint operandRank = 0 ; operandRank < operandCount ; operandRank++)
 	{
-		auto operand = this->operands[i];
+		auto operand = this->operands[operandRank];
 		if (operand == nullptr)
 		{
 			text += "…";
@@ -156,7 +160,7 @@ QString Equation::getText() const
 		}
 
 		// Add operator, except for last operand
-		if (i < operandCount - 1)
+		if (operandRank < operandCount - 1)
 		{
 			switch(operatorType)
 			{
@@ -199,9 +203,19 @@ QString Equation::getText() const
 			case Operator_t::concatOp:
 				text += " : ";
 				break;
+			case Operator_t::extractOp:
+				if (operandRank == 0)
+				{
+					text += "[";
+				}
+				else // (operandRank == 1)
+				{
+					text += "‥";
+				}
+				break;
 			case Operator_t::notOp:
 			case Operator_t::identity:
-			case Operator_t::extractOp:
+				// Single-operand operators
 				break;
 			}
 		}
@@ -209,26 +223,9 @@ QString Equation::getText() const
 
 	if (this->operatorType == Operator_t::extractOp)
 	{
-		text += "[";
-
-		if (this->rangeL != -1)
-		{
-			text += QString::number(this->rangeL);
-		}
-		else
-		{
-			text += "…";
-		}
-
-		if (this->rangeR != -1)
-		{
-			text += ".." + QString::number(this->rangeR);
-		}
-
 		text += "]";
 	}
-
-	if (operandCount > 1)
+	else if (operandCount > 1)
 	{
 		text += " )";
 	}
@@ -259,7 +256,6 @@ void Equation::setOperator(Operator_t newOperator)
 	{
 	case Operator_t::notOp:
 	case Operator_t::identity:
-	case Operator_t::extractOp:
 		while (this->operands.size() > 1)
 		{
 			this->operands.removeLast();
@@ -292,6 +288,16 @@ void Equation::setOperator(Operator_t newOperator)
 		while (this->operands.size() < 2)
 		{
 			this->operands.append(nullptr);
+		}
+		break;
+	case Operator_t::extractOp:
+		while (this->operands.size() < 2)
+		{
+			this->operands.append(std::make_shared<Operand>(NaturalValue{0}));
+		}
+		while (this->operands.size() > 3)
+		{
+			this->operands.removeLast();
 		}
 		break;
 	}
@@ -368,7 +374,7 @@ bool Equation::hasNonLogicVariables() const
 
 std::shared_ptr<Operand> Equation::getOperand(uint i) const
 {
-	if (i < this->getOperandCount())
+	if (i < this->operands.size())
 	{
 		return this->operands.at(i);
 	}
@@ -409,33 +415,7 @@ void Equation::clearOperand(uint i)
 
 uint Equation::getOperandCount() const
 {
-	switch(this->operatorType)
-	{
-	case Operator_t::notOp:
-	case Operator_t::identity:
-	case Operator_t::extractOp:
-		return 1;
-		break;
-	case Operator_t::equalOp:
-	case Operator_t::diffOp:
-	case Operator_t::lessThanOp:
-	case Operator_t::lessThanOrEqualToOp:
-	case Operator_t::greaterThanOp:
-	case Operator_t::greaterThanOrEqualToOp:
-		return 2;
-		break;
-	case Operator_t::andOp:
-	case Operator_t::orOp:
-	case Operator_t::xorOp:
-	case Operator_t::nandOp:
-	case Operator_t::norOp:
-	case Operator_t::xnorOp:
-	case Operator_t::plusOp:
-	case Operator_t::minusOp:
-	case Operator_t::concatOp:
-		return this->operands.size();
-		break;
-	}
+	return this->operands.size();
 }
 
 void Equation::increaseOperandCount()
@@ -456,6 +436,11 @@ void Equation::increaseOperandCount()
 		doIncrease = true;
 		break;
 	case Operator_t::extractOp:
+		if (this->operands.size() < 3)
+		{
+			doIncrease = true;
+		}
+		break;
 	case Operator_t::notOp:
 	case Operator_t::identity:
 	case Operator_t::equalOp:
@@ -491,12 +476,12 @@ void Equation::decreaseOperandCount()
 	case Operator_t::plusOp:
 	case Operator_t::minusOp:
 	case Operator_t::concatOp:
-		if (this->getOperandCount() > 2)
+	case Operator_t::extractOp:
+		if (this->operands.size() > 2)
 		{
 			doDecrease = true;
 		}
 		break;
-	case Operator_t::extractOp:
 	case Operator_t::notOp:
 	case Operator_t::identity:
 	case Operator_t::equalOp:
@@ -515,28 +500,6 @@ void Equation::decreaseOperandCount()
 		this->checkAndComputeInitialValue();
 		emit this->equationTextChangedEvent();
 	}
-}
-
-void Equation::setRange(int rangeL, int rangeR)
-{
-	if (this->operatorType == Operator_t::extractOp)
-	{
-		this->rangeL = rangeL;
-		this->rangeR = rangeR;
-
-		this->checkAndComputeInitialValue();
-		emit this->equationTextChangedEvent();
-	}
-}
-
-int Equation::getRangeL() const
-{
-	return this->rangeL;
-}
-
-int Equation::getRangeR() const
-{
-	return this->rangeR;
 }
 
 void Equation::doFullStackRecomputation()
@@ -579,7 +542,7 @@ void Equation::checkAndComputeInitialValue()
 			operandsValues[i] = this->operands[i]->getInitialValue();
 		}
 
-		this->initialValue = EquationComputer::computeValue(this->operatorType, operandsValues, this->rangeL, this->rangeR);
+		this->initialValue = EquationComputer::computeValue(this->operatorType, operandsValues);
 	}
 
 	if (previousValue != this->initialValue)
@@ -626,7 +589,7 @@ void Equation::operandInvalidatedEventHandler()
 void Equation::setOperand(uint i, std::shared_ptr<Operand> newOperand)
 {
 	// Do not allow placing an operand outside defined range
-	if (i >= this->getOperandCount()) return;
+	if (i >= this->operands.size()) return;
 
 
 	auto previousOperand = this->operands.at(i);
@@ -693,7 +656,16 @@ void Equation::checkForErrors()
 			this->failureCause = ComputationFailureCause_t::incorrectOperandType;
 			return;
 		}
-		// POST: operand 0 is of type Bit Vector
+		for (int i = 1 ; i < this->operands.count() ; i++)
+		{
+			if (this->operands[i]->getType() != MachineValue::Type_t::natural)
+			{
+				this->failureCause = ComputationFailureCause_t::incorrectOperandType;
+				return;
+			}
+		}
+		// POST: operand 0 is of type Bit Vector,
+		//       other operands are of type Natural
 		break;
 	}
 	case Operator_t::concatOp:
@@ -862,31 +834,24 @@ void Equation::checkForErrors()
 	// Check ranges for extract operand
 	if (this->operatorType == Operator_t::extractOp)
 	{
-		// PRE: operand 0 is of type Bit Vector
+		// PRE: operand 0 is of type Bit Vector,
+		//      other operands are of type Natural
 
-		if (this->rangeL == -1)
+		if (this->operands.count() == 3)
 		{
-			this->failureCause = ComputationFailureCause_t::missingParameter;
-			return;
-		}
-		else // (this->rangeL != -1)
-		{
-			if (this->rangeR != -1)
+			if (this->operands[1]->getInitialValue().getNaturalValue() < this->operands[2]->getInitialValue().getNaturalValue())
 			{
-				if (this->rangeL < this->rangeR)
-				{
-					this->failureCause = ComputationFailureCause_t::incorrectParameterValue;
-					return;
-				}
-			}
-
-			if (static_cast<uint>(rangeL) >= this->operands[0]->getInitialValue().getBitVectorValue().getSize())
-			{
-				this->failureCause = ComputationFailureCause_t::incorrectParameterValue;
+				this->failureCause = ComputationFailureCause_t::incorrectOperandValue;
 				return;
 			}
 		}
+
+		if (this->operands[1]->getInitialValue().getNaturalValue() >= this->operands[0]->getInitialValue().getBitVectorValue().getSize())
+		{
+			this->failureCause = ComputationFailureCause_t::incorrectOperandValue;
+			return;
+		}
 	}
-	// POST: right range is -1 and left range is < to Bit Vector size and > to 0
-	//       OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
+	// POST: extract one bit and bit extracted is < to Bit Vector size
+	//       OR extract range and right range is <= left range AND left range is < to Bit Vector size
 }

@@ -279,67 +279,67 @@
 <context>
     <name>ActionTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="145"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="144"/>
         <source>Edit action on variable</source>
         <translation>Éditer l&apos;action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="149"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="148"/>
         <source>Edit all selected actions</source>
         <translation>Éditer l&apos;ensemble des actions sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="159"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="158"/>
         <source>Edit value</source>
         <translation>Éditer la valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="167"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="166"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="174"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="173"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="185"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="184"/>
         <source>Affect whole variable</source>
         <translation>Affecter la totalité de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="194"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="193"/>
         <source>Affect variable single bit</source>
         <translation>Affecter un seul bit de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="203"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="202"/>
         <source>Affect variable range</source>
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="216"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="215"/>
         <source>Edit affected bit</source>
         <translation>Éditer le bit affecté</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="220"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="219"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="230"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="229"/>
         <source>Delete action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="236"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="235"/>
         <source>Delete actions</source>
         <translation>Supprimer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="241"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="240"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -637,204 +637,223 @@
 <context>
     <name>EquationEditorWidget</name>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="348"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="366"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="296"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="314"/>
         <source>Warning:</source>
         <translation>Attention :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="350"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="298"/>
         <source>Comparison is done between variables that have different types.</source>
         <translation>La comparaison est réalisée entre des variables de types différents.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="355"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="373"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="303"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="321"/>
         <source>As a result, they will never be equal and this equation will always be false.</source>
         <translation>Par conséquent, celles-ci ne seront jamais égales et cette équation sera toujours fausse.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="359"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="377"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="307"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="325"/>
         <source>As a result, they will always be different and this equation will always be true.</source>
         <translation>Par conséquent, celles-ci seront toujours différentes et cette équation sera toujours vraie.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="368"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="316"/>
         <source>Comparison is done between bit vector variables that have different sizes.</source>
         <translation>La comparaison est réalisée entre des vecteurs de bits de tailles différentes.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="391"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="339"/>
         <source>At least one of the operands is empty.</source>
         <translation>Au moins l&apos;une des opérandes est vide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="396"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="344"/>
         <source>At least one of the operands has an invalid value.</source>
         <translation>Au moins l&apos;une des opérandes a une valeur incorrecte.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="401"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="349"/>
         <source>At least one of the operands has an invalid type.</source>
         <translation>Au moins l&apos;une des opérandes a un type incorrect.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="406"/>
-        <source>The current operator can only act on a bit vector operand.</source>
-        <translation>L&apos;opérateur actuel ne peut agir que sur des opérandes de type vecteur de bits.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="417"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="374"/>
         <source>The current operator can only have boolean or bit vector operands.</source>
         <translation>L&apos;opérateur actuel ne peut agir que sur des opérandes de type booléen ou vecteur de bits.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="426"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="383"/>
         <source>The current operator can only have natural or relative operands.</source>
         <translation>L&apos;opérateur actuel ne peut agir que sur des opérandes de type entier naturel ou relatif.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="437"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="394"/>
         <source>The sizes of the operands do not match between each other.</source>
         <translation>Les opérandes sont de tailles différentes.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="439"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="396"/>
         <source>All bit vector operands must have the same size.</source>
         <translation>Toutes les opérandes de type vecteur de bits doivent avoir la même taille.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="444"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="401"/>
         <source>The types of the operands do not match between each other.</source>
         <translation>Les opérandes sont de types différents.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="446"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="403"/>
         <source>All operands must have the same type.</source>
         <translation>Toutes les opérandes doivent avoir le même type.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="451"/>
-        <source>A parameter is missing its value.</source>
-        <translation>Un paramètre n&apos;a pas de valeur.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="456"/>
-        <source>The value of a parameter is incorrect.</source>
-        <translation>La valeur de l&apos;un des paramètres est incorrecte.</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="564"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="527"/>
         <source>Rightmost operand deletion requested, but it is not empty.</source>
         <translation>La suppression de l&apos;opérande la plus à droite a été demandée, mais celle-ci n&apos;est pas vide.</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="568"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="531"/>
         <source>Delete rightmost operand?</source>
         <translation>Supprimer l&apos;opérande de droite ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1097"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1017"/>
         <source>not</source>
         <translation>non</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1100"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1020"/>
         <source>and</source>
         <translation>et</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1103"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1023"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1106"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1026"/>
         <source>xor</source>
         <translation>xor</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1109"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1029"/>
         <source>nand</source>
         <translation>non et</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1112"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1032"/>
         <source>nor</source>
         <translation>non ou</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1115"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1035"/>
         <source>xnor</source>
         <translation>xnor</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1118"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1038"/>
         <source>Equality</source>
         <translation>Égalité</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1121"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1041"/>
         <source>Difference</source>
         <translation>Différence</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1124"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1127"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1044"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1047"/>
         <source>Less than</source>
         <translation>Inférieur à</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1127"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1133"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1047"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1053"/>
         <source>or equal</source>
         <translation>ou égal à</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1130"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1133"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1050"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1053"/>
         <source>Greater than</source>
         <translation>Supérieur à</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1136"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1056"/>
         <source>Plus</source>
         <translation>Plus</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1139"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1059"/>
         <source>Minus</source>
         <translation>Moins</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1142"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="1062"/>
         <source>Concatenate</source>
         <translation>Concaténation</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="384"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="332"/>
         <source>Equation:</source>
         <translation>Équation :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="389"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="394"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="337"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="342"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="347"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="392"/>
         <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="399"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="435"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="442"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="449"/>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="454"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="406"/>
         <source>Error:</source>
         <translation>Erreur :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="566"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="354"/>
+        <source>The current operator can only have a bit vector as the first operand,</source>
+        <translation>L&apos;opérateur actuel ne peut avoir qu&apos;un vecteur de bits pour la première opérande,</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="358"/>
+        <source>and a natural integer as second operand.</source>
+        <translation>et un entier naturel pour la seconde opérande.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="362"/>
+        <source>and natural integers as other operands.</source>
+        <translation>et des entiers naturels pour les autres opérandes.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="408"/>
+        <source>The value of an operand is incorrect.</source>
+        <translation>La valeur de l&apos;opérande est incorrecte.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="412"/>
+        <source>The index of the bit to extract must be within the vector size.</source>
+        <translation>L&apos;indice du bit à extraire doit être plus petit que la taille du vecteur.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="416"/>
+        <source>The indexes of the subvector to extract must be within the vector size,</source>
+        <translation>Les indices du sous-vecteur à extraire doivent être plus petits que la taille du vecteur,</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="418"/>
+        <source>and the first index must be greater than the second index.</source>
+        <translation>et le premier indice doit être supérieur au second.</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="529"/>
         <source>Its content is:</source>
         <translation>Son contenu est :</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="569"/>
+        <location filename="../src/ui/dialogs/equation_editor/equationeditorwidget.cpp" line="532"/>
         <source>User confirmation needed</source>
         <translation>Confirmation de l&apos;utilisateur requise</translation>
     </message>
@@ -2026,44 +2045,44 @@
 <context>
     <name>MachineXmlParser</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="840"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="847"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="829"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="836"/>
         <source>No name was found for the machine.</source>
         <translation>Aucun nom n&apos;a été trouvé pour la machine.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="841"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="830"/>
         <source>Used file name to name machine:</source>
         <translation>Nom utilisé pour nommer la machine :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="845"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="848"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="834"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="837"/>
         <source>Machine</source>
         <translation>Machine</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="848"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="837"/>
         <source>Name defaulted to:</source>
         <translation>Nom par défaut utilisé :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="858"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="847"/>
         <source>Unable to parse zoom level.</source>
         <translation>Imposible de lire le niveau de zoom.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="859"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="848"/>
         <source>Found value was:</source>
         <translation>Valeur lue :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="885"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="874"/>
         <source>Unable to parse view position.</source>
         <translation>Impossible de lire la position de la vue.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="886"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="875"/>
         <source>Found values were:</source>
         <translation>Valeurs lues :</translation>
     </message>
@@ -2071,49 +2090,49 @@
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="119"/>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="160"/>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="216"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="349"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="381"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="432"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="480"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="487"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="668"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="705"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="746"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="762"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="900"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="923"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="954"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="961"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="973"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="343"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="370"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="421"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="469"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="476"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="657"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="694"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="735"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="751"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="889"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="912"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="943"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="950"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="962"/>
         <source>Error!</source>
         <translation>Erreur !</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="748"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="901"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="975"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="737"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="890"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="964"/>
         <source>Variable ignored.</source>
         <translation>Variable ignorée.</translation>
     </message>
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="416"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="422"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="447"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="453"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="549"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="840"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="360"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="405"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="411"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="436"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="442"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="538"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="829"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="836"/>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="847"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="858"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="885"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="874"/>
         <source>Info:</source>
         <translation>Info :</translation>
     </message>
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="549"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="360"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="538"/>
         <source>node due to previous errors.</source>
         <translation>a été ignoré en raison d&apos;erreurs précédentes.</translation>
     </message>
@@ -2123,76 +2142,76 @@
         <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="393"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="523"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="983"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1020"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="512"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="972"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1009"/>
         <source>Warning:</source>
         <translation>Attention :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="349"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="343"/>
         <source>Unexpected equation nature encountered while parsing logic equation.</source>
         <translation>Nature d&apos;équation inconnue trouvée lors du parcours d&apos;une équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="381"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="370"/>
         <source>Unable to parse operand source for an equation.</source>
         <translation>Impossible de lire la source de l&apos;opérande dans une l&apos;équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="383"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="372"/>
         <source>Operand will be ignored.</source>
         <translation>L&apos;opérande sera ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="416"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="422"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="447"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="453"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="405"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="411"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="436"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="442"/>
         <source>node due to previous errors</source>
         <translation>a été ignoré en raison d&apos;erreurs précédentes.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="432"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="421"/>
         <source>Reference to undeclared variable encountered while parsing an equation.</source>
         <translation>Référence à une variable non déclarée trouvée lors du parcours de la liste des actions.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="481"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="488"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="524"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="470"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="477"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="513"/>
         <source>Value ignored, the operand will be left empty.</source>
         <translation>Valeur ignorée, cette opérande sera laissée vide.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="644"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="633"/>
         <source>due to previous errors.</source>
         <translation>en raison d&apos;erreurs précédentes.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="685"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="674"/>
         <source>Warning.</source>
         <translation>Attention.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="685"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="674"/>
         <source>Unexpected node found within &quot;StateS&quot; node.</source>
         <translation>Nœud non supporté trouvé lors de la lecture du nœud &quot;StateS&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="746"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="735"/>
         <source>Unexpected variable nature encountered while parsing variable list.</source>
         <translation>Nature de variable inconnue trouvée lors du parcours de la liste des variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="900"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="889"/>
         <source>Name missing for a variable.</source>
         <translation>Nom manquant pour une variable.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="480"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="954"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="469"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="943"/>
         <source>Unknown type</source>
         <translation>Le type inconnu</translation>
     </message>
@@ -2212,92 +2231,92 @@
         <translation>La valeur de l&apos;action sera définie à une valeur par défaut.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="480"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="469"/>
         <source>found for a constant while parsing an equation.</source>
         <translation>trouvé pour une constante pendant la lecture d&apos;une équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="487"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="476"/>
         <source>No type found for a constant while parsing an equation.</source>
         <translation>Pas de type trouvé pour une constante pendant la lecture d&apos;une équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="523"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="512"/>
         <source>No value found for a constant while parsing an equation.</source>
         <translation>Aucune valeur trouvée pour une constante pendant la lecture d&apos;une équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="954"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="943"/>
         <source>found for variable while parsing variable list.</source>
         <translation>a été trouvé en lisant la liste des variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="955"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="962"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="944"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="951"/>
         <source>Defaulting to Boolean type.</source>
         <translation>Utilisation du type booléen par défaut.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="956"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="963"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="945"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="952"/>
         <source>Variable name was:</source>
         <translation>Le nom de la variable était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="961"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="950"/>
         <source>No type found for variable while parsing variable list.</source>
         <translation>Aucun type n&apos;a été trouvé pour une variable lors de la lecture de la liste des variables.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="973"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="983"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="962"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="972"/>
         <source>The variable named</source>
         <translation>La variable nommée</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="974"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="963"/>
         <source>This may be due to a duplicated name.</source>
         <translation>Cela peut être du à un nom dupliqué.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="983"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="972"/>
         <source>in save file was added under name</source>
         <translation>dans le fichier de sauvegarde a été ajoutée sous le nom</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="984"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="973"/>
         <source>This can be due to an ill-formed name.</source>
         <translation>Cela peut être du à un nom mal formé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="985"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="974"/>
         <source>This may trigger further errors if other components were referencing this variable.</source>
         <translation>Cela risque de causer des erreurs par la suite si d&apos;autre composants utilisent cette variable.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1020"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1009"/>
         <source>No initial value was defined for variable:</source>
         <translation>Aucune valeur initiale n&apos;a été trouvée pour la variable :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1021"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="1010"/>
         <source>Initial value defaulted to</source>
         <translation>La valeur initiale par défaut sera</translation>
     </message>
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="109"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="416"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="422"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="447"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="453"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="549"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="360"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="405"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="411"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="436"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="442"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="538"/>
         <source>Ignoring</source>
         <translation>Le nœud</translation>
     </message>
     <message>
         <location filename="../src/machine/xml/machinexmlparser.cpp" line="120"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="433"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="422"/>
         <source>Variable name was</source>
         <translation>Le nom de la variable était</translation>
     </message>
@@ -2307,76 +2326,76 @@
         <translation>Type d&apos;action inconnu trouvé lors du parcours de la liste des actions.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="393"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
         <source>Unable to parse operand rank for an equation.</source>
         <translation>Impossible de lire le numéro de l&apos;opérande dans une l&apos;équation.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="394"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="383"/>
         <source>Operand will be placed in position 0, potentially erasing existing operand.</source>
         <translation>L&apos;opérande sera placée à la position 0, écrasant toute opérande déjà à cette position.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="434"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="423"/>
         <source>Operand ignored.</source>
         <translation>Opérande ignorée.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="644"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="633"/>
         <source>Ignoring node</source>
         <translation>Nœud ignoré :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="668"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="657"/>
         <source>Unexpected root node.</source>
         <translation>Nœud racine mal nommé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="668"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="657"/>
         <source>Root node should be</source>
         <translation>Le nœud racine est normalement</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="668"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="657"/>
         <source>but found</source>
         <translation>mais il était nommé</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="686"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="706"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="747"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="675"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="695"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="736"/>
         <source>Expected</source>
         <translation>Attendait</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="686"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="706"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="747"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="675"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="695"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="736"/>
         <source>or</source>
         <translation>ou</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="382"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="686"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="706"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="747"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="371"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="675"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="695"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="736"/>
         <source>got</source>
         <translation>a trouvé</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="762"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="751"/>
         <source>Unexpected node found in a node that doesn&apos;t accept subnodes.</source>
         <translation>Nœud non supporté trouvé dans un nœud qui n&apos;accepte pas de sous-nœud.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="763"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="752"/>
         <source>Found node was:</source>
         <translation>Le nœud trouvé était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="973"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="962"/>
         <source>couldn&apos;t be added.</source>
         <translation>n&apos;a pas pu être ajoutée.</translation>
     </message>
@@ -2392,20 +2411,20 @@
         <translation>Le type d&apos;action était</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="350"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="344"/>
         <source>Equation nature was:</source>
         <translation>La nature de l&apos;équation était :</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="705"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="694"/>
         <source>Unexpected node found while parsing configuration.</source>
         <translation>Nœud inattendu trouvé en lisant la configuration.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="351"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="687"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="707"/>
-        <location filename="../src/machine/xml/machinexmlparser.cpp" line="764"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="345"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="676"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="696"/>
+        <location filename="../src/machine/xml/machinexmlparser.cpp" line="753"/>
         <source>Node ignored.</source>
         <translation>Nœud ignoré.</translation>
     </message>
@@ -2413,17 +2432,17 @@
 <context>
     <name>MachineXmlWriter</name>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="332"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="338"/>
         <source>Unable to replace existing file: permission denied. Check if the file is writable and you have appropriate rights.</source>
         <translation>Impossible de remplacer le fichier existant : autorisation refusée. Vérifiez que le fichier est accessible en écriture et que vous disposez des droits appropriés.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="336"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="342"/>
         <source>Specified directory doesn&apos;t exist.</source>
         <translation>Le dossier spécifié n&apos;existe pas.</translation>
     </message>
     <message>
-        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="343"/>
+        <location filename="../src/machine/xml/machinexmlwriter.cpp" line="349"/>
         <source>Unable to open file in write mode.</source>
         <translation>Impossible d&apos;ouvrir le fichier en écriture.</translation>
     </message>
@@ -2528,39 +2547,39 @@
 <context>
     <name>RangeEditorDialog</name>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="61"/>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="141"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="72"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="161"/>
         <source>Choose extracted bit</source>
         <translation>Choisissez le bit à extraire</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="65"/>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="151"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="76"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="171"/>
         <source>Choose extracted range</source>
         <translation>Choisissez le sous-vecteur à extraire</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="84"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="97"/>
         <source>Extract single bit</source>
         <translation>Extraire un seul bit</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="85"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="98"/>
         <source>Extract range</source>
         <translation>Extraire un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="105"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="118"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="106"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="119"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="51"/>
+        <location filename="../src/ui/dialogs/rangeeditordialog.cpp" line="57"/>
         <source>Edit range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
@@ -3474,52 +3493,52 @@
 <context>
     <name>VariableTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="109"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="108"/>
         <source>Edit variable</source>
         <translation>Éditer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="113"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="112"/>
         <source>Edit all selected variables</source>
         <translation>Éditer toutes les variables sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="119"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="118"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="126"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="125"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="138"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="137"/>
         <source>Rename variable</source>
         <translation>Renommer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="146"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="145"/>
         <source>Change bit vector size</source>
         <translation>Changer la taille du vecteur de bits</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="153"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="152"/>
         <source>Change variable value</source>
         <translation>Changer la valeur de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="160"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="159"/>
         <source>Delete variable</source>
         <translation>Supprimer la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="165"/>
         <source>Delete variables</source>
         <translation>Supprimer les variables</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="173"/>
+        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletableview.cpp" line="172"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>

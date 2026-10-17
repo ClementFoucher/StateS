@@ -57,12 +57,8 @@ public:
 	/////
 	// Object functions
 public:
-	bool setMode(Mode_t newMode, bool saveChanges = false);
-
 	void setExtractSingleBit();
 	void setExtractRange();
-
-	void refresh();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* event) override;
@@ -71,25 +67,24 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
-	void setRangeL(uint newValue);
-	void setRangeR(uint newValue);
-
 	void lEditorValueChangedEventHandler(int newValue);
 	void rEditorValueChangedEventHandler(int newValue);
 
 private:
+	void setMode(Mode_t newMode, bool saveChanges);
+
+	void setRangeL(uint newValue);
+	void setRangeR(uint newValue);
+
 	void clear();
 	void build();
-
-	/////
-	// Signals
-signals:
-	void beginEditEvent();
 
 	/////
 	// Object variables
 private:
 	std::shared_ptr<Equation> equation;
+	bool isValid = false;
+	unsigned int vectorSize;
 
 	QLabel* rangeLText = nullptr;
 	QLabel* rangeRText = nullptr;

@@ -32,7 +32,7 @@ class EquationComputer
 	/////
 	// Static functions
 public:
-	static MachineValue computeValue(Equation::Operator_t operator_, const std::vector<MachineValue> operands, int rangeL = -1, int rangeR = -1);
+	static MachineValue computeValue(Equation::Operator_t operator_, const std::vector<MachineValue> operands);
 
 	static bool isInverted(Equation::Operator_t op);
 

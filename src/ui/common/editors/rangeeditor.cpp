@@ -38,99 +38,40 @@ RangeEditor::RangeEditor(std::shared_ptr<Equation> equation, QWidget* parent) :
 {
 	if (equation->getOperator() != Equation::Operator_t::extractOp) return;
 
+	auto operand0 = equation->getOperand(0);
+	if (operand0 == nullptr) return;
+	if (operand0->getType() != MachineValue::Type_t::bitVector) return;
+
+	auto operand1 = equation->getOperand(1);
+	if (operand1 == nullptr) return;
+	if (operand1->getType() != MachineValue::Type_t::natural) return;
+
+	if (equation->getOperandCount() == 3)
+	{
+		auto operand2 = equation->getOperand(2);
+		if (operand2 == nullptr) return;
+		if (operand2->getType() != MachineValue::Type_t::natural) return;
+	}
+
+	auto value = operand0->getInitialValue().getBitVectorValue();
+	this->vectorSize = value.getSize();
+	if (this->vectorSize == 0) return;
+
 
 	this->equation = equation;
+	this->isValid = true;
 
 	this->build();
-}
-
-/**
- * @brief RangeEditor::setMode changes the mode of the editor.
- * @param newMode New mode to apply to the editor
- * @param saveChanges Save current changes before swithing mode
- *        (only relevant if current mode is editor mode).
- * @return true if the mode was changed, false if there was no
- *         mode change to operate, or if the change failed.
- */
-bool RangeEditor::setMode(Mode_t newMode, bool saveChanges)
-{
-	if (this->equation == nullptr) return false;
-
-	if (this->mode == newMode) return false;
-
-
-	auto operand = this->equation->getOperand(0);
-
-	if (newMode == Mode_t::editor_mode)
-	{
-		// The operand can be null or of invalid type:
-		// do not allow triggering editor mode in that case.
-		if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
-		{
-			emit this->beginEditEvent();
-
-			this->mode = Mode_t::editor_mode;
-		}
-	}
-	else // (newMode == Mode_t::compact_mode)
-	{
-		if (saveChanges == true)
-		{
-			int rangeL = 0;
-			int rangeR = -1;
-
-			if (this->rangeLEditor != nullptr) // This should be true, but check anyway
-			{
-				rangeL = this->rangeLEditor->getValue();
-			}
-
-			if (this->rangeREditor != nullptr)
-			{
-				rangeR = this->rangeREditor->getValue();
-			}
-
-			// Make sure range values are acceptable
-			bool valueAccepted = true;
-
-			// If operand is null or of invalid type, just accept any value
-			// as equation is invalid anyway.
-			if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
-			{
-				auto value = operand->getInitialValue().getBitVectorValue();
-				int operandSize = value.getSize();
-
-				if (rangeL <= rangeR)      valueAccepted = false;
-				if (rangeR < -1)           valueAccepted = false;
-				if (rangeL >= operandSize) valueAccepted = false;
-			}
-
-			if (valueAccepted == true)
-			{
-				this->equation->setRange(rangeL, rangeR);
-			}
-		}
-
-		this->mode = Mode_t::compact_mode;
-	}
-
-	this->clear();
-	this->build();
-
-	if (this->mode == Mode_t::editor_mode)
-	{
-		if (this->rangeLEditor != nullptr)
-		{
-			this->rangeLEditor->setFocus();
-		}
-	}
-
-	return true;
 }
 
 void RangeEditor::setExtractSingleBit()
 {
-	int rangeL = this->equation->getRangeL();
-	this->equation->setRange(rangeL, -1);
+	if (this->isValid == false) return;
+
+	if (this->equation->getOperandCount() != 3) return;
+
+
+	this->equation->decreaseOperandCount();
 
 	this->clear();
 	this->build();
@@ -138,125 +79,109 @@ void RangeEditor::setExtractSingleBit()
 
 void RangeEditor::setExtractRange()
 {
-	int rangeL = this->equation->getRangeL();
-	int rangeR;
+	if (this->isValid == false) return;
 
+	if (this->vectorSize < 2) return;
+
+	if (this->equation->getOperandCount() != 2) return;
+
+
+	this->equation->increaseOperandCount();
+
+	unsigned int rangeL = this->equation->getOperand(1)->getInitialValue().getNaturalValue();
 	if (rangeL > 0)
 	{
-		rangeR = rangeL-1;
+		this->equation->setOperand(2, NaturalValue{rangeL - 1});
 	}
 	else
 	{
-		rangeR = 0;
-		rangeL = 1;
+		this->equation->setOperand(1, NaturalValue{1});
+		this->equation->setOperand(2, NaturalValue{0});
 	}
 
-	this->equation->setRange(rangeL, rangeR);
-
 	this->clear();
-	this->build();
-}
-
-void RangeEditor::refresh()
-{
-	this->clear();
-	this->setMode(RangeEditor::Mode_t::compact_mode, false);
 	this->build();
 }
 
 void RangeEditor::mousePressEvent(QMouseEvent* event)
 {
-	bool eventAccepted = false;
-
 	if ( (event->button() == Qt::LeftButton) && (this->mode == Mode_t::compact_mode) )
 	{
-		this->setMode(Mode_t::editor_mode);
-		eventAccepted = true;
+		this->setMode(Mode_t::editor_mode, false);
 	}
-
-	if (eventAccepted == false)
+	else
 	{
-		event->ignore();
+		QWidget::mousePressEvent(event);
 	}
 }
 
 void RangeEditor::wheelEvent(QWheelEvent* event)
 {
-	if (this->equation == nullptr) return;
-
-	if (this->mode != Mode_t::compact_mode) return;
-
-	if (this->rangeLText == nullptr) return;
-
-	auto operand = this->equation->getOperand(0);
-	if (operand == nullptr) return;
-
-	if (operand->getType() != MachineValue::Type_t::bitVector) return;
-
-
-	auto value = operand->getInitialValue().getBitVectorValue();
-	int vectorSize = value.getSize();
-
-	int upperLBound = vectorSize-1;
-	int lowerRBound = 0;
-
-	int currentRangeL = this->equation->getRangeL();
-	int upperRBound = currentRangeL - 1;
-
-	int currentRangeR = this->equation->getRangeR();
-	int lowerLBound = currentRangeR + 1;
-
-	auto eventPosition = QPoint(event->position().x(), event->position().y());
-	auto childUnderMouse = this->childAt(eventPosition);
-
-	if (childUnderMouse == this->rangeLText)
+	if (this->isValid == false)
 	{
-		if (currentRangeL != -1)
+		QWidget::wheelEvent(event);
+		return;
+	}
+
+	if (this->mode != Mode_t::compact_mode)
+	{
+		QWidget::wheelEvent(event);
+		return;
+	}
+
+
+	uint currentOperandRank;
+	uint upperBound;
+	uint lowerBound;
+	if ( (this->rangeLText != nullptr) && (this->rangeLText->underMouse() == true) )
+	{
+		// Left range or bit to extract
+		currentOperandRank = 1;
+
+		upperBound = this->vectorSize-1;
+		if (this->equation->getOperandCount() == 3)
 		{
-			int newValue;
-
-			if (event->angleDelta().y() > 0)
-			{
-				newValue = currentRangeL + 1;
-			}
-			else
-			{
-				newValue = currentRangeL - 1;
-			}
-
-			if ( (newValue <= upperLBound) && (newValue >= lowerLBound) )
-			{
-				this->setRangeL(newValue);
-			}
+			lowerBound = this->equation->getOperand(2)->getInitialValue().getNaturalValue() + 1;
 		}
 		else
 		{
-			this->setRangeL(vectorSize-1);
+			lowerBound = 0;
 		}
 	}
-	else if ( (this->rangeRText != nullptr) && (childUnderMouse == this->rangeRText) )
+	else if ( (this->rangeRText != nullptr) && (this->rangeRText->underMouse() == true) )
 	{
-		if (currentRangeR != -1)
+		// Right range
+		currentOperandRank = 2;
+
+		upperBound = this->equation->getOperand(1)->getInitialValue().getNaturalValue() - 1;
+		lowerBound = 0;
+	}
+	else
+	{
+		QWidget::wheelEvent(event);
+		return;
+	}
+
+	uint currentValue = this->equation->getOperand(currentOperandRank)->getInitialValue().getNaturalValue();
+	uint newValue;
+	if (event->angleDelta().y() > 0)
+	{
+		newValue = currentValue + 1;
+	}
+	else // (event->angleDelta().y() < 0)
+	{
+		newValue = currentValue - 1;
+	}
+
+	if ( (newValue <= upperBound) && (newValue >= lowerBound) )
+	{
+		if (currentOperandRank == 1)
 		{
-			int newValue;
-
-			if (event->angleDelta().y() > 0)
-			{
-				newValue = currentRangeR + 1;
-			}
-			else
-			{
-				newValue = currentRangeR - 1;
-			}
-
-			if ( (newValue <= upperRBound) && (newValue >= lowerRBound) )
-			{
-				this->setRangeR(newValue);
-			}
+			this->setRangeL(newValue);
 		}
-		else
+		else // (currentRangeRank == 2)
 		{
-			this->setRangeR(0);
+			this->setRangeR(newValue);
 		}
 	}
 }
@@ -265,17 +190,14 @@ void RangeEditor::keyPressEvent(QKeyEvent* event)
 {
 	bool transmitEvent = true;
 
-	if (event->key() == Qt::Key::Key_Return)
+	if (this->mode == Mode_t::editor_mode)
 	{
-		if (this->mode == Mode_t::editor_mode)
+		if (event->key() == Qt::Key::Key_Return)
 		{
 			this->setMode(RangeEditor::Mode_t::compact_mode, true);
 			transmitEvent = false;
 		}
-	}
-	else if (event->key() == Qt::Key::Key_Escape)
-	{
-		if (this->mode == Mode_t::editor_mode)
+		else if (event->key() == Qt::Key::Key_Escape)
 		{
 			this->setMode(RangeEditor::Mode_t::compact_mode, false);
 			transmitEvent = false;
@@ -285,34 +207,6 @@ void RangeEditor::keyPressEvent(QKeyEvent* event)
 	if (transmitEvent == true)
 	{
 		QWidget::keyPressEvent(event);
-	}
-}
-
-void RangeEditor::setRangeL(uint newValue)
-{
-	int rangeR = this->equation->getRangeR();
-	this->equation->setRange(newValue, rangeR);
-
-	if (this->mode == Mode_t::compact_mode)
-	{
-		if (this->rangeLText == nullptr) return;
-
-
-		this->rangeLText->setText(QString::number(newValue));
-	}
-}
-
-void RangeEditor::setRangeR(uint newValue)
-{
-	int rangeL = this->equation->getRangeL();
-	this->equation->setRange(rangeL, newValue);
-
-	if (this->mode == Mode_t::compact_mode)
-	{
-		if (this->rangeRText == nullptr) return;
-
-
-		this->rangeRText->setText(QString::number(newValue));
 	}
 }
 
@@ -332,6 +226,84 @@ void RangeEditor::rEditorValueChangedEventHandler(int newValue)
 	this->rangeLEditor->setMinValue(newValue+1);
 }
 
+/**
+ * @brief RangeEditor::setMode changes the mode of the editor.
+ * @param newMode New mode to apply to the editor
+ * @param saveChanges Save current changes before swithing mode
+ *        (only relevant if current mode is editor mode).
+ */
+void RangeEditor::setMode(Mode_t newMode, bool saveChanges)
+{
+	if (this->isValid == false) return;
+
+	if (this->mode == newMode) return;
+
+
+	if (newMode == Mode_t::editor_mode)
+	{
+		this->mode = Mode_t::editor_mode;
+	}
+	else // (newMode == Mode_t::compact_mode)
+	{
+		if (saveChanges == true)
+		{
+			auto rangeL = NaturalValue{static_cast<unsigned int>(this->rangeLEditor->getValue())};
+			this->equation->setOperand(1, rangeL);
+
+			if (this->rangeREditor != nullptr)
+			{
+				auto rangeR = NaturalValue{static_cast<unsigned int>(this->rangeREditor->getValue())};
+				this->equation->setOperand(2, rangeR);
+			}
+		}
+
+		this->mode = Mode_t::compact_mode;
+	}
+
+	this->clear();
+	this->build();
+
+	if (this->mode == Mode_t::editor_mode)
+	{
+		if (this->rangeLEditor != nullptr)
+		{
+			this->rangeLEditor->setFocus();
+		}
+	}
+}
+
+void RangeEditor::setRangeL(uint newValue)
+{
+	if (this->isValid == false) return;
+
+
+	this->equation->setOperand(1, NaturalValue{newValue});
+
+	if (this->mode == Mode_t::compact_mode)
+	{
+		if (this->rangeLText == nullptr) return;
+
+
+		this->rangeLText->setText(QString::number(newValue));
+	}
+}
+
+void RangeEditor::setRangeR(uint newValue)
+{
+	if (this->isValid == false) return;
+
+
+	this->equation->setOperand(2, NaturalValue{newValue});
+
+	if (this->mode == Mode_t::compact_mode)
+	{
+		if (this->rangeRText == nullptr) return;
+
+
+		this->rangeRText->setText(QString::number(newValue));
+	}
+}
+
 void RangeEditor::clear()
 {
 	qDeleteAll(this->children());
@@ -345,100 +317,64 @@ void RangeEditor::clear()
 
 void RangeEditor::build()
 {
-	if (this->equation == nullptr) return;
+	if (this->isValid == false) return;
 
 
 	auto mainLayout = new QHBoxLayout(this);
+	mainLayout->setSpacing(0);
 	mainLayout->setSizeConstraint(QLayout::SetMinimumSize);
 
-	mainLayout->addStretch();
-
 	auto label = new QLabel("[");
-	label->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
 	mainLayout->addWidget(label);
 
-	int currentRangeL = this->equation->getRangeL();
-	int currentRangeR = this->equation->getRangeR();
-
-	QString text;
+	uint currentRangeL = this->equation->getOperand(1)->getInitialValue().getNaturalValue();
 	if (this->mode == Mode_t::editor_mode)
 	{
-		mainLayout->setSpacing(0);
 
-		if (currentRangeL != -1)
+		uint lowerBound;
+		if (this->equation->getOperandCount() == 3)
 		{
-			text = QString::number(currentRangeL);
-		}
-
-		auto operand = this->equation->getOperand(0);
-		if ( (operand != nullptr) && (operand->getType() == MachineValue::Type_t::bitVector) )
-		{
-			auto value = operand->getInitialValue().getBitVectorValue();
-			int variableSize = value.getSize();
-
-			if (currentRangeR != -1)
-			{
-				this->rangeLEditor = new LineWithUpDownButtonsEditor(currentRangeR+1, variableSize-1, text);
-				connect(this->rangeLEditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::lEditorValueChangedEventHandler);
-				mainLayout->addWidget(this->rangeLEditor);
-
-				label = new QLabel("..");
-				mainLayout->addWidget(label);
-
-				text = QString::number(currentRangeR);
-				this->rangeREditor = new LineWithUpDownButtonsEditor(0, currentRangeL-1, text);
-				connect(this->rangeREditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::rEditorValueChangedEventHandler);
-				mainLayout->addWidget(this->rangeREditor);
-			}
-			else
-			{
-				this->rangeLEditor = new LineWithUpDownButtonsEditor(0, variableSize-1, text);
-				mainLayout->addWidget(this->rangeLEditor);
-			}
-		}
-	}
-	else // (this->getEditMode() == EditionMode_t::display_mode)
-	{
-		this->rangeLText = new QLabel();
-		if (currentRangeL != -1)
-		{
-			text = QString::number(currentRangeL);
-			this->rangeLText->setStyleSheet("QLabel {border: 1px solid green; border-radius: 5px}");
+			lowerBound = this->equation->getOperand(2)->getInitialValue().getNaturalValue() + 1;
 		}
 		else
 		{
-			text = "…";
-			this->rangeLText->setStyleSheet("QLabel {border: 1px solid red; border-radius: 5px}");
+			lowerBound = 0;
 		}
-		this->rangeLText->setText(text);
+
+		this->rangeLEditor = new LineWithUpDownButtonsEditor(lowerBound, this->vectorSize-1, QString::number(currentRangeL));
+		mainLayout->addWidget(this->rangeLEditor);
+	}
+	else // (this->mode == Mode_t::compact_mode)
+	{
+		this->rangeLText = new QLabel(QString::number(currentRangeL));
+		this->rangeLText->setStyleSheet("QLabel {border: 1px solid green; border-radius: 5px}");
 
 		mainLayout->addWidget(this->rangeLText);
+	}
 
-		if (currentRangeR != -1)
+	if (this->equation->getOperandCount() == 3)
+	{
+		label = new QLabel("..");
+		mainLayout->addWidget(label);
+
+		uint currentRangeR = this->equation->getOperand(2)->getInitialValue().getNaturalValue();
+		if (this->mode == Mode_t::editor_mode)
 		{
-			label = new QLabel("..");
-			mainLayout->addWidget(label);
+			this->rangeREditor = new LineWithUpDownButtonsEditor(0, currentRangeL-1, QString::number(currentRangeR));
+			mainLayout->addWidget(this->rangeREditor);
 
-			this->rangeRText = new QLabel();
-			if (currentRangeR != -1)
-			{
-				text = QString::number(currentRangeR);
-				this->rangeRText->setStyleSheet("QLabel {border: 1px solid green; border-radius: 5px}");
-			}
-			else
-			{
-				text = "…";
-				this->rangeRText->setStyleSheet("QLabel {border: 1px solid red; border-radius: 5px}");
-			}
-			this->rangeRText->setText(text);
-
+			connect(this->rangeLEditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::lEditorValueChangedEventHandler);
+			connect(this->rangeREditor, &LineWithUpDownButtonsEditor::valueChanged, this, &RangeEditor::rEditorValueChangedEventHandler);
+		}
+		else // (this->mode == Mode_t::compact_mode)
+		{
+			this->rangeRText = new QLabel(QString::number(currentRangeR));
+			this->rangeRText->setStyleSheet("QLabel {border: 1px solid green; border-radius: 5px}");
 
 			mainLayout->addWidget(this->rangeRText);
 		}
 	}
 
 	label = new QLabel("]");
-	label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 	mainLayout->addWidget(label);
-	mainLayout->addStretch();
 }

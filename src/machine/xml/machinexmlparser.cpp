@@ -337,12 +337,6 @@ void MachineXmlParser::parseLogicEquationNode()
 	else if (valueOperator == "extract")
 	{
 		operatorType = Equation::Operator_t::extractOp;
-
-		auto srangel = this->getCurrentNodeStringAttribute("RangeL");
-		auto sranger = this->getCurrentNodeStringAttribute("RangeR");
-
-		rangeL = srangel.toInt();
-		rangeR = sranger.toInt();
 	}
 	else
 	{
@@ -355,11 +349,6 @@ void MachineXmlParser::parseLogicEquationNode()
 
 	// Build equation
 	auto equation = std::make_shared<Equation>(operatorType, operandCount);
-
-	if (operatorType == Equation::Operator_t::extractOp)
-	{
-		equation->setRange(rangeL, rangeR);
-	}
 
 	this->equationStack.push(equation);
 }

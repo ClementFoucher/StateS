@@ -32,6 +32,7 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "equation.h"
+#include "operand.h"
 #include "variable.h"
 #include "rangeeditor.h"
 
@@ -45,14 +46,24 @@ RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int ran
 	auto variable = machine->getVariable(variableId);
 	if (variable == nullptr) return;
 
+	if (variable->getType() != MachineValue::Type_t::bitVector) return;
+
+	auto variableValue = variable->getInitialValue().getBitVectorValue();
+	if (variableValue.getSize() < 2) return;
+
 
 	//
 	// Build object
 	this->setWindowTitle(tr("Edit range"));
 
-	this->equation = std::make_shared<Equation>(Equation::Operator_t::extractOp, 1);
+	unsigned int operandCount = (rangeR >= 0) ? 3 : 2;
+	this->equation = std::make_shared<Equation>(Equation::Operator_t::extractOp, operandCount);
 	this->equation->setOperand(0, variableId);
-	this->equation->setRange(rangeL, rangeR);
+	this->equation->setOperand(1, NaturalValue{static_cast<unsigned int>(rangeL)});
+	if (operandCount == 3)
+	{
+		this->equation->setOperand(2, NaturalValue{static_cast<unsigned int>(rangeR)});
+	}
 
 	//
 	// Title
@@ -74,6 +85,7 @@ RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int ran
 	this->rangeExtractor = new RangeEditor(this->equation);
 
 	auto extractorLayout = new QHBoxLayout();
+	extractorLayout->setSpacing(0);
 	extractorLayout->addStretch();
 	extractorLayout->addWidget(variableName);
 	extractorLayout->addWidget(this->rangeExtractor);
@@ -81,6 +93,7 @@ RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int ran
 
 	//
 	// Extractor type
+
 	auto extractSingleRadioButton = new QRadioButton(tr("Extract single bit"));
 	auto extractRangeRadioButton  = new QRadioButton(tr("Extract range"));
 
@@ -124,12 +137,19 @@ RangeEditorDialog::RangeEditorDialog(ComponentId variableId, int rangeL, int ran
 
 int RangeEditorDialog::getRangeL() const
 {
-	return this->equation->getRangeL();
+	return this->equation->getOperand(1)->getConstant().getNaturalValue();
 }
 
 int RangeEditorDialog::getRangeR() const
 {
-	return this->equation->getRangeR();
+	if (this->equation->getOperandCount() == 3)
+	{
+		return this->equation->getOperand(2)->getConstant().getNaturalValue();
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 void RangeEditorDialog::extractSingleBitSelectedEventHandler(bool checked)

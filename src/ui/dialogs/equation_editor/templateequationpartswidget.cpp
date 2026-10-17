@@ -318,9 +318,9 @@ void TemplateEquationPartsWidget::buildVariableList(QVBoxLayout* layout, QList<C
 			auto hLayout = new QHBoxLayout();
 			hLayout->addWidget(variableEditorWidget);
 
-			auto rangeEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp);
+			auto rangeEquation = std::make_shared<Equation>(Equation::Operator_t::extractOp, 2);
 			rangeEquation->setOperand(0, varId);
-			rangeEquation->setRange(0);
+			rangeEquation->setOperand(1, NaturalValue{0});
 			auto rangeEditorWidget = new EquationEditorWidget(rangeEquation, 0, true);
 			hLayout->addWidget(rangeEditorWidget);
 

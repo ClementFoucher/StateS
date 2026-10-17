@@ -191,34 +191,36 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 
 
 	this->stream->writeStartElement("LogicEquation");
+
+	bool writeOperandCount = false;
 	switch (equation->getOperator())
 	{
 	case Equation::Operator_t::andOp:
 		this->stream->writeAttribute("Operator", "and");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::nandOp:
 		this->stream->writeAttribute("Operator", "nand");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::norOp:
 		this->stream->writeAttribute("Operator", "nor");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::notOp:
 		this->stream->writeAttribute("Operator", "not");
 		break;
 	case Equation::Operator_t::orOp:
 		this->stream->writeAttribute("Operator", "or");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::xnorOp:
 		this->stream->writeAttribute("Operator", "xnor");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::xorOp:
 		this->stream->writeAttribute("Operator", "xor");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::equalOp:
 		this->stream->writeAttribute("Operator", "equals");
@@ -246,16 +248,20 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
 		break;
 	case Equation::Operator_t::extractOp:
 		this->stream->writeAttribute("Operator", "extract");
-		this->stream->writeAttribute("RangeL", QString::number(equation->getRangeL()));
-		this->stream->writeAttribute("RangeR", QString::number(equation->getRangeR()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::concatOp:
 		this->stream->writeAttribute("Operator", "concatenate");
-		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
+		writeOperandCount = true;
 		break;
 	case Equation::Operator_t::identity:
 		this->stream->writeAttribute("Operator", "identity");
 		break;
+	}
+
+	if (writeOperandCount == true)
+	{
+		this->stream->writeAttribute("OperandCount", QString::number(equation->getOperandCount()));
 	}
 
 	for (uint i = 0 ; i < equation->getOperandCount() ; i++)

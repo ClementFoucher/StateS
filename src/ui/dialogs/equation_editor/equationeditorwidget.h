@@ -25,9 +25,6 @@
 // Parent
 #include "equationparteditorwidget.h"
 
-// StateS
-class RangeEditor;
-
 
 class EquationEditorWidget : public EquationPartEditorWidget
 {
@@ -50,7 +47,6 @@ public:
 
 	void closeOpenEditors();
 
-	virtual void beginEdit()  override;
 	virtual bool validEdit()  override;
 	virtual bool cancelEdit() override;
 
@@ -69,7 +65,6 @@ protected:
 	virtual void processSpecificDropAction(DropAction_t    action) override;
 
 private slots:
-	void rangeEditorBeginEditEventHandler();
 	void equationChangedEventHandler();
 
 private:
@@ -78,7 +73,6 @@ private:
 	void buildCompleteEquation();
 	void updateOperandWidget(uint operandRank);
 	void setInverted(bool invert);
-	void fixExtractorRange();
 	EquationPartEditorWidget* buildOperandEditorWidget(uint operandRank);
 
 	QString getTemplateText() const;
@@ -89,7 +83,6 @@ private:
 	std::shared_ptr<Equation> equation;
 
 	QList<EquationPartEditorWidget*> operands;
-	RangeEditor* rangeEditor = nullptr;
 
 };
 

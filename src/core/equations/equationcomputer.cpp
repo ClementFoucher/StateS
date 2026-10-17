@@ -23,7 +23,7 @@
 #include "equationcomputer.h"
 
 
-MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, const std::vector<MachineValue> operands, int rangeL, int rangeR)
+MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, const std::vector<MachineValue> operands)
 {
 	MachineValue computedValue{};
 	switch (operator_)
@@ -83,16 +83,22 @@ MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, cons
 		break;
 	case Equation::Operator_t::extractOp:
 	{
-		// PRE: there is one operand
-		// PRE: the operand is valid
-		// PRE: the operand is of type Bit Vector
-		// PRE: right range is -1 and left range is < to Bit Vector size and > to 0
-		//      OR right range is >= to 0 and <= left range AND left range is < to Bit Vector size
+		// PRE: there are 2 or 3 operands
+		// PRE: the operands are valid
+		// PRE: operand 0 is of type Bit Vector, others of type Natural
+		// PRE:        extract one bit (two operands)
+		//         AND bit extracted is < to Bit Vector size
+		//      OR     extract range (three operands)
+		//         AND left range is < to Bit Vector size
+		//         AND right range is <= left range
 
 		auto operandBitVectorValue = operands[0].getBitVectorValue();
-		if (rangeR != -1)
+
+		if (operands.size() == 3) // Extract subrange
 		{
-			int range = rangeL - rangeR + 1;
+			auto rangeL = operands[1].getNaturalValue();
+			auto rangeR = operands[2].getNaturalValue();
+			uint range = rangeL - rangeR + 1;
 			auto subVector = BitVectorValue::allZeros(range);
 
 			for (int i = 0 ; i < range ; i++)
@@ -102,9 +108,10 @@ MachineValue EquationComputer::computeValue(Equation::Operator_t operator_, cons
 
 			computedValue = subVector;
 		}
-		else
+		else // (operands.size() == 2) // Extract individual bit
 		{
-			computedValue = operandBitVectorValue[rangeL];
+			auto bitToExtract = operands[1].getNaturalValue();
+			computedValue = operandBitVectorValue[bitToExtract];
 		}
 		break;
 	}

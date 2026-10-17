@@ -67,10 +67,6 @@ private:
 	Equation::Operator_t operatorType;
 	QList<std::shared_ptr<SimulatedOperand>> operands;
 
-	// Parameters specific to Extract operator type
-	int rangeL = -1;
-	int rangeR = -1;
-
 	// Equation state recomputed dynamically
 	MachineValue currentValue{};
 
