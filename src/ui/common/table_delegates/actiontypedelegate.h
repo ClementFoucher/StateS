@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -19,8 +19,8 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONTABLETYPEDELEGATE_H
-#define ACTIONTABLETYPEDELEGATE_H
+#ifndef ACTIONTYPEDELEGATE_H
+#define ACTIONTYPEDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
@@ -29,14 +29,14 @@
 class ActionTypeEditor;
 
 
-class ActionTableTypeDelegate : public QStyledItemDelegate
+class ActionTypeDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableTypeDelegate(QWidget* parent = nullptr);
+	explicit ActionTypeDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -57,4 +57,4 @@ private:
 
 };
 
-#endif // ACTIONTABLETYPEDELEGATE_H
+#endif // ACTIONTYPEDELEGATE_H

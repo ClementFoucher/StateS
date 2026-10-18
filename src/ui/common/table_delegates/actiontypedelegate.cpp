@@ -1,5 +1,5 @@
 /*
- * Copyright © 2026 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "actiontabletypedelegate.h"
+#include "actiontypedelegate.h"
 
 // Qt
 #include <QRegularExpressionValidator>
@@ -29,7 +29,7 @@
 #include "actiontypeeditor.h"
 
 
-ActionTableTypeDelegate::ActionTableTypeDelegate(QWidget* parent) :
+ActionTypeDelegate::ActionTypeDelegate(QWidget* parent) :
 	QStyledItemDelegate(parent)
 {
 	this->dummyEditor = new ActionTypeEditor(parent);
@@ -37,7 +37,7 @@ ActionTableTypeDelegate::ActionTableTypeDelegate(QWidget* parent) :
 	this->dummyEditor->setVisible(false);
 }
 
-QWidget* ActionTableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+QWidget* ActionTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	auto actionTypeEditor = new ActionTypeEditor(parent);
 
@@ -48,7 +48,7 @@ QWidget* ActionTableTypeDelegate::createEditor(QWidget* parent, const QStyleOpti
 	return actionTypeEditor;
 }
 
-void ActionTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void ActionTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto actionTypeEditor = dynamic_cast<ActionTypeEditor*>(editor);
 	if (actionTypeEditor == nullptr) return;
@@ -61,10 +61,10 @@ void ActionTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& 
 
 	actionTypeEditor->fillActionList(allowedActionTypes, currentActionType);
 
-	connect(actionTypeEditor, &ActionTypeEditor::actionTypeChangedEvent, this, &ActionTableTypeDelegate::actionTypeChangedEventHandler);
+	connect(actionTypeEditor, &ActionTypeEditor::actionTypeChangedEvent, this, &ActionTypeDelegate::actionTypeChangedEventHandler);
 }
 
-void ActionTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void ActionTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	auto actionTypeEditor = dynamic_cast<ActionTypeEditor*>(editor);
 	if (actionTypeEditor == nullptr) return;
@@ -75,7 +75,7 @@ void ActionTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* 
 	model->setData(index, static_cast<uint>(newActionType), Qt::EditRole);
 }
 
-QSize ActionTableTypeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize ActionTypeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if (this->dummyEditor == nullptr) return QStyledItemDelegate::sizeHint(option, index);
 
@@ -83,7 +83,7 @@ QSize ActionTableTypeDelegate::sizeHint(const QStyleOptionViewItem& option, cons
 	return this->dummyEditor->sizeHint();
 }
 
-void ActionTableTypeDelegate::actionTypeChangedEventHandler(ActionTypeEditor* editor)
+void ActionTypeDelegate::actionTypeChangedEventHandler(ActionTypeEditor* editor)
 {
 	emit this->commitData(editor);
 }
