@@ -20,14 +20,13 @@
  */
 
 // Current class header
-#include "variabletabletypedelegate.h"
+#include "variabletypedelegate.h"
 
 // StateS
 #include "typeeditor.h"
-#include "variabletableview.h"
 
 
-VariableTableTypeDelegate::VariableTableTypeDelegate(QWidget* parent) :
+VariableTypeDelegate::VariableTypeDelegate(QWidget* parent) :
 	QStyledItemDelegate(parent)
 {
 	// Dummy editor is only here to provide a size hint
@@ -36,7 +35,7 @@ VariableTableTypeDelegate::VariableTableTypeDelegate(QWidget* parent) :
 	this->dummyEditor->setVisible(false);
 }
 
-QWidget* VariableTableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+QWidget* VariableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	auto typeEditor = new TypeEditor(parent);
 
@@ -47,7 +46,7 @@ QWidget* VariableTableTypeDelegate::createEditor(QWidget* parent, const QStyleOp
 	return typeEditor;
 }
 
-void VariableTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void VariableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto typeEditor = dynamic_cast<TypeEditor*>(editor);
 	if (typeEditor == nullptr) return;
@@ -76,10 +75,10 @@ void VariableTableTypeDelegate::setEditorData(QWidget* editor, const QModelIndex
 		typeEditor->setCurrentType(MachineValue::Type_t::relative);
 	}
 
-	connect(typeEditor, &TypeEditor::typeChangedEvent, this, &VariableTableTypeDelegate::typeChangedEventHandler);
+	connect(typeEditor, &TypeEditor::typeChangedEvent, this, &VariableTypeDelegate::typeChangedEventHandler);
 }
 
-void VariableTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void VariableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	auto typeEditor = dynamic_cast<TypeEditor*>(editor);
 	if (typeEditor == nullptr) return;
@@ -115,12 +114,12 @@ void VariableTableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel
 	}
 }
 
-QSize VariableTableTypeDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
+QSize VariableTypeDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return this->dummyEditor->sizeHint();
 }
 
-void VariableTableTypeDelegate::typeChangedEventHandler(TypeEditor* editor)
+void VariableTypeDelegate::typeChangedEventHandler(TypeEditor* editor)
 {
 	emit this->commitData(editor);
 }

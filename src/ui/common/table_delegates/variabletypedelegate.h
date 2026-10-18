@@ -19,8 +19,8 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VARIABLETABLETYPEDELEGATE_H
-#define VARIABLETABLETYPEDELEGATE_H
+#ifndef VARIABLETYPEDELEGATE_H
+#define VARIABLETYPEDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
@@ -29,14 +29,14 @@
 class TypeEditor;
 
 
-class VariableTableTypeDelegate : public QStyledItemDelegate
+class VariableTypeDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableTypeDelegate(QWidget* parent = nullptr);
+	explicit VariableTypeDelegate(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
@@ -56,4 +56,4 @@ private:
 
 };
 
-#endif // VARIABLETABLETYPEDELEGATE_H
+#endif // VARIABLETYPEDELEGATE_H
