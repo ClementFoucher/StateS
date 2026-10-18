@@ -27,7 +27,7 @@
 #include <QContextMenuEvent>
 
 // StateS
-#include "variabletablememorizeddelegate.h"
+#include "checkboxdelegate.h"
 #include "variabletablenamedelegate.h"
 #include "variabletabletypedelegate.h"
 #include "machinevaluedelegate.h"
@@ -59,7 +59,7 @@ VariableTableView::VariableTableView(Machine::VariableNature_t tableNature, QWid
 		else if (role == "MEMORIZED")
 		{
 			this->columnsRoles[VariableTableModel::ColumnRole_t::memorized] = column;
-			this->setItemDelegateForColumn(column, new VariableTableMemorizedDelegate(this));
+			this->setItemDelegateForColumn(column, new CheckBoxDelegate(this));
 		}
 		else if (role == "VALUE")
 		{

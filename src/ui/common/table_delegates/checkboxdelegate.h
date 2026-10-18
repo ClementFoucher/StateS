@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -19,8 +19,8 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VARIABLETABLEMEMORIZEDDELEGATE_H
-#define VARIABLETABLEMEMORIZEDDELEGATE_H
+#ifndef CHECKBOXDELEGATE_H
+#define CHECKBOXDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
@@ -29,14 +29,14 @@
 class CheckBoxEditor;
 
 
-class VariableTableMemorizedDelegate : public QStyledItemDelegate
+class CheckBoxDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableMemorizedDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
+	explicit CheckBoxDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
 
 	/////
 	// Object functions
@@ -46,8 +46,8 @@ public:
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 private slots:
-	void memorizedStateChangedEventHandler(CheckBoxEditor* memorizedEditor);
+	void checkedStateChangedEventHandler(CheckBoxEditor* memorizedEditor);
 
 };
 
-#endif // VARIABLETABLEMEMORIZEDDELEGATE_H
+#endif // CHECKBOXDELEGATE_H

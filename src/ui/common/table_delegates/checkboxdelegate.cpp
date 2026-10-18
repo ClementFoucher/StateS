@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -20,18 +20,18 @@
  */
 
 // Current class header
-#include "variabletablememorizeddelegate.h"
+#include "checkboxdelegate.h"
 
 // StateS
 #include "checkboxeditor.h"
 
 
-QWidget* VariableTableMemorizedDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+QWidget* CheckBoxDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return new CheckBoxEditor(parent);
 }
 
-void VariableTableMemorizedDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void CheckBoxDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto memorizedEditor = dynamic_cast<CheckBoxEditor*>(editor);
 	if (memorizedEditor == nullptr) return;
@@ -39,10 +39,10 @@ void VariableTableMemorizedDelegate::setEditorData(QWidget* editor, const QModel
 
 	memorizedEditor->setChecked(index.data(Qt::EditRole).toBool());
 
-	connect(memorizedEditor, &CheckBoxEditor::checkedStateChangedEvent, this, &VariableTableMemorizedDelegate::memorizedStateChangedEventHandler);
+	connect(memorizedEditor, &CheckBoxEditor::checkedStateChangedEvent, this, &CheckBoxDelegate::checkedStateChangedEventHandler);
 }
 
-void VariableTableMemorizedDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void CheckBoxDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	auto memorizedEditor = dynamic_cast<CheckBoxEditor*>(editor);
 	if (memorizedEditor == nullptr) return;
@@ -51,7 +51,7 @@ void VariableTableMemorizedDelegate::setModelData(QWidget* editor, QAbstractItem
 	model->setData(index, memorizedEditor->getChecked(), Qt::EditRole);
 }
 
-void VariableTableMemorizedDelegate::memorizedStateChangedEventHandler(CheckBoxEditor* memorizedEditor)
+void CheckBoxDelegate::checkedStateChangedEventHandler(CheckBoxEditor* memorizedEditor)
 {
 	emit this->commitData(memorizedEditor);
 }
