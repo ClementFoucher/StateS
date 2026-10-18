@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -19,21 +19,21 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VARIABLETABLENAMEDELEGATE_H
-#define VARIABLETABLENAMEDELEGATE_H
+#ifndef VARIABLENAMEDELEGATE_H
+#define VARIABLENAMEDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
 
 
-class VariableTableNameDelegate : public QStyledItemDelegate
+class VariableNameDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTableNameDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
+	explicit VariableNameDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
 
 	/////
 	// Object functions
@@ -45,4 +45,4 @@ public:
 
 };
 
-#endif // VARIABLETABLENAMEDELEGATE_H
+#endif // VARIABLENAMEDELEGATE_H

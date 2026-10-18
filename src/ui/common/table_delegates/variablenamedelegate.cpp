@@ -20,7 +20,7 @@
  */
 
 // Current class header
-#include "variabletablenamedelegate.h"
+#include "variablenamedelegate.h"
 
 // StateS
 #include "variabletableview.h"
@@ -28,12 +28,12 @@
 #include "coloredlineeditor.h"
 
 
-QWidget* VariableTableNameDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+QWidget* VariableNameDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	return new ColoredLineEditor(parent);
 }
 
-void VariableTableNameDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void VariableNameDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto nameEditor = dynamic_cast<ColoredLineEditor*>(editor);
 	if (nameEditor == nullptr) return;
@@ -62,7 +62,7 @@ void VariableTableNameDelegate::setEditorData(QWidget* editor, const QModelIndex
 	}
 }
 
-void VariableTableNameDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void VariableNameDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	auto nameEditor = dynamic_cast<ColoredLineEditor*>(editor);
 	if (nameEditor == nullptr) return;
@@ -73,7 +73,7 @@ void VariableTableNameDelegate::setModelData(QWidget* editor, QAbstractItemModel
 	nameEditor->setErroneous(!success);
 }
 
-void VariableTableNameDelegate::destroyEditor(QWidget* editor, const QModelIndex& index) const
+void VariableNameDelegate::destroyEditor(QWidget* editor, const QModelIndex& index) const
 {
 	auto nameEditor = dynamic_cast<ColoredLineEditor*>(editor);
 	if (nameEditor == nullptr)

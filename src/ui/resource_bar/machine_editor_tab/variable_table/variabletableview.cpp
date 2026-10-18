@@ -28,7 +28,7 @@
 
 // StateS
 #include "checkboxdelegate.h"
-#include "variabletablenamedelegate.h"
+#include "variablenamedelegate.h"
 #include "variabletabletypedelegate.h"
 #include "machinevaluedelegate.h"
 #include "contextmenu.h"
@@ -49,7 +49,7 @@ VariableTableView::VariableTableView(Machine::VariableNature_t tableNature, QWid
 		if (role == "NAME")
 		{
 			this->columnsRoles[VariableTableModel::ColumnRole_t::name] = column;
-			this->setItemDelegateForColumn(column, new VariableTableNameDelegate(this));
+			this->setItemDelegateForColumn(column, new VariableNameDelegate(this));
 		}
 		else if (role == "TYPE")
 		{
