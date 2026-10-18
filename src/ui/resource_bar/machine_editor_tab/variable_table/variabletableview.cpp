@@ -30,7 +30,7 @@
 #include "variabletablememorizeddelegate.h"
 #include "variabletablenamedelegate.h"
 #include "variabletabletypedelegate.h"
-#include "variabletablevaluedelegate.h"
+#include "machinevaluedelegate.h"
 #include "contextmenu.h"
 #include "typeeditor.h"
 
@@ -64,7 +64,7 @@ VariableTableView::VariableTableView(Machine::VariableNature_t tableNature, QWid
 		else if (role == "VALUE")
 		{
 			this->columnsRoles[VariableTableModel::ColumnRole_t::value] = column;
-			this->setItemDelegateForColumn(column, new VariableTableValueDelegate(this));
+			this->setItemDelegateForColumn(column, new MachineValueDelegate(this));
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025-2026 Clément Foucher
+ * Copyright © 2016-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -16,18 +16,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this software. If not, see <http://www.gnu.org/licenses/>.
+ * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Current class header
-#include "variabletablevaluedelegate.h"
+#include "machinevaluedelegate.h"
 
 // StateS
 #include "machinevalue.h"
 #include "valueeditor.h"
 
 
-QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+QWidget* MachineValueDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
 	auto valueEditor = new ValueEditor(parent);
 
@@ -38,7 +38,7 @@ QWidget* VariableTableValueDelegate::createEditor(QWidget* parent, const QStyleO
 	return valueEditor;
 }
 
-void VariableTableValueDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void MachineValueDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
 	if (valueEditor == nullptr) return;
@@ -83,10 +83,10 @@ void VariableTableValueDelegate::setEditorData(QWidget* editor, const QModelInde
 		valueEditor->setMachineValue(RelativeValue::fromRawString(stringBits.at(1)));
 	}
 
-	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &VariableTableValueDelegate::valueChangedEventHandler);
+	connect(valueEditor, &ValueEditor::valueChangedEvent, this, &MachineValueDelegate::valueChangedEventHandler);
 }
 
-void VariableTableValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void MachineValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	auto valueEditor = dynamic_cast<ValueEditor*>(editor);
 	if (valueEditor == nullptr) return;
@@ -96,7 +96,7 @@ void VariableTableValueDelegate::setModelData(QWidget* editor, QAbstractItemMode
 	model->setData(index, newValue.toRawString(), Qt::EditRole);
 }
 
-void VariableTableValueDelegate::valueChangedEventHandler(ValueEditor* editor)
+void MachineValueDelegate::valueChangedEventHandler(ValueEditor* editor)
 {
 	// This is required as ValueEditor is not a QLineEdit:
 	// we have to manually handle editor finalization

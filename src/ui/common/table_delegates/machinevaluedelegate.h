@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONTABLEVALUEDELEGATE_H
-#define ACTIONTABLEVALUEDELEGATE_H
+#ifndef MACHINEVALUEDELEGATE_H
+#define MACHINEVALUEDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
@@ -30,17 +30,17 @@ class ValueEditor;
 
 
 /**
- * @brief The ActionTableValueDelegate class provides an editor
+ * @brief The MachineValueDelegate class provides an editor
  * for the action value cells in an ActionEditor table.
  */
-class ActionTableValueDelegate : public QStyledItemDelegate
+class MachineValueDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTableValueDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
+	explicit MachineValueDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
 
 	/////
 	// Object functions
@@ -54,4 +54,4 @@ private slots:
 
 };
 
-#endif // ACTIONTABLEVALUEDELEGATE_H
+#endif // MACHINEVALUEDELEGATE_H

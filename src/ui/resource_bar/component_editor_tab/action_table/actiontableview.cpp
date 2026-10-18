@@ -33,7 +33,7 @@
 #include "actiononvariable.h"
 #include "variable.h"
 #include "actiontabletypedelegate.h"
-#include "actiontablevaluedelegate.h"
+#include "machinevaluedelegate.h"
 #include "contextmenu.h"
 #include "rangeeditordialog.h"
 
@@ -63,7 +63,7 @@ ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
 		else if (role == "ACTIONVALUE")
 		{
 			this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue] = column;
-			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue], new ActionTableValueDelegate(this));
+			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue], new MachineValueDelegate(this));
 		}
 	}
 
