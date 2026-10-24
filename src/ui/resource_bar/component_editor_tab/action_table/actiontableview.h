@@ -25,14 +25,10 @@
 // Parent
 #include "reorderabletableview.h"
 
-// Stdlib
-#include <memory>
-
 // StateS
 #include "componentid.h"
 #include "actiontablemodel.h"
 class RangeEditorDialog;
-class ActionOnVariable;
 
 
 class ActionTableView : public ReorderableTableView
@@ -42,17 +38,17 @@ class ActionTableView : public ReorderableTableView
 	/////
 	// Type declarations
 private:
-	enum ContextAction_t
+	enum class ContextAction_t : int
 	{
-		Cancel             = 0,
-		DeleteAction       = 1,
-		AffectSwitchWhole  = 2,
-		AffectSwitchSingle = 3,
-		AffectSwitchRange  = 4,
-		AffectEditRange    = 5,
-		EditValue          = 6,
-		MoveUp             = 7,
-		MoveDown           = 8
+		Cancel,
+		DeleteAction,
+		BitVectorAssignWhole,
+		BitVectorAssignSingleBit,
+		BitVectorAssignSubRange,
+		BitVectorEditAssignRange,
+		EditValue,
+		MoveUp,
+		MoveDown
 	};
 
 	/////
@@ -78,8 +74,15 @@ protected:
 
 private slots:
 	void processContextMenuEventHandler(QAction* action);
+
 	void rangeEditorClosedEventHandler(int result);
+
 	void refreshPersistentEditorsEventHandler();
+
+private:
+	void setAssignSingleBit(uint row);
+	void setAssignRange(uint row);
+	void openRangeEditor(uint row);
 
 	/////
 	// Signals
@@ -94,7 +97,6 @@ private:
 	ActionTableModel* tableModel = nullptr;
 	QMap<ActionTableModel::ColumnRole_t, int> columnsRoles;
 
-	std::shared_ptr<ActionOnVariable> actionBeingEdited;
 	RangeEditorDialog* rangeEditorDialog = nullptr;
 	int currentMenuRow = -1;
 

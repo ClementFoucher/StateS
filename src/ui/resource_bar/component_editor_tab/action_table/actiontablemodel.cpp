@@ -569,3 +569,75 @@ void ActionTableModel::addAction(const QString& variableName)
 		}
 	}
 }
+
+void ActionTableModel::setRange(int row, int rangeL, int rangeR)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return;
+
+	auto action = actuator->getAction(row);
+	if (action == nullptr) return;
+
+	auto variable = machine->getVariable(action->getVariableActedOnId());
+	if (variable->getType() != MachineValue::Type_t::bitVector) return;
+
+	if ( (rangeL == action->getActionRangeL()) && (rangeR == action->getActionRangeR()) ) return;
+
+
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Change action range
+	action->setActionRange(rangeL, rangeR);
+
+	// Machine has been edited
+	machineManager->notifyMachineEdited();
+}
+
+std::shared_ptr<const Variable> ActionTableModel::getVariable(int row) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return nullptr;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return nullptr;
+
+	auto action = actuator->getAction(row);
+	if (action == nullptr) return nullptr;
+
+
+	return machine->getVariable(action->getVariableActedOnId());
+}
+
+int ActionTableModel::getActionRangeL(int row) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return -1;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return -1;
+
+	auto actionActedOn = actuator->getAction(row);
+	if (actionActedOn == nullptr) return -1;
+
+
+	return actionActedOn->getActionRangeL();
+}
+
+int ActionTableModel::getActionRangeR(int row) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return -1;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return -1;
+
+	auto actionActedOn = actuator->getAction(row);
+	if (actionActedOn == nullptr) return -1;
+
+
+	return actionActedOn->getActionRangeR();
+}

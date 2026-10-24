@@ -27,10 +27,6 @@
 #include <QHeaderView>
 
 // StateS
-#include "machinemanager.h"
-#include "machine.h"
-#include "machineactuatorcomponent.h"
-#include "actiononvariable.h"
 #include "variable.h"
 #include "actiontypedelegate.h"
 #include "machinevaluedelegate.h"
@@ -104,6 +100,10 @@ void ActionTableView::keyPressEvent(QKeyEvent* ev)
 	{
 		this->deleteSelectedRows();
 	}
+	else
+	{
+		ReorderableTableView::keyPressEvent(ev);
+	}
 }
 
 void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
@@ -111,24 +111,13 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 	uint selectedRowsCount = this->selectionModel()->selectedRows().count();
 	if (selectedRowsCount == 0) return;
 
-	std::shared_ptr<ActionOnVariable> actionActedOn;
-	std::shared_ptr<Variable> variableActedOn;
+	std::shared_ptr<const Variable> variableActedOn;
 	if (selectedRowsCount == 1)
 	{
-		auto machine = machineManager->getMachine();
-		if (machine == nullptr) return;
-
 		int actionRank = this->rowAt(ev->pos().y());
 		if (actionRank < 0) return;
 
-		auto actuator = machine->getActuatorComponent(this->actuatorId);
-		if (actuator == nullptr) return;
-
-		actionActedOn = actuator->getAction(actionRank);
-		if (actionActedOn == nullptr) return;
-
-		auto variableActedOnId = actionActedOn->getVariableActedOnId();
-		variableActedOn = machine->getVariable(variableActedOnId);
+		variableActedOn = this->tableModel->getVariable(actionRank);
 		if (variableActedOn == nullptr) return;
 
 
@@ -153,7 +142,9 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 
 	if (selectedRowsCount == 1)
 	{
-		if (actionActedOn->isActionValueEditable())
+		auto actionValueIndex = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue]);
+		auto flags = this->tableModel->flags(actionValueIndex);
+		if ( (flags & Qt::ItemIsEditable) != 0)
 		{
 			actionBeingAdded = menu->addAction(tr("Edit value"));
 			data.setValue(static_cast<int>(ContextAction_t::EditValue));
@@ -181,45 +172,45 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 	{
 		if ( (variableActedOn->getType() == MachineValue::Type_t::bitVector) && (variableActedOn->getInitialValue().getBitVectorValue().getSize() > 1) )
 		{
-			actionBeingAdded = menu->addAction(tr("Affect whole variable"));
+			actionBeingAdded = menu->addAction(tr("Assign whole variable"));
 			actionBeingAdded->setCheckable(true);
-			if (actionActedOn->getActionRangeL() == -1)
+			if (this->tableModel->getActionRangeL(this->currentMenuRow) == -1)
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchWhole));
+			data.setValue(static_cast<int>(ContextAction_t::BitVectorAssignWhole));
 			actionBeingAdded->setData(data);
 
-			actionBeingAdded = menu->addAction(tr("Affect variable single bit"));
+			actionBeingAdded = menu->addAction(tr("Assign a single bit"));
 			actionBeingAdded->setCheckable(true);
-			if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() == -1) )
+			if ( (this->tableModel->getActionRangeL(this->currentMenuRow) != -1) && (this->tableModel->getActionRangeR(this->currentMenuRow) == -1) )
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchSingle));
+			data.setValue(static_cast<int>(ContextAction_t::BitVectorAssignSingleBit));
 			actionBeingAdded->setData(data);
 
-			actionBeingAdded = menu->addAction(tr("Affect variable range"));
+			actionBeingAdded = menu->addAction(tr("Assign a sub-range"));
 			actionBeingAdded->setCheckable(true);
-			if ( (actionActedOn->getActionRangeL() != -1) && (actionActedOn->getActionRangeR() != -1) )
+			if ( (this->tableModel->getActionRangeL(this->currentMenuRow) != -1) && (this->tableModel->getActionRangeR(this->currentMenuRow) != -1) )
 			{
 				actionBeingAdded->setChecked(true);
 			}
-			data.setValue(static_cast<int>(ContextAction_t::AffectSwitchRange));
+			data.setValue(static_cast<int>(ContextAction_t::BitVectorAssignSubRange));
 			actionBeingAdded->setData(data);
 
-			if ( (actionActedOn->getActionRangeL() != -1) || (actionActedOn->getActionRangeR() != -1) )
+			if ( (this->tableModel->getActionRangeL(this->currentMenuRow) != -1) || (this->tableModel->getActionRangeR(this->currentMenuRow) != -1) )
 			{
-				if (actionActedOn->getActionRangeR() == -1)
+				if (this->tableModel->getActionRangeR(this->currentMenuRow) == -1)
 				{
-					actionBeingAdded = menu->addAction(tr("Edit affected bit"));
+					actionBeingAdded = menu->addAction(tr("Edit assigned bit"));
 				}
 				else
 				{
-					actionBeingAdded = menu->addAction(tr("Edit range"));
+					actionBeingAdded = menu->addAction(tr("Edit sub-range"));
 				}
 
-				data.setValue(static_cast<int>(ContextAction_t::AffectEditRange));
+				data.setValue(static_cast<int>(ContextAction_t::BitVectorEditAssignRange));
 				actionBeingAdded->setData(data);
 			}
 
@@ -290,40 +281,6 @@ void ActionTableView::openPersistentEditors(int firstRow, int firstColumn, int l
 void ActionTableView::processContextMenuEventHandler(QAction* action)
 {
 	auto dataValue = static_cast<ContextAction_t>(action->data().toInt());
-
-	std::shared_ptr<ActionOnVariable> actionOnVariable;
-	if (this->currentMenuRow >= 0)
-	{
-		auto machine = machineManager->getMachine();
-		if (machine == nullptr) return;
-
-		auto actuator = machine->getActuatorComponent(this->actuatorId);
-		if (actuator == nullptr) return;
-
-		actionOnVariable = actuator->getAction(this->currentMenuRow);
-		if (actionOnVariable == nullptr) return;
-	}
-
-	int oldRangeL;
-	int oldRangeR;
-
-	int newRangeL = -1;
-	int newRangeR = -1;
-	bool setRange = false;
-
-	if ( (dataValue == ContextAction_t::AffectSwitchWhole)  ||
-	     (dataValue == ContextAction_t::AffectSwitchSingle) ||
-	     (dataValue == ContextAction_t::AffectSwitchRange)  ||
-	     (dataValue == ContextAction_t::AffectEditRange)
-	   )
-	{
-		if (actionOnVariable == nullptr) return;
-
-
-		oldRangeL = actionOnVariable->getActionRangeL();
-		oldRangeR = actionOnVariable->getActionRangeR();
-	}
-
 	switch (dataValue)
 	{
 	case ContextAction_t::Cancel:
@@ -338,111 +295,56 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		this->setCurrentIndex(index);
 		this->edit(index);
 
+		this->currentMenuRow = -1;
 		break;
 	}
 	case ContextAction_t::DeleteAction:
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Delete actions
 		this->deleteSelectedRows();
+		break;
+	case ContextAction_t::BitVectorAssignWhole:
+		if (this->currentMenuRow < 0) return;
 
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
+
+		this->tableModel->setRange(this->currentMenuRow, -1, -1);
+
+		this->currentMenuRow = -1;
 		break;
-	case ContextAction_t::AffectSwitchWhole:
-		if ( (oldRangeL != -1) || (oldRangeR != -1) )
-		{
-			setRange = true;
-		}
+	case ContextAction_t::BitVectorAssignSingleBit:
+		if (this->currentMenuRow < 0) return;
+
+
+		this->setAssignSingleBit(static_cast<uint>(this->currentMenuRow));
+
+		this->currentMenuRow = -1;
 		break;
-	case ContextAction_t::AffectSwitchSingle:
-		if (oldRangeL == -1)
-		{
-			newRangeL = 0;
-			setRange = true;
-		}
-		else if  (oldRangeR != -1)
-		{
-			newRangeL = oldRangeL;
-			setRange = true;
-		}
+	case ContextAction_t::BitVectorAssignSubRange:
+		if (this->currentMenuRow < 0) return;
+
+
+		this->setAssignRange(static_cast<uint>(this->currentMenuRow));
+
+		this->currentMenuRow = -1;
 		break;
-	case ContextAction_t::AffectSwitchRange:
-		if (oldRangeL == -1)
-		{
-			newRangeL = 1;
-			newRangeR = 0;
-			setRange = true;
-		}
-		else if  (oldRangeR == -1)
-		{
-			if (oldRangeL != 0)
-			{
-				newRangeL = oldRangeL;
-				newRangeR = 0;
-				setRange = true;
-			}
-			else
-			{
-				newRangeL = 1;
-				newRangeR = 0;
-				setRange = true;
-			}
-		}
+	case ContextAction_t::BitVectorEditAssignRange:
+		if (this->currentMenuRow < 0) return;
+
+
+		this->openRangeEditor(static_cast<uint>(this->currentMenuRow));
 		break;
 	case ContextAction_t::MoveDown:
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Move actions
 		this->lowerSelectedRows();
-
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
 		break;
 	case ContextAction_t::MoveUp:
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Move actions
 		this->raiseSelectedRows();
-
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
-		break;
-	case ContextAction_t::AffectEditRange:
-		if (actionOnVariable == nullptr) return;
-
-
-		this->actionBeingEdited = actionOnVariable;
-		this->rangeEditorDialog = new RangeEditorDialog(actionOnVariable->getVariableActedOnId(), oldRangeL, oldRangeR, this);
-		connect(this->rangeEditorDialog, &RangeEditorDialog::finished, this, &ActionTableView::rangeEditorClosedEventHandler);
-
-		this->rangeEditorDialog->open();
 		break;
 	}
-
-	if (setRange == true)
-	{
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Change action range
-		actionOnVariable->setActionRange(newRangeL, newRangeR);
-
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
-	}
-
-	this->currentMenuRow = -1;
 }
 
 void ActionTableView::rangeEditorClosedEventHandler(int result)
 {
 	if (this->rangeEditorDialog == nullptr) return;
 
-	if (this->actionBeingEdited == nullptr) return;
+	if (this->currentMenuRow < 0) return;
 
 
 	if (result == QDialog::Accepted)
@@ -450,17 +352,10 @@ void ActionTableView::rangeEditorClosedEventHandler(int result)
 		int newRangeL = this->rangeEditorDialog->getRangeL();
 		int newRangeR = this->rangeEditorDialog->getRangeR();
 
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Change action range
-		this->actionBeingEdited->setActionRange(newRangeL, newRangeR);
-
-		// Machine has been edited
-		machineManager->notifyMachineEdited();
+		this->tableModel->setRange(this->currentMenuRow, newRangeL, newRangeR);
 	}
 
-	this->actionBeingEdited = nullptr;
+	this->currentMenuRow = -1;
 
 	delete this->rangeEditorDialog;
 	this->rangeEditorDialog = nullptr;
@@ -470,4 +365,60 @@ void ActionTableView::refreshPersistentEditorsEventHandler()
 {
 	this->closePersistentEditors();
 	this->openPersistentEditors();
+}
+
+void ActionTableView::setAssignSingleBit(uint row)
+{
+	int oldRangeL = this->tableModel->getActionRangeL(row);
+	int oldRangeR = this->tableModel->getActionRangeR(row);
+
+	if (oldRangeL == -1)
+	{
+		this->tableModel->setRange(row, 0, -1);
+	}
+	else if (oldRangeR != -1)
+	{
+		this->tableModel->setRange(row, oldRangeL, -1);
+	}
+}
+
+void ActionTableView::setAssignRange(uint row)
+{
+	int oldRangeL = this->tableModel->getActionRangeL(row);
+	int oldRangeR = this->tableModel->getActionRangeR(row);
+
+	int newRangeL = -1;
+	int newRangeR = -1;
+	if (oldRangeL == -1)
+	{
+		newRangeL = 1;
+		newRangeR = 0;
+	}
+	else if  (oldRangeR == -1)
+	{
+		if (oldRangeL != 0)
+		{
+			newRangeL = oldRangeL;
+			newRangeR = 0;
+		}
+		else
+		{
+			newRangeL = 1;
+			newRangeR = 0;
+		}
+	}
+
+	this->tableModel->setRange(row, newRangeL, newRangeR);
+}
+
+void ActionTableView::openRangeEditor(uint row)
+{
+	auto variable = this->tableModel->getVariable(row);
+	int oldRangeL = this->tableModel->getActionRangeL(row);
+	int oldRangeR = this->tableModel->getActionRangeR(row);
+
+	this->rangeEditorDialog = new RangeEditorDialog(variable->getId(), oldRangeL, oldRangeR, this);
+	connect(this->rangeEditorDialog, &RangeEditorDialog::finished, this, &ActionTableView::rangeEditorClosedEventHandler);
+
+	this->rangeEditorDialog->open();
 }

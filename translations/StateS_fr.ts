@@ -279,67 +279,67 @@
 <context>
     <name>ActionTableView</name>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="144"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="133"/>
         <source>Edit action on variable</source>
         <translation>Éditer l&apos;action sur la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="148"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="137"/>
         <source>Edit all selected actions</source>
         <translation>Éditer l&apos;ensemble des actions sélectionnées</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="158"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="149"/>
         <source>Edit value</source>
         <translation>Éditer la valeur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="166"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="157"/>
         <source>Move up</source>
         <translation>Déplacer vers le haut</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="173"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="164"/>
         <source>Move down</source>
         <translation>Déplacer vers le bas</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="184"/>
-        <source>Affect whole variable</source>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="175"/>
+        <source>Assign whole variable</source>
         <translation>Affecter la totalité de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="193"/>
-        <source>Affect variable single bit</source>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="184"/>
+        <source>Assign a single bit</source>
         <translation>Affecter un seul bit de la variable</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="202"/>
-        <source>Affect variable range</source>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="193"/>
+        <source>Assign a sub-range</source>
         <translation>Affecter un sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="215"/>
-        <source>Edit affected bit</source>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="206"/>
+        <source>Edit assigned bit</source>
         <translation>Éditer le bit affecté</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="219"/>
-        <source>Edit range</source>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="210"/>
+        <source>Edit sub-range</source>
         <translation>Éditer le sous-vecteur</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="229"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="220"/>
         <source>Delete action</source>
         <translation>Supprimer l&apos;action</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="235"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="226"/>
         <source>Delete actions</source>
         <translation>Supprimer les actions</translation>
     </message>
     <message>
-        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="240"/>
+        <location filename="../src/ui/resource_bar/component_editor_tab/action_table/actiontableview.cpp" line="231"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -3362,6 +3362,19 @@
     </message>
 </context>
 <context>
+    <name>VariableNameDelegate</name>
+    <message>
+        <location filename="../src/ui/common/table_delegates/variablenamedelegate.cpp" line="59"/>
+        <source>Unable to use this name!</source>
+        <translation>Impossible d&apos;utiliser ce nom !</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/common/table_delegates/variablenamedelegate.cpp" line="60"/>
+        <source>This name is probably already used by another variable.</source>
+        <translation>Ce nom est probablement déjà utilisé par une autre variable.</translation>
+    </message>
+</context>
+<context>
     <name>VariableTableModel</name>
     <message>
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="86"/>
@@ -3411,19 +3424,6 @@
         <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/variabletablemodel.cpp" line="116"/>
         <source>Value</source>
         <translation>Valeur</translation>
-    </message>
-</context>
-<context>
-    <name>VariableTableNameDelegate</name>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp" line="59"/>
-        <source>Unable to use this name!</source>
-        <translation>Impossible d&apos;utiliser ce nom !</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/resource_bar/machine_editor_tab/variable_table/delegates/variabletablenamedelegate.cpp" line="60"/>
-        <source>This name is probably already used by another variable.</source>
-        <translation>Ce nom est probablement déjà utilisé par une autre variable.</translation>
     </message>
 </context>
 <context>

@@ -27,6 +27,7 @@
 
 // StateS
 #include "componentid.h"
+class Variable;
 
 
 /**
@@ -59,10 +60,12 @@ public:
 	/////
 	// Object functions
 public:
-	virtual int columnCount(const QModelIndex& parent = QModelIndex())              const override;
-	virtual int rowCount   (const QModelIndex& parent = QModelIndex())              const override;
-	virtual QVariant data(const QModelIndex& index, int role)                       const override;
-	virtual bool setData(const QModelIndex& index, const QVariant& value, int role)       override;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+	virtual int rowCount   (const QModelIndex& parent = QModelIndex()) const override;
+
+	virtual QVariant data(const QModelIndex& index, int role)                 const override;
+	virtual bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	virtual Qt::ItemFlags flags(const QModelIndex& index)                           const override;
 
@@ -70,6 +73,11 @@ public:
 	virtual bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
 
 	void addAction(const QString& variableName);
+	void setRange(int row, int rangeL, int rangeR);
+
+	std::shared_ptr<const Variable> getVariable(int row) const;
+	int getActionRangeL(int row) const;
+	int getActionRangeR(int row) const;
 
 	/////
 	// Signals
