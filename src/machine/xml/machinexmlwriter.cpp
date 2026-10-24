@@ -182,7 +182,7 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<MachineActuatorCompo
 	}
 }
 
-void MachineXmlWriter::writeLogicEquation(std::shared_ptr<Equation> equation)
+void MachineXmlWriter::writeLogicEquation(std::shared_ptr<const Equation> equation)
 {
 	if (equation == nullptr) return;
 

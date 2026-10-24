@@ -44,7 +44,7 @@ public:
 	/////
 	// Object functions
 public:
-	std::shared_ptr<SimulatedEquation> getCondition();
+	std::shared_ptr<const SimulatedEquation> getCondition() const;
 
 	ComponentId getSourceStateId() const;
 	ComponentId getTargetStateId() const;

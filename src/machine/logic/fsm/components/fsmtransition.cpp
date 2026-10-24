@@ -41,6 +41,19 @@ FsmTransition::FsmTransition(ComponentId id, ComponentId sourceStateId, Componen
 	this->targetStateId = targetStateId;
 }
 
+/**
+ * @brief FsmTransition::checkAndFixCondition is only called
+ *        after a load from a save file, to make sure
+ *        loaded values are coherent.
+ */
+void FsmTransition::checkAndFixCondition()
+{
+	if (this->condition != nullptr)
+	{
+		this->condition->doFullStackRecomputation();
+	}
+}
+
 void FsmTransition::setSourceStateId(ComponentId sourceStateId)
 {
 	this->sourceStateId = sourceStateId;
@@ -93,7 +106,7 @@ void FsmTransition::clearCondition()
 	this->setCondition(nullptr);
 }
 
-std::shared_ptr<Equation> FsmTransition::getCondition() const
+std::shared_ptr<const Equation> FsmTransition::getCondition() const
 {
 	return this->condition;
 }

@@ -45,6 +45,8 @@ public:
 	/////
 	// Object functions
 public:
+	void checkAndFixCondition();
+
 	void setSourceStateId(ComponentId sourceStateId);
 	ComponentId getSourceStateId() const;
 
@@ -53,7 +55,7 @@ public:
 
 	void setCondition(std::shared_ptr<Equation> newCondition);
 	void clearCondition();
-	std::shared_ptr<Equation> getCondition() const;
+	std::shared_ptr<const Equation> getCondition() const;
 
 	virtual uint getAllowedActionTypes() const override;
 

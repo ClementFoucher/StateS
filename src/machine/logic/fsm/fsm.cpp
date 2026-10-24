@@ -25,7 +25,6 @@
 // StateS
 #include "fsmstate.h"
 #include "fsmtransition.h"
-#include "equation.h"
 
 
 void Fsm::finalizeLoading()
@@ -37,12 +36,10 @@ void Fsm::finalizeLoading()
 	for (auto transitionId : this->getAllTransitionsIds())
 	{
 		auto transition = this->getTransition(transitionId);
-		auto condition = transition->getCondition();
+		if (transition == nullptr) continue;
 
-		if (condition != nullptr)
-		{
-			condition->doFullStackRecomputation();
-		}
+
+		transition->checkAndFixCondition();
 	}
 }
 
