@@ -51,6 +51,14 @@ VariableTableModel::VariableTableModel(Machine::VariableNature_t editorNature, Q
 	this->columnsRoles.append(ColumnRole_t::value);
 }
 
+int VariableTableModel::columnCount(const QModelIndex& parent) const
+{
+	if (parent.isValid() == true) return 0;
+
+
+	return this->columnsRoles.count();
+}
+
 int VariableTableModel::rowCount(const QModelIndex& parent) const
 {
 	if (parent.isValid() == true) return 0;
@@ -60,94 +68,6 @@ int VariableTableModel::rowCount(const QModelIndex& parent) const
 
 
 	return machine->getVariablesIds(this->editorNature).count();
-}
-
-int VariableTableModel::columnCount(const QModelIndex& parent) const
-{
-	if (parent.isValid() == true) return 0;
-
-
-	return this->columnsRoles.count();
-}
-
-QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-	if (orientation == Qt::Horizontal)
-	{
-		if (role == Qt::DisplayRole)
-		{
-			auto columnRole = this->columnsRoles.at(section);
-			switch (columnRole)
-			{
-			case ColumnRole_t::name:
-				switch (this->editorNature)
-				{
-				case Machine::VariableNature_t::input:
-					return tr("Input");
-					break;
-				case Machine::VariableNature_t::internal:
-					return tr("Variable");
-					break;
-				case Machine::VariableNature_t::output:
-					return tr("Output");
-					break;
-				case Machine::VariableNature_t::constant:
-					return tr("Constant");
-					break;
-				}
-				break;
-			case ColumnRole_t::type:
-				return tr("Type");
-				break;
-			case ColumnRole_t::memorized:
-				return tr("Memorized");
-				break;
-			case ColumnRole_t::value:
-				switch (this->editorNature)
-				{
-				case Machine::VariableNature_t::input:
-					return tr("Initial value in simulator");
-					break;
-				case Machine::VariableNature_t::internal:
-				case Machine::VariableNature_t::output:
-					return tr("Initial/default value");
-					break;
-				case Machine::VariableNature_t::constant:
-					return tr("Value");
-					break;
-				}
-				break;
-			}
-		}
-		else if (role == Qt::UserRole)
-		{
-			auto columnRole = this->columnsRoles.at(section);
-			switch (columnRole)
-			{
-			case ColumnRole_t::name:
-				return "NAME";
-				break;
-			case ColumnRole_t::type:
-				return "TYPE";
-				break;
-			case ColumnRole_t::memorized:
-				return "MEMORIZED";
-				break;
-			case ColumnRole_t::value:
-				return "VALUE";
-				break;
-			}
-		}
-	}
-	else // (orientation == Qt::Vertical)
-	{
-		if (role == Qt::DisplayRole)
-		{
-			return section+1;
-		}
-	}
-
-	return QVariant();
 }
 
 QVariant VariableTableModel::data(const QModelIndex& index, int role) const
@@ -445,6 +365,86 @@ bool VariableTableModel::setData(const QModelIndex& index, const QVariant& value
 	}
 
 	return dataSucessfullyChanged;
+}
+
+QVariant VariableTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal)
+	{
+		if (role == Qt::DisplayRole)
+		{
+			auto columnRole = this->columnsRoles.at(section);
+			switch (columnRole)
+			{
+			case ColumnRole_t::name:
+				switch (this->editorNature)
+				{
+				case Machine::VariableNature_t::input:
+					return tr("Input");
+					break;
+				case Machine::VariableNature_t::internal:
+					return tr("Variable");
+					break;
+				case Machine::VariableNature_t::output:
+					return tr("Output");
+					break;
+				case Machine::VariableNature_t::constant:
+					return tr("Constant");
+					break;
+				}
+				break;
+			case ColumnRole_t::type:
+				return tr("Type");
+				break;
+			case ColumnRole_t::memorized:
+				return tr("Memorized");
+				break;
+			case ColumnRole_t::value:
+				switch (this->editorNature)
+				{
+				case Machine::VariableNature_t::input:
+					return tr("Initial value in simulator");
+					break;
+				case Machine::VariableNature_t::internal:
+				case Machine::VariableNature_t::output:
+					return tr("Initial/default value");
+					break;
+				case Machine::VariableNature_t::constant:
+					return tr("Value");
+					break;
+				}
+				break;
+			}
+		}
+		else if (role == Qt::UserRole)
+		{
+			auto columnRole = this->columnsRoles.at(section);
+			switch (columnRole)
+			{
+			case ColumnRole_t::name:
+				return "NAME";
+				break;
+			case ColumnRole_t::type:
+				return "TYPE";
+				break;
+			case ColumnRole_t::memorized:
+				return "MEMORIZED";
+				break;
+			case ColumnRole_t::value:
+				return "VALUE";
+				break;
+			}
+		}
+	}
+	else // (orientation == Qt::Vertical)
+	{
+		if (role == Qt::DisplayRole)
+		{
+			return section+1;
+		}
+	}
+
+	return QVariant();
 }
 
 Qt::ItemFlags VariableTableModel::flags(const QModelIndex& index) const

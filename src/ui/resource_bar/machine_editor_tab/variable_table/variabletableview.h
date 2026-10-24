@@ -39,13 +39,13 @@ class VariableTableView : public ReorderableTableView
 private:
 	enum class ContextAction_t : int
 	{
-		cancel          = 0,
-		deleteVar       = 1,
-		raise           = 2,
-		lower           = 3,
-		rename          = 4,
-		changeValue     = 5,
-		resizeBitVector = 6
+		cancel,
+		deleteVar,
+		raise,
+		lower,
+		rename,
+		changeValue,
+		resizeBitVector
 	};
 
 	/////
@@ -75,7 +75,8 @@ private slots:
 private:
 	VariableTableModel* tableModel = nullptr;
 	QMap<VariableTableModel::ColumnRole_t, int> columnsRoles;
-	int currentMenuRow = 0;
+
+	int currentMenuRow = -1;
 
 };
 

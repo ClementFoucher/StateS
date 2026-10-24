@@ -109,6 +109,7 @@ void VariableTableView::contextMenuEvent(QContextMenuEvent* event)
 	}
 	else
 	{
+		this->currentMenuRow = -1;
 		menu->addTitle(tr("Edit all selected variables"));
 	}
 
@@ -218,7 +219,7 @@ void VariableTableView::openPersistentEditors(int firstRow, int firstColumn, int
 
 void VariableTableView::processMenuEventHandler(QAction* action)
 {
-	ContextAction_t dataValue = static_cast<ContextAction_t>(action->data().toInt());
+	auto dataValue = static_cast<ContextAction_t>(action->data().toInt());
 
 	switch (dataValue)
 	{
@@ -252,7 +253,7 @@ void VariableTableView::processMenuEventHandler(QAction* action)
 	case ContextAction_t::resizeBitVector:
 	{
 		auto col = this->columnsRoles[VariableTableModel::ColumnRole_t::type];
-		auto index = this->tableModel->index(currentMenuRow, col);
+		auto index = this->tableModel->index(this->currentMenuRow, col);
 		auto editor = dynamic_cast<TypeEditor*>(this->indexWidget(index));
 		if (editor != nullptr)
 		{
@@ -262,6 +263,8 @@ void VariableTableView::processMenuEventHandler(QAction* action)
 	}
 	break;
 	}
+
+	this->currentMenuRow = -1;
 }
 
 void VariableTableView::refreshPersistentEditorsEventHandler()
