@@ -41,7 +41,7 @@
 #include "statesexception.h"
 
 
-MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, std::shared_ptr<ViewConfiguration> viewConfiguration)
+MachineXmlWriter::MachineXmlWriter(WriteMode_t mode, std::shared_ptr<const ViewConfiguration> viewConfiguration)
 {
 	this->mode = mode;
 	this->viewConfiguration = viewConfiguration;
@@ -90,7 +90,7 @@ void MachineXmlWriter::writeMachineToStream()
 	}
 }
 
-void MachineXmlWriter::writeActuatorActions(std::shared_ptr<MachineActuatorComponent> component)
+void MachineXmlWriter::writeActuatorActions(std::shared_ptr<const MachineActuatorComponent> component)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return;
@@ -174,6 +174,14 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<MachineActuatorCompo
 			if (action->getActionRangeR() != -1)
 			{
 				this->stream->writeAttribute("RangeR", QString::number(action->getActionRangeR()));
+			}
+
+			auto condition = action->getActionCondition();
+			if (condition != nullptr)
+			{
+				this->stream->writeStartElement("Condition");
+				this->writeLogicEquation(condition);
+				this->stream->writeEndElement(); // Condition
 			}
 
 			this->stream->writeEndElement(); // Action

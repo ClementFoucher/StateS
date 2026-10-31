@@ -49,7 +49,7 @@ public:
 	/////
 	// Constructors/destructors
 protected:
-	explicit MachineXmlWriter(WriteMode_t mode, std::shared_ptr<ViewConfiguration> viewConfiguration);
+	explicit MachineXmlWriter(WriteMode_t mode, std::shared_ptr<const ViewConfiguration> viewConfiguration);
 
 	/////
 	// Object functions
@@ -62,7 +62,7 @@ protected:
 	virtual void writeSubmachineToStream() = 0;
 	virtual void writeMachineType() = 0;
 
-	void writeActuatorActions(std::shared_ptr<MachineActuatorComponent> component);
+	void writeActuatorActions(std::shared_ptr<const MachineActuatorComponent> component);
 	void writeLogicEquation(std::shared_ptr<const Equation> equation);
 
 private:
@@ -77,7 +77,7 @@ private:
 	/////
 	// Object variables
 protected:
-	std::shared_ptr<ViewConfiguration> viewConfiguration;
+	std::shared_ptr<const ViewConfiguration> viewConfiguration;
 
 	std::shared_ptr<QXmlStreamWriter> stream;
 	QString xmlString;

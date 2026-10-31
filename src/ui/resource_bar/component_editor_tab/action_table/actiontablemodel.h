@@ -28,6 +28,7 @@
 // StateS
 #include "componentid.h"
 class Variable;
+class Equation;
 
 
 /**
@@ -49,7 +50,8 @@ public:
 	{
 		variableName,
 		actionType,
-		actionValue
+		actionValue,
+		actionCondition
 	};
 
 	/////
@@ -76,6 +78,7 @@ public:
 	void setRange(int row, int rangeL, int rangeR);
 
 	std::shared_ptr<const Variable> getVariable(int row) const;
+	bool hasCondition(int row) const;
 	int getActionRangeL(int row) const;
 	int getActionRangeR(int row) const;
 

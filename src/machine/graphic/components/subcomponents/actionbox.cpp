@@ -33,13 +33,15 @@
 #include "machineactuatorcomponent.h"
 #include "variable.h"
 #include "actiononvariable.h"
+#include "equation.h"
 
 
 //
 // Static elements
 //
 
-const QPen ActionBox::defaultPen = QPen(Qt::SolidPattern, 3);
+const QPen ActionBox::defaultPen   = QPen(Qt::SolidPattern, 3);
+const QPen ActionBox::conditionPen = QPen(Qt::SolidPattern, 3, Qt::DotLine);
 
 
 //
@@ -78,8 +80,9 @@ void ActionBox::buildActionBox()
 
 
 	// Build
-	qreal maxTextWidth = 0;
+	qreal maxActionWidth = 0;
 	qreal boxLeft = (this->addLine == true) ? 20 : 0;
+	QList<QGraphicsItem*> itemsToAlignRight;
 
 	for (int i = 0 ; i < actions.count() ; i++)
 	{
@@ -95,7 +98,7 @@ void ActionBox::buildActionBox()
 
 
 		qreal xPos = boxLeft;
-		qreal currentTextWidth = 0;
+		qreal currentActionWidth = 0;
 
 		// Memorized state
 
@@ -103,7 +106,7 @@ void ActionBox::buildActionBox()
 		{
 			auto memorizedText = new QGraphicsTextItem(this);
 			memorizedText->setHtml("<span style=\"color:black;\">M</span>");
-			currentTextWidth += memorizedText->boundingRect().width();
+			qreal memorizedTextWidth = memorizedText->boundingRect().width();
 
 			memorizedText->setPos(QPointF(xPos, i*this->textHeight));
 			memorizedText->setZValue(1);
@@ -111,16 +114,17 @@ void ActionBox::buildActionBox()
 			this->addToGroup(memorizedText);
 
 			QPainterPath memorizedBorderPath;
-			memorizedBorderPath.lineTo(0,                this->textHeight);
-			memorizedBorderPath.lineTo(currentTextWidth, this->textHeight);
-			memorizedBorderPath.lineTo(currentTextWidth, 0);
-			memorizedBorderPath.lineTo(0,                0);
+			memorizedBorderPath.lineTo(0,                  this->textHeight);
+			memorizedBorderPath.lineTo(memorizedTextWidth, this->textHeight);
+			memorizedBorderPath.lineTo(memorizedTextWidth, 0);
+			memorizedBorderPath.lineTo(0,                  0);
 
 			auto memorizedOutline = new QGraphicsPathItem(memorizedBorderPath, this);
-			memorizedOutline->setPen(defaultPen);
+			memorizedOutline->setPen(ActionBox::defaultPen);
 			memorizedOutline->setZValue(1);
 			memorizedOutline->setPos(xPos, i*this->textHeight);
 
+			currentActionWidth += memorizedTextWidth;
 			xPos += memorizedText->boundingRect().width();
 		}
 
@@ -177,27 +181,91 @@ void ActionBox::buildActionBox()
 
 		auto actionText = new QGraphicsTextItem(this);
 		actionText->setHtml(currentActionText);
-		currentTextWidth += actionText->boundingRect().width();
-
-		if (maxTextWidth < currentTextWidth)
-		{
-			maxTextWidth = currentTextWidth;
-		}
+		qreal currentActionTextWidth = actionText->boundingRect().width();
 
 		actionText->setPos(QPointF(xPos, i*this->textHeight));
 		actionText->setZValue(1);
 
 		this->addToGroup(actionText);
+
+		currentActionWidth += currentActionTextWidth;
+
+		// Action condition
+		auto condition = currentAction->getActionCondition();
+		if (condition != nullptr)
+		{
+			QString foregroundColor;
+			if (condition->getType() == MachineValue::Type_t::boolean)
+			{
+				// Ok
+				foregroundColor = "black";
+			}
+			else if ( (condition->getType() == MachineValue::Type_t::bitVector) && (condition->getInitialValue().getBitVectorValue().getSize() == 1) )
+			{
+				// Ok
+				foregroundColor = "black";
+			}
+			else
+			{
+				// Condition is either valid but neither a boolean
+				// nor a bit vector of size 1, or invalid.
+				foregroundColor = "red";
+			}
+
+			QString conditionRawText;
+			conditionRawText += "<span style=\"color:" + foregroundColor + ";\">";
+			conditionRawText += "<i>";
+			conditionRawText += tr("if");
+			conditionRawText += "</i>";
+			conditionRawText += " ";
+			conditionRawText += condition->getText();
+			conditionRawText += "</span>";
+
+			auto conditionText = new QGraphicsTextItem(this);
+			conditionText->setHtml(conditionRawText);
+			qreal conditionTextWidth = conditionText->boundingRect().width();
+
+			conditionText->setPos(QPointF(0, i*this->textHeight));
+			conditionText->setZValue(1);
+
+			this->addToGroup(conditionText);
+
+			QPainterPath conditionBorderPath;
+			conditionBorderPath.lineTo(0,                  this->textHeight);
+			conditionBorderPath.lineTo(conditionTextWidth, this->textHeight);
+			conditionBorderPath.lineTo(conditionTextWidth, 0);
+			conditionBorderPath.lineTo(0,                  0);
+
+			auto conditionOutline = new QGraphicsPathItem(conditionBorderPath, this);
+			conditionOutline->setPen(ActionBox::conditionPen);
+			conditionOutline->setZValue(1);
+			conditionOutline->setPos(0, i*this->textHeight);
+
+			itemsToAlignRight.append(conditionText);
+			itemsToAlignRight.append(conditionOutline);
+		}
+
+		if (maxActionWidth < currentActionWidth)
+		{
+			maxActionWidth = currentActionWidth;
+		}
+	}
+
+	for (auto item : itemsToAlignRight)
+	{
+		qreal x = boxLeft + maxActionWidth;
+		qreal y = item->pos().y();
+		item->setPos(x, y);
 	}
 
 	QPainterPath actionBorderPath;
-	actionBorderPath.lineTo(0,            static_cast<qreal>(actions.count())*this->textHeight);
-	actionBorderPath.lineTo(maxTextWidth, static_cast<qreal>(actions.count())*this->textHeight);
-	actionBorderPath.lineTo(maxTextWidth, 0);
-	actionBorderPath.lineTo(0,            0);
+	actionBorderPath.lineTo(0,              static_cast<qreal>(actions.count())*this->textHeight);
+	actionBorderPath.lineTo(maxActionWidth, static_cast<qreal>(actions.count())*this->textHeight);
+	actionBorderPath.lineTo(maxActionWidth, 0);
+	actionBorderPath.lineTo(0,              0);
 
 	this->actionsOutline = new QGraphicsPathItem(actionBorderPath, this);
-	this->actionsOutline->setPen(defaultPen);
+	this->actionsOutline->setPen(ActionBox::defaultPen);
 	this->actionsOutline->setBrush(QBrush(Qt::white, Qt::Dense3Pattern));
 	this->actionsOutline->setZValue(0);
 	this->actionsOutline->setPos(boxLeft, 0);
@@ -208,7 +276,7 @@ void ActionBox::buildActionBox()
 	{
 		qreal center = this->actionsOutline->boundingRect().height() / 2;
 		auto leftLine = new QGraphicsLineItem(0, center, 20, center, this);
-		leftLine->setPen(defaultPen);
+		leftLine->setPen(ActionBox::defaultPen);
 	}
 }
 

@@ -26,6 +26,7 @@
 #include "fsm.h"
 #include "fsmstate.h"
 #include "fsmtransition.h"
+#include "actiononvariable.h"
 
 
 FsmXmlParser::FsmXmlParser(const QString& xmlString) :
@@ -135,7 +136,7 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			else if (nodeName == "Condition")
 			{
-				this->currentSubTag = SubTag_t::condition;
+				this->currentSubTag = SubTag_t::transition_condition;
 			}
 			else
 			{
@@ -160,10 +161,12 @@ void FsmXmlParser::parseSubmachineStartElement()
 				this->addIssue("    " + tr("Expected") + " \"Action\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case SubTag_t::condition:
+		case SubTag_t::transition_condition:
 			if (nodeName == "LogicEquation")
 			{
 				this->currentSubTag = SubTag_t::logicEquation;
+				this->equationContainer = SubTag_t::transition_condition;
+
 				this->parseLogicEquationNode();
 			}
 			else
@@ -203,11 +206,33 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::action:
-			this->unexpectedTagLevel++;
+			if (nodeName == "Condition")
+			{
+				this->currentSubTag = SubTag_t::action_condition;
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
 
-			this->addIssue(tr("Error!") + " " + tr("Unexpected node found in a node that doesn't accept subnodes."));
-			this->addIssue("    " + tr("Found node was:") + " \"" + nodeName + "\".");
-			this->addIssue("    " + tr("Node ignored."));
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Action\" " + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Condition\", " + tr("got") + " \"" + nodeName + "\".");
+			}
+			break;
+		case SubTag_t::action_condition:
+			if (nodeName == "LogicEquation")
+			{
+				this->currentSubTag = SubTag_t::logicEquation;
+				this->equationContainer = SubTag_t::action_condition;
+
+				this->parseLogicEquationNode();
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Condition\" " + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+			}
 			break;
 		case SubTag_t::none:
 			this->addIssue("    "  + tr("Ignoring node") + " \"" + nodeName + "\".");
@@ -242,8 +267,9 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 				this->currentSubTag = SubTag_t::transition;
 			}
 			break;
-		case SubTag_t::condition:
-			this->processEndCondition();
+		case SubTag_t::transition_condition:
+			this->processEndTransitionCondition();
+
 			this->currentSubTag = SubTag_t::transition;
 			break;
 		case SubTag_t::state:
@@ -258,7 +284,8 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 			switch (isRoot)
 			{
 			case IsRoot_t::yes:
-				this->currentSubTag = SubTag_t::condition;
+				this->currentSubTag = this->equationContainer;
+				this->equationContainer = SubTag_t::none;
 				break;
 			case IsRoot_t::no:
 				this->currentSubTag = SubTag_t::operand;
@@ -268,6 +295,11 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 		}
 		case SubTag_t::operand:
 			this->currentSubTag = SubTag_t::logicEquation;
+			break;
+		case SubTag_t::action_condition:
+			this->processEndActionCondition();
+
+			this->currentSubTag = SubTag_t::action;
 			break;
 		case SubTag_t::none:
 			// Will not happen
@@ -426,7 +458,7 @@ void FsmXmlParser::parseTransitionNode()
 	}
 }
 
-void FsmXmlParser::processEndCondition()
+void FsmXmlParser::processEndTransitionCondition()
 {
 	auto fsm = dynamic_pointer_cast<Fsm>(this->machine);
 	if (fsm == nullptr) return;
@@ -436,6 +468,14 @@ void FsmXmlParser::processEndCondition()
 
 
 	transition->setCondition(this->getCurrentEquation());
+}
+
+void FsmXmlParser::processEndActionCondition()
+{
+	if (this->currentAction == nullptr) return;
+
+
+	this->currentAction->setActionCondition(this->getCurrentEquation());
 }
 
 std::shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const

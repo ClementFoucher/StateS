@@ -26,7 +26,8 @@
 #include <QGraphicsItemGroup>
 
 // Qt
-#include <QGraphicsPathItem>
+#include <QCoreApplication>
+class QGraphicsPathItem;
 
 // StateS
 #include "componentid.h"
@@ -34,11 +35,13 @@
 
 class ActionBox : public QGraphicsItemGroup
 {
+	Q_DECLARE_TR_FUNCTIONS(ActionBox)
 
 	/////
 	// Static variables
 private:
 	static const QPen defaultPen;
+	static const QPen conditionPen;
 
 	/////
 	// Constructors/destructors

@@ -245,8 +245,8 @@ void MachineXmlParser::parseActionNode()
 	}
 
 	// Build action
-	auto action = make_shared<ActionOnVariable>(variable, currentActuator->getAllowedActionTypes(), actionType, actionValue, rangeL, rangeR);
-	currentActuator->addAction(action, variable);
+	this->currentAction = make_shared<ActionOnVariable>(variable, currentActuator->getAllowedActionTypes(), actionType, actionValue, rangeL, rangeR);
+	currentActuator->addAction(currentAction, variable);
 }
 
 void MachineXmlParser::parseLogicEquationNode()

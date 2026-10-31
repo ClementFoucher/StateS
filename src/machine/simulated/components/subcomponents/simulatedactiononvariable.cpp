@@ -27,6 +27,7 @@
 #include "simulatedmachine.h"
 #include "actiononvariable.h"
 #include "simulatedvariable.h"
+#include "simulatedequation.h"
 
 
 SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction)
@@ -36,6 +37,12 @@ SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const Actio
 	this->actionValue = sourceAction->getActionValue();
 	this->rangeL      = sourceAction->getActionRangeL();
 	this->rangeR      = sourceAction->getActionRangeR();
+
+	auto sourceCondition = sourceAction->getActionCondition();
+	if (sourceCondition != nullptr)
+	{
+		this->condition = std::make_shared<SimulatedEquation>(sourceCondition);
+	}
 }
 
 void SimulatedActionOnVariable::doAction()
@@ -46,6 +53,14 @@ void SimulatedActionOnVariable::doAction()
 	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
 	if (simulatedVariable == nullptr) return;
 
+
+	if (this->condition != nullptr)
+	{
+		if (this->condition->isTrue() == false)
+		{
+			return;
+		}
+	}
 
 	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL >= 0) )
 	{

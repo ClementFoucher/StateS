@@ -30,8 +30,10 @@
 #include "variable.h"
 #include "actiontypedelegate.h"
 #include "machinevaluedelegate.h"
+#include "equationdelegate.h"
 #include "contextmenu.h"
 #include "rangeeditordialog.h"
+#include "equationeditordialog.h"
 
 
 ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
@@ -60,6 +62,11 @@ ActionTableView::ActionTableView(ComponentId actuatorId, QWidget* parent) :
 		{
 			this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue] = column;
 			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionValue], new MachineValueDelegate(this));
+		}
+		else if (role == "ACTIONCONDITION")
+		{
+			this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition] = column;
+			this->setItemDelegateForColumn(this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition], new EquationDelegate(this));
 		}
 	}
 
@@ -217,6 +224,25 @@ void ActionTableView::contextMenuEvent(QContextMenuEvent* ev)
 			menu->addSeparator();
 		}
 
+		if (this->tableModel->hasCondition(this->currentMenuRow) == false)
+		{
+			actionBeingAdded = menu->addAction(tr("Add a condition"));
+			data.setValue(static_cast<int>(ContextAction_t::ConditionEdit));
+			actionBeingAdded->setData(data);
+		}
+		else // (this->tableModel->hasCondition(this->currentMenuRow) == true)
+		{
+			actionBeingAdded = menu->addAction(tr("Edit condition"));
+			data.setValue(static_cast<int>(ContextAction_t::ConditionEdit));
+			actionBeingAdded->setData(data);
+
+			actionBeingAdded = menu->addAction(tr("Remove condition"));
+			data.setValue(static_cast<int>(ContextAction_t::ConditionRemove));
+			actionBeingAdded->setData(data);
+		}
+
+		menu->addSeparator();
+
 		actionBeingAdded = menu->addAction(tr("Delete action"));
 		data.setValue(static_cast<int>(ContextAction_t::DeleteAction));
 		actionBeingAdded->setData(data);
@@ -273,6 +299,11 @@ void ActionTableView::openPersistentEditors(int firstRow, int firstColumn, int l
 				{
 					this->openPersistentEditor(valueIndex);
 				}
+			}
+			else if (col == this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition])
+			{
+				auto valueIndex = this->tableModel->index(row, col);
+				this->openPersistentEditor(valueIndex);
 			}
 		}
 	}
@@ -336,7 +367,33 @@ void ActionTableView::processContextMenuEventHandler(QAction* action)
 		break;
 	case ContextAction_t::MoveUp:
 		this->raiseSelectedRows();
+	case ContextAction_t::ConditionEdit:
+	{
+		if (this->currentMenuRow < 0) return;
+
+
+		auto cellIndex = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition]);
+		auto cellData = cellIndex.data(Qt::EditRole);
+		auto condition = cellData.value<std::shared_ptr<const Equation>>();
+
+		this->equationEditorDialog = new EquationEditorDialog(condition, this);
+		connect(this->equationEditorDialog, &EquationEditorDialog::finished, this, &ActionTableView::equationEditorDialogClosedEventHandler);
+
+		this->equationEditorDialog->open();
 		break;
+	}
+	case ContextAction_t::ConditionRemove:
+	{
+		if (this->currentMenuRow < 0) return;
+
+
+		auto cellIndex = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition]);
+		auto newData = QVariant::fromValue(std::shared_ptr<const Equation>());
+		this->tableModel->setData(cellIndex, newData, Qt::EditRole);
+
+		this->currentMenuRow = -1;
+		break;
+	}
 	}
 }
 
@@ -359,6 +416,27 @@ void ActionTableView::rangeEditorClosedEventHandler(int result)
 
 	delete this->rangeEditorDialog;
 	this->rangeEditorDialog = nullptr;
+}
+
+void ActionTableView::equationEditorDialogClosedEventHandler(int result)
+{
+	if (this->equationEditorDialog == nullptr) return;
+
+	if (this->currentMenuRow < 0) return;
+
+
+	if (result == QDialog::Accepted)
+	{
+		// Change condition
+		auto cellIndex = this->tableModel->index(this->currentMenuRow, this->columnsRoles[ActionTableModel::ColumnRole_t::actionCondition]);
+		auto newData = QVariant::fromValue(this->equationEditorDialog->getResultEquation());
+		this->tableModel->setData(cellIndex, newData, Qt::EditRole);
+	}
+
+	this->currentMenuRow = -1;
+
+	delete this->equationEditorDialog;
+	this->equationEditorDialog = nullptr;
 }
 
 void ActionTableView::refreshPersistentEditorsEventHandler()

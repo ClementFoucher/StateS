@@ -32,6 +32,7 @@
 #include "machineactuatorcomponent.h"
 #include "variable.h"
 #include "actiononvariable.h"
+#include "equation.h"
 
 
 ActionTableModel::ActionTableModel(ComponentId actuatorId, QObject* parent) :
@@ -49,6 +50,7 @@ ActionTableModel::ActionTableModel(ComponentId actuatorId, QObject* parent) :
 	this->columnsRoles.append(ColumnRole_t::variableName);
 	this->columnsRoles.append(ColumnRole_t::actionType);
 	this->columnsRoles.append(ColumnRole_t::actionValue);
+	this->columnsRoles.append(ColumnRole_t::actionCondition);
 
 	connect(actuator.get(), &MachineActuatorComponent::actionFixedEvent, this, &ActionTableModel::refreshPersistentEditorsEvent);
 }
@@ -267,6 +269,18 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 		}
 		break;
 	}
+	case ColumnRole_t::actionCondition:
+	{
+		if (role == Qt::EditRole)
+		{
+			auto condition = action->getActionCondition();
+			if (condition != nullptr)
+			{
+				return QVariant::fromValue(condition);
+			}
+		}
+		break;
+	}
 	}
 
 	return QVariant();
@@ -373,6 +387,21 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 			}
 		}
 		break;
+	case ColumnRole_t::actionCondition:
+	{
+		// Machine is about to be edited
+		machineManager->notifyMachineAboutToBeDiffEdited();
+
+		// Edit condition
+		auto equation = value.value<std::shared_ptr<Equation>>();
+		action->setActionCondition(equation);
+
+		// Machine has been edited
+		QString undoDescription = "ACTION_CHANGE_CONDITION__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
+		machineManager->notifyMachineEdited(undoDescription);
+
+		break;
+	}
 	}
 
 	return false;
@@ -396,6 +425,9 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 			case ColumnRole_t::actionValue:
 				return QVariant(tr("Value"));
 				break;
+			case ColumnRole_t::actionCondition:
+				return QVariant(tr("Condition"));
+				break;
 			}
 		}
 		else if (role == Qt::UserRole)
@@ -411,6 +443,9 @@ QVariant ActionTableModel::headerData(int section, Qt::Orientation orientation, 
 				break;
 			case ColumnRole_t::actionValue:
 				return "ACTIONVALUE";
+				break;
+			case ColumnRole_t::actionCondition:
+				return "ACTIONCONDITION";
 				break;
 			}
 		}
@@ -610,6 +645,21 @@ std::shared_ptr<const Variable> ActionTableModel::getVariable(int row) const
 
 
 	return machine->getVariable(action->getVariableActedOnId());
+}
+
+bool ActionTableModel::hasCondition(int row) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+	auto action = actuator->getAction(row);
+	if (action == nullptr) return false;
+
+
+	return (action->getActionCondition() != nullptr);
 }
 
 int ActionTableModel::getActionRangeL(int row) const

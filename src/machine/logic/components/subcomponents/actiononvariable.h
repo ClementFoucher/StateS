@@ -32,18 +32,21 @@
 #include "componentid.h"
 #include "machinevalue.h"
 class Variable;
+class Equation;
 
 
 /**
  * @brief The ActionOnVariable class manages actions on variables.
  *
- * The range parameters are valid when >= 0.
- * If only left range is valid, the action acts on a single bit.
- * If both are valid, the action acts on the [rangeL..rangeR] sub-vector.
- *
- * Depending on action type and size, the action value can be
+ * Depending on type of variable acted on, the action value can be
  * explicit or implicit. Implicit values are provided by this class
  * and can not be edited.
+ *
+ * For Bit Vectors, range parameters allow to act on part of the vector.
+ * Range parameters are valid when >= 0.
+ * If both parametes are invalid, the action acts on the full variable.
+ * If only left range is valid, the action acts on a single bit.
+ * If both ranges are valid, the action acts on the [rangeL..rangeR] sub-vector.
  */
 class ActionOnVariable : public QObject
 {
@@ -81,17 +84,19 @@ public:
 public:
 	void checkAndFixAction();
 
-	void setActionType (ActionOnVariable::Type_t newType);
-	void setActionValue(MachineValue newValue);
-	void setActionRange(int newRangeL, int newRangeR);
+	void setActionType     (ActionOnVariable::Type_t newType);
+	void setActionValue    (MachineValue newValue);
+	void setActionRange    (int newRangeL, int newRangeR);
+	void setActionCondition(std::shared_ptr<Equation> equation);
 
-	ComponentId              getVariableActedOnId()  const;
-	ActionOnVariable::Type_t getActionType()         const;
-	MachineValue             getActionValue()        const;
-	int                      getActionRangeL()       const;
-	int                      getActionRangeR()       const;
-	bool                     isActionValueEditable() const;
+	ComponentId                     getVariableActedOnId()  const;
+	ActionOnVariable::Type_t        getActionType()         const;
+	MachineValue                    getActionValue()        const;
+	int                             getActionRangeL()       const;
+	int                             getActionRangeR()       const;
+	std::shared_ptr<const Equation> getActionCondition()    const;
 
+	bool isActionValueEditable() const;
 	uint getAllowedActionTypes() const;
 
 	QString getCurrentActionTypeText() const;
@@ -127,6 +132,7 @@ signals:
 private:
 	ComponentId variableId = nullId;
 	uint actuatorAllowedActions = static_cast<uint>(ActionOnVariable::Type_t::none);
+	std::shared_ptr<Equation> condition;
 
 	ActionOnVariable::Type_t actionType;
 	MachineValue actionValue;

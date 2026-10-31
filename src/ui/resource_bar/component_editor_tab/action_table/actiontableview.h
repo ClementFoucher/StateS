@@ -29,6 +29,7 @@
 #include "componentid.h"
 #include "actiontablemodel.h"
 class RangeEditorDialog;
+class EquationEditorDialog;
 
 
 class ActionTableView : public ReorderableTableView
@@ -46,6 +47,8 @@ private:
 		BitVectorAssignSingleBit,
 		BitVectorAssignSubRange,
 		BitVectorEditAssignRange,
+		ConditionEdit,
+		ConditionRemove,
 		EditValue,
 		MoveUp,
 		MoveDown
@@ -76,6 +79,7 @@ private slots:
 	void processContextMenuEventHandler(QAction* action);
 
 	void rangeEditorClosedEventHandler(int result);
+	void equationEditorDialogClosedEventHandler(int result);
 
 	void refreshPersistentEditorsEventHandler();
 
@@ -97,7 +101,10 @@ private:
 	ActionTableModel* tableModel = nullptr;
 	QMap<ActionTableModel::ColumnRole_t, int> columnsRoles;
 
-	RangeEditorDialog* rangeEditorDialog = nullptr;
+	// Dialogs that may popup from menu edition
+	RangeEditorDialog*    rangeEditorDialog    = nullptr;
+	EquationEditorDialog* equationEditorDialog = nullptr;
+
 	int currentMenuRow = -1;
 
 };

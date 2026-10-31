@@ -29,6 +29,7 @@
 #include "machinemanager.h"
 #include "machine.h"
 #include "variable.h"
+#include "equation.h"
 
 
 //
@@ -182,6 +183,11 @@ void ActionOnVariable::checkAndFixAction()
 	this->checkAndFixActionRange();
 	this->checkAndFixActionType();
 	this->checkAndFixActionValue();
+
+	if (this->condition != nullptr)
+	{
+		this->condition->doFullStackRecomputation();
+	}
 }
 
 void ActionOnVariable::setActionType(ActionOnVariable::Type_t newType)
@@ -237,6 +243,13 @@ void ActionOnVariable::setActionRange(int newRangeL, int newRangeR)
 	emit this->actionChangedEvent();
 }
 
+void ActionOnVariable::setActionCondition(std::shared_ptr<Equation> equation)
+{
+	this->condition = equation;
+
+	emit this->actionChangedEvent();
+}
+
 ComponentId ActionOnVariable::getVariableActedOnId() const
 {
 	return this->variableId;
@@ -260,6 +273,11 @@ int ActionOnVariable::getActionRangeL() const
 int ActionOnVariable::getActionRangeR() const
 {
 	return this->rangeR;
+}
+
+std::shared_ptr<const Equation> ActionOnVariable::getActionCondition() const
+{
+	return this->condition;
 }
 
 bool ActionOnVariable::isActionValueEditable() const

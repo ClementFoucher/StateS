@@ -38,6 +38,7 @@ class ViewConfiguration;
 class GraphicAttributes;
 class Equation;
 class Variable;
+class ActionOnVariable;
 
 
 class MachineXmlParser
@@ -144,6 +145,7 @@ protected:
 	std::shared_ptr<Machine> machine;
 
 	ComponentId currentComponentId;
+	std::shared_ptr<ActionOnVariable> currentAction;
 
 private:
 	std::shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed

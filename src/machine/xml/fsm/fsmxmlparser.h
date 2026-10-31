@@ -53,9 +53,10 @@ private:
 		transition,
 		// Second level subtags
 		actions_group,
-		condition,
+		transition_condition,
 		// Sublevel subtags
 		action,
+		action_condition,
 		logicEquation,
 		operand
 	};
@@ -76,7 +77,8 @@ private:
 	void parseStateNode();
 	void parseTransitionNode();
 
-	void processEndCondition();
+	void processEndTransitionCondition();
+	void processEndActionCondition();
 
 	std::shared_ptr<FsmState> getStateByName(const QString& name) const;
 
@@ -86,6 +88,8 @@ private:
 	// Remember position in file
 	MainTag_t currentMainTag = MainTag_t::none;
 	SubTag_t  currentSubTag  = SubTag_t::none;
+
+	SubTag_t equationContainer = SubTag_t::none;
 	int unexpectedTagLevel = 0;
 
 };

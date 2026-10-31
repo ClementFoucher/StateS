@@ -28,6 +28,7 @@
 // StateS
 #include "machinevalue.h"
 #include "actiononvariable.h"
+class SimulatedEquation;
 
 
 class SimulatedActionOnVariable
@@ -57,6 +58,7 @@ private:
 
 	ActionOnVariable::Type_t actionType;
 	MachineValue actionValue;
+	std::shared_ptr<SimulatedEquation> condition;
 	int rangeL = -1;
 	int rangeR = -1;
 

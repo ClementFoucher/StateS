@@ -397,8 +397,10 @@ void GraphicFsmTransition::updateConditionText()
 		{
 			// Ok
 		}
-		else // Condition is neither a boolean nor a bit vector of size 1
+		else
 		{
+			// Condition is either invalid, or is valid but
+			// isn't a boolean nor a bit vector of size 1.
 			foregroundColor = "red";
 		}
 	}
