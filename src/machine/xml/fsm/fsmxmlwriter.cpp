@@ -136,7 +136,7 @@ void FsmXmlWriter::writeFsmTransitions(std::shared_ptr<Fsm> fsm, std::shared_ptr
 		if (condition != nullptr)
 		{
 			this->stream->writeStartElement("Condition");
-			this->writeLogicEquation(condition);
+			this->writeEquation(condition);
 			this->stream->writeEndElement(); // Condition
 		}
 

@@ -103,12 +103,12 @@ public:
 
 protected:
 	void parseActionNode();
-	void parseLogicEquationNode();
+	void parseEquationNode();
 	void parseOperandNode();
 	void parseOperandVariableNode();
 	void parseOperandConstantNode();
 
-	IsRoot_t processEndLogicEquationNode();
+	IsRoot_t processEndEquationNode();
 
 	virtual void              parseSubmachineStartElement() = 0;
 	virtual IsSubmachineEnd_t parseSubmachineEndElement()   = 0;

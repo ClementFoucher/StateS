@@ -57,7 +57,7 @@ private:
 		// Sublevel subtags
 		action,
 		action_condition,
-		logicEquation,
+		equation,
 		operand
 	};
 

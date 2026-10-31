@@ -102,7 +102,7 @@ void EquationEditorWidget::clearOperand(uint operandRank)
 	this->updateOperandWidget(operandRank);
 }
 
-std::shared_ptr<Equation> EquationEditorWidget::getLogicEquation() const
+std::shared_ptr<Equation> EquationEditorWidget::getEquation() const
 {
 	return this->equation;
 }

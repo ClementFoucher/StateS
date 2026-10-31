@@ -180,7 +180,7 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<const MachineActuato
 			if (condition != nullptr)
 			{
 				this->stream->writeStartElement("Condition");
-				this->writeLogicEquation(condition);
+				this->writeEquation(condition);
 				this->stream->writeEndElement(); // Condition
 			}
 
@@ -190,7 +190,7 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<const MachineActuato
 	}
 }
 
-void MachineXmlWriter::writeLogicEquation(std::shared_ptr<const Equation> equation)
+void MachineXmlWriter::writeEquation(std::shared_ptr<const Equation> equation)
 {
 	if (equation == nullptr) return;
 
@@ -198,7 +198,7 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<const Equation> equati
 	if (machine == nullptr) return;
 
 
-	this->stream->writeStartElement("LogicEquation");
+	this->stream->writeStartElement("Equation");
 
 	bool writeOperandCount = false;
 	switch (equation->getOperator())
@@ -285,7 +285,7 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<const Equation> equati
 		{
 		case Operand::Source_t::equation:
 			this->stream->writeAttribute("Source", "Equation");
-			this->writeLogicEquation(operand->getEquation());
+			this->writeEquation(operand->getEquation());
 			break;
 		case Operand::Source_t::variable:
 		{
@@ -334,7 +334,7 @@ void MachineXmlWriter::writeLogicEquation(std::shared_ptr<const Equation> equati
 		this->stream->writeEndElement(); // Operand
 	}
 
-	this->stream->writeEndElement(); // LogicEquation
+	this->stream->writeEndElement(); // Equation
 }
 
 void MachineXmlWriter::createSaveFile() // Throws StatesException

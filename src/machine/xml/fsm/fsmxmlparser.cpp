@@ -162,22 +162,22 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::transition_condition:
-			if (nodeName == "LogicEquation")
+			if (nodeName == "Equation")
 			{
-				this->currentSubTag = SubTag_t::logicEquation;
+				this->currentSubTag = SubTag_t::equation;
 				this->equationContainer = SubTag_t::transition_condition;
 
-				this->parseLogicEquationNode();
+				this->parseEquationNode();
 			}
 			else
 			{
 				this->unexpectedTagLevel++;
 
 				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Condition\" " + tr("node") + ".");
-				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Expected") + " \"Equation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
-		case SubTag_t::logicEquation:
+		case SubTag_t::equation:
 			if (nodeName == "Operand")
 			{
 				this->currentSubTag = SubTag_t::operand;
@@ -187,22 +187,22 @@ void FsmXmlParser::parseSubmachineStartElement()
 			{
 				this->unexpectedTagLevel++;
 
-				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"LogicEquation\"" + tr("node."));
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + "\"Equation\"" + tr("node."));
 				this->addIssue("    " + tr("Expected") + " \"Operand\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::operand:
-			if (nodeName == "LogicEquation")
+			if (nodeName == "Equation")
 			{
-				this->currentSubTag = SubTag_t::logicEquation;
-				this->parseLogicEquationNode();
+				this->currentSubTag = SubTag_t::equation;
+				this->parseEquationNode();
 			}
 			else
 			{
 				this->unexpectedTagLevel++;
 
 				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Operand\" " + tr("node of type") + " \"Equation\".");
-				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Expected") + " \"Equation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::action:
@@ -219,19 +219,19 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::action_condition:
-			if (nodeName == "LogicEquation")
+			if (nodeName == "Equation")
 			{
-				this->currentSubTag = SubTag_t::logicEquation;
+				this->currentSubTag = SubTag_t::equation;
 				this->equationContainer = SubTag_t::action_condition;
 
-				this->parseLogicEquationNode();
+				this->parseEquationNode();
 			}
 			else
 			{
 				this->unexpectedTagLevel++;
 
 				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Condition\" " + tr("node."));
-				this->addIssue("    " + tr("Expected") + " \"LogicEquation\", " + tr("got") + " \"" + nodeName + "\".");
+				this->addIssue("    " + tr("Expected") + " \"Equation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::none:
@@ -277,9 +277,9 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 			this->currentComponentId = nullId;
 			this->currentSubTag = SubTag_t::none;
 			break;
-		case SubTag_t::logicEquation:
+		case SubTag_t::equation:
 		{
-			auto isRoot = this->processEndLogicEquationNode();
+			auto isRoot = this->processEndEquationNode();
 
 			switch (isRoot)
 			{
@@ -294,7 +294,7 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 			break;
 		}
 		case SubTag_t::operand:
-			this->currentSubTag = SubTag_t::logicEquation;
+			this->currentSubTag = SubTag_t::equation;
 			break;
 		case SubTag_t::action_condition:
 			this->processEndActionCondition();

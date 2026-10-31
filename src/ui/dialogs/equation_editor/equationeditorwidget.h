@@ -43,7 +43,7 @@ public:
 	void replaceOperand(uint operandRank, ComponentId newVariable);
 	void clearOperand(uint operandRank);
 
-	std::shared_ptr<Equation> getLogicEquation() const;
+	std::shared_ptr<Equation> getEquation() const;
 
 	void closeOpenEditors();
 

@@ -51,9 +51,9 @@
         <Transitions>
             <Transition Source="Init" Target="On" SliderPos="36">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="boot ok"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="init duration" ActionType="Reset"/>
@@ -61,9 +61,9 @@
             </Transition>
             <Transition Source="On" Target="Error">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="error"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="error counter" ActionType="Increment"/>
@@ -71,35 +71,35 @@
             </Transition>
             <Transition Source="On" Target="Off">
                 <Condition>
-                    <LogicEquation Operator="and" OperandCount="2">
+                    <Equation Operator="and" OperandCount="2">
                         <Operand Rank="0" Source="Variable" Name="stop"/>
                         <Operand Rank="1" Source="Equation">
-                            <LogicEquation Operator="not">
+                            <Equation Operator="not">
                                 <Operand Rank="0" Source="Variable" Name="error"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="On" Target="Blink led 0">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="suspend"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Error" Target="Off">
                 <Condition>
-                    <LogicEquation Operator="not">
+                    <Equation Operator="not">
                         <Operand Rank="0" Source="Variable" Name="error"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Off" Target="Off">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="reset errors"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="error counter" ActionType="Reset"/>
@@ -107,9 +107,9 @@
             </Transition>
             <Transition Source="Off" Target="Error" SliderPos="24">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="error"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="error counter" ActionType="Increment"/>
@@ -117,14 +117,14 @@
             </Transition>
             <Transition Source="Off" Target="Init" SliderPos="62">
                 <Condition>
-                    <LogicEquation Operator="and" OperandCount="2">
+                    <Equation Operator="and" OperandCount="2">
                         <Operand Rank="0" Source="Variable" Name="start"/>
                         <Operand Rank="1" Source="Equation">
-                            <LogicEquation Operator="not">
+                            <Equation Operator="not">
                                 <Operand Rank="0" Source="Variable" Name="error"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="boot" ActionType="Pulse"/>
@@ -132,30 +132,30 @@
             </Transition>
             <Transition Source="Blink led 0" Target="Blink led 1">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="suspend"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Blink led 0" Target="On">
                 <Condition>
-                    <LogicEquation Operator="not">
+                    <Equation Operator="not">
                         <Operand Rank="0" Source="Variable" Name="suspend"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Blink led 1" Target="Blink led 0">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="suspend"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Blink led 1" Target="On">
                 <Condition>
-                    <LogicEquation Operator="not">
+                    <Equation Operator="not">
                         <Operand Rank="0" Source="Variable" Name="suspend"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
         </Transitions>

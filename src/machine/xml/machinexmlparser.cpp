@@ -249,7 +249,7 @@ void MachineXmlParser::parseActionNode()
 	currentActuator->addAction(currentAction, variable);
 }
 
-void MachineXmlParser::parseLogicEquationNode()
+void MachineXmlParser::parseEquationNode()
 {
 	Equation::Operator_t operatorType;
 	int rangeL = -1;
@@ -340,7 +340,7 @@ void MachineXmlParser::parseLogicEquationNode()
 	}
 	else
 	{
-		this->addIssue(tr("Error!") + " " + tr("Unexpected equation nature encountered while parsing logic equation."));
+		this->addIssue(tr("Error!") + " " + tr("Unexpected equation nature encountered while parsing equation."));
 		this->addIssue("    " + tr("Equation nature was:") + " \"" + valueOperator + "\".");
 		this->addIssue("    " + tr("Node ignored."));
 
@@ -387,7 +387,7 @@ void MachineXmlParser::parseOperandNode()
 	this->operandRankStack.push(operandRank);
 
 	// Nothing to do now if operand is an equation: it will
-	// be parsed when the LogicEquation tag is encountered
+	// be parsed when the Equation tag is encountered
 	if (operandSource == "Variable")
 	{
 		this->parseOperandVariableNode();
@@ -515,15 +515,15 @@ void MachineXmlParser::parseOperandConstantNode()
 }
 
 /**
- * @brief MachineXmlParser::processEndLogicEquationNode is called when
- *        a LogicEquation end tag is encountered. It identifies
+ * @brief MachineXmlParser::processEndEquationNode is called when
+ *        an Equation end tag is encountered. It identifies
  *        if the current equation is root or is another equation
  *        operand. In the second case, it sets the current equation
  *        as an operand of the parent equation.
  * @return IsRoot_t::no if equation was an operand,
  *         IsRoot_t::yes if it was root
  */
-MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicEquationNode()
+MachineXmlParser::IsRoot_t MachineXmlParser::processEndEquationNode()
 {
 	if (this->equationStack.count() == 1)
 	{
@@ -535,7 +535,7 @@ MachineXmlParser::IsRoot_t MachineXmlParser::processEndLogicEquationNode()
 		// Current equation is another equation operand
 		if (this->operandRankStack.isEmpty() == true)
 		{
-			this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"LogicEquation\" " + tr("node due to previous errors."));
+			this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"Equation\" " + tr("node due to previous errors."));
 
 			return IsRoot_t::no;
 		}

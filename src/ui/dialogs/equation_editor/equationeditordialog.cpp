@@ -102,7 +102,7 @@ EquationEditorDialog::EquationEditorDialog(std::shared_ptr<const Equation> initi
 
 std::shared_ptr<Equation> EquationEditorDialog::getResultEquation() const
 {
-	auto rootEquation = this->equationDisplay->getLogicEquation();
+	auto rootEquation = this->equationDisplay->getEquation();
 
 	// Root equation is supposed to be an identity
 	if (rootEquation->getOperator() != Equation::Operator_t::identity) return nullptr;

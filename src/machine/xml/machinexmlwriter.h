@@ -63,7 +63,7 @@ protected:
 	virtual void writeMachineType() = 0;
 
 	void writeActuatorActions(std::shared_ptr<const MachineActuatorComponent> component);
-	void writeLogicEquation(std::shared_ptr<const Equation> equation);
+	void writeEquation(std::shared_ptr<const Equation> equation);
 
 private:
 	void createSaveFile(); // Throws StatesException

@@ -30,17 +30,17 @@
         <Transitions>
             <Transition Source="Wait trig" Target="Burst high">
                 <Condition>
-                    <LogicEquation Operator="identity">
+                    <Equation Operator="identity">
                         <Operand Rank="0" Source="Variable" Name="Trigger"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
             </Transition>
             <Transition Source="Burst high" Target="Burst low" SliderPos="76">
                 <Condition>
-                    <LogicEquation Operator="equals">
+                    <Equation Operator="equals">
                         <Operand Rank="0" Source="Variable" Name="event counter"/>
                         <Operand Rank="1" Source="Variable" Name="period length"/>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="event counter" ActionType="Reset"/>
@@ -48,20 +48,20 @@
             </Transition>
             <Transition Source="Burst low" Target="Burst high" SliderPos="76">
                 <Condition>
-                    <LogicEquation Operator="and" OperandCount="2">
+                    <Equation Operator="and" OperandCount="2">
                         <Operand Rank="0" Source="Equation">
-                            <LogicEquation Operator="equals">
+                            <Equation Operator="equals">
                                 <Operand Rank="0" Source="Variable" Name="event counter"/>
                                 <Operand Rank="1" Source="Variable" Name="period length"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
                         <Operand Rank="1" Source="Equation">
-                            <LogicEquation Operator="differs">
+                            <Equation Operator="differs">
                                 <Operand Rank="0" Source="Variable" Name="period counter"/>
                                 <Operand Rank="1" Source="Variable" Name="period count"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="event counter" ActionType="Reset"/>
@@ -70,20 +70,20 @@
             </Transition>
             <Transition Source="Burst low" Target="Wait trig" SliderPos="86">
                 <Condition>
-                    <LogicEquation Operator="and" OperandCount="2">
+                    <Equation Operator="and" OperandCount="2">
                         <Operand Rank="0" Source="Equation">
-                            <LogicEquation Operator="equals">
+                            <Equation Operator="equals">
                                 <Operand Rank="0" Source="Variable" Name="event counter"/>
                                 <Operand Rank="1" Source="Variable" Name="period length"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
                         <Operand Rank="1" Source="Equation">
-                            <LogicEquation Operator="equals">
+                            <Equation Operator="equals">
                                 <Operand Rank="0" Source="Variable" Name="period counter"/>
                                 <Operand Rank="1" Source="Variable" Name="period count"/>
-                            </LogicEquation>
+                            </Equation>
                         </Operand>
-                    </LogicEquation>
+                    </Equation>
                 </Condition>
                 <Actions>
                     <Action Name="period counter" ActionType="Reset"/>
