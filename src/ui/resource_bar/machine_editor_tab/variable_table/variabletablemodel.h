@@ -70,6 +70,17 @@ public:
 private slots:
 	void machineUpdatedEventHandler();
 
+private:
+	QVariant getNameColumnData     (const QModelIndex& index, int role) const;
+	QVariant getTypeColumnData     (const QModelIndex& index, int role) const;
+	QVariant getMemorizedColumnData(const QModelIndex& index, int role) const;
+	QVariant getValueColumnData    (const QModelIndex& index, int role) const;
+
+	bool setNameColumnData     (const QModelIndex& index, const QVariant& value, int role);
+	bool setTypeColumnData     (const QModelIndex& index, const QVariant& value, int role);
+	bool setMemorizedColumnData(const QModelIndex& index, const QVariant& value, int role);
+	bool setValueColumnData    (const QModelIndex& index, const QVariant& value, int role);
+
 	/////
 	// Signals
 signals:

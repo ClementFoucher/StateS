@@ -47,6 +47,8 @@ ActionTableModel::ActionTableModel(ComponentId actuatorId, QObject* parent) :
 
 	this->actuatorId = actuatorId;
 
+	// WARNING: changing columns order requires to
+	// update the dataChanged() signal parameters.
 	this->columnsRoles.append(ColumnRole_t::variableName);
 	this->columnsRoles.append(ColumnRole_t::actionType);
 	this->columnsRoles.append(ColumnRole_t::actionValue);
@@ -81,206 +83,22 @@ QVariant ActionTableModel::data(const QModelIndex& index, int role) const
 {
 	if (index.isValid() == false) return QVariant();
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return QVariant();
-
-
-	auto action = actuator->getAction(index.row());
-	if (action == nullptr) return QVariant();
-
-	auto variableId = action->getVariableActedOnId();
-
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return QVariant();
-
 
 	auto columnRole = this->columnsRoles.at(index.column());
 	switch (columnRole)
 	{
-	case ColumnRole_t::actionType:
-	{
-		uint allowedActionTypes = action->getAllowedActionTypes();
-
-		if (role == Qt::EditRole)
-		{
-			uint currentActionType  = static_cast<uint>(action->getActionType());
-			uint32_t returnValue = (allowedActionTypes&0xFFFF) << 16 | (currentActionType&0xFFFF);
-			return QVariant(returnValue);
-		}
-		else if (std::popcount(allowedActionTypes) == 1)
-		{
-			// Only display text if there is just one allowed action type.
-			// When more than one allowed action, there is a persistent
-			// editor in this column.
-			if (role == Qt::DisplayRole)
-			{
-				return QVariant(action->getCurrentActionTypeText());
-			}
-			else if (role == Qt::DecorationRole)
-			{
-				return QVariant(action->getCurrentActionTypeIcon());
-			}
-			else if (role == Qt::ForegroundRole)
-			{
-				QBrush brush;
-				brush.setColor(Qt::gray);
-
-				return QVariant(brush);
-			}
-		}
-		break;
-	}
 	case ColumnRole_t::variableName:
-	{
-		if (role == Qt::DisplayRole)
-		{
-			// Build name
-			QString nameText = variable->getName();
-
-			if (variable->getType() == MachineValue::Type_t::bitVector)
-			{
-				int rangeL = action->getActionRangeL();
-				int rangeR = action->getActionRangeR();
-
-				if (rangeL != -1)
-				{
-					nameText += "[" + QString::number(rangeL);
-
-					if (rangeR != -1)
-					{
-						nameText += ".." + QString::number(rangeR);
-					}
-
-					nameText += "]";
-				}
-			}
-
-			return QVariant(nameText);
-		}
-		else if (role == Qt::ForegroundRole)
-		{
-			QBrush brush;
-			brush.setColor(Qt::gray);
-
-			return QVariant(brush);
-		}
+		return this->getVariableNameColumnData(index, role);
 		break;
-	}
+	case ColumnRole_t::actionType:
+		return this->getActionTypeColumnData(index, role);
+		break;
 	case ColumnRole_t::actionValue:
-	{
-		if (role == Qt::DisplayRole)
-		{
-			switch (action->getActionType())
-			{
-			case ActionOnVariable::Type_t::reset:
-			case ActionOnVariable::Type_t::set:
-			case ActionOnVariable::Type_t::continuous:
-			case ActionOnVariable::Type_t::pulse:
-			case ActionOnVariable::Type_t::assign:
-				return QVariant(action->getActionValue().toDisplayString());
-				break;
-			case ActionOnVariable::Type_t::increment:
-				return QVariant(variable->getName() + " + 1");
-				break;
-			case ActionOnVariable::Type_t::decrement:
-				return QVariant(variable->getName() + " - 1");
-				break;
-			case ActionOnVariable::Type_t::none:
-				// Nothing
-				break;
-			}
-		}
-		else if (role == Qt::EditRole)
-		{
-			switch (action->getActionType())
-			{
-			case ActionOnVariable::Type_t::reset:
-			case ActionOnVariable::Type_t::set:
-			case ActionOnVariable::Type_t::continuous:
-			case ActionOnVariable::Type_t::pulse:
-			case ActionOnVariable::Type_t::assign:
-				if (action->isActionValueEditable() == true)
-				{
-					auto actionValue = action->getActionValue();
-
-					// Provide various fields representing value
-					QString text;
-
-					// First field is type
-					switch (actionValue.getType())
-					{
-					case MachineValue::Type_t::boolean:
-						text += "BOOLEAN";
-						break;
-					case MachineValue::Type_t::bitVector:
-						text += "BITVECTOR";
-						break;
-					case MachineValue::Type_t::natural:
-						text += "NATURAL";
-						break;
-					case MachineValue::Type_t::relative:
-						text += "RELATIVE";
-						break;
-					case MachineValue::Type_t::nullType:
-						text += "NULL";
-						break;
-					}
-
-					// Second field is variable value
-					text += ":" + actionValue.toRawString();
-
-					// Third field (only for bit vectors) is variable size
-					if (actionValue.getType() == MachineValue::Type_t::bitVector)
-					{
-						auto bitVectorValue = actionValue.getBitVectorValue();
-						text += ":" + QString::number(bitVectorValue.getSize());
-					}
-
-					return text;
-				}
-				break;
-			case ActionOnVariable::Type_t::increment:
-				return QVariant(variable->getName() + " + 1");
-				break;
-			case ActionOnVariable::Type_t::decrement:
-				return QVariant(variable->getName() + " - 1");
-				break;
-			case ActionOnVariable::Type_t::none:
-				// Nothing
-				break;
-			}
-		}
-		else if (role == Qt::ForegroundRole)
-		{
-			if (action->isActionValueEditable() == false)
-			{
-				QBrush brush;
-				brush.setColor(Qt::gray);
-
-				return QVariant(brush);
-			}
-			else
-			{
-				return QVariant();
-			}
-		}
+		return this->getActionValueColumnData(index, role);
 		break;
-	}
 	case ColumnRole_t::actionCondition:
-	{
-		if (role == Qt::EditRole)
-		{
-			auto condition = action->getActionCondition();
-			if (condition != nullptr)
-			{
-				return QVariant::fromValue(condition);
-			}
-		}
+		return this->getActionConditionColumnData(index, role);
 		break;
-	}
 	}
 
 	return QVariant();
@@ -292,116 +110,22 @@ bool ActionTableModel::setData(const QModelIndex& index, const QVariant& value, 
 
 	if (role != Qt::EditRole) return false;
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return false;
-
-	auto actuator = machine->getActuatorComponent(this->actuatorId);
-	if (actuator == nullptr) return false;
-
-	auto action = actuator->getAction(index.row());
-	if (action == nullptr) return false;
-
 
 	auto columnRole = this->columnsRoles.at(index.column());
 	switch (columnRole)
 	{
-	case ColumnRole_t::actionType:
-	{
-		ActionOnVariable::Type_t newActionType = static_cast<ActionOnVariable::Type_t>(value.toUInt());
-
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Change action type
-		action->setActionType(newActionType);
-
-		// Machine has been edited
-		QString undoDescription = "ACTION_CHANGE_TYPE__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
-		machineManager->notifyMachineEdited(undoDescription);
-
-		// Changing the action type can impact action value:
-		// We have to notify about it
-		auto rightColumnIndex = this->index(index.row(), this->columnCount()-1);
-		emit this->dataChanged(rightColumnIndex, rightColumnIndex);
-
-		return true;
-		break;
-	}
 	case ColumnRole_t::variableName:
 		// Nothing to do: read-only column
 		break;
+	case ColumnRole_t::actionType:
+		return this->setActionTypeColumnData(index, value, role);
+		break;
 	case ColumnRole_t::actionValue:
-		if (action->isActionValueEditable() == true)
-		{
-			auto valueAsString = value.toString();
-
-			MachineValue newValue{};
-			switch (action->getActionValue().getType())
-			{
-			case MachineValue::Type_t::boolean:
-			{
-				newValue = BooleanValue::fromRawString(valueAsString);
-				break;
-			}
-			case MachineValue::Type_t::bitVector:
-			{
-				auto newBitVectorVariableValue = BitVectorValue::fromRawString(valueAsString);
-
-				auto oldVariableValueSize = action->getActionValue().getBitVectorValue().getSize();
-				if (newBitVectorVariableValue.getSize() != oldVariableValueSize)
-				{
-					newBitVectorVariableValue.resize(oldVariableValueSize);
-				}
-
-				newValue = newBitVectorVariableValue;
-				break;
-			}
-			case MachineValue::Type_t::natural:
-			{
-				newValue = NaturalValue::fromRawString(valueAsString);
-				break;
-			}
-			case MachineValue::Type_t::relative:
-			{
-				newValue = RelativeValue::fromRawString(valueAsString);
-				break;
-			}
-			case MachineValue::Type_t::nullType:
-				break;
-			}
-
-			// Do not change current value if no new value is provided
-			if (newValue.isNull() == false)
-			{
-				// Machine is about to be edited
-				machineManager->notifyMachineAboutToBeDiffEdited();
-
-				// Edit action value
-				action->setActionValue(newValue);
-
-				// Machine has been edited
-				QString undoDescription = "ACTION_CHANGE_VALUE__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
-				machineManager->notifyMachineEdited(undoDescription);
-
-				return true;
-			}
-		}
+		return this->setActionValueColumnData(index, value, role);
 		break;
 	case ColumnRole_t::actionCondition:
-	{
-		// Machine is about to be edited
-		machineManager->notifyMachineAboutToBeDiffEdited();
-
-		// Edit condition
-		auto equation = value.value<std::shared_ptr<Equation>>();
-		action->setActionCondition(equation);
-
-		// Machine has been edited
-		QString undoDescription = "ACTION_CHANGE_CONDITION__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
-		machineManager->notifyMachineEdited(undoDescription);
-
+		return this->setActionConditionColumnData(index, value, role);
 		break;
-	}
 	}
 
 	return false;
@@ -690,4 +414,391 @@ int ActionTableModel::getActionRangeR(int row) const
 
 
 	return actionActedOn->getActionRangeR();
+}
+
+QVariant ActionTableModel::getVariableNameColumnData(const QModelIndex& index, int role) const
+{
+	if ( (role != Qt::DisplayRole) &&
+	     (role != Qt::ForegroundRole)
+	   )
+		return QVariant();
+
+
+	if (role == Qt::DisplayRole)
+	{
+		auto machine = machineManager->getMachine();
+		if (machine == nullptr) return QVariant();
+
+		auto actuator = machine->getActuatorComponent(this->actuatorId);
+		if (actuator == nullptr) return QVariant();
+
+		auto action = actuator->getAction(index.row());
+		if (action == nullptr) return QVariant();
+
+		auto variableId = action->getVariableActedOnId();
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) return QVariant();
+
+
+		// Build name
+		QString nameText = variable->getName();
+
+		if (variable->getType() == MachineValue::Type_t::bitVector)
+		{
+			int rangeL = action->getActionRangeL();
+			int rangeR = action->getActionRangeR();
+
+			if (rangeL != -1)
+			{
+				nameText += "[" + QString::number(rangeL);
+
+				if (rangeR != -1)
+				{
+					nameText += ".." + QString::number(rangeR);
+				}
+
+				nameText += "]";
+			}
+		}
+
+		return QVariant(nameText);
+	}
+	else // (role == Qt::ForegroundRole)
+	{
+		QBrush brush;
+		brush.setColor(Qt::gray);
+
+		return QVariant(brush);
+	}
+}
+
+QVariant ActionTableModel::getActionTypeColumnData(const QModelIndex& index, int role) const
+{
+	if ( (role != Qt::EditRole)       &&
+	     (role != Qt::DisplayRole)    &&
+	     (role != Qt::DecorationRole) &&
+	     (role != Qt::ForegroundRole)
+	   )
+		return QVariant();
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return QVariant();
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return QVariant();
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return QVariant();
+
+
+	if (role == Qt::EditRole)
+	{
+		uint allowedActionTypes = action->getAllowedActionTypes();
+		uint currentActionType  = static_cast<uint>(action->getActionType());
+		uint32_t returnValue = (allowedActionTypes&0xFFFF) << 16 | (currentActionType&0xFFFF);
+		return QVariant(returnValue);
+	}
+	else if (std::popcount(action->getAllowedActionTypes()) == 1)
+	{
+		// Only display text if there is just one allowed action type.
+		// When more than one allowed action, there is a persistent
+		// editor in this column.
+		if (role == Qt::DisplayRole)
+		{
+			return QVariant(action->getCurrentActionTypeText());
+		}
+		else if (role == Qt::DecorationRole)
+		{
+			return QVariant(action->getCurrentActionTypeIcon());
+		}
+		else if (role == Qt::ForegroundRole)
+		{
+			QBrush brush;
+			brush.setColor(Qt::gray);
+
+			return QVariant(brush);
+		}
+	}
+
+	return QVariant();
+}
+
+QVariant ActionTableModel::getActionValueColumnData(const QModelIndex& index, int role) const
+{
+	if ( (role != Qt::DisplayRole) &&
+	     (role != Qt::EditRole)    &&
+	     (role != Qt::ForegroundRole)
+	   )
+		return QVariant();
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return QVariant();
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return QVariant();
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return QVariant();
+
+
+	if (role == Qt::DisplayRole)
+	{
+		auto variableId = action->getVariableActedOnId();
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) return QVariant();
+
+
+		switch (action->getActionType())
+		{
+		case ActionOnVariable::Type_t::reset:
+		case ActionOnVariable::Type_t::set:
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+		case ActionOnVariable::Type_t::assign:
+			return QVariant(action->getActionValue().toDisplayString());
+			break;
+		case ActionOnVariable::Type_t::increment:
+			return QVariant(variable->getName() + " + 1");
+			break;
+		case ActionOnVariable::Type_t::decrement:
+			return QVariant(variable->getName() + " - 1");
+			break;
+		case ActionOnVariable::Type_t::none:
+			// Nothing
+			break;
+		}
+	}
+	else if (role == Qt::EditRole)
+	{
+		auto variableId = action->getVariableActedOnId();
+		auto variable = machine->getVariable(variableId);
+		if (variable == nullptr) return QVariant();
+
+
+		switch (action->getActionType())
+		{
+		case ActionOnVariable::Type_t::reset:
+		case ActionOnVariable::Type_t::set:
+		case ActionOnVariable::Type_t::continuous:
+		case ActionOnVariable::Type_t::pulse:
+		case ActionOnVariable::Type_t::assign:
+			if (action->isActionValueEditable() == true)
+			{
+				auto actionValue = action->getActionValue();
+
+				// Provide various fields representing value
+				QString text;
+
+				// First field is type
+				switch (actionValue.getType())
+				{
+				case MachineValue::Type_t::boolean:
+					text += "BOOLEAN";
+					break;
+				case MachineValue::Type_t::bitVector:
+					text += "BITVECTOR";
+					break;
+				case MachineValue::Type_t::natural:
+					text += "NATURAL";
+					break;
+				case MachineValue::Type_t::relative:
+					text += "RELATIVE";
+					break;
+				case MachineValue::Type_t::nullType:
+					text += "NULL";
+					break;
+				}
+
+				// Second field is variable value
+				text += ":" + actionValue.toRawString();
+
+				// Third field (only for bit vectors) is variable size
+				if (actionValue.getType() == MachineValue::Type_t::bitVector)
+				{
+					auto bitVectorValue = actionValue.getBitVectorValue();
+					text += ":" + QString::number(bitVectorValue.getSize());
+				}
+
+				return text;
+			}
+			break;
+		case ActionOnVariable::Type_t::increment:
+			return QVariant(variable->getName() + " + 1");
+			break;
+		case ActionOnVariable::Type_t::decrement:
+			return QVariant(variable->getName() + " - 1");
+			break;
+		case ActionOnVariable::Type_t::none:
+			// Nothing
+			break;
+		}
+	}
+	else // (role == Qt::ForegroundRole)
+	{
+		if (action->isActionValueEditable() == false)
+		{
+			QBrush brush;
+			brush.setColor(Qt::gray);
+
+			return QVariant(brush);
+		}
+	}
+
+	return QVariant();
+}
+
+QVariant ActionTableModel::getActionConditionColumnData(const QModelIndex& index, int role) const
+{
+	if (role != Qt::EditRole) return QVariant();
+
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return QVariant();
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return QVariant();
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return QVariant();
+
+
+	// Only one role possible, so avoid test on role
+	auto condition = action->getActionCondition();
+	if (condition != nullptr)
+	{
+		return QVariant::fromValue(condition);
+	}
+
+	return QVariant();
+}
+
+bool ActionTableModel::setActionTypeColumnData(const QModelIndex& index, const QVariant& value, int role)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return false;
+
+
+	// Get new action type
+	auto newActionType = static_cast<ActionOnVariable::Type_t>(value.toUInt());
+
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Change action type
+	action->setActionType(newActionType);
+
+	// Machine has been edited
+	QString undoDescription = "ACTION_CHANGE_TYPE__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
+	machineManager->notifyMachineEdited(undoDescription);
+
+	// Notify edition
+	// Changing the action type can impact action value.
+	// BIG ASSUMPTION HERE: Type column is left and Value column right
+	auto leftIndex  = this->index(index.row(), this->columnsRoles.indexOf(ColumnRole_t::actionType));
+	auto rightIndex = this->index(index.row(), this->columnsRoles.indexOf(ColumnRole_t::actionValue));
+	emit this->dataChanged(leftIndex, rightIndex);
+
+	return true;
+}
+
+bool ActionTableModel::setActionValueColumnData(const QModelIndex& index, const QVariant& value, int role)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return false;
+
+	if (action->isActionValueEditable() == false) return false;
+
+	auto actionValue = action->getActionValue();
+	if (actionValue.getType() == MachineValue::Type_t::nullType) return false;
+
+
+	// Get new value
+	auto valueAsString = value.toString();
+
+	MachineValue newValue{};
+	switch (action->getActionValue().getType())
+	{
+	case MachineValue::Type_t::boolean:
+		newValue = BooleanValue::fromRawString(valueAsString);
+		break;
+	case MachineValue::Type_t::bitVector:
+	{
+		auto newBitVectorVariableValue = BitVectorValue::fromRawString(valueAsString);
+
+		auto oldVariableValueSize = action->getActionValue().getBitVectorValue().getSize();
+		if (newBitVectorVariableValue.getSize() != oldVariableValueSize)
+		{
+			newBitVectorVariableValue.resize(oldVariableValueSize);
+		}
+
+		newValue = newBitVectorVariableValue;
+		break;
+	}
+	case MachineValue::Type_t::natural:
+		newValue = NaturalValue::fromRawString(valueAsString);
+		break;
+	case MachineValue::Type_t::relative:
+		newValue = RelativeValue::fromRawString(valueAsString);
+		break;
+	case MachineValue::Type_t::nullType:
+		// Checked previously, should not happen
+		break;
+	}
+
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Edit action value
+	action->setActionValue(newValue);
+
+	// Machine has been edited
+	QString undoDescription = "ACTION_CHANGE_VALUE__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
+	machineManager->notifyMachineEdited(undoDescription);
+
+	// Notify edition
+	emit this->dataChanged(index, index);
+
+	return true;
+}
+
+bool ActionTableModel::setActionConditionColumnData(const QModelIndex& index, const QVariant& value, int role)
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return false;
+
+	auto actuator = machine->getActuatorComponent(this->actuatorId);
+	if (actuator == nullptr) return false;
+
+	auto action = actuator->getAction(index.row());
+	if (action == nullptr) return false;
+
+
+	// Get new condition
+	auto equation = value.value<std::shared_ptr<Equation>>();
+
+	// Machine is about to be edited
+	machineManager->notifyMachineAboutToBeDiffEdited();
+
+	// Edit condition
+	action->setActionCondition(equation);
+
+	// Machine has been edited
+	QString undoDescription = "ACTION_CHANGE_CONDITION__" + QString::number(static_cast<uint32_t>(actuator->getId())) + "_" + QString::number(index.row());
+	machineManager->notifyMachineEdited(undoDescription);
+
+	// Notify edition
+	emit this->dataChanged(index, index);
+
+	return false;
 }

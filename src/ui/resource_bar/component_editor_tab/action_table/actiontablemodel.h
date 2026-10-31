@@ -82,6 +82,16 @@ public:
 	int getActionRangeL(int row) const;
 	int getActionRangeR(int row) const;
 
+private:
+	QVariant getVariableNameColumnData   (const QModelIndex& index, int role) const;
+	QVariant getActionTypeColumnData     (const QModelIndex& index, int role) const;
+	QVariant getActionValueColumnData    (const QModelIndex& index, int role) const;
+	QVariant getActionConditionColumnData(const QModelIndex& index, int role) const;
+
+	bool setActionTypeColumnData     (const QModelIndex& index, const QVariant& value, int role);
+	bool setActionValueColumnData    (const QModelIndex& index, const QVariant& value, int role);
+	bool setActionConditionColumnData(const QModelIndex& index, const QVariant& value, int role);
+
 	/////
 	// Signals
 signals:
