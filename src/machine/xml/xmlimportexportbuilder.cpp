@@ -23,6 +23,7 @@
 #include "xmlimportexportbuilder.h"
 
 // StateS
+#include "statesexception.h"
 #include "fsmxmlwriter.h"
 #include "fsmxmlparser.h"
 #include "machinexmlwriter.h"
@@ -74,41 +75,46 @@ std::shared_ptr<MachineXmlWriter> XmlImportExportBuilder::buildMachineWriterForS
 
 /**
  * @brief XmlImportExportBuilder::buildStringParser
- * Builds a parser for a QString object.
- * @param xmlString
- * @return
+ *        Builds a parser for a QString object.
+ * @param xmlString QString representing the
+ *        machine as XML.
+ * @return A parser for the the provided string.
  */
 std::shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildStringParser(const QString& xmlString)
 {
-	std::shared_ptr<MachineXmlParser> machineParser;
-
 	StateSXmlAnalyzer analyzer{xmlString};
 
 	if (analyzer.getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
 	{
-		machineParser = std::make_shared<FsmXmlParser>(xmlString);
+		return std::make_shared<FsmXmlParser>(xmlString);
 	}
 
-	return machineParser;
+	return nullptr;
 }
 
 /**
  * @brief XmlImportExportBuilder::buildFileParser
- * Builds a parser for a QFile object.
- * @param file
- * @return
+ *        Builds a parser for a QFile object.
+ * @param file File containing the machine XML.
+ * @param machineType Type of the machine.
+ * @return A parser for the the provided file.
  */
-std::shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(std::shared_ptr<QFile> file, std::shared_ptr<StateSXmlAnalyzer> analyzer)
+std::shared_ptr<MachineXmlParser> XmlImportExportBuilder::buildFileParser(QFile* file, StateSXmlAnalyzer::MachineType_t machineType)
 {
-	if (analyzer == nullptr) return nullptr;
-
-
-	std::shared_ptr<MachineXmlParser> machineParser;
-
-	if (analyzer->getMachineType() == StateSXmlAnalyzer::MachineType_t::fsm)
+	try
 	{
-		machineParser = std::make_shared<FsmXmlParser>(file);
+		if (machineType == StateSXmlAnalyzer::MachineType_t::fsm)
+		{
+			return std::make_shared<FsmXmlParser>(file); // Throws StatesException
+		}
+	}
+	catch (const StatesException& e)
+	{
+		if (e.getCause() != StatesException::Cause_t::file_error) throw;
+
+		// In case of file exception, just do nothing.
+		// The function will then return a nullptr.
 	}
 
-	return machineParser;
+	return nullptr;
 }

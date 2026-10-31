@@ -26,19 +26,27 @@
 #include <QXmlStreamReader>
 #include <QFile>
 
+// StateS
+#include "statesexception.h"
 
-StateSXmlAnalyzer::StateSXmlAnalyzer(std::shared_ptr<QFile> file)
+
+StateSXmlAnalyzer::StateSXmlAnalyzer(QFile* file) // Throws StatesException
 {
 	if (file->isOpen() == false)
 	{
-		file->open(QIODevice::ReadOnly);
+		bool success = file->open(QIODevice::ReadOnly);
+		if (success == false)
+		{
+			throw StatesException("StateSXmlAnalyzer", StatesException::Cause_t::file_error, tr("Unable to open file in read mode."));
+		}
 	}
 	else
 	{
+		// Get back to the beginning of the file
 		file->reset();
 	}
 
-	this->xmlReader = std::make_shared<QXmlStreamReader>(file.get());
+	this->xmlReader = std::make_shared<QXmlStreamReader>(file);
 	this->parse();
 }
 

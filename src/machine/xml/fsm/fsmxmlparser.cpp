@@ -35,8 +35,8 @@ FsmXmlParser::FsmXmlParser(const QString& xmlString) :
 	this->machine = std::make_shared<Fsm>();
 }
 
-FsmXmlParser::FsmXmlParser(std::shared_ptr<QFile> file) :
-	MachineXmlParser(file)
+FsmXmlParser::FsmXmlParser(QFile* file) : // Throws StatesException
+	MachineXmlParser(file) // Throws StatesException
 {
 	this->machine = std::make_shared<Fsm>();
 }

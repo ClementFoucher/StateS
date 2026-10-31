@@ -65,7 +65,7 @@ private:
 	// Constructors/destructors
 public:
 	explicit FsmXmlParser(const QString& xmlString);
-	explicit FsmXmlParser(std::shared_ptr<QFile> file);
+	explicit FsmXmlParser(QFile* file); // Throws StatesException
 
 	/////
 	// Object functions

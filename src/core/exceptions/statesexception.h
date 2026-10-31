@@ -22,7 +22,7 @@
 #ifndef STATESEXCEPTION_H
 #define STATESEXCEPTION_H
 
-// Stdlib
+// Parent
 #include <exception>
 
 // Qt
@@ -34,31 +34,27 @@ class StatesException : std::exception
 	/////
 	// Type declarations
 public:
-	enum class FileError_t
+	enum class Cause_t
 	{
-		unable_to_replace = 0,
-		unkown_directory  = 1,
-		unable_to_open    = 2
+		file_error
 	};
 
 	/////
 	// Constructors/destructors
 public:
-	explicit StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause);
+	explicit StatesException(const QString& sourceClass, StatesException::Cause_t exceptionCause, const QString& errorText);
 
 	/////
 	// Object functions
 public:
-	QString getSourceClass() const;
-	uint    getEnumValue()   const;
+	StatesException::Cause_t getCause() const;
 
 	virtual const char* what() const noexcept override;
 
 	/////
 	// Object variables
 private:
-	QString     sourceClass;
-	uint        errorEnumValue;
+	StatesException::Cause_t exceptionCause;
 	std::string errorText;
 
 };

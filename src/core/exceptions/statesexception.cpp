@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014-2015 Clément Foucher
+ * Copyright © 2014-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.txt.
  *
@@ -23,23 +23,17 @@
 #include "statesexception.h"
 
 
-StatesException::StatesException(const QString& sourceClass, uint errorEnumValue, const QString& errorCause)
+StatesException::StatesException(const QString& sourceClass, StatesException::Cause_t exceptionCause, const QString& errorText)
 {
-	this->sourceClass    = sourceClass;
-	this->errorEnumValue = errorEnumValue;
+	this->exceptionCause = exceptionCause;
 
-	QString et = "Exception occured in StateS class " + sourceClass + " with cause \"" + errorCause + "\".";
+	QString et = "Exception occured in StateS class " + sourceClass + " with cause \"" + errorText + "\".";
 	this->errorText = et.toStdString();
 }
 
-QString StatesException::getSourceClass() const
+StatesException::Cause_t StatesException::getCause() const
 {
-	return sourceClass;
-}
-
-uint StatesException::getEnumValue() const
-{
-	return this->errorEnumValue;
+	return this->exceptionCause;
 }
 
 const char* StatesException::what() const noexcept

@@ -30,10 +30,10 @@ class QString;
 class QFile;
 
 // StateS
+#include <statesxmlanalyzer.h>
 class MachineXmlWriter;
 class MachineXmlParser;
 class ViewConfiguration;
-class StateSXmlAnalyzer;
 
 
 class XmlImportExportBuilder
@@ -48,7 +48,7 @@ public:
 
 	// Parser
 	static std::shared_ptr<MachineXmlParser> buildStringParser(const QString& xmlString);
-	static std::shared_ptr<MachineXmlParser> buildFileParser(std::shared_ptr<QFile> file, std::shared_ptr<StateSXmlAnalyzer> analyzer);
+	static std::shared_ptr<MachineXmlParser> buildFileParser(QFile* file, StateSXmlAnalyzer::MachineType_t machineType);
 
 };
 

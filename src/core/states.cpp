@@ -213,9 +213,26 @@ void StateS::loadMachine(const QString& path)
 	}
 
 	// Build file parser
-	auto file = std::make_shared<QFile>(path);
-	auto analyzer = make_shared<StateSXmlAnalyzer>(file);
-	auto parser = XmlImportExportBuilder::buildFileParser(file, analyzer);
+	QFile file{path};
+	std::shared_ptr<StateSXmlAnalyzer> analyzer;
+	try
+	{
+		analyzer = std::make_shared<StateSXmlAnalyzer>(&file); // Throws StatesException
+	}
+	catch (const StatesException& e)
+	{
+		if (e.getCause() != StatesException::Cause_t::file_error) throw;
+
+		// In case of file exception, just do nothing.
+		// The error handling will be done below.
+	}
+
+	std::shared_ptr<MachineXmlParser> parser;
+	if (analyzer != nullptr)
+	{
+		parser = XmlImportExportBuilder::buildFileParser(&file, analyzer->getMachineType());
+	}
+
 	if (parser == nullptr)
 	{
 		issues.append(tr("Error!") + " " + tr("StateS couldn't read the selected file."));
@@ -356,7 +373,7 @@ void StateS::saveCurrentMachineInCurrentFile()
 	}
 	catch (const StatesException& e)
 	{
-		if (e.getSourceClass() == "MachineXmlWriter")
+		if (e.getCause() == StatesException::Cause_t::file_error)
 		{
 			this->displayErrorMessage(tr("Unable to save file."), QString(e.what()));
 		}

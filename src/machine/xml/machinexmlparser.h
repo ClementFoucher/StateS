@@ -89,7 +89,7 @@ private:
 
 protected:
 	explicit MachineXmlParser(const QString& xmlString);
-	explicit MachineXmlParser(std::shared_ptr<QFile> file);
+	explicit MachineXmlParser(QFile* file); // Throws StatesException
 
 	/////
 	// Object functions
@@ -148,7 +148,6 @@ protected:
 	std::shared_ptr<ActionOnVariable> currentAction;
 
 private:
-	std::shared_ptr<QFile> file; // Must keep it to maintain a reference to the file so that it is not destroyed
 	std::shared_ptr<QXmlStreamReader> xmlReader;
 
 	std::shared_ptr<ViewConfiguration> viewConfiguration;

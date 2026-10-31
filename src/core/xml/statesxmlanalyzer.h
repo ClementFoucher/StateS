@@ -27,6 +27,7 @@
 
 // Qt
 #include <QtTypes>
+#include <QCoreApplication>
 class QString;
 class QXmlStreamReader;
 class QFile;
@@ -34,6 +35,7 @@ class QFile;
 
 class StateSXmlAnalyzer
 {
+	Q_DECLARE_TR_FUNCTIONS(StateSXmlAnalyzer)
 
 	/////
 	// Type declarations
@@ -57,7 +59,7 @@ public:
 	/////
 	// Constructors/destructors
 public:
-	explicit StateSXmlAnalyzer(std::shared_ptr<QFile> file);
+	explicit StateSXmlAnalyzer(QFile* file); // Throws StatesException
 	explicit StateSXmlAnalyzer(const QString& xmlSource);
 
 	/////

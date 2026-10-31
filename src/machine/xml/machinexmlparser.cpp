@@ -28,6 +28,7 @@
 
 // StateS
 #include "machine.h"
+#include "statesexception.h"
 #include "variable.h"
 #include "viewconfiguration.h"
 #include "graphicattributes.h"
@@ -48,20 +49,24 @@ MachineXmlParser::MachineXmlParser(const QString& xmlString) :
 	this->xmlReader = std::make_shared<QXmlStreamReader>(xmlString);
 }
 
-MachineXmlParser::MachineXmlParser(std::shared_ptr<QFile> file) :
+MachineXmlParser::MachineXmlParser(QFile* file) : // Throws StatesException
 	MachineXmlParser()
 {
-	this->file = file;
 	if (file->isOpen() == false)
 	{
-		file->open(QIODevice::ReadOnly);
+		bool success = file->open(QIODevice::ReadOnly);
+		if (success == false)
+		{
+			throw StatesException("MachineXmlParser", StatesException::Cause_t::file_error, tr("Unable to open file in read mode."));
+		}
 	}
 	else
 	{
+		// Get back to the beginning of the file
 		file->reset();
 	}
 
-	this->xmlReader = std::make_shared<QXmlStreamReader>(file.get());
+	this->xmlReader = std::make_shared<QXmlStreamReader>(file);
 }
 
 void MachineXmlParser::doParse()
@@ -819,22 +824,12 @@ void MachineXmlParser::parseMachineName()
 	{
 		this->machine->setName(nameAttribute);
 	}
-	else if ( (this->file != nullptr) && (this->file->fileName().isNull() == false) )
-	{
-		auto machineName = this->file->fileName();
-		machineName = machineName.section("/", -1, -1);             // Extract file name from path
-		machineName.remove("." + machineName.section(".", -1, -1)); // Remove extension
-		this->machine->setName(machineName);
-
-		this->addIssue(tr("Info:") + " " + tr("No name was found for the machine."));
-		this->addIssue("    " + tr("Used file name to name machine:") + " \"" + machineName + "\".");
-	}
-	else // In case we still have no name
+	else
 	{
 		this->machine->setName(tr("Machine"));
 
 		this->addIssue(tr("Info:") + " " + tr("No name was found for the machine."));
-		this->addIssue("    " + tr("Name defaulted to:") + " \"" + tr("Machine") + "\".");
+		this->addIssue("    " + tr("Name defaulted to:") + " \"" + this->machine->getName() + "\".");
 	}
 }
 
