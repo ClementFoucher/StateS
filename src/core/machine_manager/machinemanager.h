@@ -126,6 +126,7 @@ signals:
 	// Indicates the machine under edit has been updated due to diff undo or redo action,
 	// so the new structure is potentially dramatically different from the previous one.
 	// Notably, graphic machine is replaced so all components depending on it should be rebuilt.
+	void machineAboutToBeUpdatedEvent();
 	void machineUpdatedEvent();
 
 	void interfaceModeChangedEvent(InterfaceMode_t newMode);

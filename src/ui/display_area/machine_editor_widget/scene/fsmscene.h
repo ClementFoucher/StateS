@@ -89,6 +89,7 @@ private slots:
 	void interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t newMode);
 
 	// Machine manager signals
+	void machineAboutToBeUpdatedEventHandler();
 	void machineUpdatedEventHandler();
 
 	// Machine builder signal

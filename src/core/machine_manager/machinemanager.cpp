@@ -305,6 +305,9 @@ MachineManager::InterfaceMode_t MachineManager::getCurrentInterfaceMode() const
 
 void MachineManager::freshMachineAvailableFromUndoRedo(std::shared_ptr<Machine> updatedMachine, std::shared_ptr<GraphicAttributes> updatedGraphicAttributes)
 {
+	// Notify that machine is about to be updated
+	emit this->machineAboutToBeUpdatedEvent();
+
 	this->setMachineInternal(updatedMachine, updatedGraphicAttributes);
 
 	// Clear tool if there was one currently in use

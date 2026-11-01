@@ -50,8 +50,9 @@ FsmScene::FsmScene() :
 {
 	connect(this, &QGraphicsScene::selectionChanged, this, &FsmScene::handleSelection);
 
-	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,       this, &FsmScene::machineUpdatedEventHandler);
-	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent, this, &FsmScene::interfaceModeChangedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineAboutToBeUpdatedEvent, this, &FsmScene::machineAboutToBeUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::machineUpdatedEvent,          this, &FsmScene::machineUpdatedEventHandler);
+	connect(machineManager.get(), &MachineManager::interfaceModeChangedEvent,    this, &FsmScene::interfaceModeChangedEventHandler);
 
 	auto machineBuilder = machineManager->getMachineBuilder();
 	connect(machineBuilder.get(), &MachineBuilder::changedToolEvent, this, &FsmScene::toolChangeEventHandler);
@@ -612,10 +613,17 @@ void FsmScene::interfaceModeChangedEventHandler(MachineManager::InterfaceMode_t 
 	}
 }
 
+void FsmScene::machineAboutToBeUpdatedEventHandler()
+{
+	emit this->requestSaveViewEvent();
+}
+
 void FsmScene::machineUpdatedEventHandler()
 {
 	this->updateSceneEditionMode(SceneEditionMode_t::idle);
 	this->displayGraphicMachine();
+
+	emit this->requestRestoreViewEvent();
 }
 
 void FsmScene::toolChangeEventHandler(MachineBuilder::Tool_t newTool)
