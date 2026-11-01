@@ -49,7 +49,15 @@ SimulatedFsmTransition::SimulatedFsmTransition(ComponentId logicComponentId) :
 	auto logicCondition = logicTransition->getCondition();
 	if (logicCondition != nullptr)
 	{
-		this->condition = make_shared<SimulatedEquation>(logicCondition);
+		this->condition = std::make_shared<SimulatedEquation>(logicCondition);
+	}
+	else // (logicCondition == nullptr)
+	{
+		// Implicit condition is always true
+		auto trueCondition = std::make_shared<Equation>(Equation::Operator_t::identity);
+		trueCondition->setOperand(0, BooleanValue::trueValue());
+
+		this->condition = std::make_shared<SimulatedEquation>(trueCondition);
 	}
 
 	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);

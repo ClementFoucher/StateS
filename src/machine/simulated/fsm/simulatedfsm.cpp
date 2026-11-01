@@ -167,18 +167,12 @@ void SimulatedFsm::subMachinePrepareStep()
 		auto transition = this->getSimulatedTransition(transitionId);
 		if (transition == nullptr) continue;
 
-
 		auto condition = transition->getCondition();
-		if (condition != nullptr)
+		if (condition == nullptr) continue;
+
+
+		if (condition->isTrue())
 		{
-			if (condition->isTrue())
-			{
-				candidateTransitions.insert(candidateTransitions.count(), transition->getId());
-			}
-		}
-		else // (condition == nullptr)
-		{
-			// Empty conditions are implicitly true
 			candidateTransitions.insert(candidateTransitions.count(), transition->getId());
 		}
 	}

@@ -73,26 +73,20 @@ void GraphicSimulatedFsmTransition::refreshSimulatedDisplay()
 	auto simulatedSourceState = simulatedFsm->getSimulatedState(simulatedTransition->getSourceStateId());
 	if (simulatedSourceState == nullptr) return;
 
+	auto condition = simulatedTransition->getCondition();
+	if (condition == nullptr) return;
+
 
 	// Determine new color
 	QColor newColor;
 
-	auto condition = simulatedTransition->getCondition();
-	if (condition != nullptr)
+	if (condition->isTrue() == true)
 	{
-		if (condition->isTrue() == true)
-		{
-			newColor = GraphicSimulatedComponent::simuActiveBorderColor;
-		}
-		else
-		{
-			newColor = GraphicSimulatedComponent::simuInactiveBorderColor;
-		}
+		newColor = GraphicSimulatedComponent::simuActiveBorderColor;
 	}
 	else
 	{
-		// Empty condition is implicitly always true
-		newColor = GraphicSimulatedComponent::simuActiveBorderColor;
+		newColor = GraphicSimulatedComponent::simuInactiveBorderColor;
 	}
 
 	// Set arrow pen
