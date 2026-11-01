@@ -1048,19 +1048,19 @@
 <context>
     <name>FsmScene</name>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="317"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="884"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="318"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="892"/>
         <source>Add state</source>
         <translation>Ajouter un état</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="318"/>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="889"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="319"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="897"/>
         <source>Add initial state</source>
         <translation>Ajouter un état initial</translation>
     </message>
     <message>
-        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1161"/>
+        <location filename="../src/ui/display_area/machine_editor_widget/scene/fsmscene.cpp" line="1169"/>
         <source>State</source>
         <translation>État</translation>
     </message>
@@ -2743,19 +2743,32 @@
     </message>
 </context>
 <context>
+    <name>SimulatedEquation</name>
+    <message>
+        <location filename="../src/machine/simulated/components/subcomponents/simulatedequation.cpp" line="35"/>
+        <source>Empty equation.</source>
+        <translation>Équation vide.</translation>
+    </message>
+    <message>
+        <location filename="../src/machine/simulated/components/subcomponents/simulatedequation.cpp" line="39"/>
+        <source>Invalid equation.</source>
+        <translation>Équation invalide.</translation>
+    </message>
+</context>
+<context>
     <name>SimulatedFsm</name>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="206"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="200"/>
         <source>Warning! There are multiple active transitions going out the current state!</source>
         <translation>Attention ! Il y a plusieurs transitions actives partant de l&apos;état courant !</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="207"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="201"/>
         <source>This means your FSM is wrong by construction. This should be fixed.</source>
         <translation>Cela signifie que votre FSM est erronée. Ceci devrait être corrigé.</translation>
     </message>
     <message>
-        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="208"/>
+        <location filename="../src/machine/simulated/fsm/simulatedfsm.cpp" line="202"/>
         <source>For current simulation, just choose the target state in the following list:</source>
         <translation>Pour la simulation actuelle, sélectionnez simplement l&apos;état cible dans la liste ci-dessous :</translation>
     </message>

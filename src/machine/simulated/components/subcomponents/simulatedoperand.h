@@ -43,7 +43,7 @@ class SimulatedOperand : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedOperand(std::shared_ptr<const Operand> sourceOperand);
+	explicit SimulatedOperand(std::shared_ptr<const Operand> sourceOperand); // Throws StatesException
 
 	/////
 	// Object functions

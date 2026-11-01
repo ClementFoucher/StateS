@@ -24,6 +24,7 @@
 
 // StateS
 #include "machinemanager.h"
+#include "statesexception.h"
 #include "simulatedmachine.h"
 #include "actiononvariable.h"
 #include "simulatedvariable.h"
@@ -41,7 +42,20 @@ SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const Actio
 	auto sourceCondition = sourceAction->getActionCondition();
 	if (sourceCondition != nullptr)
 	{
-		this->condition = std::make_shared<SimulatedEquation>(sourceCondition);
+		try
+		{
+			this->condition = std::make_shared<SimulatedEquation>(sourceCondition); // Throws StatesException
+		}
+		catch (const StatesException& e)
+		{
+			if (e.getCause() != StatesException::Cause_t::ill_formed_equation) throw;
+
+			// Ill-formed equations are always false
+			auto falseCondition = std::make_shared<Equation>(Equation::Operator_t::identity);
+			falseCondition->setOperand(0, BooleanValue::falseValue());
+
+			this->condition = std::make_shared<SimulatedEquation>(falseCondition); // Throws StatesException: Ignored. Equation is well-formed.
+		}
 	}
 }
 

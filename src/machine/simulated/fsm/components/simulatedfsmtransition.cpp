@@ -24,6 +24,7 @@
 
 // StateS
 #include "machinemanager.h"
+#include "statesexception.h"
 #include "fsm.h"
 #include "fsmtransition.h"
 #include "simulatedequation.h"
@@ -49,7 +50,20 @@ SimulatedFsmTransition::SimulatedFsmTransition(ComponentId logicComponentId) :
 	auto logicCondition = logicTransition->getCondition();
 	if (logicCondition != nullptr)
 	{
-		this->condition = std::make_shared<SimulatedEquation>(logicCondition);
+		try
+		{
+			this->condition = std::make_shared<SimulatedEquation>(logicCondition); // Throws StatesException
+		}
+		catch (const StatesException& e)
+		{
+			if (e.getCause() != StatesException::Cause_t::ill_formed_equation) throw;
+
+			// Ill-formed equations are always false
+			auto falseCondition = std::make_shared<Equation>(Equation::Operator_t::identity);
+			falseCondition->setOperand(0, BooleanValue::falseValue());
+
+			this->condition = std::make_shared<SimulatedEquation>(falseCondition); // Throws StatesException: Ignored. Equation is well-formed.
+		}
 	}
 	else // (logicCondition == nullptr)
 	{
@@ -57,7 +71,7 @@ SimulatedFsmTransition::SimulatedFsmTransition(ComponentId logicComponentId) :
 		auto trueCondition = std::make_shared<Equation>(Equation::Operator_t::identity);
 		trueCondition->setOperand(0, BooleanValue::trueValue());
 
-		this->condition = std::make_shared<SimulatedEquation>(trueCondition);
+		this->condition = std::make_shared<SimulatedEquation>(trueCondition); // Throws StatesException: Ignored. Equation is well-formed.
 	}
 
 	connect(this->condition.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedFsmTransition::conditionChangedEventHandler);

@@ -332,7 +332,7 @@ void ConditionEditor::expandTruthTable()
 		if (condition == nullptr) return;
 
 
-		this->truthTable = make_shared<TruthTable>(condition);
+		this->truthTable = std::make_shared<TruthTable>(condition);
 		if (this->truthTable->getRowsCount() > 1024)
 		{
 			auto textList = QStringList();

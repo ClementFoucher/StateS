@@ -36,7 +36,8 @@ class StatesException : std::exception
 public:
 	enum class Cause_t
 	{
-		file_error
+		file_error,
+		ill_formed_equation
 	};
 
 	/////

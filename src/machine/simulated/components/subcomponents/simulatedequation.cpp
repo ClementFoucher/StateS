@@ -23,31 +23,33 @@
 #include "simulatedequation.h"
 
 // StateS
+#include "statesexception.h"
 #include "simulatedoperand.h"
 #include "equationcomputer.h"
 
 
-SimulatedEquation::SimulatedEquation(std::shared_ptr<const Equation> sourceEquation)
+SimulatedEquation::SimulatedEquation(std::shared_ptr<const Equation> sourceEquation) // Throws StatesException
 {
-	if (sourceEquation == nullptr) return;
+	if (sourceEquation == nullptr)
+	{
+		throw StatesException("SimulatedEquation", StatesException::Cause_t::ill_formed_equation, tr("Empty equation."));
+	}
+	else if (sourceEquation->isValid() == false)
+	{
+		throw StatesException("SimulatedEquation", StatesException::Cause_t::ill_formed_equation, tr("Invalid equation."));
+	}
 
 
 	this->operatorType = sourceEquation->getOperator();
 
-	bool isValid = (sourceEquation->getComputationFailureCause() == Equation::ComputationFailureCause_t::nofail) ? true : false;
-
 	for (uint i = 0 ; i < sourceEquation->getOperandCount() ; i++)
 	{
 		auto logicOperand = sourceEquation->getOperand(i);
-		if (logicOperand == nullptr) continue;
+		if (logicOperand == nullptr) continue; // Should not happen as ill-formed equation have already been rejected, but anyway.
 
 
-		auto simulatedOperand = make_shared<SimulatedOperand>(sourceEquation->getOperand(i));
-
-		if (isValid == true)
-		{
-			connect(simulatedOperand.get(), &SimulatedOperand::operandCurrentValueChangedEvent, this, &SimulatedEquation::computeCurrentValue);
-		}
+		auto simulatedOperand = std::make_shared<SimulatedOperand>(logicOperand); // Throws StatesException: ignored. Only happens on ill-formed equations, already checked.
+		connect(simulatedOperand.get(), &SimulatedOperand::operandCurrentValueChangedEvent, this, &SimulatedEquation::computeCurrentValue);
 
 		this->operands.append(simulatedOperand);
 	}
@@ -86,7 +88,7 @@ bool SimulatedEquation::isTrue() const
 
 void SimulatedEquation::computeCurrentValue()
 {
-	// PRE: this slot is connected (thus called) only if the equation is valid
+	// PRE: the equation is well-formed
 	MachineValue previousValue{this->currentValue};
 
 	int operandsCount = this->operands.count();

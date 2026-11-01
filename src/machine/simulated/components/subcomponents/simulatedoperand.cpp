@@ -29,7 +29,7 @@
 #include "simulatedvariable.h"
 
 
-SimulatedOperand::SimulatedOperand(std::shared_ptr<const Operand> sourceOperand)
+SimulatedOperand::SimulatedOperand(std::shared_ptr<const Operand> sourceOperand) // Throws StatesException
 {
 	if (sourceOperand == nullptr) return;
 
@@ -54,7 +54,7 @@ SimulatedOperand::SimulatedOperand(std::shared_ptr<const Operand> sourceOperand)
 	}
 	case Operand::Source_t::equation:
 	{
-		auto equation = make_shared<SimulatedEquation>(sourceOperand->getEquation());
+		auto equation = std::make_shared<SimulatedEquation>(sourceOperand->getEquation()); // Throws StatesException: propagated
 		this->value = equation;
 
 		connect(equation.get(), &SimulatedEquation::equationCurrentValueChangedEvent, this, &SimulatedOperand::operandCurrentValueChangedEvent);

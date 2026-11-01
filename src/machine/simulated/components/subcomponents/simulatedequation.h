@@ -41,7 +41,7 @@ class SimulatedEquation : public QObject
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedEquation(std::shared_ptr<const Equation> sourceEquation);
+	explicit SimulatedEquation(std::shared_ptr<const Equation> sourceEquation); // Throws StatesException
 
 	/////
 	// Object functions
