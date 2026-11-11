@@ -186,7 +186,8 @@ void TypeEditor::triggerEditBitVectorSize()
 		this->sizeLineEdit->show();
 	}
 
-	this->layout()->replaceWidget(this->sizeLabel, this->sizeLineEdit);
+	auto layoutItem = this->layout()->replaceWidget(this->sizeLabel, this->sizeLineEdit);
+	delete layoutItem;
 	this->sizeLabel->hide();
 
 	this->sizeLineEdit->setText(QString::number(this->bitVectorSize));
@@ -285,7 +286,8 @@ void TypeEditor::sizeEditCanceledEventHandler()
 
 	this->sizeLabel->setText(QString::number(this->bitVectorSize));
 	this->sizeLabel->show();
-	this->layout()->replaceWidget(this->sizeLineEdit, this->sizeLabel);
+	auto layoutItem = this->layout()->replaceWidget(this->sizeLineEdit, this->sizeLabel);
+	delete layoutItem;
 	this->sizeLineEdit->hide();
 	this->sizeLineEdit->setErroneous(false);
 }

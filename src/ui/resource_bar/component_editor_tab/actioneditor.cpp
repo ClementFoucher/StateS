@@ -188,7 +188,8 @@ void ActionEditor::rowCountChangedEventHandler(int newRowCount)
 {
 	if ( (this->noActionLabel != nullptr) && (newRowCount != 0) )
 	{
-		this->layout()->replaceWidget(this->noActionLabel, this->actionTable);
+		auto layoutItem = this->layout()->replaceWidget(this->noActionLabel, this->actionTable);
+		delete layoutItem;
 		this->actionTable->show();
 
 		delete this->noActionLabel;
@@ -197,7 +198,8 @@ void ActionEditor::rowCountChangedEventHandler(int newRowCount)
 	else if ( (this->noActionLabel == nullptr) && (newRowCount == 0) )
 	{
 		this->buildNoActionDisplay();
-		this->layout()->replaceWidget(this->actionTable, this->noActionLabel);
+		auto layoutItem = this->layout()->replaceWidget(this->actionTable, this->noActionLabel);
+		delete layoutItem;
 
 		this->actionTable->hide();
 	}

@@ -113,11 +113,11 @@ void ValueEditor::setMachineValue(MachineValue value)
 
 		if (newValueType == MachineValue::Type_t::natural)
 		{
-			this->lineEdit->setValidator(new QIntValidator(0, NaturalValue::maxValue()));
+			this->lineEdit->setValidator(new QIntValidator(0, NaturalValue::maxValue(), this->lineEdit));
 		}
 		else if (newValueType == MachineValue::Type_t::relative)
 		{
-			this->lineEdit->setValidator(new QIntValidator(RelativeValue::minValue(), RelativeValue::maxValue()));
+			this->lineEdit->setValidator(new QIntValidator(RelativeValue::minValue(), RelativeValue::maxValue(), this->lineEdit));
 		}
 
 		connect(this->lineEdit, &ColoredLineEditor::editingFinished, this, &ValueEditor::textEditChangedEventHandler);
@@ -187,7 +187,7 @@ void ValueEditor::setBitVectorSize(uint size)
 		re = QRegularExpression("[01]*");
 	}
 
-	this->lineEdit->setValidator(new QRegularExpressionValidator(re));
+	this->lineEdit->setValidator(new QRegularExpressionValidator(re, this->lineEdit));
 }
 
 void ValueEditor::setFocusOnShow(bool autoFocusOnNextShow)

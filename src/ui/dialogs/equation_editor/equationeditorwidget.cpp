@@ -798,9 +798,10 @@ void EquationEditorWidget::updateOperandWidget(uint operandRank)
 	if (newOperand == nullptr) return;
 
 
-	this->layout()->replaceWidget(oldOperand, newOperand);
+	auto layoutItem = this->layout()->replaceWidget(oldOperand, newOperand);
 	this->operands[operandRank] = newOperand;
 
+	delete layoutItem;
 	// Do not delete the old operand now as we may be in a call from this object
 	oldOperand->deleteLater();
 	// The event loop will only return after mouse button is released:
