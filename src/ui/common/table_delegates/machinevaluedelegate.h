@@ -25,9 +25,6 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// StateS
-class ValueEditor;
-
 
 /**
  * @brief The MachineValueDelegate class provides an editor
@@ -50,7 +47,7 @@ public:
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 private slots:
-	void valueChangedEventHandler(ValueEditor* editor);
+	void valueChangedEventHandler();
 
 };
 

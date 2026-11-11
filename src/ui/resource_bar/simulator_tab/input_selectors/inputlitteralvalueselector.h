@@ -53,7 +53,7 @@ protected:
 
 private slots:
 	void variableValueChangedEventHandler();
-	void editorValueChangedEventHandler(ValueEditor*);
+	void editorValueChangedEventHandler();
 
 	/////
 	// Object variables

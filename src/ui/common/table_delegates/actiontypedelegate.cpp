@@ -24,18 +24,11 @@
 
 // Qt
 #include <QRegularExpressionValidator>
+#include <QTableView>
 
 // StateS
 #include "actiontypeeditor.h"
 
-
-ActionTypeDelegate::ActionTypeDelegate(QWidget* parent) :
-	QStyledItemDelegate(parent)
-{
-	this->dummyEditor = new ActionTypeEditor(parent);
-	this->dummyEditor->fillActionList(0xFFFF, ActionOnVariable::Type_t::none);
-	this->dummyEditor->setVisible(false);
-}
 
 QWidget* ActionTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
@@ -75,15 +68,17 @@ void ActionTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* model
 	model->setData(index, static_cast<uint>(newActionType), Qt::EditRole);
 }
 
-QSize ActionTypeDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+void ActionTypeDelegate::actionTypeChangedEventHandler()
 {
-	if (this->dummyEditor == nullptr) return QStyledItemDelegate::sizeHint(option, index);
+	auto actionTypeEditor = dynamic_cast<ActionTypeEditor*>(sender());
+	if (actionTypeEditor == nullptr) return;
 
 
-	return this->dummyEditor->sizeHint();
-}
+	emit this->commitData(actionTypeEditor);
 
-void ActionTypeDelegate::actionTypeChangedEventHandler(ActionTypeEditor* editor)
-{
-	emit this->commitData(editor);
+	auto tableView = dynamic_cast<QTableView*>(this->parent());
+	if (tableView != nullptr)
+	{
+		tableView->resizeColumnsToContents();
+	}
 }

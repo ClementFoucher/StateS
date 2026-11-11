@@ -64,7 +64,7 @@ protected:
 	virtual void processSpecificDropAction(DropAction_t    action) override;
 
 private slots:
-	void valueChangedEventHandler(ValueEditor*);
+	void valueChangedEventHandler();
 	void cancelEditEventHandler();
 
 private:

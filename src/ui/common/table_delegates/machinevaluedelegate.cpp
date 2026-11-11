@@ -96,10 +96,12 @@ void MachineValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* mod
 	model->setData(index, newValue.toRawString(), Qt::EditRole);
 }
 
-void MachineValueDelegate::valueChangedEventHandler(ValueEditor* editor)
+void MachineValueDelegate::valueChangedEventHandler()
 {
-	// This is required as ValueEditor is not a QLineEdit:
-	// we have to manually handle editor finalization
-	emit this->commitData(editor);
-	emit this->closeEditor(editor);
+	auto valueEditor = dynamic_cast<ValueEditor*>(sender());
+	if (valueEditor == nullptr) return;
+
+
+	emit this->commitData(valueEditor);
+	emit this->closeEditor(valueEditor);
 }

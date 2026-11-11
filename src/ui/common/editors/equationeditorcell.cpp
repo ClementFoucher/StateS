@@ -106,7 +106,7 @@ void EquationEditorCell::clearEquationButtonPressedEventHandler()
 	this->equation.reset();
 
 	this->updateDisplay();
-	emit this->equationChangedEvent(this);
+	emit this->equationChangedEvent();
 }
 
 void EquationEditorCell::equationEditorDialogClosedEventHandler(int result)
@@ -119,7 +119,7 @@ void EquationEditorCell::equationEditorDialogClosedEventHandler(int result)
 		this->equation = this->equationEditorDialog->getResultEquation();
 
 		this->updateDisplay();
-		emit this->equationChangedEvent(this);
+		emit this->equationChangedEvent();
 	}
 
 	delete this->equationEditorDialog;

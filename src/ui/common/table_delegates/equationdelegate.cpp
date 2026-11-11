@@ -65,9 +65,13 @@ void EquationDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, 
 	model->setData(index, variant, Qt::EditRole);
 }
 
-void EquationDelegate::equationChangedEventHandler(EquationEditorCell* editor)
+void EquationDelegate::equationChangedEventHandler()
 {
-	emit this->commitData(editor);
+	auto equationEditor = dynamic_cast<EquationEditorCell*>(sender());
+	if (equationEditor == nullptr) return;
+
+
+	emit this->commitData(equationEditor);
 
 	auto tableView = dynamic_cast<QTableView*>(this->parent());
 	if (tableView != nullptr)

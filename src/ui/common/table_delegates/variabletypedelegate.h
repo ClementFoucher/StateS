@@ -25,9 +25,6 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// StateS
-class TypeEditor;
-
 
 class VariableTypeDelegate : public QStyledItemDelegate
 {
@@ -36,7 +33,7 @@ class VariableTypeDelegate : public QStyledItemDelegate
 	/////
 	// Constructors/destructors
 public:
-	explicit VariableTypeDelegate(QWidget* parent = nullptr);
+	explicit VariableTypeDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
 
 	/////
 	// Object functions
@@ -44,15 +41,9 @@ public:
 	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
-	virtual QSize    sizeHint(const QStyleOptionViewItem&, const QModelIndex&)                          const override;
 
 private slots:
-	void typeChangedEventHandler(TypeEditor* editor);
-
-	/////
-	// Object variables
-private:
-	TypeEditor* dummyEditor = nullptr;
+	void typeChangedEventHandler();
 
 };
 

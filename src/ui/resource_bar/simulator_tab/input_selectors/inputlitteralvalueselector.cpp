@@ -89,7 +89,7 @@ void InputLitteralValueSelector::variableValueChangedEventHandler()
 	this->valueEditor->setMachineValue(variable->getCurrentValue());
 }
 
-void InputLitteralValueSelector::editorValueChangedEventHandler(ValueEditor*)
+void InputLitteralValueSelector::editorValueChangedEventHandler()
 {
 	auto variable = this->getVariable();
 	if (variable == nullptr) return;

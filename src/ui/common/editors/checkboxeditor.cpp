@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Clément Foucher
+ * Copyright © 2025-2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -65,6 +65,6 @@ void CheckBoxEditor::checkedStateChangedEventHandler(Qt::CheckState)
 {
 	if (this->inhibitEvents == false)
 	{
-		emit this->checkedStateChangedEvent(this);
+		emit this->checkedStateChangedEvent();
 	}
 }

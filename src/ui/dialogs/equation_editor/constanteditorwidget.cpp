@@ -228,7 +228,7 @@ void ConstantEditorWidget::processSpecificDropAction(DropAction_t action)
 	}
 }
 
-void ConstantEditorWidget::valueChangedEventHandler(ValueEditor*)
+void ConstantEditorWidget::valueChangedEventHandler()
 {
 	this->validEdit();
 }

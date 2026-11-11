@@ -22,18 +22,12 @@
 // Current class header
 #include "variabletypedelegate.h"
 
+// Qt
+#include <QTableView>
+
 // StateS
 #include "typeeditor.h"
 
-
-VariableTypeDelegate::VariableTypeDelegate(QWidget* parent) :
-	QStyledItemDelegate(parent)
-{
-	// Dummy editor is only here to provide a size hint
-	this->dummyEditor = new TypeEditor(parent);
-	this->dummyEditor->setCurrentType(MachineValue::Type_t::bitVector);
-	this->dummyEditor->setVisible(false);
-}
 
 QWidget* VariableTypeDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
 {
@@ -114,12 +108,17 @@ void VariableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* mod
 	}
 }
 
-QSize VariableTypeDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
+void VariableTypeDelegate::typeChangedEventHandler()
 {
-	return this->dummyEditor->sizeHint();
-}
+	auto typeEditor = dynamic_cast<TypeEditor*>(sender());
+	if (typeEditor == nullptr) return;
 
-void VariableTypeDelegate::typeChangedEventHandler(TypeEditor* editor)
-{
-	emit this->commitData(editor);
+
+	emit this->commitData(typeEditor);
+
+	auto tableView = dynamic_cast<QTableView*>(this->parent());
+	if (tableView != nullptr)
+	{
+		tableView->resizeColumnsToContents();
+	}
 }

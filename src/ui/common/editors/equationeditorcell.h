@@ -67,7 +67,7 @@ private:
 	/////
 	// Signals
 signals:
-	void equationChangedEvent(EquationEditorCell* me);
+	void equationChangedEvent();
 
 	/////
 	// Object variables

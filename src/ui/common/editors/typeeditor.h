@@ -83,7 +83,7 @@ private slots:
 	/////
 	// Signals
 signals:
-	void typeChangedEvent(TypeEditor* me);
+	void typeChangedEvent();
 
 	/////
 	// Object variables

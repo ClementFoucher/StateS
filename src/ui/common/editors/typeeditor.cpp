@@ -251,7 +251,7 @@ bool TypeEditor::eventFilter(QObject* watched, QEvent* event)
 
 void TypeEditor::selectedTypeChangedEventHandler(int)
 {
-	emit this->typeChangedEvent(this);
+	emit this->typeChangedEvent();
 	// Do not do anything after this line:
 	// when a type change is triggered, the editor
 	// is destroyed (close persistent editors)
@@ -263,7 +263,7 @@ void TypeEditor::sizeChangedEventHandler(QString)
 	if (this->sizeLineEdit == nullptr) return;
 
 
-	emit this->typeChangedEvent(this);
+	emit this->typeChangedEvent();
 	// Do not do anything after this line:
 	// when a type change is triggered, the editor
 	// is destroyed (close persistent editors)

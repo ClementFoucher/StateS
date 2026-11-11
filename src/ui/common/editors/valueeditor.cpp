@@ -241,10 +241,10 @@ void ValueEditor::keyPressEvent(QKeyEvent* event)
 
 void ValueEditor::comboBoxIndexChangedEventHandler(int)
 {
-	emit this->valueChangedEvent(this);
+	emit this->valueChangedEvent();
 }
 
 void ValueEditor::textEditChangedEventHandler()
 {
-	emit this->valueChangedEvent(this);
+	emit this->valueChangedEvent();
 }

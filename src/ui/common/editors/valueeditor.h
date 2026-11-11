@@ -75,7 +75,7 @@ private slots:
 	/////
 	// Signals
 signals:
-	void valueChangedEvent(ValueEditor* me);
+	void valueChangedEvent();
 	void cancelEditEvent();
 
 	/////

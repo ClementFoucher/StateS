@@ -25,9 +25,6 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// StateS
-class ActionTypeEditor;
-
 
 class ActionTypeDelegate : public QStyledItemDelegate
 {
@@ -36,7 +33,7 @@ class ActionTypeDelegate : public QStyledItemDelegate
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeDelegate(QWidget* parent = nullptr);
+	explicit ActionTypeDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
 
 	/////
 	// Object functions
@@ -44,16 +41,9 @@ public:
 	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
-	virtual QSize    sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index)             const override;
 
 private slots:
-	void actionTypeChangedEventHandler(ActionTypeEditor* editor);
-
-	/////
-	// Object variables
-private:
-	// Dummy editor is used to provide a size hint
-	ActionTypeEditor* dummyEditor = nullptr;
+	void actionTypeChangedEventHandler();
 
 };
 

@@ -107,5 +107,5 @@ ActionOnVariable::Type_t ActionTypeEditor::getActionType() const
 
 void ActionTypeEditor::processIndexChanged(int)
 {
-	emit this->actionTypeChangedEvent(this);
+	emit this->actionTypeChangedEvent();
 }

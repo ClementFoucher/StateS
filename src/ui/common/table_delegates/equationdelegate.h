@@ -25,9 +25,6 @@
 // Parent
 #include <QStyledItemDelegate>
 
-// StateS
-class EquationEditorCell;
-
 
 class EquationDelegate : public QStyledItemDelegate
 {
@@ -46,7 +43,7 @@ public:
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 private slots:
-	void equationChangedEventHandler(EquationEditorCell* editor);
+	void equationChangedEventHandler();
 
 };
 

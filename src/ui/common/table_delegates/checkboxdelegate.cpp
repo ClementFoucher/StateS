@@ -51,7 +51,11 @@ void CheckBoxDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, 
 	model->setData(index, memorizedEditor->getChecked(), Qt::EditRole);
 }
 
-void CheckBoxDelegate::checkedStateChangedEventHandler(CheckBoxEditor* memorizedEditor)
+void CheckBoxDelegate::checkedStateChangedEventHandler()
 {
+	auto memorizedEditor = dynamic_cast<CheckBoxEditor*>(sender());
+	if (memorizedEditor == nullptr) return;
+
+
 	emit this->commitData(memorizedEditor);
 }

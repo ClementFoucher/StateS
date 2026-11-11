@@ -54,7 +54,7 @@ private slots:
 	/////
 	// Signals
 signals:
-	void actionTypeChangedEvent(ActionTypeEditor* me);
+	void actionTypeChangedEvent();
 
 };
 
