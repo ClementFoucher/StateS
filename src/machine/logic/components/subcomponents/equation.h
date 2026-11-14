@@ -117,7 +117,7 @@ public:
 
 	MachineValue getInitialValue() const;
 
-	QString getText() const;
+	QString getText(bool addEnclosingParenthesis = false) const;
 
 	ComputationFailureCause_t getComputationFailureCause() const;
 	ComputationWarning_t      getComputationWarning()      const;

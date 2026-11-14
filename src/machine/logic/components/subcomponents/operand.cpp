@@ -185,7 +185,7 @@ QString Operand::getText() const
 		if (equation == nullptr) return QString();
 
 
-		return equation->getText();
+		return equation->getText(true);
 		break;
 	}
 	case Source_t::constant:

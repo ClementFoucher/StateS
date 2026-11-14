@@ -130,21 +130,28 @@ MachineValue Equation::getInitialValue() const
 	return this->initialValue;
 }
 
-QString Equation::getText() const
+QString Equation::getText(bool addEnclosingParenthesis) const
 {
 	QString text;
 
 	uint operandCount = this->operands.size();
 
+	if (addEnclosingParenthesis == true)
+	{
+		if ( (operandCount > 1) && (this->operatorType != Operator_t::extractOp) )
+		{
+			text += "( ";
+		}
+		else
+		{
+			addEnclosingParenthesis = false;
+		}
+	}
+
 	// Inversion operator
 	if (EquationComputer::isInverted(this->operatorType) == true)
 	{
 		text += '/';
-	}
-
-	if ( (operandCount > 1) && (this->operatorType != Operator_t::extractOp) )
-	{
-		text += "( ";
 	}
 
 	for (uint operandRank = 0 ; operandRank < operandCount ; operandRank++)
@@ -225,7 +232,8 @@ QString Equation::getText() const
 	{
 		text += "]";
 	}
-	else if (operandCount > 1)
+
+	if (addEnclosingParenthesis == true)
 	{
 		text += " )";
 	}
