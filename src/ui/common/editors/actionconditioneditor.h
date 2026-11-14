@@ -19,71 +19,55 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUATIONEDITORCELL_H
-#define EQUATIONEDITORCELL_H
+#ifndef ACTIONCONDITIONEDITOR_H
+#define ACTIONCONDITIONEDITOR_H
 
 // Parent
-#include <QWidget>
+#include "cellwitheditandclearbuttonseditor.h"
 
 // Qt
-class QHBoxLayout;
 class QLabel;
-class QPushButton;
 
 // StateS
 class Equation;
 class EquationEditorDialog;
 
 
-class EquationEditorCell : public QWidget
+class ActionConditionEditor : public CellWithEditAndClearButtonsEditor
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationEditorCell(QWidget* parent = nullptr);
+	explicit ActionConditionEditor(QWidget* parent = nullptr);
 
 	/////
 	// Object functions
 public:
-	void setEquation(std::shared_ptr<const Equation> equation);
-	std::shared_ptr<Equation> getEquation() const;
-
-	void setIsConditionEditor(bool isConditionEditor);
-
-protected:
-	void resizeEvent(QResizeEvent* event) override;
+	void setCondition(std::shared_ptr<const Equation> condition);
+	std::shared_ptr<Equation> getCondition() const;
 
 private slots:
-	void editEquationButtonPressedEventHandler();
-	void clearEquationButtonPressedEventHandler();
+	virtual void editButtonClickedEventHandler()  override;
+	virtual void clearButtonClickedEventHandler() override;
 
 	void equationEditorDialogClosedEventHandler(int result);
 
 private:
-	void updateDisplay();
+	virtual bool shouldClearButtonBeVisibile() override;
 
-	/////
-	// Signals
-signals:
-	void equationChangedEvent();
+	void updateDisplay();
 
 	/////
 	// Object variables
 private:
-	std::shared_ptr<Equation> equation;
-	bool isConditionEditor = false;
+	std::shared_ptr<Equation> condition;
 
-	QHBoxLayout* mainLayout;
-
-	QLabel* equationText = nullptr;
-
-	QPushButton* buttonEditEquation  = nullptr;
-	QPushButton* buttonClearEquation = nullptr;
+	QLabel* conditionText = nullptr;
 
 	EquationEditorDialog* equationEditorDialog = nullptr;
 
 };
 
-#endif // EQUATIONEDITORCELL_H
+#endif // ACTIONCONDITIONEDITOR_H

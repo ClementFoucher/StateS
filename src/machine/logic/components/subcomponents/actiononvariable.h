@@ -38,12 +38,13 @@ class Equation;
 /**
  * @brief The ActionOnVariable class manages actions on variables.
  *
- * Depending on type of variable acted on, the action value can be
- * explicit or implicit. Implicit values are provided by this class
- * and can not be edited.
+ * It should normally preserve an action provider at all time,
+ * reseting to a constant when the provider is removed.
+ * However, the equation for the action provider may at any time
+ * be invalid.
  *
- * For Bit Vectors, range parameters allow to act on part of the vector.
- * Range parameters are valid when >= 0.
+ * For actions on Bit Vectors, range parameters allow to act on a
+ * subpart of the vector. Range parameters are valid when >= 0.
  * If both parametes are invalid, the action acts on the full variable.
  * If only left range is valid, the action acts on a single bit.
  * If both ranges are valid, the action acts on the [rangeL..rangeR] sub-vector.
@@ -55,89 +56,97 @@ class ActionOnVariable : public QObject
 	/////
 	// Type declarations
 public:
-	enum class Type_t : uint
+	enum class Behavior_t : uint
 	{
 		none       = 0x0,
 		continuous = 0x1,
 		pulse      = 0x2,
-		set        = 0x4,
-		reset      = 0x8,
-		assign     = 0x10,
-		increment  = 0x20,
-		decrement  = 0x40
+		assign     = 0x4
 	};
 
 	/////
 	// Static functions
 public:
-	static QString getActionTypeText(ActionOnVariable::Type_t type);
-	static QIcon   getActionTypeIcon(ActionOnVariable::Type_t type, bool isDown = false);
+	static QString getBehaviorText(ActionOnVariable::Behavior_t behavior);
+	static QIcon   getBehaviorIcon(ActionOnVariable::Behavior_t behavior, bool isDown = false);
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionOnVariable(ComponentId variableId, uint actuatorAllowedActions);
-	explicit ActionOnVariable(std::shared_ptr<Variable> variable, uint actuatorAllowedActions, ActionOnVariable::Type_t actionType, MachineValue actionValue, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
+	explicit ActionOnVariable(ComponentId targetVariableId, uint actuatorAllowedBehaviors);
+	explicit ActionOnVariable(std::shared_ptr<Variable> targetVariable, uint actuatorAllowedBehaviors, ActionOnVariable::Behavior_t behavior, int rangeL, int rangeR); // Build an action on variable when machine is still being parsed
 
 	/////
 	// Object functions
 public:
+	// Functions specific to file loading
+	void setValueProviderRaw(std::shared_ptr<Equation> newValueProvider);
+	void setConditionRaw    (std::shared_ptr<Equation> newCondition);
 	void checkAndFixAction();
 
-	void setActionType     (ActionOnVariable::Type_t newType);
-	void setActionValue    (MachineValue newValue);
-	void setActionRange    (int newRangeL, int newRangeR);
-	void setActionCondition(std::shared_ptr<Equation> equation);
+	// Mutators
+	void setBehavior     (ActionOnVariable::Behavior_t newBehavior);
+	void setValueProvider(std::shared_ptr<Equation> newValueProvider);
+	void setCondition    (std::shared_ptr<Equation> newCondition);
+	void setRange        (int newRangeL, int newRangeR);
 
-	ComponentId                     getVariableActedOnId()  const;
-	ActionOnVariable::Type_t        getActionType()         const;
-	MachineValue                    getActionValue()        const;
-	int                             getActionRangeL()       const;
-	int                             getActionRangeR()       const;
-	std::shared_ptr<const Equation> getActionCondition()    const;
+	// Accessors
+	ComponentId                     getTargetVariableId() const;
+	ActionOnVariable::Behavior_t    getBehavior()         const;
+	std::shared_ptr<const Equation> getValueProvider()    const;
+	std::shared_ptr<const Equation> getCondition()        const;
+	int                             getRangeL()           const;
+	int                             getRangeR()           const;
+	uint                            getAllowedBehaviors() const;
 
-	bool isActionValueEditable() const;
-	uint getAllowedActionTypes() const;
+	// Helper functions
+	bool isValueProviderValid() const;
 
-	QString getCurrentActionTypeText() const;
-	QIcon   getCurrentActionTypeIcon() const;
+	MachineValue::Type_t getExpectedProvidedValueType()          const;
+	uint                 getExpectedProvidedValueBitVectorSize() const;
 
 private slots:
-	void variableTypeChangedEventHandler();
-	void variableMemorizedStateChangedEventHandler();
-	void variableInitialValueChangedEventHandler();
+	void targetVariableTypeChangedEventHandler();
+	void targetVariableMemorizedStateChangedEventHandler();
+	void targetVariableInitialValueChangedEventHandler();
+
+	void valueProviderEquationInvalidatedEventHandler();
+	void conditionEquationInvalidatedEventHandler();
 
 private:
-	void connectSignals(std::shared_ptr<Variable> variable);
+	void connectTargetVariableSignals(std::shared_ptr<Variable> targetVariable);
+	void connectValueProviderSignals();
+	void connectConditionSignals();
 
-	bool checkIfRangeFitsVariable(int rangeL, int rangeR) const;
+	bool checkIfRangeFitsTargetVariable(int rangeL, int rangeR) const;
 
-	void checkAndFixActionRange();
-	void checkAndFixActionType();
-	void checkAndFixActionValue();
+	void checkAndFixRange();
+	void checkAndFixBehavior();
+	void checkAndFixValueProvider();
 
-	void setDefaultActionValue();
+	void setDefaultValueProvider();
 
-	MachineValue::Type_t getExpectedActionType() const;
-	uint getExpectedBitVectorActionSize() const;
+	bool isValueProviderAConstant() const;
 
 	/////
 	// Signals
 signals:
 	void actionChangedEvent(); // Emitted when action changes whatever the cause
-	void actionFixedEvent();   // Emitted when action had to be adapted due to its related variable changing
+	void actionChangedAsAResultOfAnotherChangeEvent(); // Emitted when action had to be adapted due to a change in a variable it uses (directly or through an equation)
 
 	/////
 	// Object variables
 private:
-	ComponentId variableId = nullId;
-	uint actuatorAllowedActions = static_cast<uint>(ActionOnVariable::Type_t::none);
-	std::shared_ptr<Equation> condition;
+	// Immutable characteristics
+	const ComponentId targetVariableId;
+	const uint        actuatorAllowedBehaviors;
 
-	ActionOnVariable::Type_t actionType;
-	MachineValue actionValue;
-	int rangeL = -1;
-	int rangeR = -1;
+	// Variable characteristics
+	ActionOnVariable::Behavior_t behavior;
+	std::shared_ptr<Equation>    valueProvider;
+	std::shared_ptr<Equation>    condition;
+	int                          rangeL;
+	int                          rangeR;
 
 };
 

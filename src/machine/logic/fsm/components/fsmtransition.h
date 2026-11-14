@@ -57,7 +57,7 @@ public:
 	void clearCondition();
 	std::shared_ptr<const Equation> getCondition() const;
 
-	virtual uint getAllowedActionTypes() const override;
+	virtual uint getAllowedActionBehaviors() const override;
 
 private slots:
 	void conditionChangedEventHandler();

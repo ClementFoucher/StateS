@@ -88,13 +88,9 @@ const QList<ComponentId> FsmState::getIncomingTransitionsIds() const
 	return this->inputTransitionsIds;
 }
 
-uint FsmState::getAllowedActionTypes() const
+uint FsmState::getAllowedActionBehaviors() const
 {
-	return (static_cast<uint>(ActionOnVariable::Type_t::continuous) |
-	        static_cast<uint>(ActionOnVariable::Type_t::set)        |
-	        static_cast<uint>(ActionOnVariable::Type_t::reset)      |
-	        static_cast<uint>(ActionOnVariable::Type_t::assign)     |
-	        static_cast<uint>(ActionOnVariable::Type_t::increment)  |
-	        static_cast<uint>(ActionOnVariable::Type_t::decrement)
+	return (static_cast<uint>(ActionOnVariable::Behavior_t::continuous) |
+	        static_cast<uint>(ActionOnVariable::Behavior_t::assign)
 	       );
 }

@@ -25,6 +25,7 @@
 // StateS
 #include "machinemanager.h"
 #include "machine.h"
+#include "statesexception.h"
 #include "machineactuatorcomponent.h"
 #include "simulatedactiononvariable.h"
 
@@ -41,8 +42,18 @@ SimulatedActuatorComponent::SimulatedActuatorComponent(ComponentId componentId) 
 
 	for (auto& action : logicComponent->getActions())
 	{
-		auto simulatedAction = make_shared<SimulatedActionOnVariable>(action);
-		this->actionList.append(simulatedAction);
+		try
+		{
+			auto simulatedAction = std::make_shared<SimulatedActionOnVariable>(action);
+			this->actionList.append(simulatedAction);
+		}
+		catch (const StatesException& e)
+		{
+			if (e.getCause() != StatesException::Cause_t::sub_component_build_skipped) throw;
+
+			// The action will not be built if its value is invalid.
+			// Just do nothing and proceed to the next action.
+		}
 	}
 }
 

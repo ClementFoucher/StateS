@@ -56,6 +56,7 @@ private:
 		transition_condition,
 		// Sublevel subtags
 		action,
+		action_valueProvider,
 		action_condition,
 		equation,
 		operand
@@ -78,7 +79,6 @@ private:
 	void parseTransitionNode();
 
 	void processEndTransitionCondition();
-	void processEndActionCondition();
 
 	std::shared_ptr<FsmState> getStateByName(const QString& name) const;
 

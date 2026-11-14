@@ -27,8 +27,10 @@
 
 // StateS
 #include "componentid.h"
+#include "machinevalue.h"
 class Variable;
-class Equation;
+class MachineActuatorComponent;
+class ActionOnVariable;
 
 
 /**
@@ -49,9 +51,9 @@ public:
 	enum class ColumnRole_t
 	{
 		variableName,
-		actionType,
-		actionValue,
-		actionCondition
+		behavior,
+		valueProvider,
+		condition
 	};
 
 	/////
@@ -74,23 +76,33 @@ public:
 	virtual bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex())                                                       override;
 	virtual bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
 
-	void addAction(const QString& variableName);
+	// Specialized setters
+	void addAction(const QString& targetVariableName);
 	void setRange(int row, int rangeL, int rangeR);
 
-	std::shared_ptr<const Variable> getVariable(int row) const;
+	// Specialized getters
+	std::shared_ptr<const Variable> getTargetVariable(int row) const;
 	bool hasCondition(int row) const;
 	int getActionRangeL(int row) const;
 	int getActionRangeR(int row) const;
+	MachineValue::Type_t getExpectedProvidedValueType(int row) const;
+	uint getExpectedProvidedValueBitVectorSize(int row) const;
 
 private:
-	QVariant getVariableNameColumnData   (const QModelIndex& index, int role) const;
-	QVariant getActionTypeColumnData     (const QModelIndex& index, int role) const;
-	QVariant getActionValueColumnData    (const QModelIndex& index, int role) const;
-	QVariant getActionConditionColumnData(const QModelIndex& index, int role) const;
+	// Column getters
+	QVariant getVariableNameColumnData (const QModelIndex& index, int role) const;
+	QVariant getBehaviorColumnData     (const QModelIndex& index, int role) const;
+	QVariant getValueProviderColumnData(const QModelIndex& index, int role) const;
+	QVariant getConditionColumnData    (const QModelIndex& index, int role) const;
 
-	bool setActionTypeColumnData     (const QModelIndex& index, const QVariant& value, int role);
-	bool setActionValueColumnData    (const QModelIndex& index, const QVariant& value, int role);
-	bool setActionConditionColumnData(const QModelIndex& index, const QVariant& value, int role);
+	// Column setters
+	bool setBehaviorColumnData     (const QModelIndex& index, const QVariant& value, int role);
+	bool setValueProviderColumnData(const QModelIndex& index, const QVariant& value, int role);
+	bool setConditionColumnData    (const QModelIndex& index, const QVariant& value, int role);
+
+	// Helper functions
+	std::shared_ptr<MachineActuatorComponent> getActuator()      const;
+	std::shared_ptr<ActionOnVariable>         getAction(int row) const;
 
 	/////
 	// Signals

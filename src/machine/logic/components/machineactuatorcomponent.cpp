@@ -29,27 +29,27 @@
 #include "actiononvariable.h"
 
 
-std::shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId variableId)
+std::shared_ptr<ActionOnVariable> MachineActuatorComponent::addAction(ComponentId targetVariableId)
 {
 	auto machine = machineManager->getMachine();
 	if (machine == nullptr) return nullptr;
 
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return nullptr;
+	auto targetVariable = machine->getVariable(targetVariableId);
+	if (targetVariable == nullptr) return nullptr;
 
 
-	auto action = std::make_shared<ActionOnVariable>(variableId, this->getAllowedActionTypes());
+	auto action = std::make_shared<ActionOnVariable>(targetVariableId, this->getAllowedActionBehaviors());
 
-	this->addActionInternal(action, variable);
+	this->addActionInternal(action, targetVariable);
 
 	emit this->componentEditedEvent(this->id);
 
 	return action;
 }
 
-void MachineActuatorComponent::addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable)
+void MachineActuatorComponent::addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> targetVariable)
 {
-	this->addActionInternal(action, variable);
+	this->addActionInternal(action, targetVariable);
 }
 
 void MachineActuatorComponent::removeAction(uint actionRank)
@@ -60,11 +60,11 @@ void MachineActuatorComponent::removeAction(uint actionRank)
 	if (actionRank >= static_cast<uint>(this->actionList.count())) return;
 
 
-	auto variableId = actionList.at(actionRank)->getVariableActedOnId();
-	auto variable = machine->getVariable(variableId);
-	if (variable != nullptr)
+	auto targetVariableId = actionList.at(actionRank)->getTargetVariableId();
+	auto targetVariable = machine->getVariable(targetVariableId);
+	if (targetVariable != nullptr)
 	{
-		disconnect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler);
+		disconnect(targetVariable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler);
 	}
 
 	this->actionList.removeAt(actionRank);
@@ -115,8 +115,8 @@ void MachineActuatorComponent::variableDeletedEventHandler(ComponentId deletedVa
 		}
 
 
-		auto variableId = action->getVariableActedOnId();
-		if (variableId != deletedVariableId)
+		auto targetVariableId = action->getTargetVariableId();
+		if (targetVariableId != deletedVariableId)
 		{
 			newActionList.append(action);
 		}
@@ -139,19 +139,19 @@ void MachineActuatorComponent::variableInActionListModifiedEventHandler()
 	emit this->componentEditedEvent(this->id);
 }
 
-void MachineActuatorComponent::addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable)
+void MachineActuatorComponent::addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> targetVariable)
 {
 	if (action == nullptr) return;
 
-	if (variable == nullptr) return;
+	if (targetVariable == nullptr) return;
 
 
 	connect(action.get(), &ActionOnVariable::actionChangedEvent, this, &MachineActuatorComponent::variableInActionListModifiedEventHandler);
 	// To remove destroyed variables from the action list
 	// Use UniqueConnection as multiple actions on the same variable are possible due to actions on sub-vectors
-	connect(variable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler, Qt::UniqueConnection);
+	connect(targetVariable.get(), &Variable::componentDeletedEvent, this, &MachineActuatorComponent::variableDeletedEventHandler, Qt::UniqueConnection);
 
-	connect(action.get(), &ActionOnVariable::actionFixedEvent, this, &MachineActuatorComponent::actionFixedEvent);
+	connect(action.get(), &ActionOnVariable::actionChangedAsAResultOfAnotherChangeEvent, this, &MachineActuatorComponent::actionChangedAsAResultOfAnotherChangeEvent);
 
 	this->actionList.append(action);
 }

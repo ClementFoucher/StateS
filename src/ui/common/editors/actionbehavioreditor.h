@@ -19,8 +19,8 @@
  * along with StateS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONTYPEEDITOR_H
-#define ACTIONTYPEEDITOR_H
+#ifndef ACTIONBEHAVIOREDITOR_H
+#define ACTIONBEHAVIOREDITOR_H
 
 // Parent
 #include "discreetcombobox.h"
@@ -30,23 +30,23 @@
 
 
 /**
- * @brief The ActionTypeEditor class displays
- * a drop-down list of action types.
+ * @brief The ActionBehaviorEditor class displays
+ * a drop-down list of possible action behaviors.
  */
-class ActionTypeEditor : public DiscreetComboBox
+class ActionBehaviorEditor : public DiscreetComboBox
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeEditor(QWidget* parent = nullptr) : DiscreetComboBox(parent) {}
+	explicit ActionBehaviorEditor(QWidget* parent = nullptr) : DiscreetComboBox(parent) {}
 
 	/////
 	// Object functions
 public:
-	void fillActionList(uint allowedActionTypes, ActionOnVariable::Type_t currentActionType);
-	ActionOnVariable::Type_t getActionType() const;
+	void fillList(uint allowedBehaviors, ActionOnVariable::Behavior_t currentBehavior);
+	ActionOnVariable::Behavior_t getSelectedBehavior() const;
 
 private slots:
 	void processIndexChanged(int);
@@ -54,8 +54,8 @@ private slots:
 	/////
 	// Signals
 signals:
-	void actionTypeChangedEvent();
+	void behaviorChangedEvent();
 
 };
 
-#endif // ACTIONTYPEEDITOR_H
+#endif // ACTIONBEHAVIOREDITOR_H

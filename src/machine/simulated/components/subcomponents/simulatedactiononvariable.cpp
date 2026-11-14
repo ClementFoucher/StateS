@@ -26,20 +26,29 @@
 #include "machinemanager.h"
 #include "statesexception.h"
 #include "simulatedmachine.h"
-#include "actiononvariable.h"
 #include "simulatedvariable.h"
 #include "simulatedequation.h"
 
 
-SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction)
+SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction) // Throws StatesException
 {
-	this->variableId  = sourceAction->getVariableActedOnId();
-	this->actionType  = sourceAction->getActionType();
-	this->actionValue = sourceAction->getActionValue();
-	this->rangeL      = sourceAction->getActionRangeL();
-	this->rangeR      = sourceAction->getActionRangeR();
+	// Do not build a simulated action for an invalid action
+	if (sourceAction == nullptr)
+	{
+		throw StatesException("SimulatedActionOnVariable", StatesException::Cause_t::sub_component_build_skipped, tr("Invalid action."));
+	}
+	if (sourceAction->isValueProviderValid() == false)
+	{
+		throw StatesException("SimulatedActionOnVariable", StatesException::Cause_t::sub_component_build_skipped, tr("Invalid action."));
+	}
 
-	auto sourceCondition = sourceAction->getActionCondition();
+	this->targetVariableId = sourceAction->getTargetVariableId();
+	this->behavior         = sourceAction->getBehavior();
+	this->valueProvider    = std::make_shared<SimulatedEquation>(sourceAction->getValueProvider()); // Throws StatesException: ignored, we checked that the action is valid
+	this->rangeL           = sourceAction->getRangeL();
+	this->rangeR           = sourceAction->getRangeR();
+
+	auto sourceCondition = sourceAction->getCondition();
 	if (sourceCondition != nullptr)
 	{
 		try
@@ -50,11 +59,11 @@ SimulatedActionOnVariable::SimulatedActionOnVariable(std::shared_ptr<const Actio
 		{
 			if (e.getCause() != StatesException::Cause_t::ill_formed_equation) throw;
 
-			// Ill-formed equations are always false
+			// Consider ill-formed condition always false
 			auto falseCondition = std::make_shared<Equation>(Equation::Operator_t::identity);
 			falseCondition->setOperand(0, BooleanValue::falseValue());
 
-			this->condition = std::make_shared<SimulatedEquation>(falseCondition); // Throws StatesException: Ignored. Equation is well-formed.
+			this->condition = std::make_shared<SimulatedEquation>(falseCondition); // Throws StatesException: Ignored, equation is well-formed.
 		}
 	}
 }
@@ -64,9 +73,12 @@ void SimulatedActionOnVariable::doAction()
 	auto simulatedMachine = machineManager->getSimulatedMachine();
 	if (simulatedMachine == nullptr) return;
 
-	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-	if (simulatedVariable == nullptr) return;
+	auto simulatedTargetVariable = simulatedMachine->getSimulatedVariable(this->targetVariableId);
+	if (simulatedTargetVariable == nullptr) return;
 
+
+	/////
+	// If there is a condition, check that it is true
 
 	if (this->condition != nullptr)
 	{
@@ -76,27 +88,34 @@ void SimulatedActionOnVariable::doAction()
 		}
 	}
 
-	if ( (simulatedVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL >= 0) )
+	/////
+	// Update target variable value
+
+	MachineValue newValue{};
+
+	if ( (simulatedTargetVariable->getType() == MachineValue::Type_t::bitVector) && (this->rangeL >= 0) )
 	{
-		// Actions on part of a bit vector can be one-bit (boolean) or act on a sub-range
+		// Actions on part of a bit vector can be on one bit or on a sub-range
+		auto actionProvidedValue = this->valueProvider->getCurrentValue();
 
-		auto variableCurrentValue = simulatedVariable->getCurrentValue().getBitVectorValue();
-
-		if (actionValue.getType() == MachineValue::Type_t::boolean)
+		auto bitVectorNewValue = simulatedTargetVariable->getCurrentValue().getBitVectorValue();
+		if (actionProvidedValue.getType() == MachineValue::Type_t::boolean)
 		{
-			variableCurrentValue.setBit(this->rangeL, actionValue.getBooleanValue());
+			bitVectorNewValue.setBit(this->rangeL, actionProvidedValue.getBooleanValue());
 		}
-		else // (actionValue.getType() == MachineValue::Type_t::bitVector)
+		else // (newValue.getType() == MachineValue::Type_t::bitVector)
 		{
-			variableCurrentValue.setSubrange(this->rangeL, this->rangeR, actionValue.getBitVectorValue());
+			bitVectorNewValue.setSubrange(this->rangeL, this->rangeR, actionProvidedValue.getBitVectorValue());
 		}
 
-		simulatedVariable->setCurrentValue(variableCurrentValue);
+		newValue = bitVectorNewValue;
 	}
 	else
 	{
-		simulatedVariable->setCurrentValue(this->getActionValue());
+		newValue = this->valueProvider->getCurrentValue();
 	}
+
+	simulatedTargetVariable->setCurrentValue(newValue);
 }
 
 bool SimulatedActionOnVariable::isActionMemorized() const
@@ -104,72 +123,14 @@ bool SimulatedActionOnVariable::isActionMemorized() const
 	auto simulatedMachine = machineManager->getSimulatedMachine();
 	if (simulatedMachine == nullptr) return false;
 
-	auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-	if (simulatedVariable == nullptr) return false;
+	auto simulatedTargetVariable = simulatedMachine->getSimulatedVariable(this->targetVariableId);
+	if (simulatedTargetVariable == nullptr) return false;
 
 
-	return simulatedVariable->getMemorized();
+	return simulatedTargetVariable->getMemorized();
 }
 
 ComponentId SimulatedActionOnVariable::getVariableId() const
 {
-	return this->variableId;
-}
-
-MachineValue SimulatedActionOnVariable::getActionValue() const
-{
-	switch (this->actionType)
-	{
-	case ActionOnVariable::Type_t::reset:
-	case ActionOnVariable::Type_t::set:
-	case ActionOnVariable::Type_t::continuous:
-	case ActionOnVariable::Type_t::pulse:
-	case ActionOnVariable::Type_t::assign:
-		return this->actionValue;
-		break;
-	case ActionOnVariable::Type_t::increment:
-	case ActionOnVariable::Type_t::decrement:
-	{
-		auto simulatedMachine = machineManager->getSimulatedMachine();
-		if (simulatedMachine == nullptr) return MachineValue{};
-
-		auto simulatedVariable = simulatedMachine->getSimulatedVariable(this->variableId);
-		if (simulatedVariable == nullptr) return MachineValue{};
-
-		if ( (simulatedVariable->getType() != MachineValue::Type_t::natural) &&
-		     (simulatedVariable->getType() != MachineValue::Type_t::relative)
-		   )
-			return MachineValue{};
-
-
-		auto simulatedVariableValue = simulatedVariable->getCurrentValue();
-		if (this->actionType == ActionOnVariable::Type_t::increment)
-		{
-			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
-			{
-				simulatedVariableValue = simulatedVariableValue + NaturalValue{1};
-			}
-			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
-			{
-				simulatedVariableValue = simulatedVariableValue + RelativeValue{1};
-			}
-		}
-		else // (this->actionType == ActionOnVariable::Type_t::decrement)
-		{
-			if (simulatedVariable->getType() == MachineValue::Type_t::natural)
-			{
-				simulatedVariableValue = simulatedVariableValue - NaturalValue{1};
-			}
-			else // (simulatedVariable->getType() == MachineValue::Type_t::relative)
-			{
-				simulatedVariableValue = simulatedVariableValue - RelativeValue{1};
-			}
-		}
-		return simulatedVariableValue;
-		break;
-	}
-	case ActionOnVariable::Type_t::none:
-		return MachineValue{};
-		break;
-	}
+	return this->targetVariableId;
 }

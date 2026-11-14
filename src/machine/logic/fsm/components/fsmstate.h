@@ -53,7 +53,7 @@ public:
 	void removeIncomingTransitionId(ComponentId transitionId);
 	const QList<ComponentId> getIncomingTransitionsIds() const;
 
-	virtual uint getAllowedActionTypes() const override;
+	virtual uint getAllowedActionBehaviors() const override;
 
 signals:
 	void stateRenamedEvent();

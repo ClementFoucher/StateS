@@ -111,14 +111,10 @@ std::shared_ptr<const Equation> FsmTransition::getCondition() const
 	return this->condition;
 }
 
-uint FsmTransition::getAllowedActionTypes() const
+uint FsmTransition::getAllowedActionBehaviors() const
 {
-	return (static_cast<uint>(ActionOnVariable::Type_t::pulse)     |
-	        static_cast<uint>(ActionOnVariable::Type_t::set)       |
-	        static_cast<uint>(ActionOnVariable::Type_t::reset)     |
-	        static_cast<uint>(ActionOnVariable::Type_t::assign)    |
-	        static_cast<uint>(ActionOnVariable::Type_t::increment) |
-	        static_cast<uint>(ActionOnVariable::Type_t::decrement)
+	return (static_cast<uint>(ActionOnVariable::Behavior_t::pulse) |
+	        static_cast<uint>(ActionOnVariable::Behavior_t::assign)
 	       );
 }
 

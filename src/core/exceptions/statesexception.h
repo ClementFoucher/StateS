@@ -37,7 +37,8 @@ public:
 	enum class Cause_t
 	{
 		file_error,
-		ill_formed_equation
+		ill_formed_equation,
+		sub_component_build_skipped
 	};
 
 	/////

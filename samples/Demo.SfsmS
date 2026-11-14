@@ -22,29 +22,46 @@
         <States>
             <State Name="Init" X="558.787" Y="151.5">
                 <Actions>
-                    <Action Name="power" ActionType="ActiveOnState"/>
-                    <Action Name="init duration" ActionType="Increment"/>
+                    <Action TargetVariable="power" Behavior="ActiveOnState">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
+                    <Action TargetVariable="init duration" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="init duration"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </State>
             <State Name="On" X="833.787" Y="384.187">
                 <Actions>
-                    <Action Name="power" ActionType="ActiveOnState"/>
+                    <Action TargetVariable="power" Behavior="ActiveOnState">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
                 </Actions>
             </State>
             <State Name="Error" X="453.787" Y="678.187">
                 <Actions>
-                    <Action Name="alarm" ActionType="ActiveOnState"/>
+                    <Action TargetVariable="alarm" Behavior="ActiveOnState">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
                 </Actions>
             </State>
             <State Name="Off" IsInitial="true" X="158.787" Y="384.187"/>
             <State Name="Blink led 0" X="827.368" Y="854.729">
                 <Actions>
-                    <Action Name="leds" ActionType="ActiveOnState" RangeL="0"/>
+                    <Action TargetVariable="leds" Behavior="ActiveOnState" RangeL="0">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
                 </Actions>
             </State>
             <State Name="Blink led 1" X="1296.11" Y="845.759">
                 <Actions>
-                    <Action Name="leds" ActionType="ActiveOnState" RangeL="1"/>
+                    <Action TargetVariable="leds" Behavior="ActiveOnState" RangeL="1">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
                 </Actions>
             </State>
         </States>
@@ -56,7 +73,9 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="init duration" ActionType="Reset"/>
+                    <Action TargetVariable="init duration" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="On" Target="Error">
@@ -66,7 +85,14 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="error counter" ActionType="Increment"/>
+                    <Action TargetVariable="error counter" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="error counter"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="On" Target="Off">
@@ -102,7 +128,9 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="error counter" ActionType="Reset"/>
+                    <Action TargetVariable="error counter" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="Off" Target="Error" SliderPos="24">
@@ -112,7 +140,14 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="error counter" ActionType="Increment"/>
+                    <Action TargetVariable="error counter" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="error counter"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="Off" Target="Init" SliderPos="62">
@@ -127,7 +162,9 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="boot" ActionType="Pulse"/>
+                    <Action TargetVariable="boot" Behavior="Pulse">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="Blink led 0" Target="Blink led 1">

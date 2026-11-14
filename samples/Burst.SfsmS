@@ -17,13 +17,29 @@
             <State Name="Wait trig" IsInitial="true" X="151.5" Y="389.627"/>
             <State Name="Burst low" X="893.847" Y="671.024">
                 <Actions>
-                    <Action Name="event counter" ActionType="Increment"/>
+                    <Action TargetVariable="event counter" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="event counter"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </State>
             <State Name="Burst high" X="898.719" Y="151.5">
                 <Actions>
-                    <Action Name="Burst" ActionType="ActiveOnState"/>
-                    <Action Name="event counter" ActionType="Increment"/>
+                    <Action TargetVariable="Burst" Behavior="ActiveOnState">
+                        <ValueProvider Source="Constant" ConstantType="Boolean" ConstantValue="TRUE"/>
+                    </Action>
+                    <Action TargetVariable="event counter" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="event counter"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </State>
         </States>
@@ -43,7 +59,9 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Reset"/>
+                    <Action TargetVariable="event counter" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="Burst low" Target="Burst high" SliderPos="76">
@@ -64,8 +82,17 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="event counter" ActionType="Reset"/>
-                    <Action Name="period counter" ActionType="Increment"/>
+                    <Action TargetVariable="event counter" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
+                    <Action TargetVariable="period counter" Behavior="Assign">
+                        <ValueProvider Source="Equation">
+                            <Equation Operator="plus">
+                                <Operand Rank="0" Source="Variable" Name="period counter"/>
+                                <Operand Rank="1" Source="Constant" Type="Natural" Value="1"/>
+                            </Equation>
+                        </ValueProvider>
+                    </Action>
                 </Actions>
             </Transition>
             <Transition Source="Burst low" Target="Wait trig" SliderPos="86">
@@ -86,8 +113,12 @@
                     </Equation>
                 </Condition>
                 <Actions>
-                    <Action Name="period counter" ActionType="Reset"/>
-                    <Action Name="event counter" ActionType="Reset"/>
+                    <Action TargetVariable="period counter" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
+                    <Action TargetVariable="event counter" Behavior="Assign">
+                        <ValueProvider Source="Constant" ConstantType="Natural" ConstantValue="0"/>
+                    </Action>
                 </Actions>
             </Transition>
         </Transitions>

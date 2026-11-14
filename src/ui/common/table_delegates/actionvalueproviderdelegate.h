@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025-2026 Clément Foucher
+ * Copyright © 2026 Clément Foucher
  *
  * Distributed under the GNU GPL v2. For full terms see the file LICENSE.
  *
@@ -19,32 +19,35 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONTYPEDELEGATE_H
-#define ACTIONTYPEDELEGATE_H
+#ifndef ACTIONVALUEPROVIDERDELEGATE_H
+#define ACTIONVALUEPROVIDERDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
 
 
-class ActionTypeDelegate : public QStyledItemDelegate
+class ActionValueProviderDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit ActionTypeDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {}
+	explicit ActionValueProviderDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
 
 	/////
 	// Object functions
 public:
-	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&)     const override;
-	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
-	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+	virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& index) const override;
+	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                             const override;
+	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index)   const override;
+
+protected:
+	virtual bool eventFilter(QObject* object, QEvent* event) override;
 
 private slots:
-	void actionTypeChangedEventHandler();
+	void valueProviderChangedEventHandler();
 
 };
 
-#endif // ACTIONTYPEDELEGATE_H
+#endif // ACTIONVALUEPROVIDERDELEGATE_H

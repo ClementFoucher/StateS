@@ -19,21 +19,21 @@
  * along with this software. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUATIONDELEGATE_H
-#define EQUATIONDELEGATE_H
+#ifndef ACTIONCONDITIONDELEGATE_H
+#define ACTIONCONDITIONDELEGATE_H
 
 // Parent
 #include <QStyledItemDelegate>
 
 
-class EquationDelegate : public QStyledItemDelegate
+class ActionConditionDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 
 	/////
 	// Constructors/destructors
 public:
-	explicit EquationDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
+	explicit ActionConditionDelegate(QWidget* parent = nullptr) : QStyledItemDelegate(parent) {};
 
 	/////
 	// Object functions
@@ -43,8 +43,8 @@ public:
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 private slots:
-	void equationChangedEventHandler();
+	void conditionChangedEventHandler();
 
 };
 
-#endif // EQUATIONDELEGATE_H
+#endif // ACTIONCONDITIONDELEGATE_H

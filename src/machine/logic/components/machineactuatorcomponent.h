@@ -53,27 +53,27 @@ public:
 	/////
 	// Object functions
 public:
-	std::shared_ptr<ActionOnVariable> addAction(ComponentId variableId);
-	void addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable); // Add action when machine is still being parsed
+	std::shared_ptr<ActionOnVariable> addAction(ComponentId targetVariableId);
+	void addAction(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> targetVariable); // Add action when machine is still being parsed
 	void removeAction(uint actionRank);
 	std::shared_ptr<ActionOnVariable> getAction(uint actionRank) const;
 	const QList<std::shared_ptr<ActionOnVariable>> getActions() const;
 
 	void changeActionRank(uint oldActionRank, uint newActionRank);
 
-	virtual uint getAllowedActionTypes() const = 0;
+	virtual uint getAllowedActionBehaviors() const = 0;
 
 private slots:
 	void variableDeletedEventHandler(ComponentId deletedVariableId);
 	void variableInActionListModifiedEventHandler();
 
 private:
-	void addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> variable);
+	void addActionInternal(std::shared_ptr<ActionOnVariable> action, std::shared_ptr<Variable> targetVariable);
 
 	/////
 	// Signals
 signals:
-	void actionFixedEvent();
+	void actionChangedAsAResultOfAnotherChangeEvent();
 
 	/////
 	// Object variables

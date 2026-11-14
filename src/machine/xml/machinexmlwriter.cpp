@@ -103,80 +103,112 @@ void MachineXmlWriter::writeActuatorActions(std::shared_ptr<const MachineActuato
 		this->stream->writeStartElement("Actions");
 		for (auto& action : actions)
 		{
-			auto variableId = action->getVariableActedOnId();
+			auto targetVariableId = action->getTargetVariableId();
 
-			auto variable = machine->getVariable(variableId);
-			if (variable == nullptr) continue;
+			auto targetVariable = machine->getVariable(targetVariableId);
+			if (targetVariable == nullptr) continue;
 
 
 			this->stream->writeStartElement("Action");
 
-			this->stream->writeAttribute("Name", variable->getName());
+			this->stream->writeAttribute("TargetVariable", targetVariable->getName());
 
-			switch(action->getActionType())
+			switch(action->getBehavior())
 			{
-			case ActionOnVariable::Type_t::continuous:
-				this->stream->writeAttribute("ActionType", "ActiveOnState");
+			case ActionOnVariable::Behavior_t::continuous:
+				this->stream->writeAttribute("Behavior", "ActiveOnState");
 				break;
-			case ActionOnVariable::Type_t::pulse:
-				this->stream->writeAttribute("ActionType", "Pulse");
+			case ActionOnVariable::Behavior_t::pulse:
+				this->stream->writeAttribute("Behavior", "Pulse");
 				break;
-			case ActionOnVariable::Type_t::set:
-				this->stream->writeAttribute("ActionType", "Set");
+			case ActionOnVariable::Behavior_t::assign:
+				this->stream->writeAttribute("Behavior", "Assign");
 				break;
-			case ActionOnVariable::Type_t::reset:
-				this->stream->writeAttribute("ActionType", "Reset");
-				break;
-			case ActionOnVariable::Type_t::assign:
-				this->stream->writeAttribute("ActionType", "Assign");
-				break;
-			case ActionOnVariable::Type_t::increment:
-				this->stream->writeAttribute("ActionType", "Increment");
-				break;
-			case ActionOnVariable::Type_t::decrement:
-				this->stream->writeAttribute("ActionType", "Decrement");
-				break;
-			case ActionOnVariable::Type_t::none:
+			case ActionOnVariable::Behavior_t::none:
 				break;
 			}
 
-			if (action->isActionValueEditable() == true)
+			if (action->getRangeL() != -1)
 			{
-				auto actionValue = action->getActionValue();
-				if (actionValue.isNull() == false)
-				{
-					switch (actionValue.getType())
-					{
-					case MachineValue::Type_t::boolean:
-						this->stream->writeAttribute("ActionValueType", "Boolean");
-						break;
-					case MachineValue::Type_t::bitVector:
-						this->stream->writeAttribute("ActionValueType", "BitVector");
-						break;
-					case MachineValue::Type_t::natural:
-						this->stream->writeAttribute("ActionValueType", "Natural");
-						break;
-					case MachineValue::Type_t::relative:
-						this->stream->writeAttribute("ActionValueType", "Relative");
-						break;
-					case MachineValue::Type_t::nullType:
-						// Value is not null (checked before): should not happen
-						break;
-					}
+				this->stream->writeAttribute("RangeL", QString::number(action->getRangeL()));
+			}
+			if (action->getRangeR() != -1)
+			{
+				this->stream->writeAttribute("RangeR", QString::number(action->getRangeR()));
+			}
 
-					this->stream->writeAttribute("ActionValue", actionValue.toRawString());
+			this->stream->writeStartElement("ValueProvider");
+
+			auto valueProvider = action->getValueProvider();
+			bool valueWritten = false;
+			if (valueProvider != nullptr) // Should not happen: the action enforces an action value equation, but anyway...
+			{
+				if (valueProvider->getOperator() == Equation::Operator_t::identity)
+				{
+					auto operand = valueProvider->getOperand(0);
+					if (operand != nullptr)
+					{
+						// Identity operand can mean either a constant or a single variable
+						if (operand->getSource() == Operand::Source_t::constant)
+						{
+							auto constantValue = operand->getInitialValue();
+							if (constantValue.isNull() == false)
+							{
+								this->stream->writeAttribute("Source", "Constant");
+
+								switch (constantValue.getType())
+								{
+								case MachineValue::Type_t::boolean:
+									this->stream->writeAttribute("ConstantType", "Boolean");
+									break;
+								case MachineValue::Type_t::bitVector:
+									this->stream->writeAttribute("ConstantType", "BitVector");
+									break;
+								case MachineValue::Type_t::natural:
+									this->stream->writeAttribute("ConstantType", "Natural");
+									break;
+								case MachineValue::Type_t::relative:
+									this->stream->writeAttribute("ConstantType", "Relative");
+									break;
+								case MachineValue::Type_t::nullType:
+									// Value is not null (checked before): should not happen
+									break;
+								}
+
+								this->stream->writeAttribute("ConstantValue", constantValue.toRawString());
+								valueWritten = true;
+							}
+						}
+						else // (operand->getSource() == Operand::Source_t::variable)
+						{
+							auto providerVariableId = operand->getVariableId();
+							auto providerVariable = machine->getVariable(providerVariableId);
+
+							if (providerVariable != nullptr)
+							{
+								this->stream->writeAttribute("Source", "Variable");
+								this->stream->writeAttribute("VariableName", providerVariable->getName());
+								valueWritten = true;
+							}
+						}
+					}
+				}
+				else // (actionValue->getOperator() != Equation::Operator_t::identity)
+				{
+					this->stream->writeAttribute("Source", "Equation");
+					this->writeEquation(valueProvider);
+					valueWritten = true;
 				}
 			}
-			if (action->getActionRangeL() != -1)
+
+			if (valueWritten == false)
 			{
-				this->stream->writeAttribute("RangeL", QString::number(action->getActionRangeL()));
-			}
-			if (action->getActionRangeR() != -1)
-			{
-				this->stream->writeAttribute("RangeR", QString::number(action->getActionRangeR()));
+				this->stream->writeAttribute("Source", "Null");
 			}
 
-			auto condition = action->getActionCondition();
+			this->stream->writeEndElement(); // Value
+
+			auto condition = action->getCondition();
 			if (condition != nullptr)
 			{
 				this->stream->writeStartElement("Condition");

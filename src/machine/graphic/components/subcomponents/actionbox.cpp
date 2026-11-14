@@ -23,9 +23,7 @@
 #include "actionbox.h"
 
 // Qt
-#include <QBrush>
 #include <QPen>
-#include <QGraphicsItem>
 
 // StateS
 #include "machinemanager.h"
@@ -89,20 +87,21 @@ void ActionBox::buildActionBox()
 		auto currentAction = actions[i];
 		if (currentAction == nullptr) continue;
 
-		auto currentVariableId = currentAction->getVariableActedOnId();
+		auto targetVariableId = currentAction->getTargetVariableId();
 
-		auto currentVariable = machine->getVariable(currentVariableId);
-		if (currentVariable == nullptr) continue;
+		auto targetVariable = machine->getVariable(targetVariableId);
+		if (targetVariable == nullptr) continue;
 
-		if (currentVariable->getInitialValue().isNull() == true) continue;
+		if (targetVariable->getInitialValue().isNull() == true) continue;
 
 
 		qreal xPos = boxLeft;
 		qreal currentActionWidth = 0;
 
+		/////
 		// Memorized state
 
-		if (currentVariable->getMemorized() == true)
+		if (targetVariable->getMemorized() == true)
 		{
 			auto memorizedText = new QGraphicsTextItem(this);
 			memorizedText->setHtml("<span style=\"color:black;\">M</span>");
@@ -128,16 +127,19 @@ void ActionBox::buildActionBox()
 			xPos += memorizedText->boundingRect().width();
 		}
 
+		/////
+		// Action text
+
 		QString currentActionText = "<span style=\"color:black;\">";
 
 		// Variable name
-		currentActionText += currentVariable->getName();
+		currentActionText += targetVariable->getName();
 
-		// Variable range
-		if ( (currentVariable->getType() == MachineValue::Type_t::bitVector) && (currentVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
+		// Subrange for Bit Vector variables
+		if ( (targetVariable->getType() == MachineValue::Type_t::bitVector) && (targetVariable->getInitialValue().getBitVectorValue().getSize() > 1) )
 		{
-			int rangeL = currentAction->getActionRangeL();
-			int rangeR = currentAction->getActionRangeR();
+			int rangeL = currentAction->getRangeL();
+			int rangeR = currentAction->getRangeR();
 
 			if (rangeL != -1)
 			{
@@ -154,27 +156,22 @@ void ActionBox::buildActionBox()
 			}
 		}
 
-		// Action value
-		switch (currentAction->getActionType())
+		// Value provider
+		if (currentAction->isValueProviderValid() == false)
 		{
-		case ActionOnVariable::Type_t::set:
-		case ActionOnVariable::Type_t::reset:
-		case ActionOnVariable::Type_t::assign:
-			currentActionText += " ← " + currentAction->getActionValue().toDisplayString();
-			break;
-		case ActionOnVariable::Type_t::continuous:
-		case ActionOnVariable::Type_t::pulse:
-			currentActionText += " ← " + currentAction->getActionValue().toDisplayString();
-			break;
-		case ActionOnVariable::Type_t::increment:
-			currentActionText += " ← " + currentVariable->getName() + " + 1";
-			break;
-		case ActionOnVariable::Type_t::decrement:
-			currentActionText += " ← " + currentVariable->getName() + " - 1";
-			break;
-		case ActionOnVariable::Type_t::none:
-			// Nothing
-			break;
+			currentActionText += "</span><span style=\"color:red;\">";
+		}
+
+		currentActionText += " ← ";
+
+		auto valueProvider = currentAction->getValueProvider();
+		if (valueProvider != nullptr)
+		{
+			currentActionText += valueProvider->getText();
+		}
+		else
+		{
+			currentActionText += " (...) ";
 		}
 
 		currentActionText += "</span>";
@@ -190,8 +187,10 @@ void ActionBox::buildActionBox()
 
 		currentActionWidth += currentActionTextWidth;
 
-		// Action condition
-		auto condition = currentAction->getActionCondition();
+		/////
+		// Condition
+
+		auto condition = currentAction->getCondition();
 		if (condition != nullptr)
 		{
 			QString foregroundColor;

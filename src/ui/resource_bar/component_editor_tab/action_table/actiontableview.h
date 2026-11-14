@@ -47,9 +47,10 @@ private:
 		BitVectorAssignSingleBit,
 		BitVectorAssignSubRange,
 		BitVectorEditAssignRange,
+		ValueProviderEdit,
+		ValueProviderRemove,
 		ConditionEdit,
 		ConditionRemove,
-		EditValue,
 		MoveUp,
 		MoveDown
 	};
@@ -63,7 +64,7 @@ public:
 	// Object functions
 public:
 	void initialize();
-	void addAction(const QString& variableName);
+	void addAction(const QString& targetVariableName);
 
 protected slots:
 	virtual void rowsInserted        (const QModelIndex& parent, int start, int end) override;
@@ -79,7 +80,8 @@ private slots:
 	void processContextMenuEventHandler(QAction* action);
 
 	void rangeEditorClosedEventHandler(int result);
-	void equationEditorDialogClosedEventHandler(int result);
+	void equationEditorDialogForValueProviderClosedEventHandler(int result);
+	void equationEditorDialogForConditionClosedEventHandler(int result);
 
 	void refreshPersistentEditorsEventHandler();
 
@@ -87,6 +89,7 @@ private:
 	void setAssignSingleBit(uint row);
 	void setAssignRange(uint row);
 	void openRangeEditor(uint row);
+	void openEquationEditor(uint row, ActionTableModel::ColumnRole_t column);
 
 	/////
 	// Signals

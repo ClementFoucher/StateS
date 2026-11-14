@@ -27,7 +27,7 @@
 class QString;
 
 // StateS
-class BooleanValue;
+#include "booleanvalue.h"
 
 
 class BitVectorValue
@@ -52,6 +52,10 @@ public:
 
 	BitVectorValue(const BitVectorValue&  otherValue) : value{otherValue.value}, vectorSize{otherValue.vectorSize} {}
 	BitVectorValue(const BitVectorValue&& otherValue) : value{otherValue.value}, vectorSize{otherValue.vectorSize} {}
+
+	// Why do I have to macro-force the 1 but not the 0 for value, and not for vectorSize???
+	BitVectorValue(const BooleanValue&  booleanValue) : value{booleanValue == true ? UINT64_C(1) : 0}, vectorSize{1} {}
+	BitVectorValue(const BooleanValue&& booleanValue) : value{booleanValue == true ? UINT64_C(1) : 0}, vectorSize{1} {}
 
 	/////
 	// Object functions

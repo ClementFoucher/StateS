@@ -115,143 +115,188 @@ void MachineXmlParser::parseActionNode()
 		return;
 	}
 
-	// Get variable name
-	auto variableName = this->getCurrentNodeStringAttribute("Name");
 
-	auto variable = this->getVariableByName(variableName);
-	if (variable == nullptr)
+	// Get target variable name
+	auto sTargetVariable = this->getCurrentNodeStringAttribute("TargetVariable");
+
+	auto targetVariable = this->getVariableByName(sTargetVariable);
+	if (targetVariable == nullptr)
 	{
 		this->addIssue(tr("Error!") + " " + tr("Reference to undeclared variable encountered while parsing action list."));
-		this->addIssue("    " + tr("Variable name was") + " \"" + variableName + "\".");
+		this->addIssue("    " + tr("Variable name was") + " \"" + sTargetVariable + "\".");
 		this->addIssue("    " + tr("Action ignored."));
 
 		return;
 	}
 
-	// Get action type
-	ActionOnVariable::Type_t actionType;
-	auto actionTypeText = this->getCurrentNodeStringAttribute("ActionType");
+	// Get action behavior
+	ActionOnVariable::Behavior_t behavior;
+	auto sBehavior = this->getCurrentNodeStringAttribute("Behavior");
 
-	if (actionTypeText == "Pulse")
+	if (sBehavior == "Pulse")
 	{
-		actionType = ActionOnVariable::Type_t::pulse;
+		behavior = ActionOnVariable::Behavior_t::pulse;
 	}
-	else if (actionTypeText == "ActiveOnState")
+	else if (sBehavior == "ActiveOnState")
 	{
-		actionType = ActionOnVariable::Type_t::continuous;
+		behavior = ActionOnVariable::Behavior_t::continuous;
 	}
-	else if (actionTypeText == "Set")
+	else if (sBehavior == "Assign")
 	{
-		actionType = ActionOnVariable::Type_t::set;
-	}
-	else if (actionTypeText == "Reset")
-	{
-		actionType = ActionOnVariable::Type_t::reset;
-	}
-	else if (actionTypeText == "Assign")
-	{
-		actionType = ActionOnVariable::Type_t::assign;
-	}
-	else if (actionTypeText == "Increment")
-	{
-		actionType = ActionOnVariable::Type_t::increment;
-	}
-	else if (actionTypeText == "Decrement")
-	{
-		actionType = ActionOnVariable::Type_t::decrement;
+		behavior = ActionOnVariable::Behavior_t::assign;
 	}
 	else
 	{
-		this->addIssue(tr("Error!") + " " + tr("Unexpected action type encountered while parsing action list."));
-		this->addIssue("    " + tr("Action type was") + " \"" + actionTypeText + "\".");
+		this->addIssue(tr("Error!") + " " + tr("Unexpected action behavior encountered while parsing action list."));
+		this->addIssue("    " + tr("Action behavior was") + " \"" + sBehavior + "\".");
 		this->addIssue("    " + tr("Action ignored."));
 
 		return;
 	}
 
 	// Get action range
-	auto srangel = this->getCurrentNodeStringAttribute("RangeL");
-	auto sranger = this->getCurrentNodeStringAttribute("RangeR");
+	auto sRangeL = this->getCurrentNodeStringAttribute("RangeL");
+	auto sRangeR = this->getCurrentNodeStringAttribute("RangeR");
 
 	int rangeL;
 	int rangeR;
 
-	if (srangel.isEmpty() == false)
+	if (sRangeL.isEmpty() == false)
 	{
-		rangeL = srangel.toInt();
+		rangeL = sRangeL.toInt();
 	}
 	else
 	{
 		rangeL = -1;
 	}
 
-	if (sranger.isEmpty() == false)
+	if (sRangeR.isEmpty() == false)
 	{
-		rangeR = sranger.toInt();
+		rangeR = sRangeR.toInt();
 	}
 	else
 	{
 		rangeR = -1;
 	}
 
-	// Get action value type
-	auto actionValueType = MachineValue::Type_t::nullType;
+	// Build action
+	this->currentAction = std::make_shared<ActionOnVariable>(targetVariable, currentActuator->getAllowedActionBehaviors(), behavior, rangeL, rangeR);
+	currentActuator->addAction(currentAction, targetVariable);
+}
 
-	auto sactvaltype = this->getCurrentNodeStringAttribute("ActionValueType");
-	if (sactvaltype.isEmpty() == false)
+void MachineXmlParser::parseActionValueProviderNode()
+{
+	if (this->currentAction == nullptr)
 	{
-		if (sactvaltype == "Boolean")
+		this->addIssue(tr("Info:") + " " + tr("Ignoring") + " \"ValueProvider\" " + tr("node due to previous errors."));
+		return;
+	}
+
+
+	auto sSource = this->getCurrentNodeStringAttribute("Source");
+	if (sSource == "Constant")
+	{
+		// Get constant type
+		auto sConstantType = this->getCurrentNodeStringAttribute("ConstantType");
+
+		auto constantType = MachineValue::Type_t::nullType;
+		if (sConstantType == "Boolean")
 		{
-			actionValueType = MachineValue::Type_t::boolean;
+			constantType = MachineValue::Type_t::boolean;
 		}
-		else if (sactvaltype == "BitVector")
+		else if (sConstantType == "BitVector")
 		{
-			actionValueType = MachineValue::Type_t::bitVector;
+			constantType = MachineValue::Type_t::bitVector;
 		}
-		else if (sactvaltype == "Natural")
+		else if (sConstantType == "Natural")
 		{
-			actionValueType = MachineValue::Type_t::natural;
+			constantType = MachineValue::Type_t::natural;
 		}
-		else if (sactvaltype == "Relative")
+		else if (sConstantType == "Relative")
 		{
-			actionValueType = MachineValue::Type_t::relative;
+			constantType = MachineValue::Type_t::relative;
 		}
 		else
 		{
-			this->addIssue(tr("Error!") + " " + tr("Unknown value type") + " \"" + sactvaltype + "\" " + tr("found for action."));
-			this->addIssue("    " + tr("Action value will set to a default value."));
+			this->addIssue(tr("Warning:") + " " + tr("Unknown value type") + " \"" + sConstantType + "\" " + tr("found for an action value."));
+			this->addIssue("    " + tr("Action value will be set to a default constant value."));
+
+			return;
 		}
-	}
 
-	// Get action value
-	MachineValue actionValue{};
+		// Get action provider value
+		MachineValue constantValue{};
 
-	if (actionValueType != MachineValue::Type_t::nullType)
-	{
-		auto sactval = this->getCurrentNodeStringAttribute("ActionValue");
-		switch (actionValueType)
+		if (constantType != MachineValue::Type_t::nullType)
 		{
-		case MachineValue::Type_t::boolean:
-			actionValue = BooleanValue::fromRawString(sactval);
-			break;
-		case MachineValue::Type_t::bitVector:
-			actionValue = BitVectorValue::fromRawString(sactval);
-			break;
-		case MachineValue::Type_t::natural:
-			actionValue = NaturalValue::fromRawString(sactval);
-			break;
-		case MachineValue::Type_t::relative:
-			actionValue = RelativeValue::fromRawString(sactval);
-			break;
-		case MachineValue::Type_t::nullType:
-			// Value is not null (checked before): should not happen
-			break;
+			auto sConstantValue = this->getCurrentNodeStringAttribute("ConstantValue");
+			switch (constantType)
+			{
+			case MachineValue::Type_t::boolean:
+				constantValue = BooleanValue::fromRawString(sConstantValue);
+				break;
+			case MachineValue::Type_t::bitVector:
+				constantValue = BitVectorValue::fromRawString(sConstantValue);
+				break;
+			case MachineValue::Type_t::natural:
+				constantValue = NaturalValue::fromRawString(sConstantValue);
+				break;
+			case MachineValue::Type_t::relative:
+				constantValue = RelativeValue::fromRawString(sConstantValue);
+				break;
+			case MachineValue::Type_t::nullType:
+				// Value is not null (checked before): should not happen
+				break;
+			}
 		}
-	}
 
-	// Build action
-	this->currentAction = make_shared<ActionOnVariable>(variable, currentActuator->getAllowedActionTypes(), actionType, actionValue, rangeL, rangeR);
-	currentActuator->addAction(currentAction, variable);
+		if (constantValue.isNull() == true)
+		{
+			this->addIssue(tr("Warning:") + " " + tr("Unable to parse value") + " \"" + sConstantType + "\" " + tr("for an action."));
+			this->addIssue("    " + tr("Action value will be set to a default constant value."));
+
+			return;
+		}
+
+		// Build value equation
+		auto constantValueProvider = std::make_shared<Equation>(Equation::Operator_t::identity);
+		constantValueProvider->setOperand(0, constantValue);
+
+		// Affect to current action
+		this->currentAction->setValueProviderRaw(constantValueProvider);
+	}
+	else if (sSource == "Variable")
+	{
+		auto sVariableName = this->getCurrentNodeStringAttribute("VariableName");
+
+		auto variable = this->getVariableByName(sVariableName);
+		if (variable == nullptr)
+		{
+			this->addIssue(tr("Error!") + " " + tr("Reference to undeclared variable encountered while parsing an action value."));
+			this->addIssue("    " + tr("Variable name was") + " \"" + sVariableName + "\".");
+			this->addIssue("    " + tr("Action value will be set to a default constant value."));
+
+			return;
+		}
+
+		// Build value equation
+		auto valueProvider = std::make_shared<Equation>(Equation::Operator_t::identity);
+		valueProvider->setOperand(0, variable);
+
+		// Affect to current action
+		this->currentAction->setValueProviderRaw(valueProvider);
+	}
+	else if (sSource == "Equation")
+	{
+		// Equation source is also allowed, but not
+		// processed here as this is a subtag
+	}
+	else
+	{
+		this->addIssue(tr("Error!") + " " + tr("Unkown value source encountered while parsing an action value."));
+		this->addIssue("    " + tr("Requested value source was") + " \"" + sSource + "\".");
+		this->addIssue("    " + tr("Action value will be set to a default constant value."));
+	}
 }
 
 void MachineXmlParser::parseEquationNode()
@@ -552,6 +597,29 @@ MachineXmlParser::IsRoot_t MachineXmlParser::processEndEquationNode()
 
 		return IsRoot_t::no;
 	}
+}
+
+void MachineXmlParser::processEndActionValueProvider()
+{
+	if (this->currentAction == nullptr) return;
+
+
+	// An equation will only be available if there was an
+	// equation subtag. For other sources, the value provider
+	// has already been set and we need to left it untouched
+	auto currentEquation = this->getCurrentEquation();
+	if (currentEquation != nullptr)
+	{
+		this->currentAction->setValueProviderRaw(currentEquation);
+	}
+}
+
+void MachineXmlParser::processEndActionCondition()
+{
+	if (this->currentAction == nullptr) return;
+
+
+	this->currentAction->setConditionRaw(this->getCurrentEquation());
 }
 
 QString MachineXmlParser::getCurrentNodeName() const

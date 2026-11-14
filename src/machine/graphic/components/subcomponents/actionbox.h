@@ -27,7 +27,6 @@
 
 // Qt
 #include <QCoreApplication>
-class QGraphicsPathItem;
 
 // StateS
 #include "componentid.h"

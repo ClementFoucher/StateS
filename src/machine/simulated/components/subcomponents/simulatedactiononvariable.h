@@ -25,19 +25,22 @@
 // Stdlib
 #include <memory>
 
+// Qt
+#include <QCoreApplication>
+
 // StateS
-#include "machinevalue.h"
 #include "actiononvariable.h"
 class SimulatedEquation;
 
 
 class SimulatedActionOnVariable
 {
+	Q_DECLARE_TR_FUNCTIONS(SimulatedActionOnVariable)
 
 	/////
 	// Constructors/destructors
 public:
-	explicit SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction);
+	explicit SimulatedActionOnVariable(std::shared_ptr<const ActionOnVariable> sourceAction); // Throws StatesException
 
 	/////
 	// Object functions
@@ -48,19 +51,15 @@ public:
 
 	ComponentId getVariableId() const;
 
-private:
-	MachineValue getActionValue() const;
-
 	/////
 	// Object variables
 private:
-	ComponentId variableId = nullId;
-
-	ActionOnVariable::Type_t actionType;
-	MachineValue actionValue;
+	ComponentId                        targetVariableId = nullId;
+	ActionOnVariable::Behavior_t       behavior         = ActionOnVariable::Behavior_t::none;
+	std::shared_ptr<SimulatedEquation> valueProvider;
 	std::shared_ptr<SimulatedEquation> condition;
-	int rangeL = -1;
-	int rangeR = -1;
+	int                                rangeL           = -1;
+	int                                rangeR           = -1;
 
 };
 

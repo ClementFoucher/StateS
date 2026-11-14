@@ -206,7 +206,12 @@ void FsmXmlParser::parseSubmachineStartElement()
 			}
 			break;
 		case SubTag_t::action:
-			if (nodeName == "Condition")
+			if (nodeName == "ValueProvider")
+			{
+				this->currentSubTag = SubTag_t::action_valueProvider;
+				this->parseActionValueProviderNode();
+			}
+			else if (nodeName == "Condition")
 			{
 				this->currentSubTag = SubTag_t::action_condition;
 			}
@@ -216,6 +221,22 @@ void FsmXmlParser::parseSubmachineStartElement()
 
 				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"Action\" " + tr("node."));
 				this->addIssue("    " + tr("Expected") + " \"Condition\", " + tr("got") + " \"" + nodeName + "\".");
+			}
+			break;
+		case SubTag_t::action_valueProvider:
+			if (nodeName == "Equation")
+			{
+				this->currentSubTag = SubTag_t::equation;
+				this->equationContainer = SubTag_t::action_valueProvider;
+
+				this->parseEquationNode();
+			}
+			else
+			{
+				this->unexpectedTagLevel++;
+
+				this->addIssue(tr("Error!") + " " + tr("Unexpected node found while parsing") + " \"ValueProvider\" " + tr("node."));
+				this->addIssue("    " + tr("Expected") + " \"Equation\", " + tr("got") + " \"" + nodeName + "\".");
 			}
 			break;
 		case SubTag_t::action_condition:
@@ -295,6 +316,11 @@ MachineXmlParser::IsSubmachineEnd_t FsmXmlParser::parseSubmachineEndElement()
 		}
 		case SubTag_t::operand:
 			this->currentSubTag = SubTag_t::equation;
+			break;
+		case SubTag_t::action_valueProvider:
+			this->processEndActionValueProvider();
+
+			this->currentSubTag = SubTag_t::action;
 			break;
 		case SubTag_t::action_condition:
 			this->processEndActionCondition();
@@ -468,14 +494,6 @@ void FsmXmlParser::processEndTransitionCondition()
 
 
 	transition->setCondition(this->getCurrentEquation());
-}
-
-void FsmXmlParser::processEndActionCondition()
-{
-	if (this->currentAction == nullptr) return;
-
-
-	this->currentAction->setActionCondition(this->getCurrentEquation());
 }
 
 std::shared_ptr<FsmState> FsmXmlParser::getStateByName(const QString& name) const

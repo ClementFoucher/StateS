@@ -17,9 +17,6 @@ set_source_files_properties("svg/Attach_window.svg"
 set_source_files_properties("svg/Create_FSM.svg"
     PROPERTIES QT_RESOURCE_ALIAS "new_FSM"
 )
-set_source_files_properties("svg/Decrement.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "decrement"
-)
 set_source_files_properties("svg/Detach_window.svg"
     PROPERTIES QT_RESOURCE_ALIAS "detach_window"
 )
@@ -28,12 +25,6 @@ set_source_files_properties("svg/Export_PDF.svg"
 )
 set_source_files_properties("svg/Export_image.svg"
     PROPERTIES QT_RESOURCE_ALIAS "export_image"
-)
-set_source_files_properties("svg/Falling_edge.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "falling_edge"
-)
-set_source_files_properties("svg/Increment.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "increment"
 )
 set_source_files_properties("svg/Load.svg"
     PROPERTIES QT_RESOURCE_ALIAS "load"
@@ -46,9 +37,6 @@ set_source_files_properties("svg/Pulse_down.svg"
 )
 set_source_files_properties("svg/Redo.svg"
     PROPERTIES QT_RESOURCE_ALIAS "redo"
-)
-set_source_files_properties("svg/Rising_edge.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "rising_edge"
 )
 set_source_files_properties("svg/Save.svg"
     PROPERTIES QT_RESOURCE_ALIAS "save"
@@ -70,16 +58,12 @@ set(art_files
     "svg/Assign.svg"
     "svg/Attach_window.svg"
     "svg/Create_FSM.svg"
-    "svg/Decrement.svg"
     "svg/Detach_window.svg"
     "svg/Export_PDF.svg"
     "svg/Export_image.svg"
-    "svg/Falling_edge.svg"
-    "svg/Increment.svg"
     "svg/Load.svg"
     "svg/Pulse.svg"
     "svg/Redo.svg"
-    "svg/Rising_edge.svg"
     "svg/Save.svg"
     "svg/Save_as.svg"
     "svg/StateS.svg"
