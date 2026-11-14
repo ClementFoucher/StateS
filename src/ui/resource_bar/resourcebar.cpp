@@ -68,28 +68,25 @@ void ResourceBar::setSelectedItem(ComponentId componentId)
 		return;
 	}
 
-	auto item = machine->getComponent(componentId);
-	if (dynamic_pointer_cast<FsmState>(item) != nullptr)
-	{
-		int current_tab = this->currentIndex();
 
+	auto selectedItem = machine->getComponent(componentId);
+	if (dynamic_pointer_cast<FsmState>(selectedItem) != nullptr)
+	{
 		delete this->widget(TabIndex_t::componentEditorTabIndex);
 
 		auto componentEditorTab = new StateEditorTab(componentId);
 		this->insertTab(TabIndex_t::componentEditorTabIndex, componentEditorTab, tr("State"));
 
-		this->setCurrentIndex(current_tab);
+		this->setCurrentIndex(TabIndex_t::componentEditorTabIndex);
 	}
-	else if (dynamic_pointer_cast<FsmTransition>(item) != nullptr)
+	else if (dynamic_pointer_cast<FsmTransition>(selectedItem) != nullptr)
 	{
-		int current_tab = this->currentIndex();
-
 		delete this->widget(TabIndex_t::componentEditorTabIndex);
 
 		auto componentEditorTab = new TransitionEditorTab(componentId);
 		this->insertTab(TabIndex_t::componentEditorTabIndex, componentEditorTab, tr("Transition"));
 
-		this->setCurrentIndex(current_tab);
+		this->setCurrentIndex(TabIndex_t::componentEditorTabIndex);
 	}
 	else
 	{
@@ -102,13 +99,15 @@ void ResourceBar::editSelectedItem()
 	auto componentEditorTab = dynamic_cast<ComponentEditorTab*>(this->widget(TabIndex_t::componentEditorTabIndex));
 	if (componentEditorTab == nullptr) return;
 
+
 	this->setCurrentIndex(TabIndex_t::componentEditorTabIndex);
 }
 
 void ResourceBar::renameSelectedItem()
 {
-	StateEditorTab* stateEditorTab = dynamic_cast<StateEditorTab*>(this->widget(TabIndex_t::componentEditorTabIndex));
+	auto stateEditorTab = dynamic_cast<StateEditorTab*>(this->widget(TabIndex_t::componentEditorTabIndex));
 	if (stateEditorTab == nullptr) return;
+
 
 	this->setCurrentIndex(TabIndex_t::componentEditorTabIndex);
 	stateEditorTab->setEditName();
@@ -178,10 +177,10 @@ void ResourceBar::build()
 	{
 		this->machineComponentScene = std::make_shared<MachineComponentVisualizer>();
 
-		auto  hintTab          = new HintTab         (this->machineComponentScene);
-		auto  machineEditorTab = new MachineEditorTab(this->machineComponentScene);
-		auto  simulatorTab     = new SimulatorTab    ();
-		auto  verifierTab      = new VerifierTab     ();
+		auto hintTab          = new HintTab         (this->machineComponentScene);
+		auto machineEditorTab = new MachineEditorTab(this->machineComponentScene);
+		auto simulatorTab     = new SimulatorTab    ();
+		auto verifierTab      = new VerifierTab     ();
 
 		this->insertTab(TabIndex_t::hintTabIndex,            hintTab,          tr("Hints"));
 		this->insertTab(TabIndex_t::machineEditorTabIndex,   machineEditorTab, tr("Machine"));
@@ -194,7 +193,7 @@ void ResourceBar::build()
 
 		this->setCurrentIndex(TabIndex_t::hintTabIndex);
 	}
-	else
+	else // (machine == nullptr)
 	{
 		this->insertTab(TabIndex_t::hintTabIndex,            new QWidget(),  tr("Hints"));
 		this->insertTab(TabIndex_t::machineEditorTabIndex,   new QWidget(),  tr("Machine"));
