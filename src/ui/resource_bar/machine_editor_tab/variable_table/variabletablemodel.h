@@ -65,21 +65,27 @@ public:
 	virtual bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex())                                                       override;
 	virtual bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
 
+	// Specialized getter
 	QString getFailedVariableName();
 
 private slots:
 	void machineUpdatedEventHandler();
 
 private:
+	// Column getters
 	QVariant getNameColumnData     (const QModelIndex& index, int role) const;
 	QVariant getTypeColumnData     (const QModelIndex& index, int role) const;
 	QVariant getMemorizedColumnData(const QModelIndex& index, int role) const;
 	QVariant getValueColumnData    (const QModelIndex& index, int role) const;
 
+	// Column setters
 	bool setNameColumnData     (const QModelIndex& index, const QVariant& value, int role);
 	bool setTypeColumnData     (const QModelIndex& index, const QVariant& value, int role);
 	bool setMemorizedColumnData(const QModelIndex& index, const QVariant& value, int role);
 	bool setValueColumnData    (const QModelIndex& index, const QVariant& value, int role);
+
+	// Helper function
+	std::shared_ptr<Variable> getVariable(int row) const;
 
 	/////
 	// Signals

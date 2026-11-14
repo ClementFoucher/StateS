@@ -446,11 +446,7 @@ QVariant VariableTableModel::getNameColumnData(const QModelIndex& index, int rol
 	   )
 		return QVariant();
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return QVariant();
 
 
@@ -462,11 +458,7 @@ QVariant VariableTableModel::getTypeColumnData(const QModelIndex& index, int rol
 {
 	if (role != Qt::EditRole) return QVariant();
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return QVariant();
 
 
@@ -501,11 +493,7 @@ QVariant VariableTableModel::getMemorizedColumnData(const QModelIndex& index, in
 {
 	if (role != Qt::EditRole) return QVariant();
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return QVariant();
 
 
@@ -520,11 +508,7 @@ QVariant VariableTableModel::getValueColumnData(const QModelIndex& index, int ro
 	   )
 		return QVariant();
 
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return QVariant();
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return QVariant();
 
 
@@ -578,8 +562,7 @@ bool VariableTableModel::setNameColumnData(const QModelIndex& index, const QVari
 	if (machine == nullptr) return false;
 
 	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
-	if (variable == nullptr) return false;
+	if (variableId == nullId) return false;
 
 
 	// Get new name
@@ -609,11 +592,7 @@ bool VariableTableModel::setNameColumnData(const QModelIndex& index, const QVari
 
 bool VariableTableModel::setTypeColumnData(const QModelIndex& index, const QVariant& value, int role)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return false;
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return false;
 
 
@@ -700,11 +679,7 @@ bool VariableTableModel::setTypeColumnData(const QModelIndex& index, const QVari
 
 bool VariableTableModel::setMemorizedColumnData(const QModelIndex& index, const QVariant& value, int role)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return false;
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return false;
 
 
@@ -725,11 +700,7 @@ bool VariableTableModel::setMemorizedColumnData(const QModelIndex& index, const 
 
 bool VariableTableModel::setValueColumnData(const QModelIndex& index, const QVariant& value, int role)
 {
-	auto machine = machineManager->getMachine();
-	if (machine == nullptr) return false;
-
-	auto variableId = machine->getVariableId(this->editorNature, index.row());
-	auto variable = machine->getVariable(variableId);
+	auto variable = this->getVariable(index.row());
 	if (variable == nullptr) return false;
 
 	auto variableType = variable->getType();
@@ -784,4 +755,14 @@ bool VariableTableModel::setValueColumnData(const QModelIndex& index, const QVar
 	emit this->dataChanged(index, index);
 
 	return true;
+}
+
+inline std::shared_ptr<Variable> VariableTableModel::getVariable(int row) const
+{
+	auto machine = machineManager->getMachine();
+	if (machine == nullptr) return nullptr;
+
+
+	auto variableId = machine->getVariableId(this->editorNature, row);
+	return machine->getVariable(variableId);
 }
