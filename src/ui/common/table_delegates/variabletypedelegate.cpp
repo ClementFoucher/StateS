@@ -108,6 +108,18 @@ void VariableTypeDelegate::setModelData(QWidget* editor, QAbstractItemModel* mod
 	}
 }
 
+bool VariableTypeDelegate::eventFilter(QObject* object, QEvent* event)
+{
+	// This override solves a very tricky issue: QAbstractItemView
+	// installs an event filter on editors, that is handled by
+	// QAbstractItemDelegate. This is something we especially
+	// DON'T WANT for complex editors that contain subwidgets
+	// that will use 'enter' for validation, because the key
+	// press will be processed by the delegate's event filter
+	// while the subwidget is NOT the current editor.
+	return false;
+}
+
 void VariableTypeDelegate::typeChangedEventHandler()
 {
 	auto typeEditor = dynamic_cast<TypeEditor*>(sender());

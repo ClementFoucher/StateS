@@ -42,6 +42,9 @@ public:
 	virtual void     setEditorData(QWidget* editor, const QModelIndex& index)                           const override;
 	virtual void     setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
+protected:
+	virtual bool eventFilter(QObject* object, QEvent* event) override;
+
 private slots:
 	void typeChangedEventHandler();
 
